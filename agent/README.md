@@ -23,8 +23,10 @@
    is not available on private repositories under a free plan, and the
    protection matters more than privacy for a repo that holds no secrets and
    no family data. `main` requires a pull request (no approval count, since
-   one account cannot approve its own PR) and green `backend`, `frontend` and
-   `guardrails` checks; "do not allow bypassing" is on, so even the owner,
+   one account cannot approve its own PR) and green `backend`, `frontend`,
+   `guardrails` and `images` checks (the last added 2026-09-08 with
+   `gh api -X PATCH .../protection/required_status_checks`); "do not allow
+   bypassing" is on, so even the owner,
    and therefore the agent token acting as the owner, cannot push `main`.
    Applied with `gh api -X PUT repos/camory/libris/branches/main/protection`
    on 2026-09-07.
