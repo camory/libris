@@ -28,8 +28,10 @@ question; do not guess.
 - **Small and boring.** Prefer the simplest design that satisfies the task and
   the architecture. No speculative abstractions, no extra dependencies unless
   the task requires them (say why in the PR body).
-- **Contract first.** An API change starts in `api/openapi.yaml`, then
-  backend (verified by Contracteer), then frontend (regenerated types).
+- **Contract first.** An API change starts in `api/openapi.yaml`, edited
+  with Tophe and never by a headless run alone (D04); then backend (verified
+  by Contracteer), then frontend (hand-written types, tested against the
+  Contracteer mock).
 - **Keep documents true.** If you learn something a future run must know
   (a command, a gotcha, a decision you had to make), write it in
   `agent/PROGRESS.md`. If it changes an architectural rule, do not edit
