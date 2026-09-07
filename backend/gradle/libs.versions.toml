@@ -1,6 +1,8 @@
 # Versions pinned per D10. Libraries managed by the Spring Boot BOM carry no
 # version here: the BOM (build.gradle.kts, platform()) is their single source.
-# Gradle itself is pinned in gradle/wrapper/gradle-wrapper.properties (9.7.1).
+# Gradle itself is pinned in gradle/wrapper/gradle-wrapper.properties (9.7.1) and
+# the foojay toolchain resolver in settings.gradle.kts (settings plugins cannot
+# use the catalog).
 [versions]
 kotlin = "2.3.21"
 spring-boot = "4.1.1"
@@ -25,11 +27,11 @@ kotlin-reflect = { module = "org.jetbrains.kotlin:kotlin-reflect" }
 # Pinned
 archunit-junit5 = { module = "com.tngtech.archunit:archunit-junit5", version.ref = "archunit" }
 kotest-assertions-core = { module = "io.kotest:kotest-assertions-core", version.ref = "kotest" }
+detekt-cli = { module = "io.gitlab.arturbosch.detekt:detekt-cli", version.ref = "detekt" }
 detekt-formatting = { module = "io.gitlab.arturbosch.detekt:detekt-formatting", version.ref = "detekt" }
 
 [plugins]
 kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
 kotlin-spring = { id = "org.jetbrains.kotlin.plugin.spring", version.ref = "kotlin" }
 spring-boot = { id = "org.springframework.boot", version.ref = "spring-boot" }
-detekt = { id = "io.gitlab.arturbosch.detekt", version.ref = "detekt" }
 kover = { id = "org.jetbrains.kotlinx.kover", version.ref = "kover" }

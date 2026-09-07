@@ -27,7 +27,10 @@ class ArchitectureTest {
             "org.springframework.data.annotation..",
             "org.springframework.data.relational.core.mapping..",
         )
-        .`as`("D02 rule 1: domain depends only on the Kotlin/Java standard libraries and the Spring Data mapping annotations")
+        .`as`(
+            "D02 rule 1: domain depends only on the Kotlin/Java standard libraries " +
+                "and the Spring Data mapping annotations",
+        )
 
     @ArchTest
     val rule2ApplicationDependsOnDomainOnly: ArchRule = classes()
