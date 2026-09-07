@@ -20,6 +20,13 @@ must be clean. If the branch or the brief is missing, report `blocked`.
 - Run the real commands (`./gradlew check`, `npm test`, `npm run build`, as
   applicable) and read their output. Never skip, disable or weaken a test to
   get green.
+- **The gates are recorded.** `cd backend && ./gradlew check` and
+  `cd frontend && npm test` must each be run plainly, as the last thing in
+  their command, nothing piped or chained after them. The sandbox records the
+  result with a hash of the tree, and refuses `git push` and `gh pr create`
+  unless every side you changed (its directory or `api/`) has a green run on
+  exactly the current content. Partial runs (`./gradlew test`, `npx vitest`)
+  are fine while working but prove nothing.
 - **Failure budget.** If the same test or build error survives three genuinely
   different fixes, stop. Commit what is sound, push the branch, and report
   `blocked` with the exact error text. Do not burn the run on a fourth try.
