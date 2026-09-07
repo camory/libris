@@ -1,6 +1,7 @@
 # Libris agent sandbox: everything one loop iteration needs, nothing from the host.
 # JDK 25 (backend), Node 24 (frontend), Contracteer CLI (mock server, D04),
-# git + gh (branches and PRs), claude (the agent).
+# gitleaks (the guard hook's secret scan), git + gh (branches and PRs),
+# claude (the agent).
 FROM eclipse-temurin:25-jdk-noble
 
 ARG UID=1000
@@ -8,6 +9,8 @@ ARG GID=1000
 ARG NODE_MAJOR=24
 ARG CONTRACTEER_VERSION=4.0.0
 ARG CONTRACTEER_SHA256=781be856f0f1764c8cf6fa0936bc767ba5733d90f289780f066f33d7e0c7f52e
+ARG GITLEAKS_VERSION=8.30.1
+ARG GITLEAKS_SHA256=551f6fc83ea457d62a0d98237cbad105af8d557003051f41f3e7ca7b3f2470eb
 
 ENV DEBIAN_FRONTEND=noninteractive \
     LANG=C.UTF-8 \
@@ -36,6 +39,15 @@ RUN curl -fsSL -o /tmp/contracteer.zip \
  && install -m 0755 "/tmp/contracteer-${CONTRACTEER_VERSION}-linux-x86_64/bin/contracteer" /usr/local/bin/contracteer \
  && rm -rf /tmp/contracteer.zip "/tmp/contracteer-${CONTRACTEER_VERSION}-linux-x86_64" \
  && contracteer --version
+
+# gitleaks: the guard hook refuses commits and pushes carrying a credential.
+RUN curl -fsSL -o /tmp/gitleaks.tar.gz \
+      "https://github.com/gitleaks/gitleaks/releases/download/v${GITLEAKS_VERSION}/gitleaks_${GITLEAKS_VERSION}_linux_x64.tar.gz" \
+ && echo "${GITLEAKS_SHA256}  /tmp/gitleaks.tar.gz" | sha256sum -c - \
+ && tar -xzf /tmp/gitleaks.tar.gz -C /tmp gitleaks \
+ && install -m 0755 /tmp/gitleaks /usr/local/bin/gitleaks \
+ && rm -f /tmp/gitleaks.tar.gz /tmp/gitleaks \
+ && gitleaks version
 
 # Non-root user matching the host uid so bind-mounted files keep their owner.
 # claude refuses --dangerously-skip-permissions as root, which is a feature.
