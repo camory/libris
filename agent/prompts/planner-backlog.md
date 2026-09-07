@@ -23,9 +23,6 @@ then open a pull request with it for the human to approve.
 - Each task is one bullet: `- [ ] T### Title.` followed by 3 to 8 indented
   lines: what to build, acceptance criteria a test or a command can check, and
   the PRD sections and architecture decisions it serves.
-- No human tasks in the backlog. A task that needs a human step first (a CI
-  change, a contract edit, a deployment) states it as `Precondition (human):
-  …` on its own line; the brief mode blocks while it is missing.
 - IDs are stable. Never renumber or reuse an ID. New tasks take the next free
   number in their phase (`T01x`, `T02x`, …) or open a new phase.
 - Plan only what the PRD asks for. If the PRD is ambiguous, do not guess: add

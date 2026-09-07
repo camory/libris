@@ -8,9 +8,9 @@
 > *Precondition (human)* on its line; Tophe does it between runs, and the
 > planner reports `blocked` while it is missing.
 >
-> Phase 0 reviewed by Tophe on 2026-09-08. Phases 1–4 are still the first
-> draft and predate the architecture review of 2026-09-07; the planner's
-> backlog mode refreshes them before they are taken.
+> Phase 0 reviewed by Tophe on 2026-09-08. The phases after it will be
+> derived from feature specifications, one feature at a time, once Phase 0
+> is deployed; the first draft of those phases was dropped in PR #6.
 
 ## Phase 0 — Foundations, ending with `/api/v1/me` deployed
 
@@ -30,7 +30,7 @@
       `domain/ application/ infra/ ui/` with eslint-plugin-boundaries enforcing
       the five D05 rules. `vite-plugin-pwa`: manifest (name Libris, theme
       colour, placeholder icons) and precached app shell only; API caching
-      stays in T040. Dev server proxies `/api` to `localhost:8080`. Home view:
+      comes with the offline feature (PRD 4.8, P2). Dev server proxies `/api` to `localhost:8080`. Home view:
       static French title from i18n. `npm test` = `vue-tsc` + ESLint + Vitest
       with V8 coverage (D07); one component test; `npm run build` green.
       `frontend/README.md`: commands.
@@ -80,61 +80,6 @@ by name, the version in the footer, the PWA installed on iOS and Android, and
 what happens when the installed app is reopened after the Authelia session
 expired (the D06 risk). The result goes in `agent/PROGRESS.md`; if the
 redirect fails in the installed app, the D06 fallback becomes a task.
-
-## Phase 1 — Catalogue
-
-- [ ] T010 Item model and migration. Tables `item`, `series`, `person`,
-      `item_person` (role enum: WRITER, ARTIST, COLORIST, TRANSLATOR, OTHER),
-      `tag`, `item_tag` per PRD 4.1 and the glossary. Kotlin entities and
-      repositories. Migration `V002__catalogue.sql`. Repository tests.
-- [ ] T011 Items API. Contract for `GET/POST /api/v1/items`,
-      `GET/PUT/DELETE /api/v1/items/{id}` with validation (title required,
-      ISBN-13 checksum, volume ≥ 1) and RFC 9457 errors. Named examples in the
-      contract; Contracteer verification green; service + controller tests.
-- [ ] T012 Items UI. List page with type filter and sort, detail page,
-      create/edit form (mobile first, French labels), delete with confirm.
-      Pinia store using the generated client types. Component tests for the
-      form validation.
-- [ ] T013 Full-text search. Generated `tsvector` column + GIN index +
-      trigram index per D03 (migration `V003__search.sql`). `GET /api/v1/items?q=`
-      ranks by `ts_rank` with accent-insensitive prefix matching and a trigram
-      fallback for short queries. Contract updated. Tests prove `asterix` finds
-      *Astérix* and `one pice` finds *One Piece*. Frontend search box with
-      debounce on the list page.
-
-## Phase 2 — Family, ownership, reading
-
-- [ ] T020 Accounts and login. Spring Security session login per D06, `member`
-      table, roles ADMIN/MEMBER, admin-only `POST /api/v1/members`. Seed the
-      first admin from env vars `LIBRIS_ADMIN_USER` / `LIBRIS_ADMIN_PASSWORD`
-      on first start. All `/api/v1/**` except health require login. Frontend
-      login page, auth store, route guard, logout.
-- [ ] T021 Copies, location, loans. `copy` table (owner, location, condition,
-      acquired_on, format), `loan` table. API and UI on the item detail page:
-      add copy, mark lent / returned.
-- [ ] T022 Reading state. `reading_state` per member × item with status,
-      rating 1–5, notes, dates. API, item detail section, "Mes lectures" page.
-- [ ] T023 Wishlist. `wish` per member × item; list page; "convert to copy"
-      action.
-
-## Phase 3 — Fast entry and series
-
-- [ ] T030 ISBN lookup service. `GET /api/v1/lookup/isbn/{isbn}` querying Google
-      Books, Open Library and BnF SRU in parallel with timeouts, merging into a
-      prefill DTO. Unit tests with recorded responses; no live calls in tests.
-- [ ] T031 Barcode scanning. Camera scan in the PWA (`BarcodeDetector` with a
-      `@zxing/browser` fallback) → lookup → prefilled create form.
-- [ ] T032 Series completeness. Series page: owned volumes, gaps, optional total
-      volumes; series list with completion badges.
-
-## Phase 4 — PWA polish
-
-- [ ] T040 Offline read-only catalogue. Cache the item list and details with
-      Workbox runtime caching; offline banner; edits blocked offline with a
-      French message. Real icons and splash screens.
-- [ ] T041 Cover images. Upload and lookup-fetched covers stored on a volume,
-      thumbnails, served under `/api/v1/covers/{id}`.
-- [ ] T042 CSV export and import with preview and error report.
 
 ## Proposed (added by agent runs; a human promotes them into a phase)
 

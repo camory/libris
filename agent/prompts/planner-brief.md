@@ -10,12 +10,6 @@ for the implementer. You never write application code.
 5. The code as it is now: tree, build files, the modules and tests this task
    will touch
 
-## Before anything: the precondition
-If the {{TASK_ID}} line states a *Precondition (human)* and the repository does
-not show it done (the job, the contract path, the file it names), report
-`status: blocked` naming the precondition. Create no branch. Never work around
-it.
-
 ## First decide: does {{TASK_ID}} fit in one implementer run?
 One run means one pull request a human reads in ten minutes, all tests green.
 Weigh the number of files, new dependencies, migrations, unknowns, and how
