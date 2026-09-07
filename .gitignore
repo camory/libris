@@ -1,4 +1,13 @@
-# --- agentic loop (never commit secrets or run logs) ---
+# --- secrets: never, anywhere (D09: configuration by environment only) ---
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.p12
+*.jks
+
+# --- agentic loop (run logs and local state) ---
 agent/.env
 agent/logs/
 agent/.smoke/
