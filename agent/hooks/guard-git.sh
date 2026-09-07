@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 # PreToolUse hook: last line of defence inside the sandbox.
-# Denies Bash commands that would push main, rewrite history, or wipe the tree.
+# Denies Bash commands that would push main, rewrite history, wipe the tree,
+# or commit / push a credential (gitleaks, pinned in the sandbox image).
 # Active only when LIBRIS_SANDBOX=1 (set in the image), so humans working on the
 # host with the same .claude/settings.json are not affected.
 set -euo pipefail
@@ -53,6 +54,40 @@ if grep -Eq 'rm[[:space:]]+(--?[a-zA-Z]+[[:space:]]+)*(-[a-zA-Z]*r[a-zA-Z]*|--re
 fi
 if grep -Eq '(^|[[:space:];&|])(sudo|su)([[:space:]]|$)' <<<"$cmd"; then
   deny "No privilege escalation in the sandbox."
+fi
+
+# Secrets: nothing carrying a credential is committed, and nothing carrying one
+# leaves the sandbox. A commit scans the staged and the unstaged diff (so that
+# `git add && git commit` and `git commit -a` are both covered); a push scans
+# every commit not yet on origin/main, so a secret removed in a later commit
+# still blocks. Fails closed: no gitleaks, or a gitleaks error, is a denial.
+repo="${CLAUDE_PROJECT_DIR:-.}"
+is_commit=0; is_push=0
+grep -Eq '(^|[[:space:];&|])git[[:space:]]+commit([[:space:]]|$)' <<<"$cmd" && is_commit=1
+grep -Eq '(^|[[:space:];&|])git[[:space:]]+push([[:space:]]|$)' <<<"$cmd" && is_push=1
+if [[ "$is_commit" == 1 || "$is_push" == 1 ]]; then
+  command -v gitleaks >/dev/null \
+    || deny "gitleaks is missing from the sandbox: rebuild the image (agent/Dockerfile) before committing or pushing."
+  findings() { # gitleaks findings for the given scan flags, one "rule in file:line" per line; empty = clean
+    local report
+    report=$(gitleaks git "$repo" --no-banner --redact --exit-code 0 --log-level error -f json -r - "$@" 2>/dev/null) \
+      || deny "gitleaks could not scan the repository (flags: $*). Fix the repository state before retrying."
+    jq -r '.[]? | "\(.RuleID) in \(.File):\(.StartLine)"' <<<"$report"
+  }
+  if [[ "$is_commit" == 1 ]]; then
+    found=$( { findings --pre-commit --staged; findings --pre-commit; } | sort -u)
+    if [[ -n "$found" ]]; then
+      deny "gitleaks found a credential in the changes to commit: ${found//$'\n'/; }. Remove it (rotate it if real); configuration comes from the environment, never from files (D09)."
+    fi
+  fi
+  if [[ "$is_push" == 1 ]]; then
+    range=""
+    git -C "$repo" rev-parse --verify -q origin/main >/dev/null 2>&1 && range="origin/main..HEAD"
+    found=$(findings ${range:+--log-opts="$range"})
+    if [[ -n "$found" ]]; then
+      deny "gitleaks found a credential in the commits to push (${range:-whole history}): ${found//$'\n'/; }. It must leave the history before anything is pushed; rotate it if real."
+    fi
+  fi
 fi
 
 exit 0
