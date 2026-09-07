@@ -3,6 +3,7 @@
 > Read by every agent run. Decisions here are binding until changed by a human.
 > Each decision has an ID so tasks and PRs can reference it.
 > Reviewed decision by decision with Tophe on 2026-09-07.
+> D09 amended on 2026-09-08: image tags, version exposure, hand-managed routing.
 
 ## Overview
 
@@ -195,21 +196,34 @@ No Docker, no Testcontainers (it needs the Docker socket the sandbox
 deliberately lacks), no other service. A test that needs more blocks the task.
 
 ### D09 — Runtime packaging and deployment
-- Backend: multi-stage Dockerfile, JRE 25 image running the boot jar.
-  Configuration by environment variables only.
+- Backend: multi-stage Dockerfile, JRE 25 image running the boot jar as a
+  non-root user. Configuration by environment variables only.
 - Frontend: multi-stage Dockerfile, static assets served by nginx with SPA
   fallback; `index.html` and the service worker uncached, hashed assets
   immutable.
-- CI builds both images on every push to `main` and publishes them to
-  GitHub's container registry, tagged by commit.
+- Images: `ghcr.io/camory/libris-backend` and `ghcr.io/camory/libris-frontend`,
+  amd64 only, always sharing one tag since the contract couples them. CI
+  builds both on every pull request, which is the proof for a Dockerfile
+  change since the sandbox has no Docker, and pushes them on every push to
+  `main` tagged `sha-<short sha>`. A release is a git tag `vX.Y.Z` created by
+  a human; CI then re-tags the sha images with the version, so the image
+  tested on `main` is the one released. No `latest`, no moving tag. The CI
+  workflow is edited by humans only.
+- Every image carries the OCI labels (`version`, `revision`, `created`,
+  `source`) and the application exposes its version: the backend on
+  `/actuator/info` (Spring Boot build info), the frontend in a footer.
 - `deploy/` holds the production compose: PostgreSQL 18, backend and frontend
-  on the existing Traefik network with the Authelia forward-auth middleware on
-  both routers (`/api/**` and `/**`), no published ports, named volumes for
-  data and covers. Secrets live in an uncommitted `.env`. Spring Actuator's
-  health endpoint sits outside `/api`, is never routed by Traefik, and serves
-  the container healthcheck.
-- Deploy is manual: `docker compose pull && docker compose up -d` on the
-  Kimsufi box.
+  pulled by `LIBRIS_TAG` from an uncommitted `.env`, joined to the existing
+  Traefik network, no published ports, no labels, named volumes for data and
+  covers. Traefik routing (`libris.amory.fr` to the frontend, `/api` to the
+  backend, the Authelia forward-auth middleware on both routers) and the
+  Authelia access rule are declared by hand in the server's Traefik dynamic
+  configuration files and Authelia configuration, outside this repository;
+  `deploy/README.md` states what they must contain. Spring Actuator's
+  endpoints sit outside `/api`, are never routed by Traefik, and serve the
+  container healthcheck.
+- Deploy is manual: set `LIBRIS_TAG`, then `docker compose pull && docker
+  compose up -d` on the Kimsufi box. Rollback is the previous tag.
 - Backups are not the app's job: the server's Gordien (hourly `pg_dump` +
   restic) covers the database and the covers volume. Deployment registers
   Libris there; `deploy/README.md` documents the restore.
