@@ -8,7 +8,7 @@
 | `briefs/` | One brief per task, written by the planner on the task branch; `TEMPLATE.md` |
 | `TASKS.md` | Ordered backlog with checkboxes (the loop's queue) |
 | `PROGRESS.md` | Append-only diary written by runs |
-| `Dockerfile`, `compose.yaml` | Sandbox image (JDK 21, Node 22, git, gh, claude) + PostgreSQL sidecar |
+| `Dockerfile`, `compose.yaml` | Sandbox image (JDK 25, Node 24, contracteer, git, gh, claude) + PostgreSQL 18 sidecar |
 | `hooks/guard-git.sh` | PreToolUse hook denying pushes to main, force pushes, `rm -rf /`, sudo |
 | `.env.example` | Credentials and limits template → copy to `.env` (git-ignored) |
 | `host/` | Host-side pieces: the LAN firewall script and its systemd unit |

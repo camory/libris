@@ -1,10 +1,13 @@
 # Libris agent sandbox: everything one loop iteration needs, nothing from the host.
-# JDK 21 (backend), Node 22 (frontend), git + gh (branches and PRs), claude (the agent).
-FROM eclipse-temurin:21-jdk-noble
+# JDK 25 (backend), Node 24 (frontend), Contracteer CLI (mock server, D04),
+# git + gh (branches and PRs), claude (the agent).
+FROM eclipse-temurin:25-jdk-noble
 
 ARG UID=1000
 ARG GID=1000
-ARG NODE_MAJOR=22
+ARG NODE_MAJOR=24
+ARG CONTRACTEER_VERSION=4.0.0
+ARG CONTRACTEER_SHA256=781be856f0f1764c8cf6fa0936bc767ba5733d90f289780f066f33d7e0c7f52e
 
 ENV DEBIAN_FRONTEND=noninteractive \
     LANG=C.UTF-8 \
@@ -24,6 +27,15 @@ RUN apt-get update \
  && apt-get update \
  && apt-get install -y --no-install-recommends gh nodejs \
  && apt-get clean && rm -rf /var/lib/apt/lists/*
+
+# Contracteer CLI: native binary, pinned and checksummed (D04, D08).
+RUN curl -fsSL -o /tmp/contracteer.zip \
+      "https://github.com/contracteer-dev/contracteer/releases/download/${CONTRACTEER_VERSION}/contracteer-${CONTRACTEER_VERSION}-linux-x86_64.zip" \
+ && echo "${CONTRACTEER_SHA256}  /tmp/contracteer.zip" | sha256sum -c - \
+ && unzip -q /tmp/contracteer.zip -d /tmp \
+ && install -m 0755 "/tmp/contracteer-${CONTRACTEER_VERSION}-linux-x86_64/bin/contracteer" /usr/local/bin/contracteer \
+ && rm -rf /tmp/contracteer.zip "/tmp/contracteer-${CONTRACTEER_VERSION}-linux-x86_64" \
+ && contracteer --version
 
 # Non-root user matching the host uid so bind-mounted files keep their owner.
 # claude refuses --dangerously-skip-permissions as root, which is a feature.

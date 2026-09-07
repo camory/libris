@@ -11,7 +11,7 @@ jobs:
     runs-on: ubuntu-latest
     services:
       postgres:
-        image: postgres:17-alpine
+        image: postgres:18-alpine
         env:
           POSTGRES_DB: libris
           POSTGRES_USER: libris
@@ -30,7 +30,7 @@ jobs:
         run: test -f backend/gradlew && echo "yes=true" >> "$GITHUB_OUTPUT" || echo "backend not present yet"
       - if: steps.present.outputs.yes == 'true'
         uses: actions/setup-java@v4
-        with: { distribution: temurin, java-version: '21' }
+        with: { distribution: temurin, java-version: '25' }
       - if: steps.present.outputs.yes == 'true'
         uses: gradle/actions/setup-gradle@v4
       - if: steps.present.outputs.yes == 'true'
@@ -45,10 +45,20 @@ jobs:
         run: test -f frontend/package.json && echo "yes=true" >> "$GITHUB_OUTPUT" || echo "frontend not present yet"
       - if: steps.present.outputs.yes == 'true'
         uses: actions/setup-node@v4
-        with: { node-version: '22', cache: npm, cache-dependency-path: frontend/package-lock.json }
+        with: { node-version: '24', cache: npm, cache-dependency-path: frontend/package-lock.json }
+      - if: steps.present.outputs.yes == 'true'
+        name: Install Contracteer CLI (mock server for the frontend tests, D04)
+        env: { CONTRACTEER_VERSION: '4.0.0', CONTRACTEER_SHA256: '781be856f0f1764c8cf6fa0936bc767ba5733d90f289780f066f33d7e0c7f52e' }
+        run: |
+          cd "$RUNNER_TEMP"
+          curl -fsSL -o contracteer.zip "https://github.com/contracteer-dev/contracteer/releases/download/${CONTRACTEER_VERSION}/contracteer-${CONTRACTEER_VERSION}-linux-x86_64.zip"
+          echo "${CONTRACTEER_SHA256}  contracteer.zip" | sha256sum -c -
+          unzip -q contracteer.zip
+          sudo install -m 0755 "contracteer-${CONTRACTEER_VERSION}-linux-x86_64/bin/contracteer" /usr/local/bin/contracteer
+          contracteer --version
       - if: steps.present.outputs.yes == 'true'
         working-directory: frontend
-        run: npm ci && npm test -- --run && npm run build
+        run: npm ci && npm test && npm run build
 
   guardrails:
     runs-on: ubuntu-latest

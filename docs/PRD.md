@@ -1,4 +1,4 @@
-# Libris — Product Requirements (DRAFT v0.1, 2026-09-06)
+# Libris — Product Requirements (DRAFT v0.2, 2026-09-07)
 
 > Status: **draft for review by Tophe**. The agentic loop treats this file as
 > the source of truth for *what* to build. Edit it freely before the first run;
@@ -21,10 +21,11 @@ phones. It is not a social network, not a store, not a public site.
 
 | Role | Who | Can |
 |------|-----|-----|
-| Admin | Tophe | Everything, plus manage accounts and settings |
+| Admin | Tophe | Everything, plus member profiles and settings |
 | Member | Family members | Browse, search, add/edit items, manage own reading status and wishlist |
 
-Accounts are created by the admin (invite-only). No public sign-up.
+Accounts live in the household's existing Authelia instance; Libris creates a
+member profile on a user's first visit. No public sign-up, no passwords in Libris.
 
 ## 3. Domain glossary
 
@@ -92,12 +93,17 @@ Priorities: **P1** = needed before the family uses it, **P2** = soon after,
 - Export the catalogue as CSV; import from CSV with a preview and error report.
 
 ### 4.10 Administration (P1)
-- Admin creates members, resets passwords, deactivates accounts.
-- Nightly database backup to a file the admin can restore from.
+- Accounts, passwords, second factor and deactivation are managed in Authelia,
+  outside Libris. Libris creates a member profile on first visit, from the name
+  Authelia provides; the admin can edit profiles and hide departed members.
+- Backups are done by the server's existing Gordien solution (hourly `pg_dump`
+  and restic); Libris only has to be registered there and document how to
+  restore from a dump.
 
 ## 5. Non-functional requirements
 
-- **Privacy**: private to the household; every page requires login.
+- **Privacy**: private to the household; every request passes through the
+  household's Authelia login (Traefik forward auth).
 - **Simplicity**: one server, one database, no external SaaS dependency for
   core use. Metadata lookups are optional enhancements that degrade gracefully.
 - **Performance**: search results under 300 ms for a catalogue of 10 000 items.
@@ -123,5 +129,8 @@ Priorities: **P1** = needed before the family uses it, **P2** = soon after,
    link to external URLs? (Draft assumes: store our own, on a Docker volume.)
 3. Is a barcode-scan lookup source for BD needed beyond BnF? (Bedetheque has
    no public API.)
-4. Authentication: plain username + password managed by the admin is assumed.
-   Passkeys or a Traefik-level SSO (Authelia) could replace it later.
+4. ~~Authentication~~ — resolved 2026-09-07: delegated to the existing Authelia
+   (see `docs/ARCHITECTURE.md` D06).
+5. Deleting an item that still has copies: refuse, or cascade and delete the
+   copies (and their loans, reading states) with it? Technical default until
+   answered: cascade (see `docs/ARCHITECTURE.md` D11).
