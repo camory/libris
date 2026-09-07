@@ -1,0 +1,18 @@
+# Deltas from detekt's defaults (buildUponDefaultConfig = true) that D10 needs:
+# no `!!`, no `lateinit` in production code, immutable by default, official
+# Kotlin formatting (style selected by ktlint_code_style in .editorconfig).
+
+potential-bugs:
+  UnsafeCallOnNullableType:
+    active: true
+
+style:
+  LateinitUsage:
+    active: true
+    excludes: ['**/test/**']
+  VarCouldBeVal:
+    active: true
+
+formatting:
+  active: true
+  autoCorrect: false
