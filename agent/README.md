@@ -25,6 +25,11 @@
    and therefore the agent token acting as the owner, cannot push `main`.
    Applied with `gh api -X PUT repos/camory/libris/branches/main/protection`
    on 2026-09-07.
+   Also on: **secret scanning** and **push protection** (a push containing a
+   known credential pattern is refused before it lands) and **automatic
+   deletion of head branches after merge**. Applied with
+   `gh api -X PATCH repos/camory/libris` on `security_and_analysis` and
+   `delete_branch_on_merge`, 2026-09-07.
 2. **Fine-grained token** for the agent, repository access limited to
    `camory/libris`, permissions *Contents: read/write*, *Pull requests:
    read/write*, *Issues: read/write* (labels), *Metadata: read*. No
