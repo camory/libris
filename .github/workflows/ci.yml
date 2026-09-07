@@ -78,6 +78,8 @@ jobs:
         run: gitleaks git . --no-banner --redact
       - name: Loop scripts parse, schemas are JSON
         run: bash -n agent/loop.sh agent/hooks/*.sh && python3 -c "import json,glob;[json.load(open(f)) for f in glob.glob('agent/schemas/*.json')]"
+      - name: Orchestrator state derivation behaves
+        run: bash agent/test-loop.sh
       - name: Guard hook behaves
         run: bash agent/hooks/test-guard-git.sh
       - name: Proof-of-test hooks behave
