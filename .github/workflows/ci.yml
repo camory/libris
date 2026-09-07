@@ -82,3 +82,37 @@ jobs:
         run: bash agent/hooks/test-guard-git.sh
       - name: Proof-of-test hooks behave
         run: bash agent/hooks/test-proof.sh
+
+  images:
+    # Builds both images on every PR — the proof for a Dockerfile change, since
+    # the sandbox has no Docker (D08) — and pushes them on main tagged
+    # sha-<short>. A release re-tags these (release.yml), never rebuilds (D09).
+    needs: [backend, frontend]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    env:
+      REGISTRY: ghcr.io/camory
+      PUSH: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
+    steps:
+      - uses: actions/checkout@v4
+      - if: env.PUSH == 'true'
+        name: Log in to GHCR
+        env: { TOKEN: '${{ secrets.GITHUB_TOKEN }}' }
+        run: docker login ghcr.io -u "$GITHUB_ACTOR" --password-stdin <<<"$TOKEN"
+      - name: Build backend and frontend images (push on main)
+        run: |
+          tag="sha-${GITHUB_SHA::7}"
+          created="$(date -u +%Y-%m-%dT%H:%M:%SZ)"
+          for side in backend frontend; do
+            if [ ! -f "$side/Dockerfile" ]; then echo "$side/Dockerfile not present yet"; continue; fi
+            image="$REGISTRY/libris-$side:$tag"
+            docker build "$side" -t "$image" \
+              --build-arg "VERSION=$tag" \
+              --label "org.opencontainers.image.version=$tag" \
+              --label "org.opencontainers.image.revision=$GITHUB_SHA" \
+              --label "org.opencontainers.image.created=$created" \
+              --label "org.opencontainers.image.source=https://github.com/$GITHUB_REPOSITORY"
+            if [ "$PUSH" = true ]; then docker push "$image"; fi
+          done

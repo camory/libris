@@ -203,15 +203,17 @@ deliberately lacks), no other service. A test that needs more blocks the task.
   immutable.
 - Images: `ghcr.io/camory/libris-backend` and `ghcr.io/camory/libris-frontend`,
   amd64 only, always sharing one tag since the contract couples them. CI
-  builds both on every pull request, which is the proof for a Dockerfile
-  change since the sandbox has no Docker, and pushes them on every push to
-  `main` tagged `sha-<short sha>`. A release is a git tag `vX.Y.Z` created by
+  builds both on every pull request after the test jobs, which is the proof
+  for a Dockerfile change since the sandbox has no Docker, and pushes them
+  on every push to `main` tagged `sha-<short sha>`. A release is a git tag `vX.Y.Z` created by
   a human; CI then re-tags the sha images with the version, so the image
   tested on `main` is the one released. No `latest`, no moving tag. The CI
   workflow is edited by humans only.
 - Every image carries the OCI labels (`version`, `revision`, `created`,
-  `source`) and the application exposes its version: the backend on
-  `/actuator/info` (Spring Boot build info), the frontend in a footer.
+  `source`); `version` is the `sha-<short sha>` tag, since a re-tagged image
+  cannot know its release name. The application exposes that revision: the
+  backend on `/actuator/info` (Spring Boot build info), the frontend in a
+  footer. The release name lives in the registry and in `deploy/.env`.
 - `deploy/` holds the production compose: PostgreSQL 18, backend and frontend
   pulled by `LIBRIS_TAG` from an uncommitted `.env`, joined to the existing
   Traefik network, no published ports, no labels, named volumes for data and
