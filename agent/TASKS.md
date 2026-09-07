@@ -39,13 +39,13 @@
       Gradle build stage taking a `VERSION` build argument, JRE 25 runtime
       running the boot jar as a non-root user, configuration by environment
       only, `HEALTHCHECK` on `/actuator/health`, OCI labels (D09).
-      `GET /actuator/info` reports the build version (Spring Boot build
-      info), with a test. The sandbox has no Docker (D08): the PR's `images`
+      `GET /actuator/info` reports the revision passed as `VERSION` (Spring
+      Boot build info), with a test. The sandbox has no Docker (D08): the PR's `images`
       job is the oracle, and the PR body says so.
 - [ ] T004 Frontend image. Multi-stage `frontend/Dockerfile`: Node build
       taking `VERSION`, nginx serving `dist/` with SPA fallback; `index.html`
       and the service worker `no-cache`, hashed assets `immutable`; OCI labels
-      (D09). The version shows in a footer, with a component test. Verified
+      (D09). The revision shows in a footer, with a component test. Verified
       as T003.
 - [ ] T005 Member profile, backend. Precondition (human): `GET /api/v1/me` in
       `api/openapi.yaml` (D04). Spring Security pre-authenticated header
@@ -76,7 +76,7 @@
 
 Phase 0 is done when Tophe has tagged `v0.1.0`, deployed it, and checked from
 a phone on mobile data: the Authelia login, the home page greeting the member
-by name, the version in the footer, the PWA installed on iOS and Android, and
+by name, the footer revision matching `git rev-parse v0.1.0`, the PWA installed on iOS and Android, and
 what happens when the installed app is reopened after the Authelia session
 expired (the D06 risk). The result goes in `agent/PROGRESS.md`; if the
 redirect fails in the installed app, the D06 fallback becomes a task.

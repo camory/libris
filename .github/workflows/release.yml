@@ -1,0 +1,31 @@
+name: release
+on:
+  push:
+    tags: ['v[0-9]+.[0-9]+.[0-9]+']
+
+jobs:
+  retag:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    env:
+      REGISTRY: ghcr.io/camory
+    steps:
+      - uses: actions/checkout@v4
+      - name: Log in to GHCR
+        env: { TOKEN: '${{ secrets.GITHUB_TOKEN }}' }
+        run: docker login ghcr.io -u "$GITHUB_ACTOR" --password-stdin <<<"$TOKEN"
+      - name: Re-tag both sha images as ${{ github.ref_name }}
+        run: |
+          sha="$(git rev-parse 'HEAD^{commit}')"
+          from="sha-${sha:0:7}"
+          for side in backend frontend; do
+            repo="$REGISTRY/libris-$side"
+            if ! docker buildx imagetools inspect "$repo:$from" >/dev/null 2>&1; then
+              echo "::error::$repo:$from not found — $GITHUB_REF_NAME must point at a commit of main whose ci run pushed the images"
+              exit 1
+            fi
+            docker buildx imagetools create -t "$repo:$GITHUB_REF_NAME" "$repo:$from"
+            echo "$repo:$GITHUB_REF_NAME <- $from"
+          done
