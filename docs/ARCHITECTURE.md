@@ -226,7 +226,9 @@ deliberately lacks), no other service. A test that needs more blocks the task.
   `agent`, `docs`, `deploy`; imperative; subject ≤ 72 characters; trailer
   `Co-Authored-By: Claude <noreply@anthropic.com>` on agent commits.
 - Branches: `task/T###-slug` (implementer), `plan/<date>` (planner), free for
-  humans. `main` takes PRs only.
+  humans. `main` takes PRs only, squash-merged, linear history. A PR title is
+  a Conventional Commit subject: it becomes the squash commit's subject, and
+  the PR body its message.
 - API: paths under `/api/v1/`, camelCase JSON, RFC 9457 problem details,
   `X-Requested-With` required on every non-GET request.
 - Language: code, commits, documents and identifiers in English; UI text in

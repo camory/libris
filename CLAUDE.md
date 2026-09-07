@@ -40,7 +40,8 @@ question; do not guess.
 - [ ] Contract verification passes if the API changed
 - [ ] The task line in `agent/TASKS.md` is ticked `- [x]`
 - [ ] An entry is appended to `agent/PROGRESS.md`
-- [ ] Commits follow Conventional Commits; branch `task/T###-slug`
+- [ ] Commits follow Conventional Commits; branch `task/T###-slug`; the PR
+      title too, since it becomes the squash commit on `main`
 - [ ] A pull request is open against `main` with: what, why, how verified,
       follow-ups, and any decision you had to make
 
@@ -52,7 +53,7 @@ question; do not guess.
 
 ## Environment
 - Sandbox: JDK 25, Node 24, Gradle via wrapper, npm, git, gh, the `contracteer`
-  CLI, PostgreSQL reachable through `LIBRIS_DB_URL` / `LIBRIS_DB_USER` /
+  and `gitleaks` CLIs, PostgreSQL reachable through `LIBRIS_DB_URL` / `LIBRIS_DB_USER` /
   `LIBRIS_DB_PASSWORD`. Nothing else is provided (D08).
 - No Docker inside the sandbox; no network services other than the database
   and the public internet (package registries, GitHub, metadata APIs).

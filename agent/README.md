@@ -9,7 +9,8 @@
 | `TASKS.md` | Ordered backlog with checkboxes (the loop's queue) |
 | `PROGRESS.md` | Append-only diary written by runs |
 | `Dockerfile`, `compose.yaml` | Sandbox image (JDK 25, Node 24, contracteer, git, gh, claude) + PostgreSQL 18 sidecar |
-| `hooks/guard-git.sh` | PreToolUse hook denying pushes to main, force pushes, `rm -rf /`, sudo |
+| `hooks/guard-git.sh` | PreToolUse hook denying pushes to main, force pushes, `rm -rf /`, sudo, and any commit or push carrying a credential (gitleaks) |
+| `hooks/test-guard-git.sh` | Behavioural tests of the guard hook, run by the CI `guardrails` job |
 | `.env.example` | Credentials and limits template → copy to `.env` (git-ignored) |
 | `host/` | Host-side pieces: the LAN firewall script and its systemd unit |
 | `logs/` | One JSON + stderr per run (git-ignored) |
@@ -30,6 +31,10 @@
    deletion of head branches after merge**. Applied with
    `gh api -X PATCH repos/camory/libris` on `security_and_analysis` and
    `delete_branch_on_merge`, 2026-09-07.
+   Merges are **squash only** (merge commits and rebase merges disabled); the
+   squash commit takes the PR title as subject and the PR body as message,
+   and `main` **requires a linear history**. Applied with the same PATCH and
+   the branch-protection PUT, 2026-09-07.
 2. **Fine-grained token** for the agent, repository access limited to
    `camory/libris`, permissions *Contents: read/write*, *Pull requests:
    read/write*, *Issues: read/write* (labels), *Metadata: read*. No
