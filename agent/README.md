@@ -31,6 +31,10 @@
    deletion of head branches after merge**. Applied with
    `gh api -X PATCH repos/camory/libris` on `security_and_analysis` and
    `delete_branch_on_merge`, 2026-09-07.
+   Merges are **squash only** (merge commits and rebase merges disabled); the
+   squash commit takes the PR title as subject and the PR body as message,
+   and `main` **requires a linear history**. Applied with the same PATCH and
+   the branch-protection PUT, 2026-09-07.
 2. **Fine-grained token** for the agent, repository access limited to
    `camory/libris`, permissions *Contents: read/write*, *Pull requests:
    read/write*, *Issues: read/write* (labels), *Metadata: read*. No

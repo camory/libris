@@ -40,7 +40,8 @@ question; do not guess.
 - [ ] Contract verification passes if the API changed
 - [ ] The task line in `agent/TASKS.md` is ticked `- [x]`
 - [ ] An entry is appended to `agent/PROGRESS.md`
-- [ ] Commits follow Conventional Commits; branch `task/T###-slug`
+- [ ] Commits follow Conventional Commits; branch `task/T###-slug`; the PR
+      title too, since it becomes the squash commit on `main`
 - [ ] A pull request is open against `main` with: what, why, how verified,
       follow-ups, and any decision you had to make
 
