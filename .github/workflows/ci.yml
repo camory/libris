@@ -84,9 +84,6 @@ jobs:
         run: bash agent/hooks/test-proof.sh
 
   images:
-    # Builds both images on every PR — the proof for a Dockerfile change, since
-    # the sandbox has no Docker (D08) — and pushes them on main tagged
-    # sha-<short>. A release re-tags these (release.yml), never rebuilds (D09).
     needs: [backend, frontend]
     runs-on: ubuntu-latest
     permissions:

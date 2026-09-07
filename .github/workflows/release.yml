@@ -1,6 +1,3 @@
-# Release = a git tag vX.Y.Z pushed by a human (D09). This re-tags the
-# sha-<short> images that ci.yml pushed for the tagged commit; nothing is
-# rebuilt, so the image tested on main is the one released. Humans only.
 name: release
 on:
   push:
