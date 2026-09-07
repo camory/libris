@@ -60,9 +60,13 @@ tasks.test {
 // detekt 1.23.8 embeds the Kotlin 2.0.21 compiler, which refuses to start on a
 // JDK newer than 24, so its Gradle plugin cannot run inside this JDK 25 build.
 // The CLI runs instead, on a JDK 21 toolchain provisioned by the foojay
-// resolver (settings.gradle.kts), with the same configuration the plugin would
-// have used: the default config plus config/detekt/detekt.yml, the formatting
-// ruleset as a plugin, main and test sources.
+// resolver (settings.gradle.kts), with the configuration the plugin would have
+// used: the default config plus config/detekt/detekt.yml, the formatting
+// ruleset as a plugin, main and test sources analysed together with type
+// resolution over the test compile classpath, so that rules such as
+// UnsafeCallOnNullableType (D10: no `!!`) see real types. The classpath
+// holds libraries only: the project's own JVM 25 class files are newer than
+// that compiler reads, and both source sets are analysed from source anyway.
 val detektSources = files("src/main/kotlin", "src/test/kotlin")
 val detektConfig = layout.projectDirectory.file("config/detekt/detekt.yml")
 val detektReport = layout.buildDirectory.file("reports/detekt/detekt.html")
@@ -73,10 +77,12 @@ tasks.register<JavaExec>("detekt") {
     javaLauncher = javaToolchains.launcherFor { languageVersion = JavaLanguageVersion.of(21) }
     classpath = detekt
     mainClass = "io.gitlab.arturbosch.detekt.cli.Main"
+    val analysisClasspath = configurations.testCompileClasspath
     inputs.files(detektSources).withPathSensitivity(PathSensitivity.RELATIVE)
     inputs.file(detektConfig).withPathSensitivity(PathSensitivity.RELATIVE)
     inputs.file(rootDir.resolve("../.editorconfig")).withPathSensitivity(PathSensitivity.RELATIVE)
     inputs.files(detektPlugins)
+    inputs.files(analysisClasspath).withNormalizer(ClasspathNormalizer::class.java)
     outputs.file(detektReport)
     argumentProviders.add {
         listOf(
@@ -84,6 +90,8 @@ tasks.register<JavaExec>("detekt") {
             "--config", detektConfig.asFile.path,
             "--input", detektSources.joinToString(",") { it.path },
             "--plugins", detektPlugins.joinToString(",") { it.path },
+            "--classpath", analysisClasspath.get().asPath,
+            "--jvm-target", "21",
             "--report", "html:${detektReport.get().asFile.path}",
         )
     }

@@ -14,7 +14,7 @@
 
 ## Phase 0 — Foundations, ending with `/api/v1/me` deployed
 
-- [ ] T001 Backend skeleton. Spring Boot + Kotlin, JDK 25, Gradle Kotlin DSL
+- [x] T001 Backend skeleton. Spring Boot + Kotlin, JDK 25, Gradle Kotlin DSL
       with `gradle/libs.versions.toml`; starters web, data-jdbc, flyway,
       actuator, PostgreSQL driver; no Spring Security yet. Datasource from
       `LIBRIS_DB_*` (D08). `V001__extensions.sql` creates `unaccent` and
@@ -83,4 +83,14 @@ redirect fails in the installed app, the D06 fallback becomes a task.
 
 ## Proposed (added by agent runs; a human promotes them into a phase)
 
-_None yet._
+- Sandbox: the `gradle-cache` volume is mounted root-owned at
+  `/home/agent/.gradle`, so Gradle cannot start there; create the directory
+  as `agent` in `agent/Dockerfile` (as `.npm` is) so the cache persists and
+  runs need no `GRADLE_USER_HOME` override (found in T001).
+- detekt: move back to the detekt Gradle plugin, in-process on the build's
+  JDK, once a detekt release runs on JDK 25 (2.0 GA); drop the JDK 21
+  toolchain and the foojay resolver from `backend/` then (T001 deviation).
+- D10 says detekt enforces "sealed types for states" and "constructor
+  injection"; detekt has no rule for either. Amend D10 or add ArchUnit rules
+  (for example no field annotated `@Autowired`) when the first service lands
+  (T005).
