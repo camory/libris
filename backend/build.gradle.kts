@@ -29,7 +29,6 @@ dependencies {
     runtimeOnly(libs.postgresql)
 
     testImplementation(libs.spring.boot.starter.test)
-    testImplementation(libs.spring.boot.starter.web.server.test)
     testImplementation(libs.spring.boot.resttestclient)
     testImplementation(libs.archunit.junit5)
     testImplementation(libs.kotest.assertions.core)

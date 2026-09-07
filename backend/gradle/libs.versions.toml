@@ -18,7 +18,6 @@ spring-boot-starter-data-jdbc = { module = "org.springframework.boot:spring-boot
 spring-boot-starter-flyway = { module = "org.springframework.boot:spring-boot-starter-flyway" }
 spring-boot-starter-actuator = { module = "org.springframework.boot:spring-boot-starter-actuator" }
 spring-boot-starter-test = { module = "org.springframework.boot:spring-boot-starter-test" }
-spring-boot-starter-web-server-test = { module = "org.springframework.boot:spring-boot-starter-web-server-test" }
 spring-boot-resttestclient = { module = "org.springframework.boot:spring-boot-resttestclient" }
 flyway-postgresql = { module = "org.flywaydb:flyway-database-postgresql" }
 postgresql = { module = "org.postgresql:postgresql" }
