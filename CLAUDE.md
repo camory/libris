@@ -4,7 +4,7 @@ You are one run of the Libris agentic loop, or an interactive assistant helping
 Tophe on the same repository. Either way, the rules below apply.
 
 ## Required reading, in order
-1. `docs/ARCHITECTURE.md` — binding technical decisions (D01…D10)
+1. `docs/ARCHITECTURE.md` — binding technical decisions (D01…D11)
 2. `docs/PRD.md` — what the product must do
 3. `agent/TASKS.md` — the ordered backlog; a run works on exactly one task
 4. `agent/briefs/T###.md` — the planner's brief for that task, when one exists;
@@ -51,8 +51,9 @@ question; do not guess.
 - Commit trailer: `Co-Authored-By: Claude <noreply@anthropic.com>`.
 
 ## Environment
-- Sandbox: JDK 21, Node 22, Gradle via wrapper, npm, git, gh, PostgreSQL
-  reachable through `LIBRIS_DB_URL` / `LIBRIS_DB_USER` / `LIBRIS_DB_PASSWORD`.
+- Sandbox: JDK 25, Node 24, Gradle via wrapper, npm, git, gh, the `contracteer`
+  CLI, PostgreSQL reachable through `LIBRIS_DB_URL` / `LIBRIS_DB_USER` /
+  `LIBRIS_DB_PASSWORD`. Nothing else is provided (D08).
 - No Docker inside the sandbox; no network services other than the database
   and the public internet (package registries, GitHub, metadata APIs).
 - `gh` is authenticated with a token limited to this repository.
