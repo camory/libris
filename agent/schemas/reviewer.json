@@ -1,0 +1,22 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Reviewer report",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["task_id", "pr_number", "status", "summary"],
+  "properties": {
+    "task_id": { "type": "string", "pattern": "^T[0-9]{3}$" },
+    "pr_number": { "type": "integer" },
+    "status": { "type": "string", "enum": ["posted", "blocked"], "description": "posted only if the comment was posted" },
+    "verdict": { "type": "string", "enum": ["approve", "request_changes"] },
+    "blocking": { "type": "integer" },
+    "suggestions": { "type": "integer" },
+    "verified": { "type": "string", "description": "Commands run and their real outcome" },
+    "claims_contradicted": { "type": "boolean", "description": "True if the PR's 'How verified' did not match your run" },
+    "label_set": { "type": "boolean" },
+    "comment_url": { "type": "string" },
+    "notes_on_brief": { "type": "string" },
+    "summary": { "type": "string" },
+    "blocker": { "type": "string" }
+  }
+}

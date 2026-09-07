@@ -1,0 +1,16 @@
+# Re-applies the sandbox firewall after Docker (re)starts, since Docker rebuilds its chains.
+#   sudo cp agent/host/libris-sandbox-firewall.service /etc/systemd/system/
+#   sudo systemctl daemon-reload && sudo systemctl enable --now libris-sandbox-firewall
+[Unit]
+Description=Firewall rules for the Libris agent sandbox network
+After=docker.service
+Requires=docker.service
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+ExecStart=/home/tophe/dev/libris/agent/host/sandbox-firewall.sh apply
+ExecStop=/home/tophe/dev/libris/agent/host/sandbox-firewall.sh remove
+
+[Install]
+WantedBy=multi-user.target

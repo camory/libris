@@ -1,0 +1,19 @@
+# --- agentic loop (never commit secrets or run logs) ---
+agent/.env
+agent/logs/
+agent/.smoke/
+.claude/settings.local.json
+.claude/ralph-loop.local.md
+
+# --- build / deps (per-module files add their own) ---
+node_modules/
+dist/
+build/
+.gradle/
+*.log
+.DS_Store
+
+# --- IDE ---
+.idea/
+.vscode/
+*.iml

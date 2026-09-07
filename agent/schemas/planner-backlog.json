@@ -1,0 +1,26 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Planner report, backlog mode",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["status", "summary"],
+  "properties": {
+    "status": { "type": "string", "enum": ["pr_opened", "no_change", "blocked"] },
+    "branch": { "type": "string" },
+    "pr_url": { "type": "string" },
+    "summary": { "type": "string", "description": "What changed in the backlog and why, in three sentences" },
+    "changes": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "added": { "type": "integer" },
+        "removed": { "type": "integer" },
+        "split": { "type": "integer" },
+        "merged": { "type": "integer" },
+        "reordered": { "type": "boolean" }
+      }
+    },
+    "questions": { "type": "array", "items": { "type": "string" } },
+    "blocker": { "type": "string" }
+  }
+}

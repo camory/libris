@@ -1,0 +1,17 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Planner report, brief mode",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["task_id", "status", "summary"],
+  "properties": {
+    "task_id": { "type": "string", "pattern": "^T[0-9]{3}$" },
+    "status": { "type": "string", "enum": ["brief_written", "split", "blocked"] },
+    "branch": { "type": "string", "description": "task/T###-slug when brief_written, plan/... when split" },
+    "brief_path": { "type": "string" },
+    "pr_url": { "type": "string", "description": "Only when split" },
+    "summary": { "type": "string" },
+    "decisions": { "type": "array", "items": { "type": "string" }, "description": "Local decisions recorded in the brief" },
+    "blocker": { "type": "string" }
+  }
+}

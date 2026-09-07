@@ -1,0 +1,28 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Implementer report",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["task_id", "status", "summary"],
+  "properties": {
+    "task_id": { "type": "string", "pattern": "^T[0-9]{3}$" },
+    "status": { "type": "string", "enum": ["pr_opened", "blocked"], "description": "pr_opened only if gh pr create succeeded" },
+    "branch": { "type": "string" },
+    "pr_url": { "type": "string" },
+    "summary": { "type": "string", "description": "Two or three sentences: what was built and how it was verified" },
+    "criteria_met": { "type": "integer", "description": "Acceptance criteria met" },
+    "criteria_total": { "type": "integer" },
+    "deviations": { "type": "array", "items": { "type": "string" } },
+    "self_review_changed": { "type": "string", "description": "What the self-review pass changed, or 'nothing'" },
+    "tests": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "backend": { "type": "string", "description": "e.g. '12 tests, 0 failed' or 'not applicable'" },
+        "frontend": { "type": "string" }
+      }
+    },
+    "blocker": { "type": "string", "description": "Required when blocked: the question, or the exact error that survived three fixes" },
+    "follow_ups": { "type": "array", "items": { "type": "string" } }
+  }
+}

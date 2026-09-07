@@ -1,0 +1,57 @@
+# Continuous integration. Changed by humans only (the agent token has no
+# workflow permission). Jobs skip themselves until their module exists.
+name: ci
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+jobs:
+  backend:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:17-alpine
+        env:
+          POSTGRES_DB: libris
+          POSTGRES_USER: libris
+          POSTGRES_PASSWORD: libris
+        ports: ["5432:5432"]
+        options: >-
+          --health-cmd "pg_isready -U libris -d libris"
+          --health-interval 2s --health-timeout 3s --health-retries 30
+    env:
+      LIBRIS_DB_URL: jdbc:postgresql://localhost:5432/libris
+      LIBRIS_DB_USER: libris
+      LIBRIS_DB_PASSWORD: libris
+    steps:
+      - uses: actions/checkout@v4
+      - id: present
+        run: test -f backend/gradlew && echo "yes=true" >> "$GITHUB_OUTPUT" || echo "backend not present yet"
+      - if: steps.present.outputs.yes == 'true'
+        uses: actions/setup-java@v4
+        with: { distribution: temurin, java-version: '21' }
+      - if: steps.present.outputs.yes == 'true'
+        uses: gradle/actions/setup-gradle@v4
+      - if: steps.present.outputs.yes == 'true'
+        working-directory: backend
+        run: ./gradlew check --no-daemon
+
+  frontend:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - id: present
+        run: test -f frontend/package.json && echo "yes=true" >> "$GITHUB_OUTPUT" || echo "frontend not present yet"
+      - if: steps.present.outputs.yes == 'true'
+        uses: actions/setup-node@v4
+        with: { node-version: '22', cache: npm, cache-dependency-path: frontend/package-lock.json }
+      - if: steps.present.outputs.yes == 'true'
+        working-directory: frontend
+        run: npm ci && npm test -- --run && npm run build
+
+  guardrails:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: bash -n agent/loop.sh agent/hooks/guard-git.sh && python3 -c "import json,glob;[json.load(open(f)) for f in glob.glob('agent/schemas/*.json')]"
