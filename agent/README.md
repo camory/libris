@@ -4,7 +4,7 @@
 |------|------|
 | `loop.sh` | The orchestrator: `plan`, `next`, `run N`, `review <pr>`, `status` |
 | `prompts/` | One prompt per role: `planner-backlog.md`, `planner-brief.md`, `implementer.md`, `reviewer.md` (`{{TASK_ID}}`, `{{BRANCH}}` substituted) |
-| `schemas/` | The JSON report each role must end with; enforced by `--json-schema` |
+| `schemas/` | The JSON report each role must end with; enforced by `--json-schema`. No `$schema` key: the CLI's validator rejects the 2020-12 meta-schema URL |
 | `briefs/` | One brief per task, written by the planner on the task branch; `TEMPLATE.md` |
 | `TASKS.md` | Ordered backlog with checkboxes (the loop's queue) |
 | `PROGRESS.md` | Append-only diary written by runs |
