@@ -9,7 +9,8 @@
 | `TASKS.md` | Ordered backlog with checkboxes (the loop's queue) |
 | `PROGRESS.md` | Append-only diary written by runs |
 | `Dockerfile`, `compose.yaml` | Sandbox image (JDK 25, Node 24, contracteer, git, gh, claude) + PostgreSQL 18 sidecar |
-| `hooks/guard-git.sh` | PreToolUse hook denying pushes to main, force pushes, `rm -rf /`, sudo |
+| `hooks/guard-git.sh` | PreToolUse hook denying pushes to main, force pushes, `rm -rf /`, sudo, and any commit or push carrying a credential (gitleaks) |
+| `hooks/test-guard-git.sh` | Behavioural tests of the guard hook, run by the CI `guardrails` job |
 | `.env.example` | Credentials and limits template → copy to `.env` (git-ignored) |
 | `host/` | Host-side pieces: the LAN firewall script and its systemd unit |
 | `logs/` | One JSON + stderr per run (git-ignored) |
