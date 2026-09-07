@@ -21,7 +21,10 @@ question; do not guess.
 - **TDD.** Write the failing test first, then the smallest implementation,
   then refactor. No production code without a test that motivates it.
 - **Verify, never assume.** Run the real commands and read the real output.
-  Never claim tests pass without having run them in this session.
+  Never claim tests pass without having run them in this session. In the
+  sandbox the two gates of D07 are recorded when run plainly, and a push or a
+  PR is refused without a green run on the current tree for every side
+  changed.
 - **Small and boring.** Prefer the simplest design that satisfies the task and
   the architecture. No speculative abstractions, no extra dependencies unless
   the task requires them (say why in the PR body).
