@@ -56,7 +56,7 @@ task_branch() {  # local branch task/T###-*, or nothing
 
 branch_pr() {  # "<number> <state>" of the most recent PR whose head is $1, or nothing
   have_remote || return 0
-  gh pr list --state all --head "$1" --limit 1 --json number,state --jq '.[0] | "\(.number) \(.state)"' 2>/dev/null || true
+  gh pr list --state all --head "$1" --limit 1 --json number,state --jq '.[0] // empty | "\(.number) \(.state)"' 2>/dev/null || true
 }
 
 open_plan_pr() {  # number of an open plan/* PR, or nothing
@@ -265,6 +265,8 @@ cmd_status() {
   label=$(pr_review_label "$pr"); echo "  review:        ${label:-pending}"
   echo "  waiting on:    you — $(pr_url "$pr")"
 }
+
+[[ "${BASH_SOURCE[0]}" == "$0" ]] || return 0   # sourced by agent/test-loop.sh: functions only
 
 case "${1:-}" in
   plan)    cmd_plan ;;
