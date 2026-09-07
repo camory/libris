@@ -9,6 +9,7 @@
 
 # --- agentic loop (run logs and local state) ---
 agent/.env
+agent/.proof/
 agent/logs/
 agent/.smoke/
 .claude/settings.local.json

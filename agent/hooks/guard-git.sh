@@ -1,7 +1,9 @@
 #!/usr/bin/env bash
 # PreToolUse hook: last line of defence inside the sandbox.
 # Denies Bash commands that would push main, rewrite history, wipe the tree,
-# or commit / push a credential (gitleaks, pinned in the sandbox image).
+# commit / push a credential (gitleaks, pinned in the sandbox image), or push /
+# open a PR without a recorded green gate run on the current tree (see
+# record-check.sh and proof-lib.sh).
 # Active only when LIBRIS_SANDBOX=1 (set in the image), so humans working on the
 # host with the same .claude/settings.json are not affected.
 set -euo pipefail
@@ -88,6 +90,42 @@ if [[ "$is_commit" == 1 || "$is_push" == 1 ]]; then
       deny "gitleaks found a credential in the commits to push (${range:-whole history}): ${found//$'\n'/; }. It must leave the history before anything is pushed; rotate it if real."
     fi
   fi
+fi
+
+# Proof of test (D07). A gate must be run plainly, one per command, so that the
+# recorder sees its real exit status. A push or a PR needs, for every side whose
+# content (its directory plus api/) differs from origin/main, a recorded green
+# gate run on exactly the current content.
+# shellcheck source=proof-lib.sh
+source "$(dirname "${BASH_SOURCE[0]}")/proof-lib.sh"
+sides=$(gate_sides "$cmd")
+if [[ -n "$sides" ]]; then
+  if [[ $(wc -l <<<"$sides") -ne 1 ]]; then
+    deny "Run one gate per command, so that each result is recorded: \`$(gate_command backend)\`, then \`$(gate_command frontend)\`."
+  fi
+  if ! gate_is_last "$cmd"; then
+    deny "Run the gate plainly, as the last thing in the command and with nothing piped or chained after it (no \`| tail\`, no \`; echo\`, no \`|| true\`): its exit status is what gets recorded."
+  fi
+fi
+if [[ "$is_push" == 1 ]] || grep -Eq 'gh[[:space:]]+pr[[:space:]]+create' <<<"$cmd"; then
+  tree=$(work_tree "$repo")
+  has_main=0; git -C "$repo" rev-parse -q --verify origin/main >/dev/null 2>&1 && has_main=1
+  for side in backend frontend; do
+    side_exists "$repo" "$tree" "$side" || continue
+    now=$(side_hash "$repo" "$tree" "$side")
+    if [[ "$has_main" == 1 && "$now" == "$(side_hash "$repo" origin/main "$side")" ]]; then continue; fi
+    f="$(proof_dir)/$side"
+    if [[ ! -f "$f" ]]; then
+      deny "No gate run recorded for $side, whose content differs from origin/main. Run \`$(gate_command "$side")\` plainly until green, then retry."
+    fi
+    read -r h st when _ < "$f"
+    if [[ "$h" != "$now" ]]; then
+      deny "The last recorded $side gate ($st, $when) ran on a different tree. Run \`$(gate_command "$side")\` again on the current content, then retry."
+    fi
+    if [[ "$st" != green ]]; then
+      deny "The last $side gate on this tree is red ($when). Fix the build and run \`$(gate_command "$side")\` until green."
+    fi
+  done
 fi
 
 exit 0

@@ -11,6 +11,8 @@
 | `Dockerfile`, `compose.yaml` | Sandbox image (JDK 25, Node 24, contracteer, git, gh, claude) + PostgreSQL 18 sidecar |
 | `hooks/guard-git.sh` | PreToolUse hook denying pushes to main, force pushes, `rm -rf /`, sudo, and any commit or push carrying a credential (gitleaks) |
 | `hooks/test-guard-git.sh` | Behavioural tests of the guard hook, run by the CI `guardrails` job |
+| `hooks/record-check.sh`, `hooks/proof-lib.sh` | PostToolUse hooks recording each gate run (`./gradlew check`, `npm test`) with a content hash; the guard refuses `git push` / `gh pr create` without a green run on the current tree |
+| `hooks/test-proof.sh` | Behavioural tests of the proof-of-test pair, run by CI |
 | `.env.example` | Credentials and limits template → copy to `.env` (git-ignored) |
 | `host/` | Host-side pieces: the LAN firewall script and its systemd unit |
 | `logs/` | One JSON + stderr per run (git-ignored) |
