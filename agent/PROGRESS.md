@@ -75,3 +75,43 @@ Format:
     `GRADLE_USER_HOME` override is needed.
   - `gh pr edit` can fail with a GraphQL error about classic Projects; the
     REST API (`gh api -X PATCH repos/…/pulls/N`) works.
+
+## 2026-09-08 — T001 Backend skeleton — done (PR pending)
+- Did: `backend/` scaffolded — Gradle 9.7.1 wrapper, `settings.gradle.kts`,
+  `gradle.properties`, `gradle/libs.versions.toml`, `build.gradle.kts`,
+  `config/detekt/detekt.yml`, `LibrisApplication.kt`, `README.md`. Verified by
+  command, as the brief asked, not by a shipped test: the gate exits 0; a
+  useless cast fails `compileKotlin`; `!!`, `lateinit var` and a wrong
+  indentation each fail `detekt`; a throwaway JUnit 5 + Kotest test ran and was
+  deleted; `bootRun` answers UP; the gate stays green with `LIBRIS_DB_*` unset.
+- Decided:
+  - The plain `detekt` task gets `classpath.from(main.compileClasspath,
+    main.output)`. Without it the task has no type resolution and never reports
+    `!!` (the 2026-09-08 entry measured exactly that), so the acceptance
+    criterion "`./gradlew detekt` fails on a `!!`" could not hold. `check`
+    depends on that task, so the whole of what detekt can enforce of D10 is in
+    the gate. `dependsOn(compileKotlin)` is not needed: the source set output
+    carries its own task dependency.
+  - `.editorconfig` left alone. The root file already sets `indent_size = 4`
+    for `*.{kt,kts}` and detekt's formatting ruleset reported the wrong
+    indentation correctly against it, so nothing proved
+    `ktlint_code_style = intellij_idea` necessary. A rule that the two styles
+    disagree about will prove it later.
+  - `.gitignore` gained `.kotlin/`. Proof: during a build the Kotlin plugin
+    writes `backend/.kotlin/sessions/kotlin-compiler-*.salive`, untracked and
+    not covered by any existing pattern; a crashed build leaves it behind (the
+    first attempt left a `.kotlin/` directory in `backend/`).
+- Left over / gotchas:
+  - Boot 4.1.1's `/actuator/health` answers
+    `{"groups":["liveness","readiness"],"status":"UP"}`, not the bare
+    `{"status":"UP"}` the brief quoted. Availability groups are a Boot default;
+    no configuration was added to hide them.
+  - `Detekt.jdkHome.convention(null as Directory?)` is kept for the type
+    resolution tasks (`detektMain`, `detektTest`), which set a JDK 25 jdkHome
+    by convention and would crash. The plain `detekt` task sets none, so it was
+    already safe; the `withType` block covers both.
+  - The proof hook rejects `./gradlew check --dry-run | grep …` too: it wants
+    the gate last in its command, pipe included. Run `--dry-run` plainly and
+    read the output.
+  - detekt has no rule for D10's "sealed types for states" or "constructor
+    injection"; that part of D10 is unenforced until an ArchUnit rule exists.
