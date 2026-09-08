@@ -240,3 +240,35 @@ Format:
     `/actuator/info` served from a container are first exercised by T007 and
     the Phase 0 phone check; the PR's `images` job proves only that the image
     builds.
+
+## 2026-09-08 — T004 Frontend image — done (PR pending)
+- Did: `src/ui/components/AppFooter.spec.ts` written first and failed with
+  `Failed to resolve import "./AppFooter.vue"`, then
+  `src/ui/components/AppFooter.vue` (a `defineProps<{ revision: string }>()`
+  and a `<footer>`), then `src/ui/App.vue` reading
+  `import.meta.env.VITE_APP_VERSION ?? "dev"` and passing it as a prop. Then
+  `frontend/Dockerfile` (Node 24 build stage assigning `ARG VERSION` to
+  `VITE_APP_VERSION`, nginx runtime), `frontend/nginx.conf`,
+  `frontend/.dockerignore` and the image section of `frontend/README.md`.
+  Verified by command: the gate exits 0 with two specs;
+  `VITE_APP_VERSION=sha-abc1234 npm run build` puts one occurrence of the
+  literal in `dist/assets/index-<hash>.js`, a plain build puts none and
+  `grep -o 'revision:[^,}]*'` shows ``revision:Yt(`dev`)``; `npm run build`
+  writes exactly the nine files `nginx.conf` keys on; `git status --porcelain`
+  stayed empty after the gate and after both builds.
+- Decided: nothing the brief had not decided. Its measured shapes for
+  `App.vue`, the Dockerfile and `nginx.conf` all held on contact.
+- Left over / gotchas:
+  - Nothing in this repository can run nginx: no Docker and no nginx binary in
+    the sandbox (D08), and the `images` job only *builds* the image. The SPA
+    fallback and the three cache rules are first exercised by T007's compose
+    and the Phase 0 phone check; `nginx.conf` is reviewed by reading.
+  - No `HEALTHCHECK` in the frontend image, on purpose: nothing in the
+    frontend answers a health question, and how compose watches a static
+    server is T007's call.
+  - No dependency was added and no dependency was needed: `import.meta.env`
+    carries a string index signature, so the `?? "dev"` line passes
+    `vue-tsc --noEmit` and `eslint .` with no `env.d.ts` and no `any`.
+  - `src/ui/components/` now exists, and `AppFooter.vue` is its first file;
+    the `ui-components` element the boundaries policy already named is
+    exercised for the first time.

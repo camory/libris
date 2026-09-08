@@ -42,7 +42,7 @@
       `GET /actuator/info` reports the revision passed as `VERSION` (Spring
       Boot build info), with a test. The sandbox has no Docker (D08): the PR's `images`
       job is the oracle, and the PR body says so.
-- [ ] T004 Frontend image. Multi-stage `frontend/Dockerfile`: Node build
+- [x] T004 Frontend image. Multi-stage `frontend/Dockerfile`: Node build
       taking `VERSION`, nginx serving `dist/` with SPA fallback; `index.html`
       and the service worker `no-cache`, hashed assets `immutable`; OCI labels
       (D09). The revision shows in a footer, with a component test. Verified
