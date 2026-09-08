@@ -52,7 +52,9 @@ body what the self-review changed, or "nothing".
 1. Tick `{{TASK_ID}}` in `agent/TASKS.md`. Append the diary entry to
    `agent/PROGRESS.md`: did / decided / deviations / left over.
 2. Commit, push the branch, open the pull request:
-   `gh pr create --base main --title "{{TASK_ID}}: <task title>"`.
+   `gh pr create --base main --title "<type>(<scope>): {{TASK_ID}} <task title>"`,
+   a Conventional Commit subject with a D10 scope, since it becomes the
+   squash commit on `main`.
    Body sections, in this order: **What**, **Acceptance criteria** (each
    criterion from the brief and how it was verified), **How verified** (the
    real test summary lines, pasted), **Deviations from the brief**,
