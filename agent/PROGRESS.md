@@ -229,6 +229,13 @@ Format:
     `COPY … /libs/*.jar` after a `check` in the same stage would break.
   - No `.gitignore` line was needed: `git status --porcelain` stayed empty
     after the gate, after `bootJar` and after running the jar.
+  - Tophe's review of PR #20: `LibrisApplicationTest` removed. It exercised
+    Spring Boot's build info reaching the actuator through the exposure
+    setting, no Libris class, so D07 calls it a wiring test and the command
+    verification above already covers the requirement. The REST test client
+    dependency, the unused `spring-boot-starter-test` line the reviewer
+    blocked on, and the `libris.version` test property went with it. The
+    backend has no test until T005 brings real code.
   - Nothing here runs the image. The `HEALTHCHECK`, the non-root user and
     `/actuator/info` served from a container are first exercised by T007 and
     the Phase 0 phone check; the PR's `images` job proves only that the image
