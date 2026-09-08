@@ -115,3 +115,8 @@ Format:
     read the output.
   - detekt has no rule for D10's "sealed types for states" or "constructor
     injection"; that part of D10 is unenforced until an ArchUnit rule exists.
+  - Gate requirement, not a deviation: the `classpath.from(...)` on the plain
+    `detekt` task in `backend/build.gradle.kts` is what makes a `!!` fail the
+    gate. With those two lines removed, `./gradlew detekt` passes the same
+    `!!` source with `BUILD SUCCESSFUL` (measured by the reviewer of PR #15).
+    Do not drop it in a cleanup.
