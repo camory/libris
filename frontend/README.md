@@ -47,7 +47,8 @@ npm run format
 docker build . -t libris-frontend:sha-abc1234 --build-arg VERSION=sha-abc1234
 ```
 
-The image serves `dist/` with nginx on port 80: unknown paths fall back to
-`/index.html`, `index.html` and the service worker are sent `no-cache`, and the
-hashed assets `immutable`. The footer of every page then shows the version the
-image was built with, `sha-abc1234`; a build without `--build-arg` shows `dev`.
+The image serves `dist/` with nginx as the `nginx` user on port 8080: unknown
+paths fall back to `/index.html`, `index.html` and the service worker are sent
+`no-cache`, and the hashed assets `immutable`. The footer of every page then
+shows the version the image was built with, `sha-abc1234`; a build without
+`--build-arg` shows `dev`.

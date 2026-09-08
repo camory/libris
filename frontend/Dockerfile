@@ -6,7 +6,7 @@ ARG VERSION=dev
 ENV VITE_APP_VERSION=$VERSION
 RUN npm run build
 
-FROM nginx:1.30.4-alpine3.24
+FROM nginxinc/nginx-unprivileged:1.30.4-alpine3.24
 ARG VERSION=dev
 LABEL org.opencontainers.image.version=$VERSION
 LABEL org.opencontainers.image.source=https://github.com/camory/libris
