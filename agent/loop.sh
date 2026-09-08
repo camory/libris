@@ -254,13 +254,13 @@ cmd_status() {
   local task branch prinfo pr label plan
   echo "branch (local):  $(git branch --show-current)"
   echo "remote:          $(have_remote && git remote get-url origin || echo "none yet")"
-  plan=$(open_plan_pr); echo "open plan PR:    ${plan:+#$plan $(pr_url "$plan")}${plan:-none}"
+  plan=$(open_plan_pr); echo "open plan PR:    ${plan:+#}${plan:-none}${plan:+ $(pr_url "$plan")}"
   task=$(next_task); echo "next task:       ${task:-none (backlog empty)}"
   [[ -n "$task" ]] || return 0
-  branch=$(task_branch "$task"); echo "  brief phase:   ${branch:+done on $branch}${branch:-pending}"
+  branch=$(task_branch "$task"); echo "  brief phase:   ${branch:+done on }${branch:-pending}"
   [[ -n "$branch" ]] || return 0
   prinfo=$(branch_pr "$branch"); pr="${prinfo%% *}"
-  echo "  implement:     ${pr:+PR #$pr (${prinfo#* })}${pr:-pending}"
+  echo "  implement:     ${pr:+PR #}${pr:-pending}${pr:+ (${prinfo#* })}"
   [[ -n "$pr" ]] || return 0
   label=$(pr_review_label "$pr"); echo "  review:        ${label:-pending}"
   echo "  waiting on:    you — $(pr_url "$pr")"
