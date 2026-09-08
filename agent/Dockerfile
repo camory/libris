@@ -58,6 +58,9 @@ USER agent
 ENV HOME=/home/agent \
     PATH=/home/agent/.local/bin:${PATH}
 
+# Cache directories exist as agent, so the named volumes mounted there inherit the owner.
+RUN mkdir -p /home/agent/.gradle /home/agent/.npm
+
 # Claude Code native binary, installed for the agent user.
 RUN curl -fsSL https://claude.ai/install.sh | bash \
  && claude --version
