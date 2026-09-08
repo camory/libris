@@ -44,7 +44,6 @@ tasks.withType<Detekt>().configureEach {
 }
 
 tasks.detekt {
-    dependsOn(tasks.compileKotlin)
     classpath.from(sourceSets.main.get().compileClasspath, sourceSets.main.get().output)
 }
 

@@ -14,7 +14,7 @@
 
 ## Phase 0 — Foundations, ending with `/api/v1/me` deployed
 
-- [ ] T001 Backend skeleton. Spring Boot + Kotlin, JDK 25, Gradle Kotlin DSL
+- [x] T001 Backend skeleton. Spring Boot + Kotlin, JDK 25, Gradle Kotlin DSL
       with `gradle/libs.versions.toml`; starters webmvc and actuator only:
       no Spring Security and no datasource yet, both arrive with T005.
       `./gradlew check` is the D07 gate for the code that exists: warnings
