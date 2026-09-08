@@ -134,7 +134,11 @@ tests provide fakes. Enforced by `eslint-plugin-boundaries`:
 3. `infra` imports `domain` and `application` ports, never `ui`.
 4. `ui/components` import `domain` and other components only; `ui/views` may
    import `application`.
-5. Nothing imports `ui/views`.
+5. Nothing imports `ui/views`, not even another view; the router alone does.
+   Each view lives in its own folder under `ui/views`.
+
+Test files (`*.spec.ts`) are outside the layer rules: nothing imports a spec,
+so a spec may import any layer and any package to set up what it exercises.
 
 ### D06 — Authentication: delegated to Authelia
 Authentication is delegated to the household's existing Authelia, through
