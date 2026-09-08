@@ -34,7 +34,7 @@
       static French title from i18n. `npm test` = `vue-tsc` + ESLint + Vitest
       with V8 coverage (D07); one component test; `npm run build` green.
       `frontend/README.md`: commands.
-- [ ] T003 Backend image. Precondition (human): the `images` job in
+- [x] T003 Backend image. Precondition (human): the `images` job in
       `.github/workflows/ci.yml` (D09). Multi-stage `backend/Dockerfile`:
       Gradle build stage taking a `VERSION` build argument, JRE 25 runtime
       running the boot jar as a non-root user, configuration by environment
@@ -101,3 +101,8 @@ redirect fails in the installed app, the D06 fallback becomes a task.
   pinned `typescript` 6.0.3 because `typescript-eslint` 8.70.0 declares
   `>=4.8.4 <6.1.0`, so the ESLint step of the gate cannot run with 7
   (found 2026-09-08 while scaffolding the frontend).
+- Backend image: the Dockerfile declares only `org.opencontainers.image.version`
+  and `.source`; `revision` and `created` come from the `images` job's
+  `--label` flags, so a hand-built image carries two of the four D09 labels.
+  Declaring all four needs build arguments the workflow does not pass, and the
+  workflow is edited by humans only (found 2026-09-08 while writing T003).
