@@ -1,0 +1,37 @@
+openapi: 3.0.3
+info:
+  title: Libris API
+  version: 0.1.0
+paths:
+  /api/v1/me:
+    get:
+      summary: The member making the request, as Authelia describes them
+      responses:
+        "200":
+          description: The member's identity and role
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CurrentMember"
+components:
+  schemas:
+    CurrentMember:
+      type: object
+      additionalProperties: false
+      required: [username, displayName, email, role]
+      properties:
+        username:
+          type: string
+          nullable: false
+          minLength: 1
+        displayName:
+          type: string
+          nullable: false
+          minLength: 1
+        email:
+          type: string
+          nullable: false
+        role:
+          type: string
+          nullable: false
+          enum: [MEMBER, ADMIN]
