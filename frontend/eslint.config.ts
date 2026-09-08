@@ -20,7 +20,7 @@ export default tseslint.config(
         { type: "application", pattern: "src/application" },
         { type: "infra", pattern: "src/infra" },
         { type: "ui-components", pattern: "src/ui/components" },
-        { type: "ui-views", pattern: "src/ui/views" },
+        { type: "ui-views", pattern: "src/ui/views/*", capture: ["view"] },
         { type: "ui-shell", pattern: "src/ui" },
         { type: "main", pattern: "src" },
       ],

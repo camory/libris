@@ -1,6 +1,6 @@
 import { mount } from "@vue/test-utils";
 import { describe, expect, it } from "vitest";
-import { i18n } from "../i18n";
+import { i18n } from "../../i18n";
 import HomeView from "./HomeView.vue";
 
 describe("HomeView", () => {
