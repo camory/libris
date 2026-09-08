@@ -17,7 +17,7 @@
 - [x] T001 Backend skeleton. Spring Boot + Kotlin, JDK 25, Gradle Kotlin DSL
       with `gradle/libs.versions.toml`; starters webmvc and actuator only:
       no Spring Security and no datasource yet, both arrive with T005.
-      `./gradlew check` is the D07 gate for the code that exists: warnings
+      `./gradlew check` is the D07 gate for   the code that exists: warnings
       as errors, detekt + formatting with the D10 rules (the JDK 25 gotcha
       is in `agent/PROGRESS.md`), JUnit 5 + Kotest assertions, Kover XML.
       Verified by commands, not tests: the gate exits 0; a `!!`, a
@@ -47,24 +47,34 @@
       and the service worker `no-cache`, hashed assets `immutable`; OCI labels
       (D09). The revision shows in a footer, with a component test. Verified
       as T003.
-- [ ] T005 Member profile, backend. Precondition (human): `GET /api/v1/me` in
+- [ ] T005 Backend authentication. Precondition (human): `GET /api/v1/me` in
       `api/openapi.yaml` (D04). Spring Security pre-authenticated header
-      filter on `Remote-User/Groups/Name/Email`; starters data-jdbc and
-      flyway, PostgreSQL driver, datasource from `LIBRIS_DB_*` (D08); `ADMIN`
-      when in `libris-admin`; profile created on first visit (PRD 4.10);
-      `V001__member.sql` with uuid v7 ids and `created_at`/`updated_at`
-      auditing (D11); non-GET refused without `X-Requested-With` (D06); `dev`
-      profile trusts the headers, `contract-test` profile authenticates a
-      fixed member; Contracteer verifier-junit with the truncate + seed setup
-      (D04). Tests: filter, first visit, repository test, contract. The six
-      ArchUnit rules of D02 arrive with these first classes.
-- [ ] T006 Member profile, frontend. `MeApi` port in `application/`, fetch
+      filter on `Remote-User/Groups/Name/Email`; `ADMIN` when in
+      `libris-admin`, `MEMBER` otherwise; `GET /api/v1/me` answers the
+      username, display name, email and role read from the headers, nothing
+      stored and no datasource; non-GET refused without `X-Requested-With`
+      (D06); `dev` profile trusts the headers, `contract-test` profile
+      authenticates a fixed member; Contracteer verifier-junit (D04). Tests:
+      filter, role, refusal, contract. The D02 ArchUnit rules that these
+      classes give something to check arrive here, the rest with T006.
+- [ ] T006 Backend persistence and member profile. Precondition (human):
+      `id` added to the `/api/v1/me` response in `api/openapi.yaml` (D04).
+      Starters data-jdbc and flyway, PostgreSQL driver, datasource from
+      `LIBRIS_DB_*` (D08); `V001__member.sql`: `id`, `username` unique,
+      `display_name`, `created_at`, `updated_at`, uuid v7 ids and auditing
+      (D11). The profile is created on first visit by the security wiring,
+      keyed by `Remote-User` and seeded from `Remote-Name`, then owned by
+      Libris (PRD 4.10); two simultaneous first visits end with one row.
+      `/me` gains the id; role is still read from the headers. Contracteer
+      setup truncates and seeds (D04). Tests: first visit, repository,
+      contract. The remaining ArchUnit rules of D02 and D11.
+- [ ] T007 Member profile, frontend. `MeApi` port in `application/`, fetch
       client with hand-written types in `infra/api` (D04); Vitest global setup
       starts `contracteer mock`; home view greets the member by display name;
       401 or unexpected redirect reloads the page (D06); dev proxy adds a dev
       admin's `Remote-*` headers; `npm run dev:mock` (D05). Tests: client
       against the mock, home view with a fake port.
-- [ ] T007 Production compose and runbook. `deploy/compose.yaml`: PostgreSQL
+- [ ] T008 Production compose and runbook. `deploy/compose.yaml`: PostgreSQL
       18, backend and frontend from `ghcr.io/camory/libris-*:${LIBRIS_TAG}`,
       joined to the existing Traefik network, no published ports, no labels,
       named volumes for data and covers, secrets from an uncommitted `.env`
