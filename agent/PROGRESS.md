@@ -120,3 +120,65 @@ Format:
     gate. With those two lines removed, `./gradlew detekt` passes the same
     `!!` source with `BUILD SUCCESSFUL` (measured by the reviewer of PR #15).
     Do not drop it in a cleanup.
+
+## 2026-09-08 — T002 Frontend skeleton — done (PR pending)
+- Did: `frontend/` scaffolded by hand — `package.json` (exact pins, the
+  brief's version set, unchanged by npm), `package-lock.json`, `.npmrc`,
+  `.node-version`, `index.html`, `vite.config.ts` (vue, Tailwind, PWA, the
+  `/api` dev proxy, the Vitest block), `tsconfig.json`, `eslint.config.ts`,
+  `src/main.ts`, `src/ui/{App.vue,router.ts,i18n.ts,style.css}`,
+  `src/ui/views/HomeView{.vue,.spec.ts}`, two placeholder icons, `README.md`.
+  The component test was written first and failed on the missing view.
+  Verified by command: the gate exits 0 and writes `coverage/lcov.info`; a
+  type error, an `any` and a wrong assertion each fail their own step of the
+  gate; the five D05 boundary rules each fail `eslint` on a throwaway import;
+  `npm run build` emits the manifest, `sw.js` precaching `index.html`, and
+  Tailwind's `.p-4`/`.text-2xl` rules; `npm run dev` answers 502 on
+  `/api/v1/ping` and 200 on `/`.
+- Decided:
+  - Elements for `eslint-plugin-boundaries` differ from the brief's table on
+    the three single files. `mode: "file"` is deprecated in v7 (it prints a
+    warning on every run and goes away in v8), and its replacement, file
+    descriptors, cannot carry an element type. So `src/ui` is one `ui-shell`
+    element (`App.vue`, `router.ts`, `i18n.ts`, `style.css`) and the router's
+    permission to import a view is granted by a `boundaries/files` category on
+    `src/ui/router.ts`. All five D05 rules still fail as required.
+  - `settings["import/resolver"] = { node: { extensions: [".ts", ".vue"] } }`
+    is what makes the boundaries rule see local imports at all. Measured:
+    without it, `import { probe } from "../application/probe"` resolves to
+    nothing, the dependency is reported with a null element and the rule
+    stays silent; only the extension-carrying `.vue` and the external
+    packages were checked. `eslint-import-resolver-node` is a dependency of
+    `eslint-plugin-boundaries` itself, so no package was added. Do not drop
+    those two lines in a cleanup: the rule passes on a real violation without
+    them.
+  - `checkAllOrigins: true` on the rule, because D05 rule 1 forbids `domain`
+    an external package and external dependencies are unchecked by default.
+  - `vue-tsc --noEmit` over `--build`: one `tsconfig.json` covers `src/**`,
+    `vite.config.ts` and `eslint.config.ts`, so there is no project to
+    reference. Proven: a wrong type in `vite.config.ts` fails the step.
+  - `registerType: "autoUpdate"` on the PWA plugin. The default, `"prompt"`,
+    needs update UI the app does not have, and would leave an installed phone
+    on a stale shell.
+  - The home title is `La bibliothèque de la maison`, a placeholder: no
+    document names the screen. It is one message in `src/ui/i18n.ts`.
+  - `npm run format` runs `prettier --write --ignore-path ../.gitignore .`.
+    Without the flag Prettier rewrites `dist/` and `coverage/`, since it looks
+    for a `.gitignore` in the working directory and the ignores live at the
+    root. The tree is committed in Prettier's default style; no Prettier
+    configuration file was added.
+  - `.gitignore` gained `coverage/`. Proof: `npm test` writes
+    `frontend/coverage/`, untracked and matched by no existing pattern.
+    `dev-dist/` was not added: the PWA plugin's dev service worker is off, and
+    a real `npm run dev` left nothing behind.
+- Left over / gotchas:
+  - ESLint 10 depends on `jiti`, so `eslint.config.ts` loads with no extra
+    package.
+  - The Vitest block lives in `vite.config.ts` with `defineConfig` imported
+    from `vitest/config`; the one from `vite` does not type a `test` key.
+  - `src/domain/`, `src/application/`, `src/infra/` and `src/ui/components/`
+    do not exist yet (`CLAUDE.md` forbids placeholder directories). The
+    boundaries policies already name them; T006 creates the first files.
+  - Element descriptors are matched in array order, first match wins, so
+    `src/ui/components` and `src/ui/views` must stay above `src/ui`, and
+    `src/ui` above `src`, in `eslint.config.ts`.
