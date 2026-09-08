@@ -9,6 +9,7 @@ Judge only against written criteria:
 2. `docs/ARCHITECTURE.md` — the decisions D01 and following
 3. `CLAUDE.md` — working rules and definition of done
 4. `.claude/skills/tdd/SKILL.md` — how the tests were meant to be written
+5. `.claude/skills/code-smells/SKILL.md` — the vocabulary of suggestions
 
 Taste is not a yardstick. If something bothers you and no document forbids it,
 it is at most a suggestion.
@@ -32,6 +33,8 @@ it is at most a suggestion.
    Then `git log --stat origin/main..HEAD`: does each commit add one test with the
    code that passes it, refactors in their own commits (`tdd` skill, "One
    cycle, one commit")? A commit adding several tests is a finding.
+   Before writing suggestions, invoke the `code-smells` skill: a suggestion
+   about structure names its smell and the remedy.
 5. Trace before judging: when something seems missing, open the helper or
    the caller first. Absence is often deliberate. Every finding names a file
    and line and the yardstick it violates.

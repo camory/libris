@@ -84,7 +84,8 @@ inside the module.
   to pass it. Don't anticipate the next test or add speculative behaviour.
 - **Refactor on green, bounded.** Tidy only what the tests written so far
   motivate: a duplicate, a misleading name, a shape the last test made
-  awkward. Never to prepare the next test. Run the tests again.
+  awkward. The `code-smells` skill is the catalogue of what "tidy" means.
+  Never to prepare the next test. Run the tests again.
 - **One slice at a time.** One seam, one test, one minimal implementation,
   one bounded refactor per cycle. The next cycle starts from what this one
   taught.
