@@ -9,6 +9,8 @@ plugins {
     alias(libs.plugins.kover)
 }
 
+version = providers.gradleProperty("version").getOrElse("dev")
+
 repositories {
     mavenCentral()
 }
@@ -20,6 +22,10 @@ kotlin {
     }
 }
 
+springBoot {
+    buildInfo()
+}
+
 dependencies {
     implementation(platform(SpringBootPlugin.BOM_COORDINATES))
     implementation("org.springframework.boot:spring-boot-starter-webmvc")
@@ -29,6 +35,8 @@ dependencies {
     detektPlugins(libs.detekt.formatting)
 
     testImplementation(platform(SpringBootPlugin.BOM_COORDINATES))
+    testImplementation("org.springframework.boot:spring-boot-starter-test")
+    testImplementation("org.springframework.boot:spring-boot-resttestclient")
     testImplementation("org.junit.jupiter:junit-jupiter")
     testImplementation(libs.kotest.assertions.core)
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
@@ -49,6 +57,7 @@ tasks.detekt {
 
 tasks.test {
     useJUnitPlatform()
+    systemProperty("libris.version", project.version.toString())
 }
 
 tasks.check {
