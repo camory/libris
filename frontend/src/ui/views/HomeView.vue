@@ -1,0 +1,11 @@
+<script setup lang="ts">
+import { useI18n } from "vue-i18n";
+
+const { t } = useI18n();
+</script>
+
+<template>
+  <main class="p-4">
+    <h1 class="text-2xl font-bold">{{ t("home.title") }}</h1>
+  </main>
+</template>
