@@ -18,6 +18,10 @@ question; do not guess.
 ## How to work
 - **One task per run.** Do not start the next task, do not "quickly also"
   fix unrelated things. Note follow-ups under *Proposed* in `agent/TASKS.md`.
+- **Only what the task uses.** No placeholder files or directories, and no
+  dependency, plugin, migration, configuration or property that no test or
+  feature of this task exercises. Infrastructure arrives with the first task
+  that needs it, not before.
 - **TDD.** Write the failing test first, then the smallest implementation,
   then refactor. No production code without a test that motivates it.
 - **Verify, never assume.** Run the real commands and read the real output.
@@ -32,6 +36,10 @@ question; do not guess.
   with Tophe and never by a headless run alone (D04); then backend (verified
   by Contracteer), then frontend (hand-written types, tested against the
   Contracteer mock).
+- **No rationale in code.** Comments, build scripts and configuration say
+  what, never why. The why goes in the PR body, `agent/PROGRESS.md` or
+  `docs/ARCHITECTURE.md`. Never cite decision numbers (D##) in code, tests,
+  build scripts or configuration.
 - **Keep documents true.** If you learn something a future run must know
   (a command, a gotcha, a decision you had to make), write it in
   `agent/PROGRESS.md`. If it changes an architectural rule, do not edit

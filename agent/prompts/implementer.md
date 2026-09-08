@@ -37,6 +37,9 @@ must be clean. If the branch or the brief is missing, report `blocked`.
   is structural — a criterion cannot be met without contradicting
   `docs/ARCHITECTURE.md` or deciding something the brief refused to decide —
   stop and report `blocked` with the question.
+  A workaround that adds a dependency, a plugin or a toolchain is a
+  structural conflict too: try the smallest change that keeps the brief's
+  approach first, and if none works, report `blocked` with what you tried.
 - Stay inside the task. Work you discover goes under `## Proposed` in
   `agent/TASKS.md`, one line each, and is not done now.
 

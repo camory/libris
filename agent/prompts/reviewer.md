@@ -24,6 +24,10 @@ it is at most a suggestion.
    respected? For every test: does it prove what its name claims, with no
    tautological assertion, nothing skipped or weakened? Any risk of data loss,
    injection, or a secret in the code?
+   For every file in the diff: does a criterion or a declared deviation need
+   it (`CLAUDE.md`, "Only what the task uses")? Does any comment, build
+   script or configuration carry rationale or a decision number
+   (`CLAUDE.md`, "No rationale in code")?
 5. Trace before judging: when something seems missing, open the helper or
    the caller first. Absence is often deliberate. Every finding names a file
    and line and the yardstick it violates.
@@ -31,7 +35,9 @@ it is at most a suggestion.
    - **Blocking**: an acceptance criterion not met; a test that does not
      prove its claim, or was skipped or weakened; an architecture decision
      violated; a security or data-loss risk; a verification claim your run
-     contradicted.
+     contradicted; a file, dependency or setting that no criterion or
+     declared deviation needs; rationale or a decision number in code,
+     build scripts or configuration.
    - **Suggestion**: everything else — naming, structure, a simplification, a
      missing edge-case test that no criterion asks for.
 7. Verdict: `REQUEST CHANGES` if at least one blocking finding, else `APPROVE`.

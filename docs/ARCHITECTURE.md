@@ -177,6 +177,11 @@ session, no BCrypt.
 - One database, shared sequentially: Spring-level tests run in a transaction
   rolled back at the end; HTTP-level tests (Contracteer) truncate and seed
   before every case. Test classes do not run in parallel.
+- One test source set and one `test` task. No suffix sorts tests by what
+  they need: a test that needs the database gets it from D08 like any other.
+  Test classes are named after the Libris code they exercise. A test of
+  framework or library wiring may be written while learning and is deleted
+  before the pull request.
 - Coverage: no total threshold. CI reports changed-line coverage with
   `diff-cover`; informational until the loop runs without human review, then
   a gate.

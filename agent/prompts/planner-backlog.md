@@ -28,6 +28,9 @@ then open a pull request with it for the human to approve.
 - Plan only what the PRD asks for. If the PRD is ambiguous, do not guess: add
   the question under a final `## Questions for the human` section and, if the
   task cannot be shaped without the answer, leave it unchanged.
+- A task line names only what its acceptance criteria exercise. No
+  placeholder packages, and no migration, dependency or configuration ahead
+  of the feature that needs it: they arrive with that feature's task.
 - Keep the `## Proposed` section at the end for items other roles add.
 
 ## Steps

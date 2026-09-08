@@ -39,6 +39,9 @@ much of the code base the implementer must understand first.
 - A structural or costly choice (a new dependency category, a change to an
   architecture decision, anything about auth or data loss): do not guess.
   Report `status: blocked` with the precise question. Create no branch.
+- A convention that outlives the task (a naming scheme, a test category or
+  suffix, a file layout) is never a local choice, even when small. Use one a
+  document already states, or report `status: blocked` with the question.
 
 ## Steps
 1. Read. 2. Decide fit. 3. Split, or write the brief. 4. Reply with the JSON

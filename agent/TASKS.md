@@ -15,15 +15,15 @@
 ## Phase 0 — Foundations, ending with `/api/v1/me` deployed
 
 - [ ] T001 Backend skeleton. Spring Boot + Kotlin, JDK 25, Gradle Kotlin DSL
-      with `gradle/libs.versions.toml`; starters web, data-jdbc, flyway,
-      actuator, PostgreSQL driver; no Spring Security yet. Datasource from
-      `LIBRIS_DB_*` (D08). `V001__extensions.sql` creates `unaccent` and
-      `pg_trgm` (D03). Packages `domain`, `application`, `infra.web`,
-      `infra.persistence` exist (D02). `./gradlew check` runs all of D07:
-      warnings as errors, detekt + formatting with the D10 rules, JUnit 5 +
-      Kotest assertions, the six ArchUnit rules, Kover XML. Tests: Flyway
-      migrated the given database and both extensions exist;
-      `GET /actuator/health` is UP (D09). `backend/README.md`: run, test.
+      with `gradle/libs.versions.toml`; starters webmvc and actuator only:
+      no Spring Security and no datasource yet, both arrive with T005.
+      `./gradlew check` is the D07 gate for the code that exists: warnings
+      as errors, detekt + formatting with the D10 rules (the JDK 25 gotcha
+      is in `agent/PROGRESS.md`), JUnit 5 + Kotest assertions, Kover XML.
+      Verified by commands, not tests: the gate exits 0; a `!!`, a
+      `lateinit` and a formatting violation each fail it;
+      `GET /actuator/health` on `bootRun` answers UP (D09).
+      `backend/README.md`: run, test.
 - [ ] T002 Frontend skeleton. Vue 3 `<script setup>`, Vite, TypeScript strict,
       Vue Router, Pinia, vue-i18n (`fr` only), Tailwind, Vitest + Vue Test
       Utils, Prettier; `.node-version` 24, `save-exact` (D05, D10). Layers
@@ -49,13 +49,15 @@
       as T003.
 - [ ] T005 Member profile, backend. Precondition (human): `GET /api/v1/me` in
       `api/openapi.yaml` (D04). Spring Security pre-authenticated header
-      filter on `Remote-User/Groups/Name/Email`; `ADMIN` when in
-      `libris-admin`; profile created on first visit (PRD 4.10);
-      `V002__member.sql` with uuid v7 ids and `created_at`/`updated_at`
+      filter on `Remote-User/Groups/Name/Email`; starters data-jdbc and
+      flyway, PostgreSQL driver, datasource from `LIBRIS_DB_*` (D08); `ADMIN`
+      when in `libris-admin`; profile created on first visit (PRD 4.10);
+      `V001__member.sql` with uuid v7 ids and `created_at`/`updated_at`
       auditing (D11); non-GET refused without `X-Requested-With` (D06); `dev`
       profile trusts the headers, `contract-test` profile authenticates a
       fixed member; Contracteer verifier-junit with the truncate + seed setup
-      (D04). Tests: filter, first visit, repository IT, contract.
+      (D04). Tests: filter, first visit, repository test, contract. The six
+      ArchUnit rules of D02 arrive with these first classes.
 - [ ] T006 Member profile, frontend. `MeApi` port in `application/`, fetch
       client with hand-written types in `infra/api` (D04); Vitest global setup
       starts `contracteer mock`; home view greets the member by display name;
