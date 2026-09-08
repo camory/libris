@@ -277,3 +277,33 @@ Format:
   - `src/ui/components/` now exists, and `AppFooter.vue` is its first file;
     the `ui-components` element the boundaries policy already named is
     exercised for the first time.
+
+## 2026-09-09 — T005 preparation — done by Tophe + Claude (interactive)
+- Did: wrote `api/openapi.yaml` with `GET /api/v1/me` (OpenAPI 3.0.3, the
+  four Authelia header fields and a role); split the old T005 into T005
+  (authentication, no datasource) and T006 (persistence and member profile),
+  renumbering the frontend and compose tasks to T007 and T008; fixed D04
+  (group id `dev.contracteer`, Homebrew tap `contracteer-dev/contracteer`,
+  OpenAPI 3.0.3).
+- Decided: `/me` mirrors the headers in T005 and gains the id in T006; the
+  role is derived from `Remote-Groups` on every request and never stored;
+  the identity key is `Remote-User`; the display name is seeded from
+  `Remote-Name` once and then owned by Libris (T006); `CurrentMember` is
+  closed (`additionalProperties: false`) so a field added on one side fails
+  verification on the other; no 401 in the contract since authentication is
+  upstream (D06); no example on `/me`.
+- Verified: in the sandbox image, `contracteer mock api/openapi.yaml` answers
+  200 with schema-valid data and `contracteer verify` against it generates
+  and passes one case.
+- Left over / gotchas:
+  - Contracteer 4.0.0's CLI (native image) cannot load any OpenAPI 3.1
+    document: the mock fails to resolve `$ref`s and the verifier dies on
+    `io.swagger.v3.oas.models.media.JsonSchema` reflection. Fixed upstream,
+    ships with the next release; the JVM verifier is unaffected. Until then
+    the contract stays 3.0.3, and `nullable` is the 3.0 keyword.
+  - On an operation without parameters, a response example keyed `TOPHE` or
+    `200_TOPHE` creates no scenario in 4.0.0: the verifier emits one
+    `(generated)` case and the mock returns random values. Examples on such
+    operations are documentation only.
+  - This machine has no `contracteer` binary: run it from the sandbox image
+    (`docker run --rm --entrypoint sh -v "$PWD/api:/api:ro" libris-agent:local`).
