@@ -36,6 +36,10 @@ question; do not guess.
   with Tophe and never by a headless run alone (D04); then backend (verified
   by Contracteer), then frontend (hand-written types, tested against the
   Contracteer mock).
+- **No rationale in code.** Comments, build scripts and configuration say
+  what, never why. The why goes in the PR body, `agent/PROGRESS.md` or
+  `docs/ARCHITECTURE.md`. Never cite decision numbers (D##) in code, tests,
+  build scripts or configuration.
 - **Keep documents true.** If you learn something a future run must know
   (a command, a gotcha, a decision you had to make), write it in
   `agent/PROGRESS.md`. If it changes an architectural rule, do not edit
