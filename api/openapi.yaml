@@ -30,6 +30,7 @@ components:
           minLength: 1
         email:
           type: string
+          format: email
           nullable: false
         role:
           type: string
