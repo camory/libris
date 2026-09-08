@@ -18,6 +18,10 @@ question; do not guess.
 ## How to work
 - **One task per run.** Do not start the next task, do not "quickly also"
   fix unrelated things. Note follow-ups under *Proposed* in `agent/TASKS.md`.
+- **Only what the task uses.** No placeholder files or directories, and no
+  dependency, plugin, migration, configuration or property that no test or
+  feature of this task exercises. Infrastructure arrives with the first task
+  that needs it, not before.
 - **TDD.** Write the failing test first, then the smallest implementation,
   then refactor. No production code without a test that motivates it.
 - **Verify, never assume.** Run the real commands and read the real output.
