@@ -19,6 +19,7 @@ agent/.smoke/
 node_modules/
 dist/
 build/
+coverage/
 .gradle/
 .kotlin/
 *.log

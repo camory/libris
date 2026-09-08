@@ -24,7 +24,7 @@
       `lateinit` and a formatting violation each fail it;
       `GET /actuator/health` on `bootRun` answers UP (D09).
       `backend/README.md`: run, test.
-- [ ] T002 Frontend skeleton. Vue 3 `<script setup>`, Vite, TypeScript strict,
+- [x] T002 Frontend skeleton. Vue 3 `<script setup>`, Vite, TypeScript strict,
       Vue Router, Pinia, vue-i18n (`fr` only), Tailwind, Vitest + Vue Test
       Utils, Prettier; `.node-version` 24, `save-exact` (D05, D10). Layers
       `domain/ application/ infra/ ui/` with eslint-plugin-boundaries enforcing
@@ -97,3 +97,7 @@ redirect fails in the installed app, the D06 fallback becomes a task.
   `headRefOid` is not an ancestor of the local branch, with a case in
   `agent/test-loop.sh` (found 2026-09-08 on T001's second attempt; worked
   around by renaming the branch to `task/T001-backend`).
+- Frontend: upgrade to TypeScript 7 once `typescript-eslint` accepts it. T002
+  pinned `typescript` 6.0.3 because `typescript-eslint` 8.70.0 declares
+  `>=4.8.4 <6.1.0`, so the ESLint step of the gate cannot run with 7
+  (found 2026-09-08 while scaffolding the frontend).
