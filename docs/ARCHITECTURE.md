@@ -207,9 +207,9 @@ deliberately lacks), no other service. A test that needs more blocks the task.
 ### D09 — Runtime packaging and deployment
 - Backend: multi-stage Dockerfile, JRE 25 image running the boot jar as a
   non-root user. Configuration by environment variables only.
-- Frontend: multi-stage Dockerfile, static assets served by nginx with SPA
-  fallback; `index.html` and the service worker uncached, hashed assets
-  immutable.
+- Frontend: multi-stage Dockerfile, static assets served by nginx as a
+  non-root user with SPA fallback; `index.html` and the service worker
+  uncached, hashed assets immutable.
 - Images: `ghcr.io/camory/libris-backend` and `ghcr.io/camory/libris-frontend`,
   amd64 only, always sharing one tag since the contract couples them. CI
   builds both on every pull request after the test jobs, which is the proof
