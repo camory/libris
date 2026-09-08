@@ -258,6 +258,11 @@ Format:
   stayed empty after the gate and after both builds.
 - Decided: nothing the brief had not decided. Its measured shapes for
   `App.vue`, the Dockerfile and `nginx.conf` all held on contact.
+  After review, with Tophe: the runtime stage is
+  `nginxinc/nginx-unprivileged`, the nginx team's image running as uid 101
+  `nginx` with its pid and temp files under `/tmp`, so the container listens
+  on 8080, not 80. D09 now asks a non-root user of both images; T007's
+  compose and Traefik router target port 8080 on the frontend container.
 - Left over / gotchas:
   - Nothing in this repository can run nginx: no Docker and no nginx binary in
     the sandbox (D08), and the `images` job only *builds* the image. The SPA
