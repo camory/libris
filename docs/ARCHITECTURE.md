@@ -86,10 +86,10 @@ proves insufficient, `search_text` is exactly the document a Meilisearch
 container would index.
 
 ### D04 — Contract-first API, Contracteer on both sides
-`api/openapi.yaml` (OpenAPI 3.1) is the single source of truth of the HTTP
+`api/openapi.yaml` (OpenAPI 3.0.3) is the single source of truth of the HTTP
 API.
 - Backend: verified in the test suite by
-  `tech.sabai.contracteer:contracteer-verifier-junit` (pinned). The contract
+  `dev.contracteer:contracteer-verifier-junit` (pinned). The contract
   test's setup method truncates the tables and seeds whatever the document's
   examples reference, before every case.
 - Frontend: developed and tested against `contracteer mock api/openapi.yaml`
@@ -319,6 +319,6 @@ cd frontend && npm run dev:mock                      # like dev, but proxies /ap
 ```
 
 The Contracteer CLI comes from Homebrew (`brew install
-sabai-tech/contracteer/contracteer`) or the GitHub release zip. Green means
+contracteer-dev/contracteer/contracteer`) or the GitHub release zip. Green means
 `./gradlew check` and `npm test`, as defined in D07. Toolchain: JDK 25 and
 Node 24, the latter pinned in `frontend/.node-version`.
