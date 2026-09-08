@@ -9,6 +9,8 @@ plugins {
     alias(libs.plugins.kover)
 }
 
+version = providers.gradleProperty("version").getOrElse("dev")
+
 repositories {
     mavenCentral()
 }
@@ -18,6 +20,10 @@ kotlin {
     compilerOptions {
         allWarningsAsErrors = true
     }
+}
+
+springBoot {
+    buildInfo()
 }
 
 dependencies {

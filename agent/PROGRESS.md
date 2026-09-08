@@ -182,3 +182,61 @@ Format:
   - Element descriptors are matched in array order, first match wins, so
     `src/ui/components` and `src/ui/views` must stay above `src/ui`, and
     `src/ui` above `src`, in `eslint.config.ts`.
+
+## 2026-09-08 — T003 Backend image — done (PR pending)
+- Did: the first backend test, `LibrisApplicationTest`, written red against
+  `GET /actuator/info` (404 with the default exposure) and made green by
+  `springBoot { buildInfo() }`, the project version read from the `version`
+  Gradle property with a `dev` default, and a new
+  `src/main/resources/application.yaml` holding the single setting
+  `management.endpoints.web.exposure.include: health,info`. Then
+  `backend/Dockerfile` (Temurin JDK 25 build stage taking `ARG VERSION`,
+  Temurin JRE 25 runtime, non-root `libris` user, `HEALTHCHECK` on
+  `/actuator/health`, exec-form `CMD`), `backend/.dockerignore` and the image
+  section of `backend/README.md`.
+  Verified by command: the gate exits 0; dropping `info` from the exposure
+  setting fails the test with
+  `AssertionError: Status expected:<200 OK> but was:<404 NOT_FOUND>`;
+  `./gradlew test -Pversion=sha-abc1234` passes; `bootJar -Pversion=sha-abc1234`
+  writes `libris-backend-sha-abc1234.jar` whose
+  `META-INF/build-info.properties` says `build.version=sha-abc1234`; that jar
+  run with `java -jar` answers `/actuator/info` with
+  `{"build":{…,"version":"sha-abc1234"}}` and `/actuator/health` with
+  `{"groups":["liveness","readiness"],"status":"UP"}`; a plain `bootJar` writes
+  `libris-backend-dev.jar`; `runtimeClasspath` mentions no spring-security, no
+  postgresql, no flyway; the gate passes with `LIBRIS_DB_*` unset.
+- Decided:
+  - `@AutoConfigureMockMvc` does not exist in Spring Boot 4.1.1: the whole of
+    `spring-boot-test-autoconfigure` is three packages
+    (`autoconfigure`, `.jdbc`, `.json`) and no MockMvc support. Took the
+    brief's named fallback — `org.springframework.boot:spring-boot-resttestclient`
+    (BOM-managed) with `@SpringBootTest(webEnvironment = RANDOM_PORT)` and
+    `@AutoConfigureRestTestClient`. `RestTestClient` itself lives in spring-test
+    at `org.springframework.test.web.servlet.client`.
+  - Spring's parameter resolution does not inject a test constructor without
+    `@Autowired` on it: the run failed with
+    `ParameterResolutionException: No ParameterResolver registered for parameter
+    [RestTestClient client]` until `class LibrisApplicationTest @Autowired
+    constructor(...)`.
+  - The expected version reaches the test as the system property
+    `libris.version`, set by `tasks.test` from `project.version`, so
+    `-Pversion=…` and the default `dev` both assert something real.
+- Left over / gotchas:
+  - `build/libs` holds the boot jar alone only after `bootJar` on a clean
+    tree; `check` also runs `jar`, which writes a `-plain.jar` beside it. The
+    image is safe because its build stage runs `bootJar` only and
+    `.dockerignore` keeps the host's `build/` out of the context — but a
+    `COPY … /libs/*.jar` after a `check` in the same stage would break.
+  - No `.gitignore` line was needed: `git status --porcelain` stayed empty
+    after the gate, after `bootJar` and after running the jar.
+  - Tophe's review of PR #20: `LibrisApplicationTest` removed. It exercised
+    Spring Boot's build info reaching the actuator through the exposure
+    setting, no Libris class, so D07 calls it a wiring test and the command
+    verification above already covers the requirement. The REST test client
+    dependency, the unused `spring-boot-starter-test` line the reviewer
+    blocked on, and the `libris.version` test property went with it. The
+    backend has no test until T005 brings real code.
+  - Nothing here runs the image. The `HEALTHCHECK`, the non-root user and
+    `/actuator/info` served from a container are first exercised by T007 and
+    the Phase 0 phone check; the PR's `images` job proves only that the image
+    builds.
