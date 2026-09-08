@@ -243,6 +243,8 @@ deliberately lacks), no other service. A test that needs more blocks the task.
 - Kotlin: official style, immutable by default, sealed types for states,
   constructor injection, no `!!`, no `lateinit` in production code — all
   enforced by detekt. Package root `fr.amory.libris`.
+- Spring test classes receive their beans through an `@Autowired`
+  constructor; no field injection in tests.
 - TypeScript: strict; ESLint (with the boundaries rules) and Prettier.
 - Versions: latest stable at scaffold time, pinned — Gradle version catalog
   `gradle/libs.versions.toml` on the backend, exact versions in `package.json`
