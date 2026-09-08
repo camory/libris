@@ -85,4 +85,9 @@ redirect fails in the installed app, the D06 fallback becomes a task.
 
 ## Proposed (added by agent runs; a human promotes them into a phase)
 
-_None yet._
+- Loop: `sandbox_down` in `agent/loop.sh` runs `compose down`, which stops
+  the sidecar but not the one-off `run` container, so an interrupted loop
+  leaves the agent running and spending. Remove the run containers too
+  (`docker compose rm -sf agent`, to verify) and cover it in
+  `agent/test-loop.sh` if the fake `gh` pattern extends to `docker`
+  (found 2026-09-08 when a launch was stopped after twenty seconds).
