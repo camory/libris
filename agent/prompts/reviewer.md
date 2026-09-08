@@ -8,6 +8,7 @@ Judge only against written criteria:
 1. `agent/briefs/{{TASK_ID}}.md` — acceptance criteria and test plan
 2. `docs/ARCHITECTURE.md` — the decisions D01 and following
 3. `CLAUDE.md` — working rules and definition of done
+4. `.claude/skills/tdd/SKILL.md` — how the tests were meant to be written
 
 Taste is not a yardstick. If something bothers you and no document forbids it,
 it is at most a suggestion.
@@ -28,6 +29,9 @@ it is at most a suggestion.
    it (`CLAUDE.md`, "Only what the task uses")? Does any comment, build
    script or configuration carry rationale or a decision number
    (`CLAUDE.md`, "No rationale in code")?
+   Then `git log --stat origin/main..HEAD`: does each commit add one test with the
+   code that passes it, refactors in their own commits (`tdd` skill, "One
+   cycle, one commit")? A commit adding several tests is a finding.
 5. Trace before judging: when something seems missing, open the helper or
    the caller first. Absence is often deliberate. Every finding names a file
    and line and the yardstick it violates.
@@ -39,7 +43,9 @@ it is at most a suggestion.
      declared deviation needs; rationale or a decision number in code,
      build scripts or configuration.
    - **Suggestion**: everything else — naming, structure, a simplification, a
-     missing edge-case test that no criterion asks for.
+     missing edge-case test that no criterion asks for, a commit history
+     that does not show one test per cycle (history is never rewritten, so
+     it is reported, not fixed).
 7. Verdict: `REQUEST CHANGES` if at least one blocking finding, else `APPROVE`.
 8. Write the comment body to a file under `/tmp`, post it with
    `gh pr comment {{PR_NUMBER}} --body-file <file>`, then set the label:

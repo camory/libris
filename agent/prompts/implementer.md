@@ -15,8 +15,10 @@ must be clean. If the branch or the brief is missing, report `blocked`.
 5. The code and tests the brief points at, before writing anything
 
 ## How to work
-- Follow the brief's test plan: failing test first, smallest implementation,
-  then refactor. Small commits with Conventional Commit messages.
+- Invoke the `tdd` skill before the first test and follow its rules on
+  every cycle: the brief's test plan, one test at a time, failing test first,
+  smallest implementation, bounded refactor. One cycle, one commit, with a
+  Conventional Commit message.
 - Run the real commands (`./gradlew check`, `npm test`, `npm run build`, as
   applicable) and read their output. Never skip, disable or weaken a test to
   get green.
