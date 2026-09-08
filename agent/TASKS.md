@@ -91,3 +91,9 @@ redirect fails in the installed app, the D06 fallback becomes a task.
   (`docker compose rm -sf agent`, to verify) and cover it in
   `agent/test-loop.sh` if the fake `gh` pattern extends to `docker`
   (found 2026-09-08 when a launch was stopped after twenty seconds).
+- Loop: `branch_pr` in `agent/loop.sh` matches pull requests by head
+  branch name, so a task retried under the same slug after its PR was
+  closed is refused as "closed without merge". Ignore a closed PR whose
+  `headRefOid` is not an ancestor of the local branch, with a case in
+  `agent/test-loop.sh` (found 2026-09-08 on T001's second attempt; worked
+  around by renaming the branch to `task/T001-backend`).
