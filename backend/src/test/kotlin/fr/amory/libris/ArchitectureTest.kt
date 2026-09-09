@@ -13,11 +13,11 @@ import com.tngtech.archunit.library.dependencies.SlicesRuleDefinition.slices
 )
 class ArchitectureTest {
     @ArchTest
-    fun `the domain depends on the standard libraries only`(libris: JavaClasses) {
+    fun `the domain depends on the standard libraries and the uuid generator only`(libris: JavaClasses) {
         classes()
             .that().resideInAPackage("..domain..")
             .should().onlyDependOnClassesThat()
-            .resideInAnyPackage("java..", "kotlin..", "org.jetbrains.annotations..", "..domain..")
+            .resideInAnyPackage("java..", "kotlin..", "org.jetbrains.annotations..", "com.fasterxml.uuid..", "..domain..")
             .check(libris)
     }
 
