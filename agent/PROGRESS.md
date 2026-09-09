@@ -361,7 +361,7 @@ Format:
     should be reworded.
 
 ## 2026-09-09 — T006 Backend persistence: the reader entity and its repository — done (PR pending)
-- Did: eight commits. The contract edit first (four lines: the summary, the
+- Did: ten commits. The contract edit first (four lines: the summary, the
   response description, `CurrentMember` → `CurrentReader` at its definition and
   its `$ref`, `enum: [MEMBER, ADMIN]` → `[READER, ADMIN]`), which reddened
   `ApiContractTest` with `'role': Invalid value 'MEMBER'. Allowed values are
@@ -373,7 +373,7 @@ Format:
   cycles (unknown username, duplicate username). Then the filter: `Reader`
   replaces `Member`, `ReaderPrincipal` carries the reader and the authorities,
   and `MeController` derives the role from them. Then the two new ArchUnit
-  rules. `check`: 17 tests, about 1 min.
+  rules. `check`: 19 tests, about 1 min.
   Verified by command: the gate exits 0; with `LIBRIS_DB_URL` pointing at an
   unknown host it fails at `flywayInitializer` with `Unable to obtain
   connection from database`, which is T006 turning D08 into part of the gate;
