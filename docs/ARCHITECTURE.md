@@ -153,16 +153,29 @@ Traefik forward auth. The backend trusts the `Remote-User`, `Remote-Groups`,
 `Remote-Name` and `Remote-Email` headers via Spring Security's
 pre-authenticated header filter. No passwords, no login screen, no app
 session, no BCrypt.
+- The headers are read in one class, the filter, which maps them to a
+  username, an email, a display name and a list of groups; nothing else in
+  the backend sees a header. There is no standard for header SSO (the names
+  are Authelia's set of an old convention); the standard is OIDC, which
+  Authelia also serves. Moving to OIDC later replaces that one filter by the
+  mapping of the `preferred_username`, `email`, `name` and `groups` claims,
+  and nothing else. Deferred: it needs a client registered in Authelia, a
+  redirect flow, and the installed PWA's behaviour checked (see the risk
+  below).
 - Trust boundary: in production the backend publishes no port and is reachable
   only through Traefik, which overwrites the Remote headers from Authelia's
   answer. The backend trusts the headers in every profile; locally the Vite
   proxy adds them. Integration tests set the headers directly. The
   `contract-test` profile adds a fixed member's headers to every request.
-- Roles: every user Authelia lets through is `MEMBER`; members of the
-  `libris-admin` group are `ADMIN`. The policy (one or two factors) is
-  Authelia's.
-- A member profile is created on first visit from the headers.
-  `GET /api/v1/me` returns the current member and role.
+- The domain calls the person a `Reader`: one entity, id, username, email
+  and display name, keyed by username. On every request the filter loads the
+  reader by username, creating them from the headers on their first visit,
+  and sets the entity as the principal of the authentication. Controllers
+  receive it with `@AuthenticationPrincipal`; no custom principal class.
+- Roles are Spring authorities, never stored: every user Authelia lets
+  through is `ROLE_MEMBER`; members of the `libris-admin` group are also
+  `ROLE_ADMIN`. The policy (one or two factors) is Authelia's.
+- `GET /api/v1/me` returns the current reader and their role.
 - CSRF: Authelia's cookie is SameSite, and the backend refuses any non-GET
   request lacking the `X-Requested-With` header.
 - The frontend treats a 401 or an unexpected redirect on an API call as an
