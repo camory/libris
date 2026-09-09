@@ -54,4 +54,24 @@ class MeControllerTest @Autowired constructor(
             "role" to "MEMBER",
         )
     }
+
+    @Test
+    fun `a member without any group is a plain member`() {
+        val body = client.get()
+            .uri("/api/v1/me")
+            .header("Remote-User", "juliette")
+            .header("Remote-Name", "Juliette")
+            .header("Remote-Email", "juliette@amory.fr")
+            .exchange()
+            .expectStatus().isOk()
+            .expectBody(object : ParameterizedTypeReference<Map<String, String>>() {})
+            .returnResult().responseBody
+
+        body shouldBe mapOf(
+            "username" to "juliette",
+            "displayName" to "Juliette",
+            "email" to "juliette@amory.fr",
+            "role" to "MEMBER",
+        )
+    }
 }
