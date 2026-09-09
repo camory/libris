@@ -1,12 +1,17 @@
 package fr.amory.libris
 
+import com.tngtech.archunit.core.domain.JavaCall
 import com.tngtech.archunit.core.domain.JavaClass
 import com.tngtech.archunit.core.domain.JavaClasses
+import com.tngtech.archunit.core.domain.properties.HasName
+import com.tngtech.archunit.core.domain.properties.HasOwner
 import com.tngtech.archunit.core.importer.ImportOption
 import com.tngtech.archunit.junit.AnalyzeClasses
 import com.tngtech.archunit.junit.ArchTest
 import com.tngtech.archunit.lang.syntax.ArchRuleDefinition.classes
+import com.tngtech.archunit.lang.syntax.ArchRuleDefinition.noClasses
 import com.tngtech.archunit.library.dependencies.SlicesRuleDefinition.slices
+import org.springframework.data.repository.CrudRepository
 
 @AnalyzeClasses(
     packages = ["fr.amory.libris"],
@@ -50,6 +55,18 @@ class ArchitectureTest {
         classes()
             .that().implement(JavaClass.Predicates.resideInAPackage("..domain.."))
             .should().resideInAPackage("..infra..")
+            .check(libris)
+    }
+
+    @ArchTest
+    fun `nothing saves through a crud repository`(libris: JavaClasses) {
+        val crudRepository = JavaClass.Predicates.assignableTo(CrudRepository::class.java)
+        val save =
+            JavaCall.Predicates
+                .target(HasName.Predicates.name("save"))
+                .and(JavaCall.Predicates.target(HasOwner.Predicates.With.owner(crudRepository)))
+        noClasses()
+            .should().callMethodWhere(save)
             .check(libris)
     }
 }
