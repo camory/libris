@@ -5,6 +5,7 @@ import fr.amory.libris.domain.Role
 import jakarta.servlet.http.HttpServletRequest
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
+import org.springframework.http.HttpMethod
 import org.springframework.security.authentication.AuthenticationManager
 import org.springframework.security.authentication.ProviderManager
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
@@ -15,6 +16,7 @@ import org.springframework.security.core.userdetails.UserDetails
 import org.springframework.security.web.SecurityFilterChain
 import org.springframework.security.web.authentication.preauth.AbstractPreAuthenticatedProcessingFilter
 import org.springframework.security.web.authentication.preauth.PreAuthenticatedAuthenticationProvider
+import org.springframework.security.web.util.matcher.RequestMatcher
 
 const val ADMIN_GROUP = "libris-admin"
 
@@ -58,10 +60,17 @@ class SecurityConfig {
     fun filterChain(http: HttpSecurity, authenticationManager: AuthenticationManager): SecurityFilterChain {
         val filter = RemoteHeaderAuthenticationFilter()
         filter.setAuthenticationManager(authenticationManager)
+        val unsafeWrite = RequestMatcher {
+            it.method != HttpMethod.GET.name() && it.getHeader("X-Requested-With") == null
+        }
         return http
+            .csrf { it.disable() }
             .sessionManagement { it.sessionCreationPolicy(SessionCreationPolicy.STATELESS) }
             .addFilterBefore(filter, AbstractPreAuthenticatedProcessingFilter::class.java)
-            .authorizeHttpRequests { it.anyRequest().authenticated() }
+            .authorizeHttpRequests {
+                it.requestMatchers(unsafeWrite).denyAll()
+                it.anyRequest().authenticated()
+            }
             .build()
     }
 }

@@ -4,6 +4,7 @@ import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.resttestclient.autoconfigure.AutoConfigureRestTestClient
 import org.springframework.boot.test.context.SpringBootTest
+import org.springframework.http.HttpStatus
 import org.springframework.test.web.servlet.client.RestTestClient
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -41,5 +42,18 @@ class SecurityConfigTest @Autowired constructor(
             .header("Remote-Groups", "family,libris-admin")
             .exchange()
             .expectStatus().isForbidden()
+    }
+
+    @Test
+    fun `a write carrying the X-Requested-With header reaches the application`() {
+        client.post()
+            .uri("/api/v1/me")
+            .header("Remote-User", "tophe")
+            .header("Remote-Name", "Tophe")
+            .header("Remote-Email", "tophe@amory.fr")
+            .header("Remote-Groups", "family,libris-admin")
+            .header("X-Requested-With", "XMLHttpRequest")
+            .exchange()
+            .expectStatus().isEqualTo(HttpStatus.METHOD_NOT_ALLOWED)
     }
 }
