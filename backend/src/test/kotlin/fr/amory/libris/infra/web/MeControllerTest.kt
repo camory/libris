@@ -1,18 +1,28 @@
 package fr.amory.libris.infra.web
 
+import fr.amory.libris.domain.ReaderRepository
 import io.kotest.matchers.shouldBe
+import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.resttestclient.autoconfigure.AutoConfigureRestTestClient
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.core.ParameterizedTypeReference
+import org.springframework.jdbc.core.simple.JdbcClient
 import org.springframework.test.web.servlet.client.RestTestClient
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @AutoConfigureRestTestClient
 class MeControllerTest @Autowired constructor(
     private val client: RestTestClient,
+    private val readers: ReaderRepository,
+    private val jdbcClient: JdbcClient,
 ) {
+    @BeforeEach
+    fun emptyTheReaderTable() {
+        jdbcClient.sql("truncate table reader").update()
+    }
+
     @Test
     fun `a reader of the admin group is an admin`() {
         // Given
@@ -27,7 +37,8 @@ class MeControllerTest @Autowired constructor(
         val body = me(headers)
 
         // Then
-        body?.minus("id") shouldBe mapOf(
+        body shouldBe mapOf(
+            "id" to readers.findByUsername("tophe")?.id.toString(),
             "username" to "tophe",
             "displayName" to "Tophe",
             "email" to "tophe@amory.fr",
@@ -49,7 +60,8 @@ class MeControllerTest @Autowired constructor(
         val body = me(headers)
 
         // Then
-        body?.minus("id") shouldBe mapOf(
+        body shouldBe mapOf(
+            "id" to readers.findByUsername("juliette")?.id.toString(),
             "username" to "juliette",
             "displayName" to "Juliette",
             "email" to "juliette@amory.fr",
@@ -70,7 +82,8 @@ class MeControllerTest @Autowired constructor(
         val body = me(headers)
 
         // Then
-        body?.minus("id") shouldBe mapOf(
+        body shouldBe mapOf(
+            "id" to readers.findByUsername("juliette")?.id.toString(),
             "username" to "juliette",
             "displayName" to "Juliette",
             "email" to "juliette@amory.fr",
@@ -91,12 +104,34 @@ class MeControllerTest @Autowired constructor(
         val body = me(headers)
 
         // Then
-        body?.minus("id") shouldBe mapOf(
+        body shouldBe mapOf(
+            "id" to readers.findByUsername("juliette")?.id.toString(),
             "username" to "juliette",
             "displayName" to "juliette",
             "email" to "juliette@amory.fr",
             "role" to "READER",
         )
+    }
+
+    @Test
+    fun `a first visit stores the reader`() {
+        // Given
+        val headers = listOf(
+            "Remote-User" to "juliette",
+            "Remote-Name" to "Juliette",
+            "Remote-Email" to "juliette@amory.fr",
+            "Remote-Groups" to "family",
+        )
+
+        // When
+        val body = me(headers)
+
+        // Then
+        val stored = readers.findByUsername("juliette")
+        stored?.username shouldBe "juliette"
+        stored?.email shouldBe "juliette@amory.fr"
+        stored?.displayName shouldBe "Juliette"
+        body?.get("id") shouldBe stored?.id.toString()
     }
 
     private fun me(headers: List<Pair<String, String>>): Map<String, String>? =

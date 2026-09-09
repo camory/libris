@@ -1,5 +1,6 @@
 package fr.amory.libris.infra.web
 
+import fr.amory.libris.application.ReaderVisit
 import fr.amory.libris.domain.Reader
 import jakarta.servlet.http.HttpServletRequest
 import org.springframework.context.annotation.Bean
@@ -33,7 +34,8 @@ class ReaderPrincipal(
     override fun getUsername(): String = reader.username
 }
 
-class RemoteHeaderAuthenticationFilter : AbstractPreAuthenticatedProcessingFilter() {
+class RemoteHeaderAuthenticationFilter(private val readerVisit: ReaderVisit) :
+    AbstractPreAuthenticatedProcessingFilter() {
     override fun getPreAuthenticatedPrincipal(request: HttpServletRequest): Any? {
         val username = request.getHeader("Remote-User")
         val email = request.getHeader("Remote-Email")?.takeUnless { it.isBlank() }
@@ -43,14 +45,8 @@ class RemoteHeaderAuthenticationFilter : AbstractPreAuthenticatedProcessingFilte
             add(SimpleGrantedAuthority(READER_AUTHORITY))
             if (ADMIN_GROUP in groups) add(SimpleGrantedAuthority(ADMIN_AUTHORITY))
         }
-        return ReaderPrincipal(
-            Reader(
-                username = username,
-                email = email,
-                displayName = request.getHeader("Remote-Name") ?: username,
-            ),
-            authorities,
-        )
+        val displayName = request.getHeader("Remote-Name") ?: username
+        return ReaderPrincipal(readerVisit.visit(username, email, displayName), authorities)
     }
 
     override fun getPreAuthenticatedCredentials(request: HttpServletRequest): Any = "N/A"
@@ -68,8 +64,12 @@ class SecurityConfig {
     }
 
     @Bean
-    fun filterChain(http: HttpSecurity, authenticationManager: AuthenticationManager): SecurityFilterChain {
-        val filter = RemoteHeaderAuthenticationFilter()
+    fun filterChain(
+        http: HttpSecurity,
+        authenticationManager: AuthenticationManager,
+        readerVisit: ReaderVisit,
+    ): SecurityFilterChain {
+        val filter = RemoteHeaderAuthenticationFilter(readerVisit)
         filter.setAuthenticationManager(authenticationManager)
         val unsafeWrite = RequestMatcher {
             it.method != HttpMethod.GET.name() && it.getHeader("X-Requested-With") == null
