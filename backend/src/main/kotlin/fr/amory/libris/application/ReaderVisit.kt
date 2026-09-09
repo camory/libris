@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service
 @Service
 class ReaderVisit(private val readers: ReaderRepository) {
     fun visit(username: String, email: String, displayName: String): Reader {
+        readers.findByUsername(username)?.let { return it }
         val reader = Reader(username = username, email = email, displayName = displayName)
         readers.insert(reader)
         return reader
