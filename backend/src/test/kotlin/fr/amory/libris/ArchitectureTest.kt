@@ -35,4 +35,12 @@ class ArchitectureTest {
             .should().beFreeOfCycles()
             .check(libris)
     }
+
+    @ArchTest
+    fun `the infra packages do not depend on each other`(libris: JavaClasses) {
+        slices()
+            .matching("fr.amory.libris.infra.(*)..")
+            .should().notDependOnEachOther()
+            .check(libris)
+    }
 }
