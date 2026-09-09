@@ -1,5 +1,6 @@
 package fr.amory.libris
 
+import com.tngtech.archunit.core.domain.JavaClass
 import com.tngtech.archunit.core.domain.JavaClasses
 import com.tngtech.archunit.core.importer.ImportOption
 import com.tngtech.archunit.junit.AnalyzeClasses
@@ -41,6 +42,14 @@ class ArchitectureTest {
         slices()
             .matching("fr.amory.libris.infra.(*)..")
             .should().notDependOnEachOther()
+            .check(libris)
+    }
+
+    @ArchTest
+    fun `a port declared in the domain is implemented in infra`(libris: JavaClasses) {
+        classes()
+            .that().implement(JavaClass.Predicates.resideInAPackage("..domain.."))
+            .should().resideInAPackage("..infra..")
             .check(libris)
     }
 }
