@@ -1,7 +1,6 @@
 package fr.amory.libris.infra.web
 
-import fr.amory.libris.domain.Member
-import fr.amory.libris.domain.Role
+import fr.amory.libris.domain.Reader
 import jakarta.servlet.http.HttpServletRequest
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
@@ -20,13 +19,18 @@ import org.springframework.security.web.util.matcher.RequestMatcher
 
 private const val ADMIN_GROUP = "libris-admin"
 
-class MemberPrincipal(val member: Member) : UserDetails {
-    override fun getAuthorities(): Collection<GrantedAuthority> =
-        listOf(SimpleGrantedAuthority("ROLE_${member.role}"))
+const val READER_AUTHORITY = "ROLE_READER"
+const val ADMIN_AUTHORITY = "ROLE_ADMIN"
+
+class ReaderPrincipal(
+    val reader: Reader,
+    private val authorities: Collection<GrantedAuthority>,
+) : UserDetails {
+    override fun getAuthorities(): Collection<GrantedAuthority> = authorities
 
     override fun getPassword(): String? = null
 
-    override fun getUsername(): String = member.username
+    override fun getUsername(): String = reader.username
 }
 
 class RemoteHeaderAuthenticationFilter : AbstractPreAuthenticatedProcessingFilter() {
@@ -35,11 +39,17 @@ class RemoteHeaderAuthenticationFilter : AbstractPreAuthenticatedProcessingFilte
         val email = request.getHeader("Remote-Email")?.takeUnless { it.isBlank() }
         if (username == null || email == null) return null
         val groups = request.getHeader("Remote-Groups").orEmpty().split(",").map { it.trim() }
-        return Member(
-            username = username,
-            displayName = request.getHeader("Remote-Name") ?: username,
-            email = email,
-            role = if (ADMIN_GROUP in groups) Role.ADMIN else Role.READER,
+        val authorities = buildList {
+            add(SimpleGrantedAuthority(READER_AUTHORITY))
+            if (ADMIN_GROUP in groups) add(SimpleGrantedAuthority(ADMIN_AUTHORITY))
+        }
+        return ReaderPrincipal(
+            Reader(
+                username = username,
+                email = email,
+                displayName = request.getHeader("Remote-Name") ?: username,
+            ),
+            authorities,
         )
     }
 
@@ -52,7 +62,7 @@ class SecurityConfig {
     fun authenticationManager(): AuthenticationManager {
         val provider = PreAuthenticatedAuthenticationProvider()
         provider.setPreAuthenticatedUserDetailsService { token ->
-            MemberPrincipal(token.principal as Member)
+            token.principal as ReaderPrincipal
         }
         return ProviderManager(provider)
     }
