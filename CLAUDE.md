@@ -33,7 +33,8 @@ question; do not guess.
   the architecture. No speculative abstractions, no extra dependencies unless
   the task requires them (say why in the PR body).
 - **Contract first.** An API change starts in `api/openapi.yaml`, edited
-  with Tophe and never by a headless run alone (D04); then backend (verified
+  with Tophe and never by a headless run alone; a run applies only an edit
+  its task line spells out property by property (D04); then backend (verified
   by Contracteer), then frontend (hand-written types, tested against the
   Contracteer mock).
 - **No rationale in code.** Comments, build scripts and configuration say
