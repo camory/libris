@@ -5,17 +5,17 @@ info:
 paths:
   /api/v1/me:
     get:
-      summary: The member making the request, as Authelia describes them
+      summary: The reader making the request, as Authelia describes them
       responses:
         "200":
-          description: The member's identity and role
+          description: The reader's identity and role
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/CurrentMember"
+                $ref: "#/components/schemas/CurrentReader"
 components:
   schemas:
-    CurrentMember:
+    CurrentReader:
       type: object
       additionalProperties: false
       required: [username, displayName, email, role]
@@ -35,4 +35,4 @@ components:
         role:
           type: string
           nullable: false
-          enum: [MEMBER, ADMIN]
+          enum: [READER, ADMIN]

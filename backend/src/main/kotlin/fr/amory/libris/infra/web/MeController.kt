@@ -5,7 +5,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.RestController
 
-data class CurrentMemberResponse(
+data class CurrentReaderResponse(
     val username: String,
     val displayName: String,
     val email: String,
@@ -15,8 +15,8 @@ data class CurrentMemberResponse(
 @RestController
 class MeController {
     @GetMapping("/api/v1/me")
-    fun me(@AuthenticationPrincipal principal: MemberPrincipal): CurrentMemberResponse =
-        CurrentMemberResponse(
+    fun me(@AuthenticationPrincipal principal: MemberPrincipal): CurrentReaderResponse =
+        CurrentReaderResponse(
             username = principal.member.username,
             displayName = principal.member.displayName,
             email = principal.member.email,

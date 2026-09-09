@@ -1,7 +1,7 @@
 package fr.amory.libris.domain
 
 enum class Role {
-    MEMBER,
+    READER,
     ADMIN,
 }
 

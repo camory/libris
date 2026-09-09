@@ -39,7 +39,7 @@ class RemoteHeaderAuthenticationFilter : AbstractPreAuthenticatedProcessingFilte
             username = username,
             displayName = request.getHeader("Remote-Name") ?: username,
             email = email,
-            role = if (ADMIN_GROUP in groups) Role.ADMIN else Role.MEMBER,
+            role = if (ADMIN_GROUP in groups) Role.ADMIN else Role.READER,
         )
     }
 
