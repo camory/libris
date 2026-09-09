@@ -57,21 +57,40 @@
       authenticates a fixed member; Contracteer verifier-junit (D04). Tests:
       filter, role, refusal, contract. The D02 ArchUnit rules that these
       classes give something to check arrive here, the rest with T006.
-- [ ] T006 Backend persistence and member profile. Starts with the contract,
-      decided with Tophe on 2026-09-09 (D04): `CurrentMember` gains `id`,
-      `type: string`, `format: uuid`, `nullable: false`, listed in
-      `required`; the operation summary becomes "The member making the
-      request: their profile and role"; nothing else in `api/openapi.yaml`
-      changes, and `ApiContractTest` going red on it is the task's first red
-      step. Starters data-jdbc and flyway, PostgreSQL driver, datasource from
-      `LIBRIS_DB_*` (D08); `V001__member.sql`: `id`, `username` unique,
-      `display_name`, `created_at`, `updated_at`, uuid v7 ids and auditing
-      (D11). The profile is created on first visit by the security wiring,
-      keyed by `Remote-User` and seeded from `Remote-Name`, then owned by
-      Libris (PRD 4.10); two simultaneous first visits end with one row.
-      `/me` gains the id; role is still read from the headers. Contracteer
-      setup truncates and seeds (D04). Tests: first visit, repository,
-      contract. The remaining ArchUnit rules of D02 and D11.
+- [ ] T006 Backend persistence: the member table and its repository.
+      Starters data-jdbc and flyway plus the PostgreSQL driver; datasource
+      from `LIBRIS_DB_URL` / `LIBRIS_DB_USER` / `LIBRIS_DB_PASSWORD`, migrated
+      by Flyway, never by `ddl-auto` (D02, D08). `V001__member.sql`: `id` uuid
+      primary key, `username` unique and not null, `display_name` not null,
+      `created_at` and `updated_at` in `timestamptz` (D11). `domain`: the
+      member profile aggregate and its port, exposing `insert` and a lookup by
+      username; `infra.persistence`: the adapter over `JdbcAggregateTemplate`
+      with uuid v7 ids (`com.fasterxml.uuid:java-uuid-generator`) and Spring
+      Data JDBC auditing, never `CrudRepository.save` (D11). Nothing web
+      changes: `/api/v1/me` still answers the headers alone, and
+      `api/openapi.yaml` is untouched. Tests: the adapter against the
+      PostgreSQL of D08 — insert then find by username, the id a version 7
+      uuid, both timestamps filled, a second row with the same username
+      refused — in a transaction rolled back at the end (D07). The ArchUnit
+      rules these classes give something to check: `infra` packages never
+      depend on each other, a port declared in `domain` is implemented only in
+      `infra`, `CrudRepository.save` is never called (D02, D11); the
+      `application` rule arrives with T009.
+- [ ] T009 Member profile on first visit. Starts with the contract, decided
+      with Tophe on 2026-09-09 (D04): `CurrentMember` gains `id`,
+      `type: string`, `format: uuid`, `nullable: false`, listed in `required`;
+      the operation summary becomes "The member making the request: their
+      profile and role"; nothing else in `api/openapi.yaml` changes, and
+      `ApiContractTest` going red on it is the task's first red step.
+      `application`: the use case that finds the profile keyed by
+      `Remote-User` or creates it, seeded from `Remote-Name` and then owned by
+      Libris (PRD 4.10), called by the security wiring on every request; two
+      simultaneous first visits end with one row. `/me` gains the id; the role
+      is still derived from `Remote-Groups` on every request and never stored.
+      The Contracteer setup truncates and seeds before every case (D04).
+      Tests: first visit creates, the next visit reuses the row and keeps the
+      display name Libris owns, two concurrent first visits, contract. The
+      last D02 ArchUnit rule: `application` depends only on `domain`.
 - [ ] T007 Member profile, frontend. `MeApi` port in `application/`, fetch
       client with hand-written types in `infra/api` (D04); Vitest global setup
       starts `contracteer mock`; home view greets the member by display name;
