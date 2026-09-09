@@ -15,13 +15,18 @@ class MeControllerTest @Autowired constructor(
 ) {
     @Test
     fun `a member of the admin group is an admin`() {
-        val body = me(
+        // Given
+        val headers = listOf(
             "Remote-User" to "tophe",
             "Remote-Name" to "Tophe",
             "Remote-Email" to "tophe@amory.fr",
             "Remote-Groups" to "family,libris-admin",
         )
 
+        // When
+        val body = me(headers)
+
+        // Then
         body shouldBe mapOf(
             "username" to "tophe",
             "displayName" to "Tophe",
@@ -32,13 +37,18 @@ class MeControllerTest @Autowired constructor(
 
     @Test
     fun `a member outside the admin group is a plain member`() {
-        val body = me(
+        // Given
+        val headers = listOf(
             "Remote-User" to "juliette",
             "Remote-Name" to "Juliette",
             "Remote-Email" to "juliette@amory.fr",
             "Remote-Groups" to "family",
         )
 
+        // When
+        val body = me(headers)
+
+        // Then
         body shouldBe mapOf(
             "username" to "juliette",
             "displayName" to "Juliette",
@@ -49,12 +59,17 @@ class MeControllerTest @Autowired constructor(
 
     @Test
     fun `a member without any group is a plain member`() {
-        val body = me(
+        // Given
+        val headers = listOf(
             "Remote-User" to "juliette",
             "Remote-Name" to "Juliette",
             "Remote-Email" to "juliette@amory.fr",
         )
 
+        // When
+        val body = me(headers)
+
+        // Then
         body shouldBe mapOf(
             "username" to "juliette",
             "displayName" to "Juliette",
@@ -65,12 +80,17 @@ class MeControllerTest @Autowired constructor(
 
     @Test
     fun `a member without a display name is called by their username`() {
-        val body = me(
+        // Given
+        val headers = listOf(
             "Remote-User" to "juliette",
             "Remote-Email" to "juliette@amory.fr",
             "Remote-Groups" to "family",
         )
 
+        // When
+        val body = me(headers)
+
+        // Then
         body shouldBe mapOf(
             "username" to "juliette",
             "displayName" to "juliette",
@@ -79,7 +99,7 @@ class MeControllerTest @Autowired constructor(
         )
     }
 
-    private fun me(vararg headers: Pair<String, String>): Map<String, String>? =
+    private fun me(headers: List<Pair<String, String>>): Map<String, String>? =
         client.get()
             .uri("/api/v1/me")
             .headers { headers.forEach { (name, value) -> it.add(name, value) } }
