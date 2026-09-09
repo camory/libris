@@ -90,7 +90,7 @@
       packages never depend on each other, a port declared in `domain` is
       implemented only in `infra` (D02); the `application` rule arrives with
       T009.
-- [ ] T009 Reader on every request. Starts with the contract, decided with
+- [x] T009 Reader on every request. Starts with the contract, decided with
       Tophe on 2026-09-09 (D04): `CurrentReader` gains `id`, `type: string`,
       `format: uuid`, `nullable: false`, listed in `required`; the operation
       summary becomes "The reader making the request: their profile and
