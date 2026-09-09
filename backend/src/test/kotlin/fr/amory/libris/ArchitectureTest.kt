@@ -22,6 +22,14 @@ class ArchitectureTest {
     }
 
     @ArchTest
+    fun `the infrastructure packages do not depend on each other`(libris: JavaClasses) {
+        slices()
+            .matching("fr.amory.libris.infra.(*)..")
+            .should().notDependOnEachOther()
+            .check(libris)
+    }
+
+    @ArchTest
     fun `the top-level packages are free of cycles`(libris: JavaClasses) {
         slices()
             .matching("fr.amory.libris.(*)..")
