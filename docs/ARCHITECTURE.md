@@ -166,14 +166,14 @@ session, no BCrypt.
   only through Traefik, which overwrites the Remote headers from Authelia's
   answer. The backend trusts the headers in every profile; locally the Vite
   proxy adds them. Integration tests set the headers directly. The
-  `contract-test` profile adds a fixed member's headers to every request.
+  `contract-test` profile adds a fixed reader's headers to every request.
 - The domain calls the person a `Reader`: one entity, id, username, email
   and display name, keyed by username. On every request the filter loads the
   reader by username, creating them from the headers on their first visit,
   and sets the entity as the principal of the authentication. Controllers
   receive it with `@AuthenticationPrincipal`; no custom principal class.
 - Roles are Spring authorities, never stored: every user Authelia lets
-  through is `ROLE_MEMBER`; members of the `libris-admin` group are also
+  through is `ROLE_READER`; members of the `libris-admin` group are also
   `ROLE_ADMIN`. The policy (one or two factors) is Authelia's.
 - `GET /api/v1/me` returns the current reader and their role.
 - CSRF: Authelia's cookie is SameSite, and the backend refuses any non-GET

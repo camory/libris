@@ -21,11 +21,11 @@ phones. It is not a social network, not a store, not a public site.
 
 | Role | Who | Can |
 |------|-----|-----|
-| Admin | Tophe | Everything, plus member profiles and settings |
-| Member | Family members | Browse, search, add/edit items, manage own reading status and wishlist |
+| Admin | Tophe | Everything, plus reader profiles and settings |
+| Reader | Family members | Browse, search, add/edit items, manage own reading status and wishlist |
 
 Accounts live in the household's existing Authelia instance; Libris creates a
-member profile on a user's first visit. No public sign-up, no passwords in Libris.
+reader profile on a user's first visit. No public sign-up, no passwords in Libris.
 
 ## 3. Domain glossary
 
@@ -34,7 +34,7 @@ member profile on a user's first visit. No public sign-up, no passwords in Libri
   have a series and a volume number.
 - **Copy**: a physical (or digital) instance of an item that someone in the
   household owns. An item may have zero copies (wishlist) or several.
-- **Reading state**: per member and per item: to read, reading, finished,
+- **Reading state**: per reader and per item: to read, reading, finished,
   abandoned, with optional rating and notes.
 - **Loan**: a copy temporarily out of the house (lent to someone) or borrowed
   from outside.
@@ -53,7 +53,7 @@ Priorities: **P1** = needed before the family uses it, **P2** = soon after,
   genres and free tags.
 - List items with filters (type, series, owner, reading state, tag) and sort
   (title, series/volume, added date).
-- Item detail page showing copies, reading states of all members, loans.
+- Item detail page showing copies, reading states of all readers, loans.
 
 ### 4.2 Search (P1)
 - One search box that finds items by title, series, author, ISBN, tag, with
@@ -63,21 +63,21 @@ Priorities: **P1** = needed before the family uses it, **P2** = soon after,
 - Backed by PostgreSQL full-text search; no separate search service.
 
 ### 4.3 Copies, ownership and location (P1)
-- Each copy has an owner (member), a location (free text such as "salon,
+- Each copy has an owner (reader), a location (free text such as "salon,
   étagère 3"), a condition, and an acquisition date.
 - Mark a copy as lent (to whom, since when) and as returned.
 
 ### 4.4 Reading (P1)
-- Each member sets their reading state per item, a 1–5 rating, and notes.
-- A member's "currently reading" and "to read" lists.
+- Each reader sets their reading state per item, a 1–5 rating, and notes.
+- A reader's "currently reading" and "to read" lists.
 
 ### 4.5 Series tracking (P2)
 - For a series, show owned volumes and gaps (e.g. "missing 4, 7").
 - Optionally record the total number of published volumes to show completion.
 
 ### 4.6 Wishlist (P2)
-- Members add items they want; wishlist items are items with no copy and a
-  wish marker per member. Turning a wish into a copy is one action.
+- Readers add items they want; wishlist items are items with no copy and a
+  wish marker per reader. Turning a wish into a copy is one action.
 
 ### 4.7 Fast entry (P2)
 - Scan a barcode (EAN-13/ISBN) with the phone camera and prefill the form from
@@ -94,8 +94,8 @@ Priorities: **P1** = needed before the family uses it, **P2** = soon after,
 
 ### 4.10 Administration (P1)
 - Accounts, passwords, second factor and deactivation are managed in Authelia,
-  outside Libris. Libris creates a member profile on first visit, from the name
-  Authelia provides; the admin can edit profiles and hide departed members.
+  outside Libris. Libris creates a reader profile on first visit, from the name
+  Authelia provides; the admin can edit profiles and hide departed readers.
 - Backups are done by the server's existing Gordien solution (hourly `pg_dump`
   and restic); Libris only has to be registered there and document how to
   restore from a dump.

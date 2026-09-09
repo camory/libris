@@ -68,11 +68,17 @@
       version 7 uuid from `com.fasterxml.uuid:java-uuid-generator`, no
       annotation (D02, D11, D06); it replaces T005's `Member` class: the
       filter builds a `Reader` from the headers (its id not stored until
-      T009) and maps the groups to the Spring authorities `ROLE_MEMBER` and
+      T009) and maps the groups to the Spring authorities `ROLE_READER` and
       `ROLE_ADMIN`; the T005 principal class carries the reader and the
       authorities; T005's `Role` enum survives only as the JSON type of the
-      `/me` response in `infra.web`, derived from the authorities, so
-      `/api/v1/me` answers as before and `api/openapi.yaml` is untouched.
+      `/me` response in `infra.web`, derived from the authorities. Contract
+      edit, decided with Tophe on 2026-09-09 (D04): the schema
+      `CurrentMember` is renamed `CurrentReader`, its `role` enum becomes
+      `[READER, ADMIN]`, the operation summary becomes "The reader making
+      the request, as Authelia describes them" and the response description
+      "The reader's identity and role"; nothing else in `api/openapi.yaml`
+      changes, and `ApiContractTest` going red on the role value is the
+      task's first red step.
       The port `ReaderRepository` exposes `insert` and `findByUsername`;
       `infra.persistence`: `JdbcReaderRepository` over `JdbcClient`, one
       insert and one select, the row mapped by the entity's constructor
@@ -84,24 +90,29 @@
       packages never depend on each other, a port declared in `domain` is
       implemented only in `infra` (D02); the `application` rule arrives with
       T009.
-- [ ] T009 Member profile on first visit. Starts with the contract, decided
-      with Tophe on 2026-09-09 (D04): `CurrentMember` gains `id`,
-      `type: string`, `format: uuid`, `nullable: false`, listed in `required`;
-      the operation summary becomes "The member making the request: their
-      profile and role"; nothing else in `api/openapi.yaml` changes, and
+- [ ] T009 Reader on every request. Starts with the contract, decided with
+      Tophe on 2026-09-09 (D04): `CurrentReader` gains `id`, `type: string`,
+      `format: uuid`, `nullable: false`, listed in `required`; the operation
+      summary becomes "The reader making the request: their profile and
+      role"; nothing else in `api/openapi.yaml` changes, and
       `ApiContractTest` going red on it is the task's first red step.
-      `application`: the use case that finds the profile keyed by
-      `Remote-User` or creates it, seeded from `Remote-Name` and then owned by
-      Libris (PRD 4.10), called by the security wiring on every request; two
-      simultaneous first visits end with one row. `/me` gains the id; the role
-      is still derived from `Remote-Groups` on every request and never stored.
-      The Contracteer setup truncates and seeds before every case (D04).
-      Tests: first visit creates, the next visit reuses the row and keeps the
-      display name Libris owns, two concurrent first visits, contract. The
-      last D02 ArchUnit rule: `application` depends only on `domain`.
-- [ ] T007 Member profile, frontend. `MeApi` port in `application/`, fetch
+      `application`: the visit use case — given the username, email and
+      display name of the request, find the reader by username or insert
+      them; the display name is seeded from the header on the first visit and
+      then owned by Libris (PRD 4.10); two simultaneous first visits end with
+      one row. `infra.web`: the filter calls the use case on every request
+      and sets the `Reader` entity as the principal of the authentication,
+      with the authorities mapped from `Remote-Groups`; the T005 principal
+      class goes, controllers take `@AuthenticationPrincipal` (D06). `/me`
+      answers the stored reader plus the id, the role derived from the
+      authorities. The Contracteer setup truncates and seeds before every
+      case (D04). Tests: first visit inserts, the next visit returns the
+      stored reader and keeps the display name Libris owns, two concurrent
+      first visits, the filter with a stored reader, contract. The last D02
+      ArchUnit rule: `application` depends only on `domain`.
+- [ ] T007 Reader profile, frontend. `MeApi` port in `application/`, fetch
       client with hand-written types in `infra/api` (D04); Vitest global setup
-      starts `contracteer mock`; home view greets the member by display name;
+      starts `contracteer mock`; home view greets the reader by display name;
       401 or unexpected redirect reloads the page (D06); dev proxy adds a dev
       admin's `Remote-*` headers; `npm run dev:mock` (D05). Tests: client
       against the mock, home view with a fake port.
@@ -118,7 +129,7 @@
       deployment.
 
 Phase 0 is done when Tophe has tagged `v0.1.0`, deployed it, and checked from
-a phone on mobile data: the Authelia login, the home page greeting the member
+a phone on mobile data: the Authelia login, the home page greeting the reader
 by name, the footer revision matching `git rev-parse v0.1.0`, the PWA installed on iOS and Android, and
 what happens when the installed app is reopened after the Authelia session
 expired (the D06 risk). The result goes in `agent/PROGRESS.md`; if the
@@ -147,7 +158,7 @@ redirect fails in the installed app, the D06 fallback becomes a task.
   `--label` flags, so a hand-built image carries two of the four D09 labels.
   Declaring all four needs build arguments the workflow does not pass, and the
   workflow is edited by humans only (found 2026-09-08 while writing T003).
-- Backend: a blank `Remote-User` header authenticates a member whose username
+- Backend: a blank `Remote-User` header authenticates a reader whose username
   and display name are empty strings, and a blank `Remote-Name` gives an empty
   display name; both break `CurrentMember` (`minLength: 1`). T005 refuses a
   missing user and a missing or blank email; refuse a blank user the same way
