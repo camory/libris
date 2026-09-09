@@ -58,24 +58,25 @@
       filter, role, refusal, contract. The D02 ArchUnit rules that these
       classes give something to check arrive here, the rest with T006.
 - [ ] T006 Backend persistence: the member table and its repository.
-      Starters data-jdbc and flyway plus the PostgreSQL driver; datasource
-      from `LIBRIS_DB_URL` / `LIBRIS_DB_USER` / `LIBRIS_DB_PASSWORD`, migrated
-      by Flyway, never by `ddl-auto` (D02, D08). `V001__member.sql`: `id` uuid
-      primary key, `username` unique and not null, `display_name` not null,
-      `created_at` and `updated_at` in `timestamptz` (D11). `domain`: the
-      member profile aggregate and its port, exposing `insert` and a lookup by
-      username; `infra.persistence`: the adapter over `JdbcAggregateTemplate`
-      with uuid v7 ids (`com.fasterxml.uuid:java-uuid-generator`) and Spring
-      Data JDBC auditing, never `CrudRepository.save` (D11). Nothing web
-      changes: `/api/v1/me` still answers the headers alone, and
-      `api/openapi.yaml` is untouched. Tests: the adapter against the
-      PostgreSQL of D08 — insert then find by username, the id a version 7
-      uuid, both timestamps filled, a second row with the same username
-      refused — in a transaction rolled back at the end (D07). The ArchUnit
-      rules these classes give something to check: `infra` packages never
-      depend on each other, a port declared in `domain` is implemented only in
-      `infra`, `CrudRepository.save` is never called (D02, D11); the
-      `application` rule arrives with T009.
+      Starter jdbc, `spring-boot-flyway` with `flyway-database-postgresql`,
+      and the PostgreSQL driver; datasource from `LIBRIS_DB_URL` /
+      `LIBRIS_DB_USER` / `LIBRIS_DB_PASSWORD`, migrated by Flyway, never by
+      `ddl-auto` (D02, D08). `V001__member.sql`: `id` uuid primary key,
+      `username` unique and not null, `display_name` not null; no other
+      column (D11). `domain`: the member profile aggregate, its `id`
+      defaulted to a version 7 uuid from
+      `com.fasterxml.uuid:java-uuid-generator`, and its port exposing
+      `insert` and a lookup by username; no annotation (D02, D11).
+      `infra.persistence`: the port implementation over `JdbcClient`, one
+      insert and one select, the row mapped by the aggregate's constructor
+      (D02). Nothing web changes: `/api/v1/me` still answers the headers
+      alone, and `api/openapi.yaml` is untouched. Tests: the implementation
+      against the PostgreSQL of D08 — insert then find by username, the id a
+      version 7 uuid, a second row with the same username refused — in a
+      transaction rolled back at the end (D07). ArchUnit: the domain rule
+      gains the uuid generator; new rules: `infra` packages never depend on
+      each other, a port declared in `domain` is implemented only in `infra`
+      (D02); the `application` rule arrives with T009.
 - [ ] T009 Member profile on first visit. Starts with the contract, decided
       with Tophe on 2026-09-09 (D04): `CurrentMember` gains `id`,
       `type: string`, `format: uuid`, `nullable: false`, listed in `required`;
