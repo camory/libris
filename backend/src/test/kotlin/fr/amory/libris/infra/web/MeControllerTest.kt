@@ -134,6 +134,38 @@ class MeControllerTest @Autowired constructor(
         body?.get("id") shouldBe stored?.id.toString()
     }
 
+    @Test
+    fun `a later visit answers the stored reader whose display name Libris owns`() {
+        // Given
+        me(
+            listOf(
+                "Remote-User" to "juliette",
+                "Remote-Name" to "Juliette",
+                "Remote-Email" to "juliette@amory.fr",
+                "Remote-Groups" to "family",
+            ),
+        )
+
+        // When
+        val body = me(
+            listOf(
+                "Remote-User" to "juliette",
+                "Remote-Name" to "Juju",
+                "Remote-Email" to "juju@amory.fr",
+                "Remote-Groups" to "family",
+            ),
+        )
+
+        // Then
+        body shouldBe mapOf(
+            "id" to readers.findByUsername("juliette")?.id.toString(),
+            "username" to "juliette",
+            "displayName" to "Juliette",
+            "email" to "juliette@amory.fr",
+            "role" to "READER",
+        )
+    }
+
     private fun me(headers: List<Pair<String, String>>): Map<String, String>? =
         client.get()
             .uri("/api/v1/me")
