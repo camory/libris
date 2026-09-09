@@ -307,3 +307,55 @@ Format:
     operations are documentation only.
   - This machine has no `contracteer` binary: run it from the sandbox image
     (`docker run --rm --entrypoint sh -v "$PWD/api:/api:ro" libris-agent:local`).
+
+## 2026-09-09 — T005 Backend authentication — done (PR pending)
+- Did: eleven cycles, one commit each. `MeControllerTest` first — the four
+  `Remote-*` headers must answer the contract's four fields with `ADMIN`, red
+  on `Status expected:<200 OK> but was:<401 UNAUTHORIZED>` — then
+  `domain/Member.kt` (`Role`, `Member`), `infra/web/SecurityConfig.kt`
+  (`RemoteHeaderAuthenticationFilter`, `MemberPrincipal`, the
+  `PreAuthenticatedAuthenticationProvider` and the chain) and
+  `infra/web/MeController.kt`. Then the role and display-name cases, the
+  refusals in `SecurityConfigTest` (no identity headers, missing email, blank
+  email, write without `X-Requested-With`, write with it, open actuator),
+  `ApiContractTest` and `ArchitectureTest`. Dependencies: the security starter,
+  `spring-boot-starter-test` and `spring-boot-resttestclient` (BOM-managed),
+  `contracteer-verifier-junit` 4.0.0 and `archunit-junit5` 1.5.0 in the
+  catalogue.
+  Verified by command: the gate exits 0, and exits 0 again with `LIBRIS_DB_URL`,
+  `LIBRIS_DB_USER` and `LIBRIS_DB_PASSWORD` unset; `dependencies --configuration
+  runtimeClasspath` matches neither `postgresql` nor `flyway` nor `spring-data`;
+  on `bootRun` the two README `curl` lines answer `MEMBER` and `ADMIN` and a
+  bare call answers 403; `git status --porcelain` stayed empty after the gate.
+- Decided:
+  - Nothing the brief had not decided. Its measured shapes held on contact:
+    the chain answers 403 without an entry point of its own, the `denyAll`
+    matcher before `anyRequest().authenticated()` gives 403 without
+    `X-Requested-With` and 405 with it, and the nested `@TestConfiguration`
+    wrapping the request with a fixed member's headers is what makes the
+    Contracteer case pass.
+  - Two mutations recorded on the way, because four tests were green on
+    arrival: forcing `Role.ADMIN` fails the plain-member case, and dropping
+    the display-name fallback fails the username case. Cycle 1 wrote the group
+    conditional and the fallback, so those cycles confirmed rather than drove.
+- Left over / gotchas:
+  - `detekt` runs on the test sources too, and only inside `check`:
+    `./gradlew detekt` alone is the main sources. `VariableNaming` rejects a
+    backticked property name, so ArchUnit's `@ArchTest val` fields fail the
+    gate; ``@ArchTest fun `name`(classes: JavaClasses)`` with `.check(classes)`
+    passes and keeps the readable test name. Backticked function names are
+    fine.
+  - `ReturnCount` allows two returns: the filter guards `Remote-User` and
+    `Remote-Email` in one `if`, not with two `?: return null`.
+  - `git checkout <file>` after a mutation check reverts to the last commit,
+    not to the working tree — twice it wiped uncommitted implementation.
+    Commit the cycle before mutating.
+  - The contract test's failure without the fixed member is
+    `Status code does not match. Expected: 200, Actual: 403`, and the
+    ArchUnit rule's is `Class <fr.amory.libris.domain.Member> is annotated with
+    <org.springframework.web.bind.annotation.RestController>`; both are the
+    red step of their cycle, so no throwaway edit was needed after the fact.
+  - No `application-dev.yaml` and no `application-contract-test.yaml`: the
+    default chain trusts the headers in every profile, as the brief measured.
+    The PR body asks Tophe whether D06's sentence about the `dev` profile
+    should be reworded.

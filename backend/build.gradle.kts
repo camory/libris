@@ -36,6 +36,7 @@ dependencies {
     detektPlugins(libs.detekt.formatting)
 
     testImplementation(platform(SpringBootPlugin.BOM_COORDINATES))
+    testImplementation("org.junit.jupiter:junit-jupiter")
     testImplementation("org.springframework.boot:spring-boot-starter-test")
     testImplementation("org.springframework.boot:spring-boot-resttestclient")
     testImplementation(libs.kotest.assertions.core)

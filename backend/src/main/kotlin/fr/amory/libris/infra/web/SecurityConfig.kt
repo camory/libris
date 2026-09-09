@@ -18,7 +18,7 @@ import org.springframework.security.web.authentication.preauth.AbstractPreAuthen
 import org.springframework.security.web.authentication.preauth.PreAuthenticatedAuthenticationProvider
 import org.springframework.security.web.util.matcher.RequestMatcher
 
-const val ADMIN_GROUP = "libris-admin"
+private const val ADMIN_GROUP = "libris-admin"
 
 class MemberPrincipal(val member: Member) : UserDetails {
     override fun getAuthorities(): Collection<GrantedAuthority> =
