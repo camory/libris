@@ -31,7 +31,7 @@ load_env() {
   [[ -f "$ENV_FILE" ]] || die "missing $ENV_FILE (copy agent/.env.example and fill it in)" 1
   set -a; # shellcheck disable=SC1090
   source "$ENV_FILE"; set +a
-  : "${MODEL:=fable}" "${EFFORT:=high}" "${MAX_TURNS:=120}" "${MAX_BUDGET_USD:=15}" "${PR_POLL_SECONDS:=300}"
+  : "${MODEL:=fable}" "${EFFORT:=high}" "${MAX_TURNS:=120}" "${MAX_BUDGET_USD:=15}" "${AUTOCOMPACT:=150000}" "${PR_POLL_SECONDS:=300}"
   [[ -n "${CLAUDE_CODE_OAUTH_TOKEN:-}${ANTHROPIC_API_KEY:-}" ]] || die "no Claude credential in $ENV_FILE" 1
   [[ -n "${GH_TOKEN:-}" ]] || die "no GH_TOKEN in $ENV_FILE" 1
   mkdir -p agent/logs
@@ -88,22 +88,23 @@ wait_for_pr() {  # blocks until PR $1 is MERGED (returns 0) or CLOSED (returns 1
 #   role: planner-backlog | planner-brief | implementer | reviewer  (prompt + schema of that name)
 #   tag:  goes into the log file name (task id, "plan", ...)
 #   KEY=VALUE: replaces {{KEY}} in the prompt
-# Sets STATUS and LAST_LOG. Per-role overrides: PLANNER_BRIEF_MODEL, REVIEWER_EFFORT, IMPLEMENTER_MAX_TURNS, ...
+# Sets STATUS and LAST_LOG. Per-role overrides: PLANNER_BRIEF_MODEL, REVIEWER_EFFORT, IMPLEMENTER_MAX_TURNS, IMPLEMENTER_AUTOCOMPACT, ...
 run_role() {
   local role="$1" tag="$2"; shift 2
   local prompt; prompt=$(cat "agent/prompts/$role.md")
   local kv; for kv in "$@"; do local ph="{{${kv%%=*}}}"; prompt="${prompt//"$ph"/${kv#*=}}"; done
 
   local var; var=$(tr 'a-z-' 'A-Z_' <<<"$role")
-  local mv="${var}_MODEL" ev="${var}_EFFORT" tv="${var}_MAX_TURNS" bv="${var}_MAX_BUDGET_USD"
-  local model="${!mv:-$MODEL}" effort="${!ev:-$EFFORT}" turns="${!tv:-$MAX_TURNS}" budget="${!bv:-$MAX_BUDGET_USD}"
+  local mv="${var}_MODEL" ev="${var}_EFFORT" tv="${var}_MAX_TURNS" bv="${var}_MAX_BUDGET_USD" cv="${var}_AUTOCOMPACT"
+  local model="${!mv:-$MODEL}" effort="${!ev:-$EFFORT}" turns="${!tv:-$MAX_TURNS}" budget="${!bv:-$MAX_BUDGET_USD}" compact="${!cv:-$AUTOCOMPACT}"
 
   LAST_LOG="agent/logs/$(date +%Y%m%d-%H%M%S)-${tag}-${role}.json"
-  log "▶ $role for $tag — model=$model effort=$effort max_turns=$turns budget=\$$budget"
+  log "▶ $role for $tag — model=$model effort=$effort max_turns=$turns budget=\$$budget autocompact=$compact"
   set +e
   "${COMPOSE[@]}" run --rm -T agent \
     "claude -p --output-format json --json-schema \"\$(cat agent/schemas/$role.json)\" \
        --model '$model' --effort '$effort' --max-turns '$turns' --max-budget-usd '$budget' \
+       --autocompact '$compact' \
        --dangerously-skip-permissions --permission-prompts none" \
     <<<"$prompt" >"$LAST_LOG" 2>"${LAST_LOG%.json}.stderr"
   local rc=$?
