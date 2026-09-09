@@ -2,6 +2,17 @@
 
 Spring Boot / Kotlin application. JDK 25.
 
+## Database
+
+`bootRun` and `./gradlew check` both need the PostgreSQL of the environment,
+read from `LIBRIS_DB_URL`, `LIBRIS_DB_USER` and `LIBRIS_DB_PASSWORD`
+(defaults `jdbc:postgresql://localhost:5432/libris`, `libris`, `libris`).
+Flyway creates the schema on startup; nothing else does.
+
+```
+docker compose -f agent/compose.yaml up -d postgres
+```
+
 ## Run
 
 ```
@@ -35,8 +46,8 @@ curl http://localhost:8080/api/v1/me \
 ```
 
 It compiles with warnings as errors, runs detekt with its formatting ruleset,
-runs the JUnit 5 tests with Kotest assertions, and writes a Kover XML coverage
-report to `build/reports/kover/report.xml`.
+runs the JUnit 5 tests with Kotest assertions against the database above, and
+writes a Kover XML coverage report to `build/reports/kover/report.xml`.
 
 ## Image
 

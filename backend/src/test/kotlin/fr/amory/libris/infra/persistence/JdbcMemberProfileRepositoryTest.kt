@@ -2,9 +2,9 @@ package fr.amory.libris.infra.persistence
 
 import fr.amory.libris.domain.MemberProfile
 import fr.amory.libris.domain.MemberProfileRepository
+import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.matchers.nulls.shouldBeNull
 import io.kotest.matchers.shouldBe
-import io.kotest.assertions.throwables.shouldThrow
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
