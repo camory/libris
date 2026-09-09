@@ -1,4 +1,4 @@
-package fr.amory.libris
+package fr.amory.libris.infra.web
 
 import io.kotest.matchers.shouldBe
 import org.junit.jupiter.api.Test

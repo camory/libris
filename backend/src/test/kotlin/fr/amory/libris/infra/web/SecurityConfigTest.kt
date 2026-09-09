@@ -1,4 +1,4 @@
-package fr.amory.libris
+package fr.amory.libris.infra.web
 
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
