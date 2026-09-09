@@ -57,7 +57,7 @@
       authenticates a fixed member; Contracteer verifier-junit (D04). Tests:
       filter, role, refusal, contract. The D02 ArchUnit rules that these
       classes give something to check arrive here, the rest with T006.
-- [ ] T006 Backend persistence: the reader entity and its repository.
+- [x] T006 Backend persistence: the reader entity and its repository.
       Starter jdbc, `spring-boot-flyway` with `flyway-database-postgresql`,
       and the PostgreSQL driver; datasource from `LIBRIS_DB_URL` /
       `LIBRIS_DB_USER` / `LIBRIS_DB_PASSWORD`, migrated by Flyway, never by
@@ -160,7 +160,7 @@ redirect fails in the installed app, the D06 fallback becomes a task.
   workflow is edited by humans only (found 2026-09-08 while writing T003).
 - Backend: a blank `Remote-User` header authenticates a reader whose username
   and display name are empty strings, and a blank `Remote-Name` gives an empty
-  display name; both break `CurrentMember` (`minLength: 1`). T005 refuses a
+  display name; both break `CurrentReader` (`minLength: 1`). T005 refuses a
   missing user and a missing or blank email; refuse a blank user the same way
   and treat a blank name as absent, so it falls back to the username, each
   with a test (found 2026-09-09 while writing and reviewing T005).

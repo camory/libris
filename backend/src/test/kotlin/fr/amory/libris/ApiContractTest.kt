@@ -15,7 +15,7 @@ import org.springframework.context.annotation.Profile
 import org.springframework.core.Ordered
 import org.springframework.test.context.ActiveProfiles
 
-private val FIXED_MEMBER = mapOf(
+private val FIXED_READER = mapOf(
     "remote-user" to "contracteer",
     "remote-name" to "Contracteer",
     "remote-email" to "contracteer@amory.fr",
@@ -34,12 +34,12 @@ class ApiContractTest @Autowired constructor(
 
     @TestConfiguration
     @Profile("contract-test")
-    class FixedMemberHeaders {
+    class FixedReaderHeaders {
         @Bean
-        fun fixedMemberFilter(): FilterRegistrationBean<Filter> {
+        fun fixedReaderFilter(): FilterRegistrationBean<Filter> {
             val registration = FilterRegistrationBean<Filter>(
                 Filter { request, response, chain ->
-                    chain.doFilter(FixedMemberRequest(request as HttpServletRequest), response)
+                    chain.doFilter(FixedReaderRequest(request as HttpServletRequest), response)
                 },
             )
             registration.order = Ordered.HIGHEST_PRECEDENCE
@@ -47,8 +47,8 @@ class ApiContractTest @Autowired constructor(
         }
     }
 
-    private class FixedMemberRequest(request: HttpServletRequest) : HttpServletRequestWrapper(request) {
+    private class FixedReaderRequest(request: HttpServletRequest) : HttpServletRequestWrapper(request) {
         override fun getHeader(name: String): String? =
-            FIXED_MEMBER[name.lowercase()] ?: super.getHeader(name)
+            FIXED_READER[name.lowercase()] ?: super.getHeader(name)
     }
 }

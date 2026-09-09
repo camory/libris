@@ -14,7 +14,7 @@ class MeControllerTest @Autowired constructor(
     private val client: RestTestClient,
 ) {
     @Test
-    fun `a member of the admin group is an admin`() {
+    fun `a reader of the admin group is an admin`() {
         // Given
         val headers = listOf(
             "Remote-User" to "tophe",
@@ -36,7 +36,7 @@ class MeControllerTest @Autowired constructor(
     }
 
     @Test
-    fun `a member outside the admin group is a plain member`() {
+    fun `a reader outside the admin group is a plain reader`() {
         // Given
         val headers = listOf(
             "Remote-User" to "juliette",
@@ -53,12 +53,12 @@ class MeControllerTest @Autowired constructor(
             "username" to "juliette",
             "displayName" to "Juliette",
             "email" to "juliette@amory.fr",
-            "role" to "MEMBER",
+            "role" to "READER",
         )
     }
 
     @Test
-    fun `a member without any group is a plain member`() {
+    fun `a reader without any group is a plain reader`() {
         // Given
         val headers = listOf(
             "Remote-User" to "juliette",
@@ -74,12 +74,12 @@ class MeControllerTest @Autowired constructor(
             "username" to "juliette",
             "displayName" to "Juliette",
             "email" to "juliette@amory.fr",
-            "role" to "MEMBER",
+            "role" to "READER",
         )
     }
 
     @Test
-    fun `a member without a display name is called by their username`() {
+    fun `a reader without a display name is called by their username`() {
         // Given
         val headers = listOf(
             "Remote-User" to "juliette",
@@ -95,7 +95,7 @@ class MeControllerTest @Autowired constructor(
             "username" to "juliette",
             "displayName" to "juliette",
             "email" to "juliette@amory.fr",
-            "role" to "MEMBER",
+            "role" to "READER",
         )
     }
 
