@@ -18,7 +18,13 @@ class ArchitectureTest {
         classes()
             .that().resideInAPackage("..domain..")
             .should().onlyDependOnClassesThat()
-            .resideInAnyPackage("java..", "kotlin..", "org.jetbrains.annotations..", "com.fasterxml.uuid..", "..domain..")
+            .resideInAnyPackage(
+                "java..",
+                "kotlin..",
+                "org.jetbrains.annotations..",
+                "com.fasterxml.uuid..",
+                "..domain..",
+            )
             .check(libris)
     }
 
