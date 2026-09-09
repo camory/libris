@@ -30,12 +30,14 @@ dependencies {
     implementation(platform(SpringBootPlugin.BOM_COORDINATES))
     implementation("org.springframework.boot:spring-boot-starter-webmvc")
     implementation("org.springframework.boot:spring-boot-starter-actuator")
+    implementation("org.springframework.boot:spring-boot-starter-security")
     implementation("org.jetbrains.kotlin:kotlin-reflect")
 
     detektPlugins(libs.detekt.formatting)
 
     testImplementation(platform(SpringBootPlugin.BOM_COORDINATES))
-    testImplementation("org.junit.jupiter:junit-jupiter")
+    testImplementation("org.springframework.boot:spring-boot-starter-test")
+    testImplementation("org.springframework.boot:spring-boot-resttestclient")
     testImplementation(libs.kotest.assertions.core)
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 }
