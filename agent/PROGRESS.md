@@ -359,3 +359,52 @@ Format:
     default chain trusts the headers in every profile, as the brief measured.
     The PR body asks Tophe whether D06's sentence about the `dev` profile
     should be reworded.
+
+## 2026-09-09 — T006 Backend persistence: the member table and its repository — done (PR pending)
+- Did: six cycles, one commit each. `MemberProfileTest` first (red: no class),
+  then `domain/MemberProfile.kt` with the aggregate and the file-level
+  `Generators.timeBasedEpochGenerator()`, which turned the domain ArchUnit rule
+  red with the brief's four violations, so the rule gained
+  `com.fasterxml.uuid..` in the same cycle. Then
+  `JdbcMemberProfileRepositoryTest` — the big one: red on the missing port, on
+  the missing bean (`No qualifying bean of type
+  'fr.amory.libris.domain.MemberProfileRepository'`), then on the missing table
+  (`relation "member" does not exist`), green with the port, the four
+  dependencies, the datasource block, `V001__member.sql` and
+  `JdbcMemberProfileRepository`. Then the unknown username, the duplicate
+  username, and the two new ArchUnit rules, each written from its red step.
+  The brief's measured shapes all held on contact; nothing was adapted.
+- Verified by command: `cd backend && ./gradlew check` exits 0 — 20 tests in
+  1 min 3 s, the four pre-existing classes included — with `git status
+  --porcelain` empty afterwards; `gitleaks dir backend` finds no leak;
+  `git diff main` is empty for `api/openapi.yaml`, `infra/web`,
+  `domain/Member.kt`, `frontend/`, `deploy/` and `.github/`.
+- Decided:
+  - The naming scheme no document states: a persistence port is
+    `<Aggregate>Repository`, its adapter `Jdbc<Aggregate>Repository`. The PR
+    body proposes the sentence for D02 so a future run does not guess again.
+  - Two tests were green on arrival (the unknown username, the duplicate), so
+    each got a recorded mutation instead of a red step: `.optional().orElse(null)`
+    replaced by `.single()` fails with `EmptyResultDataAccessException:
+    Incorrect result size: expected 1, actual 0`, and dropping `unique` from
+    `V001__member.sql` fails with `Expected exception
+    org.springframework.dao.DuplicateKeyException but no exception was thrown`.
+- Left over / gotchas:
+  - **Mutating `V001__member.sql` needs the database dropped first, and again
+    after.** Flyway validates the checksum at context startup, so once the
+    mutated file has been applied, no `@SpringBootTest` can start — including
+    a test written to drop the tables. The way out is
+    `@SpringBootTest(properties = ["spring.flyway.enabled=false"])` on a
+    throwaway class that runs `drop table if exists member` and
+    `drop table if exists flyway_schema_history`; the next run re-applies the
+    real migration. Drop *before* mutating and the detour is avoided. The
+    throwaway class was deleted before the pull request.
+  - The gate re-applying `V001` from scratch is also what proves nobody
+    created the table by hand.
+  - `ImportOrdering` fired on the third test's import and only inside `check`
+    (`Imports must be ordered in lexicographic order…`), as the T005 entry
+    warned: a partial `./gradlew test` will not catch it, so run the gate
+    before believing a cycle is finished.
+  - The datasource is now required: every `@SpringBootTest` fails without
+    `LIBRIS_DB_URL` / `LIBRIS_DB_USER` / `LIBRIS_DB_PASSWORD`. T005's criterion
+    that `check` passes with them unset is dead; `backend/README.md` says so.

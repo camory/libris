@@ -57,7 +57,7 @@
       authenticates a fixed member; Contracteer verifier-junit (D04). Tests:
       filter, role, refusal, contract. The D02 ArchUnit rules that these
       classes give something to check arrive here, the rest with T006.
-- [ ] T006 Backend persistence: the member table and its repository.
+- [x] T006 Backend persistence: the member table and its repository.
       Starter jdbc, `spring-boot-flyway` with `flyway-database-postgresql`,
       and the PostgreSQL driver; datasource from `LIBRIS_DB_URL` /
       `LIBRIS_DB_USER` / `LIBRIS_DB_PASSWORD`, migrated by Flyway, never by
