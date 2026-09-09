@@ -4,9 +4,11 @@ import fr.amory.libris.domain.MemberProfile
 import fr.amory.libris.domain.MemberProfileRepository
 import io.kotest.matchers.nulls.shouldBeNull
 import io.kotest.matchers.shouldBe
+import io.kotest.assertions.throwables.shouldThrow
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
+import org.springframework.dao.DuplicateKeyException
 import org.springframework.transaction.annotation.Transactional
 
 @SpringBootTest
@@ -33,5 +35,16 @@ class JdbcMemberProfileRepositoryTest @Autowired constructor(
 
         // Then
         found.shouldBeNull()
+    }
+
+    @Test
+    fun `a second member profile with the same username is refused`() {
+        // Given
+        profiles.insert(MemberProfile("juliette", "Juliette"))
+
+        // When, Then
+        shouldThrow<DuplicateKeyException> {
+            profiles.insert(MemberProfile("juliette", "Juliette Amory"))
+        }
     }
 }
