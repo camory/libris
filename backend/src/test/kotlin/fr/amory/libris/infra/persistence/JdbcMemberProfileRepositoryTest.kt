@@ -2,6 +2,7 @@ package fr.amory.libris.infra.persistence
 
 import fr.amory.libris.domain.MemberProfile
 import fr.amory.libris.domain.MemberProfileRepository
+import io.kotest.matchers.nulls.shouldBeNull
 import io.kotest.matchers.shouldBe
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
@@ -23,5 +24,14 @@ class JdbcMemberProfileRepositoryTest @Autowired constructor(
 
         // Then
         profiles.findByUsername("juliette") shouldBe profile
+    }
+
+    @Test
+    fun `an unknown username finds no member profile`() {
+        // Given, When
+        val found = profiles.findByUsername("nobody")
+
+        // Then
+        found.shouldBeNull()
     }
 }
