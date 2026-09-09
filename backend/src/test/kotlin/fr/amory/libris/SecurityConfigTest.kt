@@ -30,4 +30,16 @@ class SecurityConfigTest @Autowired constructor(
             .exchange()
             .expectStatus().isForbidden()
     }
+
+    @Test
+    fun `a write without the X-Requested-With header is refused`() {
+        client.post()
+            .uri("/api/v1/me")
+            .header("Remote-User", "tophe")
+            .header("Remote-Name", "Tophe")
+            .header("Remote-Email", "tophe@amory.fr")
+            .header("Remote-Groups", "family,libris-admin")
+            .exchange()
+            .expectStatus().isForbidden()
+    }
 }
