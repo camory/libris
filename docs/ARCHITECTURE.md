@@ -148,9 +148,9 @@ pre-authenticated header filter. No passwords, no login screen, no app
 session, no BCrypt.
 - Trust boundary: in production the backend publishes no port and is reachable
   only through Traefik, which overwrites the Remote headers from Authelia's
-  answer. Locally, a `dev` profile trusts the headers the Vite proxy adds.
-  Integration tests set the headers directly. The contract-test profile
-  authenticates every request as a fixed test member.
+  answer. The backend trusts the headers in every profile; locally the Vite
+  proxy adds them. Integration tests set the headers directly. The
+  `contract-test` profile adds a fixed member's headers to every request.
 - Roles: every user Authelia lets through is `MEMBER`; members of the
   `libris-admin` group are `ADMIN`. The policy (one or two factors) is
   Authelia's.
@@ -319,7 +319,7 @@ Contract
 
 ```
 docker compose -f agent/compose.yaml up -d postgres   # throwaway DB on localhost:5432 (tmpfs: gone when recreated)
-cd backend && ./gradlew bootRun                      # http://localhost:8080 — `dev` profile trusts Remote-* headers
+cd backend && ./gradlew bootRun                      # http://localhost:8080 — trusts the Remote-* headers the caller sets
 cd frontend && npm run dev                           # http://localhost:5173 — proxies /api to :8080, adds a dev admin's Remote-* headers
 contracteer mock api/openapi.yaml -p 9090            # the API from the contract alone
 cd frontend && npm run dev:mock                      # like dev, but proxies /api to the mock
