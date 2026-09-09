@@ -57,9 +57,13 @@
       authenticates a fixed member; Contracteer verifier-junit (D04). Tests:
       filter, role, refusal, contract. The D02 ArchUnit rules that these
       classes give something to check arrive here, the rest with T006.
-- [ ] T006 Backend persistence and member profile. Precondition (human):
-      `id` added to the `/api/v1/me` response in `api/openapi.yaml` (D04).
-      Starters data-jdbc and flyway, PostgreSQL driver, datasource from
+- [ ] T006 Backend persistence and member profile. Starts with the contract,
+      decided with Tophe on 2026-09-09 (D04): `CurrentMember` gains `id`,
+      `type: string`, `format: uuid`, `nullable: false`, listed in
+      `required`; the operation summary becomes "The member making the
+      request: their profile and role"; nothing else in `api/openapi.yaml`
+      changes, and `ApiContractTest` going red on it is the task's first red
+      step. Starters data-jdbc and flyway, PostgreSQL driver, datasource from
       `LIBRIS_DB_*` (D08); `V001__member.sql`: `id`, `username` unique,
       `display_name`, `created_at`, `updated_at`, uuid v7 ids and auditing
       (D11). The profile is created on first visit by the security wiring,

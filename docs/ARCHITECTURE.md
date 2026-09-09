@@ -99,8 +99,10 @@ API.
 - Named examples are optional. They document and disambiguate a request or a
   response; when present, request and response examples share a key and use
   fixed identifiers.
-- The contract is edited with Tophe, never by a headless run alone. Before
-  touching it, read <https://contracteer.dev/latest>. A gap in Contracteer
+- The contract is edited with Tophe, never by a headless run alone: a run
+  applies only an edit its task line spells out property by property and
+  decides nothing about the contract itself. Before touching it, read
+  <https://contracteer.dev/latest>. A gap in Contracteer
   blocks the task with a question; it is never worked around.
 - Order of work: contract, then backend, then frontend.
 
