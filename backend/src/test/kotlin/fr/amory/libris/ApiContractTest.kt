@@ -13,6 +13,7 @@ import org.springframework.boot.web.servlet.FilterRegistrationBean
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Profile
 import org.springframework.core.Ordered
+import org.springframework.jdbc.core.simple.JdbcClient
 import org.springframework.test.context.ActiveProfiles
 
 private val FIXED_READER = mapOf(
@@ -26,10 +27,11 @@ private val FIXED_READER = mapOf(
 @ActiveProfiles("contract-test")
 class ApiContractTest @Autowired constructor(
     @field:ContracteerServerPort @param:LocalServerPort val serverPort: Int,
+    private val jdbcClient: JdbcClient,
 ) {
     @ContracteerTest(openApiDoc = "../api/openapi.yaml")
     fun `the API matches the contract`() {
-        // nothing to seed
+        jdbcClient.sql("truncate table reader").update()
     }
 
     @TestConfiguration

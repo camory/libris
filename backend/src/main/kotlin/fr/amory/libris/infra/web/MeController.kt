@@ -11,6 +11,7 @@ enum class Role {
 }
 
 data class CurrentReaderResponse(
+    val id: String,
     val username: String,
     val displayName: String,
     val email: String,
@@ -22,6 +23,7 @@ class MeController {
     @GetMapping("/api/v1/me")
     fun me(@AuthenticationPrincipal principal: ReaderPrincipal): CurrentReaderResponse =
         CurrentReaderResponse(
+            id = principal.reader.id.toString(),
             username = principal.reader.username,
             displayName = principal.reader.displayName,
             email = principal.reader.email,

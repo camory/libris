@@ -27,7 +27,7 @@ class MeControllerTest @Autowired constructor(
         val body = me(headers)
 
         // Then
-        body shouldBe mapOf(
+        body?.minus("id") shouldBe mapOf(
             "username" to "tophe",
             "displayName" to "Tophe",
             "email" to "tophe@amory.fr",
@@ -49,7 +49,7 @@ class MeControllerTest @Autowired constructor(
         val body = me(headers)
 
         // Then
-        body shouldBe mapOf(
+        body?.minus("id") shouldBe mapOf(
             "username" to "juliette",
             "displayName" to "Juliette",
             "email" to "juliette@amory.fr",
@@ -70,7 +70,7 @@ class MeControllerTest @Autowired constructor(
         val body = me(headers)
 
         // Then
-        body shouldBe mapOf(
+        body?.minus("id") shouldBe mapOf(
             "username" to "juliette",
             "displayName" to "Juliette",
             "email" to "juliette@amory.fr",
@@ -91,7 +91,7 @@ class MeControllerTest @Autowired constructor(
         val body = me(headers)
 
         // Then
-        body shouldBe mapOf(
+        body?.minus("id") shouldBe mapOf(
             "username" to "juliette",
             "displayName" to "juliette",
             "email" to "juliette@amory.fr",
