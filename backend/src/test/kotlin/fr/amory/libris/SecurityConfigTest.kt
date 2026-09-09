@@ -18,4 +18,16 @@ class SecurityConfigTest @Autowired constructor(
             .exchange()
             .expectStatus().isForbidden()
     }
+
+    @Test
+    fun `a request without an email is refused`() {
+        client.get()
+            .uri("/api/v1/me")
+            .header("Remote-User", "juliette")
+            .header("Remote-Name", "Juliette")
+            .header("Remote-Email", " ")
+            .header("Remote-Groups", "family")
+            .exchange()
+            .expectStatus().isForbidden()
+    }
 }
