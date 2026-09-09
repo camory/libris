@@ -117,7 +117,34 @@ redirect fails in the installed app, the D06 fallback becomes a task.
   Declaring all four needs build arguments the workflow does not pass, and the
   workflow is edited by humans only (found 2026-09-08 while writing T003).
 - Backend: a blank `Remote-User` header authenticates a member whose username
-  and display name are empty strings, which the `CurrentMember` schema forbids
-  (`minLength: 1`). T005 refuses a missing user and a missing or blank email,
-  and nothing exercises a blank user; refuse it the same way, with a test
-  (found 2026-09-09 while writing T005's header filter).
+  and display name are empty strings, and a blank `Remote-Name` gives an empty
+  display name; both break `CurrentMember` (`minLength: 1`). T005 refuses a
+  missing user and a missing or blank email; refuse a blank user the same way
+  and treat a blank name as absent, so it falls back to the username, each
+  with a test (found 2026-09-09 while writing and reviewing T005).
+- Backend gate speed: on the sandbox host `./gradlew check` takes about 42 s
+  warm (test 28 s, detekt 10 s). The first Spring context boots in 10 s and
+  the second in 0.9 s, so the cost is cold-JVM class loading, not Spring.
+  Measured 2026-09-09 on T005's 13 tests: `clean test` 7 s on a Mac, 20 s on
+  Gordien, 32 s on bestheda. Levers, in order: a JDK 25 AOT cache or an AppCDS
+  archive plus `-XX:TieredStopAtLevel=1` on the test JVM (`jvmArgs` of
+  `tasks.test`; measure in a scratch worktree first, expected test task
+  28 s to about 20 s); the implementer runs one test class during red and
+  green and the full gate at commit; briefs keep every `@SpringBootTest`
+  class on one context configuration.
+- Loop: resume after the usage window resets. When a role's JSON ends with
+  `is_error: true` and a result like "You've hit your session limit · resets
+  12:20am (UTC)", `run_role` sees no report and the loop exits 6 with the
+  task half done. Detect it, sleep until the reset time, rerun the role once
+  with `claude -p --resume <session_id>` (the id is in the JSON) and the same
+  flags, with a case in `agent/test-loop.sh` (seen 2026-09-08 on T001's
+  reviewer).
+- CI: path filtering. Skip `backend`, `frontend` and `images` on a pull
+  request that changes nothing under `backend/`, `frontend/` or `api/`: a
+  `changes` job (`git diff --name-only` against the base, no marketplace
+  action) whose outputs gate the three jobs with a job-level `if:` on
+  `pull_request` only, because a workflow-level `paths:` filter leaves a
+  required check pending while a skipped job reports success. `images` stays
+  unconditional on push to `main`, since `release.yml` re-tags `sha-<short>`
+  of the tagged commit. `ci.yml` is edited by humans only (Tophe,
+  2026-09-09).
