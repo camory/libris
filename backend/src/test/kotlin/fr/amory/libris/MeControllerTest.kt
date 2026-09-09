@@ -74,4 +74,24 @@ class MeControllerTest @Autowired constructor(
             "role" to "MEMBER",
         )
     }
+
+    @Test
+    fun `a member without a display name is called by their username`() {
+        val body = client.get()
+            .uri("/api/v1/me")
+            .header("Remote-User", "juliette")
+            .header("Remote-Email", "juliette@amory.fr")
+            .header("Remote-Groups", "family")
+            .exchange()
+            .expectStatus().isOk()
+            .expectBody(object : ParameterizedTypeReference<Map<String, String>>() {})
+            .returnResult().responseBody
+
+        body shouldBe mapOf(
+            "username" to "juliette",
+            "displayName" to "juliette",
+            "email" to "juliette@amory.fr",
+            "role" to "MEMBER",
+        )
+    }
 }
