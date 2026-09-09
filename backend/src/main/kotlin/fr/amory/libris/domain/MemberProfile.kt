@@ -10,3 +10,9 @@ data class MemberProfile(
     val displayName: String,
     val id: UUID = uuids.generate(),
 )
+
+interface MemberProfileRepository {
+    fun insert(profile: MemberProfile)
+
+    fun findByUsername(username: String): MemberProfile?
+}
