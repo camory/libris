@@ -2,6 +2,18 @@
 
 Spring Boot / Kotlin application. JDK 25.
 
+## Database
+
+`bootRun` and the tests need a PostgreSQL 18, given to them, never created by
+the build. Flyway migrates it at startup. Three environment variables address
+it, with these defaults:
+
+| Variable | Default |
+| --- | --- |
+| `LIBRIS_DB_URL` | `jdbc:postgresql://localhost:5432/libris` |
+| `LIBRIS_DB_USER` | `libris` |
+| `LIBRIS_DB_PASSWORD` | `libris` |
+
 ## Run
 
 ```
@@ -12,7 +24,7 @@ The application listens on <http://localhost:8080>. Health:
 <http://localhost:8080/actuator/health>.
 
 It reads the caller's identity from the `Remote-*` headers Traefik forwards
-from Authelia, so a local call passes them itself. As a member:
+from Authelia, so a local call passes them itself. As a reader:
 
 ```
 curl http://localhost:8080/api/v1/me \
@@ -35,8 +47,8 @@ curl http://localhost:8080/api/v1/me \
 ```
 
 It compiles with warnings as errors, runs detekt with its formatting ruleset,
-runs the JUnit 5 tests with Kotest assertions, and writes a Kover XML coverage
-report to `build/reports/kover/report.xml`.
+runs the JUnit 5 tests with Kotest assertions against the database above, and
+writes a Kover XML coverage report to `build/reports/kover/report.xml`.
 
 ## Image
 
