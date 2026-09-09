@@ -21,6 +21,17 @@ class SecurityConfigTest @Autowired constructor(
     }
 
     @Test
+    fun `a request whose user header is missing is refused`() {
+        client.get()
+            .uri("/api/v1/me")
+            .header("Remote-Name", "Juliette")
+            .header("Remote-Email", "juliette@amory.fr")
+            .header("Remote-Groups", "family")
+            .exchange()
+            .expectStatus().isForbidden()
+    }
+
+    @Test
     fun `a request whose email header is blank is refused`() {
         client.get()
             .uri("/api/v1/me")
