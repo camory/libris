@@ -120,6 +120,10 @@ The reviewer never stops the loop: its verdict is advisory.
   scaffolding and dependency downloads can legitimately reach $10 or more.
 - `MODEL` / `EFFORT`: `fable` + `high` by default. Per-role overrides such as
   `REVIEWER_MODEL=sonnet` or `PLANNER_BRIEF_MAX_TURNS=40` go in `.env`.
+- `AUTOCOMPACT`: the context size, in tokens, at which the CLI summarises the
+  run's history and continues; 150000 by default, `auto` for the CLI's own
+  threshold. A compaction shows in the session transcript kept in the
+  `claude-state` volume.
 - Each run writes `agent/logs/<timestamp>-<task>-<role>.json` (the CLI result
   with cost, turns and the structured report) and a matching `.stderr`.
 - Gradle and npm caches persist in named volumes between runs; the database
