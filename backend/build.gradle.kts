@@ -39,6 +39,7 @@ dependencies {
     testImplementation("org.springframework.boot:spring-boot-starter-test")
     testImplementation("org.springframework.boot:spring-boot-resttestclient")
     testImplementation(libs.kotest.assertions.core)
+    testImplementation(libs.contracteer.verifier.junit)
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 }
 

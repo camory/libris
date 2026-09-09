@@ -4,10 +4,12 @@ spring-boot = "4.1.1"
 detekt = "1.23.8"
 kover = "0.9.9"
 kotest = "6.2.4"
+contracteer = "4.0.0"
 
 [libraries]
 detekt-formatting = { module = "io.gitlab.arturbosch.detekt:detekt-formatting", version.ref = "detekt" }
 kotest-assertions-core = { module = "io.kotest:kotest-assertions-core", version.ref = "kotest" }
+contracteer-verifier-junit = { module = "dev.contracteer:contracteer-verifier-junit", version.ref = "contracteer" }
 
 [plugins]
 kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }

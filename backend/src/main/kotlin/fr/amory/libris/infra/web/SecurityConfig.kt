@@ -31,8 +31,9 @@ class MemberPrincipal(val member: Member) : UserDetails {
 
 class RemoteHeaderAuthenticationFilter : AbstractPreAuthenticatedProcessingFilter() {
     override fun getPreAuthenticatedPrincipal(request: HttpServletRequest): Any? {
-        val username = request.getHeader("Remote-User") ?: return null
-        val email = request.getHeader("Remote-Email")?.takeUnless { it.isBlank() } ?: return null
+        val username = request.getHeader("Remote-User")
+        val email = request.getHeader("Remote-Email")?.takeUnless { it.isBlank() }
+        if (username == null || email == null) return null
         val groups = request.getHeader("Remote-Groups").orEmpty().split(",").map { it.trim() }
         return Member(
             username = username,
