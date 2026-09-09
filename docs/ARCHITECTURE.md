@@ -183,7 +183,12 @@ session, no BCrypt.
   before every case. Test classes do not run in parallel.
 - One test source set and one `test` task. No suffix sorts tests by what
   they need: a test that needs the database gets it from D08 like any other.
-  Test classes are named after the Libris code they exercise. A test of
+  Test classes are named after the Libris code they exercise. Tests live
+  beside the code they exercise: on the backend in its package, on the
+  frontend as a sibling `.spec.ts`; a test of the whole application
+  (contract, architecture) lives in the backend's root package. A test body
+  is laid out as Given, When, Then, marked by those three comments, unless it
+  is a single statement. A test of
   framework or library wiring may be written while learning and is deleted
   before the pull request.
 - Coverage: no total threshold. CI reports changed-line coverage with

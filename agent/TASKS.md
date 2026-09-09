@@ -47,7 +47,7 @@
       and the service worker `no-cache`, hashed assets `immutable`; OCI labels
       (D09). The revision shows in a footer, with a component test. Verified
       as T003.
-- [ ] T005 Backend authentication. Precondition (human): `GET /api/v1/me` in
+- [x] T005 Backend authentication. Precondition (human): `GET /api/v1/me` in
       `api/openapi.yaml` (D04). Spring Security pre-authenticated header
       filter on `Remote-User/Groups/Name/Email`; `ADMIN` when in
       `libris-admin`, `MEMBER` otherwise; `GET /api/v1/me` answers the
@@ -116,3 +116,8 @@ redirect fails in the installed app, the D06 fallback becomes a task.
   `--label` flags, so a hand-built image carries two of the four D09 labels.
   Declaring all four needs build arguments the workflow does not pass, and the
   workflow is edited by humans only (found 2026-09-08 while writing T003).
+- Backend: a blank `Remote-User` header authenticates a member whose username
+  and display name are empty strings, which the `CurrentMember` schema forbids
+  (`minLength: 1`). T005 refuses a missing user and a missing or blank email,
+  and nothing exercises a blank user; refuse it the same way, with a test
+  (found 2026-09-09 while writing T005's header filter).
