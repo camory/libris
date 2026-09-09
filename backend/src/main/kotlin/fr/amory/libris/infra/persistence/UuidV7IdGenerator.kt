@@ -1,10 +1,13 @@
 package fr.amory.libris.infra.persistence
 
 import com.fasterxml.uuid.Generators
+import fr.amory.libris.domain.IdGenerator
+import org.springframework.stereotype.Component
 import java.util.UUID
 
-class UuidV7IdGenerator {
+@Component
+class UuidV7IdGenerator : IdGenerator {
     private val generator = Generators.timeBasedEpochGenerator()
 
-    fun next(): UUID = generator.generate()
+    override fun next(): UUID = generator.generate()
 }

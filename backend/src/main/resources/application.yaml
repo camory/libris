@@ -1,3 +1,9 @@
+spring:
+  datasource:
+    url: ${LIBRIS_DB_URL:jdbc:postgresql://localhost:5432/libris}
+    username: ${LIBRIS_DB_USER:libris}
+    password: ${LIBRIS_DB_PASSWORD:libris}
+
 management:
   endpoints:
     web:

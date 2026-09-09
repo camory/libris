@@ -17,7 +17,14 @@ class ArchitectureTest {
         classes()
             .that().resideInAPackage("..domain..")
             .should().onlyDependOnClassesThat()
-            .resideInAnyPackage("java..", "kotlin..", "org.jetbrains.annotations..", "..domain..")
+            .resideInAnyPackage(
+                "java..",
+                "kotlin..",
+                "org.jetbrains.annotations..",
+                "org.springframework.data.annotation..",
+                "org.springframework.data.relational.core.mapping..",
+                "..domain..",
+            )
             .check(libris)
     }
 
