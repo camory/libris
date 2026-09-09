@@ -1,9 +1,9 @@
 package fr.amory.libris
 
+import com.tngtech.archunit.core.domain.JavaClasses
 import com.tngtech.archunit.core.importer.ImportOption
 import com.tngtech.archunit.junit.AnalyzeClasses
 import com.tngtech.archunit.junit.ArchTest
-import com.tngtech.archunit.lang.ArchRule
 import com.tngtech.archunit.lang.syntax.ArchRuleDefinition.classes
 import com.tngtech.archunit.library.dependencies.SlicesRuleDefinition.slices
 
@@ -13,15 +13,19 @@ import com.tngtech.archunit.library.dependencies.SlicesRuleDefinition.slices
 )
 class ArchitectureTest {
     @ArchTest
-    val `the domain depends on the standard libraries only`: ArchRule =
+    fun `the domain depends on the standard libraries only`(libris: JavaClasses) {
         classes()
             .that().resideInAPackage("..domain..")
             .should().onlyDependOnClassesThat()
             .resideInAnyPackage("java..", "kotlin..", "org.jetbrains.annotations..", "..domain..")
+            .check(libris)
+    }
 
     @ArchTest
-    val `the top-level packages are free of cycles`: ArchRule =
+    fun `the top-level packages are free of cycles`(libris: JavaClasses) {
         slices()
             .matching("fr.amory.libris.(*)..")
             .should().beFreeOfCycles()
+            .check(libris)
+    }
 }
