@@ -92,6 +92,9 @@ inside the module.
 - **One cycle, one commit.** Commit the test with the implementation that
   makes it pass, at green; a refactor is its own `refactor:` commit. A
   commit that adds several tests is horizontal slicing made visible.
+- **Commit before you mutate.** A mutation check that ends with
+  `git checkout <file>` restores the last commit and takes uncommitted work
+  with it; commit the cycle first.
 - **Run the one test while cycling, the gate at the end.** A single class or
   file is enough for red and green; the full gate proves the task.
 
