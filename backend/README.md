@@ -2,6 +2,14 @@
 
 Spring Boot / Kotlin application. JDK 25.
 
+## Database
+
+The application and its tests need a PostgreSQL, which they never create:
+they read it from `LIBRIS_DB_URL` (default
+`jdbc:postgresql://localhost:5432/libris`), `LIBRIS_DB_USER` and
+`LIBRIS_DB_PASSWORD` (default `libris` for both). Flyway migrates it at
+start-up from `src/main/resources/db/migration`.
+
 ## Run
 
 ```
