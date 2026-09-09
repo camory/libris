@@ -57,26 +57,33 @@
       authenticates a fixed member; Contracteer verifier-junit (D04). Tests:
       filter, role, refusal, contract. The D02 ArchUnit rules that these
       classes give something to check arrive here, the rest with T006.
-- [ ] T006 Backend persistence: the member table and its repository.
+- [ ] T006 Backend persistence: the reader entity and its repository.
       Starter jdbc, `spring-boot-flyway` with `flyway-database-postgresql`,
       and the PostgreSQL driver; datasource from `LIBRIS_DB_URL` /
       `LIBRIS_DB_USER` / `LIBRIS_DB_PASSWORD`, migrated by Flyway, never by
-      `ddl-auto` (D02, D08). `V001__member.sql`: `id` uuid primary key,
-      `username` unique and not null, `display_name` not null; no other
-      column (D11). `domain`: the member profile aggregate, its `id`
-      defaulted to a version 7 uuid from
-      `com.fasterxml.uuid:java-uuid-generator`, and its port exposing
-      `insert` and a lookup by username; no annotation (D02, D11).
-      `infra.persistence`: the port implementation over `JdbcClient`, one
-      insert and one select, the row mapped by the aggregate's constructor
-      (D02). Nothing web changes: `/api/v1/me` still answers the headers
-      alone, and `api/openapi.yaml` is untouched. Tests: the implementation
-      against the PostgreSQL of D08 — insert then find by username, the id a
-      version 7 uuid, a second row with the same username refused — in a
-      transaction rolled back at the end (D07). ArchUnit: the domain rule
-      gains the uuid generator; new rules: `infra` packages never depend on
-      each other, a port declared in `domain` is implemented only in `infra`
-      (D02); the `application` rule arrives with T009.
+      `ddl-auto` (D02, D08). `V001__reader.sql`: `id` uuid primary key,
+      `username` unique and not null, `email` not null, `display_name` not
+      null; no other column (D11). `domain`: the one entity for a person,
+      `Reader(id, username, email, displayName)`, its `id` defaulted to a
+      version 7 uuid from `com.fasterxml.uuid:java-uuid-generator`, no
+      annotation (D02, D11, D06); it replaces T005's `Member` class: the
+      filter builds a `Reader` from the headers (its id not stored until
+      T009) and maps the groups to the Spring authorities `ROLE_MEMBER` and
+      `ROLE_ADMIN`; the T005 principal class carries the reader and the
+      authorities; T005's `Role` enum survives only as the JSON type of the
+      `/me` response in `infra.web`, derived from the authorities, so
+      `/api/v1/me` answers as before and `api/openapi.yaml` is untouched.
+      The port `ReaderRepository` exposes `insert` and `findByUsername`;
+      `infra.persistence`: `JdbcReaderRepository` over `JdbcClient`, one
+      insert and one select, the row mapped by the entity's constructor
+      (D02). Tests: the repository against the PostgreSQL of D08 — insert
+      then find by username returns an equal reader, an unknown username
+      finds none, a second row with the same username refused — in a
+      transaction rolled back at the end (D07); the T005 tests keep passing.
+      ArchUnit: the domain rule gains the uuid generator; new rules: `infra`
+      packages never depend on each other, a port declared in `domain` is
+      implemented only in `infra` (D02); the `application` rule arrives with
+      T009.
 - [ ] T009 Member profile on first visit. Starts with the contract, decided
       with Tophe on 2026-09-09 (D04): `CurrentMember` gains `id`,
       `type: string`, `format: uuid`, `nullable: false`, listed in `required`;
