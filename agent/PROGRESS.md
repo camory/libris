@@ -359,3 +359,47 @@ Format:
     default chain trusts the headers in every profile, as the brief measured.
     The PR body asks Tophe whether D06's sentence about the `dev` profile
     should be reworded.
+
+## 2026-09-09 — T006 Backend persistence: the reader entity and its repository — done (PR pending)
+- Did: eight commits. The contract edit first (four lines: the summary, the
+  response description, `CurrentMember` → `CurrentReader` at its definition and
+  its `$ref`, `enum: [MEMBER, ADMIN]` → `[READER, ADMIN]`), which reddened
+  `ApiContractTest` with `'role': Invalid value 'MEMBER'. Allowed values are
+  [READER, ADMIN].`; then `Role`/`CurrentReaderResponse` and the four
+  `MeControllerTest` expectations. Then `JdbcReaderRepositoryTest`, whose first
+  cycle drove the five dependencies, the datasource block, `V001__reader.sql`,
+  `domain/Reader.kt`, `domain/ReaderRepository.kt` and
+  `infra/persistence/JdbcReaderRepository.kt` into existence, and the two other
+  cycles (unknown username, duplicate username). Then the filter: `Reader`
+  replaces `Member`, `ReaderPrincipal` carries the reader and the authorities,
+  and `MeController` derives the role from them. Then the two new ArchUnit
+  rules. `check`: 17 tests, about 1 min.
+  Verified by command: the gate exits 0; with `LIBRIS_DB_URL` pointing at an
+  unknown host it fails at `flywayInitializer` with `Unable to obtain
+  connection from database`, which is T006 turning D08 into part of the gate;
+  on `bootRun` Flyway reports `Database: jdbc:postgresql://postgres:5432/libris
+  (PostgreSQL 18.6)` and the two README `curl` lines answer `READER` and
+  `ADMIN`; `git status --porcelain` empty after the gate.
+- Decided: nothing the brief had not decided. Every measured shape held: the
+  five dependencies are enough, `flyway-database-postgresql` at `runtimeOnly`,
+  `@SpringBootTest` + `@Transactional` rolls back the case whose insert raised
+  `DuplicateKeyException`, and both new ArchUnit rules failed on their
+  deliberate violation with the exact lines the brief predicted.
+- Deviations: none.
+- Left over / gotchas:
+  - The sandbox PostgreSQL keeps `flyway_schema_history` between iterations
+    (tmpfs, so only across a single sandbox life), so editing an applied
+    migration file breaks every context startup with a checksum mismatch until
+    the database is recreated. That is why the duplicate-username case got no
+    mutation check: dropping `unique` from `V001__reader.sql` would have
+    reddened the whole suite for the wrong reason. D11 already forbids editing
+    a merged migration; this is the same rule, one iteration earlier.
+  - `provider.setPreAuthenticatedUserDetailsService { it.principal as
+    ReaderPrincipal }` is a cast, not a lookup: the filter builds the
+    `UserDetails` because the details service never sees the request or the
+    groups. T009 replaces both when the reader gets a stored id.
+  - A background `bootRun` started with `( … & )` from a tool call dies with
+    the call; start it as a real background command and wait for
+    `/actuator/health` with `curl --retry --retry-connrefused` (a plain poll
+    loop spins without sleeping and gives up in milliseconds).
+
