@@ -359,3 +359,49 @@ Format:
     default chain trusts the headers in every profile, as the brief measured.
     The PR body asks Tophe whether D06's sentence about the `dev` profile
     should be reworded.
+
+## 2026-09-09 — T006 Backend persistence: the member table — done (PR pending)
+- Did: six cycles, one commit each. `UuidV7IdGeneratorTest` first (red on an
+  unresolved reference), then `java-uuid-generator` 5.2.0 in the catalogue and
+  `UuidV7IdGenerator`. Then the big cycle: `JdbcMemberProfileRepositoryTest`
+  inserting a profile and finding it back by username, red on unresolved
+  references, green with the data-jdbc starter, `spring-boot-flyway`,
+  `flyway-database-postgresql` and the driver, the datasource properties,
+  `V001__member.sql`, `MemberProfile`, `MemberProfileRepository`,
+  `IdGenerator`, `JdbcMemberProfileRepository` and `PersistenceConfig`. Then
+  the duplicate username, then the three ArchUnit rules, one cycle each. The
+  README gained the database section.
+  Verified by command: `cd backend && ./gradlew check` exits 0 with 20 tests,
+  and exits 0 again on the same tree; `git status --porcelain` empty after
+  both; `git diff main` empty on `api/openapi.yaml` and on `infra/web`;
+  `dependencies --configuration runtimeClasspath` lists the five new modules
+  and no other.
+- Decided:
+  - Nothing the brief had not decided. Its measured shapes held on contact:
+    `IsNewAwareAuditingHandler.markCreated` before `JdbcAggregateTemplate.insert`
+    fills both timestamps, and the duplicate surfaces as a plain
+    `DuplicateKeyException`.
+  - The domain rule needed the two packages the brief measured
+    (`org.springframework.data.annotation..` and
+    `org.springframework.data.relational.core.mapping..`); without them
+    `MemberProfile` fails it four times. The PR body proposes the D02 wording.
+  - The duplicate-username case was green on arrival, since `V001` carries the
+    unique constraint from the first cycle: it confirms rather than drives, and
+    no mutation was recorded for it because the only mutation available is an
+    edit to `V001`, which the checksum trap forbids.
+- Left over / gotchas:
+  - T005's criterion that the gate passes with `LIBRIS_DB_URL`,
+    `LIBRIS_DB_USER` and `LIBRIS_DB_PASSWORD` unset no longer holds: every
+    `@SpringBootTest` boots Flyway, so the whole suite now needs the database
+    of D08. The defaults in `application.yaml` are what a laptop uses.
+  - Flyway ran once against the given database and its history row outlives the
+    run: `V001__member.sql` must never be edited again, on pain of
+    `Migration checksum mismatch for migration version 001` at every later
+    context start-up. The brief's repair (a throwaway `@SpringBootTest` with
+    `spring.flyway.enabled=false` dropping `member` and
+    `flyway_schema_history`) was not needed.
+  - The suite boots three Spring contexts and takes about 55 s warm for
+    `check`; keeping the repository test to `@SpringBootTest` and
+    `@Transactional` is what avoids a fourth.
+  - The two rows both use the username `juliette`, which is what proves the
+    rollback: the second test would fail on the first test's leftover row.
