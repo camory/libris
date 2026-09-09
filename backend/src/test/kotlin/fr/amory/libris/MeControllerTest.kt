@@ -33,4 +33,25 @@ class MeControllerTest @Autowired constructor(
             "role" to "ADMIN",
         )
     }
+
+    @Test
+    fun `a member outside the admin group is a plain member`() {
+        val body = client.get()
+            .uri("/api/v1/me")
+            .header("Remote-User", "juliette")
+            .header("Remote-Name", "Juliette")
+            .header("Remote-Email", "juliette@amory.fr")
+            .header("Remote-Groups", "family")
+            .exchange()
+            .expectStatus().isOk()
+            .expectBody(object : ParameterizedTypeReference<Map<String, String>>() {})
+            .returnResult().responseBody
+
+        body shouldBe mapOf(
+            "username" to "juliette",
+            "displayName" to "Juliette",
+            "email" to "juliette@amory.fr",
+            "role" to "MEMBER",
+        )
+    }
 }
