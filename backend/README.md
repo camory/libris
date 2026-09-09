@@ -11,6 +11,23 @@ Spring Boot / Kotlin application. JDK 25.
 The application listens on <http://localhost:8080>. Health:
 <http://localhost:8080/actuator/health>.
 
+It reads the caller's identity from the `Remote-*` headers Traefik forwards
+from Authelia, so a local call passes them itself. As a member:
+
+```
+curl http://localhost:8080/api/v1/me \
+  -H 'Remote-User: juliette' -H 'Remote-Name: Juliette' \
+  -H 'Remote-Email: juliette@amory.fr' -H 'Remote-Groups: family'
+```
+
+As an admin:
+
+```
+curl http://localhost:8080/api/v1/me \
+  -H 'Remote-User: tophe' -H 'Remote-Name: Tophe' \
+  -H 'Remote-Email: tophe@amory.fr' -H 'Remote-Groups: family,libris-admin'
+```
+
 ## Test
 
 ```
