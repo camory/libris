@@ -15,16 +15,12 @@ class MeControllerTest @Autowired constructor(
 ) {
     @Test
     fun `a member of the admin group is an admin`() {
-        val body = client.get()
-            .uri("/api/v1/me")
-            .header("Remote-User", "tophe")
-            .header("Remote-Name", "Tophe")
-            .header("Remote-Email", "tophe@amory.fr")
-            .header("Remote-Groups", "family,libris-admin")
-            .exchange()
-            .expectStatus().isOk()
-            .expectBody(object : ParameterizedTypeReference<Map<String, String>>() {})
-            .returnResult().responseBody
+        val body = me(
+            "Remote-User" to "tophe",
+            "Remote-Name" to "Tophe",
+            "Remote-Email" to "tophe@amory.fr",
+            "Remote-Groups" to "family,libris-admin",
+        )
 
         body shouldBe mapOf(
             "username" to "tophe",
@@ -36,16 +32,12 @@ class MeControllerTest @Autowired constructor(
 
     @Test
     fun `a member outside the admin group is a plain member`() {
-        val body = client.get()
-            .uri("/api/v1/me")
-            .header("Remote-User", "juliette")
-            .header("Remote-Name", "Juliette")
-            .header("Remote-Email", "juliette@amory.fr")
-            .header("Remote-Groups", "family")
-            .exchange()
-            .expectStatus().isOk()
-            .expectBody(object : ParameterizedTypeReference<Map<String, String>>() {})
-            .returnResult().responseBody
+        val body = me(
+            "Remote-User" to "juliette",
+            "Remote-Name" to "Juliette",
+            "Remote-Email" to "juliette@amory.fr",
+            "Remote-Groups" to "family",
+        )
 
         body shouldBe mapOf(
             "username" to "juliette",
@@ -57,15 +49,11 @@ class MeControllerTest @Autowired constructor(
 
     @Test
     fun `a member without any group is a plain member`() {
-        val body = client.get()
-            .uri("/api/v1/me")
-            .header("Remote-User", "juliette")
-            .header("Remote-Name", "Juliette")
-            .header("Remote-Email", "juliette@amory.fr")
-            .exchange()
-            .expectStatus().isOk()
-            .expectBody(object : ParameterizedTypeReference<Map<String, String>>() {})
-            .returnResult().responseBody
+        val body = me(
+            "Remote-User" to "juliette",
+            "Remote-Name" to "Juliette",
+            "Remote-Email" to "juliette@amory.fr",
+        )
 
         body shouldBe mapOf(
             "username" to "juliette",
@@ -77,15 +65,11 @@ class MeControllerTest @Autowired constructor(
 
     @Test
     fun `a member without a display name is called by their username`() {
-        val body = client.get()
-            .uri("/api/v1/me")
-            .header("Remote-User", "juliette")
-            .header("Remote-Email", "juliette@amory.fr")
-            .header("Remote-Groups", "family")
-            .exchange()
-            .expectStatus().isOk()
-            .expectBody(object : ParameterizedTypeReference<Map<String, String>>() {})
-            .returnResult().responseBody
+        val body = me(
+            "Remote-User" to "juliette",
+            "Remote-Email" to "juliette@amory.fr",
+            "Remote-Groups" to "family",
+        )
 
         body shouldBe mapOf(
             "username" to "juliette",
@@ -94,4 +78,13 @@ class MeControllerTest @Autowired constructor(
             "role" to "MEMBER",
         )
     }
+
+    private fun me(vararg headers: Pair<String, String>): Map<String, String>? =
+        client.get()
+            .uri("/api/v1/me")
+            .headers { headers.forEach { (name, value) -> it.add(name, value) } }
+            .exchange()
+            .expectStatus().isOk()
+            .expectBody(object : ParameterizedTypeReference<Map<String, String>>() {})
+            .returnResult().responseBody
 }
