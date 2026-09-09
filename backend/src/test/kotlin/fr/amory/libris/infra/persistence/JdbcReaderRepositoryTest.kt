@@ -23,4 +23,9 @@ class JdbcReaderRepositoryTest @Autowired constructor(
         // Then
         readers.findByUsername("juliette") shouldBe juliette
     }
+
+    @Test
+    fun `an unknown username finds no reader`() {
+        readers.findByUsername("nobody") shouldBe null
+    }
 }
