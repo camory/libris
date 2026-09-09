@@ -40,33 +40,38 @@ runs everything.
 
 ### D02 — Backend: Kotlin + Spring Boot, light hexagon
 Spring Boot, Kotlin, JDK 25, one Gradle module. Persistence with
-**Spring Data JDBC** (no JPA, no Exposed, no jOOQ). Migrations with
-**Flyway**, SQL files, never `ddl-auto`.
+**Spring JDBC** (`JdbcClient`, hand-written SQL; no Spring Data, no JPA, no
+Exposed, no jOOQ). Migrations with **Flyway**, SQL files, never `ddl-auto`.
 
 Packages under `fr.amory.libris`:
 - `domain` — aggregates as data classes, value types, domain rules, and the
-  ports as plain Kotlin interfaces. Framework-free, with one concession:
-  Spring Data's mapping annotations (`@Id`, `@Table`, `@MappedCollection`)
-  are allowed so that no second persistence model exists.
+  ports as plain Kotlin interfaces. Framework-free: no annotation, no
+  framework type; the only library is the uuid generator of D11.
 - `application` — use-case services and transaction boundaries. Depends on
   `domain` only.
 - `infra.web` — controllers, request/response DTOs, problem details.
-- `infra.persistence` — Spring Data JDBC repositories, the port
-  implementations, the SQL for search and listings.
+- `infra.persistence` — the port implementations over `JdbcClient`: the SQL
+  of every insert, update, lookup, search and listing, and the row-to-aggregate
+  mapping, which is the aggregate's constructor.
 - `infra.lookup` — Google Books, Open Library and BnF clients (P2).
 
 Enforced by ArchUnit rules in the test suite (see D07):
-1. `domain` depends only on the Kotlin/Java standard libraries and the Spring
-   Data mapping annotations.
+1. `domain` depends only on the Kotlin/Java standard libraries and the uuid
+   generator of D11.
 2. `application` depends only on `domain` (plus `@Service` / `@Transactional`).
 3. `infra.*` packages depend on `domain` and `application`, never on each
    other.
 4. No cycles between top-level packages.
 5. Ports declared in `domain` are implemented only in `infra`.
-6. `CrudRepository.save` is never called (see D11).
 
 Considered and rejected: Ktor and http4k (the human reviewer's fluency is the
-merge gate), Spring Modulith (over-engineering at this size).
+merge gate), Spring Modulith (over-engineering at this size), Spring Data
+JDBC (2026-09-09: its aggregate mapping needs `@Id` on the persisted class,
+so a framework-free domain would carry a second persistence model and a
+mapper per aggregate, which is all the framework saved), jOOQ (typed SQL is
+the upgrade path if queries multiply; its code generator needs the migrated
+schema at build time, machinery this size does not justify), Exposed and
+SQLDelight (a second schema definition beside the Flyway files).
 
 ### D03 — Database: PostgreSQL only
 PostgreSQL 18, nothing else. Search is one ranked SQL query over:
