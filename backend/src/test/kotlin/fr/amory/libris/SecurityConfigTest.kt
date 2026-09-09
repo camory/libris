@@ -56,4 +56,12 @@ class SecurityConfigTest @Autowired constructor(
             .exchange()
             .expectStatus().isEqualTo(HttpStatus.METHOD_NOT_ALLOWED)
     }
+
+    @Test
+    fun `the health endpoint answers without any header`() {
+        client.get()
+            .uri("/actuator/health")
+            .exchange()
+            .expectStatus().isOk()
+    }
 }

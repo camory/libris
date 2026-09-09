@@ -68,6 +68,7 @@ class SecurityConfig {
             .sessionManagement { it.sessionCreationPolicy(SessionCreationPolicy.STATELESS) }
             .addFilterBefore(filter, AbstractPreAuthenticatedProcessingFilter::class.java)
             .authorizeHttpRequests {
+                it.requestMatchers("/actuator/**").permitAll()
                 it.requestMatchers(unsafeWrite).denyAll()
                 it.anyRequest().authenticated()
             }
