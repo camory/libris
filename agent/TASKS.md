@@ -115,7 +115,8 @@
       starts `contracteer mock`; home view greets the reader by display name;
       401 or unexpected redirect reloads the page (D06); dev proxy adds a dev
       admin's `Remote-*` headers; `npm run dev:mock` (D05). Tests: client
-      against the mock, home view with a fake port.
+      against the mock, home view with a fake port, the application created
+      through `createLibrisApp` over fake ports (D07).
 - [ ] T008 Production compose and runbook. `deploy/compose.yaml`: PostgreSQL
       18, backend and frontend from `ghcr.io/camory/libris-*:${LIBRIS_TAG}`,
       joined to the existing Traefik network, no published ports, no labels,

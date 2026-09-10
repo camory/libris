@@ -125,7 +125,9 @@ offline with a clear message. No sync queue.
 Configuration reaches the code as arguments, never as `import.meta.env`: the
 API client takes its base URL from its constructor, `main.ts` passes the
 same-origin value and a spec passes the mock's. No `VITE_*` variable exists
-until a task needs one.
+until a task needs one. `createLibrisApp(ports)` builds the application with
+its router, i18n and Pinia over the given port implementations; `main.ts`
+builds the real ports and mounts it.
 
 Layers under `frontend/src`:
 - `domain/` — pure TypeScript: types and pure functions (series gaps, sort
@@ -219,7 +221,9 @@ session, no BCrypt.
   props and assert the rendered text and the emitted events. `ui/views`
   mount with the real i18n and a fake port provided through its injection
   key. `infra/api` runs against `contracteer mock`, one spec per operation
-  the client implements, the error responses of the contract included.
+  the client implements, the error responses of the contract included. One
+  test creates the application through `createLibrisApp` over fake ports and
+  checks the home view renders.
 - One test source set and one `test` task. No suffix sorts tests by what
   they need: a test that needs the database gets it from D08 like any other.
   Test classes are named after the Libris code they exercise. Tests live
