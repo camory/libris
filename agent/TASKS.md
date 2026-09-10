@@ -110,15 +110,37 @@
       stored reader and keeps the display name Libris owns, two concurrent
       first visits, the filter with a stored reader, contract. The last D02
       ArchUnit rule: `application` depends only on `domain`.
-- [ ] T007 Reader profile, frontend. `MeApi` port in `application/`, fetch
-      client with hand-written types in `infra/api` (D04); Vitest global setup
-      starts `contracteer mock`; the client sends `Accept: application/json`
-      (D06); home view greets the reader by display name;
-      `createLibrisApp` builds router, i18n and Pinia over the ports and
-      `main.ts` alone reads `import.meta.env` (D05); dev proxy adds a dev
-      admin's `Remote-*` headers; `npm run dev:mock` (D05). Tests: client
-      against the mock, home view with a fake port, the application created
-      through `createLibrisApp` over fake ports (D07).
+- [ ] T007 Frontend API client for the current reader. `src/domain`: the reader
+      type, pure TypeScript (`id`, `username`, `displayName`, `email`, and the
+      role `READER | ADMIN`); `src/application`: the `MeApi` port, one method
+      answering that type; `src/infra/api`: the hand-written type of the
+      `CurrentReader` response and the fetch client implementing the port,
+      taking its base URL as a constructor argument and sending
+      `Accept: application/json` (D04, D05, D06). No code generation, and
+      `api/openapi.yaml` does not change. A Vitest global setup starts
+      `contracteer mock api/openapi.yaml -p <port>` before the suite and stops
+      it after; the spec passes that base URL to the client (D04, D07). Test:
+      one spec beside the client, the single operation the contract declares,
+      every response it declares (`200` only) and none it does not; the
+      contract carries no examples, so the mock answers generated values and
+      the spec asserts the shape, not the values. `frontend/README.md` says
+      the gate now needs the `contracteer` binary on the PATH (D08); the CI
+      `frontend` job already installs it. Nothing imports the client yet: the
+      home view is T010.
+- [ ] T010 The reader on the home page. `createLibrisApp(ports, revision)`
+      builds a router, i18n and Pinia of its own over the given ports and
+      provides them through typed injection keys; `main.ts` alone reads
+      `import.meta.env`, builds the real `MeApi` over the same-origin base URL
+      and mounts the application; `App.vue` receives the revision instead of
+      reading it (D05). The home view injects `MeApi` and greets the reader by
+      display name, the message in the `fr` catalogue (PRD §4.10, §5). Shared
+      fakes of the ports live in `src/fixture` (D07), with the ESLint
+      boundaries element that lets a spec import them. The dev proxy adds a
+      dev admin's `Remote-*` headers, and `npm run dev:mock` proxies `/api` to
+      the Contracteer mock instead of the backend (D05, D06). Tests: the home
+      view mounted with the real i18n and a fake port provided through its
+      key, awaiting `flushPromises`; the application created through
+      `createLibrisApp` over fake ports renders the home view (D07).
 - [ ] T008 Production compose and runbook. `deploy/compose.yaml`: PostgreSQL
       18, backend and frontend from `ghcr.io/camory/libris-*:${LIBRIS_TAG}`,
       joined to the existing Traefik network, no published ports, no labels,
