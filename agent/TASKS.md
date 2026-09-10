@@ -193,10 +193,9 @@ redirect fails in the installed app, the D06 fallback becomes a task.
   unconditional on push to `main`, since `release.yml` re-tags `sha-<short>`
   of the tagged commit. `ci.yml` is edited by humans only (Tophe,
   2026-09-09).
-- Frontend: handle the 401 of D06. The contract declares it without a body
-  and the Contracteer mock answers from the schema when no scenario matches,
-  so it cannot serve a bodiless response on a parameterless `GET`. Needs a
-  way in Contracteer for a client test to select a declared response; then
-  the API client gets an `onUnauthenticated` callback, `main.ts` wires it
-  to a page reload, and the spec runs against the mock (Tophe, 2026-09-10,
-  while amending the frontend rules).
+- Frontend: handle the 401 of D06. Authelia answers it on an expired
+  session and the contract does not declare it, so the Contracteer mock
+  never serves it. The task decides with Tophe how its spec produces the
+  401, Authelia being a boundary Libris does not control; then the API
+  client gets an `onUnauthenticated` callback and `main.ts` wires it to a
+  page reload (Tophe, 2026-09-10, while amending the frontend rules).
