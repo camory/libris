@@ -482,3 +482,32 @@ Format:
     unresolvable placeholder as literal text, so the error names Hikari, not
     the variable. This box has no PostgreSQL: run the gate with
     `docker compose -f agent/compose.yaml up -d --wait postgres`, then `down`.
+
+
+## 2026-09-10 — T007 split into T007 and T010 (planner) — done (PR pending)
+- Did: replaced the single frontend task by two, in `agent/TASKS.md`: T007 is
+  the `/me` client (domain type, `MeApi` port, `infra/api` fetch client, the
+  Vitest global setup that runs `contracteer mock`), T010 is the wiring and
+  the screen (`createLibrisApp`, `main.ts`, `App.vue`, the home greeting,
+  `src/fixture`, the dev proxy headers, `npm run dev:mock`). No brief written.
+- Decided: nothing about the product. The split boundary is the hexagon's:
+  T007 adds the outward layers with one spec against the mock, T010 wires
+  them and shows them. T007 leaves the client unimported for one PR, which
+  D04's order of work (contract, backend, frontend) already implies.
+- Measured on this tree, for whoever writes the two briefs:
+  - `contracteer mock api/openapi.yaml -p 9099` starts in about four seconds
+    and logs `Contracteer mock server started on port 9099` as its last line;
+    `GET /api/v1/me` answers 200. The contract declares no example, so the
+    body is generated: `{"id":"93b7…","username":"wprlgKiA0O",…,"role":"ADMIN"}`
+    — a spec can assert the shape and the types, never a value, and `role`
+    varies between calls.
+  - `fetch` works as-is in the Vitest 5 `jsdom` environment on Node 24: a
+    throwaway spec calling the mock over `http://localhost:9099` passed with
+    no polyfill and no per-file environment override.
+  - `pkill -f contracteer` kills the tool call itself, whose command line
+    contains the pattern (exit 144). Match on something else, or stop the
+    mock from the setup that started it.
+- Left over / gotchas: the eslint `boundaries` elements have no `fixture`
+  entry and `createLibrisApp` has no home that the current policies allow
+  under `src/ui` (`ui-shell` may import `ui-components` only); T010 places it
+  beside `main.ts` in `src/`, whose element may import anything.
