@@ -1,16 +1,22 @@
 package fr.amory.libris.infra.web
 
+import fr.amory.libris.application.ReaderVisit
+import fr.amory.libris.domain.Reader
 import org.junit.jupiter.api.Test
+import org.mockito.BDDMockito.given
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.resttestclient.autoconfigure.AutoConfigureRestTestClient
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.http.HttpStatus
+import org.springframework.test.context.bean.override.mockito.MockitoBean
 import org.springframework.test.web.servlet.client.RestTestClient
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@SpringBootTest(classes = [WebSlice::class], webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @AutoConfigureRestTestClient
+@MockitoBean(types = [ReaderVisit::class])
 class SecurityConfigTest @Autowired constructor(
     private val client: RestTestClient,
+    private val visit: ReaderVisit,
 ) {
     @Test
     fun `a request without the identity headers is refused`() {
@@ -68,6 +74,11 @@ class SecurityConfigTest @Autowired constructor(
 
     @Test
     fun `a write carrying the X-Requested-With header reaches the application`() {
+        // Given
+        given(visit.visit("tophe", "tophe@amory.fr", "Tophe"))
+            .willReturn(Reader(username = "tophe", email = "tophe@amory.fr", displayName = "Tophe"))
+
+        // When, Then
         client.post()
             .uri("/api/v1/me")
             .header("Remote-User", "tophe")

@@ -3,6 +3,7 @@ package fr.amory.libris.application
 import fr.amory.libris.domain.DuplicateUsernameException
 import fr.amory.libris.domain.Reader
 import fr.amory.libris.domain.ReaderRepository
+import fr.amory.libris.fixture.ReadersInMemory
 import io.kotest.matchers.shouldBe
 import org.junit.jupiter.api.Test
 
@@ -49,17 +50,6 @@ class ReaderVisitTest {
         // Then
         loser shouldBe winner
     }
-}
-
-private class ReadersInMemory : ReaderRepository {
-    private val stored = mutableMapOf<String, Reader>()
-
-    override fun insert(reader: Reader) {
-        if (reader.username in stored) throw DuplicateUsernameException(reader.username)
-        stored[reader.username] = reader
-    }
-
-    override fun findByUsername(username: String): Reader? = stored[username]
 }
 
 private class ReadersLosingTheRace(private val winner: Reader) : ReaderRepository {

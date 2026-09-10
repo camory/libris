@@ -1,31 +1,42 @@
 package fr.amory.libris.infra.web
 
-import fr.amory.libris.domain.ReaderRepository
+import fr.amory.libris.application.ReaderVisit
+import fr.amory.libris.domain.Reader
 import io.kotest.matchers.shouldBe
-import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import org.mockito.BDDMockito.given
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.resttestclient.autoconfigure.AutoConfigureRestTestClient
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.core.ParameterizedTypeReference
-import org.springframework.jdbc.core.simple.JdbcClient
+import org.springframework.test.context.bean.override.mockito.MockitoBean
 import org.springframework.test.web.servlet.client.RestTestClient
+import java.util.UUID
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+private val TOPHE = Reader(
+    id = UUID.fromString("01991c3a-5b7e-7c1d-8f2a-3d4e5f607181"),
+    username = "tophe",
+    email = "tophe@amory.fr",
+    displayName = "Tophe",
+)
+private val JULIETTE = Reader(
+    id = UUID.fromString("01991c3a-5b7e-7c1d-8f2a-3d4e5f607182"),
+    username = "juliette",
+    email = "juliette@amory.fr",
+    displayName = "Juliette",
+)
+
+@SpringBootTest(classes = [WebSlice::class], webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @AutoConfigureRestTestClient
+@MockitoBean(types = [ReaderVisit::class])
 class MeControllerTest @Autowired constructor(
     private val client: RestTestClient,
-    private val readers: ReaderRepository,
-    private val jdbcClient: JdbcClient,
+    private val visit: ReaderVisit,
 ) {
-    @BeforeEach
-    fun emptyTheReaderTable() {
-        jdbcClient.sql("truncate table reader").update()
-    }
-
     @Test
     fun `a reader of the admin group is an admin`() {
         // Given
+        given(visit.visit("tophe", "tophe@amory.fr", "Tophe")).willReturn(TOPHE)
         val headers = listOf(
             "Remote-User" to "tophe",
             "Remote-Name" to "Tophe",
@@ -38,7 +49,7 @@ class MeControllerTest @Autowired constructor(
 
         // Then
         body shouldBe mapOf(
-            "id" to readers.findByUsername("tophe")?.id.toString(),
+            "id" to "01991c3a-5b7e-7c1d-8f2a-3d4e5f607181",
             "username" to "tophe",
             "displayName" to "Tophe",
             "email" to "tophe@amory.fr",
@@ -49,6 +60,7 @@ class MeControllerTest @Autowired constructor(
     @Test
     fun `a reader outside the admin group is a plain reader`() {
         // Given
+        given(visit.visit("juliette", "juliette@amory.fr", "Juliette")).willReturn(JULIETTE)
         val headers = listOf(
             "Remote-User" to "juliette",
             "Remote-Name" to "Juliette",
@@ -61,7 +73,7 @@ class MeControllerTest @Autowired constructor(
 
         // Then
         body shouldBe mapOf(
-            "id" to readers.findByUsername("juliette")?.id.toString(),
+            "id" to "01991c3a-5b7e-7c1d-8f2a-3d4e5f607182",
             "username" to "juliette",
             "displayName" to "Juliette",
             "email" to "juliette@amory.fr",
@@ -72,6 +84,7 @@ class MeControllerTest @Autowired constructor(
     @Test
     fun `a reader without any group is a plain reader`() {
         // Given
+        given(visit.visit("juliette", "juliette@amory.fr", "Juliette")).willReturn(JULIETTE)
         val headers = listOf(
             "Remote-User" to "juliette",
             "Remote-Name" to "Juliette",
@@ -82,18 +95,14 @@ class MeControllerTest @Autowired constructor(
         val body = me(headers)
 
         // Then
-        body shouldBe mapOf(
-            "id" to readers.findByUsername("juliette")?.id.toString(),
-            "username" to "juliette",
-            "displayName" to "Juliette",
-            "email" to "juliette@amory.fr",
-            "role" to "READER",
-        )
+        body?.get("role") shouldBe "READER"
     }
 
     @Test
-    fun `a reader without a display name is called by their username`() {
+    fun `a reader without a display name visits under their username`() {
         // Given
+        given(visit.visit("juliette", "juliette@amory.fr", "juliette"))
+            .willReturn(JULIETTE.copy(displayName = "juliette"))
         val headers = listOf(
             "Remote-User" to "juliette",
             "Remote-Email" to "juliette@amory.fr",
@@ -104,22 +113,17 @@ class MeControllerTest @Autowired constructor(
         val body = me(headers)
 
         // Then
-        body shouldBe mapOf(
-            "id" to readers.findByUsername("juliette")?.id.toString(),
-            "username" to "juliette",
-            "displayName" to "juliette",
-            "email" to "juliette@amory.fr",
-            "role" to "READER",
-        )
+        body?.get("displayName") shouldBe "juliette"
     }
 
     @Test
-    fun `a first visit stores the reader`() {
+    fun `the answer is the reader of the visit, not the one of the headers`() {
         // Given
+        given(visit.visit("juliette", "juju@amory.fr", "Juju")).willReturn(JULIETTE)
         val headers = listOf(
             "Remote-User" to "juliette",
-            "Remote-Name" to "Juliette",
-            "Remote-Email" to "juliette@amory.fr",
+            "Remote-Name" to "Juju",
+            "Remote-Email" to "juju@amory.fr",
             "Remote-Groups" to "family",
         )
 
@@ -127,38 +131,8 @@ class MeControllerTest @Autowired constructor(
         val body = me(headers)
 
         // Then
-        val stored = readers.findByUsername("juliette")
-        stored?.username shouldBe "juliette"
-        stored?.email shouldBe "juliette@amory.fr"
-        stored?.displayName shouldBe "Juliette"
-        body?.get("id") shouldBe stored?.id.toString()
-    }
-
-    @Test
-    fun `a later visit answers the stored reader whose display name Libris owns`() {
-        // Given
-        me(
-            listOf(
-                "Remote-User" to "juliette",
-                "Remote-Name" to "Juliette",
-                "Remote-Email" to "juliette@amory.fr",
-                "Remote-Groups" to "family",
-            ),
-        )
-
-        // When
-        val body = me(
-            listOf(
-                "Remote-User" to "juliette",
-                "Remote-Name" to "Juju",
-                "Remote-Email" to "juju@amory.fr",
-                "Remote-Groups" to "family",
-            ),
-        )
-
-        // Then
         body shouldBe mapOf(
-            "id" to readers.findByUsername("juliette")?.id.toString(),
+            "id" to "01991c3a-5b7e-7c1d-8f2a-3d4e5f607182",
             "username" to "juliette",
             "displayName" to "Juliette",
             "email" to "juliette@amory.fr",
