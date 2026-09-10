@@ -662,3 +662,42 @@ Format:
   PRD line and the D06 risk say so now.
 - Left over: T011 and T012, then the reopen check on the Pixel in the
   installed app closes Phase 0.
+
+## 2026-09-10 — T012 Expired session in the browser and the installed app
+- Did: the escape path out of the app shell, frontend only. `FetchMeApi`
+  takes a second constructor argument `onUnauthenticated: () => void`, calls
+  it when `/api/v1/me` answers 401 and rejects; `main.ts` wires it to
+  `window.location.assign("/session")`. `vite.config.ts` passes
+  `workbox: { navigateFallbackDenylist: [/^\/session$/] }` to `VitePWA`, so
+  the built `sw.js` leaves that one path to the network, and `nginx.conf`
+  answers it with `location = /session { return 302 /; }`. Two cycles, two
+  commits; the spec gained one case beside its contract case.
+- Decided: nothing the brief left open. The client rejects after calling
+  back, the callback is required, and the 401 case lives in the existing
+  spec file — all three as the brief's *Risks and decisions* set them.
+- Deviations: none.
+- Measured, for a future run:
+  - `vi.stubGlobal("fetch", …)` with `new Response(null, { status: 401 })`
+    needs no import and no cast in the jsdom environment; the `afterEach`
+    calling `vi.unstubAllGlobals()` is what keeps the contract case honest,
+    since it would otherwise pass only by running first.
+  - After `npm run build`,
+    `grep -c 'denylist:\[/\^\\\/session\$/\]' dist/sw.js` answers 1; the
+    minified route reads `NavigationRoute(e.createHandlerBoundToURL(
+    "index.html"),{denylist:[/^\/session$/]})`. `navigateFallback` is left
+    alone: vite-plugin-pwa defaults it to `index.html` in `generateSW` mode.
+  - `npx prettier --check` cannot infer a parser for `nginx.conf`; pass it
+    the TypeScript and Markdown files only.
+  - Gate: `npm test` green, 4 test files / 6 tests, 3.3 s, 100% of 28
+    statements. `npm run build` green.
+- Left over / gotchas:
+  - The redirect through Traefik and Authelia cannot be exercised in the
+    sandbox (no Docker, no nginx, no Authelia — D08). The `sw.js` string and
+    the read of `nginx.conf` are all a run can prove; the hand check on the
+    Pixel closes it, and closes Phase 0 with it.
+  - The new service worker takes over only after one reopen, so the first
+    reopen after the release may still swallow `/session`. Open the app once
+    before testing the expiry.
+  - `HomeView` keeps its `.then()` and no `catch`: the rejection is visible
+    in devtools while the browser is already leaving the page. An error UI is
+    a product decision the PRD does not make.

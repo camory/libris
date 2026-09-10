@@ -158,7 +158,7 @@
       `crossorigin="use-credentials"` and the browser sends the Authelia
       cookie when it fetches it. Verified by the built `dist/index.html` and
       by the install prompt on an Android phone (D06). Hand task.
-- [ ] T012 Expired session in the browser and the installed app. The service
+- [x] T012 Expired session in the browser and the installed app. The service
       worker's navigation route excludes `/session`
       (`workbox.navigateFallbackDenylist`), `frontend/nginx.conf` answers
       `/session` with a 302 to `/`, `FetchMeApi` takes an `onUnauthenticated`
