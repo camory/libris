@@ -474,3 +474,11 @@ Format:
     health; it is the only test that proves the production wiring.
   - Test doubles live in `fixture`; the later-visit HTTP case is gone, the
     rule it checked belongs to `ReaderVisitTest`. 25 tests.
+  - Configuration by environment only (D08): `application.yaml` has
+    placeholders without defaults; a developer copies `backend/.env.example`
+    to `backend/.env`, which Gradle's `test` and `bootRun` read when the
+    environment does not define a variable. Without the variables the boot
+    fails on `'url' must start with "jdbc"`: Boot's binder keeps an
+    unresolvable placeholder as literal text, so the error names Hikari, not
+    the variable. This box has no PostgreSQL: run the gate with
+    `docker compose -f agent/compose.yaml up -d --wait postgres`, then `down`.

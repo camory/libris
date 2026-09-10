@@ -226,8 +226,10 @@ session, no BCrypt.
 The build creates no infrastructure. It receives, identically in local dev,
 the sandbox and CI:
 - a PostgreSQL of the production major, through `LIBRIS_DB_URL`,
-  `LIBRIS_DB_USER`, `LIBRIS_DB_PASSWORD` (default
-  `jdbc:postgresql://localhost:5432/libris`, user and password `libris`);
+  `LIBRIS_DB_USER`, `LIBRIS_DB_PASSWORD`; on a developer's machine they
+  may come from `backend/.env`, copied from `backend/.env.example`, which
+  Gradle's `test` and `bootRun` read when the environment does not define
+  them;
 - the `contracteer` binary on the PATH;
 - the pinned JDK and Node.
 
@@ -350,6 +352,7 @@ Contract
 
 ```
 docker compose -f agent/compose.yaml up -d postgres   # throwaway DB on localhost:5432 (tmpfs: gone when recreated)
+cp backend/.env.example backend/.env                  # once per checkout; the three database variables
 cd backend && ./gradlew bootRun                      # http://localhost:8080 — trusts the Remote-* headers the caller sets
 cd frontend && npm run dev                           # http://localhost:5173 — proxies /api to :8080, adds a dev admin's Remote-* headers
 contracteer mock api/openapi.yaml -p 9090            # the API from the contract alone

@@ -66,12 +66,24 @@ tasks.detekt {
     classpath.from(sourceSets.main.get().compileClasspath, sourceSets.main.get().output)
 }
 
+val dotenv: Map<String, String> = file(".env").takeIf { it.isFile }?.readLines().orEmpty()
+    .filter { it.isNotBlank() && !it.startsWith("#") }
+    .associate { it.substringBefore("=").trim() to it.substringAfter("=").trim() }
+
+fun ProcessForkOptions.environmentFromDotenv() =
+    dotenv.forEach { (name, value) -> if (System.getenv(name) == null) environment(name, value) }
+
 tasks.test {
     useJUnitPlatform()
+    environmentFromDotenv()
     testLogging {
         events(TestLogEvent.PASSED, TestLogEvent.SKIPPED, TestLogEvent.FAILED)
         exceptionFormat = TestExceptionFormat.FULL
     }
+}
+
+tasks.bootRun {
+    environmentFromDotenv()
 }
 
 tasks.check {
