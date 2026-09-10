@@ -511,3 +511,37 @@ Format:
   entry and `createLibrisApp` has no home that the current policies allow
   under `src/ui` (`ui-shell` may import `ui-components` only); T010 places it
   beside `main.ts` in `src/`, whose element may import anything.
+
+
+## 2026-09-10 — T007 Frontend API client for the current reader — done (PR pending)
+- Did: three commits. First the mock infrastructure — `vitest.global-setup.ts`
+  spawning `contracteer mock ../api/openapi.yaml -p 9099`, resolving on the
+  stdout line and killing it in the returned teardown, registered under
+  `test.globalSetup`, added to the `include` of `tsconfig.json` with `"node"` in
+  `types`, and `@types/node` installed. Then the red spec
+  `src/infra/api/FetchMeApi.spec.ts` (one case, `Failed to resolve import
+  "./FetchMeApi"` its only reason to be red, the mock already answering), then
+  green with `domain/Reader.ts`, `application/MeApi.ts` and
+  `infra/api/FetchMeApi.ts` in that order. `npm test`: 3 test files, 3 tests,
+  3.27 s; `npm run build` green in 311 ms.
+- Decided: nothing the brief had not decided. Two mutations, each reverted:
+  calling `/api/v1/mine` reddens the case, and dropping `email` from the mapping
+  reddens it with `expected undefined to deeply equal Any<String>`.
+- Deviations: none.
+- Left over / gotchas:
+  - The shape assertions cannot catch a swapped mapping: `email: body.username`
+    passes, since every property the contract declares is a string and the mock
+    generates the values. Only a missing property or a wrong path reddens the
+    case. An example in the contract is what would close that gap, and the
+    contract is edited with Tophe.
+  - `pgrep -af openapi` matches the tool call's own command line, exactly as
+    `pkill -f contracteer` does: the check that finds nothing left behind is
+    `pgrep -af "openap""i"`. `mock.kill()` in the teardown leaves no process.
+  - The hand-written `CurrentReaderResponse` spells its `role` enum out rather
+    than importing the domain's `Role`, so the wire type mirrors the schema and
+    a contract change surfaces as a mapping error instead of silently
+    redefining the domain.
+  - The Vitest run reports jsdom created three times, 79% of the tracked time,
+    and suggests `pool: 'vmThreads'` or `isolate: false`. Nothing needs it at
+    3 s; it is what to reach for when the suite grows.
+

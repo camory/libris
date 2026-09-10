@@ -1,12 +1,12 @@
 import type { MeApi } from "../../application/MeApi";
-import type { Reader, Role } from "../../domain/Reader";
+import type { Reader } from "../../domain/Reader";
 
 interface CurrentReaderResponse {
   id: string;
   username: string;
   displayName: string;
   email: string;
-  role: Role;
+  role: "READER" | "ADMIN";
 }
 
 export class FetchMeApi implements MeApi {
