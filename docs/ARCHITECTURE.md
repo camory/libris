@@ -122,6 +122,11 @@ PWA via `vite-plugin-pwa` (Workbox): precached app shell, API GET responses
 cached network-first with cache fallback, any non-GET fails immediately
 offline with a clear message. No sync queue.
 
+Configuration reaches the code as arguments, never as `import.meta.env`: the
+API client takes its base URL from its constructor, `main.ts` passes the
+same-origin value and a spec passes the mock's. No `VITE_*` variable exists
+until a task needs one.
+
 Layers under `frontend/src`:
 - `domain/` — pure TypeScript: types and pure functions (series gaps, sort
   orders, reading-state transitions, validation rules). No Vue, no fetch, no
