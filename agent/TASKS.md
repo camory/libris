@@ -112,8 +112,10 @@
       ArchUnit rule: `application` depends only on `domain`.
 - [ ] T007 Reader profile, frontend. `MeApi` port in `application/`, fetch
       client with hand-written types in `infra/api` (D04); Vitest global setup
-      starts `contracteer mock`; home view greets the reader by display name;
-      401 or unexpected redirect reloads the page (D06); dev proxy adds a dev
+      starts `contracteer mock`; the client sends `Accept: application/json`
+      (D06); home view greets the reader by display name;
+      `createLibrisApp` builds router, i18n and Pinia over the ports and
+      `main.ts` alone reads `import.meta.env` (D05); dev proxy adds a dev
       admin's `Remote-*` headers; `npm run dev:mock` (D05). Tests: client
       against the mock, home view with a fake port, the application created
       through `createLibrisApp` over fake ports (D07).
@@ -191,3 +193,9 @@ redirect fails in the installed app, the D06 fallback becomes a task.
   unconditional on push to `main`, since `release.yml` re-tags `sha-<short>`
   of the tagged commit. `ci.yml` is edited by humans only (Tophe,
   2026-09-09).
+- Frontend: handle the 401 of D06. Authelia answers it on an expired
+  session and the contract does not declare it, so the Contracteer mock
+  never serves it. The task decides with Tophe how its spec produces the
+  401, Authelia being a boundary Libris does not control; then the API
+  client gets an `onUnauthenticated` callback and `main.ts` wires it to a
+  page reload (Tophe, 2026-09-10, while amending the frontend rules).

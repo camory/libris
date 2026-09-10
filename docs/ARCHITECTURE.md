@@ -122,12 +122,14 @@ PWA via `vite-plugin-pwa` (Workbox): precached app shell, API GET responses
 cached network-first with cache fallback, any non-GET fails immediately
 offline with a clear message. No sync queue.
 
-Configuration reaches the code as arguments, never as `import.meta.env`: the
-API client takes its base URL from its constructor, `main.ts` passes the
-same-origin value and a spec passes the mock's. No `VITE_*` variable exists
-until a task needs one. `createLibrisApp(ports)` builds the application with
-its router, i18n and Pinia over the given port implementations; `main.ts`
-builds the real ports and mounts it.
+`main.ts` alone reads `import.meta.env`; every other module receives its
+configuration as an argument. The API client takes its base URL from its
+constructor: `main.ts` passes the same-origin value and a spec passes the
+mock's. The footer's revision comes from `VITE_APP_VERSION`, the one `VITE_*`
+variable; no other exists until a task needs one.
+`createLibrisApp(ports, revision)` builds the application with a router, i18n
+and Pinia of its own over the given port implementations; `main.ts` reads
+the revision, builds the real ports and mounts it.
 
 Layers under `frontend/src`:
 - `domain/` — pure TypeScript: types and pure functions (series gaps, sort
@@ -141,8 +143,9 @@ Layers under `frontend/src`:
 - `ui/` — `components/` (presentational: props in, events out, no API calls),
   `views/`, the router, the i18n messages.
 
-Wiring happens once in `main.ts`, through provide/inject with typed keys;
-tests provide fakes. Enforced by `eslint-plugin-boundaries`:
+Wiring happens once, in `createLibrisApp`, through provide/inject with typed
+keys: a composable takes its port as an argument, the view that calls it
+injects the port; tests provide fakes. Enforced by `eslint-plugin-boundaries`:
 1. `domain` imports only `domain`.
 2. `application` imports `domain` and its own ports, never `infra` or `ui`.
 3. `infra` imports `domain` and `application` ports, never `ui`.
@@ -188,8 +191,14 @@ session, no BCrypt.
 - `GET /api/v1/me` returns the current reader and their role.
 - CSRF: Authelia's cookie is SameSite, and the backend refuses any non-GET
   request lacking the `X-Requested-With` header.
-- The frontend treats a 401 or an unexpected redirect on an API call as an
-  expired session and reloads the page. Logout is a link to Authelia's logout.
+- A 401 on an API call means an expired session. Authelia answers it, the
+  backend never does, and the contract does not declare it. The frontend
+  sends `Accept: application/json` on every request, which is what makes
+  Authelia answer 401 rather than redirect. The frontend does not handle
+  the 401 yet; the task that adds it gives the API client an
+  `onUnauthenticated` callback that `main.ts` wires to a page reload, so
+  that the OIDC move changes `main.ts` and not the client. Logout is a link
+  to Authelia's logout.
 - The contract declares no security scheme: authentication is upstream.
 - Risk to verify on real phones with the first deployed screen: the portal
   redirect inside an installed PWA (iOS opens other origins in an in-app
@@ -217,13 +226,17 @@ session, no BCrypt.
   and reads its health. Test classes do not run in parallel.
 - The frontend follows the same slicing. `domain` is plain Vitest, no
   doubles. `application` composables and stores run over fakes of their
-  ports, with a fresh Pinia per test and no DOM. `ui/components` mount with
+  ports, with a fresh Pinia per test and no component mounted: a composable
+  is called with its fake port as an argument. `ui/components` mount with
   props and assert the rendered text and the emitted events. `ui/views`
   mount with the real i18n and a fake port provided through its injection
-  key. `infra/api` runs against `contracteer mock`, one spec per operation
-  the client implements, the error responses of the contract included. One
-  test creates the application through `createLibrisApp` over fake ports and
-  checks the home view renders.
+  key, and await `flushPromises` before asserting what the port answered. A
+  view or component test asserts on what the reader sees, text and roles,
+  never on tags or classes. `infra/api` runs against `contracteer mock`, one
+  spec per operation the client implements, every response the contract
+  declares and none it does not; the 401 of D06 is outside the contract and
+  waits for its own task. One test creates the application through
+  `createLibrisApp` over fake ports and checks the home view renders.
 - One test source set and one `test` task. No suffix sorts tests by what
   they need: a test that needs the database gets it from D08 like any other.
   Test classes are named after the Libris code they exercise. Tests live
