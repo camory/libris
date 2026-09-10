@@ -3,7 +3,7 @@ import vue from "@vitejs/plugin-vue";
 import { defineConfig } from "vitest/config";
 import { VitePWA } from "vite-plugin-pwa";
 
-export default defineConfig({
+export default defineConfig(({ mode }) => ({
   plugins: [
     vue(),
     tailwindcss(),
@@ -26,7 +26,16 @@ export default defineConfig({
   ],
   server: {
     proxy: {
-      "/api": "http://localhost:8080",
+      "/api": {
+        target:
+          mode === "mock" ? "http://localhost:9090" : "http://localhost:8080",
+        headers: {
+          "Remote-User": "dev",
+          "Remote-Name": "Dev Admin",
+          "Remote-Email": "dev@amory.fr",
+          "Remote-Groups": "libris-admin",
+        },
+      },
     },
   },
   test: {
@@ -37,4 +46,4 @@ export default defineConfig({
       reporter: ["text", "lcov"],
     },
   },
-});
+}));

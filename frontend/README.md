@@ -15,7 +15,16 @@ npm run dev
 ```
 
 The dev server listens on <http://localhost:5173> and proxies `/api` to
-<http://localhost:8080>.
+<http://localhost:8080>, adding `Remote-User: dev`, `Remote-Name: Dev Admin`,
+`Remote-Email: dev@amory.fr` and `Remote-Groups: libris-admin` to every proxied
+request, the headers Authelia sets in production.
+
+```
+npm run dev:mock
+```
+
+The same server, proxying `/api` to <http://localhost:9090> instead, where
+`contracteer mock ../api/openapi.yaml -p 9090` answers from the contract alone.
 
 ## Build
 
