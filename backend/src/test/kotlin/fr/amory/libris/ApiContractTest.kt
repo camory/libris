@@ -18,13 +18,6 @@ import org.springframework.context.annotation.Import
 import org.springframework.core.Ordered
 import org.springframework.test.context.bean.override.mockito.MockitoBean
 
-private val FIXED_READER = mapOf(
-    "remote-user" to "contracteer",
-    "remote-name" to "Contracteer",
-    "remote-email" to "contracteer@amory.fr",
-    "remote-groups" to "family",
-)
-
 @WebSliceTest
 @Import(ApiContractTest.FixedReaderHeaders::class)
 @MockitoBean(types = [ReaderVisit::class])
@@ -42,7 +35,7 @@ class ApiContractTest @Autowired constructor(
     class FixedReaderHeaders {
         @Bean
         fun fixedReaderFilter(): FilterRegistrationBean<Filter> {
-            val registration = FilterRegistrationBean<Filter>(
+            val registration = FilterRegistrationBean(
                 Filter { request, response, chain ->
                     chain.doFilter(FixedReaderRequest(request as HttpServletRequest), response)
                 },
@@ -50,10 +43,19 @@ class ApiContractTest @Autowired constructor(
             registration.order = Ordered.HIGHEST_PRECEDENCE
             return registration
         }
-    }
 
-    private class FixedReaderRequest(request: HttpServletRequest) : HttpServletRequestWrapper(request) {
-        override fun getHeader(name: String): String? =
-            FIXED_READER[name.lowercase()] ?: super.getHeader(name)
+        private class FixedReaderRequest(request: HttpServletRequest) : HttpServletRequestWrapper(request) {
+            override fun getHeader(name: String): String? =
+                FIXED_READER[name.lowercase()] ?: super.getHeader(name)
+        }
+
+        private companion object {
+            val FIXED_READER = mapOf(
+                "remote-user" to "contracteer",
+                "remote-name" to "Contracteer",
+                "remote-email" to "contracteer@amory.fr",
+                "remote-groups" to "family",
+            )
+        }
     }
 }
