@@ -1,0 +1,46 @@
+name: libris
+
+services:
+  postgres:
+    image: postgres:18-alpine
+    environment:
+      POSTGRES_DB: libris
+      POSTGRES_USER: libris
+      POSTGRES_PASSWORD: ${LIBRIS_DB_PASSWORD:?}
+    volumes:
+      - data:/var/lib/postgresql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U libris -d libris"]
+      interval: 10s
+      timeout: 3s
+      retries: 6
+    restart: unless-stopped
+
+  backend:
+    image: ghcr.io/camory/libris-backend:${LIBRIS_TAG:?}
+    container_name: libris-backend
+    environment:
+      LIBRIS_DB_URL: jdbc:postgresql://postgres:5432/libris
+      LIBRIS_DB_USER: libris
+      LIBRIS_DB_PASSWORD: ${LIBRIS_DB_PASSWORD:?}
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - default
+      - web
+    restart: unless-stopped
+
+  frontend:
+    image: ghcr.io/camory/libris-frontend:${LIBRIS_TAG:?}
+    container_name: libris-frontend
+    networks:
+      - web
+    restart: unless-stopped
+
+volumes:
+  data:
+
+networks:
+  web:
+    external: true

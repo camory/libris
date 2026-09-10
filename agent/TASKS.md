@@ -141,7 +141,7 @@
       view mounted with the real i18n and a fake port provided through its
       key, awaiting `flushPromises`; the application created through
       `createLibrisApp` over fake ports renders the home view (D07).
-- [ ] T008 Production compose and runbook. `deploy/compose.yaml`: PostgreSQL
+- [x] T008 Production compose and runbook. `deploy/compose.yaml`: PostgreSQL
       18, backend and frontend from `ghcr.io/camory/libris-*:${LIBRIS_TAG}`,
       joined to the existing Traefik network, no published ports, no labels,
       named volumes for data and covers, secrets from an uncommitted `.env`

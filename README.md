@@ -37,5 +37,5 @@ agent/             loop driver, sandbox image, task backlog, progress log
 backend/           Spring Boot API            (created by task T001)
 frontend/          Vue PWA                    (created by task T002)
 api/               OpenAPI contract           (created by task T011)
-deploy/            production compose         (created by task T050)
+deploy/            production compose         (created by task T008)
 ```
