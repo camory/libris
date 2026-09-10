@@ -113,7 +113,8 @@
 - [ ] T007 Reader profile, frontend. `MeApi` port in `application/`, fetch
       client with hand-written types in `infra/api` (D04); Vitest global setup
       starts `contracteer mock`; home view greets the reader by display name;
-      401 or unexpected redirect reloads the page (D06); dev proxy adds a dev
+      `createLibrisApp` builds router, i18n and Pinia over the ports and
+      `main.ts` alone reads `import.meta.env` (D05); dev proxy adds a dev
       admin's `Remote-*` headers; `npm run dev:mock` (D05). Tests: client
       against the mock, home view with a fake port, the application created
       through `createLibrisApp` over fake ports (D07).

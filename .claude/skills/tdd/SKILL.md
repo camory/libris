@@ -73,15 +73,17 @@ if the conflict is structural, report `blocked`.
 
 Double Libris code only at its layer seams: a port gets a hand-written
 fake from the `fixture` package, a use case seen from `infra.web` gets a
-stub. On the frontend the seam is the port: a view or a store is tested
-over a fake of the port provided through its injection key, never over a
-mocked module. Never mock a collaborator a module constructs itself, never
-mock the database or the API contract: the database is the real PostgreSQL
-of the sandbox, and the frontend talks to `contracteer mock`. Mock the
-boundaries you do not control: an outside service, time, randomness,
-`location.reload`; on the frontend that is what `vi.mock` and `vi.fn` are
-for, and nothing else. A seam worth doubling is injected, not constructed
-inside the module.
+stub. On the frontend the seam is the port: a composable is called with a
+fake of its port, a view is mounted with the fake provided through its
+injection key, never over a mocked module. Never mock a collaborator a
+module constructs itself, never mock the database or the API contract: the
+database is the real PostgreSQL of the sandbox, and the frontend talks to
+`contracteer mock`. A response the contract does not declare is not a seam:
+the client does not handle it and no spec exercises it. Mock the boundaries
+you do not control: an outside service, time, randomness, a browser API; on
+the frontend that is what `vi.mock`, `vi.fn` and `vi.stubGlobal` are for,
+and nothing else. A seam worth doubling is injected, not constructed inside
+the module.
 
 ## Rules of the loop
 
