@@ -35,6 +35,10 @@ npm test
 It runs the `vue-tsc` type check, ESLint with the architecture boundary rules,
 and the Vitest suite with a V8 coverage report written to `coverage/lcov.info`.
 
+It needs the `contracteer` binary on the PATH: the suite starts a mock of
+`api/openapi.yaml` on port 9099 before the tests and stops it after, and the
+`infra/api` specs run against it.
+
 ## Format
 
 ```

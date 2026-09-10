@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
-    "test": "vue-tsc --noEmit && eslint . && vitest run --coverage",
+    "test": "vue-tsc --build && eslint . && vitest run --coverage",
     "format": "prettier --write --ignore-path ../.gitignore ."
   },
   "dependencies": {
@@ -17,6 +17,7 @@
   },
   "devDependencies": {
     "@tailwindcss/vite": "4.3.3",
+    "@types/node": "22.20.2",
     "@vitejs/plugin-vue": "6.0.8",
     "@vitest/coverage-v8": "5.0.0",
     "@vue/test-utils": "2.5.0",

@@ -511,3 +511,50 @@ Format:
   entry and `createLibrisApp` has no home that the current policies allow
   under `src/ui` (`ui-shell` may import `ui-components` only); T010 places it
   beside `main.ts` in `src/`, whose element may import anything.
+
+
+## 2026-09-10 — T007 Frontend API client for the current reader — done (PR pending)
+- Did: three commits. First the mock infrastructure — `vitest.global-setup.ts`
+  spawning `contracteer mock ../api/openapi.yaml -p 9099`, resolving on the
+  stdout line and killing it in the returned teardown, registered under
+  `test.globalSetup`, added to the `include` of `tsconfig.json` with `"node"` in
+  `types`, and `@types/node` installed. Then the red spec
+  `src/infra/api/FetchMeApi.spec.ts` (one case, `Failed to resolve import
+  "./FetchMeApi"` its only reason to be red, the mock already answering), then
+  green with `domain/Reader.ts`, `application/MeApi.ts` and
+  `infra/api/FetchMeApi.ts` in that order. `npm test`: 3 test files, 3 tests,
+  3.27 s; `npm run build` green in 311 ms.
+- Decided: nothing the brief had not decided. Two mutations, each reverted:
+  calling `/api/v1/mine` reddens the case, and dropping `email` from the mapping
+  reddens it with `expected undefined to deeply equal Any<String>`.
+- Deviations: none.
+- Left over / gotchas:
+  - The shape assertions cannot catch a swapped mapping: `email: body.username`
+    passes, since every property the contract declares is a string and the mock
+    generates the values. Only a missing property or a wrong path reddens the
+    case. An example in the contract is what would close that gap, and the
+    contract is edited with Tophe.
+  - `pgrep -af openapi` matches the tool call's own command line, exactly as
+    `pkill -f contracteer` does: the check that finds nothing left behind is
+    `pgrep -af "openap""i"`. `mock.kill()` in the teardown leaves no process.
+  - The hand-written `CurrentReaderResponse` spells its `role` enum out rather
+    than importing the domain's `Role`, so the wire type mirrors the schema and
+    a contract change surfaces as a mapping error instead of silently
+    redefining the domain.
+  - The Vitest run reports jsdom created three times, 79% of the tracked time,
+    and suggests `pool: 'vmThreads'` or `isolate: false`. Nothing needs it at
+    3 s; it is what to reach for when the suite grows.
+- After review (Tophe): `"node"` in the one `tsconfig.json`'s `types` had put
+  Node's globals into every file under `src/`, so `process.env.HOME` in
+  `src/application` passed `vue-tsc` and ESLint (the boundaries rule catches a
+  `node:` import, not a global). A `/// <reference types="node" />` in the
+  setup file leaks the same way: type packages are program-wide. So two
+  programs: `tsconfig.app.json` (`src/`, `vite/client` types only) and
+  `tsconfig.node.json` (`vite.config.ts`, `vitest.global-setup.ts`,
+  `eslint.config.ts`, `node` types), referenced from `tsconfig.json`, checked
+  by `vue-tsc --build`. The `ProvidedContext` augmentation both sides need
+  lives in `vitest.d.ts`. Measured: the probe now fails with `Cannot find name
+  'process'`; gate and build green. This box runs the frontend gate inside the
+  sandbox image (Node 20 here, jsdom 30 needs 22): `docker run --rm --network
+  none -v "$PWD":/work -w /work/frontend libris-agent:local 'npm test'`.
+

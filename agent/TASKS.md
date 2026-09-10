@@ -110,7 +110,7 @@
       stored reader and keeps the display name Libris owns, two concurrent
       first visits, the filter with a stored reader, contract. The last D02
       ArchUnit rule: `application` depends only on `domain`.
-- [ ] T007 Frontend API client for the current reader. `src/domain`: the reader
+- [x] T007 Frontend API client for the current reader. `src/domain`: the reader
       type, pure TypeScript (`id`, `username`, `displayName`, `email`, and the
       role `READER | ADMIN`); `src/application`: the `MeApi` port, one method
       answering that type; `src/infra/api`: the hand-written type of the
