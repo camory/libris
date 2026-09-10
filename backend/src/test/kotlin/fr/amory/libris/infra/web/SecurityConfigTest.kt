@@ -5,14 +5,11 @@ import fr.amory.libris.domain.Reader
 import org.junit.jupiter.api.Test
 import org.mockito.BDDMockito.given
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.boot.resttestclient.autoconfigure.AutoConfigureRestTestClient
-import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.http.HttpStatus
 import org.springframework.test.context.bean.override.mockito.MockitoBean
 import org.springframework.test.web.servlet.client.RestTestClient
 
-@SpringBootTest(classes = [WebSlice::class], webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@AutoConfigureRestTestClient
+@WebSliceTest
 @MockitoBean(types = [ReaderVisit::class])
 class SecurityConfigTest @Autowired constructor(
     private val client: RestTestClient,

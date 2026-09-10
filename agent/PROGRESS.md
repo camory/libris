@@ -455,14 +455,16 @@ Format:
     to reword D06's "via Spring Security's pre-authenticated header filter".
 
   After review (Tophe + Claude, 2026-09-10), four hand commits on the branch:
-  - Tests are sliced by layer (D07). `WebSlice` is a test-only
+  - Tests are sliced by layer (D07). `@WebSliceTest` composes
+    `@SpringBootTest` on `WebSliceConfiguration`, a test-only
     `@SpringBootConfiguration` scanning `infra.web` with the datasource
-    auto-configuration excluded; it carries `@TestComponent`, which is what
-    keeps the main application's scan from picking it up. `MeControllerTest`,
-    `SecurityConfigTest` and `ApiContractTest` boot it on a random port and
-    stub `ReaderVisit` with a class-level `@MockitoBean(types = …)`,
-    received through the constructor. A `@SpringBootTest` with explicit
-    `classes` does not detect nested `@TestConfiguration` classes: list them.
+    auto-configuration excluded, plus the REST test client; the configuration
+    carries `@TestComponent`, which is what keeps the main application's scan
+    from picking it up. `MeControllerTest`, `SecurityConfigTest` and
+    `ApiContractTest` wear it and stub `ReaderVisit` with a class-level
+    `@MockitoBean(types = …)`, received through the constructor. A
+    `@SpringBootTest` with explicit `classes` does not detect nested
+    `@TestConfiguration` classes: `@Import` them on the test.
   - `JdbcReaderRepositoryTest` is a `@JdbcTest`. In Boot 4 the slice brings
     no Flyway (import `FlywayAutoConfiguration` explicitly), scans no
     repository (`@Import` the adapter), and replaces the datasource with an

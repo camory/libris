@@ -6,8 +6,6 @@ import io.kotest.matchers.shouldBe
 import org.junit.jupiter.api.Test
 import org.mockito.BDDMockito.given
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.boot.resttestclient.autoconfigure.AutoConfigureRestTestClient
-import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.core.ParameterizedTypeReference
 import org.springframework.test.context.bean.override.mockito.MockitoBean
 import org.springframework.test.web.servlet.client.RestTestClient
@@ -26,8 +24,7 @@ private val JULIETTE = Reader(
     displayName = "Juliette",
 )
 
-@SpringBootTest(classes = [WebSlice::class], webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@AutoConfigureRestTestClient
+@WebSliceTest
 @MockitoBean(types = [ReaderVisit::class])
 class MeControllerTest @Autowired constructor(
     private val client: RestTestClient,

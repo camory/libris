@@ -4,17 +4,17 @@ import dev.contracteer.verifier.junit.ContracteerServerPort
 import dev.contracteer.verifier.junit.ContracteerTest
 import fr.amory.libris.application.ReaderVisit
 import fr.amory.libris.domain.Reader
-import fr.amory.libris.infra.web.WebSlice
+import fr.amory.libris.infra.web.WebSliceTest
 import jakarta.servlet.Filter
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletRequestWrapper
 import org.mockito.BDDMockito.given
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.context.TestConfiguration
 import org.springframework.boot.test.web.server.LocalServerPort
 import org.springframework.boot.web.servlet.FilterRegistrationBean
 import org.springframework.context.annotation.Bean
+import org.springframework.context.annotation.Import
 import org.springframework.core.Ordered
 import org.springframework.test.context.bean.override.mockito.MockitoBean
 
@@ -25,10 +25,8 @@ private val FIXED_READER = mapOf(
     "remote-groups" to "family",
 )
 
-@SpringBootTest(
-    classes = [WebSlice::class, ApiContractTest.FixedReaderHeaders::class],
-    webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
-)
+@WebSliceTest
+@Import(ApiContractTest.FixedReaderHeaders::class)
 @MockitoBean(types = [ReaderVisit::class])
 class ApiContractTest @Autowired constructor(
     @field:ContracteerServerPort @param:LocalServerPort val serverPort: Int,
