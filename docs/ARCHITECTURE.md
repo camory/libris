@@ -146,6 +146,8 @@ tests provide fakes. Enforced by `eslint-plugin-boundaries`:
 
 Test files (`*.spec.ts`) are outside the layer rules: nothing imports a spec,
 so a spec may import any layer and any package to set up what it exercises.
+`src/fixture` holds the shared fakes of the ports: it may import `domain` and
+`application`, and only specs import it.
 
 ### D06 — Authentication: delegated to Authelia
 Authentication is delegated to the household's existing Authelia, through
@@ -206,13 +208,21 @@ session, no BCrypt.
   runs in the JDBC slice against the PostgreSQL of D08, each test in a
   transaction rolled back at the end. One test boots the whole application
   and reads its health. Test classes do not run in parallel.
+- The frontend follows the same slicing. `domain` is plain Vitest, no
+  doubles. `application` composables and stores run over fakes of their
+  ports, with a fresh Pinia per test and no DOM. `ui/components` mount with
+  props and assert the rendered text and the emitted events. `ui/views`
+  mount with the real i18n and a fake port provided through its injection
+  key. `infra/api` runs against `contracteer mock`, one spec per operation
+  the client implements, the error responses of the contract included.
 - One test source set and one `test` task. No suffix sorts tests by what
   they need: a test that needs the database gets it from D08 like any other.
   Test classes are named after the Libris code they exercise. Tests live
   beside the code they exercise: on the backend in its package, on the
   frontend as a sibling `.spec.ts`; a test of the whole application
   (contract, architecture, boot) lives in the backend's root package;
-  shared test doubles live in the `fixture` package. A test body
+  shared test doubles live in the `fixture` package on the backend and in
+  `src/fixture` on the frontend. A test body
   is laid out as Given, When, Then, marked by those three comments, unless it
   is a single statement. A test of
   framework or library wiring may be written while learning and is deleted
