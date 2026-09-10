@@ -26,6 +26,7 @@ describe("createLibrisApp", () => {
     expect(host.textContent).toContain("La bibliothèque de la maison");
     expect(host.textContent).toContain("Bonjour Chloé");
     expect(host.textContent).toContain("sha-abc1234");
+
     app.unmount();
   });
 });
