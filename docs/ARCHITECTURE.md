@@ -95,8 +95,8 @@ container would index.
 API.
 - Backend: verified in the test suite by
   `dev.contracteer:contracteer-verifier-junit` (pinned). The contract
-  test's setup method truncates the tables and seeds whatever the document's
-  examples reference, before every case.
+  test runs over the web slice of D07; its setup method stubs the use cases
+  with whatever the document's examples reference, before every case.
 - Frontend: developed and tested against `contracteer mock api/openapi.yaml`
   — the Vite dev proxy, the Vitest global setup and, later, Playwright all
   point at it. **No code generation**: request and response types are written
@@ -150,8 +150,8 @@ so a spec may import any layer and any package to set up what it exercises.
 ### D06 — Authentication: delegated to Authelia
 Authentication is delegated to the household's existing Authelia, through
 Traefik forward auth. The backend trusts the `Remote-User`, `Remote-Groups`,
-`Remote-Name` and `Remote-Email` headers via Spring Security's
-pre-authenticated header filter. No passwords, no login screen, no app
+`Remote-Name` and `Remote-Email` headers via a header filter of its own
+that sets a pre-authenticated token. No passwords, no login screen, no app
 session, no BCrypt.
 - The headers are read in one class, the filter, which maps them to a
   username, an email, a display name and a list of groups; nothing else in
@@ -166,7 +166,8 @@ session, no BCrypt.
   only through Traefik, which overwrites the Remote headers from Authelia's
   answer. The backend trusts the headers in every profile; locally the Vite
   proxy adds them. Integration tests set the headers directly. The
-  `contract-test` profile adds a fixed reader's headers to every request.
+  contract test adds a fixed reader's headers to every request through a
+  test configuration of its own.
 - The domain calls the person a `Reader`: one entity, id, username, email
   and display name, keyed by username. On every request the filter loads the
   reader by username, creating them from the headers on their first visit,
@@ -190,23 +191,28 @@ session, no BCrypt.
 - Backend, `cd backend && ./gradlew check`: compile with warnings as errors;
   detekt with its formatting ruleset; JUnit 5 unit tests with Kotest
   assertions (JUnit 5 is the only test framework, Kotest is used as an
-  assertion library only); integration tests of `infra.persistence` against
+  assertion library only); the JDBC slice of `infra.persistence` against
   the PostgreSQL of D08; the ArchUnit rules of D02; Contracteer verification
-  against the running app under the contract-test profile; a Kover coverage
-  report (XML, JaCoCo format).
+  against the web slice on a real port; one test booting the whole
+  application; a Kover coverage report (XML, JaCoCo format).
 - Frontend, `cd frontend && npm test`: `vue-tsc` type check; ESLint with the
   boundaries rules; Vitest unit tests plus `infra/api` against
   `contracteer mock`, started by the global setup; a V8 coverage report
   (LCOV).
-- One database, shared sequentially: Spring-level tests run in a transaction
-  rolled back at the end; HTTP-level tests (Contracteer) truncate and seed
-  before every case. Test classes do not run in parallel.
+- Each layer is tested in isolation. `application` runs plain JUnit over
+  the fakes of its ports. `infra.web` boots a web slice, the package with
+  its security chain on a real port and no datasource, over stubbed use
+  cases; the Contracteer test runs over that slice. `infra.persistence`
+  runs in the JDBC slice against the PostgreSQL of D08, each test in a
+  transaction rolled back at the end. One test boots the whole application
+  and reads its health. Test classes do not run in parallel.
 - One test source set and one `test` task. No suffix sorts tests by what
   they need: a test that needs the database gets it from D08 like any other.
   Test classes are named after the Libris code they exercise. Tests live
   beside the code they exercise: on the backend in its package, on the
   frontend as a sibling `.spec.ts`; a test of the whole application
-  (contract, architecture) lives in the backend's root package. A test body
+  (contract, architecture, boot) lives in the backend's root package;
+  shared test doubles live in the `fixture` package. A test body
   is laid out as Given, When, Then, marked by those three comments, unless it
   is a single statement. A test of
   framework or library wiring may be written while learning and is deleted
@@ -220,12 +226,16 @@ session, no BCrypt.
 The build creates no infrastructure. It receives, identically in local dev,
 the sandbox and CI:
 - a PostgreSQL of the production major, through `LIBRIS_DB_URL`,
-  `LIBRIS_DB_USER`, `LIBRIS_DB_PASSWORD` (default
-  `jdbc:postgresql://localhost:5432/libris`, user and password `libris`);
+  `LIBRIS_DB_USER`, `LIBRIS_DB_PASSWORD`; on a developer's machine they
+  may come from `backend/.env`, copied from `backend/.env.example`, which
+  Gradle's `test` and `bootRun` read when the environment does not define
+  them;
 - the `contracteer` binary on the PATH;
 - the pinned JDK and Node.
 
 Tests migrate the given database with Flyway and never drop or recreate it.
+Production differs from tests and local dev by these environment variables
+only: there is no profile-specific configuration file.
 No Docker, no Testcontainers (it needs the Docker socket the sandbox
 deliberately lacks), no other service. A test that needs more blocks the task.
 
@@ -342,6 +352,7 @@ Contract
 
 ```
 docker compose -f agent/compose.yaml up -d postgres   # throwaway DB on localhost:5432 (tmpfs: gone when recreated)
+cp backend/.env.example backend/.env                  # once per checkout; the three database variables
 cd backend && ./gradlew bootRun                      # http://localhost:8080 — trusts the Remote-* headers the caller sets
 cd frontend && npm run dev                           # http://localhost:5173 — proxies /api to :8080, adds a dev admin's Remote-* headers
 contracteer mock api/openapi.yaml -p 9090            # the API from the contract alone

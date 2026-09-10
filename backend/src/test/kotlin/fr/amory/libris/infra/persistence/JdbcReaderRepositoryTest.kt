@@ -1,16 +1,15 @@
 package fr.amory.libris.infra.persistence
 
+import fr.amory.libris.domain.DuplicateUsernameException
 import fr.amory.libris.domain.Reader
 import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.matchers.shouldBe
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.boot.test.context.SpringBootTest
-import org.springframework.dao.DuplicateKeyException
-import org.springframework.transaction.annotation.Transactional
+import org.springframework.context.annotation.Import
 
-@SpringBootTest
-@Transactional
+@JdbcSliceTest
+@Import(JdbcReaderRepository::class)
 class JdbcReaderRepositoryTest @Autowired constructor(
     private val readers: JdbcReaderRepository,
 ) {
@@ -37,7 +36,7 @@ class JdbcReaderRepositoryTest @Autowired constructor(
         readers.insert(Reader(username = "juliette", email = "juliette@amory.fr", displayName = "Juliette"))
 
         // When, Then
-        shouldThrow<DuplicateKeyException> {
+        shouldThrow<DuplicateUsernameException> {
             readers.insert(Reader(username = "juliette", email = "juju@amory.fr", displayName = "Juju"))
         }
     }

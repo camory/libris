@@ -1,5 +1,7 @@
 package fr.amory.libris.infra.web
 
+import fr.amory.libris.domain.Reader
+import org.springframework.security.core.Authentication
 import org.springframework.security.core.GrantedAuthority
 import org.springframework.security.core.annotation.AuthenticationPrincipal
 import org.springframework.web.bind.annotation.GetMapping
@@ -11,6 +13,7 @@ enum class Role {
 }
 
 data class CurrentReaderResponse(
+    val id: String,
     val username: String,
     val displayName: String,
     val email: String,
@@ -20,12 +23,13 @@ data class CurrentReaderResponse(
 @RestController
 class MeController {
     @GetMapping("/api/v1/me")
-    fun me(@AuthenticationPrincipal principal: ReaderPrincipal): CurrentReaderResponse =
+    fun me(@AuthenticationPrincipal reader: Reader, authentication: Authentication): CurrentReaderResponse =
         CurrentReaderResponse(
-            username = principal.reader.username,
-            displayName = principal.reader.displayName,
-            email = principal.reader.email,
-            role = roleOf(principal.authorities),
+            id = reader.id.toString(),
+            username = reader.username,
+            displayName = reader.displayName,
+            email = reader.email,
+            role = roleOf(authentication.authorities),
         )
 
     private fun roleOf(authorities: Collection<GrantedAuthority>): Role =

@@ -29,6 +29,22 @@ class ArchitectureTest {
     }
 
     @ArchTest
+    fun `the application depends on the domain only`(libris: JavaClasses) {
+        classes()
+            .that().resideInAPackage("..application..")
+            .should().onlyDependOnClassesThat()
+            .resideInAnyPackage(
+                "java..",
+                "kotlin..",
+                "org.jetbrains.annotations..",
+                "org.springframework.stereotype..",
+                "..domain..",
+                "..application..",
+            )
+            .check(libris)
+    }
+
+    @ArchTest
     fun `the infrastructure packages do not depend on each other`(libris: JavaClasses) {
         slices()
             .matching("fr.amory.libris.infra.(*)..")

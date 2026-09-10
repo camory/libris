@@ -5,7 +5,7 @@ info:
 paths:
   /api/v1/me:
     get:
-      summary: The reader making the request, as Authelia describes them
+      summary: "The reader making the request: their profile and role"
       responses:
         "200":
           description: The reader's identity and role
@@ -18,8 +18,12 @@ components:
     CurrentReader:
       type: object
       additionalProperties: false
-      required: [username, displayName, email, role]
+      required: [id, username, displayName, email, role]
       properties:
+        id:
+          type: string
+          format: uuid
+          nullable: false
         username:
           type: string
           nullable: false

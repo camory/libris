@@ -1,40 +1,40 @@
 package fr.amory.libris.infra.web
 
-import fr.amory.libris.domain.Reader
+import fr.amory.libris.application.ReaderVisit
+import jakarta.servlet.FilterChain
 import jakarta.servlet.http.HttpServletRequest
+import jakarta.servlet.http.HttpServletResponse
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.http.HttpMethod
-import org.springframework.security.authentication.AuthenticationManager
-import org.springframework.security.authentication.ProviderManager
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
 import org.springframework.security.config.http.SessionCreationPolicy
-import org.springframework.security.core.GrantedAuthority
 import org.springframework.security.core.authority.SimpleGrantedAuthority
-import org.springframework.security.core.userdetails.UserDetails
+import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.security.web.SecurityFilterChain
-import org.springframework.security.web.authentication.preauth.AbstractPreAuthenticatedProcessingFilter
-import org.springframework.security.web.authentication.preauth.PreAuthenticatedAuthenticationProvider
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter
+import org.springframework.security.web.authentication.preauth.PreAuthenticatedAuthenticationToken
 import org.springframework.security.web.util.matcher.RequestMatcher
+import org.springframework.web.filter.OncePerRequestFilter
 
 private const val ADMIN_GROUP = "libris-admin"
 
 const val READER_AUTHORITY = "ROLE_READER"
 const val ADMIN_AUTHORITY = "ROLE_ADMIN"
 
-class ReaderPrincipal(
-    val reader: Reader,
-    private val authorities: Collection<GrantedAuthority>,
-) : UserDetails {
-    override fun getAuthorities(): Collection<GrantedAuthority> = authorities
+class RemoteHeaderAuthenticationFilter(private val readerVisit: ReaderVisit) : OncePerRequestFilter() {
+    override fun shouldNotFilterErrorDispatch(): Boolean = false
 
-    override fun getPassword(): String? = null
+    override fun doFilterInternal(
+        request: HttpServletRequest,
+        response: HttpServletResponse,
+        filterChain: FilterChain,
+    ) {
+        authenticationOf(request)?.let { SecurityContextHolder.getContext().authentication = it }
+        filterChain.doFilter(request, response)
+    }
 
-    override fun getUsername(): String = reader.username
-}
-
-class RemoteHeaderAuthenticationFilter : AbstractPreAuthenticatedProcessingFilter() {
-    override fun getPreAuthenticatedPrincipal(request: HttpServletRequest): Any? {
+    private fun authenticationOf(request: HttpServletRequest): PreAuthenticatedAuthenticationToken? {
         val username = request.getHeader("Remote-User")
         val email = request.getHeader("Remote-Email")?.takeUnless { it.isBlank() }
         if (username == null || email == null) return null
@@ -43,41 +43,25 @@ class RemoteHeaderAuthenticationFilter : AbstractPreAuthenticatedProcessingFilte
             add(SimpleGrantedAuthority(READER_AUTHORITY))
             if (ADMIN_GROUP in groups) add(SimpleGrantedAuthority(ADMIN_AUTHORITY))
         }
-        return ReaderPrincipal(
-            Reader(
-                username = username,
-                email = email,
-                displayName = request.getHeader("Remote-Name") ?: username,
-            ),
-            authorities,
-        )
+        val reader = readerVisit.visit(username, email, request.getHeader("Remote-Name") ?: username)
+        return PreAuthenticatedAuthenticationToken(reader, "N/A", authorities)
     }
-
-    override fun getPreAuthenticatedCredentials(request: HttpServletRequest): Any = "N/A"
 }
 
 @Configuration
 class SecurityConfig {
     @Bean
-    fun authenticationManager(): AuthenticationManager {
-        val provider = PreAuthenticatedAuthenticationProvider()
-        provider.setPreAuthenticatedUserDetailsService { token ->
-            token.principal as ReaderPrincipal
-        }
-        return ProviderManager(provider)
-    }
-
-    @Bean
-    fun filterChain(http: HttpSecurity, authenticationManager: AuthenticationManager): SecurityFilterChain {
-        val filter = RemoteHeaderAuthenticationFilter()
-        filter.setAuthenticationManager(authenticationManager)
+    fun filterChain(http: HttpSecurity, readerVisit: ReaderVisit): SecurityFilterChain {
         val unsafeWrite = RequestMatcher {
             it.method != HttpMethod.GET.name() && it.getHeader("X-Requested-With") == null
         }
         return http
             .csrf { it.disable() }
             .sessionManagement { it.sessionCreationPolicy(SessionCreationPolicy.STATELESS) }
-            .addFilterBefore(filter, AbstractPreAuthenticatedProcessingFilter::class.java)
+            .addFilterBefore(
+                RemoteHeaderAuthenticationFilter(readerVisit),
+                UsernamePasswordAuthenticationFilter::class.java,
+            )
             .authorizeHttpRequests {
                 it.requestMatchers("/actuator/**").permitAll()
                 it.requestMatchers(unsafeWrite).denyAll()

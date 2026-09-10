@@ -403,3 +403,82 @@ Format:
     `/actuator/health` with `curl --retry --retry-connrefused` (a plain poll
     loop spins without sleeping and gives up in milliseconds).
 
+
+## 2026-09-09 — T009 Reader on every request — done (PR pending)
+- Did: nine commits. The contract edit first (the summary, quoted for its
+  colon, and `id` first in `required` and in the properties of
+  `CurrentReader`), red on `'id': is required` for
+  `GET /api/v1/me -> 200 (application/json) (generated)`; green by mirroring
+  the principal's id in `CurrentReaderResponse`. Then `application/ReaderVisit`
+  in three cycles against two fakes of `ReaderRepository` — first visit
+  inserts, later visit returns the stored reader, a visit that loses the race
+  returns the winner's row — which brought `domain/DuplicateUsernameException`
+  into existence; then `JdbcReaderRepository` translating Spring's
+  `DuplicateKeyException` into it; then the filter calling the use case, with
+  `MeControllerTest` truncating `reader` before every case and asserting the
+  whole body against the stored row; then the D06 refactor (`ReaderPrincipal`,
+  the provider and the `AuthenticationManager` deleted, the filter an
+  `OncePerRequestFilter` building the `PreAuthenticatedAuthenticationToken`
+  itself, `MeController` taking `@AuthenticationPrincipal reader: Reader`);
+  then the fifth ArchUnit rule. `check`: 25 tests, detekt clean, 1 min 13 s.
+  Verified by command: the gate exits 0; `grep -r ReaderPrincipal backend/src`
+  finds nothing; two mutations, each reverted — replacing the found reader by
+  `it.copy(email = email, displayName = displayName)` reddens both later-visit
+  cases, and making `ReaderVisit` catch `org.springframework.dao.
+  DuplicateKeyException` reddens `the application depends on the domain only`
+  with the violation the brief predicted.
+- Decided: nothing the brief had not decided. Its two measured risks held:
+  `shouldNotFilterErrorDispatch() = false` is what keeps the write carrying
+  `X-Requested-With` at 405 instead of 403, and the seven `SecurityConfigTest`
+  cases stayed untouched through the filter rewrite.
+- Deviations:
+  - The test plan expected the stored id on "the two [cases] that assert the
+    whole map"; all four T005/T006 cases assert the whole map, so all four
+    carry `"id" to readers.findByUsername(…)?.id.toString()`.
+  - Because the contract went green one cycle before storage existed, those
+    four cases asserted `body?.minus("id")` for one commit; the cycle that
+    made the filter store the reader restored the full-map equality.
+- Left over / gotchas:
+  - A mutation dropping `findByUsername` from the head of `ReaderVisit.visit`
+    passes every test: the insert then fails as a duplicate and the fallback
+    finds the same row, so the seam cannot see the difference. Mutating what
+    the case is named after — the display name the stored reader keeps — is
+    what reddens it. Only the extra insert attempt per request argues for the
+    find, and no test can.
+  - `OncePerRequestFilter` with `shouldNotFilterErrorDispatch() = false` runs
+    the visit again on the Servlet ERROR dispatch, so an error response costs
+    one more `select` on `reader` than a normal one.
+  - `PreAuthenticatedAuthenticationProvider` cannot carry a framework-free
+    entity: it replaces the token's principal with what its
+    `AuthenticationUserDetailsService` returns. That is why there is no
+    provider and no `AuthenticationManager` any more; the PR body asks Tophe
+    to reword D06's "via Spring Security's pre-authenticated header filter".
+
+  After review (Tophe + Claude, 2026-09-10), four hand commits on the branch:
+  - Tests are sliced by layer (D07). `@WebSliceTest` composes
+    `@SpringBootTest` on `WebSliceConfiguration`, a test-only
+    `@SpringBootConfiguration` scanning `infra.web` with the datasource
+    auto-configuration excluded, plus the REST test client; the configuration
+    carries `@TestComponent`, which is what keeps the main application's scan
+    from picking it up. `MeControllerTest`, `SecurityConfigTest` and
+    `ApiContractTest` wear it and stub `ReaderVisit` with a class-level
+    `@MockitoBean(types = …)`, received through the constructor. A
+    `@SpringBootTest` with explicit `classes` does not detect nested
+    `@TestConfiguration` classes: `@Import` them on the test.
+  - `JdbcReaderRepositoryTest` wears `@JdbcSliceTest`, which composes
+    `@JdbcTest`. In Boot 4 the slice brings no Flyway (the annotation imports
+    `FlywayAutoConfiguration`), replaces the datasource with an embedded one
+    unless `replace = NONE` (the annotation says so), and scans no
+    repository: the test `@Import`s the adapter.
+  - `LibrisApplicationTest` boots the whole application and reads its
+    health; it is the only test that proves the production wiring.
+  - Test doubles live in `fixture`; the later-visit HTTP case is gone, the
+    rule it checked belongs to `ReaderVisitTest`. 25 tests.
+  - Configuration by environment only (D08): `application.yaml` has
+    placeholders without defaults; a developer copies `backend/.env.example`
+    to `backend/.env`, which Gradle's `test` and `bootRun` read when the
+    environment does not define a variable. Without the variables the boot
+    fails on `'url' must start with "jdbc"`: Boot's binder keeps an
+    unresolvable placeholder as literal text, so the error names Hikari, not
+    the variable. This box has no PostgreSQL: run the gate with
+    `docker compose -f agent/compose.yaml up -d --wait postgres`, then `down`.

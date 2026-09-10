@@ -42,10 +42,10 @@ dependencies {
 
     detektPlugins(libs.detekt.formatting)
 
-    testImplementation(platform(SpringBootPlugin.BOM_COORDINATES))
     testImplementation("org.junit.jupiter:junit-jupiter")
     testImplementation("org.springframework.boot:spring-boot-starter-test")
     testImplementation("org.springframework.boot:spring-boot-resttestclient")
+    testImplementation("org.springframework.boot:spring-boot-jdbc-test")
     testImplementation(libs.kotest.assertions.core)
     testImplementation(libs.contracteer.verifier.junit)
     testImplementation(libs.archunit.junit5)
@@ -67,12 +67,24 @@ tasks.detekt {
 
 tasks.test {
     useJUnitPlatform()
+    environmentFromDotenv()
     testLogging {
         events(TestLogEvent.PASSED, TestLogEvent.SKIPPED, TestLogEvent.FAILED)
         exceptionFormat = TestExceptionFormat.FULL
     }
 }
 
+tasks.bootRun {
+    environmentFromDotenv()
+}
+
 tasks.check {
     dependsOn(tasks.koverXmlReport)
 }
+
+val dotenv: Map<String, String> = file(".env").takeIf { it.isFile }?.readLines().orEmpty()
+    .filter { it.isNotBlank() && !it.startsWith("#") }
+    .associate { it.substringBefore("=").trim() to it.substringAfter("=").trim() }
+
+fun ProcessForkOptions.environmentFromDotenv() =
+    dotenv.forEach { (name, value) -> if (System.getenv(name) == null) environment(name, value) }
