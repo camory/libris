@@ -85,7 +85,7 @@ Priorities: **P1** = needed before the family uses it, **P2** = soon after,
 - Manual ISBN entry does the same lookup.
 
 ### 4.8 PWA behaviour (P1 for install, P2 for offline)
-- Installable on iOS and Android home screens, with icons and a splash screen.
+- Installable on Android home screens, with icons and a splash screen.
 - Works offline for browsing the last synced catalogue (read-only); edits made
   offline are rejected with a clear message in v1 (no sync queue).
 
