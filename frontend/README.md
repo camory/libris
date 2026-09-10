@@ -65,3 +65,8 @@ paths fall back to `/index.html`, `index.html` and the service worker are sent
 `no-cache`, and the hashed assets `immutable`. The footer of every page then
 shows the version the image was built with, `sha-abc1234`; a build without
 `--build-arg` shows `dev`.
+
+The site answers `/session` with a 302 to `/`, and the service worker leaves
+that path to the network instead of serving the app shell from its precache.
+An expired session therefore reaches Authelia: the application navigates to
+`/session`, the reader logs in, and comes back to the home page.

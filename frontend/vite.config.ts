@@ -10,6 +10,9 @@ export default defineConfig(({ mode }) => ({
     VitePWA({
       registerType: "autoUpdate",
       useCredentials: true,
+      workbox: {
+        navigateFallbackDenylist: [/^\/session$/],
+      },
       manifest: {
         name: "Libris",
         short_name: "Libris",
