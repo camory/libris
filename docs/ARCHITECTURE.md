@@ -5,6 +5,7 @@
 > Reviewed decision by decision with Tophe on 2026-09-07.
 > D09 amended on 2026-09-08: image tags, version exposure, hand-managed routing.
 > D09 amended on 2026-09-10: the runbook lives on the server, not in the repository.
+> D06 amended on 2026-09-10: Android only; manifest fetched with credentials; the expired session leaves the app through a network-only path.
 
 ## Overview
 
@@ -197,13 +198,22 @@ session, no BCrypt.
   sends `Accept: application/json` on every request, which is what makes
   Authelia answer 401 rather than redirect. The frontend does not handle
   the 401 yet; the task that adds it gives the API client an
-  `onUnauthenticated` callback that `main.ts` wires to a page reload, so
-  that the OIDC move changes `main.ts` and not the client. Logout is a link
+  `onUnauthenticated` callback that `main.ts` wires to a navigation, so
+  that the OIDC move changes `main.ts` and not the client. A reload is not
+  enough: the service worker answers every navigation from its cache, so
+  the browser never reaches Traefik and Authelia never redirects. The
+  navigation goes to a path the service worker leaves to the network,
+  `/session`, which nginx answers with a redirect to `/`; Authelia
+  intercepts it, logs the reader in and sends them back. Logout is a link
   to Authelia's logout.
 - The contract declares no security scheme: authentication is upstream.
-- Risk to verify on real phones with the first deployed screen: the portal
-  redirect inside an installed PWA (iOS opens other origins in an in-app
-  browser). Fallback if it fails: app-native accounts behind Authelia's rule.
+- Risk to verify on a real phone with the first deployed screen: the portal
+  redirect inside an installed PWA. Android only: nobody in the household
+  has an iPhone. Fallback if it fails: app-native accounts behind Authelia's
+  rule.
+- The manifest link carries `crossorigin="use-credentials"`: a browser
+  fetches a manifest without cookies otherwise, and behind Authelia that
+  request is refused, which makes the app uninstallable.
 
 ### D07 — Tests are the oracle
 "Green" means these two commands pass; each lists exactly what it runs.

@@ -153,12 +153,31 @@
       from a dump (D09). No Docker in the sandbox: verified by Tophe's
       deployment.
 
-Phase 0 is done when Tophe has tagged `v0.1.0`, deployed it, and checked from
-a phone on mobile data: the Authelia login, the home page greeting the reader
-by name, the footer revision matching `git rev-parse v0.1.0`, the PWA installed on iOS and Android, and
-what happens when the installed app is reopened after the Authelia session
-expired (the D06 risk). The result goes in `agent/PROGRESS.md`; if the
-redirect fails in the installed app, the D06 fallback becomes a task.
+- [x] T011 PWA installable behind Authelia. `useCredentials: true` in the
+      `VitePWA` options, so the built `index.html` links the manifest with
+      `crossorigin="use-credentials"` and the browser sends the Authelia
+      cookie when it fetches it. Verified by the built `dist/index.html` and
+      by the install prompt on an Android phone (D06). Hand task.
+- [ ] T012 Expired session in the browser and the installed app. The service
+      worker's navigation route excludes `/session`
+      (`workbox.navigateFallbackDenylist`), `frontend/nginx.conf` answers
+      `/session` with a 302 to `/`, `FetchMeApi` takes an `onUnauthenticated`
+      callback called on a 401 (its spec produces the 401 from a fake `fetch`,
+      the Contracteer mock never serves one), and `main.ts` wires it to
+      `window.location.assign("/session")`. Verified by the specs, the built
+      `sw.js`, and by hand on the Pixel: reopen the site and the installed app
+      after the Authelia session expired, land on the login, come back greeted
+      (D06). If the installed app fails the redirect, the D06 fallback becomes
+      a task.
+
+Phase 0 is done when Tophe has released a version, deployed it, and checked
+from an Android phone on mobile data: the Authelia login, the home page
+greeting the reader by name, the footer revision matching
+`git rev-parse --short <tag>`, the PWA installed, and the reopen after the
+Authelia session expired (T012). The result goes in `agent/PROGRESS.md`.
+Checked with `v0.1.0` on 2026-09-10: login, greeting and revision pass; the
+install prompt is missing (T011); the greeting vanishes on an expired
+session (T012).
 
 ## Proposed (added by agent runs; a human promotes them into a phase)
 
@@ -215,9 +234,10 @@ redirect fails in the installed app, the D06 fallback becomes a task.
   unconditional on push to `main`, since `release.yml` re-tags `sha-<short>`
   of the tagged commit. `ci.yml` is edited by humans only (Tophe,
   2026-09-09).
-- Frontend: handle the 401 of D06. Authelia answers it on an expired
-  session and the contract does not declare it, so the Contracteer mock
-  never serves it. The task decides with Tophe how its spec produces the
-  401, Authelia being a boundary Libris does not control; then the API
-  client gets an `onUnauthenticated` callback and `main.ts` wires it to a
-  page reload (Tophe, 2026-09-10, while amending the frontend rules).
+- Frontend: reload on a new service worker. `registerSW.js` only registers;
+  with `registerType: "autoUpdate"` the new worker takes over on the first
+  load after a release but the page shown came from the old precache, so
+  the footer shows the previous revision until a second load. Register
+  through `virtual:pwa-register` and reload when the new worker takes
+  control, or show a "new version" notice (seen by Tophe on 2026-09-10 with
+  the first release).

@@ -636,3 +636,29 @@ Format:
   - Phase 0 exit still to do by Tophe: tag `v0.1.0`, deploy that tag, then
     the phone checklist in `agent/TASKS.md` (greeting, footer revision, PWA
     installed on iOS and Android, reopen after the Authelia session expired).
+
+## 2026-09-10 — v0.1.0 released and checked on the Pixel — Phase 0 exit partly
+- Did: release `v0.1.0` on 87c2d4d (tag pushed, then `gh release create`
+  with generated notes: `--target <sha>` is refused by GitHub, tag first).
+  Release workflow green, both images answer to `v0.1.0` anonymously.
+  Deployed by Tophe; checked from the Pixel in Brave: the Authelia login,
+  the greeting by name and the footer revision `sha-87c2d4d` pass.
+- Found:
+  - No install prompt, on the Pixel and on the Mac. The built `index.html`
+    links the manifest without `crossorigin="use-credentials"`, so the
+    browser fetches it without the Authelia cookie and gets the login
+    redirect instead of JSON. Became T011.
+  - The greeting vanishes once the Authelia session has expired, in the
+    browser already: the service worker's navigation route serves
+    `index.html` from the precache for every navigation, so the page never
+    reaches Traefik, Authelia never redirects, and `/api/v1/me` answers 401.
+    The Proposed plan (a page reload on 401) would loop into the same cache;
+    D06 amended: the 401 handler navigates to `/session`, a path the worker
+    leaves to the network and nginx redirects to `/`. Became T012.
+  - The footer showed the previous revision on the first load after the
+    release: `registerSW.js` only registers, the page shown came from the
+    old precache; the second load shows the new one. Proposed item.
+- Decided (Tophe): Android only, nobody in the household has an iPhone; the
+  PRD line and the D06 risk say so now.
+- Left over: T011 and T012, then the reopen check on the Pixel in the
+  installed app closes Phase 0.
