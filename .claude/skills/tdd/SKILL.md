@@ -78,8 +78,8 @@ fake of its port, a view is mounted with the fake provided through its
 injection key, never over a mocked module. Never mock a collaborator a
 module constructs itself, never mock the database or the API contract: the
 database is the real PostgreSQL of the sandbox, and the frontend talks to
-`contracteer mock`. A response the contract does not declare is not a seam:
-the client does not handle it and no spec exercises it. Mock the boundaries
+`contracteer mock`. A response the mock cannot serve is not a seam: the
+client does not handle it and no spec exercises it. Mock the boundaries
 you do not control: an outside service, time, randomness, a browser API; on
 the frontend that is what `vi.mock`, `vi.fn` and `vi.stubGlobal` are for,
 and nothing else. A seam worth doubling is injected, not constructed inside

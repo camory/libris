@@ -191,11 +191,15 @@ session, no BCrypt.
 - `GET /api/v1/me` returns the current reader and their role.
 - CSRF: Authelia's cookie is SameSite, and the backend refuses any non-GET
   request lacking the `X-Requested-With` header.
-- A 401 or an unexpected redirect on an API call means an expired session.
-  The contract declares neither, so the frontend handles neither: the
-  backend is reachable through Traefik and Authelia only. The day the
-  contract declares such a response, the frontend reloads the page on it.
-  Logout is a link to Authelia's logout.
+- A 401 on an API call means an expired session. Authelia answers it, so
+  the contract declares it on every operation without a body, and the
+  frontend sends `Accept: application/json` on every request, which is what
+  makes Authelia answer 401 rather than redirect. The frontend does not
+  handle the 401 until the Contracteer mock can serve a bodiless response
+  on request; the task that adds it gives the API client an
+  `onUnauthenticated` callback that `main.ts` wires to a page reload, so
+  that the OIDC move changes `main.ts` and not the client. Logout is a link
+  to Authelia's logout.
 - The contract declares no security scheme: authentication is upstream.
 - Risk to verify on real phones with the first deployed screen: the portal
   redirect inside an installed PWA (iOS opens other origins in an in-app
@@ -230,10 +234,11 @@ session, no BCrypt.
   key, and await `flushPromises` before asserting what the port answered. A
   view or component test asserts on what the reader sees, text and roles,
   never on tags or classes. `infra/api` runs against `contracteer mock`, one
-  spec per operation the client implements, every response the contract
-  declares and none it does not: a response absent from the contract is not
-  handled, so not tested. One test creates the application through
-  `createLibrisApp` over fake ports and checks the home view renders.
+  spec per operation the client implements, every response the mock serves
+  and none it does not: a declared response the mock cannot serve, the 401
+  of D06, is not handled, so not tested. One test creates the application
+  through `createLibrisApp` over fake ports and checks the home view
+  renders.
 - One test source set and one `test` task. No suffix sorts tests by what
   they need: a test that needs the database gets it from D08 like any other.
   Test classes are named after the Libris code they exercise. Tests live

@@ -13,6 +13,8 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/CurrentReader"
+        "401":
+          description: No valid session; answered by the authentication layer, without a defined body
 components:
   schemas:
     CurrentReader:

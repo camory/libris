@@ -112,7 +112,8 @@
       ArchUnit rule: `application` depends only on `domain`.
 - [ ] T007 Reader profile, frontend. `MeApi` port in `application/`, fetch
       client with hand-written types in `infra/api` (D04); Vitest global setup
-      starts `contracteer mock`; home view greets the reader by display name;
+      starts `contracteer mock`; the client sends `Accept: application/json`
+      (D06); home view greets the reader by display name;
       `createLibrisApp` builds router, i18n and Pinia over the ports and
       `main.ts` alone reads `import.meta.env` (D05); dev proxy adds a dev
       admin's `Remote-*` headers; `npm run dev:mock` (D05). Tests: client
@@ -192,3 +193,10 @@ redirect fails in the installed app, the D06 fallback becomes a task.
   unconditional on push to `main`, since `release.yml` re-tags `sha-<short>`
   of the tagged commit. `ci.yml` is edited by humans only (Tophe,
   2026-09-09).
+- Frontend: handle the 401 of D06. The contract declares it without a body
+  and the Contracteer mock answers from the schema when no scenario matches,
+  so it cannot serve a bodiless response on a parameterless `GET`. Needs a
+  way in Contracteer for a client test to select a declared response; then
+  the API client gets an `onUnauthenticated` callback, `main.ts` wires it
+  to a page reload, and the spec runs against the mock (Tophe, 2026-09-10,
+  while amending the frontend rules).
