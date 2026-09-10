@@ -602,3 +602,41 @@ Format:
   - `createLibrisApp.spec.ts` is the only test of the revision wire, since
     `main.ts` stays untested by design (composition root, four statements).
   - The suite still reports jsdom created four times, 80% of the tracked time.
+
+## 2026-09-10 — T008 Production compose and runbook — done by hand (PR pending)
+- Did: written by Tophe with Claude in an interactive session, not by the
+  loop: nothing in `deploy/` can be verified in the sandbox (no Docker) or by
+  CI, and Tophe writes compose and Traefik configuration himself, so two
+  agent runs would have drafted YAML for him to correct against Gordien.
+  `deploy/compose.yaml`: `postgres:18-alpine` with the `data` volume on
+  `/var/lib/postgresql` and a `pg_isready` healthcheck, on the private
+  network only; `backend` on both networks, waiting for a healthy database;
+  `frontend` on the external `web` network only; `LIBRIS_TAG` and
+  `LIBRIS_DB_PASSWORD` required (`${VAR:?}`); `deploy/.env.example`.
+  `deploy/README.md`: the Traefik routers and services, the four
+  `authResponseHeaders`, the Authelia rule and group, the two backup-job
+  lines, first deploy, upgrade with a dump first, rollback, restore, failure
+  signs. Tophe deployed it on Gordien the same afternoon and reached the home
+  page from his phone's browser.
+- Decided: fixed `container_name`s `libris-backend` and `libris-frontend`, the
+  names the hand-written Traefik services resolve on the shared `web`
+  network. No covers volume until a task stores a cover: the backend reads no
+  path for it yet, a volume mounted nowhere would be a placeholder.
+- Deviations: the task line and D09 name a covers volume; deferred as above.
+- Measured, for a future run:
+  - The ghcr images are public: an anonymous token from
+    `https://ghcr.io/token?scope=repository:camory/libris-backend:pull`
+    fetches the `sha-<short sha>` manifest, so the box needs no registry login.
+  - `docker compose -f deploy/compose.yaml config` without `.env` fails with
+    "required variable LIBRIS_TAG is missing a value"; with `.env.example`
+    copied it resolves both images, the external `web` network and
+    `libris_data`.
+  - From outside, `https://libris.amory.fr/` answers 302 to
+    `https://auth.amory.fr/?rd=…` and `/api/v1/me` with `Accept:
+    application/json` answers 401: Authelia's two answers, before Libris.
+- Left over / gotchas:
+  - Phase 0 exit still to do by Tophe: tag `v0.1.0`, deploy that tag, then
+    the phone checklist in `agent/TASKS.md` (greeting, footer revision, PWA
+    installed on iOS and Android, reopen after the Authelia session expired).
+  - `deploy/README.md` shows three placeholders for names that live on
+    Gordien: `<authelia-middleware>`, `<resolver>`, `<policy>`.
