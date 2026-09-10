@@ -4,6 +4,7 @@
 > Each decision has an ID so tasks and PRs can reference it.
 > Reviewed decision by decision with Tophe on 2026-09-07.
 > D09 amended on 2026-09-08: image tags, version exposure, hand-managed routing.
+> D09 amended on 2026-09-10: the runbook lives on the server, not in the repository.
 
 ## Overview
 
@@ -296,15 +297,17 @@ deliberately lacks), no other service. A test that needs more blocks the task.
   covers. Traefik routing (`libris.amory.fr` to the frontend, `/api` to the
   backend, the Authelia forward-auth middleware on both routers) and the
   Authelia access rule are declared by hand in the server's Traefik dynamic
-  configuration files and Authelia configuration, outside this repository;
-  `deploy/README.md` states what they must contain. Spring Actuator's
+  configuration files and Authelia configuration, outside this repository.
+  The runbook (what those files contain, first deploy, upgrade, rollback,
+  backup registration, restore) lives on the server beside the compose file,
+  never in this public repository. Spring Actuator's
   endpoints sit outside `/api`, are never routed by Traefik, and serve the
   container healthcheck.
 - Deploy is manual: set `LIBRIS_TAG`, then `docker compose pull && docker
   compose up -d` on the Kimsufi box. Rollback is the previous tag.
 - Backups are not the app's job: the server's Gordien (hourly `pg_dump` +
   restic) covers the database and the covers volume. Deployment registers
-  Libris there; `deploy/README.md` documents the restore.
+  Libris there; the server's runbook documents the restore.
 
 ### D10 — Conventions
 - Kotlin: official style, immutable by default, sealed types for states,
