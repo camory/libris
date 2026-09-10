@@ -701,3 +701,34 @@ Format:
   - `HomeView` keeps its `.then()` and no `catch`: the rejection is visible
     in devtools while the browser is already leaving the page. An error UI is
     a product decision the PRD does not make.
+
+## 2026-09-10 — Phase 0 closed with v0.1.3 on the Pixel
+- Did: `v0.1.1` (T011, manifest fetched with credentials), `v0.1.2` (T012,
+  expired session leaves the app through `/session`) and `v0.1.3` (relative
+  redirect for `/session`) released the same evening, each tagged on the
+  merge commit after the CI run on `main`, then `gh release create` with
+  generated notes. Tophe deployed each one and checked from the Pixel in
+  Brave and from the Mac.
+- Checked:
+  - `v0.1.1`: Libris installs from Brave on the Mac (address-bar icon) and
+    on the Pixel (three-dot menu, no icon on Android). T011 confirmed.
+  - `v0.1.2`: the expired session reaches the Authelia login, then the
+    return lands on "the page cannot be displayed": nginx built the
+    `/session` redirect as `http://libris.amory.fr:8080/`, scheme and port
+    of the container. Seen first by the Claude Code session that deploys
+    Libris on the server, reproduced here with the frontend's nginx image and
+    the production `Host` header.
+  - `v0.1.3` (`absolute_redirect off`, `Location: /`): the reopen after an
+    expired session, in Brave and in the installed app, goes through the
+    login and comes back to the home page greeted by name. T012 confirmed;
+    the D06 risk did not materialise on Android, the fallback stays unused.
+- Measured, for a future run:
+  - A release is `git tag vX.Y.Z <merge sha> && git push origin vX.Y.Z`,
+    then `gh release create vX.Y.Z --title vX.Y.Z --generate-notes`;
+    `gh release create --target <sha>` is refused by GitHub. The release
+    workflow needs the `sha-` images, so tag only after the CI run on
+    `main` has finished.
+  - After a release the first load shows the previous revision, the second
+    the new one (Proposed item on the service worker registration).
+- Left over: no unchecked task in a phase. Next run is the planner in
+  backlog mode for Phase 1.

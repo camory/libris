@@ -177,7 +177,10 @@ greeting the reader by name, the footer revision matching
 Authelia session expired (T012). The result goes in `agent/PROGRESS.md`.
 Checked with `v0.1.0` on 2026-09-10: login, greeting and revision pass; the
 install prompt is missing (T011); the greeting vanishes on an expired
-session (T012).
+session (T012). Checked with `v0.1.3` on 2026-09-10: installed from Brave on
+the Pixel and on the Mac; the reopen after an expired session, in Brave and
+in the installed app, goes through the login and comes back greeted.
+**Phase 0 is done.**
 
 ## Proposed (added by agent runs; a human promotes them into a phase)
 
