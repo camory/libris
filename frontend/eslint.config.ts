@@ -22,6 +22,7 @@ export default tseslint.config(
         { type: "ui-components", pattern: "src/ui/components" },
         { type: "ui-views", pattern: "src/ui/views/*", capture: ["view"] },
         { type: "ui-shell", pattern: "src/ui" },
+        { type: "fixture", pattern: "src/fixture" },
         { type: "main", pattern: "src" },
       ],
       "boundaries/files": [
@@ -46,6 +47,10 @@ export default tseslint.config(
             },
             {
               from: { element: { type: "infra" } },
+              allow: { to: { element: { types: ["domain", "application"] } } },
+            },
+            {
+              from: { element: { type: "fixture" } },
               allow: { to: { element: { types: ["domain", "application"] } } },
             },
             {
