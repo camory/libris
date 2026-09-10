@@ -465,10 +465,11 @@ Format:
     `@MockitoBean(types = …)`, received through the constructor. A
     `@SpringBootTest` with explicit `classes` does not detect nested
     `@TestConfiguration` classes: `@Import` them on the test.
-  - `JdbcReaderRepositoryTest` is a `@JdbcTest`. In Boot 4 the slice brings
-    no Flyway (import `FlywayAutoConfiguration` explicitly), scans no
-    repository (`@Import` the adapter), and replaces the datasource with an
-    embedded one unless `@AutoConfigureTestDatabase(replace = NONE)`.
+  - `JdbcReaderRepositoryTest` wears `@JdbcSliceTest`, which composes
+    `@JdbcTest`. In Boot 4 the slice brings no Flyway (the annotation imports
+    `FlywayAutoConfiguration`), replaces the datasource with an embedded one
+    unless `replace = NONE` (the annotation says so), and scans no
+    repository: the test `@Import`s the adapter.
   - `LibrisApplicationTest` boots the whole application and reads its
     health; it is the only test that proves the production wiring.
   - Test doubles live in `fixture`; the later-visit HTTP case is gone, the
