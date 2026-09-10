@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
-    "test": "vue-tsc --noEmit && eslint . && vitest run --coverage",
+    "test": "vue-tsc --build && eslint . && vitest run --coverage",
     "format": "prettier --write --ignore-path ../.gitignore ."
   },
   "dependencies": {

@@ -1,12 +1,6 @@
 import { spawn } from "node:child_process";
 import type { TestProject } from "vitest/node";
 
-declare module "vitest" {
-  interface ProvidedContext {
-    mockBaseUrl: string;
-  }
-}
-
 const port = 9099;
 
 export default async function setup(project: TestProject) {

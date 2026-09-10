@@ -544,4 +544,17 @@ Format:
   - The Vitest run reports jsdom created three times, 79% of the tracked time,
     and suggests `pool: 'vmThreads'` or `isolate: false`. Nothing needs it at
     3 s; it is what to reach for when the suite grows.
+- After review (Tophe): `"node"` in the one `tsconfig.json`'s `types` had put
+  Node's globals into every file under `src/`, so `process.env.HOME` in
+  `src/application` passed `vue-tsc` and ESLint (the boundaries rule catches a
+  `node:` import, not a global). A `/// <reference types="node" />` in the
+  setup file leaks the same way: type packages are program-wide. So two
+  programs: `tsconfig.app.json` (`src/`, `vite/client` types only) and
+  `tsconfig.node.json` (`vite.config.ts`, `vitest.global-setup.ts`,
+  `eslint.config.ts`, `node` types), referenced from `tsconfig.json`, checked
+  by `vue-tsc --build`. The `ProvidedContext` augmentation both sides need
+  lives in `vitest.d.ts`. Measured: the probe now fails with `Cannot find name
+  'process'`; gate and build green. This box runs the frontend gate inside the
+  sandbox image (Node 20 here, jsdom 30 needs 22): `docker run --rm --network
+  none -v "$PWD":/work -w /work/frontend libris-agent:local 'npm test'`.
 
