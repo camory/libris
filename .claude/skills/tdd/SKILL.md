@@ -71,11 +71,13 @@ if the conflict is structural, report `blocked`.
 
 ## Mocking
 
-Mock only at boundaries you do not control: an outside service, time,
-randomness. Never mock Libris code, the database or the API contract: the
-database is the real PostgreSQL of the sandbox, and the frontend talks to
-`contracteer mock`. A boundary worth mocking is injected, not constructed
-inside the module.
+Double Libris code only at its layer seams: a port gets a hand-written
+fake from the `fixture` package, a use case seen from `infra.web` gets a
+stub. Never mock a collaborator a module constructs itself, never mock the
+database or the API contract: the database is the real PostgreSQL of the
+sandbox, and the frontend talks to `contracteer mock`. Mock the boundaries
+you do not control: an outside service, time, randomness. A seam worth
+doubling is injected, not constructed inside the module.
 
 ## Rules of the loop
 
