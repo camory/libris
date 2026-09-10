@@ -46,6 +46,7 @@ dependencies {
     testImplementation("org.junit.jupiter:junit-jupiter")
     testImplementation("org.springframework.boot:spring-boot-starter-test")
     testImplementation("org.springframework.boot:spring-boot-resttestclient")
+    testImplementation("org.springframework.boot:spring-boot-jdbc-test")
     testImplementation(libs.kotest.assertions.core)
     testImplementation(libs.contracteer.verifier.junit)
     testImplementation(libs.archunit.junit5)
