@@ -3,7 +3,7 @@ import { describe, expect, it } from "vitest";
 import { meApiKey } from "../../../application/MeApi";
 import type { Reader } from "../../../domain/Reader";
 import { FakeMeApi } from "../../../fixture/FakeMeApi";
-import { i18n } from "../../i18n";
+import { createLibrisI18n } from "../../i18n";
 import HomeView from "./HomeView.vue";
 
 const chloe: Reader = {
@@ -17,7 +17,7 @@ const chloe: Reader = {
 const mountHomeView = (reader: Reader) =>
   mount(HomeView, {
     global: {
-      plugins: [i18n],
+      plugins: [createLibrisI18n()],
       provide: { [meApiKey]: new FakeMeApi(reader) },
     },
   });

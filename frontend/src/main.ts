@@ -1,8 +1,8 @@
-import { createPinia } from "pinia";
-import { createApp } from "vue";
-import App from "./ui/App.vue";
-import { i18n } from "./ui/i18n";
-import { router } from "./ui/router";
+import { createLibrisApp } from "./createLibrisApp";
+import { FetchMeApi } from "./infra/api/FetchMeApi";
 import "./ui/style.css";
 
-createApp(App).use(createPinia()).use(router).use(i18n).mount("#app");
+createLibrisApp(
+  { meApi: new FetchMeApi(window.location.origin) },
+  import.meta.env.VITE_APP_VERSION ?? "dev",
+).mount("#app");

@@ -7,8 +7,10 @@ const fr = {
   },
 };
 
-export const i18n = createI18n({
-  legacy: false,
-  locale: "fr",
-  messages: { fr },
-});
+export function createLibrisI18n() {
+  return createI18n({
+    legacy: false,
+    locale: "fr",
+    messages: { fr },
+  });
+}
