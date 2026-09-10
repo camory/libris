@@ -8,9 +8,10 @@
 > *Precondition (human)* on its line; Tophe does it between runs, and the
 > planner reports `blocked` while it is missing.
 >
-> Phase 0 reviewed by Tophe on 2026-09-08. The phases after it will be
-> derived from feature specifications, one feature at a time, once Phase 0
-> is deployed; the first draft of those phases was dropped in PR #6.
+> Phase 0 reviewed by Tophe on 2026-09-08 and closed on 2026-09-10 with
+> `v0.1.3` on the Pixel. Phase 1 drafted on 2026-09-10 from PRD §4.1 and
+> §4.2; the phases after it come one feature at a time, once this one is
+> deployed.
 
 ## Phase 0 — Foundations, ending with `/api/v1/me` deployed
 
@@ -181,6 +182,213 @@ session (T012). Checked with `v0.1.3` on 2026-09-10: installed from Brave on
 the Pixel and on the Mac; the reopen after an expired session, in Brave and
 in the installed app, goes through the login and comes back greeted.
 **Phase 0 is done.**
+
+## Phase 1 — The catalogue: enter it, browse it, find it again
+
+> Serves PRD §4.1 and §4.2. Every backend task changes `api/openapi.yaml`, so
+> every one of them opens on a *Precondition (human)*: Tophe writes the
+> operation and its schemas with Claude in an interactive session (D04), the
+> line below saying what it must carry. Copies, loans, reading states,
+> wishlist, series gaps and the reader profiles Authelia does not own
+> (PRD §4.3, §4.4, §4.5, §4.6, §4.10) are Phase 2, planned once this phase is
+> deployed.
+
+- [ ] T020 Backend: create and list items. Precondition (human):
+      `POST /api/v1/items` and `GET /api/v1/items` in `api/openapi.yaml`,
+      carrying an `Item` (id, type `BOOK|MANGA|BD`, title, and the nullable
+      subtitle, isbn13, publisher, publicationYear, language, pageCount,
+      summary), a `NewItem` without the id, a page (`content`, `page`, `size`,
+      `totalElements`, `sort=title`) and `/problems/validation` with
+      `errors: [{field, message}]` (D04, D11). `V002__item.sql` creates those
+      columns with `type` under a text CHECK. `domain.Item` defaults its id to
+      a version 7 uuid, refuses a blank title and keeps an ISBN as thirteen
+      digits or refuses it; `application` gains the add and the list use case;
+      `JdbcItemRepository` holds the insert, the page query and the count;
+      `ItemController` maps the refusals to the validation problem.
+      Tests: the use cases over a fake port, the JDBC slice against the D08
+      database, the web slice on both operations and on a 400, contract
+      (PRD §4.1, D02, D03, D11).
+
+- [ ] T021 Frontend: the catalogue list. `domain/Item.ts`, the `ItemsApi` port
+      with `list()`, `infra/api/FetchItemsApi.ts` with the hand-written page
+      and item types, and its fake in `src/fixture` (D05, D07).
+      `ui/views/catalogue/CatalogueView.vue` on the route `/items`, injecting
+      the port, listing each item's title and type in French, with an empty
+      state and a link to it from the home view.
+      Tests: the client against `contracteer mock`, the one operation the
+      contract declares and every response it declares; the view mounted with
+      the real i18n and the fake port, awaiting `flushPromises` — the titles
+      the port answered, and the empty state when it answers none
+      (PRD §4.1, D04, D05, D07).
+
+- [ ] T022 Frontend: add an item. `ItemsApi.add`, implemented by
+      `FetchItemsApi` with `X-Requested-With` and `Accept: application/json`,
+      turning a `/problems/validation` body into errors by field (D06, D11).
+      `ui/views/item-new/NewItemView.vue` on `/items/new`, one French-labelled
+      control per property of `NewItem`, reached from the catalogue; a
+      successful save routes to `/items`.
+      Tests: the client against the mock on the 201 and the 400; the view over
+      the fake port — a save calls the port with what was typed and routes, a
+      validation problem shows its message beside the named field
+      (PRD §4.1, D05, D07).
+
+- [ ] T023 Backend: read, edit and delete an item. Precondition (human):
+      `GET`, `PUT` and `DELETE /api/v1/items/{id}` in `api/openapi.yaml`, the
+      `PUT` taking a `NewItem` and answering the `Item`, the `DELETE`
+      answering `204`, both plus `GET` answering `/problems/not-found` (D04).
+      `ItemRepository` and `JdbcItemRepository` gain `findById`, `update` and
+      `delete`, one SQL statement each (D11); one use case each, the update
+      keeping the id and refusing what the add refuses.
+      Tests: the JDBC slice — an update reads back changed, a delete leaves
+      nothing, an unknown id finds none; the use cases over the fake port; the
+      web slice on the 404; contract (PRD §4.1, D02, D11).
+
+- [ ] T024 Frontend: the item page. `ItemsApi.byId`, the route `/items/:id`
+      and `ui/views/item/ItemView.vue` showing every property the item carries
+      under a French label, hiding the ones it does not; each row of the
+      catalogue links to it; an unknown id shows a not-found message rather
+      than an empty page.
+      Tests: the client against the mock on the 200 and the 404; the view over
+      the fake port on an item with every property, on one with only the
+      required ones, and on the not-found answer (PRD §4.1, D05, D07).
+
+- [ ] T025 Frontend: edit and delete an item. `ItemsApi.update` and
+      `ItemsApi.remove` on the client; the T022 form extracted into a
+      component that takes initial values, mounted by
+      `ui/views/item-edit/EditItemView.vue` on `/items/:id/edit`; the item
+      page offers the edit link and a delete that asks for confirmation and
+      then routes to `/items`.
+      Tests: the client against the mock on the `PUT` and the `DELETE`; the
+      form component rendering its initial values and emitting what was
+      changed; the item view — a confirmed delete calls the port and routes,
+      a cancelled one does neither (PRD §4.1, D05, D07).
+
+- [ ] T026 Backend: series and volume number. Precondition (human): `Item`
+      gains `series` (nullable object of id and name) and `volumeNumber`
+      (nullable integer, minimum 1); `NewItem` gains `seriesName` (nullable)
+      and `volumeNumber` (D04). `V003__series.sql`: `series(id, name unique
+      not null)`, `item.series_id` a nullable foreign key, `item.volume_number`
+      a nullable integer (D11). The add and update use cases find the series
+      by name or insert it, and a blank name leaves the item without one.
+      Tests: the use case — an existing name is reused, a new one is inserted,
+      a blank one clears the series; the JDBC slice on the join; the web
+      slice; contract (PRD §3, §4.1, D03, D11).
+
+- [ ] T027 Frontend: series and volume on the item. The hand-written types and
+      the form gain the series name and the volume number; the catalogue row
+      and the item page show them in French next to the title.
+      Tests: the client against the mock on an item with a series and one
+      without; the form component round-tripping both fields; the catalogue
+      and item views showing the series and volume the port answered, and
+      neither when it answers null (PRD §4.1, D05, D07).
+
+- [ ] T028 Backend: authors by role. Precondition (human): `Item` gains
+      `authors`, a required array (possibly empty) of `{id, name, role}` with
+      `role` in `WRITER|ARTIST|COLOURIST|TRANSLATOR`; `NewItem` gains the same
+      array without the ids (D04). `V004__author.sql`: `author(id, name unique
+      not null)` and `item_author(item_id, author_id, role)` with the role on
+      the join table and a cascade from the item (D11). The use cases find an
+      author by name or insert them; saving an item replaces its whole author
+      list; the repository reads them back ordered by role then name.
+      Tests: the use case on a reused and on a new author and on a replaced
+      list; the JDBC slice on the join and on the cascade; the web slice;
+      contract (PRD §3, §4.1, D02, D11).
+
+- [ ] T029 Frontend: authors on the item. The form gains a list of author rows
+      — a name and a role chosen from the four, added and removed one at a
+      time; the item page groups the authors under their French role name; the
+      catalogue row shows the first author.
+      Tests: the client against the mock on an item with several authors and
+      one with none; the form component adding, filling and removing a row;
+      the item and catalogue views on what the port answered
+      (PRD §4.1, D05, D07).
+
+- [ ] T030 Backend: free tags. Precondition (human): `Item` and `NewItem` gain
+      `tags`, a required array (possibly empty) of non-blank strings (D04).
+      `V005__tag.sql`: `tag(id, name unique not null)` and
+      `item_tag(item_id, tag_id)` cascading from the item (D11). The use cases
+      trim each tag, drop the blanks, treat two tags differing only by case as
+      one, and replace the item's whole tag list on every save.
+      Tests: the use case on a reused tag, a new one, a duplicate differing by
+      case and a blank; the JDBC slice on the join and the cascade; the web
+      slice; contract (PRD §4.1, D11).
+
+- [ ] T031 Frontend: tags on the item. The form gains a tag input that adds a
+      tag on Enter and removes one by its own control; the item page lists the
+      tags; the catalogue row does not.
+      Tests: the client against the mock on a tagged item and an untagged one;
+      the form component adding and removing tags and emitting the list; the
+      item view on the tags the port answered (PRD §4.1, D05, D07).
+
+- [ ] T032 Backend: search. Precondition (human): `GET /api/v1/items` gains
+      the nullable query parameter `q`; with it the page is ordered by
+      relevance instead of by title (D04). `V006__search.sql` creates the
+      `unaccent` and `pg_trgm` extensions and the two text search
+      configurations of D03, adds `item.search_text` and the generated,
+      GIN-indexed `item.search_vector`, the trigram index, and backfills the
+      rows already there. The use cases write `search_text` on every save from
+      the title, subtitle, series name, author names and tag names; the
+      repository's ranked query answers it (D03).
+      Tests: the JDBC slice — `asterix` finds *Astérix*, an author name and a
+      tag find their item, a one-word typo finds it, the title match outranks
+      the tag match, an ISBN finds its item; the web slice; contract
+      (PRD §4.2, §5, D03).
+
+- [ ] T033 Frontend: the search box. The catalogue view gains a single search
+      field, French-labelled, that calls `list({ q })` as the reader types
+      (debounced), keeps `q` in the query string so the page can be reloaded
+      or shared, shows how many items matched and an empty state naming what
+      was searched.
+      Tests: the client against the mock with and without `q`; the view over
+      the fake port — typing calls the port once with the text, the results
+      replace the list, no match shows the empty state, and a `q` already in
+      the route is searched on mount (PRD §4.2, D05, D07).
+
+- [ ] T034 Backend: filter and sort the catalogue. Precondition (human):
+      `GET /api/v1/items` gains the repeatable filters `type`, `series` and
+      `tag`, and accepts `sort` in `title|series|addedAt` with
+      `order=asc|desc` (D04, D11). `V007__item_added_at.sql` adds
+      `added_at timestamptz not null`, set by the add use case (D11); the sort
+      by `series` orders by series name then volume number, the items without
+      a series last.
+      Tests: the JDBC slice — one case per filter, one per combination of two,
+      one per sort in both orders; the web slice on an unaccepted sort field
+      answering the validation problem; contract (PRD §4.1, D11).
+
+- [ ] T035 Frontend: filter, sort and page through the catalogue. The
+      catalogue view gains a type filter, a series filter, a tag filter, a
+      sort control and a way to reach the pages after the first, all kept in
+      the query string beside `q`.
+      Tests: the client against the mock passing each parameter; the view over
+      the fake port — choosing a filter calls the port with it, choosing a
+      sort calls the port with it, the next page appends or replaces as the
+      view shows it, and the query string of the route drives the first call
+      (PRD §4.1, D05, D07).
+
+Phase 1 is done when Tophe has released a version, deployed it, and from an
+Android phone: added a book with a series, an author and a tag, found it by an
+accented and by a misspelt search, edited it, filtered the catalogue by type
+and deleted the book. The result goes in `agent/PROGRESS.md`.
+
+## Questions for the human
+
+1. Cover images (PRD §4.1, open question 2). No task plans them: the draft
+   assumes we store our own on the covers volume, which needs an upload
+   operation, a served path and a volume `deploy/compose.yaml` does not
+   declare yet. Store our own, link external URLs, or leave covers out of v1?
+2. Genres (PRD §4.1 says "genres and free tags"). T030 plans free tags only.
+   Are genres the same mechanism, or a closed list the admin maintains?
+3. Series (T026). A series is created by typing its name on the item form, and
+   nothing renames, merges or deletes one; D03 anticipates a rename re-saving
+   the items. Is a series screen in v1, or later?
+4. Author roles (T028). The enum proposed is `WRITER`, `ARTIST`, `COLOURIST`,
+   `TRANSLATOR`, from PRD §3 and §4.1. Enough for v1? Is a BD's scenario
+   writer a `WRITER`?
+5. Deleting an item (T023) is unambiguous while no copy exists, so it is
+   planned. PRD open question 5 must be answered before the copies phase, and
+   open question 1 (digital copies) before the copy form is shaped.
+6. Once the catalogue exists, should `/` be the catalogue rather than the
+   greeting, with the reader's name moved into the header?
 
 ## Proposed (added by agent runs; a human promotes them into a phase)
 
