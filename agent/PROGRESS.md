@@ -558,3 +558,47 @@ Format:
   sandbox image (Node 20 here, jsdom 30 needs 22): `docker run --rm --network
   none -v "$PWD":/work -w /work/frontend libris-agent:local 'npm test'`.
 
+
+
+## 2026-09-10 — T010 The reader on the home page — done (PR pending)
+- Did: four commits. Cycle 1, the greeting — `HomeView.spec.ts` gains
+  `greets the reader the API answers by display name`, red on the missing
+  `src/fixture/FakeMeApi`, green with `meApiKey` beside the port in
+  `application/MeApi.ts`, the fake, the `fixture` ESLint element and its
+  policy, `home.greeting` in the `fr` catalogue and the `inject` + `<p>` in the
+  view. Cycle 2, the wiring — `createLibrisApp.spec.ts` red on the missing
+  module, green with `createLibrisApp.ts`, `i18n.ts` and `router.ts` turned
+  into `createLibrisI18n()` / `createLibrisRouter()` factories, `App.vue`
+  taking `revision` as a prop and `main.ts` shrunk to the composition root.
+  Then the dev proxy (`--mode mock`, the four `Remote-*` headers, `dev:mock`,
+  the README) and one refactor. `npm test`: 4 test files, 5 tests, 3.89 s,
+  100% of the 24 statements it covers; `npm run build` green in 307 ms.
+- Decided: nothing the brief had not decided.
+- Deviations: none. One sequencing detail: `HomeView.spec.ts` used the old
+  `i18n` singleton in cycle 1 and followed the factory in cycle 2, so each
+  cycle's red had a single reason; the end state is the brief's.
+- Measured, for a future run:
+  - The boundaries probe the brief asks for: importing `src/fixture/FakeMeApi`
+    from `HomeView.vue` fails `npx eslint` with `There is no policy allowing
+    dependencies from elements of type "ui-views" and captured values:
+    view="home" to elements of type "fixture"`. Reverted.
+  - The `fixture` element must sit before `main` in `boundaries/elements`:
+    `src` matches everything under it and the first pattern wins.
+  - Both proxies answered by hand. `npm run dev` with a header-echoing server
+    on 8080: the four `Remote-*` headers arrive on `/api/v1/me`. With
+    `contracteer mock api/openapi.yaml -p 9090` running, `npm run dev:mock`
+    answers a generated `CurrentReader` body.
+  - A dev server or a mock started in a tool call dies with the call. Start
+    them as background tasks, wait with `curl --retry 30 --retry-connrefused`
+    (a foreground `sleep` is refused), and stop them by task id — a `pkill -f`
+    whose pattern appears in the tool call's own command line kills the call
+    (exit 144), the gotcha the T007 entries already record.
+- Left over / gotchas:
+  - Both new specs declare the same `chloe` reader literal. The brief's rule
+    ("the fixture holds no default reader until a second spec needs the same
+    one") now applies, but the shared reader would be a fixture file the brief
+    does not name; kept duplicated, to be moved by the third spec that wants
+    it.
+  - `createLibrisApp.spec.ts` is the only test of the revision wire, since
+    `main.ts` stays untested by design (composition root, four statements).
+  - The suite still reports jsdom created four times, 80% of the tracked time.

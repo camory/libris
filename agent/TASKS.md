@@ -127,7 +127,7 @@
       the gate now needs the `contracteer` binary on the PATH (D08); the CI
       `frontend` job already installs it. Nothing imports the client yet: the
       home view is T010.
-- [ ] T010 The reader on the home page. `createLibrisApp(ports, revision)`
+- [x] T010 The reader on the home page. `createLibrisApp(ports, revision)`
       builds a router, i18n and Pinia of its own over the given ports and
       provides them through typed injection keys; `main.ts` alone reads
       `import.meta.env`, builds the real `MeApi` over the same-origin base URL

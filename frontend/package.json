@@ -5,6 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
+    "dev:mock": "vite --mode mock",
     "build": "vite build",
     "test": "vue-tsc --build && eslint . && vitest run --coverage",
     "format": "prettier --write --ignore-path ../.gitignore ."
