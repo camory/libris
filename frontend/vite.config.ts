@@ -9,6 +9,7 @@ export default defineConfig(({ mode }) => ({
     tailwindcss(),
     VitePWA({
       registerType: "autoUpdate",
+      useCredentials: true,
       manifest: {
         name: "Libris",
         short_name: "Libris",
