@@ -38,11 +38,8 @@ class FastEntryScenarios @Autowired constructor(
     @Disabled("S4")
     fun `S4 Unknown ISBN`() {
         // Given
-        bnfKnows("9782000000013", "bnf/9782000000013.xml")
-        openLibrary.stubFor(
-            get(urlPathEqualTo("/isbn/9782000000013.json"))
-                .willReturn(notFound().withHeader("Content-Type", "text/html; charset=utf-8")),
-        )
+        bnfDoesNotKnow("9782000000013")
+        openLibraryDoesNotKnow("9782000000013")
         // When
         val response = ask("9782000000013")
         // Then
@@ -55,8 +52,8 @@ class FastEntryScenarios @Autowired constructor(
     @Disabled("S5")
     fun `S5 Merged answer`() {
         // Given
-        bnfKnows("9782723488525", "bnf/9782723488525-without-pages-and-year.xml")
-        openLibraryKnows("9782723488525", "OL33773404M")
+        bnfPartiallyKnows("9782723488525")
+        openLibraryKnows("9782723488525")
         // When
         val response = ask("9782723488525")
         // Then
@@ -73,8 +70,8 @@ class FastEntryScenarios @Autowired constructor(
     @Disabled("S6")
     fun `S6 One source down`() {
         // Given
-        bnf.stubFor(get(urlPathEqualTo("/api/SRU")).willReturn(serverError()))
-        openLibraryKnows("9782723488525", "OL33773404M")
+        bnfFails()
+        openLibraryKnows("9782723488525")
         // When
         val response = ask("9782723488525")
         // Then
@@ -89,11 +86,8 @@ class FastEntryScenarios @Autowired constructor(
     @Disabled("S6")
     fun `S6 One source down, past the timeout`() {
         // Given
-        bnfKnows("9782723488525", "bnf/9782723488525.xml")
-        openLibrary.stubFor(
-            get(urlPathEqualTo("/isbn/9782723488525.json"))
-                .willReturn(temporaryRedirect("${openLibrary.baseUrl()}/books/OL33773404M.json").withFixedDelay(2_000)),
-        )
+        bnfKnows("9782723488525")
+        openLibraryAnswersTooLate("9782723488525")
         // When
         val response = ask("9782723488525")
         // Then
@@ -104,26 +98,49 @@ class FastEntryScenarios @Autowired constructor(
             .jsonPath("$.sources").isEqualTo(listOf("BNF"))
     }
 
-    private fun bnfKnows(isbn: String, record: String) {
+    private fun bnfKnows(isbn: String) = bnfAnswers(isbn, recorded("bnf/$isbn.xml"))
+
+    private fun bnfPartiallyKnows(isbn: String) = bnfAnswers(isbn, recorded("bnf/$isbn-without-pages-and-year.xml"))
+
+    private fun bnfDoesNotKnow(isbn: String) = bnfAnswers(isbn, recorded("bnf/$isbn.xml"))
+
+    private fun bnfFails() {
+        bnf.stubFor(get(urlPathEqualTo("/api/SRU")).willReturn(serverError()))
+    }
+
+    private fun bnfAnswers(isbn: String, envelope: String) {
         bnf.stubFor(
             get(urlPathEqualTo("/api/SRU"))
                 .withQueryParam("query", containing(isbn))
-                .willReturn(xml(recorded(record))),
+                .willReturn(xml(envelope)),
         )
     }
 
-    private fun openLibraryKnows(isbn: String, olid: String) {
-        val document = recorded("open-library/books/$olid.json")
+    private fun openLibraryKnows(isbn: String) {
+        val document = recorded("open-library/books/$isbn.json")
+        val key = JsonPath.read<String>(document, "$.key")
         openLibrary.stubFor(
-            get(urlPathEqualTo("/isbn/$isbn.json"))
-                .willReturn(temporaryRedirect("${openLibrary.baseUrl()}/books/$olid.json")),
+            get(urlPathEqualTo("/isbn/$isbn.json")).willReturn(temporaryRedirect("${openLibrary.baseUrl()}$key.json")),
         )
-        openLibrary.stubFor(get(urlPathEqualTo("/books/$olid.json")).willReturn(json(document)))
+        openLibrary.stubFor(get(urlPathEqualTo("$key.json")).willReturn(json(document)))
         JsonPath.read<List<String>>(document, "$.authors[*].key").forEach { author ->
             openLibrary.stubFor(
                 get(urlPathEqualTo("$author.json")).willReturn(json(recorded("open-library$author.json"))),
             )
         }
+    }
+
+    private fun openLibraryDoesNotKnow(isbn: String) {
+        openLibrary.stubFor(
+            get(urlPathEqualTo("/isbn/$isbn.json"))
+                .willReturn(notFound().withHeader("Content-Type", "text/html; charset=utf-8")),
+        )
+    }
+
+    private fun openLibraryAnswersTooLate(isbn: String) {
+        openLibrary.stubFor(
+            get(urlPathEqualTo("/isbn/$isbn.json")).willReturn(ok().withFixedDelay(2_000)),
+        )
     }
 
     private fun ask(isbn: String): RestTestClient.ResponseSpec = http.get()
