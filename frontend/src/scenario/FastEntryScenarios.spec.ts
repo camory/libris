@@ -108,6 +108,19 @@ describe("Fast entry", () => {
     expect(host.textContent).toContain("9782000000006 est un ISBN inconnu.");
   });
 
+  it.skip("S7 Every source down", async () => {
+    // Given
+    const screen = open("/isbn");
+
+    // When
+    await ask(screen, "9791000000008");
+
+    // Then
+    await screen.findByText(
+      "Erreur lors de la recherche, veuillez réessayer plus tard.",
+    );
+  });
+
   function cameraAllowed() {
     const stream = { getTracks: () => [{ stop: () => {} }] };
     Object.defineProperty(navigator, "mediaDevices", {
