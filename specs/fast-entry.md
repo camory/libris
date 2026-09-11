@@ -32,10 +32,12 @@ then a non-ISBN barcode; checked by hand on the Pixel.
 **S3 — Not an ISBN**
 Given a reader on the lookup screen
 When they submit a text of the wrong length or with a wrong check digit
-Then the API answers the validation problem naming the field, and the screen
-shows its message beside the field.
-Proof: unit test of the ISBN rule (thirteen digits kept, ten converted, check
-digit verified, separators dropped); contract example on the 400.
+Then the screen says beside the field that this is not an ISBN, without
+calling the API; and the API, given thirteen digits with a wrong check digit,
+answers the validation problem naming the field `isbn`.
+Proof: unit test of the ISBN rule in the frontend (thirteen digits kept, ten
+converted, check digit verified, separators dropped); contract example
+`400_NOT_AN_ISBN` verified on both sides.
 
 **S4 — Unknown ISBN**
 Given an ISBN no source knows
@@ -63,29 +65,31 @@ Proof: use-case test with one failing fake.
 **S7 — Every source down**
 Given every source failing or not answering in time
 When the reader submits an ISBN
-Then the API answers the lookup-unavailable problem and the screen says to try
+Then the API answers the sources-unavailable problem and the screen says to try
 again later.
 Proof: contract example on the 503; use-case test with failing fakes.
 
 ## Contract
 
-Release `v0.2.0` of `camory/libris-api`, one read-only operation:
+Release `v0.3.0` of `camory/libris-api`, one read-only operation:
 
-- `GET /api/v1/isbn/{isbn}` (the ISBN as typed, ten to seventeen characters)
-  → `200` `LookupResult`: `isbn13`, `title`, nullable `subtitle`, `authors`
-  as an array of `{name, role}` with `role` in `WRITER | ARTIST | COLOURIST |
-  TRANSLATOR`, nullable `series` as `{name, volumeNumber}`, nullable
-  `collection`, `publisher`, `publicationYear`, `language`, `pageCount`,
-  `summary`, `coverUrl`, and `sources` as an array of `BNF | OPEN_LIBRARY`;
-  `400` `ValidationProblem` (`/problems/validation`, `errors` naming the
-  field); `404` `Problem` `/problems/not-found`; `503` `Problem`
-  `/problems/lookup-unavailable`. Examples `ONE_PIECE_1` (9782723488525),
-  `400_NOT_AN_ISBN` ("123"), `404_UNKNOWN_ISBN` (9782000000006),
-  `503_SOURCES_DOWN` (9791000000008).
+- `GET /api/v1/isbn/{isbn}` (thirteen digits; the client turns the typed text
+  or the barcode into the ISBN-13 first) → `200` `Isbn`: `isbn13`, `title`,
+  nullable `subtitle`, `authors` as an array of `IsbnAuthor` `{name, role}`
+  with `role` in `WRITER | ARTIST | COLOURIST | TRANSLATOR`, nullable
+  `series` as `IsbnSeries` `{name, volumeNumber}`, nullable `collection`,
+  `publisher`, `publicationYear`, `language`, `pageCount`, `summary`,
+  `coverUrl`, and `sources` as an array of `BNF | OPEN_LIBRARY`; `400`
+  `ValidationProblem` `/problems/validation` with `errors: [{field: isbn,
+  code: not-an-isbn}]`; `404` `Problem` `/problems/not-found`; `503` `Problem`
+  `/problems/sources-unavailable`. Examples `ONE_PIECE_1` (9782723488525),
+  `400_NOT_AN_ISBN` (9782723488526, wrong check digit), `404_UNKNOWN_ISBN`
+  (9782000000006), `503_SOURCES_DOWN` (9791000000008).
 
-Problems are served as `application/problem+json`: a request whose `Accept`
-lists only `application/json` gets no problem from `contracteer mock`, so the
-client sends `Accept: application/json, application/problem+json`.
+Problems carry no wording: the screen picks its text from `type`. A 5xx
+without a problem body means Libris itself is unavailable, not the sources.
+`contracteer mock` serves a problem only when the request's `Accept` lists
+`application/problem+json`, which the client always sends.
 
 Sources in this feature: the BnF SRU (`recordSchema=unimarcxchange`; the
 role comes from the author field's function code, mapped against the BnF's

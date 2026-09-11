@@ -6,6 +6,7 @@
 > D09 amended on 2026-09-08: image tags, version exposure, hand-managed routing.
 > D09 amended on 2026-09-10: the runbook lives on the server, not in the repository.
 > D06 amended on 2026-09-10: Android only; manifest fetched with credentials; the expired session leaves the app through a network-only path.
+> D11 amended on 2026-09-11: problems carry no wording, the frontend does; every error the API describes has a problem body; a response field is added, never removed or renamed.
 
 ## Overview
 
@@ -206,8 +207,9 @@ session, no BCrypt.
   request lacking the `X-Requested-With` header.
 - A 401 on an API call means an expired session. Authelia answers it, the
   backend never does, and the contract does not declare it. The frontend
-  sends `Accept: application/json` on every request, which is what makes
-  Authelia answer 401 rather than redirect. The frontend does not handle
+  sends `Accept: application/json, application/problem+json` on every
+  request; the absence of `text/html` is what makes Authelia answer 401
+  rather than redirect. The frontend does not handle
   the 401 yet; the task that adds it gives the API client an
   `onUnauthenticated` callback that `main.ts` wires to a navigation, so
   that the OIDC move changes `main.ts` and not the client. A reload is not
@@ -394,14 +396,22 @@ API shapes
 - Filters are query parameters named after the field, repeated for multiple
   values.
 - Absent optional values are serialised as `null`, never omitted.
-- Errors are RFC 9457 problem details. `type` is a slug under `/problems/`
-  (`/problems/validation`, `/problems/not-found`, …) that the frontend
-  switches on. Validation problems add `errors: [{ field, message }]`.
-  Messages are in French; they reach the user.
+- Errors are RFC 9457 problem details, `application/problem+json`, with
+  `type`, `title` and `status`, no `detail`: the wording is the frontend's,
+  which switches on `type`, a slug under `/problems/` (`/problems/validation`,
+  `/problems/not-found`, …). Validation problems add
+  `errors: [{ field, code }]`. A problem carries no nullable field, since
+  Spring omits the empty fields of a `ProblemDetail`.
+- Every error the API describes carries a problem body, whatever its status.
+  Traefik and Authelia answer plain text or HTML, so a problem body is how
+  the client tells an answer of Libris from one of the infrastructure: a
+  5xx without one means Libris itself is unavailable.
 
 Contract
 - Every schema in the contract states `required` and `nullable`
   explicitly, since the frontend types are written by hand from it.
+- A response field is added, never removed or renamed, while the major
+  version stands.
 
 ## Local development (human)
 
