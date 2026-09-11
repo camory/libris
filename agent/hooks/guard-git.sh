@@ -94,7 +94,7 @@ fi
 
 # Proof of test (D07). A gate must be run plainly, one per command, so that the
 # recorder sees its real exit status. A push or a PR needs, for every side whose
-# content (its directory plus api/) differs from origin/main, a recorded green
+# content (its directory) differs from origin/main, a recorded green
 # gate run on exactly the current content.
 # shellcheck source=proof-lib.sh
 source "$(dirname "${BASH_SOURCE[0]}")/proof-lib.sh"

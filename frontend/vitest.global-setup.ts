@@ -6,7 +6,7 @@ const port = 9099;
 export default async function setup(project: TestProject) {
   const mock = spawn(
     "contracteer",
-    ["mock", "../api/openapi.yaml", "-p", String(port)],
+    ["mock", "https://raw.githubusercontent.com/camory/libris-api/v0.1.0/openapi.yaml", "-p", String(port)],
     { stdio: ["ignore", "pipe", "inherit"] },
   );
 

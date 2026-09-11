@@ -22,8 +22,9 @@ checked by hand on the Pixel.
 
 ## Contract
 
-The operations, schemas and problems `api/openapi.yaml` gains for this
-feature, written in the same session as the spec, before planning. One line
+The operations, schemas and problems the contract (`camory/libris-api`) gains for this
+feature, written and released in the same session as the spec, before planning;
+name the release. One line
 per operation: method, path, request and response schemas, problems.
 
 ## Done

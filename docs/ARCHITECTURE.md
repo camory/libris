@@ -33,12 +33,12 @@ phone / browser ──► https://libris.amory.fr
 
 ### D01 — Monorepo: two applications, one contract
 `backend/` (Gradle, Kotlin DSL) and `frontend/` (npm, Vite) live in one
-repository, with `api/openapi.yaml` at the root, shared by both. One PR can
-change the contract, the backend and the frontend of a feature. Each app has
-its own build, tests and Dockerfile. There is no root build: the whole
-interface is `cd backend && ./gradlew check` and `cd frontend && npm test`.
-CI runs each app's job only when that app or `api/` changed; a push to `main`
-runs everything.
+repository. The contract they share lives in its own repository and each side
+pins the release it implements (D04). One PR can change the backend and the
+frontend of a feature. Each app has its own build, tests and Dockerfile. There
+is no root build: the whole interface is `cd backend && ./gradlew check` and
+`cd frontend && npm test`. CI runs every job on each pull request and on each
+push to `main`; a job skips itself while its application does not exist.
 
 ### D02 — Backend: Kotlin + Spring Boot, light hexagon
 Spring Boot, Kotlin, JDK 25, one Gradle module. Persistence with
@@ -93,25 +93,36 @@ proves insufficient, `search_text` is exactly the document a Meilisearch
 container would index.
 
 ### D04 — Contract-first API, Contracteer on both sides
-`api/openapi.yaml` (OpenAPI 3.0.3) is the single source of truth of the HTTP
-API.
+The OpenAPI 3.0.3 document `openapi.yaml` in the repository
+`camory/libris-api` is the single source of truth of the HTTP API. It is
+released, never consumed from a branch: one GitHub release per change, tagged
+`v<info.version>`, with release immutability on, so a released tag never
+moves and its content never changes. Each side pins the raw file of the
+release it implements:
+`https://raw.githubusercontent.com/camory/libris-api/v<version>/openapi.yaml`.
 - Backend: verified in the test suite by
-  `dev.contracteer:contracteer-verifier-junit` (pinned). The contract
-  test runs over the web slice of D07; its setup method stubs the use cases
-  with whatever the document's examples reference, before every case.
-- Frontend: developed and tested against `contracteer mock api/openapi.yaml`
-  — the Vite dev proxy, the Vitest global setup and, later, Playwright all
+  `dev.contracteer:contracteer-verifier-junit` (pinned), loading the pinned
+  URL. The contract test runs over the web slice of D07; its setup method
+  stubs the use cases with whatever the document's examples reference, before
+  every case.
+- Frontend: developed and tested against `contracteer mock <pinned URL>` —
+  the Vite dev proxy, the Vitest global setup and, later, Playwright all
   point at it. **No code generation**: request and response types are written
   by hand in `frontend/src/infra/api`; the mock is what catches drift.
 - Named examples are optional. They document and disambiguate a request or a
   response; when present, request and response examples share a key and use
   fixed identifiers.
-- The contract is edited with Tophe, never by a headless run alone: a run
-  applies only an edit its task line spells out property by property and
-  decides nothing about the contract itself. Before touching it, read
-  <https://contracteer.dev/latest>. A gap in Contracteer
-  blocks the task with a question; it is never worked around.
-- Order of work: contract, then backend, then frontend.
+- The contract is written and released with Tophe, never by a headless run: a
+  feature's contract is released in the session that writes its spec, and the
+  spec's Contract section names the release. The first backend task and the
+  first frontend task of the feature bump their side's pin to that release;
+  the bump is the only contract-related edit a run makes, and it decides
+  nothing about the contract itself. Before touching it, read
+  <https://contracteer.dev/latest>. A gap in Contracteer blocks the task with
+  a question; it is never worked around.
+- Order of work: contract released, then backend, then frontend. A release may
+  describe operations no side implements yet: each gate checks only the
+  release its side pins.
 
 ### D05 — Frontend: Vue 3 + Vite + TypeScript, light hexagon
 Vue 3 with `<script setup>`, Vite, TypeScript strict, Vue Router, Pinia (only
@@ -389,7 +400,7 @@ API shapes
   Messages are in French; they reach the user.
 
 Contract
-- Every schema in `api/openapi.yaml` states `required` and `nullable`
+- Every schema in the contract states `required` and `nullable`
   explicitly, since the frontend types are written by hand from it.
 
 ## Local development (human)
@@ -399,7 +410,7 @@ docker compose -f agent/compose.yaml up -d postgres   # throwaway DB on localhos
 cp backend/.env.example backend/.env                  # once per checkout; the three database variables
 cd backend && ./gradlew bootRun                      # http://localhost:8080 — trusts the Remote-* headers the caller sets
 cd frontend && npm run dev                           # http://localhost:5173 — proxies /api to :8080, adds a dev admin's Remote-* headers
-contracteer mock api/openapi.yaml -p 9090            # the API from the contract alone
+contracteer mock <pinned URL> -p 9090                # the API from the contract alone (URL: see D04)
 cd frontend && npm run dev:mock                      # like dev, but proxies /api to the mock
 ```
 

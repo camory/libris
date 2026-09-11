@@ -24,7 +24,8 @@ npm run dev:mock
 ```
 
 The same server, proxying `/api` to <http://localhost:9090> instead, where
-`contracteer mock ../api/openapi.yaml -p 9090` answers from the contract alone.
+`contracteer mock <contract URL> -p 9090` answers from the contract alone, the URL
+being the one pinned in `vitest.global-setup.ts`.
 
 ## Build
 
@@ -44,8 +45,9 @@ npm test
 It runs the `vue-tsc` type check, ESLint with the architecture boundary rules,
 and the Vitest suite with a V8 coverage report written to `coverage/lcov.info`.
 
-It needs the `contracteer` binary on the PATH: the suite starts a mock of
-`api/openapi.yaml` on port 9099 before the tests and stops it after, and the
+It needs the `contracteer` binary on the PATH and access to GitHub: the suite
+starts a mock of the contract release pinned in `vitest.global-setup.ts` (see
+`docs/ARCHITECTURE.md`, D04) on port 9099 before the tests and stops it after, and the
 `infra/api` specs run against it.
 
 ## Format

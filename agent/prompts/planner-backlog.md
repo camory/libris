@@ -31,7 +31,9 @@ to approve.
   the scenarios it realises (`S1, S3`) and the architecture decisions it
   serves. Every scenario of the spec is realised by at least one task.
 - The contract for a feature is written with the spec, before you run: a task
-  never edits `api/openapi.yaml` and never opens on a contract precondition.
+  never edits the contract and never opens on a contract precondition; the
+  first backend task and the first frontend task of a feature bump the pinned
+  contract release to the one the spec names, and nothing else about it.
 - IDs are stable. Never renumber or reuse an ID. New tasks take the next free
   number after the highest ID in `agent/TASKS.md`, the *Done* section
   included.

@@ -39,7 +39,7 @@ result.displayName shouldBe headers["Remote-Name"]
 A **seam** is the public boundary you test at: the interface where you
 observe behaviour without reaching inside. Tests live at seams, never
 against internals. In Libris the seams are the HTTP interface (through the
-test client, matching `api/openapi.yaml`), the public functions of `domain`
+test client, matching the pinned contract), the public functions of `domain`
 and `application`, the `infra.persistence` interface against the real
 PostgreSQL, and for the frontend a rendered component, a store, or
 `infra/api` against the Contracteer mock.

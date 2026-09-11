@@ -33,14 +33,13 @@ expect_reason() { # $1 substring of the deny reason, $2 label, $3 command
 }
 commit_all() { git -C "$repo" add -A && git -C "$repo" commit -q -m "$1"; }
 
-# A repository with backend/, frontend/ and api/ on main, pushed; a task branch.
+# A repository with backend/ and frontend/ on main, pushed; a task branch.
 origin="$tmp/origin.git"; repo="$tmp/repo"
 git init -q --bare "$origin"; git init -q -b main "$repo"
 git -C "$repo" config user.email test@example.com; git -C "$repo" config user.name test
-mkdir -p "$repo/backend" "$repo/frontend" "$repo/api"
+mkdir -p "$repo/backend" "$repo/frontend"
 echo "fun main() {}" > "$repo/backend/App.kt"
 echo "export {}" > "$repo/frontend/main.ts"
-echo "openapi: 3.1.0" > "$repo/api/openapi.yaml"
 printf 'agent/.proof/\n' > "$repo/.gitignore"
 commit_all init; git -C "$repo" remote add origin "$origin"; git -C "$repo" push -q -u origin main
 git -C "$repo" switch -q -c task/T000-proof
@@ -67,12 +66,7 @@ echo "fun main() { println(3) }" > "$repo/backend/App.kt"; commit_all "backend c
 record PostToolUse "cd backend && ./gradlew test"
 expect_reason backend "a partial run (gradlew test) is not the gate"          "$push"
 record PostToolUse "$BACK"
-echo "paths: {}" >> "$repo/api/openapi.yaml"; commit_all "contract change"
-expect_reason backend "a contract change invalidates the backend proof"       "$push"
-record PostToolUse "$BACK"
-expect_reason frontend "a contract change also needs the frontend gate"       "$push"
-record PostToolUse "$FRONT"
-expect allow        "both gates green: push allowed"                          "$push"
+expect allow        "the full gate recorded: push allowed"                    "$push"
 expect allow        "gh pr create with valid proofs: allowed"                 "$pr"
 echo "export const x = 1" > "$repo/frontend/main.ts"; commit_all "frontend change"
 expect_reason frontend "gh pr create with a stale frontend proof: denied"     "$pr"
