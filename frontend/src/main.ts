@@ -1,12 +1,7 @@
-import { createLibrisApp } from "./createLibrisApp";
-import { FetchMeApi } from "./infra/api/FetchMeApi";
+import { bootstrap } from "./bootstrap";
 import "./ui/style.css";
 
-createLibrisApp(
-  {
-    meApi: new FetchMeApi(window.location.origin, () =>
-      window.location.assign("/session"),
-    ),
-  },
+bootstrap(
+  window.location.origin,
   import.meta.env.VITE_APP_VERSION ?? "dev",
 ).mount("#app");

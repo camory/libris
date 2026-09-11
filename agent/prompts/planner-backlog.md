@@ -28,8 +28,9 @@ to approve.
   screens).
 - Each task is one bullet: `- [ ] T### Title.` followed by 3 to 8 indented
   lines: what to build, acceptance criteria a test or a command can check,
-  the scenarios it realises (`S1, S3`) and the architecture decisions it
-  serves. Every scenario of the spec is realised by at least one task.
+  the scenarios it realises (`S1, S3`), whose scenario tests it un-skips,
+  and the architecture decisions it serves. Every scenario of the spec is
+  realised by at least one task.
 - The contract for a feature is written with the spec, before you run: a task
   never edits the contract and never opens on a contract precondition; the
   first backend task and the first frontend task of a feature bump the pinned

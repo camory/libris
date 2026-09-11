@@ -7,6 +7,7 @@ kotest = "6.2.4"
 contracteer = "4.0.0"
 archunit = "1.5.0"
 java-uuid-generator = "5.1.0"
+wiremock = "3.13.2"
 
 [libraries]
 detekt-formatting = { module = "io.gitlab.arturbosch.detekt:detekt-formatting", version.ref = "detekt" }
@@ -14,6 +15,7 @@ kotest-assertions-core = { module = "io.kotest:kotest-assertions-core", version.
 contracteer-verifier-junit = { module = "dev.contracteer:contracteer-verifier-junit", version.ref = "contracteer" }
 archunit-junit5 = { module = "com.tngtech.archunit:archunit-junit5", version.ref = "archunit" }
 java-uuid-generator = { module = "com.fasterxml.uuid:java-uuid-generator", version.ref = "java-uuid-generator" }
+wiremock-standalone = { module = "org.wiremock:wiremock-standalone", version.ref = "wiremock" }
 
 [plugins]
 kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }

@@ -6,19 +6,38 @@ why now.
 
 ## Scenarios
 
-Prose, not executable. IDs are stable: task lines, briefs and reviews cite
-them. The last line of each names its proof.
+One block per scenario, Gherkin keywords, one clause per line, a blank line
+between Given, When and Then, `And` for each further clause. A scenario for
+both sides uses words that hold on both, "the reader asks", "Libris answers";
+the proof line says what each side checks. IDs are stable: task lines,
+briefs, reviews and the scenario tests cite them, and a scenario test bears
+the scenario's exact title, which therefore has no punctuation a method name
+refuses; a scenario with several cases has one test per case, the title
+followed by a comma and the case. The side line says which side realises it.
 
-**S1 — <title>**
+**S1 <title>** · frontend, backend
+
+```gherkin
 Given …
-When …
-Then …
-Proof: contract example `<operationId>/<name>` verified by Contracteer on both
-sides | unit test of `<rule>` | component test against `contracteer mock` |
-checked by hand on the Pixel.
 
-**S2 — <title>**
+When …
+
+Then …
+
+And …
+```
+
+Proof: contract example `<name>` verified by Contracteer on both sides |
+backend scenario test over stubbed sources | frontend scenario test against
+`contracteer mock` | unit test of `<rule>` | checked by hand on the Pixel.
+A scenario test is written with the spec, committed skipped, and un-skipped
+by the task that realises it.
+
+**S2 <title>** · backend
+
+```gherkin
 …
+```
 
 ## Contract
 

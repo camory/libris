@@ -6,6 +6,7 @@
 > D09 amended on 2026-09-08: image tags, version exposure, hand-managed routing.
 > D09 amended on 2026-09-10: the runbook lives on the server, not in the repository.
 > D06 amended on 2026-09-10: Android only; manifest fetched with credentials; the expired session leaves the app through a network-only path.
+> D11 amended on 2026-09-11: problems carry no wording, the frontend does; every error the API describes has a problem body; a response field is added, never removed or renamed.
 
 ## Overview
 
@@ -135,14 +136,16 @@ PWA via `vite-plugin-pwa` (Workbox): precached app shell, API GET responses
 cached network-first with cache fallback, any non-GET fails immediately
 offline with a clear message. No sync queue.
 
-`main.ts` alone reads `import.meta.env`; every other module receives its
-configuration as an argument. The API client takes its base URL from its
-constructor: `main.ts` passes the same-origin value and a spec passes the
-mock's. The footer's revision comes from `VITE_APP_VERSION`, the one `VITE_*`
-variable; no other exists until a task needs one.
+`main.ts` alone reads `import.meta.env` and `window`; every other module
+receives its configuration as an argument. The API client takes its base URL
+from its constructor: `bootstrap` passes the origin it is given and a spec
+passes the mock's. The footer's revision comes from `VITE_APP_VERSION`, the
+one `VITE_*` variable; no other exists until a task needs one.
 `createLibrisApp(ports, revision)` builds the application with a router, i18n
-and Pinia of its own over the given port implementations; `main.ts` reads
-the revision, builds the real ports and mounts it.
+and Pinia of its own over the given port implementations;
+`bootstrap(origin, revision)` builds the real ports over that origin and
+calls it; `main.ts` reads the origin and the revision and mounts what
+`bootstrap` answers. A scenario test calls `bootstrap` with the mock's origin.
 
 Layers under `frontend/src`:
 - `domain/` — pure TypeScript: types and pure functions (series gaps, sort
@@ -206,11 +209,12 @@ session, no BCrypt.
   request lacking the `X-Requested-With` header.
 - A 401 on an API call means an expired session. Authelia answers it, the
   backend never does, and the contract does not declare it. The frontend
-  sends `Accept: application/json` on every request, which is what makes
-  Authelia answer 401 rather than redirect. The frontend does not handle
+  sends `Accept: application/json, application/problem+json` on every
+  request; the absence of `text/html` is what makes Authelia answer 401
+  rather than redirect. The frontend does not handle
   the 401 yet; the task that adds it gives the API client an
-  `onUnauthenticated` callback that `main.ts` wires to a navigation, so
-  that the OIDC move changes `main.ts` and not the client. A reload is not
+  `onUnauthenticated` callback that `bootstrap` wires to a navigation, so
+  that the OIDC move changes `bootstrap` and not the client. A reload is not
   enough: the service worker answers every navigation from its cache, so
   the browser never reaches Traefik and Authelia never redirects. The
   navigation goes to a path the service worker leaves to the network,
@@ -259,6 +263,15 @@ session, no BCrypt.
   declares and none it does not; the 401 of D06 is outside the contract and
   waits for its own task. One test creates the application through
   `createLibrisApp` over fake ports and checks the home view renders.
+- Each feature spec has one scenario test class per side,
+  `fr.amory.libris.scenario` on the backend and `src/scenario` on the
+  frontend, one method per scenario or case, bearing its exact title. The
+  backend boots the whole application over WireMock stubs of the sources;
+  the frontend boots it through `bootstrap` over `contracteer mock`. Tophe
+  writes them with the spec, committed skipped. A task un-skips the scenario
+  tests its line cites and changes nothing else in them; the inside, ports,
+  use cases, adapters and their tests, is the run's. A scenario test that
+  has to change is a spec conversation, not a task.
 - One test source set and one `test` task. No suffix sorts tests by what
   they need: a test that needs the database gets it from D08 like any other.
   Test classes are named after the Libris code they exercise. Tests live
@@ -394,14 +407,22 @@ API shapes
 - Filters are query parameters named after the field, repeated for multiple
   values.
 - Absent optional values are serialised as `null`, never omitted.
-- Errors are RFC 9457 problem details. `type` is a slug under `/problems/`
-  (`/problems/validation`, `/problems/not-found`, …) that the frontend
-  switches on. Validation problems add `errors: [{ field, message }]`.
-  Messages are in French; they reach the user.
+- Errors are RFC 9457 problem details, `application/problem+json`, with
+  `type`, `title` and `status`, no `detail`: the wording is the frontend's,
+  which switches on `type`, a slug under `/problems/` (`/problems/validation`,
+  `/problems/not-found`, …). Validation problems add
+  `errors: [{ field, code }]`. A problem carries no nullable field, since
+  Spring omits the empty fields of a `ProblemDetail`.
+- Every error the API describes carries a problem body, whatever its status.
+  Traefik and Authelia answer plain text or HTML, so a problem body is how
+  the client tells an answer of Libris from one of the infrastructure: a
+  5xx without one means Libris itself is unavailable.
 
 Contract
 - Every schema in the contract states `required` and `nullable`
   explicitly, since the frontend types are written by hand from it.
+- A response field is added, never removed or renamed, while the major
+  version stands.
 
 ## Local development (human)
 
