@@ -69,16 +69,23 @@ Proof: contract example on the 503; use-case test with failing fakes.
 
 ## Contract
 
-One read-only operation, path settled in the contract session:
+Release `v0.2.0` of `camory/libris-api`, one read-only operation:
 
-- `GET` lookup by `isbn` (query parameter, the text as typed) → `200`
-  `LookupResult`: `isbn13`, `title`, nullable `subtitle`, `authors` as an
-  array of `{name, role}` with `role` in `WRITER | ARTIST | COLOURIST |
+- `GET /api/v1/isbn/{isbn}` (the ISBN as typed, ten to seventeen characters)
+  → `200` `LookupResult`: `isbn13`, `title`, nullable `subtitle`, `authors`
+  as an array of `{name, role}` with `role` in `WRITER | ARTIST | COLOURIST |
   TRANSLATOR`, nullable `series` as `{name, volumeNumber}`, nullable
   `collection`, `publisher`, `publicationYear`, `language`, `pageCount`,
   `summary`, `coverUrl`, and `sources` as an array of `BNF | OPEN_LIBRARY`;
-  `400` `/problems/validation`; `404` `/problems/not-found`; `503`
-  `/problems/lookup-unavailable`.
+  `400` `ValidationProblem` (`/problems/validation`, `errors` naming the
+  field); `404` `Problem` `/problems/not-found`; `503` `Problem`
+  `/problems/lookup-unavailable`. Examples `ONE_PIECE_1` (9782723488525),
+  `400_NOT_AN_ISBN` ("123"), `404_UNKNOWN_ISBN` (9782000000006),
+  `503_SOURCES_DOWN` (9791000000008).
+
+Problems are served as `application/problem+json`: a request whose `Accept`
+lists only `application/json` gets no problem from `contracteer mock`, so the
+client sends `Accept: application/json, application/problem+json`.
 
 Sources in this feature: the BnF SRU (`recordSchema=unimarcxchange`; the
 role comes from the author field's function code, mapped against the BnF's
