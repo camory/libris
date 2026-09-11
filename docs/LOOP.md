@@ -20,7 +20,10 @@ sandbox. State passes only through files in the repository and the pull
 request.
 
 ```
-docs/PRD.md ──► PLANNER (backlog) ──► agent/TASKS.md proposal ──► human approves the list
+docs/PRD.md ──► specs/<feature>.md (written with the human, contract included)
+                        │
+                        ▼
+              PLANNER (backlog) ──► agent/TASKS.md proposal ──► human approves the list
                                               │ first unchecked task
                                               ▼
                                       PLANNER (brief) ──► concrete brief for that task
@@ -55,11 +58,13 @@ Nothing important lives outside these files. Decided 2026-09-06 (step 2).
 | File | Holds | Planner | Implementer | Reviewer | Human |
 |------|-------|---------|-------------|----------|-------|
 | `CLAUDE.md` | standing orders for every run | reads | reads | reads | writes |
-| `docs/PRD.md` | what the product must do | reads | reads parts | reads parts | writes |
+| `docs/PRD.md` | what the product must do, the domain words | reads | reads parts | reads parts | writes |
+| `specs/<feature>.md` | one feature's scenarios, contract and done check | derives a phase from it, fills its *Tasks* | reads the cited scenarios | judges against | writes, with Claude, in a session |
 | `docs/ARCHITECTURE.md` | binding technical decisions | reads | reads | judges against | writes |
 | `agent/TASKS.md` | ordered backlog with checkboxes | proposes via a `plan/<date>` PR | ticks one line | reads | approves by merging |
 | `agent/briefs/T###.md` | concrete plan for one task | writes, on the task branch | reads, follows | judges against | reads in the PR |
 | `agent/PROGRESS.md` | append-only diary | reads | appends one entry per task | reads | reads |
+| `agent/PROPOSED.md` | follow-ups and ideas, never picked up by a run | | appends | | promotes into a spec or a task |
 | the pull request | diff, description, review, verdict | | opens | comments | decides |
 
 Two rules sit behind the table. The reviewer judges against written criteria
@@ -153,3 +158,4 @@ Decisions taken while designing the loop, newest last.
 - 2026-09-09 · tdd skill · The implementer works one test at a time: an adapted copy of Matt Pocock's `tdd` skill lives in `.claude/skills/tdd/` (seams pre-agreed by the brief's test plan, refactor kept inside the cycle and bounded to what the written tests motivate, one cycle per commit, the wiring test named as an anti-pattern) and the implementer prompt invokes it by name before the first test. The reviewer reads the commit history against it; horizontal slicing is a suggestion, not blocking, because history is never rewritten and the fix is to redo the task. Only that skill is vendored, not the plugin: the plugin would live in the `claude-state` volume, unversioned, with 24 unused skills. Verified with a one-turn `claude -p` probe in the sandbox that invoked the skill.
 - 2026-09-09 · code smells · Fowler's twelve smells (chapter 3 of _Refactoring_), adapted from the baseline of Matt Pocock's `code-review` skill, live in `.claude/skills/code-smells/` as the shared vocabulary of "tidy": the implementer's bounded refactor on green tidies only a smell inside code the written tests cover, the reviewer names the smell and the remedy in a suggestion. A smell is always a judgement call, the documents override it, and what detekt or ESLint enforce is not reported. Never blocking, with one exception by scope: a whole file, dependency or parameter nothing needs is the "Only what the task uses" rule, which blocks.
 - 2026-09-09 · context size · Every role runs with `--autocompact 150000`: at that context size the CLI summarises the history and continues, the built-in form of a handoff. Measured on the T006 runs (Opus, one-million-token window, no compaction): the planner ended at 140k tokens after 52 turns, the implementer at 105k after about 50, the reviewer at 65k after 26; what fills the context is stale tool output, and accuracy drops with it well before the window is full. A turn is a poor proxy (52 turns cost 140k, 26 cost 65k), so the bound is on tokens. An orchestrated handoff (a PostToolUse hook measuring the transcript, a `handoff` status, a fresh run on a note committed at green) is the next step only if compaction summaries prove lossy, seen as an agent re-reading what it had read or repeating a mistake. Also measured: after a Monitor wake-up the result JSON's `num_turns` and `duration_ms` cover only the last segment (`origin: task-notification`); cost and `duration_api_ms` stay cumulative.
+- 2026-09-11 · feature specs · A phase is one feature spec, `specs/<feature>.md`: scenarios with stable IDs (Given, When, Then, and the proof each one gets), the contract delta written in the same session as the spec, the feature's done check, and the task IDs the planner fills in. The planner in backlog mode plans only from specs, the PRD being context and vocabulary; briefs restate the cited scenarios as criteria and the reviewer judges against them. Done phases collapse to one line under *Done* in `agent/TASKS.md`; follow-ups moved to `agent/PROPOSED.md`. Rationale: the first Phase 1 plan (PR #46, closed) showed the planner inventing domain choices from a five-line PRD section; the domain model went into PRD §3 (PR #47) and the behaviour needs a home between the PRD and a task line. Writing the contract per feature, once, replaces one *Precondition (human)* per backend task.

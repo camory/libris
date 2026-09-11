@@ -7,8 +7,9 @@
 | `prompts/` | One prompt per role: `planner-backlog.md`, `planner-brief.md`, `implementer.md`, `reviewer.md` (`{{TASK_ID}}`, `{{BRANCH}}` substituted) |
 | `schemas/` | The JSON report each role must end with; enforced by `--json-schema`. No `$schema` key: the CLI's validator rejects the 2020-12 meta-schema URL |
 | `briefs/` | One brief per task, written by the planner on the task branch; `TEMPLATE.md` |
-| `TASKS.md` | Ordered backlog with checkboxes (the loop's queue) |
+| `TASKS.md` | Ordered backlog with checkboxes (the loop's queue), one phase per spec in `../specs/` |
 | `PROGRESS.md` | Append-only diary written by runs |
+| `PROPOSED.md` | Follow-ups and ideas, appended by runs and by Tophe, promoted by a human |
 | `Dockerfile`, `compose.yaml` | Sandbox image (JDK 25, Node 24, contracteer, git, gh, claude) + PostgreSQL 18 sidecar |
 | `hooks/guard-git.sh` | PreToolUse hook denying pushes to main, force pushes, `rm -rf /`, sudo, and any commit or push carrying a credential (gitleaks) |
 | `hooks/test-guard-git.sh` | Behavioural tests of the guard hook, run by the CI `guardrails` job |
