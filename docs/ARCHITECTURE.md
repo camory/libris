@@ -136,14 +136,16 @@ PWA via `vite-plugin-pwa` (Workbox): precached app shell, API GET responses
 cached network-first with cache fallback, any non-GET fails immediately
 offline with a clear message. No sync queue.
 
-`main.ts` alone reads `import.meta.env`; every other module receives its
-configuration as an argument. The API client takes its base URL from its
-constructor: `main.ts` passes the same-origin value and a spec passes the
-mock's. The footer's revision comes from `VITE_APP_VERSION`, the one `VITE_*`
-variable; no other exists until a task needs one.
+`main.ts` alone reads `import.meta.env` and `window`; every other module
+receives its configuration as an argument. The API client takes its base URL
+from its constructor: `bootstrap` passes the origin it is given and a spec
+passes the mock's. The footer's revision comes from `VITE_APP_VERSION`, the
+one `VITE_*` variable; no other exists until a task needs one.
 `createLibrisApp(ports, revision)` builds the application with a router, i18n
-and Pinia of its own over the given port implementations; `main.ts` reads
-the revision, builds the real ports and mounts it.
+and Pinia of its own over the given port implementations;
+`bootstrap(origin, revision)` builds the real ports over that origin and
+calls it; `main.ts` reads the origin and the revision and mounts what
+`bootstrap` answers. A scenario test calls `bootstrap` with the mock's origin.
 
 Layers under `frontend/src`:
 - `domain/` — pure TypeScript: types and pure functions (series gaps, sort
@@ -211,8 +213,8 @@ session, no BCrypt.
   request; the absence of `text/html` is what makes Authelia answer 401
   rather than redirect. The frontend does not handle
   the 401 yet; the task that adds it gives the API client an
-  `onUnauthenticated` callback that `main.ts` wires to a navigation, so
-  that the OIDC move changes `main.ts` and not the client. A reload is not
+  `onUnauthenticated` callback that `bootstrap` wires to a navigation, so
+  that the OIDC move changes `bootstrap` and not the client. A reload is not
   enough: the service worker answers every navigation from its cache, so
   the browser never reaches Traefik and Authelia never redirects. The
   navigation goes to a path the service worker leaves to the network,
