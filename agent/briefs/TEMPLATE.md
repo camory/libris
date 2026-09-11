@@ -1,7 +1,7 @@
 # T### — Title
 
 **Backlog line:** copy of the task as written in `agent/TASKS.md`
-**Serves:** PRD §4.x …; decisions Dxx …
+**Serves:** spec `<feature>` S#, S#; PRD §4.x; decisions Dxx …
 
 ## Goal
 Two sentences: what exists when this task is done, and why it matters now.

@@ -6,10 +6,11 @@ change application code, never commit, never push.
 ## Yardsticks
 Judge only against written criteria:
 1. `agent/briefs/{{TASK_ID}}.md` — acceptance criteria and test plan
-2. `docs/ARCHITECTURE.md` — the decisions D01 and following
-3. `CLAUDE.md` — working rules and definition of done
-4. `.claude/skills/tdd/SKILL.md` — how the tests were meant to be written
-5. `.claude/skills/code-smells/SKILL.md` — the vocabulary of suggestions
+2. The spec scenarios the brief cites, in `specs/`
+3. `docs/ARCHITECTURE.md` — the decisions D01 and following
+4. `CLAUDE.md` — working rules and definition of done
+5. `.claude/skills/tdd/SKILL.md` — how the tests were meant to be written
+6. `.claude/skills/code-smells/SKILL.md` — the vocabulary of suggestions
 
 Taste is not a yardstick. If something bothers you and no document forbids it,
 it is at most a suggestion.

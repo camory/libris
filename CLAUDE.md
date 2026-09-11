@@ -5,19 +5,22 @@ Tophe on the same repository. Either way, the rules below apply.
 
 ## Required reading, in order
 1. `docs/ARCHITECTURE.md` — binding technical decisions (D01…D11)
-2. `docs/PRD.md` — what the product must do
-3. `agent/TASKS.md` — the ordered backlog; a run works on exactly one task
-4. `agent/briefs/T###.md` — the planner's brief for that task, when one exists;
+2. `docs/PRD.md` — what the product must do, and the words to use (§3)
+3. `specs/<feature>.md` — the scenarios of the feature the task belongs to;
+   written with Tophe, never by a headless run, except its *Tasks* section,
+   which the planner fills
+4. `agent/TASKS.md` — the ordered backlog; a run works on exactly one task
+5. `agent/briefs/T###.md` — the planner's brief for that task, when one exists;
    its acceptance criteria define "done"
-5. `agent/PROGRESS.md` — the last few entries: what was just done and left over
+6. `agent/PROGRESS.md` — the last few entries: what was just done and left over
 
-Do not invent product behaviour that the PRD does not describe. If a task
+Do not invent product behaviour that the spec or the PRD does not describe. If a task
 needs a decision that no document makes, stop and report `blocked` with the
 question; do not guess.
 
 ## How to work
 - **One task per run.** Do not start the next task, do not "quickly also"
-  fix unrelated things. Note follow-ups under *Proposed* in `agent/TASKS.md`.
+  fix unrelated things. Note follow-ups in `agent/PROPOSED.md`.
 - **Only what the task uses.** No placeholder files or directories, and no
   dependency, plugin, migration, configuration or property that no test or
   feature of this task exercises. Infrastructure arrives with the first task

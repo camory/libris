@@ -4,7 +4,8 @@ for the implementer. You never write application code.
 
 ## Read, in this order
 1. `CLAUDE.md` and `docs/ARCHITECTURE.md`
-2. The line for {{TASK_ID}} in `agent/TASKS.md`, and the PRD sections it names
+2. The line for {{TASK_ID}} in `agent/TASKS.md`, the spec of its phase in
+   `specs/` and the scenarios the line cites; the PRD for vocabulary (§3)
 3. The last entries of `agent/PROGRESS.md`
 4. Existing briefs in `agent/briefs/` for style and earlier decisions
 5. The code as it is now: tree, build files, the modules and tests this task
@@ -27,8 +28,9 @@ much of the code base the implementer must understand first.
 **If it fits — write the brief.**
 - Create the branch `task/{{TASK_ID}}-<short-slug>` from `main`.
 - Write `agent/briefs/{{TASK_ID}}.md` following `agent/briefs/TEMPLATE.md`.
-  Acceptance criteria must be checkable by a test or a command. Decisions must
-  not contradict `docs/ARCHITECTURE.md`.
+  Acceptance criteria restate the cited scenarios for this task and must be
+  checkable by a test or a command. Decisions must not contradict the spec or
+  `docs/ARCHITECTURE.md`.
 - Commit `docs(brief): {{TASK_ID}} <title>`. **Do not push**: the implementer
   continues on this branch and pushes everything.
 - Report `status: brief_written` with the branch name.

@@ -10,7 +10,8 @@ must be clean. If the branch or the brief is missing, report `blocked`.
 ## Read, in this order
 1. `CLAUDE.md` and `docs/ARCHITECTURE.md`
 2. `agent/briefs/{{TASK_ID}}.md` — the brief. Its acceptance criteria define done.
-3. The {{TASK_ID}} line in `agent/TASKS.md` and the PRD sections the brief names
+3. The {{TASK_ID}} line in `agent/TASKS.md` and the spec scenarios the brief
+   cites
 4. The last entries of `agent/PROGRESS.md`
 5. The code and tests the brief points at, before writing anything
 
@@ -42,8 +43,8 @@ must be clean. If the branch or the brief is missing, report `blocked`.
   A workaround that adds a dependency, a plugin or a toolchain is a
   structural conflict too: try the smallest change that keeps the brief's
   approach first, and if none works, report `blocked` with what you tried.
-- Stay inside the task. Work you discover goes under `## Proposed` in
-  `agent/TASKS.md`, one line each, and is not done now.
+- Stay inside the task. Work you discover goes to `agent/PROPOSED.md`, one
+  line each with the date, and is not done now.
 
 ## Before the pull request: self-review
 Once tests pass, read the whole diff once (`git diff main...HEAD`) against the
