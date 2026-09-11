@@ -28,8 +28,8 @@ much of the code base the implementer must understand first.
 **If it fits — write the brief.**
 - Create the branch `task/{{TASK_ID}}-<short-slug>` from `main`.
 - Write `agent/briefs/{{TASK_ID}}.md` following `agent/briefs/TEMPLATE.md`.
-  Acceptance criteria restate the cited scenarios for this task and must be
-  checkable by a test or a command. Decisions must not contradict the spec or
+  Acceptance criteria restate the cited scenarios for this task, name their
+  scenario tests as the proof, and must be checkable by a test or a command. Decisions must not contradict the spec or
   `docs/ARCHITECTURE.md`.
 - Commit `docs(brief): {{TASK_ID}} <title>`. **Do not push**: the implementer
   continues on this branch and pushes everything.

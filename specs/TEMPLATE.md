@@ -30,6 +30,8 @@ And …
 Proof: contract example `<name>` verified by Contracteer on both sides |
 backend scenario test over stubbed sources | frontend scenario test against
 `contracteer mock` | unit test of `<rule>` | checked by hand on the Pixel.
+A scenario test is written with the spec, committed skipped, and un-skipped
+by the task that realises it.
 
 **S2 <title>** · backend
 

@@ -263,6 +263,15 @@ session, no BCrypt.
   declares and none it does not; the 401 of D06 is outside the contract and
   waits for its own task. One test creates the application through
   `createLibrisApp` over fake ports and checks the home view renders.
+- Each feature spec has one scenario test class per side,
+  `fr.amory.libris.scenario` on the backend and `src/scenario` on the
+  frontend, one method per scenario or case, bearing its exact title. The
+  backend boots the whole application over WireMock stubs of the sources;
+  the frontend boots it through `bootstrap` over `contracteer mock`. Tophe
+  writes them with the spec, committed skipped. A task un-skips the scenario
+  tests its line cites and changes nothing else in them; the inside, ports,
+  use cases, adapters and their tests, is the run's. A scenario test that
+  has to change is a spec conversation, not a task.
 - One test source set and one `test` task. No suffix sorts tests by what
   they need: a test that needs the database gets it from D08 like any other.
   Test classes are named after the Libris code they exercise. Tests live

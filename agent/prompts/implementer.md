@@ -22,7 +22,8 @@ must be clean. If the branch or the brief is missing, report `blocked`.
   Conventional Commit message.
 - Run the real commands (`./gradlew check`, `npm test`, `npm run build`, as
   applicable) and read their output. Never skip, disable or weaken a test to
-  get green.
+  get green. The scenario tests the task cites are un-skipped, never edited;
+  if one cannot pass as written, report `blocked` with the assertion.
 - **The gates are recorded.** `cd backend && ./gradlew check` and
   `cd frontend && npm test` must each be run plainly, as the last thing in
   their command, nothing piped or chained after them. The sandbox records the

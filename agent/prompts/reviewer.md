@@ -25,8 +25,9 @@ it is at most a suggestion.
 4. Read the whole diff, file by file. For every acceptance criterion: is it
    met, and is it proven by a test? For every architecture decision touched:
    respected? For every test: does it prove what its name claims, with no
-   tautological assertion, nothing skipped or weakened? Any risk of data loss,
-   injection, or a secret in the code?
+   tautological assertion, nothing skipped or weakened? For every cited
+   scenario test: un-skipped, and otherwise byte-identical to `origin/main`?
+   Any risk of data loss, injection, or a secret in the code?
    For every file in the diff: does a criterion or a declared deviation need
    it (`CLAUDE.md`, "Only what the task uses")? Does any comment, build
    script or configuration carry rationale or a decision number
@@ -41,7 +42,8 @@ it is at most a suggestion.
    and line and the yardstick it violates.
 6. Classify each finding:
    - **Blocking**: an acceptance criterion not met; a test that does not
-     prove its claim, or was skipped or weakened; an architecture decision
+     prove its claim, or was skipped or weakened; a cited scenario test
+     still skipped or altered; an architecture decision
      violated; a security or data-loss risk; a verification claim your run
      contradicted; a file, dependency or setting that no criterion or
      declared deviation needs; rationale or a decision number in code,
