@@ -4,7 +4,7 @@ import {
   within,
   type BoundFunctions,
 } from "@testing-library/dom";
-import { afterEach, describe, expect, inject, it } from "vitest";
+import { afterEach, describe, expect, inject, it, vi } from "vitest";
 import { bootstrap } from "../bootstrap";
 
 type Screen = BoundFunctions<typeof queries>;
@@ -16,6 +16,9 @@ describe("Fast entry", () => {
   afterEach(() => {
     app.unmount();
     window.history.replaceState(null, "", "/");
+    vi.unstubAllGlobals();
+    vi.restoreAllMocks();
+    Reflect.deleteProperty(navigator, "mediaDevices");
   });
 
   it("the application runs over the mock", async () => {
@@ -48,6 +51,41 @@ describe("Fast entry", () => {
     // Then
     await showsTheOnePieceCard(screen);
   });
+
+  it.skip("S2 Scanned barcode", async () => {
+    // Given
+    cameraAllowed();
+    cameraSees("9782723488525");
+
+    // When
+    const screen = open("/isbn");
+
+    // Then
+    await showsTheOnePieceCard(screen);
+  });
+
+  function cameraAllowed() {
+    const stream = { getTracks: () => [{ stop: () => {} }] };
+    Object.defineProperty(navigator, "mediaDevices", {
+      configurable: true,
+      value: { getUserMedia: () => Promise.resolve(stream) },
+    });
+    vi.spyOn(HTMLMediaElement.prototype, "play").mockResolvedValue();
+  }
+
+  function cameraSees(ean13: string) {
+    vi.stubGlobal(
+      "BarcodeDetector",
+      class {
+        static getSupportedFormats() {
+          return Promise.resolve(["ean_13"]);
+        }
+        detect() {
+          return Promise.resolve([{ rawValue: ean13, format: "ean_13" }]);
+        }
+      },
+    );
+  }
 
   function open(path: string) {
     window.history.replaceState(null, "", path);
