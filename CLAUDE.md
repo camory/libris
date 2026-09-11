@@ -35,11 +35,12 @@ question; do not guess.
 - **Small and boring.** Prefer the simplest design that satisfies the task and
   the architecture. No speculative abstractions, no extra dependencies unless
   the task requires them (say why in the PR body).
-- **Contract first.** An API change starts in `api/openapi.yaml`, edited
-  with Tophe and never by a headless run alone; a run applies only an edit
-  its task line spells out property by property (D04); then backend (verified
-  by Contracteer), then frontend (hand-written types, tested against the
-  Contracteer mock).
+- **Contract first.** An API change starts in the contract repository
+  `camory/libris-api`, written and released with Tophe, never by a headless
+  run; each side pins the release it implements, and the only contract edit a
+  run makes is the pin bump its task line spells out (D04); then backend
+  (verified by Contracteer), then frontend (hand-written types, tested against
+  the Contracteer mock).
 - **No rationale in code.** Comments, build scripts and configuration say
   what, never why. The why goes in the PR body, `agent/PROGRESS.md` or
   `docs/ARCHITECTURE.md`. Never cite decision numbers (D##) in code, tests,
