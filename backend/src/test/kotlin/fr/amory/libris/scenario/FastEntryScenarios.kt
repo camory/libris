@@ -9,6 +9,7 @@ import com.github.tomakehurst.wiremock.client.WireMock.ok
 import com.github.tomakehurst.wiremock.client.WireMock.serverError
 import com.github.tomakehurst.wiremock.client.WireMock.temporaryRedirect
 import com.github.tomakehurst.wiremock.client.WireMock.urlPathEqualTo
+import com.jayway.jsonpath.JsonPath
 import io.kotest.matchers.shouldBe
 import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
@@ -55,7 +56,7 @@ class FastEntryScenarios @Autowired constructor(
     fun `S5 Merged answer`() {
         // Given
         bnfKnows("9782723488525", "bnf/9782723488525-without-pages-and-year.xml")
-        openLibraryKnowsOnePiece()
+        openLibraryKnows("9782723488525", "OL33773404M")
         // When
         val response = ask("9782723488525")
         // Then
@@ -73,13 +74,14 @@ class FastEntryScenarios @Autowired constructor(
     fun `S6 One source down`() {
         // Given
         bnf.stubFor(get(urlPathEqualTo("/api/SRU")).willReturn(serverError()))
-        openLibraryKnowsOnePiece()
+        openLibraryKnows("9782723488525", "OL33773404M")
         // When
         val response = ask("9782723488525")
         // Then
         response.expectStatus().isOk()
             .expectBody()
             .jsonPath("$.title").isEqualTo("One Piece - Édition originale Tome 01")
+            .jsonPath("$.coverUrl").isEqualTo("https://covers.openlibrary.org/b/isbn/9782723488525-L.jpg")
             .jsonPath("$.sources").isEqualTo(listOf("OPEN_LIBRARY"))
     }
 
@@ -98,6 +100,7 @@ class FastEntryScenarios @Autowired constructor(
         response.expectStatus().isOk()
             .expectBody()
             .jsonPath("$.title").isEqualTo("Romance dawn")
+            .jsonPath("$.coverUrl").isEqualTo("https://covers.openlibrary.org/b/isbn/9782723488525-L.jpg")
             .jsonPath("$.sources").isEqualTo(listOf("BNF"))
     }
 
@@ -109,23 +112,18 @@ class FastEntryScenarios @Autowired constructor(
         )
     }
 
-    private fun openLibraryKnowsOnePiece() {
+    private fun openLibraryKnows(isbn: String, edition: String) {
+        val editionDocument = recorded("open-library/books/$edition.json")
         openLibrary.stubFor(
-            get(urlPathEqualTo("/isbn/9782723488525.json"))
-                .willReturn(temporaryRedirect("${openLibrary.baseUrl()}/books/OL33773404M.json")),
+            get(urlPathEqualTo("/isbn/$isbn.json"))
+                .willReturn(temporaryRedirect("${openLibrary.baseUrl()}/books/$edition.json")),
         )
-        openLibrary.stubFor(
-            get(urlPathEqualTo("/books/OL33773404M.json"))
-                .willReturn(json(recorded("open-library/books/OL33773404M.json"))),
-        )
-        openLibrary.stubFor(
-            get(urlPathEqualTo("/authors/OL2733294A.json"))
-                .willReturn(json(recorded("open-library/authors/OL2733294A.json"))),
-        )
-        openLibrary.stubFor(
-            get(urlPathEqualTo("/authors/OL7476994A.json"))
-                .willReturn(json(recorded("open-library/authors/OL7476994A.json"))),
-        )
+        openLibrary.stubFor(get(urlPathEqualTo("/books/$edition.json")).willReturn(json(editionDocument)))
+        JsonPath.read<List<String>>(editionDocument, "$.authors[*].key").forEach { author ->
+            openLibrary.stubFor(
+                get(urlPathEqualTo("$author.json")).willReturn(json(recorded("open-library$author.json"))),
+            )
+        }
     }
 
     private fun ask(isbn: String): RestTestClient.ResponseSpec = http.get()

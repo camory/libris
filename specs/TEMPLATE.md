@@ -12,7 +12,8 @@ both sides uses words that hold on both, "the reader asks", "Libris answers";
 the proof line says what each side checks. IDs are stable: task lines,
 briefs, reviews and the scenario tests cite them, and a scenario test bears
 the scenario's exact title, which therefore has no punctuation a method name
-refuses. The side line says which side realises it.
+refuses; a scenario with several cases has one test per case, the title
+followed by a comma and the case. The side line says which side realises it.
 
 **S1 <title>** · frontend, backend
 

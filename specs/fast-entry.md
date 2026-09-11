@@ -100,6 +100,8 @@ When the reader asks for an ISBN
 Then the answer carries what the source that replied knows
 
 And lists only that source
+
+And keeps Open Library's cover by ISBN, whichever source is down
 ```
 
 Proof: backend scenario test with one stub failing, then one stub answering
