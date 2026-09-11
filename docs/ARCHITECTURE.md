@@ -77,16 +77,16 @@ SQLDelight (a second schema definition beside the Flyway files).
 
 ### D03 — Database: PostgreSQL only
 PostgreSQL 18, nothing else. Search is one ranked SQL query over:
-- `item.search_text`, maintained by the application on every item save:
-  title, subtitle, series name, author names, tag names. Renaming a series,
-  an author or a tag re-saves its items.
-- `item.search_vector`, a generated column derived from `search_text` and
+- `edition.search_text`, maintained by the application on every edition
+  save: title, subtitle, series name, author names, tag names. Renaming a
+  series, an author or a tag re-saves its editions.
+- `edition.search_vector`, a generated column derived from `search_text` and
   indexed with GIN, using two custom text search configurations built on
   `unaccent`: French stemming and plain tokens, so that both "Astérix" and a
   romanised manga title match.
 - a `pg_trgm` index on `search_text` for typo tolerance on short queries.
 
-The first migration creates the `unaccent` and `pg_trgm` extensions; both are
+The search migration creates the `unaccent` and `pg_trgm` extensions; both are
 trusted, so the application user, which owns the database, needs no superuser.
 No Elasticsearch, Meilisearch, ParadeDB or embedded Lucene. If relevance ever
 proves insufficient, `search_text` is exactly the document a Meilisearch
@@ -360,16 +360,15 @@ Time
   columns.
 
 Schema
-- snake_case, singular table names (`item`, `copy`, `reading_state`). Join
-  tables are named after both sides (`item_author`), with the role column on
-  them.
+- snake_case, singular table names (`edition`, `copy`, `bookshelf`). Join
+  tables are named after both sides (`edition_author`), with the role column
+  on them.
 - Enumerations stored as text with a CHECK constraint, never as PostgreSQL
   enum types. Values in UPPER_SNAKE (`BOOK`, `MANGA`, `BD`), identical in
   Kotlin, SQL and JSON.
 - Foreign keys always declared. Deletes are hard; rows meaningless without
   their parent cascade (author and tag links, copies, reading states, loans).
-  Whether deleting an item that still has copies must be refused is a product
-  question (PRD open question 5).
+  Removing the last copy of an edition deletes the edition (PRD §3).
 - ISBN-13 / EAN stored normalised: thirteen digits, no separators, validated
   on input.
 - Flyway files `V001__short_description.sql`, three digits, never edited once
