@@ -112,14 +112,14 @@ class FastEntryScenarios @Autowired constructor(
         )
     }
 
-    private fun openLibraryKnows(isbn: String, edition: String) {
-        val editionDocument = recorded("open-library/books/$edition.json")
+    private fun openLibraryKnows(isbn: String, olid: String) {
+        val document = recorded("open-library/books/$olid.json")
         openLibrary.stubFor(
             get(urlPathEqualTo("/isbn/$isbn.json"))
-                .willReturn(temporaryRedirect("${openLibrary.baseUrl()}/books/$edition.json")),
+                .willReturn(temporaryRedirect("${openLibrary.baseUrl()}/books/$olid.json")),
         )
-        openLibrary.stubFor(get(urlPathEqualTo("/books/$edition.json")).willReturn(json(editionDocument)))
-        JsonPath.read<List<String>>(editionDocument, "$.authors[*].key").forEach { author ->
+        openLibrary.stubFor(get(urlPathEqualTo("/books/$olid.json")).willReturn(json(document)))
+        JsonPath.read<List<String>>(document, "$.authors[*].key").forEach { author ->
             openLibrary.stubFor(
                 get(urlPathEqualTo("$author.json")).willReturn(json(recorded("open-library$author.json"))),
             )
