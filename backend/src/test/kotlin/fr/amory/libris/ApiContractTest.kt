@@ -25,7 +25,7 @@ class ApiContractTest @Autowired constructor(
     @field:ContracteerServerPort @param:LocalServerPort val serverPort: Int,
     private val visit: ReaderVisit,
 ) {
-    @ContracteerTest(openApiDoc = "../api/openapi.yaml")
+    @ContracteerTest(openApiDoc = "https://raw.githubusercontent.com/camory/libris-api/v0.1.0/openapi.yaml")
     fun `the API matches the contract`() {
         given(visit.visit("contracteer", "contracteer@amory.fr", "Contracteer"))
             .willReturn(Reader(username = "contracteer", email = "contracteer@amory.fr", displayName = "Contracteer"))
