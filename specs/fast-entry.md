@@ -8,66 +8,100 @@ feature, and this one shows first how good the sources are.
 
 ## Scenarios
 
-**S1 — Typed ISBN, found**
-Given a reader on the lookup screen
-When they type an ISBN, with or without hyphens or spaces, thirteen digits or
-the old ten, and submit
-Then one card shows what the sources know: title, subtitle, authors with their
-roles, series and tome, collection, publisher, publication year, language,
-page count, summary, cover, the ISBN-13, and which sources answered. No kind
-is shown: no source gives one.
-Proof: contract example verified by Contracteer on both sides; component test
-of the screen against `contracteer mock`.
+**S1 — Typed ISBN, found** · frontend, backend
 
-**S2 — Scanned barcode**
+```gherkin
+Given a reader on the lookup screen
+When they type an ISBN, with or without hyphens or spaces, thirteen digits or the old ten
+And they submit
+Then one card shows what the sources know: title, subtitle, authors with their roles,
+     series and tome, collection, publisher, publication year, language, page count,
+     summary, cover, the ISBN-13, and which sources answered
+And no kind is shown, since no source gives one
+```
+
+Proof: contract example `ONE_PIECE_1` verified by Contracteer on both sides;
+scenario test of the screen against `contracteer mock`.
+
+**S2 — Scanned barcode** · frontend
+
+```gherkin
 Given a reader on the lookup screen who allowed the camera
 When the camera sees an EAN-13 starting with 978 or 979
-Then the same lookup runs with it and the card of S1 shows. Any other barcode,
-the five-digit price add-on included, is ignored. Scanning uses the browser's
-`BarcodeDetector`, present in Chrome and Brave on Android; where it is
-absent the screen offers only the text field.
-Proof: component test with a stubbed `BarcodeDetector` answering an EAN-13,
+Then the same lookup runs with it and the card of S1 shows
+And any other barcode, the five-digit price add-on included, is ignored
+```
+
+Scanning uses the browser's `BarcodeDetector`, present in Chrome and Brave on
+Android; where it is absent the screen offers only the text field.
+Proof: scenario test with a stubbed `BarcodeDetector` answering an EAN-13,
 then a non-ISBN barcode; checked by hand on the Pixel.
 
-**S3 — Not an ISBN**
+**S3 — Not an ISBN** · frontend, backend
+
+```gherkin
 Given a reader on the lookup screen
 When they submit a text of the wrong length or with a wrong check digit
-Then the screen says beside the field that this is not an ISBN, without
-calling the API; and the API, given thirteen digits with a wrong check digit,
-answers the validation problem naming the field `isbn`.
+Then the screen says beside the field that this is not an ISBN, without calling the API
+And the API, given thirteen digits with a wrong check digit, answers the validation
+    problem naming the field `isbn` without asking any source
+```
+
 Proof: unit test of the ISBN rule in the frontend (thirteen digits kept, ten
 converted, check digit verified, separators dropped); contract example
-`400_NOT_AN_ISBN` verified on both sides.
+`400_NOT_AN_ISBN` verified on both sides; backend scenario test over stubbed
+sources that receive no call.
 
-**S4 — Unknown ISBN**
+**S4 — Unknown ISBN** · frontend, backend
+
+```gherkin
 Given an ISBN no source knows
 When the reader submits it
-Then the API answers the not-found problem and the screen says no source
-knows this ISBN.
-Proof: contract example on the 404; use-case test over fake sources that
-answer nothing.
+Then the API answers the not-found problem
+And the screen says no source knows this ISBN
+```
 
-**S5 — Merged answer**
+Proof: backend scenario test over stubbed sources answering nothing; frontend
+scenario test against `contracteer mock` with `404_UNKNOWN_ISBN`.
+
+**S5 — Merged answer** · backend
+
+```gherkin
 Given an ISBN both the BnF and Open Library know
 When the reader submits it
-Then the card carries the BnF's value for every field the BnF gives, Open
-Library's for the fields the BnF leaves empty, Open Library's cover by ISBN,
-and lists both sources.
-Proof: use-case test over fakes answering different fields.
+Then the card carries the BnF's value for every field the BnF gives
+And Open Library's for the fields the BnF leaves empty
+And Open Library's cover by ISBN
+And lists both sources
+```
 
-**S6 — One source down**
+Proof: backend scenario test over stubbed sources, one recorded BnF record
+with fields blanked that Open Library fills; unit tests of the merge rule,
+field by field, in the implementer's loop.
+
+**S6 — One source down** · backend
+
+```gherkin
 Given a source that fails or does not answer in time while the other answers
 When the reader submits an ISBN
-Then the card shows the answer of the source that replied and lists only that
-source.
-Proof: use-case test with one failing fake.
+Then the card shows the answer of the source that replied
+And lists only that source
+```
 
-**S7 — Every source down**
+Proof: backend scenario test with one stub failing, then one stub answering
+past the timeout.
+
+**S7 — Every source down** · frontend, backend
+
+```gherkin
 Given every source failing or not answering in time
 When the reader submits an ISBN
-Then the API answers the sources-unavailable problem and the screen says to try
-again later.
-Proof: contract example on the 503; use-case test with failing fakes.
+Then the API answers the sources-unavailable problem
+And the screen says to try again later
+```
+
+Proof: backend scenario test with both stubs failing; frontend scenario test
+against `contracteer mock` with `503_SOURCES_DOWN`.
 
 ## Contract
 

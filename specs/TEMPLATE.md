@@ -6,19 +6,29 @@ why now.
 
 ## Scenarios
 
-Prose, not executable. IDs are stable: task lines, briefs and reviews cite
-them. The last line of each names its proof.
+One block per scenario, Gherkin keywords, one clause per line, `And` for each
+further clause. IDs are stable: task lines, briefs, reviews and the scenario
+tests cite them, and a scenario test bears the scenario's exact title. The
+side line says which side realises it; the last line names its proof.
 
-**S1 — <title>**
+**S1 — <title>** · frontend, backend
+
+```gherkin
 Given …
 When …
 Then …
-Proof: contract example `<operationId>/<name>` verified by Contracteer on both
-sides | unit test of `<rule>` | component test against `contracteer mock` |
-checked by hand on the Pixel.
+And …
+```
 
-**S2 — <title>**
+Proof: contract example `<name>` verified by Contracteer on both sides |
+scenario test over stubbed sources | scenario test against `contracteer mock` |
+unit test of `<rule>` | checked by hand on the Pixel.
+
+**S2 — <title>** · backend
+
+```gherkin
 …
+```
 
 ## Contract
 

@@ -1,4 +1,4 @@
-package fr.amory.libris
+package fr.amory.libris.scenario
 
 import com.github.tomakehurst.wiremock.WireMockServer
 import com.github.tomakehurst.wiremock.core.WireMockConfiguration.options

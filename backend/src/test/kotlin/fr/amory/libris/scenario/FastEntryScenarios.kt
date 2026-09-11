@@ -1,4 +1,4 @@
-package fr.amory.libris
+package fr.amory.libris.scenario
 
 import com.github.tomakehurst.wiremock.WireMockServer
 import com.github.tomakehurst.wiremock.client.WireMock.containing
@@ -32,7 +32,7 @@ class FastEntryScenarios @Autowired constructor(
 
     @Test
     @Disabled("S4")
-    fun `S4 an ISBN no source knows`() {
+    fun `S4 — Unknown ISBN`() {
         // Given
         bnf.stubFor(
             get(urlPathEqualTo("/api/SRU"))
