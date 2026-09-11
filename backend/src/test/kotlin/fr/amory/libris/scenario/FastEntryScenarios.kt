@@ -1,10 +1,12 @@
 package fr.amory.libris.scenario
 
 import com.github.tomakehurst.wiremock.WireMockServer
+import com.github.tomakehurst.wiremock.client.ResponseDefinitionBuilder
 import com.github.tomakehurst.wiremock.client.WireMock.containing
 import com.github.tomakehurst.wiremock.client.WireMock.get
 import com.github.tomakehurst.wiremock.client.WireMock.notFound
 import com.github.tomakehurst.wiremock.client.WireMock.ok
+import com.github.tomakehurst.wiremock.client.WireMock.temporaryRedirect
 import com.github.tomakehurst.wiremock.client.WireMock.urlPathEqualTo
 import io.kotest.matchers.shouldBe
 import org.junit.jupiter.api.Disabled
@@ -37,27 +39,68 @@ class FastEntryScenarios @Autowired constructor(
         bnf.stubFor(
             get(urlPathEqualTo("/api/SRU"))
                 .withQueryParam("query", containing("9782000000013"))
-                .willReturn(
-                    ok()
-                        .withHeader("Content-Type", "text/xml;charset=UTF-8")
-                        .withBody(recorded("bnf/9782000000013.xml")),
-                ),
+                .willReturn(xml(recorded("bnf/9782000000013.xml"))),
         )
         openLibrary.stubFor(
             get(urlPathEqualTo("/isbn/9782000000013.json"))
                 .willReturn(notFound().withHeader("Content-Type", "text/html; charset=utf-8")),
         )
         // When
-        val response = http.get()
-            .uri("/api/v1/isbn/9782000000013")
-            .headers { it.putAll(READER) }
-            .accept(APPLICATION_JSON, APPLICATION_PROBLEM_JSON)
-            .exchange()
+        val response = ask("9782000000013")
         // Then
         response.expectStatus().isNotFound()
             .expectHeader().contentType(APPLICATION_PROBLEM_JSON)
             .expectBody().jsonPath("$.type").isEqualTo("/problems/not-found")
     }
+
+    @Test
+    @Disabled("S5")
+    fun `S5 Merged answer`() {
+        // Given
+        bnf.stubFor(
+            get(urlPathEqualTo("/api/SRU"))
+                .withQueryParam("query", containing("9782723488525"))
+                .willReturn(xml(recorded("bnf/9782723488525-without-pages-and-year.xml"))),
+        )
+        openLibrary.stubFor(
+            get(urlPathEqualTo("/isbn/9782723488525.json"))
+                .willReturn(temporaryRedirect("${openLibrary.baseUrl()}/books/OL33773404M.json")),
+        )
+        openLibrary.stubFor(
+            get(urlPathEqualTo("/books/OL33773404M.json"))
+                .willReturn(json(recorded("open-library/books/OL33773404M.json"))),
+        )
+        openLibrary.stubFor(
+            get(urlPathEqualTo("/authors/OL2733294A.json"))
+                .willReturn(json(recorded("open-library/authors/OL2733294A.json"))),
+        )
+        openLibrary.stubFor(
+            get(urlPathEqualTo("/authors/OL7476994A.json"))
+                .willReturn(json(recorded("open-library/authors/OL7476994A.json"))),
+        )
+        // When
+        val response = ask("9782723488525")
+        // Then
+        response.expectStatus().isOk()
+            .expectBody()
+            .jsonPath("$.title").isEqualTo("Romance dawn")
+            .jsonPath("$.pageCount").isEqualTo(207)
+            .jsonPath("$.publicationYear").isEqualTo(2013)
+            .jsonPath("$.coverUrl").isEqualTo("https://covers.openlibrary.org/b/isbn/9782723488525-L.jpg")
+            .jsonPath("$.sources").isEqualTo(listOf("BNF", "OPEN_LIBRARY"))
+    }
+
+    private fun ask(isbn: String): RestTestClient.ResponseSpec = http.get()
+        .uri("/api/v1/isbn/$isbn")
+        .headers { it.putAll(READER) }
+        .accept(APPLICATION_JSON, APPLICATION_PROBLEM_JSON)
+        .exchange()
+
+    private fun xml(body: String): ResponseDefinitionBuilder =
+        ok().withHeader("Content-Type", "text/xml;charset=UTF-8").withBody(body)
+
+    private fun json(body: String): ResponseDefinitionBuilder =
+        ok().withHeader("Content-Type", "application/json").withBody(body)
 
     private fun recorded(name: String): String =
         checkNotNull(javaClass.getResource("/scenarios/$name")) { "no recorded answer $name" }.readText()
