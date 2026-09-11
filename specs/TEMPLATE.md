@@ -6,25 +6,31 @@ why now.
 
 ## Scenarios
 
-One block per scenario, Gherkin keywords, one clause per line, `And` for each
-further clause. IDs are stable: task lines, briefs, reviews and the scenario
-tests cite them, and a scenario test bears the scenario's exact title. The
-side line says which side realises it; the last line names its proof.
+One block per scenario, Gherkin keywords, one clause per line, a blank line
+between Given, When and Then, `And` for each further clause. A scenario for
+both sides uses words that hold on both, "the reader asks", "Libris answers";
+the proof line says what each side checks. IDs are stable: task lines,
+briefs, reviews and the scenario tests cite them, and a scenario test bears
+the scenario's exact title, which therefore has no punctuation a method name
+refuses. The side line says which side realises it.
 
-**S1 — <title>** · frontend, backend
+**S1 <title>** · frontend, backend
 
 ```gherkin
 Given …
+
 When …
+
 Then …
+
 And …
 ```
 
 Proof: contract example `<name>` verified by Contracteer on both sides |
-scenario test over stubbed sources | scenario test against `contracteer mock` |
-unit test of `<rule>` | checked by hand on the Pixel.
+backend scenario test over stubbed sources | frontend scenario test against
+`contracteer mock` | unit test of `<rule>` | checked by hand on the Pixel.
 
-**S2 — <title>** · backend
+**S2 <title>** · backend
 
 ```gherkin
 …

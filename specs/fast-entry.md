@@ -8,70 +8,81 @@ feature, and this one shows first how good the sources are.
 
 ## Scenarios
 
-**S1 — Typed ISBN, found** · frontend, backend
+**S1 Typed ISBN, found** · frontend, backend
 
 ```gherkin
-Given a reader on the lookup screen
-When they type an ISBN, with or without hyphens or spaces, thirteen digits or the old ten
-And they submit
-Then one card shows what the sources know: title, subtitle, authors with their roles,
-     series and tome, collection, publisher, publication year, language, page count,
-     summary, cover, the ISBN-13, and which sources answered
-And no kind is shown, since no source gives one
+Given an ISBN the sources know
+
+When the reader asks for it, typed with or without hyphens or spaces,
+     thirteen digits or the old ten
+
+Then Libris answers what the sources know: title, subtitle, authors with their
+     roles, series and tome, collection, publisher, publication year, language,
+     page count, summary, cover, the ISBN-13, and which sources answered
 ```
 
 Proof: contract example `ONE_PIECE_1` verified by Contracteer on both sides;
-scenario test of the screen against `contracteer mock`.
+backend scenario test over stubbed sources; frontend scenario test of the
+screen against `contracteer mock`.
 
-**S2 — Scanned barcode** · frontend
+**S2 Scanned barcode** · frontend
 
 ```gherkin
 Given a reader on the lookup screen who allowed the camera
+
 When the camera sees an EAN-13 starting with 978 or 979
+
 Then the same lookup runs with it and the card of S1 shows
-And any other barcode, the five-digit price add-on included, is ignored
 ```
 
 Scanning uses the browser's `BarcodeDetector`, present in Chrome and Brave on
 Android; where it is absent the screen offers only the text field.
-Proof: scenario test with a stubbed `BarcodeDetector` answering an EAN-13,
-then a non-ISBN barcode; checked by hand on the Pixel.
+Proof: frontend scenario test with a stubbed `BarcodeDetector`; checked by
+hand on the Pixel.
 
-**S3 — Not an ISBN** · frontend, backend
+**S3 Not an ISBN** · frontend
 
 ```gherkin
 Given a reader on the lookup screen
+
 When they submit a text of the wrong length or with a wrong check digit
-Then the screen says beside the field that this is not an ISBN, without calling the API
-And the API, given thirteen digits with a wrong check digit, answers the validation
-    problem naming the field `isbn` without asking any source
+
+Then the screen says beside the field that this is not an ISBN
+
+And no request leaves
 ```
 
-Proof: unit test of the ISBN rule in the frontend (thirteen digits kept, ten
-converted, check digit verified, separators dropped); contract example
-`400_NOT_AN_ISBN` verified on both sides; backend scenario test over stubbed
-sources that receive no call.
+Proof: unit test of the ISBN rule (thirteen digits kept, ten converted, check
+digit verified, separators dropped); frontend scenario test. The API's own
+check is the contract example `400_NOT_AN_ISBN`, verified on both sides.
 
-**S4 — Unknown ISBN** · frontend, backend
+**S4 Unknown ISBN** · frontend, backend
 
 ```gherkin
 Given an ISBN no source knows
-When the reader submits it
-Then the API answers the not-found problem
-And the screen says no source knows this ISBN
+
+When the reader asks for it
+
+Then Libris answers that no source knows it
 ```
 
-Proof: backend scenario test over stubbed sources answering nothing; frontend
-scenario test against `contracteer mock` with `404_UNKNOWN_ISBN`.
+Proof: backend scenario test over stubbed sources answering nothing, the
+not-found problem; frontend scenario test against `contracteer mock` with
+`404_UNKNOWN_ISBN`, the message.
 
-**S5 — Merged answer** · backend
+**S5 Merged answer** · backend
 
 ```gherkin
 Given an ISBN both the BnF and Open Library know
-When the reader submits it
-Then the card carries the BnF's value for every field the BnF gives
+
+When the reader asks for it
+
+Then the answer carries the BnF's value for every field the BnF gives
+
 And Open Library's for the fields the BnF leaves empty
+
 And Open Library's cover by ISBN
+
 And lists both sources
 ```
 
@@ -79,29 +90,34 @@ Proof: backend scenario test over stubbed sources, one recorded BnF record
 with fields blanked that Open Library fills; unit tests of the merge rule,
 field by field, in the implementer's loop.
 
-**S6 — One source down** · backend
+**S6 One source down** · backend
 
 ```gherkin
 Given a source that fails or does not answer in time while the other answers
-When the reader submits an ISBN
-Then the card shows the answer of the source that replied
+
+When the reader asks for an ISBN
+
+Then the answer carries what the source that replied knows
+
 And lists only that source
 ```
 
 Proof: backend scenario test with one stub failing, then one stub answering
 past the timeout.
 
-**S7 — Every source down** · frontend, backend
+**S7 Every source down** · frontend, backend
 
 ```gherkin
 Given every source failing or not answering in time
-When the reader submits an ISBN
-Then the API answers the sources-unavailable problem
-And the screen says to try again later
+
+When the reader asks for an ISBN
+
+Then Libris answers that the sources are unavailable, to try again later
 ```
 
-Proof: backend scenario test with both stubs failing; frontend scenario test
-against `contracteer mock` with `503_SOURCES_DOWN`.
+Proof: backend scenario test with both stubs failing, the sources-unavailable
+problem; frontend scenario test against `contracteer mock` with
+`503_SOURCES_DOWN`, the message.
 
 ## Contract
 

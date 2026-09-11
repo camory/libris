@@ -32,7 +32,7 @@ class FastEntryScenarios @Autowired constructor(
 
     @Test
     @Disabled("S4")
-    fun `S4 — Unknown ISBN`() {
+    fun `S4 Unknown ISBN`() {
         // Given
         bnf.stubFor(
             get(urlPathEqualTo("/api/SRU"))
