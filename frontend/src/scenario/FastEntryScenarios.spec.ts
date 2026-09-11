@@ -64,6 +64,38 @@ describe("Fast entry", () => {
     await showsTheOnePieceCard(screen);
   });
 
+  it.skip("S3 Not an ISBN, wrong length", async () => {
+    // Given
+    const screen = open("/isbn");
+    const requests = vi.spyOn(globalThis, "fetch");
+
+    // When
+    await ask(screen, "978272348852");
+
+    // Then
+    await screen.findByText(/n'est pas un ISBN valide/);
+    expect(host.textContent).toContain(
+      "978272348852 n'est pas un ISBN valide.",
+    );
+    expect(requests).not.toHaveBeenCalled();
+  });
+
+  it.skip("S3 Not an ISBN, wrong check digit", async () => {
+    // Given
+    const screen = open("/isbn");
+    const requests = vi.spyOn(globalThis, "fetch");
+
+    // When
+    await ask(screen, "9782723488526");
+
+    // Then
+    await screen.findByText(/n'est pas un ISBN valide/);
+    expect(host.textContent).toContain(
+      "9782723488526 n'est pas un ISBN valide.",
+    );
+    expect(requests).not.toHaveBeenCalled();
+  });
+
   function cameraAllowed() {
     const stream = { getTracks: () => [{ stop: () => {} }] };
     Object.defineProperty(navigator, "mediaDevices", {
