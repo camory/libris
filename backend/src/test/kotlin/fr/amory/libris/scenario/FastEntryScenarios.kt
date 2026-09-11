@@ -6,6 +6,7 @@ import com.github.tomakehurst.wiremock.client.WireMock.containing
 import com.github.tomakehurst.wiremock.client.WireMock.get
 import com.github.tomakehurst.wiremock.client.WireMock.notFound
 import com.github.tomakehurst.wiremock.client.WireMock.ok
+import com.github.tomakehurst.wiremock.client.WireMock.serverError
 import com.github.tomakehurst.wiremock.client.WireMock.temporaryRedirect
 import com.github.tomakehurst.wiremock.client.WireMock.urlPathEqualTo
 import io.kotest.matchers.shouldBe
@@ -36,11 +37,7 @@ class FastEntryScenarios @Autowired constructor(
     @Disabled("S4")
     fun `S4 Unknown ISBN`() {
         // Given
-        bnf.stubFor(
-            get(urlPathEqualTo("/api/SRU"))
-                .withQueryParam("query", containing("9782000000013"))
-                .willReturn(xml(recorded("bnf/9782000000013.xml"))),
-        )
+        bnfKnows("9782000000013", "bnf/9782000000013.xml")
         openLibrary.stubFor(
             get(urlPathEqualTo("/isbn/9782000000013.json"))
                 .willReturn(notFound().withHeader("Content-Type", "text/html; charset=utf-8")),
@@ -57,11 +54,62 @@ class FastEntryScenarios @Autowired constructor(
     @Disabled("S5")
     fun `S5 Merged answer`() {
         // Given
+        bnfKnows("9782723488525", "bnf/9782723488525-without-pages-and-year.xml")
+        openLibraryKnowsOnePiece()
+        // When
+        val response = ask("9782723488525")
+        // Then
+        response.expectStatus().isOk()
+            .expectBody()
+            .jsonPath("$.title").isEqualTo("Romance dawn")
+            .jsonPath("$.pageCount").isEqualTo(207)
+            .jsonPath("$.publicationYear").isEqualTo(2013)
+            .jsonPath("$.coverUrl").isEqualTo("https://covers.openlibrary.org/b/isbn/9782723488525-L.jpg")
+            .jsonPath("$.sources").isEqualTo(listOf("BNF", "OPEN_LIBRARY"))
+    }
+
+    @Test
+    @Disabled("S6")
+    fun `S6 One source down`() {
+        // Given
+        bnf.stubFor(get(urlPathEqualTo("/api/SRU")).willReturn(serverError()))
+        openLibraryKnowsOnePiece()
+        // When
+        val response = ask("9782723488525")
+        // Then
+        response.expectStatus().isOk()
+            .expectBody()
+            .jsonPath("$.title").isEqualTo("One Piece - Édition originale Tome 01")
+            .jsonPath("$.sources").isEqualTo(listOf("OPEN_LIBRARY"))
+    }
+
+    @Test
+    @Disabled("S6")
+    fun `S6 One source down, past the timeout`() {
+        // Given
+        bnfKnows("9782723488525", "bnf/9782723488525.xml")
+        openLibrary.stubFor(
+            get(urlPathEqualTo("/isbn/9782723488525.json"))
+                .willReturn(temporaryRedirect("${openLibrary.baseUrl()}/books/OL33773404M.json").withFixedDelay(2_000)),
+        )
+        // When
+        val response = ask("9782723488525")
+        // Then
+        response.expectStatus().isOk()
+            .expectBody()
+            .jsonPath("$.title").isEqualTo("Romance dawn")
+            .jsonPath("$.sources").isEqualTo(listOf("BNF"))
+    }
+
+    private fun bnfKnows(isbn: String, record: String) {
         bnf.stubFor(
             get(urlPathEqualTo("/api/SRU"))
-                .withQueryParam("query", containing("9782723488525"))
-                .willReturn(xml(recorded("bnf/9782723488525-without-pages-and-year.xml"))),
+                .withQueryParam("query", containing(isbn))
+                .willReturn(xml(recorded(record))),
         )
+    }
+
+    private fun openLibraryKnowsOnePiece() {
         openLibrary.stubFor(
             get(urlPathEqualTo("/isbn/9782723488525.json"))
                 .willReturn(temporaryRedirect("${openLibrary.baseUrl()}/books/OL33773404M.json")),
@@ -78,16 +126,6 @@ class FastEntryScenarios @Autowired constructor(
             get(urlPathEqualTo("/authors/OL7476994A.json"))
                 .willReturn(json(recorded("open-library/authors/OL7476994A.json"))),
         )
-        // When
-        val response = ask("9782723488525")
-        // Then
-        response.expectStatus().isOk()
-            .expectBody()
-            .jsonPath("$.title").isEqualTo("Romance dawn")
-            .jsonPath("$.pageCount").isEqualTo(207)
-            .jsonPath("$.publicationYear").isEqualTo(2013)
-            .jsonPath("$.coverUrl").isEqualTo("https://covers.openlibrary.org/b/isbn/9782723488525-L.jpg")
-            .jsonPath("$.sources").isEqualTo(listOf("BNF", "OPEN_LIBRARY"))
     }
 
     private fun ask(isbn: String): RestTestClient.ResponseSpec = http.get()
