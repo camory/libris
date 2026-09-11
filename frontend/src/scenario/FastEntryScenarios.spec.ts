@@ -96,6 +96,18 @@ describe("Fast entry", () => {
     expect(requests).not.toHaveBeenCalled();
   });
 
+  it.skip("S4 Unknown ISBN", async () => {
+    // Given
+    const screen = open("/isbn");
+
+    // When
+    await ask(screen, "9782000000006");
+
+    // Then
+    await screen.findByText(/est un ISBN inconnu/);
+    expect(host.textContent).toContain("9782000000006 est un ISBN inconnu.");
+  });
+
   function cameraAllowed() {
     const stream = { getTracks: () => [{ stop: () => {} }] };
     Object.defineProperty(navigator, "mediaDevices", {
