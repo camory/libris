@@ -157,3 +157,10 @@ wrong ISBN and read the message.
 
 ## Tasks
 
+- T013 — S4, S7, the API's own check in S3 — backend
+- T014 — the merge rule of S5 and S6 — backend
+- T015 — S1, S5, S6 — backend
+- T016 — the rule of S3, the client of S1, S4, S7 — frontend
+- T017 — S3, S4, S7 — frontend
+- T018 — S1 — frontend
+- T019 — S2 — frontend
