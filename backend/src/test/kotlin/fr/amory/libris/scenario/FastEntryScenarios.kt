@@ -9,6 +9,7 @@ import com.github.tomakehurst.wiremock.client.WireMock.ok
 import com.github.tomakehurst.wiremock.client.WireMock.serverError
 import com.github.tomakehurst.wiremock.client.WireMock.temporaryRedirect
 import com.github.tomakehurst.wiremock.client.WireMock.urlPathEqualTo
+import com.github.tomakehurst.wiremock.client.WireMock.urlPathMatching
 import com.jayway.jsonpath.JsonPath
 import io.kotest.matchers.shouldBe
 import org.junit.jupiter.api.Disabled
@@ -16,6 +17,7 @@ import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.core.env.Environment
+import org.springframework.http.HttpStatus.SERVICE_UNAVAILABLE
 import org.springframework.http.MediaType.APPLICATION_JSON
 import org.springframework.http.MediaType.APPLICATION_PROBLEM_JSON
 import org.springframework.test.web.servlet.client.RestTestClient
@@ -98,6 +100,20 @@ class FastEntryScenarios @Autowired constructor(
             .jsonPath("$.sources").isEqualTo(listOf("BNF"))
     }
 
+    @Test
+    @Disabled("S7")
+    fun `S7 Every source down`() {
+        // Given
+        bnfFails()
+        openLibraryFails()
+        // When
+        val response = ask("9782723488525")
+        // Then
+        response.expectStatus().isEqualTo(SERVICE_UNAVAILABLE)
+            .expectHeader().contentType(APPLICATION_PROBLEM_JSON)
+            .expectBody().jsonPath("$.type").isEqualTo("/problems/sources-unavailable")
+    }
+
     private fun bnfKnows(isbn: String) = bnfAnswers(isbn, recorded("bnf/$isbn.xml"))
 
     private fun bnfPartiallyKnows(isbn: String) = bnfAnswers(isbn, recorded("bnf/$isbn-without-pages-and-year.xml"))
@@ -128,6 +144,10 @@ class FastEntryScenarios @Autowired constructor(
                 get(urlPathEqualTo("$author.json")).willReturn(json(recorded("open-library$author.json"))),
             )
         }
+    }
+
+    private fun openLibraryFails() {
+        openLibrary.stubFor(get(urlPathMatching("/isbn/.*")).willReturn(serverError()))
     }
 
     private fun openLibraryDoesNotKnow(isbn: String) {
