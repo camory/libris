@@ -80,6 +80,7 @@ frontend one; no other task touches the contract (D04).
       none it does not, against `contracteer mock` (D07).
       Bumps the frontend pin to `v0.3.0` in `vitest.global-setup.ts`, the
       only contract edit (D04).
+      `FetchMeApi` sends the same `Accept` header from then on (D06).
       Realises the rule of S3 and the client half of S1, S4, S7; un-skips
       nothing.
 
@@ -93,6 +94,8 @@ frontend one; no other task touches the contract (D04).
       (D11).
       The fake of the port lands in `src/fixture`; the view test provides it
       through the injection key (D07).
+      The home page links to `/isbn`, so the reader reaches the screen from
+      the installed app.
       Realises S3, S4 and S7 on the frontend; un-skips
       `S3 Not an ISBN, wrong length`, `S3 Not an ISBN, wrong check digit`,
       `S4 Unknown ISBN` and `S7 Every source down`.
@@ -126,30 +129,3 @@ card; type a wrong ISBN and read the message.*
 - Phase 0 — Foundations, T001 to T012, done 2026-09-10 with `v0.1.3` on the
   Pixel: `/api/v1/me` deployed behind Authelia, the PWA installable, the
   expired session handled. Reviewed by Tophe on 2026-09-08.
-
-## Questions for the human
-
-- Nothing leads to the lookup screen. No scenario covers reaching `/isbn`
-  from the home page, so no task adds a link: is that link part of this
-  feature, or does the Pixel check type the URL?
-- The cover URL. The spec's *Contract* names
-  `covers.openlibrary.org/b/isbn/<isbn>-L.jpg?default=false`, the scenario
-  tests of both sides expect the same URL without the query, and nothing
-  stubs that host. The tasks build the plain URL and never fetch it;
-  confirm, or the scenario tests change with the spec.
-- The sources in production. The scenario tests name `LIBRIS_BNF_URL`,
-  `LIBRIS_OPEN_LIBRARY_URL` and `LIBRIS_SOURCE_TIMEOUT`; a run cannot verify
-  `deploy/`, which Tophe writes by hand. The tasks read the three from the
-  environment and default them to the public endpoints, so `deploy/` needs
-  no change — or should they be required there, like `LIBRIS_DB_URL`?
-- The BnF record schema. The spec asks for `recordSchema=unimarcxchange`,
-  the recorded answer under `scenarios/bnf` carries `marcxchange`, and the
-  WireMock stub matches the query parameter only. Which one does T015 ask
-  for?
-- Not planned, no spec yet: PRD §4.1 catalogue, §4.2 search, §4.3 bookshelves
-  and copies, §4.4 reading, §4.5 series tracking, §4.6 wishlist, §4.8 offline
-  browsing, §4.9 import/export, §4.10 reader profiles. Google Books is left
-  out of fast entry by the spec itself, pending PRD open question 6.
-- For `agent/PROPOSED.md`, which a planner run does not edit: `FetchMeApi`
-  sends `Accept: application/json` alone, where D06 asks every request for
-  `application/json, application/problem+json`.
