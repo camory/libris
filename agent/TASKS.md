@@ -19,20 +19,35 @@
 ## Fast entry — specs/fast-entry.md
 
 Contract: release `v0.3.0` of `camory/libris-api`, one read-only operation,
-`GET /api/v1/isbn/{isbn}`. T013 moves the backend pin to it and T016 the
+`GET /api/v1/isbn/{isbn}`. T020 moves the backend pin to it and T016 the
 frontend one; no other task touches the contract (D04).
 
-- [ ] T013 Backend: the ISBN endpoint over Open Library.
-      `GET /api/v1/isbn/{isbn}`: the ISBN-13 value type with its check digit,
-      the source port, the lookup use case and the controller (D02, D11).
-      Not-found when no source knows the ISBN, sources-unavailable when every
-      source fails or answers past `LIBRIS_SOURCE_TIMEOUT`, validation
-      `{field: isbn, code: not-an-isbn}` on a wrong check digit.
-      Open Library is the only source: base URL `LIBRIS_OPEN_LIBRARY_URL`,
-      the edition followed from `/isbn/<isbn>.json`, its authors fetched by
-      key with the role `WRITER` (PRD §3), the cover URL built from the ISBN
-      and never fetched; tested against WireMock over the recorded answers
-      under `src/test/resources/scenarios/open-library`.
+- [ ] T013 Backend: the ISBN-13 value type and the Open Library source.
+      `domain`: the ISBN-13 value type — thirteen digits, check digit
+      verified, refusing anything else — and the source port, which answers
+      what one source knows about an ISBN, or nothing at all: title, subtitle,
+      authors with their roles, series and volume number, collection,
+      publisher, publication year, language, page count, summary, cover URL
+      (D02, D11, PRD §3).
+      `infra.lookup`: Open Library, base URL `LIBRIS_OPEN_LIBRARY_URL`, the
+      edition followed from `/isbn/<isbn>.json`, its authors fetched by key
+      with the role `WRITER`, the cover URL built from the ISBN and never
+      fetched, the call bounded by `LIBRIS_SOURCE_TIMEOUT`; an unknown ISBN is
+      nothing known, a failure or a timeout is a failure, and the caller tells
+      the two apart.
+      Tested against WireMock over the recorded answers under
+      `src/test/resources/scenarios/open-library`; the whole application still
+      boots with neither variable set.
+      No use case, no controller, no contract edit; un-skips nothing.
+
+- [ ] T020 Backend: the ISBN endpoint and its four answers.
+      `application`: the lookup use case over the source port of T013, asking
+      Open Library and answering what it knows, that no source knows the ISBN,
+      or that no source replied. `infra.web`: `GET /api/v1/isbn/{isbn}`, its
+      response and its problems (D02, D11) — not-found when no source knows
+      the ISBN, sources-unavailable when every source fails or answers past
+      `LIBRIS_SOURCE_TIMEOUT`, validation `{field: isbn, code: not-an-isbn}`
+      on a wrong check digit.
       Bumps the backend pin to `v0.3.0` in `ApiContractTest`, the only
       contract edit; Contracteer green on the four responses, the 200 over
       the stubbed use case (D04, D07).
