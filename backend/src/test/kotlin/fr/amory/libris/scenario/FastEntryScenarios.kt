@@ -66,7 +66,6 @@ class FastEntryScenarios @Autowired constructor(
     }
 
     @Test
-    @Disabled("S4")
     fun `S4 Unknown ISBN`() {
         // Given
         bnf.doesNotKnow("9782000000013")
@@ -130,7 +129,6 @@ class FastEntryScenarios @Autowired constructor(
     }
 
     @Test
-    @Disabled("S7")
     fun `S7 Every source down`() {
         // Given
         bnf.fails()

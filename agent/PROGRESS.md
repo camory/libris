@@ -797,3 +797,52 @@ Format:
   to `fixture`, the scenario file edited with Tophe for that alone.
 - Left over: nothing of T013. The port has no caller yet — T014 (the BnF
   source) and T015 (the lookup use case) are next.
+
+## 2026-09-12 — T020 the ISBN endpoint and its four answers — done
+- Did: `application/IsbnLookup.kt` — the use case over the T013 source port and
+  the sealed `LookupResult` (`Found(edition, sources)`, `UnknownIsbn`,
+  `SourcesUnavailable`); `infra/web/IsbnController.kt` — `GET
+  /api/v1/isbn/{isbn}`, its response types and its three problem details;
+  `fixture/SourceAnswering` — the fake `IsbnSource` answering a fixed answer,
+  which T014 reuses. Eleven red-green cycles, one commit each. Moved the
+  backend pin to `v0.3.0`: Contracteer now runs five cases, `/api/v1/me` and
+  the four examples of the ISBN operation, all green. Un-skipped `S4 Unknown
+  ISBN` and `S7 Every source down`; `S1`, `S5` and the two `S6` stay skipped.
+  `./gradlew check` green, run plainly.
+- Decided:
+  - **A problem detail is built in the controller, never thrown.** A private
+    `problem(status, type)` of `IsbnController.kt` returns
+    `ProblemDetail.forStatus(status)` with `type` and `title` set, and the
+    controller answers it as the body of a `ResponseEntity`. No
+    `@RestControllerAdvice`, no exception, no
+    `spring.mvc.problemdetails.enabled`. Measured: Spring then writes
+    `application/problem+json` on its own, but leaves `title` null, so the
+    title is set explicitly from `status.reasonPhrase` — the contract requires
+    it. Spring adds `instance` (the request path); the contract tolerates it.
+  - **Mockito stubs a method taking a value class.** `given(lookup.lookUp(
+    isbn13Of("9782723488525")))` works from Kotlin call syntax despite the JVM
+    mangling of `Isbn13`; the hand-written fake the brief kept in reserve was
+    not needed.
+  - **A web-slice test must mock every use case of `infra.web`, not only the
+    one it exercises.** `WebSliceConfiguration` component-scans the package, so
+    the new `IsbnController` broke `MeControllerTest` and `SecurityConfigTest`
+    with `No qualifying bean of type IsbnLookup`. Both now declare
+    `@MockitoBean(types = [ReaderVisit::class, IsbnLookup::class])`, which also
+    keeps one shared context for the three classes.
+  - **A scenario writes to the database and commits.** `ScenarioTest` is a full
+    `@SpringBootTest`, so the reader headers of an un-skipped scenario insert
+    `juliette` for good, and `JdbcReaderRepositoryTest` then failed on the
+    unique username. The slice test now starts from an empty table
+    (`@Sql(statements = ["delete from reader"])`, rolled back with the test
+    transaction); any future scenario that authenticates would have broken it
+    the same way.
+  - The cold-JVM timeout T013 warned about did not materialise: `S4` answers
+    404 and `S7` 503, on two runs of the class alone and on the full gate.
+- Deviations from the brief: `MeControllerTest.kt` and `SecurityConfigTest.kt`
+  (the mocked `IsbnLookup`) and `JdbcReaderRepositoryTest.kt` (the empty table)
+  are changed although the brief's *Changed* list names neither; none is in its
+  *Not changed* list and no acceptance criterion covers them. Both changes are
+  consequences of the endpoint existing, above.
+- Left over: nothing of T020. The `sources` of an answer is the one source that
+  replied until T014 merges several; the BnF stubs of `S4` and `S7` stay
+  unused, as the brief says. Two follow-ups in `agent/PROPOSED.md`.
