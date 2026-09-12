@@ -84,7 +84,7 @@ class OpenLibrarySource(
 
         fun requestFactory(timeout: Duration): JdkClientHttpRequestFactory {
             val client = HttpClient.newBuilder()
-                .followRedirects(HttpClient.Redirect.ALWAYS)
+                .followRedirects(HttpClient.Redirect.NORMAL)
                 .connectTimeout(timeout)
                 .build()
             return JdkClientHttpRequestFactory(client).apply { setReadTimeout(timeout) }
