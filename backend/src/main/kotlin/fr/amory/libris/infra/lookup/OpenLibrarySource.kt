@@ -7,9 +7,7 @@ import fr.amory.libris.domain.lookup.Source
 import fr.amory.libris.domain.lookup.SourceAnswer
 import fr.amory.libris.domain.lookup.SourceAuthor
 import fr.amory.libris.domain.lookup.SourceEdition
-import org.springframework.beans.factory.annotation.Value
 import org.springframework.http.client.JdkClientHttpRequestFactory
-import org.springframework.stereotype.Component
 import org.springframework.web.client.HttpClientErrorException
 import org.springframework.web.client.RestClient
 import org.springframework.web.client.RestClientException
@@ -19,11 +17,7 @@ import tools.jackson.databind.node.MissingNode
 import java.net.http.HttpClient
 import java.time.Duration
 
-@Component
-class OpenLibrarySource(
-    @Value("\${LIBRIS_OPEN_LIBRARY_URL:https://openlibrary.org}") baseUrl: String,
-    @Value("\${LIBRIS_SOURCE_TIMEOUT:5s}") timeout: Duration,
-) : IsbnSource {
+class OpenLibrarySource(baseUrl: String, timeout: Duration) : IsbnSource {
     override val source = Source.OPEN_LIBRARY
 
     private val http = RestClient.builder()

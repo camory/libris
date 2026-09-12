@@ -753,9 +753,13 @@ Format:
     has `required(field)`, which throws `JsonNodeException` on a missing
     property or on a `MissingNode`; that is how a body the client cannot read
     becomes a failure.
-  - **`@param:Value` does not compile on a constructor parameter** that is
-    not a property: "Redundant annotation target 'param'", and warnings are
-    errors. Plain `@Value` on the parameter.
+  - **Settings go through `application.yaml` and a properties class**, as
+    the datasource already does: the yaml maps `LIBRIS_*` variables with
+    their defaults onto `libris.sources.*`, `SourcesProperties` binds them,
+    `LookupConfig` declares the source beans from it, and a client is a plain
+    class the tests construct. Defaults live in the yaml only. A bean in
+    `infra.lookup` may not be named `openLibrary` or `bnf`: the scenario
+    harness owns those names for its WireMock servers.
   - **`SourceAnswer` is a sealed class, not a sealed interface.**
     `ArchitectureTest`'s "a port of the domain is implemented in the
     infrastructure only" rule matches any non-interface class assignable to a
@@ -769,7 +773,8 @@ Format:
     `1s`.
   - detekt counts returns: three in one function is one too many, and an
     elvis over a platform type Kotlin reads as non-null is unreachable code.
-- Deviations from the brief: `@Value` instead of `@param:Value`; an answer
+- Deviations from the brief: a properties class and a yaml block instead of
+  `@param:Value` (decided with Tophe on review); an answer
   the client cannot read — an edition with no title, an author with no name,
   an empty body — is a failure through Jackson's `required()` and a second
   catch, not through the HTTP one; the warm-up call in `@BeforeAll`.
@@ -778,6 +783,8 @@ Format:
   for the unreadable answers above; the ArchUnit port rule noted in
   `agent/PROPOSED.md`; the source port and what it answers moved to
   `domain.lookup`, `Isbn13` and `AuthorRole` staying at the root (D02
-  amended with Tophe).
+  amended with Tophe); `Redirect.NORMAL`; the settings moved to
+  `application.yaml` and `SourcesProperties`, proven by two cases added to
+  `LibrisApplicationTest` on the same context.
 - Left over: nothing of T013. The port has no caller yet — T014 (the BnF
   source) and T015 (the lookup use case) are next.

@@ -3,6 +3,10 @@ spring:
     url: ${LIBRIS_DB_URL}
     username: ${LIBRIS_DB_USER}
     password: ${LIBRIS_DB_PASSWORD}
+libris:
+  sources:
+    open-library-url: ${LIBRIS_OPEN_LIBRARY_URL:https://openlibrary.org}
+    timeout: ${LIBRIS_SOURCE_TIMEOUT:5s}
 management:
   endpoints:
     web:
