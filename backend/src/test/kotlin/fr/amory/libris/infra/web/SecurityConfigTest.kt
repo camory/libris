@@ -1,5 +1,6 @@
 package fr.amory.libris.infra.web
 
+import fr.amory.libris.application.IsbnLookup
 import fr.amory.libris.application.ReaderVisit
 import fr.amory.libris.domain.Reader
 import org.junit.jupiter.api.Test
@@ -10,7 +11,7 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean
 import org.springframework.test.web.servlet.client.RestTestClient
 
 @WebSliceTest
-@MockitoBean(types = [ReaderVisit::class])
+@MockitoBean(types = [ReaderVisit::class, IsbnLookup::class])
 class SecurityConfigTest @Autowired constructor(
     private val client: RestTestClient,
     private val visit: ReaderVisit,

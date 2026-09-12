@@ -1,5 +1,6 @@
 package fr.amory.libris.infra.web
 
+import fr.amory.libris.application.IsbnLookup
 import fr.amory.libris.application.ReaderVisit
 import fr.amory.libris.domain.Reader
 import io.kotest.matchers.shouldBe
@@ -25,7 +26,7 @@ private val JULIETTE = Reader(
 )
 
 @WebSliceTest
-@MockitoBean(types = [ReaderVisit::class])
+@MockitoBean(types = [ReaderVisit::class, IsbnLookup::class])
 class MeControllerTest @Autowired constructor(
     private val client: RestTestClient,
     private val visit: ReaderVisit,
