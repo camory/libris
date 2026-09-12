@@ -119,10 +119,23 @@ class OpenLibrarySourceTest {
         answer shouldBe SourceAnswer.Failed
     }
 
+    @Test
+    fun `an Open Library that answers past the timeout is a failure`() {
+        // Given
+        openLibraryAnswersTooLate(ONE_PIECE)
+
+        // When
+        val answer = openLibrary.lookUp(isbn(ONE_PIECE))
+
+        // Then
+        answer shouldBe SourceAnswer.Failed
+    }
+
     private companion object {
         const val ONE_PIECE = "9782723488525"
         val TIMEOUT: Duration = Duration.ofMillis(200)
         val WARM_UP_TIMEOUT: Duration = Duration.ofSeconds(20)
+        const val LATE = 2_000
         val wireMock = WireMockServer(options().dynamicPort())
 
         @BeforeAll
@@ -163,6 +176,12 @@ class OpenLibrarySourceTest {
 
         fun openLibraryFailsOn(path: String) {
             wireMock.stubFor(get(urlPathEqualTo(path)).willReturn(serverError()))
+        }
+
+        fun openLibraryAnswersTooLate(isbn: String) {
+            wireMock.stubFor(
+                get(urlPathEqualTo("/isbn/$isbn.json")).willReturn(ok().withFixedDelay(LATE)),
+            )
         }
 
         fun json(body: String): ResponseDefinitionBuilder =
