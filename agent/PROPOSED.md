@@ -65,3 +65,10 @@
   through `virtual:pwa-register` and reload when the new worker takes
   control, or show a "new version" notice (seen by Tophe on 2026-09-10 with
   the first release).
+- Backend: narrow the ArchUnit port rule. "A port of the domain is
+  implemented in the infrastructure only" matches every class assignable to
+  any `domain` interface, so the variants of a sealed interface, or an enum
+  implementing a domain interface, break it; T013 chose a sealed class for
+  `SourceAnswer` because of it. Match the ports only (the interfaces of
+  `domain` that `infra` implements, by name or by a marker), so the domain
+  may use its own interfaces (seen on T013, 2026-09-12).

@@ -747,8 +747,12 @@ Format:
   - **Jackson 3 is the one on the main classpath.** Spring Boot 4 brings
     `tools.jackson.databind` (3.1.5); `com.fasterxml.jackson` 2.21.5 is on
     the test runtime only. The renames that matter here: `asText()` is
-    `asString()`, and a `JsonNode` is not an `Iterable`, so an array is read
-    through `values()`.
+    `asString()`. A `JsonNode` is an `Iterable<JsonNode>`, but it declares
+    its own `map(Function)`, which shadows Kotlin's `Iterable.map` on the
+    node itself, so an array is read through `path(field).values()`. It also
+    has `required(field)`, which throws `JsonNodeException` on a missing
+    property or on a `MissingNode`; that is how a body the client cannot read
+    becomes a failure.
   - **`@param:Value` does not compile on a constructor parameter** that is
     not a property: "Redundant annotation target 'param'", and warnings are
     errors. Plain `@Value` on the parameter.
@@ -765,8 +769,13 @@ Format:
     `1s`.
   - detekt counts returns: three in one function is one too many, and an
     elvis over a platform type Kotlin reads as non-null is unreachable code.
-- Deviations from the brief: `@Value` instead of `@param:Value`; an edition
-  with no title is a failure through an explicit guard rather than through
-  the catch; the warm-up call in `@BeforeAll`.
+- Deviations from the brief: `@Value` instead of `@param:Value`; an answer
+  the client cannot read — an edition with no title, an author with no name,
+  an empty body — is a failure through Jackson's `required()` and a second
+  catch, not through the HTTP one; the warm-up call in `@BeforeAll`.
+- Reviewed with Tophe on 2026-09-12: `Isbn13` accepts ASCII digits only
+  (`isDigit()` and `digitToInt()` are Unicode-aware); two failure cases added
+  for the unreadable answers above; the ArchUnit port rule noted in
+  `agent/PROPOSED.md`.
 - Left over: nothing of T013. The port has no caller yet — T014 (the BnF
   source) and T015 (the lookup use case) are next.
