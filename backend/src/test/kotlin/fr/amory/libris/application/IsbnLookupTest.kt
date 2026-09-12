@@ -3,6 +3,7 @@ package fr.amory.libris.application
 import fr.amory.libris.domain.Isbn13
 import fr.amory.libris.domain.lookup.Source.OPEN_LIBRARY
 import fr.amory.libris.domain.lookup.SourceAnswer.Known
+import fr.amory.libris.domain.lookup.SourceAnswer.NothingKnown
 import fr.amory.libris.domain.lookup.SourceAuthor
 import fr.amory.libris.domain.lookup.SourceEdition
 import fr.amory.libris.domain.AuthorRole.WRITER
@@ -38,5 +39,17 @@ class IsbnLookupTest {
 
         // Then
         result shouldBe LookupResult.Found(ONE_PIECE_1, listOf(OPEN_LIBRARY))
+    }
+
+    @Test
+    fun `a source that knows nothing answers that no source knows the ISBN`() {
+        // Given
+        val lookup = IsbnLookup(SourceAnswering(OPEN_LIBRARY, NothingKnown))
+
+        // When
+        val result = lookup.lookUp(isbn13Of("9782000000013"))
+
+        // Then
+        result shouldBe LookupResult.UnknownIsbn
     }
 }
