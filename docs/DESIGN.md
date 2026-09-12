@@ -183,8 +183,8 @@ meaning. An icon alone is a button (U04) and carries its `aria-label`.
 ### U08 — Words on screen
 French, in the words of PRD §3: ouvrage, série, tome, collection, auteur,
 lecteur, bibliothèque, exemplaire, and a role as the activity, not the
-person: scénario, dessin, couleurs, traduction. Every sentence and label lives in the
-`fr` catalogue; a component never holds a French string.
+person: scénario, dessin, couleurs, traduction. Every sentence and label
+lives in the `fr` catalogue; a component never holds a French string.
 
 Sentences are short, in the plain present, without exclamation marks, and
 end with a full stop when they are sentences (*Scannez le code-barres ou
