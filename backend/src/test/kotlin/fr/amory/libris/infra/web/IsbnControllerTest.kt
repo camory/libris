@@ -2,6 +2,7 @@ package fr.amory.libris.infra.web
 
 import fr.amory.libris.application.IsbnLookup
 import fr.amory.libris.application.LookupResult.Found
+import fr.amory.libris.application.LookupResult.SourcesUnavailable
 import fr.amory.libris.application.LookupResult.UnknownIsbn
 import fr.amory.libris.application.ReaderVisit
 import fr.amory.libris.domain.AuthorRole.ARTIST
@@ -17,6 +18,7 @@ import org.junit.jupiter.api.Test
 import org.mockito.BDDMockito.given
 import org.mockito.Mockito.verifyNoInteractions
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.http.HttpStatus.SERVICE_UNAVAILABLE
 import org.springframework.http.MediaType.APPLICATION_JSON
 import org.springframework.http.MediaType.APPLICATION_PROBLEM_JSON
 import org.springframework.test.context.bean.override.mockito.MockitoBean
@@ -178,6 +180,24 @@ class IsbnControllerTest @Autowired constructor(
             .expectBody().json(
                 """
                 { "type": "/problems/not-found", "title": "Not Found", "status": 404 }
+                """,
+            )
+    }
+
+    @Test
+    fun `an ISBN no source replied to is answered as sources unavailable`() {
+        // Given
+        given(lookup.lookUp(isbn13Of("9791000000008"))).willReturn(SourcesUnavailable)
+
+        // When
+        val response = ask("9791000000008")
+
+        // Then
+        response.expectStatus().isEqualTo(SERVICE_UNAVAILABLE)
+            .expectHeader().contentType(APPLICATION_PROBLEM_JSON)
+            .expectBody().json(
+                """
+                { "type": "/problems/sources-unavailable", "title": "Service Unavailable", "status": 503 }
                 """,
             )
     }
