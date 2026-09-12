@@ -2,6 +2,7 @@
 
 **Backlog line:** copy of the task as written in `agent/TASKS.md`
 **Serves:** spec `<feature>` S#, S#; PRD §4.x; decisions Dxx …
+**First of its kind:** what this task introduces that the code base has none of yet, or `none`
 
 ## Goal
 Two sentences: what exists when this task is done, and why it matters now.
