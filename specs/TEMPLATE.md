@@ -39,6 +39,14 @@ by the task that realises it.
 …
 ```
 
+## Screen
+
+For a feature with a frontend side: the mockups, drawn with Tophe before
+planning, linked and exported under `specs/<feature>/<n>-<state>.jpg`; the
+route; the layout top to bottom on a phone, with the words on screen in
+French; then one bullet per state, named after the scenario it shows. The
+text is what the implementer builds from; the pictures show it.
+
 ## Contract
 
 The operations, schemas and problems the contract (`camory/libris-api`) gains for this
