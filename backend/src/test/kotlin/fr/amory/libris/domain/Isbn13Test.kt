@@ -25,7 +25,7 @@ class Isbn13Test {
     }
 
     @Test
-    fun `a text that is not thirteen digits is not an ISBN-13`() {
+    fun `a text that is not digits only is not an ISBN-13`() {
         // Given / When / Then
         Isbn13.of("978-2-7234-8852-5") shouldBe null
         Isbn13.of("9782723488525 ") shouldBe null

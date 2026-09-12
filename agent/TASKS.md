@@ -22,7 +22,7 @@ Contract: release `v0.3.0` of `camory/libris-api`, one read-only operation,
 `GET /api/v1/isbn/{isbn}`. T020 moves the backend pin to it and T016 the
 frontend one; no other task touches the contract (D04).
 
-- [ ] T013 Backend: the ISBN-13 value type and the Open Library source.
+- [x] T013 Backend: the ISBN-13 value type and the Open Library source.
       `domain`: the ISBN-13 value type — thirteen digits, check digit
       verified, refusing anything else — and the source port, which answers
       what one source knows about an ISBN, or nothing at all: title, subtitle,
