@@ -3,11 +3,15 @@ package fr.amory.libris.domain
 @JvmInline
 value class Isbn13 private constructor(val digits: String) {
     companion object {
+        private const val LENGTH = 13
         private const val ODD_WEIGHT = 3
         private const val MODULUS = 10
 
-        fun of(text: String): Isbn13? =
-            if (text.last().digitToInt() == checkDigitOf(text.dropLast(1))) Isbn13(text) else null
+        fun of(text: String): Isbn13? = when {
+            text.length != LENGTH -> null
+            text.last().digitToInt() != checkDigitOf(text.dropLast(1)) -> null
+            else -> Isbn13(text)
+        }
 
         private fun checkDigitOf(body: String): Int {
             val weighted = body.mapIndexed { position, digit ->
