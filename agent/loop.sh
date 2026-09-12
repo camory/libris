@@ -99,16 +99,18 @@ run_role() {
   local model="${!mv:-$MODEL}" effort="${!ev:-$EFFORT}" turns="${!tv:-$MAX_TURNS}" budget="${!bv:-$MAX_BUDGET_USD}" compact="${!cv:-$AUTOCOMPACT}"
 
   LAST_LOG="agent/logs/$(date +%Y%m%d-%H%M%S)-${tag}-${role}.json"
+  local trace="${LAST_LOG%.json}.jsonl"
   log "▶ $role for $tag — model=$model effort=$effort max_turns=$turns budget=\$$budget autocompact=$compact"
   set +e
   "${COMPOSE[@]}" run --rm -T agent \
-    "claude -p --output-format json --json-schema \"\$(cat agent/schemas/$role.json)\" \
+    "claude -p --output-format stream-json --verbose --json-schema \"\$(cat agent/schemas/$role.json)\" \
        --model '$model' --effort '$effort' --max-turns '$turns' --max-budget-usd '$budget' \
        --autocompact '$compact' \
        --dangerously-skip-permissions --permission-prompts none" \
-    <<<"$prompt" >"$LAST_LOG" 2>"${LAST_LOG%.json}.stderr"
+    <<<"$prompt" >"$trace" 2>"${LAST_LOG%.json}.stderr"
   local rc=$?
   set -e
+  jq -c 'select(.type == "result")' "$trace" 2>/dev/null | tail -n1 >"$LAST_LOG"
   (( rc == 0 )) || log "  claude exited with code $rc — see ${LAST_LOG%.json}.stderr"
 
   STATUS=$(jq -r '.structured_output.status // "none"' "$LAST_LOG" 2>/dev/null || echo none)

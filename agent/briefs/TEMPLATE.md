@@ -7,6 +7,13 @@
 ## Goal
 Two sentences: what exists when this task is done, and why it matters now.
 
+## Rules in play
+One line per decision of `docs/ARCHITECTURE.md` and rule of `docs/DESIGN.md`
+the task touches, numbered, each stating what it requires of this task:
+- D07 — the scenario tests named in the backlog line are un-skipped, never
+  edited
+- U04 — the button is busy while the lookup runs and the field stays editable
+
 ## Acceptance criteria
 - [ ] Each line checkable by a test, a command, or an HTTP call
 - [ ] …

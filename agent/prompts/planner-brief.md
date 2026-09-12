@@ -36,6 +36,10 @@ much of the code base the implementer must understand first.
   decision cannot be followed because it needs a file a run may not edit,
   say so under *Risks and decisions* and report `status: blocked` rather
   than instruct against the decision.
+- Fill **Rules in play**: the decisions and rules this task touches, one
+  line each with what it requires here. The implementer works from these
+  lines, not from the documents; a rule missing here is a rule the
+  implementer will not apply.
 - Fill the **First of its kind** line of the template. It names the kind of
   thing this task introduces and the code base has none of yet — the first
   outbound client, the first configuration setting, the first sub-package of
