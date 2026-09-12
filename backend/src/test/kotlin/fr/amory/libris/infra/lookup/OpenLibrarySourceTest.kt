@@ -14,6 +14,7 @@ import fr.amory.libris.domain.Source
 import fr.amory.libris.domain.SourceAnswer
 import fr.amory.libris.domain.SourceAuthor
 import fr.amory.libris.domain.SourceEdition
+import io.kotest.matchers.collections.shouldContainExactlyInAnyOrder
 import io.kotest.matchers.shouldBe
 import org.junit.jupiter.api.AfterAll
 import org.junit.jupiter.api.AfterEach
@@ -61,38 +62,61 @@ class OpenLibrarySourceTest {
         )
     }
 
-    private fun isbn(text: String): Isbn13 = checkNotNull(Isbn13.of(text))
+    @Test
+    fun `looking up an ISBN asks for the edition and its authors, never for the cover`() {
+        // Given
+        openLibraryKnows(ONE_PIECE)
 
-    private fun openLibraryKnows(isbn: String) {
-        val document = recorded("open-library/books/$isbn.json")
-        val key = JsonPath.read<String>(document, "$.key")
-        wireMock.stubFor(
-            get(urlPathEqualTo("/isbn/$isbn.json")).willReturn(temporaryRedirect("${wireMock.baseUrl()}$key.json")),
+        // When
+        openLibrary.lookUp(isbn(ONE_PIECE))
+
+        // Then
+        wireMock.allServeEvents.map { it.request.url } shouldContainExactlyInAnyOrder listOf(
+            "/isbn/$ONE_PIECE.json",
+            "/books/OL33773404M.json",
+            "/authors/OL2733294A.json",
+            "/authors/OL7476994A.json",
         )
-        wireMock.stubFor(get(urlPathEqualTo("$key.json")).willReturn(json(document)))
-        JsonPath.read<List<String>>(document, "$.authors[*].key").forEach { author ->
-            wireMock.stubFor(
-                get(urlPathEqualTo("$author.json")).willReturn(json(recorded("open-library$author.json"))),
-            )
-        }
     }
-
-    private fun json(body: String): ResponseDefinitionBuilder =
-        ok().withHeader("Content-Type", "application/json").withBody(body)
-
-    private fun recorded(name: String): String =
-        checkNotNull(javaClass.getResource("/scenarios/$name")) { "no recorded answer $name" }.readText()
 
     private companion object {
         const val ONE_PIECE = "9782723488525"
-        val TIMEOUT: Duration = Duration.ofSeconds(1)
+        val TIMEOUT: Duration = Duration.ofMillis(200)
+        val WARM_UP_TIMEOUT: Duration = Duration.ofSeconds(20)
         val wireMock = WireMockServer(options().dynamicPort())
 
         @BeforeAll
         @JvmStatic
         fun startWireMock() {
             wireMock.start()
+            openLibraryKnows(ONE_PIECE)
+            OpenLibrarySource(wireMock.baseUrl(), WARM_UP_TIMEOUT).lookUp(isbn(ONE_PIECE))
+            wireMock.resetAll()
         }
+
+        fun isbn(text: String): Isbn13 = checkNotNull(Isbn13.of(text))
+
+        fun openLibraryKnows(isbn: String) {
+            val document = recorded("open-library/books/$isbn.json")
+            val key = JsonPath.read<String>(document, "$.key")
+            wireMock.stubFor(
+                get(urlPathEqualTo("/isbn/$isbn.json")).willReturn(temporaryRedirect("${wireMock.baseUrl()}$key.json")),
+            )
+            wireMock.stubFor(get(urlPathEqualTo("$key.json")).willReturn(json(document)))
+            JsonPath.read<List<String>>(document, "$.authors[*].key").forEach { author ->
+                wireMock.stubFor(
+                    get(urlPathEqualTo("$author.json")).willReturn(json(recorded("open-library$author.json"))),
+                )
+            }
+        }
+
+        fun json(body: String): ResponseDefinitionBuilder =
+            ok().withHeader("Content-Type", "application/json").withBody(body)
+
+        fun recorded(name: String): String =
+            checkNotNull(OpenLibrarySourceTest::class.java.getResource("/scenarios/$name")) {
+                "no recorded answer $name"
+            }.readText()
 
         @AfterAll
         @JvmStatic
