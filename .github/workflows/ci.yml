@@ -1,5 +1,6 @@
 # Continuous integration. Changed by humans only (the agent token has no
-# workflow permission). Jobs skip themselves until their module exists.
+# workflow permission). Jobs skip themselves until their module exists, and
+# on a pull request while their side is unchanged.
 name: ci
 on:
   pull_request:
@@ -7,7 +8,31 @@ on:
     branches: [main]
 
 jobs:
+  changes:
+    runs-on: ubuntu-latest
+    outputs:
+      backend: ${{ steps.diff.outputs.backend }}
+      frontend: ${{ steps.diff.outputs.frontend }}
+    steps:
+      - uses: actions/checkout@v4
+        with: { fetch-depth: 0 }
+      - id: diff
+        run: |
+          if [ "$GITHUB_EVENT_NAME" = push ]; then
+            printf 'backend=true\nfrontend=true\n' >> "$GITHUB_OUTPUT"; exit 0
+          fi
+          files=$(git diff --name-only "origin/$GITHUB_BASE_REF...HEAD")
+          for side in backend frontend; do
+            if grep -qE "^($side/|\.github/workflows/ci\.yml)" <<<"$files"; then
+              echo "$side=true" >> "$GITHUB_OUTPUT"
+            else
+              echo "$side=false" >> "$GITHUB_OUTPUT"; echo "$side unchanged"
+            fi
+          done
+
   backend:
+    needs: changes
+    if: needs.changes.outputs.backend == 'true'
     runs-on: ubuntu-latest
     services:
       postgres:
@@ -38,6 +63,8 @@ jobs:
         run: ./gradlew check --no-daemon
 
   frontend:
+    needs: changes
+    if: needs.changes.outputs.frontend == 'true'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -86,7 +113,8 @@ jobs:
         run: bash agent/hooks/test-proof.sh
 
   images:
-    needs: [backend, frontend]
+    needs: [changes, backend, frontend]
+    if: ${{ !cancelled() && !contains(needs.*.result, 'failure') && contains(needs.*.result, 'success') }}
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -94,6 +122,8 @@ jobs:
     env:
       REGISTRY: ghcr.io/camory
       PUSH: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
+      BUILD_BACKEND: ${{ needs.changes.outputs.backend }}
+      BUILD_FRONTEND: ${{ needs.changes.outputs.frontend }}
     steps:
       - uses: actions/checkout@v4
       - if: env.PUSH == 'true'
@@ -105,6 +135,8 @@ jobs:
           tag="sha-${GITHUB_SHA::7}"
           created="$(date -u +%Y-%m-%dT%H:%M:%SZ)"
           for side in backend frontend; do
+            case $side in backend) wanted=$BUILD_BACKEND ;; frontend) wanted=$BUILD_FRONTEND ;; esac
+            if [ "$wanted" != true ]; then echo "$side unchanged"; continue; fi
             if [ ! -f "$side/Dockerfile" ]; then echo "$side/Dockerfile not present yet"; continue; fi
             image="$REGISTRY/libris-$side:$tag"
             docker build "$side" -t "$image" \

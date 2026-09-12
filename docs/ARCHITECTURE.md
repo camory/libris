@@ -38,8 +38,10 @@ repository. The contract they share lives in its own repository and each side
 pins the release it implements (D04). One PR can change the backend and the
 frontend of a feature. Each app has its own build, tests and Dockerfile. There
 is no root build: the whole interface is `cd backend && ./gradlew check` and
-`cd frontend && npm test`. CI runs every job on each pull request and on each
-push to `main`; a job skips itself while its application does not exist.
+`cd frontend && npm test`. CI runs every job on each push to `main`; on a
+pull request the backend and frontend jobs run only when their directory or
+the workflow changed, and the images job builds the sides that ran. A job
+skips itself while its application does not exist.
 
 ### D02 — Backend: Kotlin + Spring Boot, light hexagon
 Spring Boot, Kotlin, JDK 25, one Gradle module. Persistence with
