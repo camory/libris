@@ -29,8 +29,19 @@ much of the code base the implementer must understand first.
 - Create the branch `task/{{TASK_ID}}-<short-slug>` from `main`.
 - Write `agent/briefs/{{TASK_ID}}.md` following `agent/briefs/TEMPLATE.md`.
   Acceptance criteria restate the cited scenarios for this task, name their
-  scenario tests as the proof, and must be checkable by a test or a command. Decisions must not contradict the spec or
-  `docs/ARCHITECTURE.md`.
+  scenario tests as the proof, and must be checkable by a test or a command.
+  Decisions must not contradict the spec or `docs/ARCHITECTURE.md`; when a
+  decision cannot be followed because it needs a file a run may not edit,
+  say so under *Risks and decisions* and report `status: blocked` rather
+  than instruct against the decision.
+- Fill the **First of its kind** line of the template. It names the kind of
+  thing this task introduces and the code base has none of yet — the first
+  outbound client, the first configuration setting, the first sub-package of
+  a layer, the first shared fixture, the first migration of a shape, the
+  first frontend view of a family — or says `none`. Such a task sets
+  conventions no document states yet: the reviewer repeats the line in its
+  verdict and Tophe reviews the pull request interactively before merging,
+  amending `docs/ARCHITECTURE.md` with what the review settles.
 - Commit `docs(brief): {{TASK_ID}} <title>`. **Do not push**: the implementer
   continues on this branch and pushes everything.
 - Report `status: brief_written` with the branch name.

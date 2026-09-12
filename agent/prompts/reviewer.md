@@ -28,6 +28,18 @@ it is at most a suggestion.
    tautological assertion, nothing skipped or weakened? For every cited
    scenario test: un-skipped, and otherwise byte-identical to `origin/main`?
    Any risk of data loss, injection, or a secret in the code?
+   A criterion stated as a property — never, always, none, every — is not
+   the list of cases its tests happen to cover: read the code for a
+   counterexample (an input, a response, a missing field) and, if you find
+   one, the criterion is not met even when no test or recorded answer
+   exercises it.
+   Read the PROGRESS entry of the task: every claim a future run would act
+   on (an API's behaviour, a library's shape, a command, a gotcha) must be
+   true of the code on the branch; check each one against the code.
+   Read the brief against `docs/ARCHITECTURE.md` too, not only the code
+   against the brief: an instruction of the brief that contradicts a
+   decision is a finding under *Notes on the brief*, and code that followed
+   it is judged against the decision, the brief losing.
    For every file in the diff: does a criterion or a declared deviation need
    it (`CLAUDE.md`, "Only what the task uses")? Does any comment, build
    script or configuration carry rationale or a decision number
@@ -41,7 +53,8 @@ it is at most a suggestion.
    the caller first. Absence is often deliberate. Every finding names a file
    and line and the yardstick it violates.
 6. Classify each finding:
-   - **Blocking**: an acceptance criterion not met; a test that does not
+   - **Blocking**: an acceptance criterion not met, a counterexample to a
+     property criterion included; a test that does not
      prove its claim, or was skipped or weakened; a cited scenario test
      still skipped or altered; an architecture decision
      violated; a security or data-loss risk; a verification claim your run
@@ -51,7 +64,8 @@ it is at most a suggestion.
    - **Suggestion**: everything else — naming, structure, a simplification, a
      missing edge-case test that no criterion asks for, a commit history
      that does not show one test per cycle (history is never rewritten, so
-     it is reported, not fixed).
+     it is reported, not fixed), a PROGRESS claim that is false of the
+     branch (name the claim and what the code says instead).
 7. Verdict: `REQUEST CHANGES` if at least one blocking finding, else `APPROVE`.
 8. Write the comment body to a file under `/tmp`, post it with
    `gh pr comment {{PR_NUMBER}} --body-file <file>`, then set the label:
@@ -64,6 +78,7 @@ it is at most a suggestion.
 ```
 ## Reviewer verdict: APPROVE | REQUEST CHANGES
 Blocking: N · Suggestions: M · Verified: <commands you ran and their real result>
+First of its kind: <what the brief declares, or omit this line> — Tophe reviews this PR interactively before merging
 
 ### Blocking
 - `path:line` — what is wrong and which criterion, decision or rule it violates
@@ -78,7 +93,9 @@ Blocking: N · Suggestions: M · Verified: <commands you ran and their real resu
 - [ ] criterion — not met because …
 
 ### Notes on the brief
-What the planner got wrong or left unclear, for the next brief; or "none".
+What the planner got wrong or left unclear, for the next brief, including
+any instruction that contradicts a decision of `docs/ARCHITECTURE.md`; or
+"none".
 ```
 
 Be as short as the findings allow. A review nobody reads protects nothing.
