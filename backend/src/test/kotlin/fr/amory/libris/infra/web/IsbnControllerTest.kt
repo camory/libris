@@ -40,6 +40,21 @@ private val ONE_PIECE_1 = SourceEdition(
     coverUrl = "https://covers.openlibrary.org/b/isbn/9782723488525-L.jpg",
 )
 
+private val BARE = SourceEdition(
+    isbn13 = isbn13Of("9782000000013"),
+    title = "Un ouvrage sans rien d'autre",
+    subtitle = null,
+    authors = emptyList(),
+    series = null,
+    collection = null,
+    publisher = null,
+    publicationYear = null,
+    language = null,
+    pageCount = null,
+    summary = null,
+    coverUrl = null,
+)
+
 @WebSliceTest
 @MockitoBean(types = [ReaderVisit::class, IsbnLookup::class])
 class IsbnControllerTest @Autowired constructor(
@@ -77,6 +92,38 @@ class IsbnControllerTest @Autowired constructor(
                   "summary": "Luffy prend la mer.",
                   "coverUrl": "https://covers.openlibrary.org/b/isbn/9782723488525-L.jpg",
                   "sources": ["BNF", "OPEN_LIBRARY"]
+                }
+                """,
+                JsonCompareMode.STRICT,
+            )
+    }
+
+    @Test
+    fun `an edition the sources left empty carries every field as null`() {
+        // Given
+        given(lookup.lookUp(isbn13Of("9782000000013"))).willReturn(Found(BARE, listOf(OPEN_LIBRARY)))
+
+        // When
+        val response = ask("9782000000013")
+
+        // Then
+        response.expectStatus().isOk()
+            .expectBody().json(
+                """
+                {
+                  "isbn13": "9782000000013",
+                  "title": "Un ouvrage sans rien d'autre",
+                  "subtitle": null,
+                  "authors": [],
+                  "series": null,
+                  "collection": null,
+                  "publisher": null,
+                  "publicationYear": null,
+                  "language": null,
+                  "pageCount": null,
+                  "summary": null,
+                  "coverUrl": null,
+                  "sources": ["OPEN_LIBRARY"]
                 }
                 """,
                 JsonCompareMode.STRICT,
