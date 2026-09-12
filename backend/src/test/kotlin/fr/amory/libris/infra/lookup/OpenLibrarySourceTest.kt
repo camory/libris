@@ -106,6 +106,19 @@ class OpenLibrarySourceTest {
         answer shouldBe SourceAnswer.Failed
     }
 
+    @Test
+    fun `an Open Library that fails on an author is a failure`() {
+        // Given
+        openLibraryKnows(ONE_PIECE)
+        openLibraryFailsOn("/authors/OL2733294A.json")
+
+        // When
+        val answer = openLibrary.lookUp(isbn(ONE_PIECE))
+
+        // Then
+        answer shouldBe SourceAnswer.Failed
+    }
+
     private companion object {
         const val ONE_PIECE = "9782723488525"
         val TIMEOUT: Duration = Duration.ofMillis(200)
@@ -146,6 +159,10 @@ class OpenLibrarySourceTest {
 
         fun openLibraryFails() {
             wireMock.stubFor(get(urlPathMatching("/isbn/.*")).willReturn(serverError()))
+        }
+
+        fun openLibraryFailsOn(path: String) {
+            wireMock.stubFor(get(urlPathEqualTo(path)).willReturn(serverError()))
         }
 
         fun json(body: String): ResponseDefinitionBuilder =
