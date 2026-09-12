@@ -11,6 +11,7 @@ import fr.amory.libris.domain.SourceEdition
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.http.client.JdkClientHttpRequestFactory
 import org.springframework.stereotype.Component
+import org.springframework.web.client.HttpClientErrorException
 import org.springframework.web.client.RestClient
 import java.net.http.HttpClient
 import java.time.Duration
@@ -28,7 +29,7 @@ class OpenLibrarySource(
         .build()
 
     override fun lookUp(isbn: Isbn13): SourceAnswer {
-        val edition = document("/isbn/${isbn.digits}.json")
+        val edition = edition(isbn) ?: return SourceAnswer.NothingKnown
         return SourceAnswer.Known(
             SourceEdition(
                 isbn13 = isbn,
@@ -46,6 +47,13 @@ class OpenLibrarySource(
             ),
         )
     }
+
+    private fun edition(isbn: Isbn13): JsonNode? =
+        try {
+            document("/isbn/${isbn.digits}.json")
+        } catch (ignored: HttpClientErrorException.NotFound) {
+            null
+        }
 
     private fun authorsOf(edition: JsonNode): List<SourceAuthor> =
         edition.path("authors").values().map { SourceAuthor(nameOf(it.path("key").asString()), WRITER) }

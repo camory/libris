@@ -3,6 +3,7 @@ package fr.amory.libris.infra.lookup
 import com.github.tomakehurst.wiremock.WireMockServer
 import com.github.tomakehurst.wiremock.client.ResponseDefinitionBuilder
 import com.github.tomakehurst.wiremock.client.WireMock.get
+import com.github.tomakehurst.wiremock.client.WireMock.notFound
 import com.github.tomakehurst.wiremock.client.WireMock.ok
 import com.github.tomakehurst.wiremock.client.WireMock.temporaryRedirect
 import com.github.tomakehurst.wiremock.client.WireMock.urlPathEqualTo
@@ -79,6 +80,18 @@ class OpenLibrarySourceTest {
         )
     }
 
+    @Test
+    fun `an ISBN Open Library does not know is nothing known`() {
+        // Given
+        openLibraryDoesNotKnow(ONE_PIECE)
+
+        // When
+        val answer = openLibrary.lookUp(isbn(ONE_PIECE))
+
+        // Then
+        answer shouldBe SourceAnswer.NothingKnown
+    }
+
     private companion object {
         const val ONE_PIECE = "9782723488525"
         val TIMEOUT: Duration = Duration.ofMillis(200)
@@ -108,6 +121,13 @@ class OpenLibrarySourceTest {
                     get(urlPathEqualTo("$author.json")).willReturn(json(recorded("open-library$author.json"))),
                 )
             }
+        }
+
+        fun openLibraryDoesNotKnow(isbn: String) {
+            wireMock.stubFor(
+                get(urlPathEqualTo("/isbn/$isbn.json"))
+                    .willReturn(notFound().withHeader("Content-Type", "text/html; charset=utf-8")),
+            )
         }
 
         fun json(body: String): ResponseDefinitionBuilder =
