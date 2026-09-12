@@ -1,6 +1,5 @@
 package fr.amory.libris.infra.lookup
 
-import tools.jackson.databind.JsonNode
 import fr.amory.libris.domain.AuthorRole.WRITER
 import fr.amory.libris.domain.Isbn13
 import fr.amory.libris.domain.IsbnSource
@@ -14,6 +13,7 @@ import org.springframework.stereotype.Component
 import org.springframework.web.client.HttpClientErrorException
 import org.springframework.web.client.RestClient
 import org.springframework.web.client.RestClientException
+import tools.jackson.databind.JsonNode
 import java.net.http.HttpClient
 import java.time.Duration
 
@@ -36,13 +36,15 @@ class OpenLibrarySource(
             SourceAnswer.Failed
         }
 
-    private fun answerFor(isbn: Isbn13): SourceAnswer {
-        val edition = editionOf(isbn) ?: return SourceAnswer.NothingKnown
-        val title = edition["title"]?.asString() ?: return SourceAnswer.Failed
+    private fun answerFor(isbn: Isbn13): SourceAnswer =
+        editionOf(isbn)?.let { answerFrom(isbn, it) } ?: SourceAnswer.NothingKnown
+
+    private fun answerFrom(isbn: Isbn13, edition: JsonNode): SourceAnswer {
+        val title = edition["title"] ?: return SourceAnswer.Failed
         return SourceAnswer.Known(
             SourceEdition(
                 isbn13 = isbn,
-                title = title,
+                title = title.asString(),
                 subtitle = edition["subtitle"]?.asString(),
                 authors = authorsOf(edition),
                 series = null,
