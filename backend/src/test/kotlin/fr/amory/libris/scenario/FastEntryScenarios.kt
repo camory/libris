@@ -1,14 +1,8 @@
 package fr.amory.libris.scenario
 
 import com.github.tomakehurst.wiremock.WireMockServer
-import com.github.tomakehurst.wiremock.client.ResponseDefinitionBuilder
-import com.github.tomakehurst.wiremock.client.WireMock.containing
-import com.github.tomakehurst.wiremock.client.WireMock.get
-import com.github.tomakehurst.wiremock.client.WireMock.ok
-import com.github.tomakehurst.wiremock.client.WireMock.serverError
-import com.github.tomakehurst.wiremock.client.WireMock.urlPathEqualTo
+import fr.amory.libris.fixture.BnfStubs
 import fr.amory.libris.fixture.OpenLibraryStubs
-import fr.amory.libris.fixture.recorded
 import io.kotest.matchers.shouldBe
 import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
@@ -25,14 +19,15 @@ import org.springframework.test.web.servlet.client.RestTestClient
 class FastEntryScenarios @Autowired constructor(
     private val http: RestTestClient,
     private val environment: Environment,
-    @param:Qualifier("bnf") private val bnf: WireMockServer,
+    @Qualifier("bnf") bnfServer: WireMockServer,
     @Qualifier("openLibrary") openLibraryServer: WireMockServer,
 ) {
+    private val bnf = BnfStubs(bnfServer)
     private val openLibrary = OpenLibraryStubs(openLibraryServer)
 
     @Test
     fun `the application runs over the stubbed sources`() {
-        environment.getProperty("LIBRIS_BNF_URL") shouldBe "${bnf.baseUrl()}/api/SRU"
+        environment.getProperty("LIBRIS_BNF_URL") shouldBe "${bnf.baseUrl}/api/SRU"
         environment.getProperty("LIBRIS_OPEN_LIBRARY_URL") shouldBe openLibrary.baseUrl
         environment.getProperty("LIBRIS_SOURCE_TIMEOUT") shouldBe "1s"
     }
@@ -41,7 +36,7 @@ class FastEntryScenarios @Autowired constructor(
     @Disabled("S1")
     fun `S1 Typed ISBN, found`() {
         // Given
-        bnfKnows("9782723488525")
+        bnf.knows("9782723488525")
         openLibrary.knows("9782723488525")
         // When
         val response = ask("9782723488525")
@@ -74,7 +69,7 @@ class FastEntryScenarios @Autowired constructor(
     @Disabled("S4")
     fun `S4 Unknown ISBN`() {
         // Given
-        bnfDoesNotKnow("9782000000013")
+        bnf.doesNotKnow("9782000000013")
         openLibrary.doesNotKnow("9782000000013")
         // When
         val response = ask("9782000000013")
@@ -88,7 +83,7 @@ class FastEntryScenarios @Autowired constructor(
     @Disabled("S5")
     fun `S5 Merged answer`() {
         // Given
-        bnfPartiallyKnows("9782723488525")
+        bnf.partiallyKnows("9782723488525")
         openLibrary.knows("9782723488525")
         // When
         val response = ask("9782723488525")
@@ -106,7 +101,7 @@ class FastEntryScenarios @Autowired constructor(
     @Disabled("S6")
     fun `S6 One source down`() {
         // Given
-        bnfFails()
+        bnf.fails()
         openLibrary.knows("9782723488525")
         // When
         val response = ask("9782723488525")
@@ -122,7 +117,7 @@ class FastEntryScenarios @Autowired constructor(
     @Disabled("S6")
     fun `S6 One source down, past the timeout`() {
         // Given
-        bnfKnows("9782723488525")
+        bnf.knows("9782723488525")
         openLibrary.answersTooLate("9782723488525")
         // When
         val response = ask("9782723488525")
@@ -138,7 +133,7 @@ class FastEntryScenarios @Autowired constructor(
     @Disabled("S7")
     fun `S7 Every source down`() {
         // Given
-        bnfFails()
+        bnf.fails()
         openLibrary.fails()
         // When
         val response = ask("9782723488525")
@@ -148,32 +143,11 @@ class FastEntryScenarios @Autowired constructor(
             .expectBody().jsonPath("$.type").isEqualTo("/problems/sources-unavailable")
     }
 
-    private fun bnfKnows(isbn: String) = bnfAnswers(isbn, recorded("bnf/$isbn.xml"))
-
-    private fun bnfPartiallyKnows(isbn: String) = bnfAnswers(isbn, recorded("bnf/$isbn-without-pages-and-year.xml"))
-
-    private fun bnfDoesNotKnow(isbn: String) = bnfAnswers(isbn, recorded("bnf/$isbn.xml"))
-
-    private fun bnfFails() {
-        bnf.stubFor(get(urlPathEqualTo("/api/SRU")).willReturn(serverError()))
-    }
-
-    private fun bnfAnswers(isbn: String, envelope: String) {
-        bnf.stubFor(
-            get(urlPathEqualTo("/api/SRU"))
-                .withQueryParam("query", containing(isbn))
-                .willReturn(xml(envelope)),
-        )
-    }
-
     private fun ask(isbn: String): RestTestClient.ResponseSpec = http.get()
         .uri("/api/v1/isbn/$isbn")
         .headers { it.putAll(READER) }
         .accept(APPLICATION_JSON, APPLICATION_PROBLEM_JSON)
         .exchange()
-
-    private fun xml(body: String): ResponseDefinitionBuilder =
-        ok().withHeader("Content-Type", "text/xml;charset=UTF-8").withBody(body)
 
     private companion object {
         val READER = mapOf(
