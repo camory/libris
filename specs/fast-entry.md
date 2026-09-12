@@ -146,14 +146,22 @@ without a problem body means Libris itself is unavailable, not the sources.
 Sources in this feature: the BnF SRU (`recordSchema=unimarcxchange`; the
 role comes from the author field's function code, mapped against the BnF's
 published list) and Open Library (`/isbn/<isbn>.json`, authors fetched by
-key, cover `covers.openlibrary.org/b/isbn/<isbn>-L.jpg?default=false`).
+key, cover `covers.openlibrary.org/b/isbn/<isbn>-L.jpg`).
 Google Books waits for PRD open question 6.
 
 ## Done
 
-On the Pixel, from the installed app: scan a manga and a BD and read both
+On the Pixel, from the installed app, through the home page's link to the
+lookup screen: scan a manga and a BD and read both
 cards, sources included; type an ISBN-10 by hand and read its card; type a
 wrong ISBN and read the message.
 
 ## Tasks
 
+- T013 — S4, S7, the API's own check in S3 — backend
+- T014 — the merge rule of S5 and S6 — backend
+- T015 — S1, S5, S6 — backend
+- T016 — the rule of S3, the client of S1, S4, S7 — frontend
+- T017 — S3, S4, S7 — frontend
+- T018 — S1 — frontend
+- T019 — S2 — frontend
