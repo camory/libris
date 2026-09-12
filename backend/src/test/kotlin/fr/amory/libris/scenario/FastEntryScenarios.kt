@@ -4,13 +4,11 @@ import com.github.tomakehurst.wiremock.WireMockServer
 import com.github.tomakehurst.wiremock.client.ResponseDefinitionBuilder
 import com.github.tomakehurst.wiremock.client.WireMock.containing
 import com.github.tomakehurst.wiremock.client.WireMock.get
-import com.github.tomakehurst.wiremock.client.WireMock.notFound
 import com.github.tomakehurst.wiremock.client.WireMock.ok
 import com.github.tomakehurst.wiremock.client.WireMock.serverError
-import com.github.tomakehurst.wiremock.client.WireMock.temporaryRedirect
 import com.github.tomakehurst.wiremock.client.WireMock.urlPathEqualTo
-import com.github.tomakehurst.wiremock.client.WireMock.urlPathMatching
-import com.jayway.jsonpath.JsonPath
+import fr.amory.libris.fixture.OpenLibraryStubs
+import fr.amory.libris.fixture.recorded
 import io.kotest.matchers.shouldBe
 import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
@@ -28,12 +26,14 @@ class FastEntryScenarios @Autowired constructor(
     private val http: RestTestClient,
     private val environment: Environment,
     @param:Qualifier("bnf") private val bnf: WireMockServer,
-    @param:Qualifier("openLibrary") private val openLibrary: WireMockServer,
+    @Qualifier("openLibrary") openLibraryServer: WireMockServer,
 ) {
+    private val openLibrary = OpenLibraryStubs(openLibraryServer)
+
     @Test
     fun `the application runs over the stubbed sources`() {
         environment.getProperty("LIBRIS_BNF_URL") shouldBe "${bnf.baseUrl()}/api/SRU"
-        environment.getProperty("LIBRIS_OPEN_LIBRARY_URL") shouldBe openLibrary.baseUrl()
+        environment.getProperty("LIBRIS_OPEN_LIBRARY_URL") shouldBe openLibrary.baseUrl
         environment.getProperty("LIBRIS_SOURCE_TIMEOUT") shouldBe "1s"
     }
 
@@ -42,7 +42,7 @@ class FastEntryScenarios @Autowired constructor(
     fun `S1 Typed ISBN, found`() {
         // Given
         bnfKnows("9782723488525")
-        openLibraryKnows("9782723488525")
+        openLibrary.knows("9782723488525")
         // When
         val response = ask("9782723488525")
         // Then
@@ -75,7 +75,7 @@ class FastEntryScenarios @Autowired constructor(
     fun `S4 Unknown ISBN`() {
         // Given
         bnfDoesNotKnow("9782000000013")
-        openLibraryDoesNotKnow("9782000000013")
+        openLibrary.doesNotKnow("9782000000013")
         // When
         val response = ask("9782000000013")
         // Then
@@ -89,7 +89,7 @@ class FastEntryScenarios @Autowired constructor(
     fun `S5 Merged answer`() {
         // Given
         bnfPartiallyKnows("9782723488525")
-        openLibraryKnows("9782723488525")
+        openLibrary.knows("9782723488525")
         // When
         val response = ask("9782723488525")
         // Then
@@ -107,7 +107,7 @@ class FastEntryScenarios @Autowired constructor(
     fun `S6 One source down`() {
         // Given
         bnfFails()
-        openLibraryKnows("9782723488525")
+        openLibrary.knows("9782723488525")
         // When
         val response = ask("9782723488525")
         // Then
@@ -123,7 +123,7 @@ class FastEntryScenarios @Autowired constructor(
     fun `S6 One source down, past the timeout`() {
         // Given
         bnfKnows("9782723488525")
-        openLibraryAnswersTooLate("9782723488525")
+        openLibrary.answersTooLate("9782723488525")
         // When
         val response = ask("9782723488525")
         // Then
@@ -139,7 +139,7 @@ class FastEntryScenarios @Autowired constructor(
     fun `S7 Every source down`() {
         // Given
         bnfFails()
-        openLibraryFails()
+        openLibrary.fails()
         // When
         val response = ask("9782723488525")
         // Then
@@ -166,37 +166,6 @@ class FastEntryScenarios @Autowired constructor(
         )
     }
 
-    private fun openLibraryKnows(isbn: String) {
-        val document = recorded("open-library/books/$isbn.json")
-        val key = JsonPath.read<String>(document, "$.key")
-        openLibrary.stubFor(
-            get(urlPathEqualTo("/isbn/$isbn.json")).willReturn(temporaryRedirect("${openLibrary.baseUrl()}$key.json")),
-        )
-        openLibrary.stubFor(get(urlPathEqualTo("$key.json")).willReturn(json(document)))
-        JsonPath.read<List<String>>(document, "$.authors[*].key").forEach { author ->
-            openLibrary.stubFor(
-                get(urlPathEqualTo("$author.json")).willReturn(json(recorded("open-library$author.json"))),
-            )
-        }
-    }
-
-    private fun openLibraryFails() {
-        openLibrary.stubFor(get(urlPathMatching("/isbn/.*")).willReturn(serverError()))
-    }
-
-    private fun openLibraryDoesNotKnow(isbn: String) {
-        openLibrary.stubFor(
-            get(urlPathEqualTo("/isbn/$isbn.json"))
-                .willReturn(notFound().withHeader("Content-Type", "text/html; charset=utf-8")),
-        )
-    }
-
-    private fun openLibraryAnswersTooLate(isbn: String) {
-        openLibrary.stubFor(
-            get(urlPathEqualTo("/isbn/$isbn.json")).willReturn(ok().withFixedDelay(2_000)),
-        )
-    }
-
     private fun ask(isbn: String): RestTestClient.ResponseSpec = http.get()
         .uri("/api/v1/isbn/$isbn")
         .headers { it.putAll(READER) }
@@ -205,12 +174,6 @@ class FastEntryScenarios @Autowired constructor(
 
     private fun xml(body: String): ResponseDefinitionBuilder =
         ok().withHeader("Content-Type", "text/xml;charset=UTF-8").withBody(body)
-
-    private fun json(body: String): ResponseDefinitionBuilder =
-        ok().withHeader("Content-Type", "application/json").withBody(body)
-
-    private fun recorded(name: String): String =
-        checkNotNull(javaClass.getResource("/scenarios/$name")) { "no recorded answer $name" }.readText()
 
     private companion object {
         val READER = mapOf(

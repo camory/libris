@@ -760,6 +760,13 @@ Format:
     class the tests construct. Defaults live in the yaml only. A bean in
     `infra.lookup` may not be named `openLibrary` or `bnf`: the scenario
     harness owns those names for its WireMock servers.
+  - **A source is stubbed through a fixture, not copied stubs.**
+    `fixture/OpenLibraryStubs` wraps a `WireMockServer` (`knows`,
+    `doesNotKnow`, `fails`, `failsOn`, `answers`, `answersTooLate`) and
+    `fixture/recorded()` reads `src/test/resources/scenarios/`; both
+    `FastEntryScenarios` and `OpenLibrarySourceTest` use them. T014 adds
+    `fixture/BnfStubs` the same way and moves the `bnf*` helpers out of the
+    scenario file, with Tophe, since that file is his.
   - **`SourceAnswer` is a sealed class, not a sealed interface.**
     `ArchitectureTest`'s "a port of the domain is implemented in the
     infrastructure only" rule matches any non-interface class assignable to a
@@ -785,6 +792,7 @@ Format:
   `domain.lookup`, `Isbn13` and `AuthorRole` staying at the root (D02
   amended with Tophe); `Redirect.NORMAL`; the settings moved to
   `application.yaml` and `SourcesProperties`, proven by two cases added to
-  `LibrisApplicationTest` on the same context.
+  `LibrisApplicationTest` on the same context. The Open Library stubs extracted to
+  `fixture`, the scenario file edited with Tophe for that alone.
 - Left over: nothing of T013. The port has no caller yet — T014 (the BnF
   source) and T015 (the lookup use case) are next.
