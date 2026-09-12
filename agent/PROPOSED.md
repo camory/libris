@@ -72,3 +72,21 @@
   `SourceAnswer` because of it. Match the ports only (the interfaces of
   `domain` that `infra` implements, by name or by a marker), so the domain
   may use its own interfaces (seen on T013, 2026-09-12).
+- Backend: Open Library in one request. `/api/books?bibkeys=ISBN:<isbn>&jscmd=data&format=json`
+  answers title, subtitle, publishers, publish date, page count and the
+  author names inline, with no redirect and no per-author request; nothing
+  known is a 200 with an empty object, and the cover comes by cover id
+  rather than by ISBN. Measured on 2026-09-12 against `9782723488525`: it
+  lists one author (尾田栄一郎) where the edition document lists two (the
+  second is Shueisha, a publisher filed as an author), so the two endpoints
+  do not answer the same list. A spec change: `specs/fast-entry.md` names
+  the edition endpoint, the recorded answers and the scenario stubs follow
+  it. To weigh with Tophe when T014 is planned (found reviewing T013).
+- Contract: the unknown-ISBN example is known. `9782000000006`, the
+  `404_UNKNOWN_ISBN` example of `libris-api`, is a real Open Library record
+  on 2026-09-12 ("Test", John le Carré, Michelin Editions des Voyages, a
+  placeholder someone created). The scenarios stub the sources, so nothing
+  fails, but a manual S4 against the real source finds a book.
+  `9782000000013` and `9791000000008` are unknown at both endpoints; the
+  latter is already the `503_SOURCES_DOWN` example. To change in the
+  contract with Tophe on its next release (found reviewing T013).
