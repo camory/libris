@@ -158,7 +158,9 @@ wrong ISBN and read the message.
 
 ## Tasks
 
-- T013 — S4, S7, the API's own check in S3 — backend
+- T013 — the ISBN-13 value type and the Open Library source, no scenario
+  of its own — backend
+- T020 — S4, S7, the API's own check in S3 — backend
 - T014 — the merge rule of S5 and S6 — backend
 - T015 — S1, S5, S6 — backend
 - T016 — the rule of S3, the client of S1, S4, S7 — frontend
