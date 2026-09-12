@@ -14,6 +14,7 @@ import fr.amory.libris.domain.lookup.SourceEdition
 import fr.amory.libris.domain.lookup.SourceSeries
 import org.junit.jupiter.api.Test
 import org.mockito.BDDMockito.given
+import org.mockito.Mockito.verifyNoInteractions
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.MediaType.APPLICATION_JSON
 import org.springframework.http.MediaType.APPLICATION_PROBLEM_JSON
@@ -148,6 +149,18 @@ class IsbnControllerTest @Autowired constructor(
                 }
                 """,
             )
+    }
+
+    @Test
+    fun `a text that is not digits at all never reaches the lookup`() {
+        // When
+        val response = ask("pas-un-isbn")
+
+        // Then
+        response.expectStatus().isBadRequest()
+            .expectHeader().contentType(APPLICATION_PROBLEM_JSON)
+            .expectBody().jsonPath("$.errors").isEqualTo(listOf(mapOf("field" to "isbn", "code" to "not-an-isbn")))
+        verifyNoInteractions(lookup)
     }
 
     private fun ask(isbn: String): RestTestClient.ResponseSpec {
