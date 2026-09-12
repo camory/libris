@@ -130,6 +130,26 @@ class IsbnControllerTest @Autowired constructor(
             )
     }
 
+    @Test
+    fun `an ISBN with a wrong check digit is refused`() {
+        // When
+        val response = ask("9782723488526")
+
+        // Then
+        response.expectStatus().isBadRequest()
+            .expectHeader().contentType(APPLICATION_PROBLEM_JSON)
+            .expectBody().json(
+                """
+                {
+                  "type": "/problems/validation",
+                  "title": "Bad Request",
+                  "status": 400,
+                  "errors": [{ "field": "isbn", "code": "not-an-isbn" }]
+                }
+                """,
+            )
+    }
+
     private fun ask(isbn: String): RestTestClient.ResponseSpec {
         given(visit.visit("juliette", "juliette@amory.fr", "Juliette")).willReturn(JULIETTE)
         return client.get()
