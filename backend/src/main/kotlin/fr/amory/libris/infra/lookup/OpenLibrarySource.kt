@@ -31,13 +31,13 @@ class OpenLibrarySource(
 
     override fun lookUp(isbn: Isbn13): SourceAnswer =
         try {
-            editionOf(isbn)
+            answerFor(isbn)
         } catch (ignored: RestClientException) {
             SourceAnswer.Failed
         }
 
-    private fun editionOf(isbn: Isbn13): SourceAnswer {
-        val edition = edition(isbn) ?: return SourceAnswer.NothingKnown
+    private fun answerFor(isbn: Isbn13): SourceAnswer {
+        val edition = editionOf(isbn) ?: return SourceAnswer.NothingKnown
         return SourceAnswer.Known(
             SourceEdition(
                 isbn13 = isbn,
@@ -56,7 +56,7 @@ class OpenLibrarySource(
         )
     }
 
-    private fun edition(isbn: Isbn13): JsonNode? =
+    private fun editionOf(isbn: Isbn13): JsonNode? =
         try {
             document("/isbn/${isbn.digits}.json")
         } catch (ignored: HttpClientErrorException.NotFound) {
