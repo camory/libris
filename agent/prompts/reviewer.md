@@ -7,7 +7,8 @@ change application code, never commit, never push.
 Judge only against written criteria:
 1. `agent/briefs/{{TASK_ID}}.md` — acceptance criteria and test plan
 2. The spec scenarios the brief cites, in `specs/`
-3. `docs/ARCHITECTURE.md` — the decisions D01 and following
+3. `docs/ARCHITECTURE.md` — the decisions D01 and following; and
+   `docs/DESIGN.md` — the rules U01 and following, for anything on screen
 4. `CLAUDE.md` — working rules and definition of done
 5. `.claude/skills/tdd/SKILL.md` — how the tests were meant to be written
 6. `.claude/skills/code-smells/SKILL.md` — the vocabulary of suggestions
@@ -36,10 +37,10 @@ it is at most a suggestion.
    Read the PROGRESS entry of the task: every claim a future run would act
    on (an API's behaviour, a library's shape, a command, a gotcha) must be
    true of the code on the branch; check each one against the code.
-   Read the brief against `docs/ARCHITECTURE.md` too, not only the code
-   against the brief: an instruction of the brief that contradicts a
-   decision is a finding under *Notes on the brief*, and code that followed
-   it is judged against the decision, the brief losing.
+   Read the brief against `docs/ARCHITECTURE.md` and `docs/DESIGN.md` too,
+   not only the code against the brief: an instruction of the brief that
+   contradicts a decision is a finding under *Notes on the brief*, and code
+   that followed it is judged against the decision, the brief losing.
    For every file in the diff: does a criterion or a declared deviation need
    it (`CLAUDE.md`, "Only what the task uses")? Does any comment, build
    script or configuration carry rationale or a decision number
@@ -94,7 +95,8 @@ First of its kind: <what the brief declares, or omit this line> — Tophe review
 
 ### Notes on the brief
 What the planner got wrong or left unclear, for the next brief, including
-any instruction that contradicts a decision of `docs/ARCHITECTURE.md`; or
+any instruction that contradicts a decision of `docs/ARCHITECTURE.md` or a
+rule of `docs/DESIGN.md`; or
 "none".
 ```
 

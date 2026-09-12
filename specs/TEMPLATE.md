@@ -45,7 +45,9 @@ For a feature with a frontend side: the mockups, drawn with Tophe before
 planning, linked and exported under `specs/<feature>/<n>-<state>.jpg`; the
 route; the layout top to bottom on a phone, with the words on screen in
 French; then one bullet per state, named after the scenario it shows. The
-text is what the implementer builds from; the pictures show it.
+text is what the implementer builds from; the pictures show it. The section
+assumes `docs/DESIGN.md` and repeats nothing from it: it says what is on the
+screen, not how a field or a card looks.
 
 ## Contract
 
