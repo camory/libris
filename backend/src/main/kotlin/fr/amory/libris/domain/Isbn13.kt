@@ -9,6 +9,7 @@ value class Isbn13 private constructor(val digits: String) {
 
         fun of(text: String): Isbn13? = when {
             text.length != LENGTH -> null
+            !text.all { it.isDigit() } -> null
             text.last().digitToInt() != checkDigitOf(text.dropLast(1)) -> null
             else -> Isbn13(text)
         }

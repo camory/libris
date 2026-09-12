@@ -23,4 +23,13 @@ class Isbn13Test {
         Isbn13.of("978272348852") shouldBe null
         Isbn13.of("97827234885250") shouldBe null
     }
+
+    @Test
+    fun `a text that is not thirteen digits is not an ISBN-13`() {
+        // Given / When / Then
+        Isbn13.of("978-2-7234-8852-5") shouldBe null
+        Isbn13.of("9782723488525 ") shouldBe null
+        Isbn13.of("97827234885X5") shouldBe null
+        Isbn13.of("") shouldBe null
+    }
 }
