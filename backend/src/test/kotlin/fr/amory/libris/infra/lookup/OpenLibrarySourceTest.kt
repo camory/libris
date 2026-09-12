@@ -5,8 +5,10 @@ import com.github.tomakehurst.wiremock.client.ResponseDefinitionBuilder
 import com.github.tomakehurst.wiremock.client.WireMock.get
 import com.github.tomakehurst.wiremock.client.WireMock.notFound
 import com.github.tomakehurst.wiremock.client.WireMock.ok
+import com.github.tomakehurst.wiremock.client.WireMock.serverError
 import com.github.tomakehurst.wiremock.client.WireMock.temporaryRedirect
 import com.github.tomakehurst.wiremock.client.WireMock.urlPathEqualTo
+import com.github.tomakehurst.wiremock.client.WireMock.urlPathMatching
 import com.github.tomakehurst.wiremock.core.WireMockConfiguration.options
 import com.jayway.jsonpath.JsonPath
 import fr.amory.libris.domain.AuthorRole.WRITER
@@ -92,6 +94,18 @@ class OpenLibrarySourceTest {
         answer shouldBe SourceAnswer.NothingKnown
     }
 
+    @Test
+    fun `an Open Library that fails on the edition is a failure`() {
+        // Given
+        openLibraryFails()
+
+        // When
+        val answer = openLibrary.lookUp(isbn(ONE_PIECE))
+
+        // Then
+        answer shouldBe SourceAnswer.Failed
+    }
+
     private companion object {
         const val ONE_PIECE = "9782723488525"
         val TIMEOUT: Duration = Duration.ofMillis(200)
@@ -128,6 +142,10 @@ class OpenLibrarySourceTest {
                 get(urlPathEqualTo("/isbn/$isbn.json"))
                     .willReturn(notFound().withHeader("Content-Type", "text/html; charset=utf-8")),
             )
+        }
+
+        fun openLibraryFails() {
+            wireMock.stubFor(get(urlPathMatching("/isbn/.*")).willReturn(serverError()))
         }
 
         fun json(body: String): ResponseDefinitionBuilder =

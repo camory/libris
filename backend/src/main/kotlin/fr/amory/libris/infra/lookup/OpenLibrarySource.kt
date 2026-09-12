@@ -13,6 +13,7 @@ import org.springframework.http.client.JdkClientHttpRequestFactory
 import org.springframework.stereotype.Component
 import org.springframework.web.client.HttpClientErrorException
 import org.springframework.web.client.RestClient
+import org.springframework.web.client.RestClientException
 import java.net.http.HttpClient
 import java.time.Duration
 
@@ -28,7 +29,14 @@ class OpenLibrarySource(
         .requestFactory(requestFactory(timeout))
         .build()
 
-    override fun lookUp(isbn: Isbn13): SourceAnswer {
+    override fun lookUp(isbn: Isbn13): SourceAnswer =
+        try {
+            editionOf(isbn)
+        } catch (ignored: RestClientException) {
+            SourceAnswer.Failed
+        }
+
+    private fun editionOf(isbn: Isbn13): SourceAnswer {
         val edition = edition(isbn) ?: return SourceAnswer.NothingKnown
         return SourceAnswer.Known(
             SourceEdition(
