@@ -2,6 +2,7 @@ package fr.amory.libris.infra.web
 
 import fr.amory.libris.application.IsbnLookup
 import fr.amory.libris.application.LookupResult.Found
+import fr.amory.libris.application.LookupResult.UnknownIsbn
 import fr.amory.libris.application.ReaderVisit
 import fr.amory.libris.domain.AuthorRole.ARTIST
 import fr.amory.libris.domain.AuthorRole.WRITER
@@ -161,6 +162,24 @@ class IsbnControllerTest @Autowired constructor(
             .expectHeader().contentType(APPLICATION_PROBLEM_JSON)
             .expectBody().jsonPath("$.errors").isEqualTo(listOf(mapOf("field" to "isbn", "code" to "not-an-isbn")))
         verifyNoInteractions(lookup)
+    }
+
+    @Test
+    fun `an ISBN no source knows is not found`() {
+        // Given
+        given(lookup.lookUp(isbn13Of("9782000000013"))).willReturn(UnknownIsbn)
+
+        // When
+        val response = ask("9782000000013")
+
+        // Then
+        response.expectStatus().isNotFound()
+            .expectHeader().contentType(APPLICATION_PROBLEM_JSON)
+            .expectBody().json(
+                """
+                { "type": "/problems/not-found", "title": "Not Found", "status": 404 }
+                """,
+            )
     }
 
     private fun ask(isbn: String): RestTestClient.ResponseSpec {

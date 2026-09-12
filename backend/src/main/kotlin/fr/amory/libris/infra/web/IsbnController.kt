@@ -2,12 +2,14 @@ package fr.amory.libris.infra.web
 
 import fr.amory.libris.application.IsbnLookup
 import fr.amory.libris.application.LookupResult.Found
+import fr.amory.libris.application.LookupResult.UnknownIsbn
 import fr.amory.libris.domain.AuthorRole
 import fr.amory.libris.domain.Isbn13
 import fr.amory.libris.domain.lookup.Source
 import fr.amory.libris.domain.lookup.SourceEdition
 import org.springframework.http.HttpStatus
 import org.springframework.http.HttpStatus.BAD_REQUEST
+import org.springframework.http.HttpStatus.NOT_FOUND
 import org.springframework.http.ProblemDetail
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.GetMapping
@@ -16,6 +18,7 @@ import org.springframework.web.bind.annotation.RestController
 import java.net.URI
 
 private const val VALIDATION_PROBLEM = "/problems/validation"
+private const val NOT_FOUND_PROBLEM = "/problems/not-found"
 
 data class ValidationErrorResponse(
     val field: String,
@@ -55,6 +58,7 @@ class IsbnController(private val lookup: IsbnLookup) {
         val isbn13 = Isbn13.of(isbn) ?: return ResponseEntity.badRequest().body(notAnIsbn())
         return when (val result = lookup.lookUp(isbn13)) {
             is Found -> ResponseEntity.ok(responseOf(result.edition, result.sources))
+            UnknownIsbn -> ResponseEntity.status(NOT_FOUND).body(problem(NOT_FOUND, NOT_FOUND_PROBLEM))
             else -> TODO()
         }
     }
