@@ -38,10 +38,11 @@ class OpenLibrarySource(
 
     private fun answerFor(isbn: Isbn13): SourceAnswer {
         val edition = editionOf(isbn) ?: return SourceAnswer.NothingKnown
+        val title = edition["title"]?.asString() ?: return SourceAnswer.Failed
         return SourceAnswer.Known(
             SourceEdition(
                 isbn13 = isbn,
-                title = edition["title"].asString(),
+                title = title,
                 subtitle = edition["subtitle"]?.asString(),
                 authors = authorsOf(edition),
                 series = null,
