@@ -10,7 +10,8 @@ must be clean. If the branch or the brief is missing, report `blocked`.
 ## Read, in this order
 1. `CLAUDE.md` and `docs/ARCHITECTURE.md`; `docs/DESIGN.md` when the brief
    touches a screen
-2. `agent/briefs/{{TASK_ID}}.md` — the brief. Its acceptance criteria define done.
+2. `agent/briefs/{{TASK_ID}}.md` — the brief. Its acceptance criteria define
+   done; its *Rules in play* are the decisions to keep at hand while coding.
 3. The {{TASK_ID}} line in `agent/TASKS.md` and the spec scenarios the brief
    cites
 4. The last entries of `agent/PROGRESS.md`

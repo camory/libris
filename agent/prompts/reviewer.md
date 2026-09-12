@@ -41,6 +41,9 @@ it is at most a suggestion.
    not only the code against the brief: an instruction of the brief that
    contradicts a decision is a finding under *Notes on the brief*, and code
    that followed it is judged against the decision, the brief losing.
+   The brief's *Rules in play* are your checklist for the code; a decision
+   the task touches and the list omits is a note on the brief, and the code
+   is judged against it all the same.
    For every file in the diff: does a criterion or a declared deviation need
    it (`CLAUDE.md`, "Only what the task uses")? Does any comment, build
    script or configuration carry rationale or a decision number

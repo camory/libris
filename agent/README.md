@@ -125,7 +125,11 @@ The reviewer never stops the loop: its verdict is advisory.
   run's history and continues; 150000 by default, `auto` for the CLI's own
   threshold. A compaction shows in the session transcript kept in the
   `claude-state` volume.
-- Each run writes `agent/logs/<timestamp>-<task>-<role>.json` (the CLI result
+- Each run writes `agent/logs/<timestamp>-<task>-<role>.jsonl` (the whole
+  session as the CLI streams it: every tool call with its input, every
+  answer), the `.json` next to it (the last line of the stream: the result
   with cost, turns and the structured report) and a matching `.stderr`.
+  `agent/reads.sh <trace.jsonl>` lists what the run read, in the order it
+  read it.
 - Gradle and npm caches persist in named volumes between runs; the database
   does not (tmpfs), so every run starts from a clean schema.
