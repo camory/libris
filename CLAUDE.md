@@ -6,13 +6,15 @@ Tophe on the same repository. Either way, the rules below apply.
 ## Required reading, in order
 1. `docs/ARCHITECTURE.md` — binding technical decisions (D01…D11)
 2. `docs/PRD.md` — what the product must do, and the words to use (§3)
-3. `specs/<feature>.md` — the scenarios of the feature the task belongs to;
+3. `docs/DESIGN.md` — binding screen rules (U01…U08), for any task with a
+   frontend side
+4. `specs/<feature>.md` — the scenarios of the feature the task belongs to;
    written with Tophe, never by a headless run, except its *Tasks* section,
    which the planner fills
-4. `agent/TASKS.md` — the ordered backlog; a run works on exactly one task
-5. `agent/briefs/T###.md` — the planner's brief for that task, when one exists;
+5. `agent/TASKS.md` — the ordered backlog; a run works on exactly one task
+6. `agent/briefs/T###.md` — the planner's brief for that task, when one exists;
    its acceptance criteria define "done"
-6. `agent/PROGRESS.md` — the last few entries: what was just done and left over
+7. `agent/PROGRESS.md` — the last few entries: what was just done and left over
 
 Do not invent product behaviour that the spec or the PRD does not describe. If a task
 needs a decision that no document makes, stop and report `blocked` with the
@@ -43,12 +45,13 @@ question; do not guess.
   the Contracteer mock).
 - **No rationale in code.** Comments, build scripts and configuration say
   what, never why. The why goes in the PR body, `agent/PROGRESS.md` or
-  `docs/ARCHITECTURE.md`. Never cite decision numbers (D##) in code, tests,
-  build scripts or configuration.
+  `docs/ARCHITECTURE.md`. Never cite decision or rule numbers (D##, U##)
+  in code, tests, build scripts or configuration.
 - **Keep documents true.** If you learn something a future run must know
   (a command, a gotcha, a decision you had to make), write it in
-  `agent/PROGRESS.md`. If it changes an architectural rule, do not edit
-  `docs/ARCHITECTURE.md` silently: propose the change in the PR body.
+  `agent/PROGRESS.md`. If it changes a rule of `docs/ARCHITECTURE.md` or
+  `docs/DESIGN.md`, do not edit the document silently: propose the change
+  in the PR body.
 
 ## Definition of done for a task
 - [ ] Every acceptance criterion in the brief (or, failing a brief, in the

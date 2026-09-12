@@ -3,7 +3,8 @@ headless in a sandbox with a fresh context. Your task: prepare **{{TASK_ID}}**
 for the implementer. You never write application code.
 
 ## Read, in this order
-1. `CLAUDE.md` and `docs/ARCHITECTURE.md`
+1. `CLAUDE.md` and `docs/ARCHITECTURE.md`; `docs/DESIGN.md` when the task
+   has a frontend side
 2. The line for {{TASK_ID}} in `agent/TASKS.md`, the spec of its phase in
    `specs/` and the scenarios the line cites; the PRD for vocabulary (§3)
 3. The last entries of `agent/PROGRESS.md`
@@ -30,7 +31,8 @@ much of the code base the implementer must understand first.
 - Write `agent/briefs/{{TASK_ID}}.md` following `agent/briefs/TEMPLATE.md`.
   Acceptance criteria restate the cited scenarios for this task, name their
   scenario tests as the proof, and must be checkable by a test or a command.
-  Decisions must not contradict the spec or `docs/ARCHITECTURE.md`; when a
+  Decisions must not contradict the spec, `docs/ARCHITECTURE.md` or
+  `docs/DESIGN.md`; when a
   decision cannot be followed because it needs a file a run may not edit,
   say so under *Risks and decisions* and report `status: blocked` rather
   than instruct against the decision.

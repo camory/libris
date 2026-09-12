@@ -8,7 +8,7 @@ to approve.
 
 ## Read, in this order
 1. `CLAUDE.md`
-2. `docs/ARCHITECTURE.md`
+2. `docs/ARCHITECTURE.md` and `docs/DESIGN.md`
 3. `docs/PRD.md` — context and vocabulary (§3); it does not generate tasks
 4. `specs/*.md` — the feature specs. A spec whose *Tasks* section is empty is
    yours to plan; one whose status is `done` is history

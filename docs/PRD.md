@@ -73,7 +73,8 @@ _Avoid_: contributor, creator, person, artist (as the entity).
 **Role**:
 What an author did on an edition: `WRITER`, `ARTIST`, `COLOURIST`,
 `TRANSLATOR`.
-*On screen*: auteur or scénariste, dessinateur, coloriste, traducteur.
+*On screen*: auteur; the role as the activity, scénario, dessin, couleurs,
+traduction.
 _Avoid_: function, credit, job.
 
 **Tag**:
