@@ -4,8 +4,10 @@ import com.github.tomakehurst.wiremock.WireMockServer
 import com.github.tomakehurst.wiremock.core.WireMockConfiguration.options
 import fr.amory.libris.domain.AuthorRole.WRITER
 import fr.amory.libris.domain.Isbn13
-import fr.amory.libris.domain.lookup.Source
-import fr.amory.libris.domain.lookup.SourceAnswer
+import fr.amory.libris.domain.lookup.Source.OPEN_LIBRARY
+import fr.amory.libris.domain.lookup.SourceAnswer.Failed
+import fr.amory.libris.domain.lookup.SourceAnswer.Known
+import fr.amory.libris.domain.lookup.SourceAnswer.NothingKnown
 import fr.amory.libris.domain.lookup.SourceAuthor
 import fr.amory.libris.domain.lookup.SourceEdition
 import fr.amory.libris.fixture.OpenLibraryStubs
@@ -16,6 +18,8 @@ import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.Test
 import java.time.Duration
+import java.time.Duration.ofMillis
+import java.time.Duration.ofSeconds
 
 class OpenLibrarySourceTest {
     private val source = OpenLibrarySource(server.baseUrl(), TIMEOUT)
@@ -27,7 +31,7 @@ class OpenLibrarySourceTest {
 
     @Test
     fun `the source names itself`() {
-        source.source shouldBe Source.OPEN_LIBRARY
+        source.source shouldBe OPEN_LIBRARY
     }
 
     @Test
@@ -39,7 +43,7 @@ class OpenLibrarySourceTest {
         val answer = source.lookUp(isbn(ONE_PIECE))
 
         // Then
-        answer shouldBe SourceAnswer.Known(
+        answer shouldBe Known(
             SourceEdition(
                 isbn13 = isbn(ONE_PIECE),
                 title = "One Piece - Édition originale Tome 01",
@@ -83,7 +87,7 @@ class OpenLibrarySourceTest {
         val answer = source.lookUp(isbn(ONE_PIECE))
 
         // Then
-        answer shouldBe SourceAnswer.NothingKnown
+        answer shouldBe NothingKnown
     }
 
     @Test
@@ -95,7 +99,7 @@ class OpenLibrarySourceTest {
         val answer = source.lookUp(isbn(ONE_PIECE))
 
         // Then
-        answer shouldBe SourceAnswer.Failed
+        answer shouldBe Failed
     }
 
     @Test
@@ -108,7 +112,7 @@ class OpenLibrarySourceTest {
         val answer = source.lookUp(isbn(ONE_PIECE))
 
         // Then
-        answer shouldBe SourceAnswer.Failed
+        answer shouldBe Failed
     }
 
     @Test
@@ -121,7 +125,7 @@ class OpenLibrarySourceTest {
         val answer = source.lookUp(isbn(ONE_PIECE))
 
         // Then
-        answer shouldBe SourceAnswer.Failed
+        answer shouldBe Failed
     }
 
     @Test
@@ -133,7 +137,7 @@ class OpenLibrarySourceTest {
         val answer = source.lookUp(isbn(ONE_PIECE))
 
         // Then
-        answer shouldBe SourceAnswer.Failed
+        answer shouldBe Failed
     }
 
     @Test
@@ -145,13 +149,13 @@ class OpenLibrarySourceTest {
         val answer = source.lookUp(isbn(ONE_PIECE))
 
         // Then
-        answer shouldBe SourceAnswer.Failed
+        answer shouldBe Failed
     }
 
     private companion object {
         const val ONE_PIECE = "9782723488525"
-        val TIMEOUT: Duration = Duration.ofMillis(200)
-        val WARM_UP_TIMEOUT: Duration = Duration.ofSeconds(20)
+        val TIMEOUT: Duration = ofMillis(200)
+        val WARM_UP_TIMEOUT: Duration = ofSeconds(20)
         val server = WireMockServer(options().dynamicPort())
         val openLibrary = OpenLibraryStubs(server)
 

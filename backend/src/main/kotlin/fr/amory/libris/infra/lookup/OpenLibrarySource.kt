@@ -3,8 +3,11 @@ package fr.amory.libris.infra.lookup
 import fr.amory.libris.domain.AuthorRole.WRITER
 import fr.amory.libris.domain.Isbn13
 import fr.amory.libris.domain.lookup.IsbnSource
-import fr.amory.libris.domain.lookup.Source
+import fr.amory.libris.domain.lookup.Source.OPEN_LIBRARY
 import fr.amory.libris.domain.lookup.SourceAnswer
+import fr.amory.libris.domain.lookup.SourceAnswer.Failed
+import fr.amory.libris.domain.lookup.SourceAnswer.Known
+import fr.amory.libris.domain.lookup.SourceAnswer.NothingKnown
 import fr.amory.libris.domain.lookup.SourceAuthor
 import fr.amory.libris.domain.lookup.SourceEdition
 import org.springframework.http.client.JdkClientHttpRequestFactory
@@ -15,10 +18,11 @@ import tools.jackson.databind.JsonNode
 import tools.jackson.databind.exc.JsonNodeException
 import tools.jackson.databind.node.MissingNode
 import java.net.http.HttpClient
+import java.net.http.HttpClient.Redirect.NORMAL
 import java.time.Duration
 
 class OpenLibrarySource(baseUrl: String, timeout: Duration) : IsbnSource {
-    override val source = Source.OPEN_LIBRARY
+    override val source = OPEN_LIBRARY
 
     private val http = RestClient.builder()
         .baseUrl(baseUrl)
@@ -29,16 +33,16 @@ class OpenLibrarySource(baseUrl: String, timeout: Duration) : IsbnSource {
         try {
             answerFor(isbn)
         } catch (ignored: RestClientException) {
-            SourceAnswer.Failed
+            Failed
         } catch (ignored: JsonNodeException) {
-            SourceAnswer.Failed
+            Failed
         }
 
     private fun answerFor(isbn: Isbn13): SourceAnswer =
-        editionOf(isbn)?.let { answerFrom(isbn, it) } ?: SourceAnswer.NothingKnown
+        editionOf(isbn)?.let { answerFrom(isbn, it) } ?: NothingKnown
 
     private fun answerFrom(isbn: Isbn13, edition: JsonNode): SourceAnswer =
-        SourceAnswer.Known(
+        Known(
             SourceEdition(
                 isbn13 = isbn,
                 title = edition.required("title").asString(),
@@ -78,7 +82,7 @@ class OpenLibrarySource(baseUrl: String, timeout: Duration) : IsbnSource {
 
         fun requestFactory(timeout: Duration): JdkClientHttpRequestFactory {
             val client = HttpClient.newBuilder()
-                .followRedirects(HttpClient.Redirect.NORMAL)
+                .followRedirects(NORMAL)
                 .connectTimeout(timeout)
                 .build()
             return JdkClientHttpRequestFactory(client).apply { setReadTimeout(timeout) }
