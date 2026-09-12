@@ -73,10 +73,8 @@ describe("Fast entry", () => {
     await ask(screen, "978272348852");
 
     // Then
-    await screen.findByText(/n'est pas un ISBN valide/);
-    expect(host.textContent).toContain(
-      "978272348852 n'est pas un ISBN valide.",
-    );
+    await screen.findByText("ISBN invalide");
+    expect(field(screen).value).toBe("978272348852");
     expect(requests).not.toHaveBeenCalled();
   });
 
@@ -89,10 +87,8 @@ describe("Fast entry", () => {
     await ask(screen, "9782723488526");
 
     // Then
-    await screen.findByText(/n'est pas un ISBN valide/);
-    expect(host.textContent).toContain(
-      "9782723488526 n'est pas un ISBN valide.",
-    );
+    await screen.findByText("ISBN invalide");
+    expect(field(screen).value).toBe("9782723488526");
     expect(requests).not.toHaveBeenCalled();
   });
 
@@ -104,8 +100,8 @@ describe("Fast entry", () => {
     await ask(screen, "9782000000006");
 
     // Then
-    await screen.findByText(/est un ISBN inconnu/);
-    expect(host.textContent).toContain("9782000000006 est un ISBN inconnu.");
+    await screen.findByText("ISBN inconnu");
+    expect(field(screen).value).toBe("9782000000006");
   });
 
   it.skip("S7 Every source down", async () => {
@@ -152,9 +148,12 @@ describe("Fast entry", () => {
   }
 
   async function ask(screen: Screen, text: string) {
-    const field = screen.getByRole("textbox", { name: "ISBN" });
-    await fireEvent.input(field, { target: { value: text } });
+    await fireEvent.input(field(screen), { target: { value: text } });
     await fireEvent.click(screen.getByRole("button", { name: "Chercher" }));
+  }
+
+  function field(screen: Screen) {
+    return screen.getByRole<HTMLInputElement>("textbox", { name: "ISBN" });
   }
 
   async function showsTheOnePieceCard(screen: Screen) {

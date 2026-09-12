@@ -121,6 +121,44 @@ Proof: backend scenario test with both stubs failing, the sources-unavailable
 problem; frontend scenario test against `contracteer mock` with
 `503_SOURCES_DOWN`, the message.
 
+## Screen
+
+Mockups: <https://claude.ai/code/artifact/900be65c-b8a0-4766-a8b3-23ceb4e19422>,
+one artboard per state below, exported as `specs/fast-entry/<n>-<state>.jpg`
+in the same order. Route `/isbn`, reached from the home page's link and from
+the tab bar.
+
+Top to bottom on a phone: the title *Ajouter un ouvrage* and the line
+*Scannez le code-barres ou saisissez l'ISBN.*; the field labelled *ISBN*,
+numeric keyboard, placeholder `978-2-7234-8852-5`, the typed text kept as
+typed; inside the field at the right, a barcode icon when the browser has a
+`BarcodeDetector`, nothing otherwise; under the field the button *Chercher*,
+full width; then the state of the lookup; at the bottom the tab bar,
+*Accueil* and *Ajouter*, the latter active on this screen.
+
+States:
+
+- **Ready**: nothing under the button.
+- **Camera open** (S2): the icon turns into a cross; the camera view, with
+  corner brackets, fills the space between the button and the tab bar,
+  centred. The first EAN-13 read closes it and runs the lookup; the cross
+  closes it.
+- **Searching**: the button reads *Recherche en cours…* with a spinner and
+  accepts nothing; a grey placeholder of the card takes its place below.
+- **Found** (S1): the card. Cover at the left; at its right the series and
+  tome (*One piece · tome 1*), the title, the subtitle, the authors each with
+  their roles (*Eiichirō Oda · scénario, dessin*); then one row per field,
+  *Collection*, *Éditeur*, *Année*, *Langue*, *Pages*, *ISBN*; then
+  *Sources* followed by one chip per source, *BnF*, *Open Library*. A field
+  the answer leaves empty has no row.
+- **Not an ISBN** (S3): the field outlined in red and *ISBN invalide* in red
+  under it. No request leaves.
+- **Unknown ISBN** (S4): the same, *ISBN inconnu*.
+- **Sources unavailable** (S7): *Erreur lors de la recherche, veuillez
+  réessayer plus tard.* in red under the field.
+
+A message replaces the previous card or message; the field keeps its text.
+
 ## Contract
 
 Release `v0.3.0` of `camory/libris-api`, one read-only operation:
