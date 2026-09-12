@@ -52,7 +52,7 @@ class OpenLibrarySource(
                 authors = authorsOf(edition),
                 series = null,
                 collection = null,
-                publisher = edition["publishers"]?.firstOrNull()?.asString(),
+                publisher = edition.path("publishers").values().firstOrNull()?.asString(),
                 publicationYear = yearOf(edition["publish_date"]?.asString()),
                 language = null,
                 pageCount = edition["number_of_pages"]?.asInt(),
