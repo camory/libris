@@ -120,6 +120,31 @@ class OpenLibrarySourceTest {
     }
 
     @Test
+    fun `an Open Library whose author has no name is a failure`() {
+        // Given
+        openLibraryKnows(ONE_PIECE)
+        openLibraryAnswersOn("/authors/OL2733294A.json", """{"key": "/authors/OL2733294A"}""")
+
+        // When
+        val answer = openLibrary.lookUp(isbn(ONE_PIECE))
+
+        // Then
+        answer shouldBe SourceAnswer.Failed
+    }
+
+    @Test
+    fun `an Open Library that answers an empty body is a failure`() {
+        // Given
+        openLibraryAnswersOn("/isbn/$ONE_PIECE.json", "")
+
+        // When
+        val answer = openLibrary.lookUp(isbn(ONE_PIECE))
+
+        // Then
+        answer shouldBe SourceAnswer.Failed
+    }
+
+    @Test
     fun `an Open Library that answers past the timeout is a failure`() {
         // Given
         openLibraryAnswersTooLate(ONE_PIECE)
@@ -176,6 +201,10 @@ class OpenLibrarySourceTest {
 
         fun openLibraryFailsOn(path: String) {
             wireMock.stubFor(get(urlPathEqualTo(path)).willReturn(serverError()))
+        }
+
+        fun openLibraryAnswersOn(path: String, body: String) {
+            wireMock.stubFor(get(urlPathEqualTo(path)).willReturn(json(body)))
         }
 
         fun openLibraryAnswersTooLate(isbn: String) {

@@ -14,6 +14,8 @@ import org.springframework.web.client.HttpClientErrorException
 import org.springframework.web.client.RestClient
 import org.springframework.web.client.RestClientException
 import tools.jackson.databind.JsonNode
+import tools.jackson.databind.exc.JsonNodeException
+import tools.jackson.databind.node.MissingNode
 import java.net.http.HttpClient
 import java.time.Duration
 
@@ -34,17 +36,18 @@ class OpenLibrarySource(
             answerFor(isbn)
         } catch (ignored: RestClientException) {
             SourceAnswer.Failed
+        } catch (ignored: JsonNodeException) {
+            SourceAnswer.Failed
         }
 
     private fun answerFor(isbn: Isbn13): SourceAnswer =
         editionOf(isbn)?.let { answerFrom(isbn, it) } ?: SourceAnswer.NothingKnown
 
-    private fun answerFrom(isbn: Isbn13, edition: JsonNode): SourceAnswer {
-        val title = edition["title"] ?: return SourceAnswer.Failed
-        return SourceAnswer.Known(
+    private fun answerFrom(isbn: Isbn13, edition: JsonNode): SourceAnswer =
+        SourceAnswer.Known(
             SourceEdition(
                 isbn13 = isbn,
-                title = title.asString(),
+                title = edition.required("title").asString(),
                 subtitle = edition["subtitle"]?.asString(),
                 authors = authorsOf(edition),
                 series = null,
@@ -57,7 +60,6 @@ class OpenLibrarySource(
                 coverUrl = "$COVERS/${isbn.digits}-L.jpg",
             ),
         )
-    }
 
     private fun editionOf(isbn: Isbn13): JsonNode? =
         try {
@@ -69,12 +71,12 @@ class OpenLibrarySource(
     private fun authorsOf(edition: JsonNode): List<SourceAuthor> =
         edition.path("authors").values().map { SourceAuthor(nameOf(it.path("key").asString()), WRITER) }
 
-    private fun nameOf(key: String): String = document("$key.json")["name"].asString()
+    private fun nameOf(key: String): String = document("$key.json").required("name").asString()
 
     private fun yearOf(publishDate: String?): Int? = publishDate?.let { YEAR.find(it)?.value?.toInt() }
 
     private fun document(path: String): JsonNode =
-        checkNotNull(http.get().uri(path).retrieve().body(JsonNode::class.java))
+        http.get().uri(path).retrieve().body(JsonNode::class.java) ?: MissingNode.getInstance()
 
     private companion object {
         const val COVERS = "https://covers.openlibrary.org/b/isbn"
