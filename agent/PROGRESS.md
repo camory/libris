@@ -732,3 +732,68 @@ Format:
     the new one (Proposed item on the service worker registration).
 - Left over: no unchecked task in a phase. Next run is the planner in
   backlog mode for Phase 1.
+
+## 2026-09-12 — T013 The ISBN-13 value type and the Open Library source
+- Did: `Isbn13` in `domain` (thirteen digits, check digit verified, a refusal
+  answered as `null`), the `IsbnSource` port with `Source`, `AuthorRole`,
+  `SourceAnswer` (known, nothing known, failed), `SourceEdition`,
+  `SourceAuthor`, `SourceSeries`, and `OpenLibrarySource` in `infra.lookup`
+  over a `RestClient` built on a JDK `HttpClient` that follows redirects.
+  Eleven cycles, `Isbn13Test` and `OpenLibrarySourceTest` against WireMock
+  and the recorded answers. `./gradlew check` green, the six scenario methods
+  still skipped, `LibrisApplicationTest` green with neither
+  `LIBRIS_OPEN_LIBRARY_URL` nor `LIBRIS_SOURCE_TIMEOUT` set.
+- Decided, for a future run:
+  - **Jackson 3 is the one on the main classpath.** Spring Boot 4 brings
+    `tools.jackson.databind` (3.1.5); `com.fasterxml.jackson` 2.21.5 is on
+    the test runtime only. The renames that matter here: `asText()` is
+    `asString()`. A `JsonNode` is an `Iterable<JsonNode>`, but it declares
+    its own `map(Function)`, which shadows Kotlin's `Iterable.map` on the
+    node itself, so an array is read through `path(field).values()`. It also
+    has `required(field)`, which throws `JsonNodeException` on a missing
+    property or on a `MissingNode`; that is how a body the client cannot read
+    becomes a failure.
+  - **Settings go through `application.yaml` and a properties class**, as
+    the datasource already does: the yaml maps `LIBRIS_*` variables with
+    their defaults onto `libris.sources.*`, `SourcesProperties` binds them,
+    `LookupConfig` declares the source beans from it, and a client is a plain
+    class the tests construct. Defaults live in the yaml only. A bean in
+    `infra.lookup` may not be named `openLibrary` or `bnf`: the scenario
+    harness owns those names for its WireMock servers.
+  - **A source is stubbed through a fixture, not copied stubs.**
+    `fixture/OpenLibraryStubs` (`knows`, `doesNotKnow`, `fails`, `failsOn`,
+    `answers`, `answersTooLate`) and `fixture/BnfStubs` (`knows`,
+    `partiallyKnows`, `doesNotKnow`, `fails`) each wrap a `WireMockServer`;
+    `fixture/recorded()` reads `src/test/resources/scenarios/`.
+    `FastEntryScenarios` holds the scenarios, `ask` and the reader headers
+    only, so a run never needs to touch it: a source test uses the fixture,
+    and a case the fixture cannot express is a method added to the fixture.
+  - **`SourceAnswer` is a sealed class, not a sealed interface.**
+    `ArchitectureTest`'s "a port of the domain is implemented in the
+    infrastructure only" rule matches any non-interface class assignable to a
+    domain interface, so variants of a sealed interface living in `domain`
+    break it; a sealed class does not.
+  - **The first HTTP request of the JVM costs more than a second**, so a
+    client built with a 200 ms timeout times out on the first case whatever
+    it stubs. `OpenLibrarySourceTest` warms the client once in `@BeforeAll`
+    with a generous timeout; the cases then run under 200 ms, the delayed one
+    included. T015 should expect the same of the scenarios, whose timeout is
+    `1s`.
+  - detekt counts returns: three in one function is one too many, and an
+    elvis over a platform type Kotlin reads as non-null is unreachable code.
+- Deviations from the brief: a properties class and a yaml block instead of
+  `@param:Value` (decided with Tophe on review); an answer
+  the client cannot read — an edition with no title, an author with no name,
+  an empty body — is a failure through Jackson's `required()` and a second
+  catch, not through the HTTP one; the warm-up call in `@BeforeAll`.
+- Reviewed with Tophe on 2026-09-12: `Isbn13` accepts ASCII digits only
+  (`isDigit()` and `digitToInt()` are Unicode-aware); two failure cases added
+  for the unreadable answers above; the ArchUnit port rule noted in
+  `agent/PROPOSED.md`; the source port and what it answers moved to
+  `domain.lookup`, `Isbn13` and `AuthorRole` staying at the root (D02
+  amended with Tophe); `Redirect.NORMAL`; the settings moved to
+  `application.yaml` and `SourcesProperties`, proven by two cases added to
+  `LibrisApplicationTest` on the same context. The Open Library and BnF stubs extracted
+  to `fixture`, the scenario file edited with Tophe for that alone.
+- Left over: nothing of T013. The port has no caller yet — T014 (the BnF
+  source) and T015 (the lookup use case) are next.

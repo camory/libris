@@ -7,6 +7,8 @@
 > D09 amended on 2026-09-10: the runbook lives on the server, not in the repository.
 > D06 amended on 2026-09-10: Android only; manifest fetched with credentials; the expired session leaves the app through a network-only path.
 > D11 amended on 2026-09-11: problems carry no wording, the frontend does; every error the API describes has a problem body; a response field is added, never removed or renamed.
+> D02 amended on 2026-09-12: the domain may be split by concern into sub-packages; `domain.lookup` is the first.
+> D10 amended on 2026-09-12: members imported, not qualified, when the bare name is unambiguous.
 
 ## Overview
 
@@ -51,7 +53,10 @@ Exposed, no jOOQ). Migrations with **Flyway**, SQL files, never `ddl-auto`.
 Packages under `fr.amory.libris`:
 - `domain` — aggregates as data classes, value types, domain rules, and the
   ports as plain Kotlin interfaces. Framework-free: no annotation, no
-  framework type; the only library is the uuid generator of D11.
+  framework type; the only library is the uuid generator of D11. What the
+  catalogue owns — the aggregates, `Isbn13`, `AuthorRole` — lives at the
+  root; a concern that only uses them lives in a sub-package, the first being
+  `domain.lookup`: the source port and what a source answers.
 - `application` — use-case services and transaction boundaries. Depends on
   `domain` only.
 - `infra.web` — controllers, request/response DTOs, problem details.
@@ -348,7 +353,10 @@ deliberately lacks), no other service. A test that needs more blocks the task.
 ### D10 — Conventions
 - Kotlin: official style, immutable by default, sealed types for states,
   constructor injection, no `!!`, no `lateinit` in production code — all
-  enforced by detekt. Package root `fr.amory.libris`.
+  enforced by detekt. Package root `fr.amory.libris`. A member is imported,
+  not qualified, whenever its bare name is unambiguous: `OPEN_LIBRARY`,
+  `Failed`, `RANDOM_PORT`, `ofSeconds(5)`; `MissingNode.getInstance()` stays
+  qualified because `getInstance()` alone says nothing.
 - Spring test classes receive their beans through an `@Autowired`
   constructor; no field injection in tests.
 - TypeScript: strict; ESLint (with the boundaries rules) and Prettier.
