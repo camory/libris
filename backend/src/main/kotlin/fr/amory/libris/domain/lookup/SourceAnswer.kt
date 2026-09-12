@@ -1,4 +1,4 @@
-package fr.amory.libris.domain
+package fr.amory.libris.domain.lookup
 
 sealed class SourceAnswer {
     data class Known(val edition: SourceEdition) : SourceAnswer()

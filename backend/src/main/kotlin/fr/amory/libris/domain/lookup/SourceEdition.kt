@@ -1,4 +1,6 @@
-package fr.amory.libris.domain
+package fr.amory.libris.domain.lookup
+
+import fr.amory.libris.domain.Isbn13
 
 data class SourceEdition(
     val isbn13: Isbn13,

@@ -13,10 +13,10 @@ import com.github.tomakehurst.wiremock.core.WireMockConfiguration.options
 import com.jayway.jsonpath.JsonPath
 import fr.amory.libris.domain.AuthorRole.WRITER
 import fr.amory.libris.domain.Isbn13
-import fr.amory.libris.domain.Source
-import fr.amory.libris.domain.SourceAnswer
-import fr.amory.libris.domain.SourceAuthor
-import fr.amory.libris.domain.SourceEdition
+import fr.amory.libris.domain.lookup.Source
+import fr.amory.libris.domain.lookup.SourceAnswer
+import fr.amory.libris.domain.lookup.SourceAuthor
+import fr.amory.libris.domain.lookup.SourceEdition
 import io.kotest.matchers.collections.shouldContainExactlyInAnyOrder
 import io.kotest.matchers.shouldBe
 import org.junit.jupiter.api.AfterAll

@@ -776,6 +776,8 @@ Format:
 - Reviewed with Tophe on 2026-09-12: `Isbn13` accepts ASCII digits only
   (`isDigit()` and `digitToInt()` are Unicode-aware); two failure cases added
   for the unreadable answers above; the ArchUnit port rule noted in
-  `agent/PROPOSED.md`.
+  `agent/PROPOSED.md`; the source port and what it answers moved to
+  `domain.lookup`, `Isbn13` and `AuthorRole` staying at the root (D02
+  amended with Tophe).
 - Left over: nothing of T013. The port has no caller yet — T014 (the BnF
   source) and T015 (the lookup use case) are next.

@@ -2,11 +2,11 @@ package fr.amory.libris.infra.lookup
 
 import fr.amory.libris.domain.AuthorRole.WRITER
 import fr.amory.libris.domain.Isbn13
-import fr.amory.libris.domain.IsbnSource
-import fr.amory.libris.domain.Source
-import fr.amory.libris.domain.SourceAnswer
-import fr.amory.libris.domain.SourceAuthor
-import fr.amory.libris.domain.SourceEdition
+import fr.amory.libris.domain.lookup.IsbnSource
+import fr.amory.libris.domain.lookup.Source
+import fr.amory.libris.domain.lookup.SourceAnswer
+import fr.amory.libris.domain.lookup.SourceAuthor
+import fr.amory.libris.domain.lookup.SourceEdition
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.http.client.JdkClientHttpRequestFactory
 import org.springframework.stereotype.Component
