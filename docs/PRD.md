@@ -194,6 +194,9 @@ Priorities: **P1** = needed before the family uses it, **P2** = soon after,
   API key is configured, the cover by ISBN from Open Library. Sites without an
   API (Bedetheque, BDGest, Babelio) are candidates for later, subject to their
   terms of use.
+- Delivered in two specs: `specs/fast-entry.md` is the lookup alone, showing
+  what the sources know; adding the ouvrage to a bookshelf from that card is
+  the next spec.
 
 ### 4.8 PWA behaviour (P1 for install, P2 for offline)
 - Installable on Android home screens, with icons and a splash screen.
