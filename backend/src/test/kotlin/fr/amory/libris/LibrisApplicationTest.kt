@@ -30,7 +30,11 @@ class LibrisApplicationTest @Autowired constructor(
 
     @Test
     fun `the sources are configured with their defaults`() {
-        sources shouldBe SourcesProperties("https://openlibrary.org", ofSeconds(5))
+        sources shouldBe SourcesProperties(
+            bnfUrl = "https://catalogue.bnf.fr/api/SRU",
+            openLibraryUrl = "https://openlibrary.org",
+            timeout = ofSeconds(5),
+        )
     }
 
     @Test
