@@ -123,4 +123,17 @@ class MergeTest {
         // Then
         merged.authors shouldBe listOf(SourceAuthor("Eiichirō Oda", WRITER))
     }
+
+    @Test
+    fun `a series is taken whole, the next edition's volume number ignored`() {
+        // Given
+        val first = sourceEdition(series = SourceSeries("One piece", null))
+        val second = sourceEdition(series = SourceSeries("One Piece", 1))
+
+        // When
+        val merged = merge(isbn13Of("9782723488525"), listOf(first, second))
+
+        // Then
+        merged.series shouldBe SourceSeries("One piece", null)
+    }
 }
