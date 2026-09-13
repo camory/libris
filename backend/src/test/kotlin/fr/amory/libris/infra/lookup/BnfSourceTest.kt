@@ -6,6 +6,7 @@ import com.github.tomakehurst.wiremock.http.RequestMethod.GET
 import fr.amory.libris.domain.AuthorRole.WRITER
 import fr.amory.libris.domain.lookup.Source.BNF
 import fr.amory.libris.domain.lookup.SourceAnswer.Known
+import fr.amory.libris.domain.lookup.SourceAnswer.NothingKnown
 import fr.amory.libris.domain.lookup.SourceAuthor
 import fr.amory.libris.domain.lookup.SourceEdition
 import fr.amory.libris.domain.lookup.SourceSeries
@@ -58,6 +59,18 @@ class BnfSourceTest {
     }
 
     @Test
+    fun `an ISBN the BnF does not know is nothing known`() {
+        // Given
+        bnf.doesNotKnow(UNKNOWN)
+
+        // When
+        val answer = source.lookUp(isbn13Of(UNKNOWN))
+
+        // Then
+        answer shouldBe NothingKnown
+    }
+
+    @Test
     fun `looking up an ISBN sends one search on the SRU endpoint`() {
         // Given
         bnf.knows(ONE_PIECE)
@@ -78,6 +91,7 @@ class BnfSourceTest {
 
     private companion object {
         const val ONE_PIECE = "9782723488525"
+        const val UNKNOWN = "9782000000013"
         const val SRU = "/api/SRU"
         val ONE_PIECE_EDITION = SourceEdition(
             isbn13 = isbn13Of(ONE_PIECE),
