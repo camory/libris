@@ -57,7 +57,6 @@ data class IsbnResponse(
 private fun problem(status: HttpStatus, type: String): ProblemDetail =
     ProblemDetail.forStatus(status).apply {
         this.type = URI.create(type)
-        this.title = status.reasonPhrase
     }
 
 private fun ProblemDetail.asResponse(): ResponseEntity<Any> = ResponseEntity.status(status).body(this)

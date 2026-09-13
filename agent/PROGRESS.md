@@ -812,13 +812,13 @@ Format:
 - Decided:
   - **A problem detail is built in the controller, never thrown.** A private
     `problem(status, type)` of `IsbnController.kt` returns
-    `ProblemDetail.forStatus(status)` with `type` and `title` set, and the
-    controller answers it as the body of a `ResponseEntity`. No
-    `@RestControllerAdvice`, no exception, no
-    `spring.mvc.problemdetails.enabled`. Measured: Spring then writes
-    `application/problem+json` on its own, but leaves `title` null, so the
-    title is set explicitly from `status.reasonPhrase` — the contract requires
-    it. Spring adds `instance` (the request path); the contract tolerates it.
+    `ProblemDetail.forStatus(status)` with `type` set, and the controller
+    answers it as the body of a `ResponseEntity`. No `@RestControllerAdvice`,
+    no exception, no `spring.mvc.problemdetails.enabled`. Measured: Spring
+    then writes `application/problem+json` on its own and derives `title`
+    from the status (`ProblemDetail.getTitle()` falls back to the reason
+    phrase), so nothing sets it. Spring adds `instance` (the request path);
+    the contract tolerates it.
   - **Mockito stubs a method taking a value class.** `given(lookup.lookUp(
     isbn13Of("9782723488525")))` works from Kotlin call syntax despite the JVM
     mangling of `Isbn13`; the hand-written fake the brief kept in reserve was
@@ -843,6 +843,17 @@ Format:
   are changed although the brief's *Changed* list names neither; none is in its
   *Not changed* list and no acceptance criterion covers them. Both changes are
   consequences of the endpoint existing, above.
+- Reviewed with Tophe on 2026-09-13: `IsbnControllerTest` deleted. Contracteer
+  is the web slice test: it proves structure and types, never values, by
+  design; a hand-written controller test exists only for behaviour the
+  contract cannot express, `MeController`'s role from the groups header being
+  the example. Exact values are asserted in domain, application and scenario
+  tests, never in a slice. The no-interaction check on a bad ISBN is proven by
+  the types: no `Isbn13`, no call. The explicit `title` line removed, the
+  reviewer's finding, confirmed by running the cases without it. From now on a
+  contract task opens with the pin bump: the new cases are the red, the
+  controller the green. The D07 wording is to be reviewed with Tophe as a
+  whole, not amended piecemeal.
 - Left over: nothing of T020. The `sources` of an answer is the one source that
   replied until T014 merges several; the BnF stubs of `S4` and `S7` stay
   unused, as the brief says. Two follow-ups in `agent/PROPOSED.md`.
