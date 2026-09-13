@@ -10,6 +10,7 @@
 > D02 amended on 2026-09-12: the domain may be split by concern into sub-packages; `domain.lookup` is the first.
 > D10 amended on 2026-09-12: members imported, not qualified, when the bare name is unambiguous.
 > D07 rewritten on 2026-09-13: the web slice is proven by Contracteer, values by domain, application and scenario tests; a fresh schema before every database-backed class.
+> D11 amended on 2026-09-13: a validation `code` is documentation until the contract enumerates it; the rationale of keys over wording, and what Spring's problem advice is for.
 
 ## Overview
 
@@ -433,12 +434,32 @@ API shapes
   `type`, `title` and `status`, no `detail`: the wording is the frontend's,
   which switches on `type`, a slug under `/problems/` (`/problems/validation`,
   `/problems/not-found`, …). Validation problems add
-  `errors: [{ field, code }]`. A problem carries no nullable field, since
-  Spring omits the empty fields of a `ProblemDetail`.
+  `errors: [{ field, code }]`: `field` names the request field, `code` is a
+  slug that says why it was refused. A `code` is documentation until a
+  client must tell two refusals of one field apart; then the contract
+  enumerates it for that operation, and only then does a test assert it. A
+  problem carries no nullable field, since Spring omits the empty fields of
+  a `ProblemDetail`.
 - Every error the API describes carries a problem body, whatever its status.
   Traefik and Authelia answer plain text or HTML, so a problem body is how
   the client tells an answer of Libris from one of the infrastructure: a
   5xx without one means Libris itself is unavailable.
+- The API sends keys, the frontend owns the wording: `type` is the key of a
+  problem, `code` the key of a field's refusal, and the frontend maps them to
+  its own i18n entries with a fallback for a key it does not know. When a
+  message needs data (a limit, a name), the problem gains a structured
+  extension member declared in the contract, never a sentence. An outcome of
+  a use case (not found, sources unavailable, a refused value) is a result the
+  controller answers, not an exception; Spring's problem advice
+  (`spring.mvc.problemdetails.enabled`, or an advice extending
+  `ResponseEntityExceptionHandler`) is for the failures the framework raises
+  before a controller runs (an unreadable body, a parameter of the wrong
+  type) and arrives with the first operation whose contract declares one,
+  shaped as above. Considered and rejected: sentences rendered by the server
+  under `Accept-Language` (wording in two repositories, a new sentence is a
+  deploy, the screen cannot adapt it to its context, an offline PWA has none);
+  a message-key field beside `type` and `code` (a key twice, or the API
+  coupled to the layout of a translation file).
 
 Contract
 - Every schema in the contract states `required` and `nullable`
