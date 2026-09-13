@@ -94,3 +94,15 @@
   `9782000000013` and `9791000000008` are unknown at both endpoints; the
   latter is already the `503_SOURCES_DOWN` example. To change in the
   contract with Tophe on its next release (found reviewing T013).
+- Backend: the source timeout is per HTTP request, not per lookup. The Open
+  Library client bounds each of its requests (the edition, then one per
+  author), so a source slow on every request may take several timeouts and
+  still answer, while the spec's "does not answer in time" reads per lookup.
+  Rare in practice (a source is down or hanging rather than uniformly slow);
+  a per-lookup deadline is more code in every client. To decide with Tophe
+  if it ever bites (found on 2026-09-13).
+- Backend: the wait when every source hangs. The default timeout is 5 s per
+  request and T014 asks the sources in turn, so two hanging sources mean
+  10 s before the 503; asking in parallel would halve it at the price of an
+  executor in `application`. Sequential is the boring choice; a shorter
+  default is a product number for Tophe (found on 2026-09-13).

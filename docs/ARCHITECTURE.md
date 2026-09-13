@@ -11,6 +11,7 @@
 > D10 amended on 2026-09-12: members imported, not qualified, when the bare name is unambiguous.
 > D07 rewritten on 2026-09-13: the web slice is proven by Contracteer, values by domain, application and scenario tests; a fresh schema before every database-backed class.
 > D11 amended on 2026-09-13: a validation `code` is documentation until the contract enumerates it; the rationale of keys over wording, and what Spring's problem advice is for.
+> D02 amended on 2026-09-13: the timeout is the source adapter's, the use case never sees time.
 
 ## Overview
 
@@ -58,7 +59,10 @@ Packages under `fr.amory.libris`:
   framework type; the only library is the uuid generator of D11. What the
   catalogue owns — the aggregates, `Isbn13`, `AuthorRole` — lives at the
   root; a concern that only uses them lives in a sub-package, the first being
-  `domain.lookup`: the source port and what a source answers.
+  `domain.lookup`: the source port and what a source answers. The port's
+  contract on time: a source answers within `LIBRIS_SOURCE_TIMEOUT` or
+  answers `Failed`; the bound is the adapter's, and the use case never sees
+  time.
 - `application` — use-case services and transaction boundaries. Depends on
   `domain` only.
 - `infra.web` — controllers, request/response DTOs, problem details.

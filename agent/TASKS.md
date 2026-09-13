@@ -59,12 +59,12 @@ frontend one; no other task touches the contract (D04).
       wins for every field it gives, the next fills the fields it leaves
       empty, the cover stays Open Library's by ISBN, and `sources` lists the
       ones that answered (D02).
-      The use case asks every source, each bounded by
-      `LIBRIS_SOURCE_TIMEOUT`, and keeps what the ones that replied know; it
-      still answers not-found when none knows and sources-unavailable when
-      none replies.
-      Tested over two fakes: both answering, one failing, one answering past
-      the timeout, both failing. No new source and no contract edit.
+      The use case asks every source in turn and keeps what the ones that
+      replied know; it never sees time, a late source being a failed one by
+      the port's contract (D02); it still answers not-found when none knows
+      and sources-unavailable when none replies.
+      Tested over two fakes: both answering, one failing, both failing. No
+      new source and no contract edit.
       Realises the rule S5 and S6 assert; un-skips nothing, both go green
       with T015.
 
