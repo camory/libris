@@ -797,3 +797,25 @@ Format:
   to `fixture`, the scenario file edited with Tophe for that alone.
 - Left over: nothing of T013. The port has no caller yet — T014 (the BnF
   source) and T015 (the lookup use case) are next.
+
+## 2026-09-13 — the test schema is fresh for every database-backed class — done by Tophe + Claude (interactive)
+- Did: `fixture/FreshSchema`, a JUnit `BeforeAllCallback` that takes the
+  `Flyway` bean of the Spring context and runs `clean()` then `migrate()`;
+  `JdbcSliceTest` and `ScenarioTest` carry it and set
+  `spring.flyway.clean-disabled=false` for their contexts. Found on T020: a
+  scenario class boots the whole application on a real port, so the reader
+  visit of its first request commits `juliette`, and `JdbcReaderRepositoryTest`
+  then failed on the unique username on the next run against the same
+  database (the sandbox one survives between runs; CI's is fresh).
+- Decided: the class that commits owns the state, and every class that touches
+  the database starts from a freshly migrated schema, before the class rather
+  than after so that a run that dies mid-way leaves nothing for the next.
+  Cleaning the scenario context alone is not enough: the scenarios recommit
+  the reader after their own clean, so the slice needs the same start. A
+  cleanup in the victim test (`@Sql(statements = ["delete from reader"])`,
+  T020's first answer) is dropped: one per table, and it says nothing of why.
+  Gotcha: `backend/.env` points the host gate at the throwaway compose
+  database `bootRun` uses, so a gate run wipes what was entered by hand.
+- Left over / gotchas: the `@Sql` line leaves `JdbcReaderRepositoryTest` once
+  #60 is merged. D07's sentence on the slices does not say it yet; to be
+  written when D07 is reviewed as a whole.
