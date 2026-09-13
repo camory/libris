@@ -8,9 +8,9 @@ import fr.amory.libris.domain.lookup.Source.OPEN_LIBRARY
 import fr.amory.libris.domain.lookup.SourceAnswer.Failed
 import fr.amory.libris.domain.lookup.SourceAnswer.Known
 import fr.amory.libris.domain.lookup.SourceAnswer.NothingKnown
+import fr.amory.libris.fixture.A_SOURCE_EDITION
 import fr.amory.libris.fixture.SourceAnswering
 import fr.amory.libris.fixture.isbn13Of
-import fr.amory.libris.fixture.sourceEdition
 import io.kotest.matchers.shouldBe
 import org.junit.jupiter.api.Test
 
@@ -20,8 +20,8 @@ class IsbnLookupTest {
         // Given
         val lookup = IsbnLookup(
             listOf(
-                SourceAnswering(BNF, Known(sourceEdition(title = "Romance dawn"))),
-                SourceAnswering(OPEN_LIBRARY, Known(sourceEdition(title = "Tome 01", pageCount = 207))),
+                SourceAnswering(BNF, Known(A_SOURCE_EDITION.copy(title = "Romance dawn"))),
+                SourceAnswering(OPEN_LIBRARY, Known(A_SOURCE_EDITION.copy(title = "Tome 01", pageCount = 207))),
             ),
         )
 
@@ -30,7 +30,7 @@ class IsbnLookupTest {
 
         // Then
         result shouldBe Found(
-            sourceEdition(
+            A_SOURCE_EDITION.copy(
                 title = "Romance dawn",
                 pageCount = 207,
                 coverUrl = "https://covers.openlibrary.org/b/isbn/9782723488525-L.jpg",
@@ -44,7 +44,7 @@ class IsbnLookupTest {
         // Given
         val lookup = IsbnLookup(
             listOf(
-                SourceAnswering(BNF, Known(sourceEdition(title = "Romance dawn"))),
+                SourceAnswering(BNF, Known(A_SOURCE_EDITION.copy(title = "Romance dawn"))),
                 SourceAnswering(OPEN_LIBRARY, Failed),
             ),
         )
@@ -54,7 +54,7 @@ class IsbnLookupTest {
 
         // Then
         result shouldBe Found(
-            sourceEdition(
+            A_SOURCE_EDITION.copy(
                 title = "Romance dawn",
                 coverUrl = "https://covers.openlibrary.org/b/isbn/9782723488525-L.jpg",
             ),
