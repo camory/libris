@@ -3,6 +3,7 @@ package fr.amory.libris.infra.lookup
 import com.github.tomakehurst.wiremock.WireMockServer
 import com.github.tomakehurst.wiremock.core.WireMockConfiguration.options
 import com.github.tomakehurst.wiremock.http.RequestMethod.GET
+import fr.amory.libris.domain.lookup.Source.BNF
 import fr.amory.libris.fixture.BnfStubs
 import fr.amory.libris.fixture.isbn13Of
 import io.kotest.matchers.shouldBe
@@ -20,6 +21,11 @@ class BnfSourceTest {
     @AfterEach
     fun forgetTheStubs() {
         server.resetAll()
+    }
+
+    @Test
+    fun `the source names itself`() {
+        source.source shouldBe BNF
     }
 
     @Test
