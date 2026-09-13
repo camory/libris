@@ -4,7 +4,6 @@ import com.github.tomakehurst.wiremock.WireMockServer
 import fr.amory.libris.fixture.BnfStubs
 import fr.amory.libris.fixture.OpenLibraryStubs
 import io.kotest.matchers.shouldBe
-import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Qualifier
@@ -33,7 +32,6 @@ class FastEntryScenarios @Autowired constructor(
     }
 
     @Test
-    @Disabled("S1")
     fun `S1 Typed ISBN, found`() {
         // Given
         bnf.knows("9782723488525")
