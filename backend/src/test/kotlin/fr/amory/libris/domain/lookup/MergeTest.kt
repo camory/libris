@@ -136,4 +136,17 @@ class MergeTest {
         // Then
         merged.series shouldBe SourceSeries("One piece", null)
     }
+
+    @Test
+    fun `the cover is Open Library's by the asked ISBN, whatever the editions carry`() {
+        // Given
+        val editions = listOf(sourceEdition(coverUrl = null), sourceEdition(coverUrl = null))
+
+        // When
+        val merged = merge(isbn13Of("9782070368228"), editions)
+
+        // Then
+        merged.isbn13 shouldBe isbn13Of("9782070368228")
+        merged.coverUrl shouldBe "https://covers.openlibrary.org/b/isbn/9782070368228-L.jpg"
+    }
 }
