@@ -75,9 +75,9 @@ class IsbnLookupTest {
     }
 
     @Test
-    fun `a source that failed answers that no source replied`() {
+    fun `every source having failed answers that no source replied`() {
         // Given
-        val lookup = IsbnLookup(listOf(SourceAnswering(OPEN_LIBRARY, Failed)))
+        val lookup = IsbnLookup(listOf(SourceAnswering(BNF, Failed), SourceAnswering(OPEN_LIBRARY, Failed)))
 
         // When
         val result = lookup.lookUp(isbn13Of("9782723488525"))
