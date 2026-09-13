@@ -885,3 +885,49 @@ Format:
 - Left over / gotchas: the `@Sql` line leaves `JdbcReaderRepositoryTest` once
   #60 is merged. D07's sentence on the slices does not say it yet; to be
   written when D07 is reviewed as a whole.
+
+## 2026-09-13 — T014 the merge rule and several sources — done
+- Did: `domain/lookup/Merge.kt`, the first domain rule written as a function:
+  `merge(isbn, editions)` answers one `SourceEdition` whose every field is the
+  first edition that gives one, `authors` and `series` taken whole, the ISBN
+  the asked one and the cover always Open Library's by that ISBN. Beside it
+  `openLibraryCoverOf(isbn)`, the one place the address is written now:
+  `OpenLibrarySource` lost its private `COVERS` constant and calls it, its
+  answer unchanged. `IsbnLookup` takes `List<IsbnSource>`, asks them in the
+  order Spring gave them and answers `Found(merge(…), the sources that knew)`,
+  `SourcesUnavailable` only when every source failed, `UnknownIsbn` as soon as
+  one replied and none knew. `MergeTest` (six cases) and `IsbnLookupTest`
+  (five cases, rewritten over two fakes) are new or rewritten;
+  `fixture/SourceEditions.kt` holds the shared edition the two use.
+- Decided:
+  - **The shared fixture is a value, not a builder.** The brief asked for a
+    function with every parameter defaulted; detekt's `LongParameterList`
+    refuses a function of twelve parameters (threshold 6, and
+    `ignoreDefaultParameters` is false by default) while it exempts data
+    classes. Raising the threshold would have meant editing
+    `config/detekt/detekt.yml`, which the brief's own criterion forbids, and
+    a local `@Suppress` buys a lint escape for nothing. So
+    `A_SOURCE_EDITION` is one value and a test varies one field with
+    `copy(…)` — the same "name only the field you are about" the builder was
+    for, in the idiom Kotlin already gives. Any future fixture of a data
+    class with many fields should follow it rather than fight the rule.
+  - **The gate's own order.** A test file whose imports are not in
+    lexicographic order fails `detekt` (`ImportOrdering`) though it compiles
+    and runs: adding an import by hand costs a `./gradlew detekt` before the
+    commit.
+  - The merge is one expression over `firstNotNullOfOrNull`, so the rule of
+    every nullable field is the same line; `authors` is the first non-empty
+    list, `firstOrNull { it.authors.isNotEmpty() }`.
+- Deviations from the brief: the fixture above, `A_SOURCE_EDITION` +
+  `copy` instead of `sourceEdition(…)`, for the reason given. Everything the
+  builder was needed for is unchanged. Nothing else.
+- Gotcha, not a deviation: three cycles of `MergeTest` (authors whole, series
+  whole, the cover) and four of `IsbnLookupTest` passed the moment they were
+  written. The field-by-field rule of the third cycle is one expression that
+  covers the whole of S5 at once, so the later cases pin behaviour instead of
+  driving it; they are still the criteria's proofs and each would fail on a
+  rule that merged inside `authors` or `series`, or that let an edition's own
+  `coverUrl` through. Their commits say `test(backend)`, not `feat`.
+- Left over: nothing of T014. The four skipped scenario methods (`S1`, both
+  `S6`, `S5`) stay skipped and go green with T015's BnF, which is also what
+  ranks a source before another — here the order is the one Spring gives.
