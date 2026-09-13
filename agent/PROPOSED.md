@@ -112,3 +112,14 @@
   10 s before the 503; asking in parallel would halve it at the price of an
   executor in `application`. Sequential is the boring choice; a shorter
   default is a product number for Tophe (found on 2026-09-13).
+- Backend: no BnF function code maps to `COLOURIST`. The UNIMARC `$4`
+  codes the recordings carry are `070` (writer), and the role map adds
+  `440` (artist) and `730` (translator); nothing in them names a colourist,
+  and a code invented from nothing would be a guess. To settle with Tophe
+  against a real record of an album whose colourist is credited (found on
+  2026-09-13).
+- Backend: the BnF language map holds one entry, `fre → fr`. The mapping
+  from UNIMARC `101$a` to the two-letter code the contract wants grows one
+  language at a time, with the recordings that exercise it; a whole ISO
+  639-2 to 639-1 table would be code no test asks for. To revisit if the
+  library turns out to hold much beyond French (found on 2026-09-13).
