@@ -46,6 +46,18 @@ class BnfSourceTest {
     }
 
     @Test
+    fun `a record without pages and year gives neither`() {
+        // Given
+        bnf.partiallyKnows(ONE_PIECE)
+
+        // When
+        val answer = source.lookUp(isbn13Of(ONE_PIECE))
+
+        // Then
+        answer shouldBe Known(ONE_PIECE_EDITION.copy(publicationYear = null, pageCount = null))
+    }
+
+    @Test
     fun `looking up an ISBN sends one search on the SRU endpoint`() {
         // Given
         bnf.knows(ONE_PIECE)
