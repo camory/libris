@@ -4,7 +4,6 @@ import fr.amory.libris.application.LookupResult.Found
 import fr.amory.libris.application.LookupResult.SourcesUnavailable
 import fr.amory.libris.application.LookupResult.UnknownIsbn
 import fr.amory.libris.domain.AuthorRole.WRITER
-import fr.amory.libris.domain.Isbn13
 import fr.amory.libris.domain.lookup.Source.OPEN_LIBRARY
 import fr.amory.libris.domain.lookup.SourceAnswer.Failed
 import fr.amory.libris.domain.lookup.SourceAnswer.Known
@@ -12,10 +11,9 @@ import fr.amory.libris.domain.lookup.SourceAnswer.NothingKnown
 import fr.amory.libris.domain.lookup.SourceAuthor
 import fr.amory.libris.domain.lookup.SourceEdition
 import fr.amory.libris.fixture.SourceAnswering
+import fr.amory.libris.fixture.isbn13Of
 import io.kotest.matchers.shouldBe
 import org.junit.jupiter.api.Test
-
-private fun isbn13Of(text: String): Isbn13 = checkNotNull(Isbn13.of(text))
 
 private val ONE_PIECE_1 = SourceEdition(
     isbn13 = isbn13Of("9782723488525"),

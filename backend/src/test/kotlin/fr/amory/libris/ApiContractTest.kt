@@ -9,13 +9,13 @@ import fr.amory.libris.application.LookupResult.UnknownIsbn
 import fr.amory.libris.application.ReaderVisit
 import fr.amory.libris.domain.AuthorRole.ARTIST
 import fr.amory.libris.domain.AuthorRole.WRITER
-import fr.amory.libris.domain.Isbn13
 import fr.amory.libris.domain.Reader
 import fr.amory.libris.domain.lookup.Source.BNF
 import fr.amory.libris.domain.lookup.Source.OPEN_LIBRARY
 import fr.amory.libris.domain.lookup.SourceAuthor
 import fr.amory.libris.domain.lookup.SourceEdition
 import fr.amory.libris.domain.lookup.SourceSeries
+import fr.amory.libris.fixture.isbn13Of
 import fr.amory.libris.infra.web.WebSliceTest
 import jakarta.servlet.Filter
 import jakarta.servlet.http.HttpServletRequest
@@ -29,8 +29,6 @@ import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Import
 import org.springframework.core.Ordered
 import org.springframework.test.context.bean.override.mockito.MockitoBean
-
-private fun isbn13Of(text: String): Isbn13 = checkNotNull(Isbn13.of(text))
 
 private val ONE_PIECE_1 = SourceEdition(
     isbn13 = isbn13Of("9782723488525"),

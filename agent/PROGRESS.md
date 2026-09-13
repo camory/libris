@@ -850,7 +850,9 @@ Format:
   the example. Exact values are asserted in domain, application and scenario
   tests, never in a slice. The no-interaction check on a bad ISBN is proven by
   the types: no `Isbn13`, no call. The explicit `title` line removed, the
-  reviewer's finding, confirmed by running the cases without it. From now on a
+  reviewer's finding, confirmed by running the cases without it. The
+  `isbn13Of` helper, written three times (the contract test, the use case
+  test, T013's source test), is one function of `fixture`. From now on a
   contract task opens with the pin bump: the new cases are the red, the
   controller the green. The D07 wording is to be reviewed with Tophe as a
   whole, not amended piecemeal.
