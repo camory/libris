@@ -6,7 +6,6 @@ import fr.amory.libris.application.LookupResult.UnknownIsbn
 import fr.amory.libris.domain.Isbn13
 import fr.amory.libris.domain.lookup.IsbnSource
 import fr.amory.libris.domain.lookup.Source
-import fr.amory.libris.domain.lookup.SourceAnswer
 import fr.amory.libris.domain.lookup.SourceAnswer.Failed
 import fr.amory.libris.domain.lookup.SourceAnswer.Known
 import fr.amory.libris.domain.lookup.SourceEdition
@@ -25,14 +24,14 @@ sealed class LookupResult {
 class IsbnLookup(private val sources: List<IsbnSource>) {
     fun lookUp(isbn: Isbn13): LookupResult {
         val answers = sources.map { it.source to it.lookUp(isbn) }
-        val known = answers.mapNotNull { (source, answer) -> knowledgeOf(source, answer) }
+        val known = answers.mapNotNull { (source, answer) -> if (answer is Known) source to answer.edition else null }
         return when {
-            known.isNotEmpty() -> Found(merge(isbn, known.map { it.second }), known.map { it.first })
+            known.isNotEmpty() -> Found(
+                merge(isbn, known.map { (_, edition) -> edition }),
+                known.map { (source, _) -> source },
+            )
             answers.all { (_, answer) -> answer == Failed } -> SourcesUnavailable
             else -> UnknownIsbn
         }
     }
-
-    private fun knowledgeOf(source: Source, answer: SourceAnswer): Pair<Source, SourceEdition>? =
-        (answer as? Known)?.let { source to it.edition }
 }
