@@ -84,6 +84,18 @@ class BnfSourceTest {
     }
 
     @Test
+    fun `a BnF that answers past the timeout is a failure`() {
+        // Given
+        bnf.answersTooLate(ONE_PIECE)
+
+        // When
+        val answer = source.lookUp(isbn13Of(ONE_PIECE))
+
+        // Then
+        answer shouldBe Failed
+    }
+
+    @Test
     fun `looking up an ISBN sends one search on the SRU endpoint`() {
         // Given
         bnf.knows(ONE_PIECE)
