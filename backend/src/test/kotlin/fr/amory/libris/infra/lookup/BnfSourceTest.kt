@@ -5,6 +5,7 @@ import com.github.tomakehurst.wiremock.core.WireMockConfiguration.options
 import com.github.tomakehurst.wiremock.http.RequestMethod.GET
 import fr.amory.libris.domain.AuthorRole.WRITER
 import fr.amory.libris.domain.lookup.Source.BNF
+import fr.amory.libris.domain.lookup.SourceAnswer.Failed
 import fr.amory.libris.domain.lookup.SourceAnswer.Known
 import fr.amory.libris.domain.lookup.SourceAnswer.NothingKnown
 import fr.amory.libris.domain.lookup.SourceAuthor
@@ -68,6 +69,18 @@ class BnfSourceTest {
 
         // Then
         answer shouldBe NothingKnown
+    }
+
+    @Test
+    fun `a BnF that fails is a failure`() {
+        // Given
+        bnf.fails()
+
+        // When
+        val answer = source.lookUp(isbn13Of(ONE_PIECE))
+
+        // Then
+        answer shouldBe Failed
     }
 
     @Test
