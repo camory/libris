@@ -90,3 +90,15 @@
   `9782000000013` and `9791000000008` are unknown at both endpoints; the
   latter is already the `503_SOURCES_DOWN` example. To change in the
   contract with Tophe on its next release (found reviewing T013).
+- Backend: the web slice grows a mock per controller. Every `@WebSliceTest`
+  class must name every use case of `infra.web` in its `@MockitoBean`, because
+  `WebSliceConfiguration` scans the whole package; the list will be copied into
+  each new test class as controllers arrive. Declaring the mocks on the
+  `@WebSliceTest` annotation itself would keep one list (found on T020,
+  2026-09-12).
+- Backend: a scenario test commits what it writes. `ScenarioTest` boots the
+  whole application on a real port, so anything a scenario stores stays in the
+  sandbox database and the next run reads it; the reader of the headers is the
+  first case. Persistence slice tests must start from a known table, and a
+  scenario that stores an ouvrage will need the same thought (found on T020,
+  2026-09-12).
