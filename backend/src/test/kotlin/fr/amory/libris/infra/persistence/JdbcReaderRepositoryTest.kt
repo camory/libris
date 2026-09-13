@@ -7,9 +7,11 @@ import io.kotest.matchers.shouldBe
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.context.annotation.Import
+import org.springframework.test.context.jdbc.Sql
 
 @JdbcSliceTest
 @Import(JdbcReaderRepository::class)
+@Sql(statements = ["delete from reader"])
 class JdbcReaderRepositoryTest @Autowired constructor(
     private val readers: JdbcReaderRepository,
 ) {
