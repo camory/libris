@@ -14,14 +14,10 @@ import fr.amory.libris.domain.lookup.SourceAnswer.NothingKnown
 import fr.amory.libris.domain.lookup.SourceAuthor
 import fr.amory.libris.domain.lookup.SourceEdition
 import fr.amory.libris.domain.lookup.SourceSeries
-import org.springframework.http.client.JdkClientHttpRequestFactory
-import org.springframework.web.client.RestClient
 import org.springframework.web.client.RestClientException
 import org.w3c.dom.Element
 import org.xml.sax.SAXException
 import java.io.ByteArrayInputStream
-import java.net.http.HttpClient
-import java.net.http.HttpClient.Redirect.NORMAL
 import java.time.Duration
 import javax.xml.parsers.DocumentBuilderFactory
 
@@ -37,10 +33,7 @@ internal fun authorRoleOf(functionCode: String?): AuthorRole = ROLES[functionCod
 class BnfSource(baseUrl: String, timeout: Duration) : IsbnSource {
     override val source = BNF
 
-    private val http = RestClient.builder()
-        .baseUrl(baseUrl)
-        .requestFactory(requestFactory(timeout))
-        .build()
+    private val http = sourceRestClient(baseUrl, timeout)
 
     override fun lookUp(isbn: Isbn13): SourceAnswer =
         try {
@@ -101,14 +94,6 @@ class BnfSource(baseUrl: String, timeout: Duration) : IsbnSource {
         .orEmpty()
 
     private companion object {
-        fun requestFactory(timeout: Duration): JdkClientHttpRequestFactory {
-            val client = HttpClient.newBuilder()
-                .followRedirects(NORMAL)
-                .connectTimeout(timeout)
-                .build()
-            return JdkClientHttpRequestFactory(client).apply { setReadTimeout(timeout) }
-        }
-
         fun recordIn(answer: String): UnimarcRecord? {
             val factory = DocumentBuilderFactory.newInstance().apply {
                 isNamespaceAware = true
