@@ -54,7 +54,7 @@ frontend one; no other task touches the contract (D04).
       Realises S4, S7 and the API's own check in S3; un-skips
       `S4 Unknown ISBN` and `S7 Every source down`.
 
-- [ ] T014 Backend: the merge rule and several sources.
+- [x] T014 Backend: the merge rule and several sources.
       The domain rule of S5, tested field by field: the first source's value
       wins for every field it gives, the next fills the fields it leaves
       empty, the cover stays Open Library's by ISBN, and `sources` lists the

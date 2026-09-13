@@ -10,6 +10,7 @@ import fr.amory.libris.domain.lookup.SourceAnswer.Known
 import fr.amory.libris.domain.lookup.SourceAnswer.NothingKnown
 import fr.amory.libris.domain.lookup.SourceAuthor
 import fr.amory.libris.domain.lookup.SourceEdition
+import fr.amory.libris.domain.lookup.openLibraryCoverOf
 import org.springframework.http.client.JdkClientHttpRequestFactory
 import org.springframework.web.client.HttpClientErrorException
 import org.springframework.web.client.RestClient
@@ -55,7 +56,7 @@ class OpenLibrarySource(baseUrl: String, timeout: Duration) : IsbnSource {
                 language = null,
                 pageCount = edition["number_of_pages"]?.asInt(),
                 summary = null,
-                coverUrl = "$COVERS/${isbn.digits}-L.jpg",
+                coverUrl = openLibraryCoverOf(isbn),
             ),
         )
 
@@ -77,7 +78,6 @@ class OpenLibrarySource(baseUrl: String, timeout: Duration) : IsbnSource {
         http.get().uri(path).retrieve().body(JsonNode::class.java) ?: MissingNode.getInstance()
 
     private companion object {
-        const val COVERS = "https://covers.openlibrary.org/b/isbn"
         val YEAR = Regex("\\d{4}")
 
         fun requestFactory(timeout: Duration): JdkClientHttpRequestFactory {
