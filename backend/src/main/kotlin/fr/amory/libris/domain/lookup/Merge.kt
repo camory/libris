@@ -4,6 +4,8 @@ import fr.amory.libris.domain.Isbn13
 
 private const val COVERS = "https://covers.openlibrary.org/b/isbn"
 
+fun openLibraryCoverOf(isbn: Isbn13): String = "$COVERS/${isbn.digits}-L.jpg"
+
 fun merge(isbn: Isbn13, editions: List<SourceEdition>): SourceEdition = SourceEdition(
     isbn13 = isbn,
     title = editions.first().title,
@@ -16,5 +18,5 @@ fun merge(isbn: Isbn13, editions: List<SourceEdition>): SourceEdition = SourceEd
     language = editions.firstNotNullOfOrNull { it.language },
     pageCount = editions.firstNotNullOfOrNull { it.pageCount },
     summary = editions.firstNotNullOfOrNull { it.summary },
-    coverUrl = "$COVERS/${isbn.digits}-L.jpg",
+    coverUrl = openLibraryCoverOf(isbn),
 )
