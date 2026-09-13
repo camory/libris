@@ -1,5 +1,7 @@
 package fr.amory.libris.domain.lookup
 
+import fr.amory.libris.domain.AuthorRole.TRANSLATOR
+import fr.amory.libris.domain.AuthorRole.WRITER
 import fr.amory.libris.fixture.isbn13Of
 import fr.amory.libris.fixture.sourceEdition
 import io.kotest.matchers.shouldBe
@@ -16,5 +18,55 @@ class MergeTest {
 
         // Then
         merged shouldBe edition.copy(coverUrl = "https://covers.openlibrary.org/b/isbn/9782723488525-L.jpg")
+    }
+
+    @Test
+    fun `two editions that both give every field answer the first one's values`() {
+        // Given
+        val first = sourceEdition(
+            title = "Romance dawn",
+            subtitle = "à l'aube d'une grande aventure",
+            authors = listOf(SourceAuthor("Eiichirō Oda", WRITER)),
+            series = SourceSeries("One piece", 1),
+            collection = "Shonen manga",
+            publisher = "Glénat",
+            publicationYear = 2013,
+            language = "fr",
+            pageCount = 203,
+            summary = "Luffy prend la mer",
+            coverUrl = "https://example.org/une-couverture.jpg",
+        )
+        val second = sourceEdition(
+            title = "One Piece - Édition originale Tome 01",
+            subtitle = "un autre sous-titre",
+            authors = listOf(SourceAuthor("Sylvain Chollet", TRANSLATOR)),
+            series = SourceSeries("One Piece", 2),
+            collection = "Shōnen",
+            publisher = "Glénat Manga",
+            publicationYear = 2003,
+            language = "ja",
+            pageCount = 207,
+            summary = "un autre résumé",
+            coverUrl = "https://example.org/une-autre-couverture.jpg",
+        )
+
+        // When
+        val merged = merge(isbn13Of("9782723488525"), listOf(first, second))
+
+        // Then
+        merged shouldBe sourceEdition(
+            isbn13 = isbn13Of("9782723488525"),
+            title = "Romance dawn",
+            subtitle = "à l'aube d'une grande aventure",
+            authors = listOf(SourceAuthor("Eiichirō Oda", WRITER)),
+            series = SourceSeries("One piece", 1),
+            collection = "Shonen manga",
+            publisher = "Glénat",
+            publicationYear = 2013,
+            language = "fr",
+            pageCount = 203,
+            summary = "Luffy prend la mer",
+            coverUrl = "https://covers.openlibrary.org/b/isbn/9782723488525-L.jpg",
+        )
     }
 }
