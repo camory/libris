@@ -112,7 +112,6 @@ class FastEntryScenarios @Autowired constructor(
     }
 
     @Test
-    @Disabled("S6")
     fun `S6 One source down, past the timeout`() {
         // Given
         bnf.knows("9782723488525")
