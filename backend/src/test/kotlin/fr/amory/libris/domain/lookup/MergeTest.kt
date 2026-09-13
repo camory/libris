@@ -69,4 +69,42 @@ class MergeTest {
             coverUrl = "https://covers.openlibrary.org/b/isbn/9782723488525-L.jpg",
         )
     }
+
+    @Test
+    fun `a field the first edition leaves empty is the next edition's`() {
+        // Given
+        val first = sourceEdition(title = "Romance dawn")
+        val second = sourceEdition(
+            title = "One Piece - Édition originale Tome 01",
+            subtitle = "à l'aube d'une grande aventure",
+            authors = listOf(SourceAuthor("Eiichirō Oda", WRITER)),
+            series = SourceSeries("One piece", 1),
+            collection = "Shonen manga",
+            publisher = "Glénat",
+            publicationYear = 2013,
+            language = "fr",
+            pageCount = 203,
+            summary = "Luffy prend la mer",
+            coverUrl = "https://example.org/une-couverture.jpg",
+        )
+
+        // When
+        val merged = merge(isbn13Of("9782723488525"), listOf(first, second))
+
+        // Then
+        merged shouldBe sourceEdition(
+            isbn13 = isbn13Of("9782723488525"),
+            title = "Romance dawn",
+            subtitle = "à l'aube d'une grande aventure",
+            authors = listOf(SourceAuthor("Eiichirō Oda", WRITER)),
+            series = SourceSeries("One piece", 1),
+            collection = "Shonen manga",
+            publisher = "Glénat",
+            publicationYear = 2013,
+            language = "fr",
+            pageCount = 203,
+            summary = "Luffy prend la mer",
+            coverUrl = "https://covers.openlibrary.org/b/isbn/9782723488525-L.jpg",
+        )
+    }
 }
