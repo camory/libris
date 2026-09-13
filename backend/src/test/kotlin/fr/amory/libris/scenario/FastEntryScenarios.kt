@@ -97,7 +97,6 @@ class FastEntryScenarios @Autowired constructor(
     }
 
     @Test
-    @Disabled("S6")
     fun `S6 One source down`() {
         // Given
         bnf.fails()
