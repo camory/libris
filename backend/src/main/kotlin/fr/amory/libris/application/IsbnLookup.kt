@@ -25,11 +25,9 @@ class IsbnLookup(private val sources: List<IsbnSource>) {
     fun lookUp(isbn: Isbn13): LookupResult {
         val answers = sources.map { it.source to it.lookUp(isbn) }
         val known = answers.mapNotNull { (source, answer) -> if (answer is Known) source to answer.edition else null }
+        val (sources, editions) = known.unzip()
         return when {
-            known.isNotEmpty() -> Found(
-                merge(isbn, known.map { (_, edition) -> edition }),
-                known.map { (source, _) -> source },
-            )
+            known.isNotEmpty() -> Found(merge(isbn, editions), sources)
             answers.all { (_, answer) -> answer == Failed } -> SourcesUnavailable
             else -> UnknownIsbn
         }
