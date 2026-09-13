@@ -140,7 +140,10 @@ class MergeTest {
     @Test
     fun `the cover is Open Library's by the asked ISBN, whatever the editions carry`() {
         // Given
-        val editions = listOf(A_SOURCE_EDITION.copy(coverUrl = null), A_SOURCE_EDITION.copy(coverUrl = null))
+        val editions = listOf(
+            A_SOURCE_EDITION.copy(coverUrl = "https://example.org/une-couverture.jpg"),
+            A_SOURCE_EDITION.copy(coverUrl = null),
+        )
 
         // When
         val merged = merge(isbn13Of("9782070368228"), editions)
