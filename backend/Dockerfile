@@ -2,7 +2,7 @@ FROM eclipse-temurin:25.0.4_7-jdk-noble AS build
 WORKDIR /workspace
 COPY . .
 ARG VERSION=dev
-RUN ./gradlew --no-daemon bootJar -Pversion=$VERSION
+RUN --mount=type=cache,target=/root/.gradle ./gradlew --no-daemon bootJar -Pversion=$VERSION
 
 FROM eclipse-temurin:25.0.4_7-jre-noble
 ARG VERSION=dev
