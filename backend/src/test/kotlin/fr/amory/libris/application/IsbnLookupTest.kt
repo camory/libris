@@ -40,6 +40,29 @@ class IsbnLookupTest {
     }
 
     @Test
+    fun `a source that failed takes no part in the answer`() {
+        // Given
+        val lookup = IsbnLookup(
+            listOf(
+                SourceAnswering(BNF, Known(sourceEdition(title = "Romance dawn"))),
+                SourceAnswering(OPEN_LIBRARY, Failed),
+            ),
+        )
+
+        // When
+        val result = lookup.lookUp(isbn13Of("9782723488525"))
+
+        // Then
+        result shouldBe Found(
+            sourceEdition(
+                title = "Romance dawn",
+                coverUrl = "https://covers.openlibrary.org/b/isbn/9782723488525-L.jpg",
+            ),
+            listOf(BNF),
+        )
+    }
+
+    @Test
     fun `a source that knows nothing answers that no source knows the ISBN`() {
         // Given
         val lookup = IsbnLookup(listOf(SourceAnswering(OPEN_LIBRARY, NothingKnown)))
