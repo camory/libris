@@ -79,7 +79,6 @@ class FastEntryScenarios @Autowired constructor(
     }
 
     @Test
-    @Disabled("S5")
     fun `S5 Merged answer`() {
         // Given
         bnf.partiallyKnows("9782723488525")
