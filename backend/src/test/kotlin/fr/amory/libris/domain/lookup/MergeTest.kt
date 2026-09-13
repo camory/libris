@@ -1,5 +1,6 @@
 package fr.amory.libris.domain.lookup
 
+import fr.amory.libris.domain.AuthorRole.ARTIST
 import fr.amory.libris.domain.AuthorRole.TRANSLATOR
 import fr.amory.libris.domain.AuthorRole.WRITER
 import fr.amory.libris.fixture.isbn13Of
@@ -106,5 +107,20 @@ class MergeTest {
             summary = "Luffy prend la mer",
             coverUrl = "https://covers.openlibrary.org/b/isbn/9782723488525-L.jpg",
         )
+    }
+
+    @Test
+    fun `authors are taken whole from the first edition that gives any`() {
+        // Given
+        val first = sourceEdition(authors = listOf(SourceAuthor("Eiichirō Oda", WRITER)))
+        val second = sourceEdition(
+            authors = listOf(SourceAuthor("Eiichirō Oda", ARTIST), SourceAuthor("Sylvain Chollet", TRANSLATOR)),
+        )
+
+        // When
+        val merged = merge(isbn13Of("9782723488525"), listOf(first, second))
+
+        // Then
+        merged.authors shouldBe listOf(SourceAuthor("Eiichirō Oda", WRITER))
     }
 }
