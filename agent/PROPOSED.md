@@ -69,9 +69,13 @@
   implemented in the infrastructure only" matches every class assignable to
   any `domain` interface, so the variants of a sealed interface, or an enum
   implementing a domain interface, break it; T013 chose a sealed class for
-  `SourceAnswer` because of it. Match the ports only (the interfaces of
-  `domain` that `infra` implements, by name or by a marker), so the domain
-  may use its own interfaces (seen on T013, 2026-09-12).
+  `SourceAnswer` because of it. Remedy decided with Tophe on 2026-09-13: add
+  one clause, `.and().resideOutsideOfPackage("..domain..")`, so a class
+  outside `domain` that implements a domain interface must reside in
+  `infra`, and the domain may use its own interfaces; no naming convention,
+  no marker. To apply in the first task that needs a domain implementer of
+  a domain interface, one clause and nothing else (seen on T013,
+  2026-09-12).
 - Backend: Open Library in one request. `/api/books?bibkeys=ISBN:<isbn>&jscmd=data&format=json`
   answers title, subtitle, publishers, publish date, page count and the
   author names inline, with no redirect and no per-author request; nothing
