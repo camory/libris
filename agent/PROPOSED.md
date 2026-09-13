@@ -100,12 +100,6 @@
   each new test class as controllers arrive. Declaring the mocks on the
   `@WebSliceTest` annotation itself would keep one list (found on T020,
   2026-09-12).
-- Backend: a scenario test commits what it writes. `ScenarioTest` boots the
-  whole application on a real port, so anything a scenario stores stays in the
-  sandbox database and the next run reads it; the reader of the headers is the
-  first case. Persistence slice tests must start from a known table, and a
-  scenario that stores an ouvrage will need the same thought (found on T020,
-  2026-09-12).
 - Backend: the source timeout is per HTTP request, not per lookup. The Open
   Library client bounds each of its requests (the edition, then one per
   author), so a source slow on every request may take several timeouts and
