@@ -3,6 +3,8 @@ package fr.amory.libris.infra.lookup
 import com.github.tomakehurst.wiremock.WireMockServer
 import com.github.tomakehurst.wiremock.core.WireMockConfiguration.options
 import com.github.tomakehurst.wiremock.http.RequestMethod.GET
+import fr.amory.libris.domain.AuthorRole.ARTIST
+import fr.amory.libris.domain.AuthorRole.TRANSLATOR
 import fr.amory.libris.domain.AuthorRole.WRITER
 import fr.amory.libris.domain.lookup.Source.BNF
 import fr.amory.libris.domain.lookup.SourceAnswer.Failed
@@ -93,6 +95,15 @@ class BnfSourceTest {
 
         // Then
         answer shouldBe Failed
+    }
+
+    @Test
+    fun `an author's role is what their function code names`() {
+        authorRoleOf("070") shouldBe WRITER
+        authorRoleOf("440") shouldBe ARTIST
+        authorRoleOf("730") shouldBe TRANSLATOR
+        authorRoleOf(null) shouldBe WRITER
+        authorRoleOf("999") shouldBe WRITER
     }
 
     @Test
