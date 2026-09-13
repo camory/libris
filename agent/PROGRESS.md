@@ -852,7 +852,11 @@ Format:
   the types: no `Isbn13`, no call. The explicit `title` line removed, the
   reviewer's finding, confirmed by running the cases without it. The
   `isbn13Of` helper, written three times (the contract test, the use case
-  test, T013's source test), is one function of `fixture`. From now on a
+  test, T013's source test), is one function of `fixture`. The use case test
+  answers with `AN_EDITION`, a title and nulls: it proves the edition is
+  passed through, not its values, and `ONE_PIECE_1` names the document's
+  example in the contract test alone. An edition builder with defaults waits
+  for T014, whose merge tests need it. From now on a
   contract task opens with the pin bump: the new cases are the red, the
   controller the green. The D07 wording is to be reviewed with Tophe as a
   whole, not amended piecemeal.

@@ -3,44 +3,42 @@ package fr.amory.libris.application
 import fr.amory.libris.application.LookupResult.Found
 import fr.amory.libris.application.LookupResult.SourcesUnavailable
 import fr.amory.libris.application.LookupResult.UnknownIsbn
-import fr.amory.libris.domain.AuthorRole.WRITER
 import fr.amory.libris.domain.lookup.Source.OPEN_LIBRARY
 import fr.amory.libris.domain.lookup.SourceAnswer.Failed
 import fr.amory.libris.domain.lookup.SourceAnswer.Known
 import fr.amory.libris.domain.lookup.SourceAnswer.NothingKnown
-import fr.amory.libris.domain.lookup.SourceAuthor
 import fr.amory.libris.domain.lookup.SourceEdition
 import fr.amory.libris.fixture.SourceAnswering
 import fr.amory.libris.fixture.isbn13Of
 import io.kotest.matchers.shouldBe
 import org.junit.jupiter.api.Test
 
-private val ONE_PIECE_1 = SourceEdition(
+private val AN_EDITION = SourceEdition(
     isbn13 = isbn13Of("9782723488525"),
-    title = "Romance dawn",
-    subtitle = "à l'aube d'une grande aventure",
-    authors = listOf(SourceAuthor("Eiichirō Oda", WRITER)),
+    title = "Un ouvrage",
+    subtitle = null,
+    authors = emptyList(),
     series = null,
     collection = null,
-    publisher = "Glénat",
-    publicationYear = 2013,
+    publisher = null,
+    publicationYear = null,
     language = null,
-    pageCount = 203,
+    pageCount = null,
     summary = null,
-    coverUrl = "https://covers.openlibrary.org/b/isbn/9782723488525-L.jpg",
+    coverUrl = null,
 )
 
 class IsbnLookupTest {
     @Test
     fun `a source that knows the ISBN answers what it knows and names itself`() {
         // Given
-        val lookup = IsbnLookup(SourceAnswering(OPEN_LIBRARY, Known(ONE_PIECE_1)))
+        val lookup = IsbnLookup(SourceAnswering(OPEN_LIBRARY, Known(AN_EDITION)))
 
         // When
         val result = lookup.lookUp(isbn13Of("9782723488525"))
 
         // Then
-        result shouldBe Found(ONE_PIECE_1, listOf(OPEN_LIBRARY))
+        result shouldBe Found(AN_EDITION, listOf(OPEN_LIBRARY))
     }
 
     @Test
