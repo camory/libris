@@ -40,7 +40,7 @@ frontend one; no other task touches the contract (D04).
       boots with neither variable set.
       No use case, no controller, no contract edit; un-skips nothing.
 
-- [ ] T020 Backend: the ISBN endpoint and its four answers.
+- [x] T020 Backend: the ISBN endpoint and its four answers.
       `application`: the lookup use case over the source port of T013, asking
       Open Library and answering what it knows, that no source knows the ISBN,
       or that no source replied. `infra.web`: `GET /api/v1/isbn/{isbn}`, its
