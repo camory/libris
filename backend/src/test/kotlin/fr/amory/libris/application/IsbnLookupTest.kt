@@ -87,4 +87,16 @@ class IsbnLookupTest {
         // Then
         result shouldBe SourcesUnavailable
     }
+
+    @Test
+    fun `one source failing while the other knows nothing answers that the ISBN is unknown`() {
+        // Given
+        val lookup = IsbnLookup(listOf(SourceAnswering(BNF, Failed), SourceAnswering(OPEN_LIBRARY, NothingKnown)))
+
+        // When
+        val result = lookup.lookUp(isbn13Of("9782000000013"))
+
+        // Then
+        result shouldBe UnknownIsbn
+    }
 }
