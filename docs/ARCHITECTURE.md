@@ -9,6 +9,7 @@
 > D11 amended on 2026-09-11: problems carry no wording, the frontend does; every error the API describes has a problem body; a response field is added, never removed or renamed.
 > D02 amended on 2026-09-12: the domain may be split by concern into sub-packages; `domain.lookup` is the first.
 > D10 amended on 2026-09-12: members imported, not qualified, when the bare name is unambiguous.
+> D07 rewritten on 2026-09-13: the web slice is proven by Contracteer, values by domain, application and scenario tests; a fresh schema before every database-backed class.
 
 ## Overview
 
@@ -250,13 +251,23 @@ session, no BCrypt.
   boundaries rules; Vitest unit tests plus `infra/api` against
   `contracteer mock`, started by the global setup; a V8 coverage report
   (LCOV).
-- Each layer is tested in isolation. `application` runs plain JUnit over
-  the fakes of its ports. `infra.web` boots a web slice, the package with
-  its security chain on a real port and no datasource, over stubbed use
-  cases; the Contracteer test runs over that slice. `infra.persistence`
-  runs in the JDBC slice against the PostgreSQL of D08, each test in a
-  transaction rolled back at the end. One test boots the whole application
-  and reads its health. Test classes do not run in parallel.
+- Each layer is tested in isolation, and a test asserts what its layer
+  owns. `domain` and `application` own the behaviour and the values:
+  `application` runs plain JUnit over the fakes of its ports. `infra.web` is
+  proven by the Contracteer test: the web slice, the package with its
+  security chain on a real port and no datasource, over stubbed use cases
+  whose stubs mirror the document's examples; it proves structure and types,
+  never values, by design. A hand-written test in the web slice exists only
+  for behaviour the contract cannot express, such as a role derived from a
+  header, and asserts no value the contract leaves free. A task that
+  implements an operation of the contract opens with the pin bump: the new
+  verification cases are its first red, the controller their green.
+  `infra.persistence` runs in the JDBC slice against the PostgreSQL of D08,
+  each test in a transaction rolled back at the end. Every class that
+  touches the database, the JDBC slice and the scenario classes, starts
+  from a schema cleaned and migrated by Flyway before the class. One test
+  boots the whole application and reads its health. Test classes do not run
+  in parallel.
 - The frontend follows the same slicing. `domain` is plain Vitest, no
   doubles. `application` composables and stores run over fakes of their
   ports, with a fresh Pinia per test and no component mounted: a composable
@@ -274,23 +285,24 @@ session, no BCrypt.
   `fr.amory.libris.scenario` on the backend and `src/scenario` on the
   frontend, one method per scenario or case, bearing its exact title. The
   backend boots the whole application over WireMock stubs of the sources;
-  the frontend boots it through `bootstrap` over `contracteer mock`. Tophe
-  writes them with the spec, committed skipped. A task un-skips the scenario
-  tests its line cites and changes nothing else in them; the inside, ports,
-  use cases, adapters and their tests, is the run's. A scenario test that
-  has to change is a spec conversation, not a task.
+  the frontend boots it through `bootstrap` over `contracteer mock`. A
+  scenario asserts the exact values its spec names: with the domain and
+  application tests, it is where values are proven. Tophe writes them with
+  the spec, committed skipped. A task un-skips the scenario tests its line
+  cites and changes nothing else in them; the inside, ports, use cases,
+  adapters and their tests, is the run's. A scenario test that has to
+  change is a spec conversation, not a task.
 - One test source set and one `test` task. No suffix sorts tests by what
   they need: a test that needs the database gets it from D08 like any other.
   Test classes are named after the Libris code they exercise. Tests live
   beside the code they exercise: on the backend in its package, on the
   frontend as a sibling `.spec.ts`; a test of the whole application
-  (contract, architecture, boot) lives in the backend's root package;
-  shared test doubles live in the `fixture` package on the backend and in
-  `src/fixture` on the frontend. A test body
-  is laid out as Given, When, Then, marked by those three comments, unless it
-  is a single statement. A test of
-  framework or library wiring may be written while learning and is deleted
-  before the pull request.
+  (contract, architecture, boot) lives in the backend's root package; shared
+  test doubles and helpers live in the `fixture` package on the backend and
+  in `src/fixture` on the frontend. A test body is laid out as Given, When,
+  Then, marked by those three comments, unless it is a single statement. A
+  test of framework or library wiring may be written while learning and is
+  deleted before the pull request.
 - Coverage: no total threshold. CI reports changed-line coverage with
   `diff-cover`; informational until the loop runs without human review, then
   a gate.
