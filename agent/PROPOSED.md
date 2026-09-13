@@ -69,9 +69,13 @@
   implemented in the infrastructure only" matches every class assignable to
   any `domain` interface, so the variants of a sealed interface, or an enum
   implementing a domain interface, break it; T013 chose a sealed class for
-  `SourceAnswer` because of it. Match the ports only (the interfaces of
-  `domain` that `infra` implements, by name or by a marker), so the domain
-  may use its own interfaces (seen on T013, 2026-09-12).
+  `SourceAnswer` because of it. Remedy decided with Tophe on 2026-09-13: add
+  one clause, `.and().resideOutsideOfPackage("..domain..")`, so a class
+  outside `domain` that implements a domain interface must reside in
+  `infra`, and the domain may use its own interfaces; no naming convention,
+  no marker. To apply in the first task that needs a domain implementer of
+  a domain interface, one clause and nothing else (seen on T013,
+  2026-09-12).
 - Backend: Open Library in one request. `/api/books?bibkeys=ISBN:<isbn>&jscmd=data&format=json`
   answers title, subtitle, publishers, publish date, page count and the
   author names inline, with no redirect and no per-author request; nothing
@@ -96,9 +100,15 @@
   each new test class as controllers arrive. Declaring the mocks on the
   `@WebSliceTest` annotation itself would keep one list (found on T020,
   2026-09-12).
-- Backend: a scenario test commits what it writes. `ScenarioTest` boots the
-  whole application on a real port, so anything a scenario stores stays in the
-  sandbox database and the next run reads it; the reader of the headers is the
-  first case. Persistence slice tests must start from a known table, and a
-  scenario that stores an ouvrage will need the same thought (found on T020,
-  2026-09-12).
+- Backend: the source timeout is per HTTP request, not per lookup. The Open
+  Library client bounds each of its requests (the edition, then one per
+  author), so a source slow on every request may take several timeouts and
+  still answer, while the spec's "does not answer in time" reads per lookup.
+  Rare in practice (a source is down or hanging rather than uniformly slow);
+  a per-lookup deadline is more code in every client. To decide with Tophe
+  if it ever bites (found on 2026-09-13).
+- Backend: the wait when every source hangs. The default timeout is 5 s per
+  request and T014 asks the sources in turn, so two hanging sources mean
+  10 s before the 503; asking in parallel would halve it at the price of an
+  executor in `application`. Sequential is the boring choice; a shorter
+  default is a product number for Tophe (found on 2026-09-13).

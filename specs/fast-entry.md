@@ -170,9 +170,9 @@ Release `v0.3.0` of `camory/libris-api`, one read-only operation:
   `series` as `IsbnSeries` `{name, volumeNumber}`, nullable `collection`,
   `publisher`, `publicationYear`, `language`, `pageCount`, `summary`,
   `coverUrl`, and `sources` as an array of `BNF | OPEN_LIBRARY`; `400`
-  `ValidationProblem` `/problems/validation` with `errors: [{field: isbn,
-  code: not-an-isbn}]`; `404` `Problem` `/problems/not-found`; `503` `Problem`
-  `/problems/sources-unavailable`. Examples `ONE_PIECE_1` (9782723488525),
+  `ValidationProblem` `/problems/validation`, one error on the `isbn` field,
+  its code the document's example; `404` `Problem` `/problems/not-found`;
+  `503` `Problem` `/problems/sources-unavailable`. Examples `ONE_PIECE_1` (9782723488525),
   `400_NOT_AN_ISBN` (9782723488526, wrong check digit), `404_UNKNOWN_ISBN`
   (9782000000006), `503_SOURCES_DOWN` (9791000000008).
 
