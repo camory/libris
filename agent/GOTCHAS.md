@@ -1,0 +1,150 @@
+# Libris — Gotchas
+
+What a run must know before it starts, learned on this tree and still true.
+Every role reads this file whole. An item is a fact that costs a cycle when
+unknown: a name, a command, a tool's behaviour, a trap. A rule belongs in
+`docs/ARCHITECTURE.md` or `docs/DESIGN.md`, a follow-up in
+`agent/PROPOSED.md`, the story of a task in `agent/PROGRESS.md`. An item is
+rewritten or removed the day it stops being true; the diary keeps the date it
+was found.
+
+## The sandbox and the tools
+- The proof hook counts any command containing `gradlew … check` or
+  `npm test` as a gate run, `--dry-run`, pipes and heredoc text included:
+  run the gate plainly, last in its command, and write files with the Write
+  tool.
+- A server started inside a tool call dies with the call (`bootRun`, `npm
+  run dev`, `contracteer mock`). Start it as a background task, wait with
+  `curl --retry 30 --retry-connrefused`, stop it by task id. A foreground
+  `sleep` is refused.
+- `pkill -f` or `pgrep -af` with a pattern that appears in the tool call's
+  own command line kills or matches the call itself (exit 144). Match on
+  something else, or stop the process from what started it.
+- `git checkout <file>` reverts to the last commit, not to the working tree:
+  commit the cycle before a mutation check.
+- `gh pr edit` fails with a GraphQL error about classic Projects; use
+  `gh api -X PATCH repos/camory/libris/pulls/N`. `gh` GraphQL calls are
+  rate-limited: poll `gh pr checks` every 30 s or more, and merge through
+  REST (`gh api -X PUT repos/camory/libris/pulls/N/merge -f
+  merge_method=squash`) when `gh pr merge` is throttled.
+- The sandbox PostgreSQL survives between runs (tmpfs: gone when the
+  container is recreated). Editing an applied migration breaks every context
+  start with a Flyway checksum mismatch until the database is recreated;
+  D11 forbids editing a merged one anyway.
+- The loop takes the agent PostgreSQL down at the end of a run; a host gate
+  then fails with connection refused until
+  `docker compose --env-file agent/.env -f agent/compose.yaml up -d postgres`.
+  `backend/.env` points the host gate at that database, and `FreshSchema`
+  wipes it: what was entered by hand through `bootRun` is gone after a gate.
+- This box has no `contracteer` binary and an old Node: the frontend gate
+  and the Contracteer CLI run inside the sandbox image
+  (`docker run --rm --network none -v "$PWD":/work -w /work/frontend
+  libris-agent:local 'npm test'`).
+
+## Backend build and detekt
+- Spring Boot 4.1.1 names: `spring-boot-starter-webmvc`,
+  `spring-boot-starter-flyway`, `tools.jackson.module:jackson-module-kotlin`
+  (Jackson 3, `tools.jackson.databind`; `com.fasterxml.jackson` 2.x is on the
+  test runtime only). `RestTestClient` comes from
+  `spring-boot-resttestclient`, lives in `org.springframework.test.web.
+  servlet.client`, and `@AutoConfigureMockMvc` does not exist. `kotlin-reflect`
+  is needed at runtime.
+- Jackson 3 renames: `asText()` is `asString()`; a `JsonNode` declares its
+  own `map(Function)` that shadows Kotlin's `Iterable.map`, so an array is
+  read through `path(field).values()`; `required(field)` throws
+  `JsonNodeException` on a missing property.
+- Kotlin 2.3.21 emits no warning for an unused local: prove
+  warnings-as-errors with a useless cast.
+- detekt 1.23.8 runs in-process with `jdkHome` cleared; handing it a JDK 25
+  `jdkHome` crashes its embedded Kotlin 2.0.21 compiler. The plain `detekt`
+  task has `classpath.from(main.compileClasspath, main.output)`, which is
+  what makes a `!!` fail the gate: do not drop it in a cleanup. It has no
+  JDK on that classpath, so two JDK exception types caught in one `try`
+  (`IOException` and `SAXException`) read as one class to
+  `UnreachableCatchBlock`, and `!!` on a Java-typed receiver goes unreported.
+- detekt runs on the test sources too, but only inside `check`:
+  `./gradlew detekt` alone is the main sources. Run `./gradlew detekt`
+  before each commit anyway: `ImportOrdering` fails an import added by hand
+  out of lexicographic order, `VariableNaming` refuses a backticked property
+  (`@ArchTest fun \`name\`(classes: JavaClasses)` instead of a `val`),
+  `ReturnCount` allows two returns, `LongParameterList` refuses a function of
+  more than six parameters but exempts data classes (a shared fixture is a
+  value plus `copy(...)`, not a builder), `SpreadOperator` trips on
+  `runApplication(*args)`, `UnusedPrivateProperty` fails a constructor
+  argument no test uses yet (write the case that motivates it first),
+  `SwallowedException` and `TooGenericExceptionCaught` stay quiet when the
+  parameter is named `ignored`. An elvis over a platform type Kotlin reads
+  as non-null is unreachable code.
+- `check` also runs `jar`, which writes a `-plain.jar` beside the boot jar
+  in `build/libs`; the image's build stage runs `bootJar` only.
+
+## Backend tests
+- The first HTTP request and the first XML parse of a JVM cost more than a
+  second. A client test with a short timeout warms the client once in
+  `@BeforeAll` under a long timeout, then resets the stubs. A delay stub
+  (`answersTooLate`) must delay a real recorded answer, otherwise the case
+  passes without the timeout, on the unreadable empty body.
+- Spring injects a test constructor only with `@Autowired` on it. A
+  `@SpringBootTest` with explicit `classes` does not detect nested
+  `@TestConfiguration` classes: `@Import` them.
+- The web slice (`@WebSliceTest`) component-scans `infra.web`, so every use
+  case a controller of the package takes must be in the class-level
+  `@MockitoBean(types = [...])` of every web-slice test, not only the one
+  exercised. Mockito stubs a method taking a value class from Kotlin call
+  syntax (`given(lookup.lookUp(isbn13Of("…")))`).
+- A scenario class boots the whole application and commits what its
+  requests write; `FreshSchema` on `JdbcSliceTest` and `ScenarioTest` is
+  what keeps the JDBC slice from meeting a reader it did not insert.
+- `ArchitectureTest`'s port rule matches any non-interface class assignable
+  to a domain interface, so the variants of a sealed *interface* in `domain`
+  break it: a state is a sealed *class*.
+- A bean of `infra.lookup` may not be named `openLibrary` or `bnf`: the
+  scenario harness owns those names for its WireMock servers.
+- A problem detail is built in the controller (`ProblemDetail.forStatus`
+  with `type`) and answered as a `ResponseEntity` body; Spring writes
+  `application/problem+json` and derives `title` from the status. No advice,
+  no exception, no `spring.mvc.problemdetails.enabled`.
+- `/actuator/health` answers `{"groups":["liveness","readiness"],
+  "status":"UP"}`, not the bare status.
+
+## Frontend build and tests
+- Two TypeScript programs: `tsconfig.app.json` (`src/`, `vite/client` types)
+  and `tsconfig.node.json` (`vite.config.ts`, `vitest.global-setup.ts`,
+  `eslint.config.ts`, `node` types), checked by `vue-tsc --build`. A `node`
+  type package or a `/// <reference types="node" />` in the app program puts
+  Node's globals into every file under `src/` unnoticed by the boundaries
+  rule.
+- `eslint-plugin-boundaries`: elements are matched in array order, first
+  match wins, so `src/ui/components`, `src/ui/views` and `src/fixture` must
+  sit above `src/ui` and `src` in `eslint.config.ts`. `settings["import/
+  resolver"] = { node: { extensions: [".ts", ".vue"] } }` is what makes the
+  rule see extension-less local imports: do not drop it in a cleanup.
+  `mode: "file"` is deprecated; a single file gets its permission through a
+  `boundaries/files` category.
+- The Vitest block lives in `vite.config.ts` with `defineConfig` from
+  `vitest/config`. `fetch` works in the `jsdom` environment on Node 24 with
+  no polyfill. `vi.stubGlobal("fetch", …)` needs `vi.unstubAllGlobals()` in
+  an `afterEach`, or the contract case passes only by running first.
+- `contracteer mock api/openapi.yaml -p 9099` starts in about four seconds
+  and logs `Contracteer mock server started on port 9099` last; the global
+  setup resolves on that line and kills the process in its teardown. The
+  mock generates values, so an `infra/api` spec asserts shape and types,
+  never a value, and cannot catch a swapped mapping between two strings.
+- `npm run format` passes `--ignore-path ../.gitignore`, or Prettier
+  rewrites `dist/` and `coverage/`; `prettier --check` cannot parse
+  `nginx.conf`.
+- `registerType: "autoUpdate"` on the PWA plugin; after a release the first
+  load still shows the previous revision, the second the new one.
+
+## Contract and release
+- Contracteer 4.0.0's CLI cannot load an OpenAPI 3.1 document: the contract
+  stays 3.0.3 and `nullable` is the 3.0 keyword. On an operation without
+  parameters a response example creates no scenario; the verifier emits one
+  generated case.
+- A release is `git tag vX.Y.Z <merge sha> && git push origin vX.Y.Z`, then
+  `gh release create vX.Y.Z --title vX.Y.Z --generate-notes`; `--target
+  <sha>` is refused. Tag only after the CI run on `main` has pushed the
+  `sha-` images. The ghcr images are public: pulling needs no login.
+- The `images` job proves an image builds, nothing runs it: nginx, the
+  `HEALTHCHECK`, the SPA fallback and the `/session` redirect are exercised
+  only by a deploy and the phone check.

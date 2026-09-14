@@ -9,6 +9,8 @@
 | `briefs/` | One brief per task, written by the planner on the task branch; `TEMPLATE.md` |
 | `TASKS.md` | Ordered backlog with checkboxes (the loop's queue), one phase per spec in `../specs/` |
 | `PROGRESS.md` | Append-only diary written by runs |
+| `GOTCHAS.md` | What a run must know before it starts, read whole by every role, kept true |
+| `archive/` | The diary entries of finished phases, one file per phase |
 | `PROPOSED.md` | Follow-ups and ideas, appended by runs and by Tophe, promoted by a human |
 | `Dockerfile`, `compose.yaml` | Sandbox image (JDK 25, Node 24, contracteer, git, gh, claude) + PostgreSQL 18 sidecar |
 | `hooks/guard-git.sh` | PreToolUse hook denying pushes to main, force pushes, `rm -rf /`, sudo, and any commit or push carrying a credential (gitleaks) |

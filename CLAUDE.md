@@ -15,6 +15,8 @@ Tophe on the same repository. Either way, the rules below apply.
 6. `agent/briefs/T###.md` — the planner's brief for that task, when one exists;
    its acceptance criteria define "done"
 7. `agent/PROGRESS.md` — the last few entries: what was just done and left over
+8. `agent/GOTCHAS.md` — read whole: the names, commands and traps of this
+   tree that cost a cycle when unknown
 
 Do not invent product behaviour that the spec or the PRD does not describe. If a task
 needs a decision that no document makes, stop and report `blocked` with the
@@ -48,10 +50,12 @@ question; do not guess.
   `docs/ARCHITECTURE.md`. Never cite decision or rule numbers (D##, U##)
   in code, tests, build scripts or configuration.
 - **Keep documents true.** If you learn something a future run must know
-  (a command, a gotcha, a decision you had to make), write it in
-  `agent/PROGRESS.md`. If it changes a rule of `docs/ARCHITECTURE.md` or
-  `docs/DESIGN.md`, do not edit the document silently: propose the change
-  in the PR body.
+  (a name, a command, a tool's behaviour, a trap), add it to
+  `agent/GOTCHAS.md` as one item, and rewrite or remove an item there that
+  stopped being true. The story of the task, what was decided and what is
+  left, goes in `agent/PROGRESS.md`. If what you learned changes a rule of
+  `docs/ARCHITECTURE.md` or `docs/DESIGN.md`, do not edit the document
+  silently: propose the change in the PR body.
 
 ## Definition of done for a task
 - [ ] Every acceptance criterion in the brief (or, failing a brief, in the
