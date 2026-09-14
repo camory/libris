@@ -87,7 +87,7 @@ class BnfSource(baseUrl: String, timeout: Duration) : IsbnSource {
                 .queryParam("operation", "searchRetrieve")
                 .queryParam("recordSchema", "unimarcxchange")
                 .queryParam("maximumRecords", "1")
-                .queryParam("query", """bib.isbn all "${isbn.digits}"""")
+                .queryParam("query", queryFor(isbn))
                 .build()
         }
         .retrieve()
@@ -95,6 +95,11 @@ class BnfSource(baseUrl: String, timeout: Duration) : IsbnSource {
         .orEmpty()
 
     private companion object {
+        fun queryFor(isbn: Isbn13): String =
+            """${isbnClause(isbn.digits)} or ${isbnClause(isbn.isbn10)}"""
+
+        fun isbnClause(isbn: String?): String = """bib.isbn all "$isbn""""
+
         fun recordIn(answer: String): UnimarcRecord? {
             val factory = DocumentBuilderFactory.newInstance().apply {
                 isNamespaceAware = true

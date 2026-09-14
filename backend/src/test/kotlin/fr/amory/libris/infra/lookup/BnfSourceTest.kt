@@ -134,11 +134,13 @@ class BnfSourceTest {
         request.queryParameter("operation").values() shouldBe listOf("searchRetrieve")
         request.queryParameter("recordSchema").values() shouldBe listOf("unimarcxchange")
         request.queryParameter("maximumRecords").values() shouldBe listOf("1")
-        request.queryParameter("query").values() shouldBe listOf("""bib.isbn all "$ONE_PIECE"""")
+        request.queryParameter("query").values() shouldBe
+            listOf("""bib.isbn all "$ONE_PIECE" or bib.isbn all "$ONE_PIECE_TEN"""")
     }
 
     private companion object {
         const val ONE_PIECE = "9782723488525"
+        const val ONE_PIECE_TEN = "2723488527"
         const val UNKNOWN = "9782000000013"
         const val SRU = "/api/SRU"
         val ONE_PIECE_EDITION = SourceEdition(
