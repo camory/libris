@@ -148,7 +148,9 @@ content, under the button, not a layer over the page.
 **Card.** A card shows one thing the app knows, an ouvrage: `surface`, a
 1 px `border`, radius 14, 16 of padding, its parts 14 apart. Top part, side
 by side: the cover at the left, 96 by 149, radius 6, `border` behind it
-while it loads or when there is none, never stretched; at its right,
+while it loads, never stretched; when there is none, or the image does not
+load, the same block holds an outlined book icon, 40, `muted` at 60 %,
+centred, the stand-in of U05's empty state; at its right,
 stacked 6 apart, the overline (série · tome, U02), the card title, the
 subtitle in `lead` `muted`, and one line per author in `body`, the name in
 `text` and its roles after a middle dot in `muted`: *Eiichirō Oda · scénario,

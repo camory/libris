@@ -135,8 +135,31 @@ frontend one; no other task touches the contract (D04).
       alone, and the camera stops when the screen goes away.
       Realises S2; un-skips `S2 Scanned barcode`.
 
+- [ ] T021 Backend: the BnF alone, with its cover.
+      Open Library leaves: `OpenLibrarySource`, `LIBRIS_OPEN_LIBRARY_URL`,
+      the merge rule and their tests go; the use case asks the one source
+      and `sources` lists `BNF` (D02). `OPEN_LIBRARY` stays in the contract,
+      unused: no contract edit.
+      The BnF source fills `coverUrl` for every record it maps, the
+      catalogue's cover URL built from field 003, the ark from `ark:/` on,
+      never checked; the card shows its stand-in when the picture is not
+      there (T022).
+      Tested over the recorded BnF answers, the cover URL asserted on both;
+      the S5 and S6 scenario tests go with the rule, the past-the-timeout
+      case moves under S7.
+      Realises the cover of S1 and the one-source S4 and S7; un-skips
+      nothing.
+
+- [ ] T022 Frontend: the stand-in of the cover.
+      In `SourceEditionCard`, the cover block holds an outlined book icon,
+      `ui/components/icons/IconBook.vue`, when `coverUrl` is null and when the
+      image fails to load (U05, U06); the picture, when it loads, as before.
+      Component tests over the three cases: a cover that loads, none, one
+      that errors. No scenario un-skipped, S1's two already pass.
+      Realises the stand-in of the Found state.
+
 *Done (Tophe, on the Pixel, from the installed app): scan a manga and a BD
-and read both cards, sources included; type an ISBN-10 by hand and read its
+and read both cards, the source included; type an ISBN-10 by hand and read its
 card; type a wrong ISBN and read the message.*
 
 ## Done
