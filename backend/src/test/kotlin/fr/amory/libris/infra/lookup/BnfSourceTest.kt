@@ -119,6 +119,13 @@ class BnfSourceTest {
     }
 
     @Test
+    fun `a control field without an ark names no cover`() {
+        coverUrlOf("http://catalogue.bnf.fr/ark:/12148/cb43636708p") shouldBe ONE_PIECE_COVER
+        coverUrlOf("FRBNF436367080000000") shouldBe null
+        coverUrlOf(null) shouldBe null
+    }
+
+    @Test
     fun `looking up an ISBN sends one search on the SRU endpoint`() {
         // Given
         bnf.knows(ONE_PIECE)
@@ -157,6 +164,8 @@ class BnfSourceTest {
         const val UNKNOWN = "9782000000013"
         const val WITHOUT_A_TEN = "9791000000008"
         const val SRU = "/api/SRU"
+        const val ONE_PIECE_COVER =
+            "https://catalogue.bnf.fr/couverture?&appName=NE&idArk=ark:/12148/cb43636708p&couverture=1"
         val ONE_PIECE_EDITION = SourceEdition(
             isbn13 = isbn13Of(ONE_PIECE),
             title = "Romance dawn",
@@ -169,7 +178,7 @@ class BnfSourceTest {
             language = "fr",
             pageCount = 203,
             summary = null,
-            coverUrl = "https://catalogue.bnf.fr/couverture?&appName=NE&idArk=ark:/12148/cb43636708p&couverture=1",
+            coverUrl = ONE_PIECE_COVER,
         )
         val TIMEOUT: Duration = ofMillis(200)
         val WARM_UP_TIMEOUT: Duration = ofSeconds(20)

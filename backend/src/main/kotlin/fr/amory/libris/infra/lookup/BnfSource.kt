@@ -34,8 +34,9 @@ private const val COVER_AFTER = "&couverture=1"
 
 internal fun authorRoleOf(functionCode: String?): AuthorRole = ROLES[functionCode] ?: WRITER
 
-internal fun coverUrlOf(controlField: String): String =
-    COVER_BEFORE + ARK + controlField.substringAfter(ARK) + COVER_AFTER
+internal fun coverUrlOf(controlField: String?): String? =
+    controlField?.indexOf(ARK)?.takeIf { it >= 0 }
+        ?.let { COVER_BEFORE + controlField.substring(it) + COVER_AFTER }
 
 class BnfSource(baseUrl: String, timeout: Duration) : IsbnSource {
     override val source = BNF
@@ -70,7 +71,7 @@ class BnfSource(baseUrl: String, timeout: Duration) : IsbnSource {
             language = LANGUAGES[record.value("101", "a")],
             pageCount = PAGES.find(record.value("215", "a").orEmpty())?.groupValues?.get(1)?.toIntOrNull(),
             summary = null,
-            coverUrl = record.control("003")?.let { coverUrlOf(it) },
+            coverUrl = coverUrlOf(record.control("003")),
         )
 
     private fun authorsOf(record: UnimarcRecord): List<SourceAuthor> =
