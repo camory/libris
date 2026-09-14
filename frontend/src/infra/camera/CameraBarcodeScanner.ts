@@ -1,4 +1,5 @@
 import type { BarcodeScanner } from "../../application/BarcodeScanner";
+import { isbn13Of } from "../../domain/Isbn13";
 
 interface BarcodeDetectorConstructor {
   new (options: { formats: string[] }): BarcodeDetector;
@@ -10,6 +11,11 @@ interface BarcodeDetector {
 }
 
 const format = "ean_13";
+const betweenLooks = 100;
+
+function pause(): Promise<void> {
+  return new Promise((resolve) => setTimeout(resolve, betweenLooks));
+}
 
 function detector(): BarcodeDetectorConstructor | undefined {
   return (globalThis as { BarcodeDetector?: BarcodeDetectorConstructor })
@@ -28,8 +34,16 @@ export class CameraBarcodeScanner implements BarcodeScanner {
     });
     into.srcObject = stream;
     await into.play();
-    const codes = await new (detector()!)({ formats: [format] }).detect(into);
-    return codes[0]?.rawValue ?? null;
+    const barcodes = new (detector()!)({ formats: [format] });
+    for (;;) {
+      for (const { rawValue } of await barcodes.detect(into)) {
+        const isbn13 = isbn13Of(rawValue);
+        if (isbn13 !== null) {
+          return isbn13;
+        }
+      }
+      await pause();
+    }
   }
 
   stop(): void {}

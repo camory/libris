@@ -46,6 +46,18 @@ describe("CameraBarcodeScanner", () => {
     expect(read).toBe("9782723488525");
   });
 
+  it("keeps looking past a code that is not an ISBN", async () => {
+    // Given
+    detectorAnnouncing(["ean_13"], "1234567890128", "9782723488525");
+    cameraAllowed();
+
+    // When
+    const read = await new CameraBarcodeScanner().read(video());
+
+    // Then
+    expect(read).toBe("9782723488525");
+  });
+
   function video() {
     return document.createElement("video");
   }
