@@ -13,6 +13,7 @@ const fr = {
     search: "Chercher",
     invalid: "ISBN invalide",
     unknown: "ISBN inconnu",
+    error: "Erreur lors de la recherche, veuillez réessayer plus tard.",
   },
 };
 

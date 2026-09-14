@@ -37,6 +37,11 @@ const unknownIsbn: IsbnAnswer = {
   type: "/problems/not-found",
 };
 
+const sourcesDown: IsbnAnswer = {
+  outcome: "problem",
+  type: "/problems/sources-unavailable",
+};
+
 describe("IsbnView", () => {
   it("renders the title and the hint", () => {
     const screen = open(new FakeIsbnApi(unknownIsbn));
@@ -97,6 +102,21 @@ describe("IsbnView", () => {
 
     // Then
     expect(screen.getByText("ISBN inconnu")).toBeDefined();
+  });
+
+  it("asks to try again later when no source answered", async () => {
+    // Given
+    const screen = open(new FakeIsbnApi(sourcesDown));
+
+    // When
+    await ask(screen, "9791000000008");
+
+    // Then
+    expect(
+      screen.getByText(
+        "Erreur lors de la recherche, veuillez réessayer plus tard.",
+      ),
+    ).toBeDefined();
   });
 
   function open(api: FakeIsbnApi) {

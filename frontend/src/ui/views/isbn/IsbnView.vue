@@ -27,7 +27,7 @@ async function search() {
   if (answer.outcome === "found") {
     edition.value = answer.edition;
   } else {
-    message.value = messages[answer.type];
+    message.value = messages[answer.type] ?? "isbn.error";
   }
 }
 </script>
