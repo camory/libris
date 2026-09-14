@@ -25,6 +25,30 @@ describe("SourceEditionCard", () => {
     expect(card.match(/Eiichirō Oda/g)).toHaveLength(1);
   });
 
+  it("shows one row per field, in the order of the card", () => {
+    // When
+    const card = show(onePiece1);
+
+    // Then
+    const parts = [
+      "Collection",
+      "Shonen manga",
+      "Éditeur",
+      "Glénat",
+      "Année",
+      "2013",
+      "Langue",
+      "français",
+      "Pages",
+      "203",
+      "ISBN",
+      "9782723488525",
+    ];
+    const positions = parts.map((part) => card.indexOf(part));
+    expect(positions).not.toContain(-1);
+    expect(positions).toEqual([...positions].sort((a, b) => a - b));
+  });
+
   function show(edition: SourceEdition) {
     const wrapper = mount(SourceEditionCard, {
       props: { edition },

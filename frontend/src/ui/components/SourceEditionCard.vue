@@ -30,6 +30,18 @@ const authorLines = computed(() => {
   }
   return [...roles].map(([name, said]) => ({ name, roles: said.join(", ") }));
 });
+
+const rows = computed(() => {
+  const edition = props.edition;
+  return [
+    { label: "collection", value: edition.collection },
+    { label: "publisher", value: edition.publisher },
+    { label: "year", value: edition.publicationYear },
+    { label: "language", value: t(`language.${edition.language}`) },
+    { label: "pages", value: edition.pageCount },
+    { label: "isbn", value: edition.isbn13 },
+  ];
+});
 </script>
 
 <template>
@@ -56,6 +68,17 @@ const authorLines = computed(() => {
           <span class="text-muted">{{ line.roles }}</span>
         </template>
       </i18n-t>
+    </div>
+
+    <div>
+      <div
+        v-for="row in rows"
+        :key="row.label"
+        class="flex justify-between gap-3.5 border-t border-border py-[7px] text-body"
+      >
+        <span class="text-muted">{{ t(`isbn.card.${row.label}`) }}</span>
+        <span class="text-right tabular-nums">{{ row.value }}</span>
+      </div>
     </div>
   </article>
 </template>

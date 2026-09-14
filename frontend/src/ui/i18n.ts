@@ -19,7 +19,16 @@ const fr = {
     card: {
       series: "{name} · tome {volume}",
       author: "{name} · {roles}",
+      collection: "Collection",
+      publisher: "Éditeur",
+      year: "Année",
+      language: "Langue",
+      pages: "Pages",
+      isbn: "ISBN",
     },
+  },
+  language: {
+    fr: "français",
   },
   role: {
     WRITER: "scénario",
