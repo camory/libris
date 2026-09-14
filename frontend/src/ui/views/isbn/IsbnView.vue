@@ -1,20 +1,20 @@
 <script setup lang="ts">
-import { inject, ref } from "vue";
+import { computed, inject, ref } from "vue";
 import { useI18n } from "vue-i18n";
 import { isbnApiKey } from "../../../application/IsbnApi";
 import { isbn13Of } from "../../../domain/Isbn13";
 import type { SourceEdition } from "../../../domain/SourceEdition";
 import IconAlert from "../../components/icons/IconAlert.vue";
 
-const messages: Record<string, string> = {
-  "/problems/not-found": "isbn.unknown",
-};
+const messages = new Map([["/problems/not-found", "isbn.unknown"]]);
+const refusals = ["isbn.invalid", "isbn.unknown"];
 
 const { t } = useI18n();
 const isbnApi = inject(isbnApiKey)!;
 
 const typed = ref("");
 const message = ref<string>();
+const refused = computed(() => refusals.includes(message.value ?? ""));
 const edition = ref<SourceEdition>();
 const searching = ref(false);
 
@@ -32,7 +32,7 @@ async function search() {
   if (answer.outcome === "found") {
     edition.value = answer.edition;
   } else {
-    message.value = messages[answer.type] ?? "isbn.error";
+    message.value = messages.get(answer.type) ?? "isbn.error";
   }
 }
 </script>
@@ -55,7 +55,7 @@ async function search() {
         inputmode="numeric"
         :placeholder="t('isbn.placeholder')"
         class="h-[50px] rounded-xl border-[1.5px] bg-surface px-3.5 text-field tabular-nums"
-        :class="message ? 'border-danger' : 'border-border'"
+        :class="refused ? 'border-danger' : 'border-border'"
       />
       <button
         type="button"
