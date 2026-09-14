@@ -138,6 +138,21 @@ describe("SourceEditionCard", () => {
     expect(screen(onePiece1).queryAllByRole("button")).toEqual([]);
   });
 
+  it("shows the série alone when the sources gave it no tome", () => {
+    // Given
+    const standalone: SourceEdition = {
+      ...onePiece1,
+      series: { name: "One piece", volumeNumber: null },
+    };
+
+    // When
+    const card = show(standalone);
+
+    // Then
+    expect(card).toContain("One piece");
+    expect(card).not.toContain("tome");
+  });
+
   it("shows the code of a language the catalogue has no word for", () => {
     // When
     const card = screen({ ...onePiece1, language: "en" });
