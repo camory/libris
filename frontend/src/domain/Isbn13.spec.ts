@@ -36,4 +36,9 @@ describe("isbn13Of", () => {
   it("refuses a thirteen-digit EAN with another prefix", () => {
     expect(isbn13Of("4006381333931")).toBeNull();
   });
+
+  it("refuses a text that is not digits", () => {
+    expect(isbn13Of("978-2-7234-8852-X")).toBeNull();
+    expect(isbn13Of("")).toBeNull();
+  });
 });
