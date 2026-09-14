@@ -164,8 +164,9 @@ was found.
   tokens in `src/ui/style.css`: custom properties on `:root`, overridden in a
   `prefers-color-scheme: dark` block, exposed through `@theme inline` as
   `--color-*` and `--text-*`. A template names `bg-surface` or `text-body`;
-  a size or a shade written in a class is a step that is missing from the
-  file.
+  a colour shade or a type size written in a class is a step that is missing
+  from the file. The box of a control, `h-[50px]` or `border-[1.5px]`, is
+  not a token and is written as is.
 
 ## Contract and release
 - Contracteer 4.0.0's CLI cannot load an OpenAPI 3.1 document: the contract
