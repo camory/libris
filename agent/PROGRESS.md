@@ -300,13 +300,12 @@ Format:
   the key) and `infra/api/FetchIsbnApi.ts` with its four cases against the
   mock; the pin moved to `v0.3.0` and `FetchMeApi` gained the `Accept` header.
 - Decided:
-  - **The check digit is the length rule.** Comparing the computed thirteenth
-    digit with `digits.slice(12)` already refuses a text of the wrong length,
-    so no case had to add one: twelve digits compare a digit against `""`,
-    fourteen compare it against two characters. The shape regex that the
-    prefix case brought (`^97[89][0-9]{10}$`) then covers letters and the
-    empty string too, which is why four of the nine cases went green on
-    arrival and their commits say `test(frontend)`, not `feat`.
+  - **The shape regex is the length rule.** `^97[89][0-9]{10}$` refuses a
+    text of the wrong length, a letter and the empty string before the check
+    digit is ever computed; the comparison with `digits.slice(12)` did that
+    job until the prefix case brought the regex, which is why four of the
+    nine cases went green on arrival and their commits say `test(frontend)`,
+    not `feat`.
   - **The ten is verified, then converted, then verified again.** The
     conversion recomputes the thirteenth digit, so the converted value always
     passes the ISBN-13 check: only the mod-11 sum over the first nine plus the
@@ -317,6 +316,13 @@ Format:
     reads `IsbnResponse`, anything else reads `ProblemResponse` and answers
     its `type`; no status list, and the wire types stay private to the file.
 - Deviations from the brief: none.
+- Review fix-ups (2026-09-14): a ten whose check character was a tab, a
+  newline or a non-breaking space was converted, `Number()` reading those as
+  zero; `thirteenOf` now refuses any ten outside `^[0-9]{9}[0-9Xx]$` first,
+  with the case that motivates it. The client hands the 200 body over as the
+  edition: the wire type names the thirteen fields, the domain type is the
+  same shape, and a field-by-field copy between them was three edits per
+  contract change.
 - Left over: nothing of T016. The 401 on the lookup call is in
   `agent/PROPOSED.md`; the port is not wired into `createLibrisApp`, which is
   T017's, and no fake of it exists yet.
