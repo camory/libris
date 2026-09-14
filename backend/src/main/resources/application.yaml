@@ -6,7 +6,6 @@ spring:
 libris:
   sources:
     bnf-url: ${LIBRIS_BNF_URL:https://catalogue.bnf.fr/api/SRU}
-    open-library-url: ${LIBRIS_OPEN_LIBRARY_URL:https://openlibrary.org}
     timeout: ${LIBRIS_SOURCE_TIMEOUT:5s}
 management:
   endpoints:
