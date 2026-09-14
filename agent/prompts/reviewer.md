@@ -20,6 +20,8 @@ it is at most a suggestion.
 1. `gh pr view {{PR_NUMBER}} --json title,body,headRefName,files` and
    `gh pr diff {{PR_NUMBER}}`. Read the brief as it is on the branch.
 2. Fetch and check out the head branch. The working tree must be clean.
+   Read `agent/GOTCHAS.md` whole, as it is on the branch, before running
+   anything: it names the traps of the gate and the tools.
 3. Run the verification the PR body claims (`./gradlew check`, `npm test`,
    `npm run build`, whichever apply) and compare the real output with the
    *How verified* section. A claim contradicted by your own run is blocking.
@@ -34,9 +36,11 @@ it is at most a suggestion.
    counterexample (an input, a response, a missing field) and, if you find
    one, the criterion is not met even when no test or recorded answer
    exercises it.
-   Read the PROGRESS entry of the task: every claim a future run would act
-   on (an API's behaviour, a library's shape, a command, a gotcha) must be
-   true of the code on the branch; check each one against the code.
+   Read the PROGRESS entry of the task and the diff of `agent/GOTCHAS.md`:
+   every claim a future run would act on (an API's behaviour, a library's
+   shape, a command, a trap) must be true of the code on the branch; check
+   each one against the code. A fact of that kind the entry tells and the
+   gotchas file does not hold is a suggestion.
    Read the brief against `docs/ARCHITECTURE.md` and `docs/DESIGN.md` too,
    not only the code against the brief: an instruction of the brief that
    contradicts a decision is a finding under *Notes on the brief*, and code
@@ -68,8 +72,8 @@ it is at most a suggestion.
    - **Suggestion**: everything else — naming, structure, a simplification, a
      missing edge-case test that no criterion asks for, a commit history
      that does not show one test per cycle (history is never rewritten, so
-     it is reported, not fixed), a PROGRESS claim that is false of the
-     branch (name the claim and what the code says instead).
+     it is reported, not fixed), a PROGRESS claim or a GOTCHAS item that is
+     false of the branch (name the claim and what the code says instead).
 7. Verdict: `REQUEST CHANGES` if at least one blocking finding, else `APPROVE`.
 8. Write the comment body to a file under `/tmp`, post it with
    `gh pr comment {{PR_NUMBER}} --body-file <file>`, then set the label:
