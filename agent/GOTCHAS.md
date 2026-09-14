@@ -130,6 +130,19 @@ was found.
   setup resolves on that line and kills the process in its teardown. The
   mock generates values, so an `infra/api` spec asserts shape and types,
   never a value, and cannot catch a swapped mapping between two strings.
+- `contracteer mock` answers a request whose `Accept` does not list
+  `application/problem+json` with a plain-text refusal, not with the problem
+  the document declares: the client's `response.json()` then throws
+  `SyntaxError: Unexpected token 'A', "Accept hea"...`. That header is what
+  makes the three problem cases of `FetchIsbnApi.spec.ts` possible.
+- The mock picks its response from the request's path parameter: a value the
+  document gives as a named example of that parameter gets that example's
+  response, so `9782723488525` answers 200 and `9782000000006` answers 404.
+  A value that matches no example gets a generated 200.
+- `expect.toSatisfy(predicate, message)` is an asymmetric matcher in
+  Vitest 5: it is how one `toEqual` over a whole object asserts a nullable
+  field (`value === null || typeof value === "string"`) against the values
+  the mock generates.
 - `npm run format` passes `--ignore-path ../.gitignore`, or Prettier
   rewrites `dist/` and `coverage/`; `prettier --check` cannot parse
   `nginx.conf`.

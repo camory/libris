@@ -83,7 +83,7 @@ frontend one; no other task touches the contract (D04).
       `S5 Merged answer`, `S6 One source down` and
       `S6 One source down, past the timeout`.
 
-- [ ] T016 Frontend: the ISBN rule and the lookup client.
+- [x] T016 Frontend: the ISBN rule and the lookup client.
       `domain`: the rule of S3 — separators dropped, the old ten converted,
       the check digit verified — answering the ISBN-13 or a refusal, with its
       unit tests (D05).
