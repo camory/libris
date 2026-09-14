@@ -14,4 +14,8 @@ describe("isbn13Of", () => {
   it("refuses thirteen digits whose check digit is wrong", () => {
     expect(isbn13Of("9782723488526")).toBeNull();
   });
+
+  it("refuses a text of the wrong length", () => {
+    expect(isbn13Of("978272348852")).toBeNull();
+  });
 });
