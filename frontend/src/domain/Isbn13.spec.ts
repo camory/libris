@@ -10,4 +10,8 @@ describe("isbn13Of", () => {
     expect(isbn13Of("978-2-7234-8852-5")).toBe("9782723488525");
     expect(isbn13Of("978 2 7234 8852 5")).toBe("9782723488525");
   });
+
+  it("refuses thirteen digits whose check digit is wrong", () => {
+    expect(isbn13Of("9782723488526")).toBeNull();
+  });
 });
