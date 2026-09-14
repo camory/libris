@@ -4,9 +4,11 @@ import {
   within,
   type BoundFunctions,
 } from "@testing-library/dom";
-import { flushPromises, mount } from "@vue/test-utils";
+import { flushPromises, mount, type VueWrapper } from "@vue/test-utils";
 import { describe, expect, it } from "vitest";
+import { barcodeScannerKey } from "../../../application/BarcodeScanner";
 import { isbnApiKey, type IsbnAnswer } from "../../../application/IsbnApi";
+import { FakeBarcodeScanner } from "../../../fixture/FakeBarcodeScanner";
 import { FakeIsbnApi } from "../../../fixture/FakeIsbnApi";
 import { onePiece1 } from "../../../fixture/SourceEditions";
 import { createLibrisI18n } from "../../i18n";
@@ -26,7 +28,11 @@ const sourcesDown: IsbnAnswer = {
   type: "/problems/sources-unavailable",
 };
 
+const neverRead = new Promise<string | null>(() => {});
+
 describe("IsbnView", () => {
+  let mounted: VueWrapper;
+
   it("renders the title and the hint", () => {
     const screen = open(new FakeIsbnApi(unknownIsbn));
 
@@ -178,14 +184,32 @@ describe("IsbnView", () => {
     ).toBe(false);
   });
 
-  function open(api: FakeIsbnApi) {
-    const wrapper = mount(IsbnView, {
+  it("opens the camera by itself where the browser detects barcodes", async () => {
+    // Given
+    const scanner = new FakeBarcodeScanner(true, neverRead);
+
+    // When
+    const screen = open(new FakeIsbnApi(unknownIsbn), scanner);
+    await flushPromises();
+
+    // Then
+    expect(
+      screen.getByRole("button", { name: "Fermer la caméra" }),
+    ).toBeDefined();
+    expect(scanner.readsInto).toHaveLength(1);
+  });
+
+  function open(
+    api: FakeIsbnApi,
+    scanner: FakeBarcodeScanner = new FakeBarcodeScanner(false),
+  ) {
+    mounted = mount(IsbnView, {
       global: {
         plugins: [createLibrisI18n()],
-        provide: { [isbnApiKey]: api },
+        provide: { [isbnApiKey]: api, [barcodeScannerKey]: scanner },
       },
     });
-    return within(wrapper.element as HTMLElement);
+    return within(mounted.element as HTMLElement);
   }
 
   async function ask(screen: Screen, text: string) {
