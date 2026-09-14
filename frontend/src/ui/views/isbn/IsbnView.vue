@@ -54,7 +54,7 @@ async function search() {
         type="text"
         inputmode="numeric"
         :placeholder="t('isbn.placeholder')"
-        class="h-[50px] rounded-xl border-[1.5px] bg-surface px-3.5 text-field tabular-nums"
+        class="h-[50px] rounded-xl border-[1.5px] bg-surface px-3.5 text-field tabular-nums placeholder:text-muted"
         :class="refused ? 'border-danger' : 'border-border'"
       />
       <button
