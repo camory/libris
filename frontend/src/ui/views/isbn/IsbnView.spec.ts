@@ -163,6 +163,20 @@ describe("IsbnView", () => {
     expect(field(screen).disabled).toBe(false);
   });
 
+  it("comes back to itself once the answer lands", async () => {
+    // Given
+    const screen = open(new FakeIsbnApi(sourcesDown));
+
+    // When
+    await ask(screen, "9791000000008");
+
+    // Then
+    expect(
+      screen.getByRole<HTMLButtonElement>("button", { name: "Chercher" })
+        .disabled,
+    ).toBe(false);
+  });
+
   function open(api: FakeIsbnApi) {
     const wrapper = mount(IsbnView, {
       global: {
