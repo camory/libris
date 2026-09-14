@@ -421,11 +421,16 @@ Format:
     with no detector, a refused camera and a pressed cross all show. The pull
     request asks Tophe to confirm it; wanting the tap instead means changing
     the scenario, which is a spec conversation.
-  - **`stop()` answers the pending `read()` with `null`.** One value, one
-    `if` in the view: `null` means "no code", whether the reader refused the
-    camera or pressed the cross, and the screen does the same thing in both
-    cases. The fake honours the same contract, which is what lets the view's
-    cases and the adapter's cases tell the same story.
+  - **`stop()` answers the pending `read()` with `null`, even when a look is
+    in flight and finds a code.** One value, one `if` in the view: `null`
+    means "no code", whether the reader refused the camera, pressed the cross
+    or left the screen, and the screen does the same thing in every case. A
+    look the detector could not take counts as nothing seen and the camera
+    keeps looking; a picture that cannot start gives the camera back with
+    `null`. The fake honours the same contract, which is what lets the view's
+    cases and the adapter's cases tell the same story. (Review fix-ups: the
+    adapter first returned a code after `stop()` and let a rejecting
+    `detect()` or `play()` escape with the stream still open.)
   - **The adapter keeps the whole loop.** It applies `isbn13Of` itself, so a
     shelf full of EAN-13s that are not ISBNs never reaches the view and no
     scan ever shows *ISBN invalide*, and it stops every track of the stream
