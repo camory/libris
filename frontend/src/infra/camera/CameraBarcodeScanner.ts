@@ -27,6 +27,13 @@ function pause(): Promise<void> {
   return new Promise((resolve) => setTimeout(resolve, betweenLooks));
 }
 
+function look(
+  barcodes: BarcodeDetector,
+  into: HTMLVideoElement,
+): Promise<{ rawValue: string }[]> {
+  return barcodes.detect(into).catch(() => []);
+}
+
 function detector(): BarcodeDetectorConstructor | undefined {
   return (globalThis as { BarcodeDetector?: BarcodeDetectorConstructor })
     .BarcodeDetector;
@@ -51,7 +58,7 @@ export class CameraBarcodeScanner implements BarcodeScanner {
     await into.play();
     const barcodes = new (detector()!)({ formats: [format] });
     while (this.looking) {
-      for (const { rawValue } of await barcodes.detect(into)) {
+      for (const { rawValue } of await look(barcodes, into)) {
         const isbn13 = isbn13Of(rawValue);
         if (isbn13 !== null) {
           this.release();

@@ -58,6 +58,18 @@ describe("CameraBarcodeScanner", () => {
     expect(read).toBe("9782723488525");
   });
 
+  it("keeps looking past a look the detector could not take", async () => {
+    // Given
+    detectorAnnouncing(["ean_13"], new Error("no frame yet"), "9782723488525");
+    cameraAllowed();
+
+    // When
+    const read = await new CameraBarcodeScanner().read(video());
+
+    // Then
+    expect(read).toBe("9782723488525");
+  });
+
   it("reads nothing where the reader refuses the camera", async () => {
     // Given
     detectorAnnouncing(["ean_13"], "9782723488525");
@@ -117,7 +129,7 @@ describe("CameraBarcodeScanner", () => {
     });
   }
 
-  function detectorAnnouncing(formats: string[], ...codes: string[]) {
+  function detectorAnnouncing(formats: string[], ...looks: (string | Error)[]) {
     let reads = 0;
     vi.stubGlobal(
       "BarcodeDetector",
@@ -126,9 +138,12 @@ describe("CameraBarcodeScanner", () => {
           return Promise.resolve(formats);
         }
         detect() {
-          const code = codes[Math.min(reads++, codes.length - 1)];
+          const look = looks[Math.min(reads++, looks.length - 1)];
+          if (look instanceof Error) {
+            return Promise.reject(look);
+          }
           return Promise.resolve(
-            code === undefined ? [] : [{ rawValue: code }],
+            look === undefined ? [] : [{ rawValue: look }],
           );
         }
       },
