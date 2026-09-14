@@ -140,6 +140,9 @@ frontend one; no other task touches the contract (D04).
       the merge rule and their tests go; the use case asks the one source
       and `sources` lists `BNF` (D02). `OPEN_LIBRARY` stays in the contract,
       unused: no contract edit.
+      The BnF source asks with the thirteen digits and, when they start
+      with 978, with the ten as well, since a record made before 2007 holds
+      the ten alone (9782253098058 answers to 2253098051 only).
       The BnF source fills `coverUrl` for every record it maps, the
       catalogue's cover URL built from field 003, the ark from `ark:/` on,
       never checked; the card shows its stand-in when the picture is not
