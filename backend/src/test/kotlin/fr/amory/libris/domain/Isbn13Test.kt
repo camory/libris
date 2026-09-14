@@ -26,6 +26,11 @@ class Isbn13Test {
     }
 
     @Test
+    fun `an ISBN that does not start with 978 converts to no ten`() {
+        Isbn13.of("9791000000008")?.isbn10 shouldBe null
+    }
+
+    @Test
     fun `a text of another length is not an ISBN-13`() {
         // Given / When / Then
         Isbn13.of("978272348852") shouldBe null

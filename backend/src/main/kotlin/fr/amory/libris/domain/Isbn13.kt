@@ -2,14 +2,16 @@ package fr.amory.libris.domain
 
 @JvmInline
 value class Isbn13 private constructor(val digits: String) {
-    val isbn10: String
-        get() = digits.substring(PREFIX_LENGTH, LENGTH - 1).let { it + tenCheckDigitOf(it) }
+    val isbn10: String?
+        get() = digits.takeIf { it.startsWith(TEN_PREFIX) }
+            ?.substring(TEN_PREFIX.length, LENGTH - 1)
+            ?.let { it + tenCheckDigitOf(it) }
 
     companion object {
         private const val LENGTH = 13
         private const val ODD_WEIGHT = 3
         private const val MODULUS = 10
-        private const val PREFIX_LENGTH = 3
+        private const val TEN_PREFIX = "978"
         private const val TEN_MODULUS = 11
         private const val TEN_FIRST_WEIGHT = 10
 
