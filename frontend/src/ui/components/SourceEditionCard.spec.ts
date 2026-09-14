@@ -16,6 +16,15 @@ describe("SourceEditionCard", () => {
     expect(card).toContain("à l'aube d'une grande aventure");
   });
 
+  it("shows one line per author, with the French words of its roles", () => {
+    // When
+    const card = show(onePiece1);
+
+    // Then
+    expect(card).toContain("Eiichirō Oda · scénario, dessin");
+    expect(card.match(/Eiichirō Oda/g)).toHaveLength(1);
+  });
+
   function show(edition: SourceEdition) {
     const wrapper = mount(SourceEditionCard, {
       props: { edition },

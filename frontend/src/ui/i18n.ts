@@ -18,7 +18,14 @@ const fr = {
     error: "Erreur lors de la recherche, veuillez réessayer plus tard.",
     card: {
       series: "{name} · tome {volume}",
+      author: "{name} · {roles}",
     },
+  },
+  role: {
+    WRITER: "scénario",
+    ARTIST: "dessin",
+    COLOURIST: "couleurs",
+    TRANSLATOR: "traduction",
   },
 };
 

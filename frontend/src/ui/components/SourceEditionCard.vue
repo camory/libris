@@ -20,6 +20,16 @@ const overline = computed(() => {
     volume: series.volumeNumber,
   });
 });
+
+const authorLines = computed(() => {
+  const roles = new Map<string, string[]>();
+  for (const author of props.edition.authors) {
+    const said = roles.get(author.name) ?? [];
+    said.push(t(`role.${author.role}`));
+    roles.set(author.name, said);
+  }
+  return [...roles].map(([name, said]) => ({ name, roles: said.join(", ") }));
+});
 </script>
 
 <template>
@@ -34,6 +44,18 @@ const overline = computed(() => {
       <p v-if="edition.subtitle" class="text-lead text-muted">
         {{ edition.subtitle }}
       </p>
+      <i18n-t
+        v-for="line in authorLines"
+        :key="line.name"
+        keypath="isbn.card.author"
+        tag="p"
+        class="text-body"
+      >
+        <template #name>{{ line.name }}</template>
+        <template #roles>
+          <span class="text-muted">{{ line.roles }}</span>
+        </template>
+      </i18n-t>
     </div>
   </article>
 </template>
