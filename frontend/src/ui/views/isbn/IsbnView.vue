@@ -16,6 +16,7 @@ const isbnApi = inject(isbnApiKey)!;
 const typed = ref("");
 const message = ref<string>();
 const edition = ref<SourceEdition>();
+const searching = ref(false);
 
 async function search() {
   edition.value = undefined;
@@ -25,7 +26,9 @@ async function search() {
     message.value = "isbn.invalid";
     return;
   }
+  searching.value = true;
   const answer = await isbnApi.lookUp(isbn13);
+  searching.value = false;
   if (answer.outcome === "found") {
     edition.value = answer.edition;
   } else {
@@ -56,10 +59,16 @@ async function search() {
       />
       <button
         type="button"
-        class="h-[50px] rounded-xl bg-accent text-button text-white active:bg-accent-pressed"
+        :disabled="searching"
+        class="flex h-[50px] items-center justify-center gap-2 rounded-xl bg-accent text-button text-white active:bg-accent-pressed disabled:opacity-70"
         @click="search"
       >
-        {{ t("isbn.search") }}
+        <span
+          v-if="searching"
+          aria-hidden="true"
+          class="size-4 animate-spin rounded-full border-2 border-white/30 border-t-white"
+        ></span>
+        {{ searching ? t("isbn.searching") : t("isbn.search") }}
       </button>
     </div>
 

@@ -11,6 +11,7 @@ const fr = {
     label: "ISBN",
     placeholder: "978-2-7234-8852-5",
     search: "Chercher",
+    searching: "Recherche en cours…",
     invalid: "ISBN invalide",
     unknown: "ISBN inconnu",
     error: "Erreur lors de la recherche, veuillez réessayer plus tard.",

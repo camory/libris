@@ -148,6 +148,21 @@ describe("IsbnView", () => {
     expect(screen.queryByText("Romance dawn")).toBeNull();
   });
 
+  it("is busy while the lookup runs, over a field that stays editable", async () => {
+    // Given
+    const screen = open(new FakeIsbnApi(new Promise<IsbnAnswer>(() => {})));
+
+    // When
+    await ask(screen, "9782723488525");
+
+    // Then
+    const button = screen.getByRole<HTMLButtonElement>("button", {
+      name: "Recherche en cours…",
+    });
+    expect(button.disabled).toBe(true);
+    expect(field(screen).disabled).toBe(false);
+  });
+
   function open(api: FakeIsbnApi) {
     const wrapper = mount(IsbnView, {
       global: {
