@@ -61,6 +61,20 @@ describe("FetchIsbnApi", () => {
       type: "/problems/sources-unavailable",
     });
   });
+
+  it("answers a problem when the API refuses the ISBN", async () => {
+    // Given
+    const api = new FetchIsbnApi(inject("mockBaseUrl"));
+
+    // When
+    const answer = await api.lookUp("9782723488526");
+
+    // Then
+    expect(answer).toEqual({
+      outcome: "problem",
+      type: "/problems/validation",
+    });
+  });
 });
 
 function areAuthors(value: unknown) {
