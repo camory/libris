@@ -138,6 +138,16 @@ describe("SourceEditionCard", () => {
     expect(screen(onePiece1).queryAllByRole("button")).toEqual([]);
   });
 
+  it("shows the code of a language the catalogue has no word for", () => {
+    // When
+    const card = screen({ ...onePiece1, language: "en" });
+
+    // Then
+    expect(card.getByText("Langue")).toBeDefined();
+    expect(card.getByText("en")).toBeDefined();
+    expect(card.queryByText("language.en")).toBeNull();
+  });
+
   function show(edition: SourceEdition) {
     return card(edition).text().replace(/\s+/g, " ");
   }

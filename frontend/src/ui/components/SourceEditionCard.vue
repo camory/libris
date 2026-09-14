@@ -5,7 +5,7 @@ import type { SourceEdition } from "../../domain/SourceEdition";
 
 const props = defineProps<{ edition: SourceEdition }>();
 
-const { t } = useI18n();
+const { t, te } = useI18n();
 
 const overline = computed(() => {
   const series = props.edition.series;
@@ -33,7 +33,11 @@ const authorLines = computed(() => {
 
 const languageWord = computed(() => {
   const language = props.edition.language;
-  return language === null ? null : t(`language.${language}`);
+  if (language === null) {
+    return null;
+  }
+  const word = `language.${language}`;
+  return te(word) ? t(word) : language;
 });
 
 const rows = computed(() => {
