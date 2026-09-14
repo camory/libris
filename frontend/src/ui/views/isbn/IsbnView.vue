@@ -1,18 +1,27 @@
 <script setup lang="ts">
-import { ref } from "vue";
+import { inject, ref } from "vue";
 import { useI18n } from "vue-i18n";
+import { isbnApiKey } from "../../../application/IsbnApi";
 import { isbn13Of } from "../../../domain/Isbn13";
+import type { SourceEdition } from "../../../domain/SourceEdition";
 import IconAlert from "../../components/icons/IconAlert.vue";
 
 const { t } = useI18n();
+const isbnApi = inject(isbnApiKey)!;
 
 const typed = ref("");
 const message = ref<string>();
+const edition = ref<SourceEdition>();
 
-function search() {
+async function search() {
   const isbn13 = isbn13Of(typed.value);
   if (isbn13 === null) {
     message.value = "isbn.invalid";
+    return;
+  }
+  const answer = await isbnApi.lookUp(isbn13);
+  if (answer.outcome === "found") {
+    edition.value = answer.edition;
   }
 }
 </script>
@@ -45,6 +54,8 @@ function search() {
         {{ t("isbn.search") }}
       </button>
     </div>
+
+    <p v-if="edition" class="mt-5 text-card-title">{{ edition.title }}</p>
 
     <p v-if="message" class="mt-5 flex items-start gap-2 text-body text-danger">
       <IconAlert />

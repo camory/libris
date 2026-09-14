@@ -7,11 +7,30 @@ import {
 import { flushPromises, mount } from "@vue/test-utils";
 import { describe, expect, it } from "vitest";
 import { isbnApiKey, type IsbnAnswer } from "../../../application/IsbnApi";
+import type { SourceEdition } from "../../../domain/SourceEdition";
 import { FakeIsbnApi } from "../../../fixture/FakeIsbnApi";
 import { createLibrisI18n } from "../../i18n";
 import IsbnView from "./IsbnView.vue";
 
 type Screen = BoundFunctions<typeof queries>;
+
+const onePiece: SourceEdition = {
+  isbn13: "9782723488525",
+  title: "Romance dawn",
+  subtitle: "à l'aube d'une grande aventure",
+  authors: [{ name: "Eiichirō Oda", role: "WRITER" }],
+  series: { name: "One piece", volumeNumber: 1 },
+  collection: "Shonen manga",
+  publisher: "Glénat",
+  publicationYear: 2013,
+  language: "fr",
+  pageCount: 203,
+  summary: null,
+  coverUrl: "https://covers.openlibrary.org/b/isbn/9782723488525-L.jpg",
+  sources: ["BNF", "OPEN_LIBRARY"],
+};
+
+const found: IsbnAnswer = { outcome: "found", edition: onePiece };
 
 const unknownIsbn: IsbnAnswer = {
   outcome: "problem",
@@ -40,6 +59,20 @@ describe("IsbnView", () => {
     expect(screen.getByText("ISBN invalide")).toBeDefined();
     expect(field(screen).value).toBe("978272348852");
     expect(api.asked).toEqual([]);
+  });
+
+  it("asks for the ISBN-13 the rule computes and shows the title", async () => {
+    // Given
+    const api = new FakeIsbnApi(found);
+    const screen = open(api);
+
+    // When
+    await ask(screen, "978-2-7234-8852-5");
+
+    // Then
+    expect(api.asked).toEqual(["9782723488525"]);
+    expect(screen.getByText("Romance dawn")).toBeDefined();
+    expect(screen.queryByText("Glénat")).toBeNull();
   });
 
   function open(api: FakeIsbnApi) {
