@@ -74,13 +74,9 @@ async function search() {
       </button>
     </div>
 
-    <div v-if="searching" class="mt-5">
-      <SourceEditionCardSkeleton />
-    </div>
+    <SourceEditionCardSkeleton v-if="searching" class="mt-5" />
 
-    <div v-else-if="edition" class="mt-5">
-      <SourceEditionCard :edition="edition" />
-    </div>
+    <SourceEditionCard v-else-if="edition" :edition="edition" class="mt-5" />
 
     <p v-if="message" class="mt-5 flex items-start gap-2 text-body text-danger">
       <IconAlert />
