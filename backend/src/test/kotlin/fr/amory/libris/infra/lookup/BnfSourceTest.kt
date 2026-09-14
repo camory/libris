@@ -86,6 +86,18 @@ class BnfSourceTest {
     }
 
     @Test
+    fun `an answer that cannot be read is a failure`() {
+        // Given
+        bnf.answersUnreadably(ONE_PIECE)
+
+        // When
+        val answer = source.lookUp(isbn13Of(ONE_PIECE))
+
+        // Then
+        answer shouldBe Failed
+    }
+
+    @Test
     fun `a BnF that answers past the timeout is a failure`() {
         // Given
         bnf.answersTooLate(ONE_PIECE)

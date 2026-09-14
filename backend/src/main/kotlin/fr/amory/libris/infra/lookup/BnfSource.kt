@@ -18,6 +18,7 @@ import org.springframework.web.client.RestClientException
 import org.w3c.dom.Element
 import org.xml.sax.SAXException
 import java.io.ByteArrayInputStream
+import java.io.IOException
 import java.time.Duration
 import javax.xml.parsers.DocumentBuilderFactory
 
@@ -41,6 +42,8 @@ class BnfSource(baseUrl: String, timeout: Duration) : IsbnSource {
         } catch (ignored: RestClientException) {
             Failed
         } catch (ignored: SAXException) {
+            Failed
+        } catch (ignored: IOException) {
             Failed
         }
 
