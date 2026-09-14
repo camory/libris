@@ -143,3 +143,8 @@
   it at the price of a behaviour no scenario describes and of jsdom's own
   form submission in the tests; the task that adds it is the one that decides
   what the spec says about the keyboard (found on T017, 2026-09-14).
+- Frontend: a rejected `lookUp` (the network down, the API unreachable)
+  leaves the lookup screen's button busy for ever and says nothing, since
+  `search()` awaits it without a `finally`. What the screen says then is a
+  scenario of `specs/fast-entry.md` to write with Tophe; the button coming
+  back is a `finally` (raised by the reviewer of PR #71, 2026-09-14).
