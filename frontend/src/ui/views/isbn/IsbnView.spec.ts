@@ -119,6 +119,22 @@ describe("IsbnView", () => {
     ).toBeDefined();
   });
 
+  it("falls back to the same sentence for a problem it does not know", async () => {
+    // Given
+    const teapot: IsbnAnswer = { outcome: "problem", type: "/problems/teapot" };
+    const screen = open(new FakeIsbnApi(teapot));
+
+    // When
+    await ask(screen, "9782723488525");
+
+    // Then
+    expect(
+      screen.getByText(
+        "Erreur lors de la recherche, veuillez réessayer plus tard.",
+      ),
+    ).toBeDefined();
+  });
+
   function open(api: FakeIsbnApi) {
     const wrapper = mount(IsbnView, {
       global: {
