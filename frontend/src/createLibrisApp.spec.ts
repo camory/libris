@@ -2,6 +2,7 @@ import { flushPromises } from "@vue/test-utils";
 import { describe, expect, it } from "vitest";
 import { createLibrisApp } from "./createLibrisApp";
 import type { Reader } from "./domain/Reader";
+import { FakeIsbnApi } from "./fixture/FakeIsbnApi";
 import { FakeMeApi } from "./fixture/FakeMeApi";
 
 const chloe: Reader = {
@@ -16,7 +17,16 @@ describe("createLibrisApp", () => {
   it("renders the home view over the ports it is given", async () => {
     // Given
     const host = document.createElement("div");
-    const app = createLibrisApp({ meApi: new FakeMeApi(chloe) }, "sha-abc1234");
+    const app = createLibrisApp(
+      {
+        meApi: new FakeMeApi(chloe),
+        isbnApi: new FakeIsbnApi({
+          outcome: "problem",
+          type: "/problems/not-found",
+        }),
+      },
+      "sha-abc1234",
+    );
 
     // When
     app.mount(host);
