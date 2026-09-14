@@ -126,6 +126,18 @@ describe("SourceEditionCard", () => {
     ).toEqual([]);
   });
 
+  it("shows one chip per source, after the word Sources, acting on nothing", () => {
+    // When
+    const card = show(onePiece1);
+
+    // Then
+    const parts = ["Sources", "BnF", "Open Library"];
+    const positions = parts.map((part) => card.indexOf(part));
+    expect(positions).not.toContain(-1);
+    expect(positions).toEqual([...positions].sort((a, b) => a - b));
+    expect(screen(onePiece1).queryAllByRole("button")).toEqual([]);
+  });
+
   function show(edition: SourceEdition) {
     return card(edition).text().replace(/\s+/g, " ");
   }

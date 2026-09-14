@@ -26,6 +26,7 @@ const fr = {
       language: "Langue",
       pages: "Pages",
       isbn: "ISBN",
+      sources: "Sources",
     },
   },
   language: {
@@ -36,6 +37,10 @@ const fr = {
     ARTIST: "dessin",
     COLOURIST: "couleurs",
     TRANSLATOR: "traduction",
+  },
+  source: {
+    BNF: "BnF",
+    OPEN_LIBRARY: "Open Library",
   },
 };
 
