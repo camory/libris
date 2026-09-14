@@ -1,6 +1,7 @@
 package fr.amory.libris
 
 import fr.amory.libris.domain.lookup.IsbnSource
+import fr.amory.libris.domain.lookup.Source.BNF
 import fr.amory.libris.domain.lookup.Source.OPEN_LIBRARY
 import fr.amory.libris.infra.lookup.SourcesProperties
 import io.kotest.matchers.shouldBe
@@ -30,11 +31,15 @@ class LibrisApplicationTest @Autowired constructor(
 
     @Test
     fun `the sources are configured with their defaults`() {
-        sources shouldBe SourcesProperties("https://openlibrary.org", ofSeconds(5))
+        sources shouldBe SourcesProperties(
+            bnfUrl = "https://catalogue.bnf.fr/api/SRU",
+            openLibraryUrl = "https://openlibrary.org",
+            timeout = ofSeconds(5),
+        )
     }
 
     @Test
-    fun `Open Library is the one source`() {
-        isbnSources.map { it.source } shouldBe listOf(OPEN_LIBRARY)
+    fun `the BnF is asked before Open Library`() {
+        isbnSources.map { it.source } shouldBe listOf(BNF, OPEN_LIBRARY)
     }
 }

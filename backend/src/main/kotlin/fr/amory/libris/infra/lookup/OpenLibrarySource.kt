@@ -11,24 +11,17 @@ import fr.amory.libris.domain.lookup.SourceAnswer.NothingKnown
 import fr.amory.libris.domain.lookup.SourceAuthor
 import fr.amory.libris.domain.lookup.SourceEdition
 import fr.amory.libris.domain.lookup.openLibraryCoverOf
-import org.springframework.http.client.JdkClientHttpRequestFactory
 import org.springframework.web.client.HttpClientErrorException
-import org.springframework.web.client.RestClient
 import org.springframework.web.client.RestClientException
 import tools.jackson.databind.JsonNode
 import tools.jackson.databind.exc.JsonNodeException
 import tools.jackson.databind.node.MissingNode
-import java.net.http.HttpClient
-import java.net.http.HttpClient.Redirect.NORMAL
 import java.time.Duration
 
 class OpenLibrarySource(baseUrl: String, timeout: Duration) : IsbnSource {
     override val source = OPEN_LIBRARY
 
-    private val http = RestClient.builder()
-        .baseUrl(baseUrl)
-        .requestFactory(requestFactory(timeout))
-        .build()
+    private val http = sourceRestClient(baseUrl, timeout)
 
     override fun lookUp(isbn: Isbn13): SourceAnswer =
         try {
@@ -79,13 +72,5 @@ class OpenLibrarySource(baseUrl: String, timeout: Duration) : IsbnSource {
 
     private companion object {
         val YEAR = Regex("\\d{4}")
-
-        fun requestFactory(timeout: Duration): JdkClientHttpRequestFactory {
-            val client = HttpClient.newBuilder()
-                .followRedirects(NORMAL)
-                .connectTimeout(timeout)
-                .build()
-            return JdkClientHttpRequestFactory(client).apply { setReadTimeout(timeout) }
-        }
     }
 }

@@ -17,6 +17,16 @@ class BnfStubs(private val server: WireMockServer) {
 
     fun doesNotKnow(isbn: String) = answers(isbn, recorded("bnf/$isbn.xml"))
 
+    fun answersTooLate(isbn: String) {
+        server.stubFor(
+            get(urlPathEqualTo(SRU))
+                .withQueryParam("query", containing(isbn))
+                .willReturn(xml(recorded("bnf/$isbn.xml")).withFixedDelay(LATE)),
+        )
+    }
+
+    fun answersUnreadably(isbn: String) = answers(isbn, UNREADABLE)
+
     fun fails() {
         server.stubFor(get(urlPathEqualTo(SRU)).willReturn(serverError()))
     }
@@ -34,5 +44,7 @@ class BnfStubs(private val server: WireMockServer) {
 
     private companion object {
         const val SRU = "/api/SRU"
+        const val LATE = 2_000
+        const val UNREADABLE = "<srw:searchRetrieveResponse>"
     }
 }

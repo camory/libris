@@ -68,7 +68,7 @@ frontend one; no other task touches the contract (D04).
       Realises the rule S5 and S6 assert; un-skips nothing, both go green
       with T015.
 
-- [ ] T015 Backend: the BnF source.
+- [x] T015 Backend: the BnF source.
       `infra.lookup`: the SRU client on `LIBRIS_BNF_URL`, queried
       `bib.isbn all "<isbn>"`, ranked before Open Library in the merge; an
       empty record set means it knows nothing (D02).

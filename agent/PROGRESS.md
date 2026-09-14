@@ -931,3 +931,75 @@ Format:
 - Left over: nothing of T014. The four skipped scenario methods (`S1`, both
   `S6`, `S5`) stay skipped and go green with T015's BnF, which is also what
   ranks a source before another — here the order is the one Spring gives.
+
+## 2026-09-13 — T015 the BnF source — done
+
+- Did: `infra.lookup.BnfSource`, the SRU 1.2 client on `LIBRIS_BNF_URL`,
+  asking `?version=1.2&operation=searchRetrieve&recordSchema=unimarcxchange&maximumRecords=1&query=bib.isbn all "<isbn>"`
+  and mapping the marcxchange record the JDK's own `DocumentBuilderFactory`
+  parses — no new dependency. Title `200$a`, subtitle `200$e`, authors
+  `700`/`701`/`702` in document order (`$b` + `$a`, role from `$4`), series
+  `461$t` with `461$v` as a number, collection `410$t`, publisher `210$c`,
+  year the first four digits of `210$d`, pages the number before `p.` in
+  `215$a`, language `101$a` through a map, summary and cover `null`, the
+  `isbn13` the one asked. A failure or an unparseable answer is `Failed`, no
+  marcxchange `record` is `NothingKnown`. `SourcesProperties` gained
+  `bnfUrl`, `application.yaml` its default `https://catalogue.bnf.fr/api/SRU`,
+  `LookupConfig` ranks the two beans with `@Order`. `BnfSourceTest` (eight
+  cases) over the recorded answers, `BnfStubs` gained `answersTooLate`, and
+  the four scenario methods `S1`, `S5` and both `S6` are un-skipped:
+  `FastEntryScenarios` now runs seven of seven, none skipped.
+- Decided:
+  - **The role map is a top-level `internal` function.** No recording carries
+    a `440` or a `730`, so the only honest way to prove the whole map is to
+    call it: `authorRoleOf(functionCode)` sits beside the class and its test
+    reads the five cases in one place. Mapping through the HTTP seam would
+    have meant inventing records the BnF never sent.
+  - **The ISBN of the answer is the one asked, not `010$a`.** The BnF writes
+    it hyphenated; the contract wants thirteen digits, and the search already
+    matched on the digits we hold.
+  - **Ranking lives in the wiring.** `@Order(1)` on the BnF bean and
+    `@Order(2)` on Open Library is what fixes the list Spring injects into
+    `IsbnLookup` — verified by mutation: with `@Order(9)` the application
+    test reports `[OPEN_LIBRARY, BNF]`. Declaration order alone does not
+    rank them, and the use case stays ignorant of who comes first.
+  - **One request client for both sources.** `SourceHttp.kt` holds
+    `sourceRestClient(baseUrl, timeout)`, the `JdkClientHttpRequestFactory`
+    with the connect and read timeouts that `OpenLibrarySource` had built
+    privately; both clients call it now.
+  - **The cold JVM costs more than the 200 ms test timeout.** The first
+    lookup of the class loads the HTTP client, the XML parser and their
+    modules, and it fails the timeout cases into a false green — or the real
+    cases into a false red. A `@BeforeAll` does one lookup under a 20 s
+    timeout and resets the stubs; every case then runs at 200 ms. Any future
+    source test with a short timeout needs the same warm-up.
+- Deviations from the brief: the order of the cases inside `BnfSourceTest`.
+  The brief put `the source names itself` first, but a class whose
+  constructor takes `baseUrl` and `timeout` that no test yet uses fails
+  detekt (`UnusedPrivateProperty`), so the SRU-request case came first — it
+  is what motivates both arguments — and the naming case second. Every case
+  of the plan is there, nothing else changed.
+- Gotcha, not a deviation: the mapping is one expression, so the whole
+  record is pinned by one field-by-field assertion in the commit that maps
+  it (`a178a87 feat(backend): the BnF source maps the UNIMARC record`); the
+  fields have no case of their own, but each would fail on a wrong tag or
+  subfield.
+- Review fix-ups (2026-09-14): the parser read the answer as bytes, so a
+  prolog naming an encoding the JDK lacks made `DocumentBuilder.parse` throw
+  `IOException`, which escaped `BnfSource.lookUp` and took the whole lookup
+  down. The answer is a `String` the HTTP layer already decoded, so the parser
+  now reads it through a `StringReader`: the prolog's encoding is ignored, no
+  `IOException` can arise, and one `catch` of `SAXException` covers what the
+  parser throws — the case `an answer that cannot be read is a failure` pins
+  it over `BnfStubs.answersUnreadably`, the one hand-written body in the
+  fixture. A second `catch` of a JDK type was tried first and detekt reported
+  it unreachable: the plain `detekt` task has no JDK on its classpath, so two
+  unresolved JDK exception types read as one class to `UnreachableCatchBlock`.
+  `answersTooLate` delays the recorded answer, not an empty body, so only the
+  read timeout can turn that case green. Year and page count go through
+  `toIntOrNull()` like the volume number. Any source test with a delay stub
+  should delay a real answer for the same reason
+  (`OpenLibraryStubs.answersTooLate` still delays an empty body).
+- Left over: nothing of T015. `COLOURIST` has no BnF function code and the
+  language map holds only `fre → fr`; both are in `agent/PROPOSED.md` for
+  Tophe.
