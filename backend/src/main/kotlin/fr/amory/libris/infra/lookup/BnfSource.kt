@@ -16,9 +16,9 @@ import fr.amory.libris.domain.lookup.SourceEdition
 import fr.amory.libris.domain.lookup.SourceSeries
 import org.springframework.web.client.RestClientException
 import org.w3c.dom.Element
+import org.xml.sax.InputSource
 import org.xml.sax.SAXException
-import java.io.ByteArrayInputStream
-import java.io.IOException
+import java.io.StringReader
 import java.time.Duration
 import javax.xml.parsers.DocumentBuilderFactory
 
@@ -42,8 +42,6 @@ class BnfSource(baseUrl: String, timeout: Duration) : IsbnSource {
         } catch (ignored: RestClientException) {
             Failed
         } catch (ignored: SAXException) {
-            Failed
-        } catch (ignored: IOException) {
             Failed
         }
 
@@ -102,7 +100,7 @@ class BnfSource(baseUrl: String, timeout: Duration) : IsbnSource {
                 isNamespaceAware = true
                 setFeature("http://apache.org/xml/features/disallow-doctype-decl", true)
             }
-            val document = factory.newDocumentBuilder().parse(ByteArrayInputStream(answer.toByteArray()))
+            val document = factory.newDocumentBuilder().parse(InputSource(StringReader(answer)))
             val record = document.getElementsByTagNameNS(MARCXCHANGE, "record").item(0) as Element?
             return record?.let { UnimarcRecord(fieldsOf(it)) }
         }

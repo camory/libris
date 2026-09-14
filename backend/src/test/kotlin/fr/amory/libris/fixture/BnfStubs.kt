@@ -45,6 +45,6 @@ class BnfStubs(private val server: WireMockServer) {
     private companion object {
         const val SRU = "/api/SRU"
         const val LATE = 2_000
-        const val UNREADABLE = """<?xml version="1.0" encoding="bogus-enc"?><a/>"""
+        const val UNREADABLE = "<srw:searchRetrieveResponse>"
     }
 }
