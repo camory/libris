@@ -1,9 +1,5 @@
 import type { IsbnApi, IsbnAnswer } from "../../application/IsbnApi";
-import type {
-  AuthorRole,
-  Source,
-  SourceEdition,
-} from "../../domain/SourceEdition";
+import type { AuthorRole, Source } from "../../domain/SourceEdition";
 
 interface IsbnResponse {
   isbn13: string;
@@ -34,27 +30,9 @@ export class FetchIsbnApi implements IsbnApi {
     });
     if (response.status === 200) {
       const body = (await response.json()) as IsbnResponse;
-      return { outcome: "found", edition: editionOf(body) };
+      return { outcome: "found", edition: body };
     }
     const problem = (await response.json()) as ProblemResponse;
     return { outcome: "problem", type: problem.type };
   }
-}
-
-function editionOf(body: IsbnResponse): SourceEdition {
-  return {
-    isbn13: body.isbn13,
-    title: body.title,
-    subtitle: body.subtitle,
-    authors: body.authors,
-    series: body.series,
-    collection: body.collection,
-    publisher: body.publisher,
-    publicationYear: body.publicationYear,
-    language: body.language,
-    pageCount: body.pageCount,
-    summary: body.summary,
-    coverUrl: body.coverUrl,
-    sources: body.sources,
-  };
 }
