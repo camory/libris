@@ -75,6 +75,19 @@ describe("IsbnView", () => {
     expect(screen.queryByText("Glénat")).toBeNull();
   });
 
+  it("asks for the ISBN-13 an old ten converts to", async () => {
+    // Given
+    const api = new FakeIsbnApi(found);
+    const screen = open(api);
+
+    // When
+    await ask(screen, "2723488527");
+
+    // Then
+    expect(api.asked).toEqual(["9782723488525"]);
+    expect(screen.getByText("Romance dawn")).toBeDefined();
+  });
+
   function open(api: FakeIsbnApi) {
     const wrapper = mount(IsbnView, {
       global: {
