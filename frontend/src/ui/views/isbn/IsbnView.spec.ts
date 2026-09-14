@@ -250,6 +250,30 @@ describe("IsbnView", () => {
     expect(scanner.readsInto).toHaveLength(2);
   });
 
+  it("says nothing when the reader refuses the camera", async () => {
+    // Given
+    const scanner = new FakeBarcodeScanner(true, null);
+
+    // When
+    const screen = open(new FakeIsbnApi(unknownIsbn), scanner);
+    await flushPromises();
+
+    // Then
+    expect(
+      screen.queryByRole("button", { name: "Fermer la caméra" }),
+    ).toBeNull();
+    expect(screen.queryByText("ISBN invalide")).toBeNull();
+    expect(screen.queryByText("ISBN inconnu")).toBeNull();
+    expect(
+      screen.queryByText(
+        "Erreur lors de la recherche, veuillez réessayer plus tard.",
+      ),
+    ).toBeNull();
+    expect(
+      screen.getByRole("button", { name: "Scanner le code-barres" }),
+    ).toBeDefined();
+  });
+
   function open(
     api: FakeIsbnApi,
     scanner: FakeBarcodeScanner = new FakeBarcodeScanner(false),
