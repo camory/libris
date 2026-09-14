@@ -1,1 +1,61 @@
 @import "tailwindcss";
+
+:root {
+  --libris-bg: #f8fafc;
+  --libris-surface: #ffffff;
+  --libris-text: #0f172b;
+  --libris-muted: #62748e;
+  --libris-border: #e2e8f0;
+  --libris-danger: #b91c1c;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --libris-bg: #0f172b;
+    --libris-surface: #1d293d;
+    --libris-text: #f1f5f9;
+    --libris-muted: #90a1b9;
+    --libris-border: #314158;
+    --libris-danger: #f87171;
+  }
+}
+
+@theme inline {
+  --font-sans: system-ui, -apple-system, "Segoe UI", sans-serif;
+
+  --color-bg: var(--libris-bg);
+  --color-surface: var(--libris-surface);
+  --color-text: var(--libris-text);
+  --color-muted: var(--libris-muted);
+  --color-border: var(--libris-border);
+  --color-danger: var(--libris-danger);
+  --color-accent: #0f766e;
+  --color-accent-pressed: #115e59;
+
+  --text-page-title: 22px;
+  --text-page-title--line-height: 1.2;
+  --text-page-title--font-weight: 600;
+  --text-page-title--letter-spacing: -0.01em;
+  --text-card-title: 20px;
+  --text-card-title--line-height: 1.2;
+  --text-card-title--font-weight: 700;
+  --text-field: 18px;
+  --text-field--line-height: 1.2;
+  --text-field--font-weight: 400;
+  --text-button: 16px;
+  --text-button--line-height: 1.2;
+  --text-button--font-weight: 600;
+  --text-body: 14px;
+  --text-body--line-height: 1.4;
+  --text-body--font-weight: 400;
+  --text-label: 13px;
+  --text-label--line-height: 1.2;
+  --text-label--font-weight: 600;
+}
+
+body {
+  background-color: var(--color-bg);
+  color: var(--color-text);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}

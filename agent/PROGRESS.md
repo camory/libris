@@ -326,3 +326,48 @@ Format:
 - Left over: nothing of T016. The 401 on the lookup call is in
   `agent/PROPOSED.md`; the port is not wired into `createLibrisApp`, which is
   T017's, and no fake of it exists yet.
+
+## 2026-09-14 — T017 the lookup screen, typed ISBN — done
+- Did: `ui/views/isbn/IsbnView.vue` and its eleven cases (the header, the field
+  and its label, the *Chercher* button, `isbn13Of` before anything leaves,
+  the title of the answer, the three messages, the fallback for a problem
+  named like an object member), `fixture/FakeIsbnApi.ts`,
+  `ui/components/icons/IconAlert.vue`, the colour roles and the type steps in
+  `ui/style.css`, the `/isbn` route, the eight strings of the `fr` catalogue,
+  `isbnApi` in `LibrisPorts` and in `bootstrap`, the home page's link, and the
+  four scenario methods un-skipped.
+- Decided:
+  - **The screen renders on the tick it is mounted.** `FastEntryScenarios`'
+    `open()` calls `bootstrap(…).mount(host)` and then queries the host
+    synchronously, but vue-router starts its first navigation at
+    `app.use(router)` and finishes it a macrotask later, so the host held the
+    footer alone and all four methods failed on
+    `Unable to find an accessible element with the role "textbox" and name
+    "ISBN"`. `createLibrisApp` now sets `router.currentRoute` from
+    `router.options.history.location` immediately after `app.use(router)`.
+    The eager navigation still runs to its end, so `finalizeNavigation`
+    replaces the history entry, `markAsReady` wires the popstate listener and
+    `isReady()` resolves as before; only the first paint stops waiting for a
+    guard queue this application does not have. The assignment needs a cast to
+    `RouteLocationNormalizedLoaded` because `resolve()` types `name` as
+    nullable. This is the one thing on the branch the scenarios forced and the
+    brief did not foresee.
+  - **The tokens carry the scheme, the templates carry role names.** The six
+    roles are custom properties on `:root` overridden under
+    `prefers-color-scheme: dark`, exposed to Tailwind through `@theme inline`;
+    the accent is a literal of that block, the same in both schemes; the type
+    steps are `--text-*` tokens of the same block. No component names a
+    scheme and no class holds a colour shade or a type size; the box of a
+    control is written as is.
+  - **The busy button is markup, not a component.** A `<span>` with
+    `animate-spin` inside the button, and the label switched by the same ref
+    that disables it; the field is never disabled.
+  - **`card title` is declared now.** The brief lists the step among the ones
+    this screen uses and the title of the answer is an *ouvrage*'s title; the
+    sentence saying it arrives with the card was read as the older one.
+- Deviations from the brief: the `router.currentRoute` assignment in
+  `createLibrisApp.ts`, above. The file was already on the brief's changed
+  list and every acceptance criterion still holds.
+- Left over: nothing of T017. The tab bar of U03, the look of `HomeView` and
+  the keyboard's go key are in `agent/PROPOSED.md`. The hint sentence names
+  scanning, which T019 ships; it is the spec's own wording and the PR says so.

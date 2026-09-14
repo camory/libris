@@ -18,5 +18,6 @@ meApi.currentReader().then((current) => {
   <main class="p-4">
     <h1 class="text-2xl font-bold">{{ t("home.title") }}</h1>
     <p v-if="reader">{{ t("home.greeting", { name: reader.displayName }) }}</p>
+    <RouterLink to="/isbn">{{ t("home.add") }}</RouterLink>
   </main>
 </template>

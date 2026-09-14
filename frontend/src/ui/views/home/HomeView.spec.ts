@@ -1,9 +1,11 @@
+import { within } from "@testing-library/dom";
 import { flushPromises, mount } from "@vue/test-utils";
 import { describe, expect, it } from "vitest";
 import { meApiKey } from "../../../application/MeApi";
 import type { Reader } from "../../../domain/Reader";
 import { FakeMeApi } from "../../../fixture/FakeMeApi";
 import { createLibrisI18n } from "../../i18n";
+import { createLibrisRouter } from "../../router";
 import HomeView from "./HomeView.vue";
 
 const chloe: Reader = {
@@ -17,7 +19,7 @@ const chloe: Reader = {
 const mountHomeView = (reader: Reader) =>
   mount(HomeView, {
     global: {
-      plugins: [createLibrisI18n()],
+      plugins: [createLibrisI18n(), createLibrisRouter()],
       provide: { [meApiKey]: new FakeMeApi(reader) },
     },
   });
@@ -38,5 +40,15 @@ describe("HomeView", () => {
 
     // Then
     expect(wrapper.text()).toContain("Bonjour Chloé");
+  });
+
+  it("links to the screen that adds an ouvrage", () => {
+    const screen = within(mountHomeView(chloe).element as HTMLElement);
+
+    expect(
+      screen
+        .getByRole("link", { name: "Ajouter un ouvrage" })
+        .getAttribute("href"),
+    ).toBe("/isbn");
   });
 });
