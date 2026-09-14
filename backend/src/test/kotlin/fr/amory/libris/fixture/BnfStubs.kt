@@ -21,7 +21,7 @@ class BnfStubs(private val server: WireMockServer) {
         server.stubFor(
             get(urlPathEqualTo(SRU))
                 .withQueryParam("query", containing(isbn))
-                .willReturn(ok().withFixedDelay(LATE)),
+                .willReturn(xml(recorded("bnf/$isbn.xml")).withFixedDelay(LATE)),
         )
     }
 
