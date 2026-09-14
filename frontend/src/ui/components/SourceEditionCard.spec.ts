@@ -49,6 +49,29 @@ describe("SourceEditionCard", () => {
     expect(positions).toEqual([...positions].sort((a, b) => a - b));
   });
 
+  it("gives no row to a field the sources did not give", () => {
+    // Given
+    const partly: SourceEdition = {
+      ...onePiece1,
+      collection: null,
+      publisher: null,
+      publicationYear: null,
+      language: null,
+      pageCount: null,
+    };
+
+    // When
+    const card = show(partly);
+
+    // Then
+    for (const label of ["Collection", "Éditeur", "Année", "Langue", "Pages"]) {
+      expect(card).not.toContain(label);
+    }
+    expect(card).toContain("ISBN");
+    expect(card).toContain("9782723488525");
+    expect(card).not.toContain("inconnu");
+  });
+
   function show(edition: SourceEdition) {
     const wrapper = mount(SourceEditionCard, {
       props: { edition },

@@ -31,16 +31,22 @@ const authorLines = computed(() => {
   return [...roles].map(([name, said]) => ({ name, roles: said.join(", ") }));
 });
 
+const languageWord = computed(() => {
+  const language = props.edition.language;
+  return language === null ? null : t(`language.${language}`);
+});
+
 const rows = computed(() => {
   const edition = props.edition;
-  return [
+  const fields = [
     { label: "collection", value: edition.collection },
     { label: "publisher", value: edition.publisher },
     { label: "year", value: edition.publicationYear },
-    { label: "language", value: t(`language.${edition.language}`) },
+    { label: "language", value: languageWord.value },
     { label: "pages", value: edition.pageCount },
     { label: "isbn", value: edition.isbn13 },
   ];
+  return fields.filter((field) => field.value !== null);
 });
 </script>
 
