@@ -52,7 +52,7 @@ describe("Fast entry", () => {
     await showsTheOnePieceCard(screen);
   });
 
-  it.skip("S2 Scanned barcode", async () => {
+  it("S2 Scanned barcode", async () => {
     // Given
     cameraAllowed();
     cameraSees("9782723488525");

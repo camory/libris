@@ -127,7 +127,9 @@ describe("CameraBarcodeScanner", () => {
         }
         detect() {
           const code = codes[Math.min(reads++, codes.length - 1)];
-          return Promise.resolve(code === undefined ? [] : [{ rawValue: code }]);
+          return Promise.resolve(
+            code === undefined ? [] : [{ rawValue: code }],
+          );
         }
       },
     );
