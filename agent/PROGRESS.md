@@ -979,12 +979,27 @@ Format:
   detekt (`UnusedPrivateProperty`), so the SRU-request case came first — it
   is what motivates both arguments — and the naming case second. Every case
   of the plan is there, nothing else changed.
-- Gotcha, not a deviation, the same as T014's: the cases for subtitle,
-  series, collection, publisher and language passed the moment they were
-  written, because the field-by-field mapping of the third cycle is one
-  expression that covers them. They still pin the mapping — each would fail
-  on a wrong tag or subfield — and their commits say `test(backend)`, not
-  `feat`.
+- Gotcha, not a deviation: the mapping is one expression, so the whole
+  record is pinned by one field-by-field assertion in the commit that maps
+  it (`a178a87 feat(backend): the BnF source maps the UNIMARC record`); the
+  fields have no case of their own, but each would fail on a wrong tag or
+  subfield.
+- Review fix-ups (2026-09-14): the parser read the answer as bytes, so a
+  prolog naming an encoding the JDK lacks made `DocumentBuilder.parse` throw
+  `IOException`, which escaped `BnfSource.lookUp` and took the whole lookup
+  down. The answer is a `String` the HTTP layer already decoded, so the parser
+  now reads it through a `StringReader`: the prolog's encoding is ignored, no
+  `IOException` can arise, and one `catch` of `SAXException` covers what the
+  parser throws — the case `an answer that cannot be read is a failure` pins
+  it over `BnfStubs.answersUnreadably`, the one hand-written body in the
+  fixture. A second `catch` of a JDK type was tried first and detekt reported
+  it unreachable: the plain `detekt` task has no JDK on its classpath, so two
+  unresolved JDK exception types read as one class to `UnreachableCatchBlock`.
+  `answersTooLate` delays the recorded answer, not an empty body, so only the
+  read timeout can turn that case green. Year and page count go through
+  `toIntOrNull()` like the volume number. Any source test with a delay stub
+  should delay a real answer for the same reason
+  (`OpenLibraryStubs.answersTooLate` still delays an empty body).
 - Left over: nothing of T015. `COLOURIST` has no BnF function code and the
   language map holds only `fre → fr`; both are in `agent/PROPOSED.md` for
   Tophe.
