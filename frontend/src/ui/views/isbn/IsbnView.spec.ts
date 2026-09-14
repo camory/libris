@@ -4,7 +4,7 @@ import {
   within,
   type BoundFunctions,
 } from "@testing-library/dom";
-import { flushPromises, mount, type VueWrapper } from "@vue/test-utils";
+import { flushPromises, mount } from "@vue/test-utils";
 import { describe, expect, it } from "vitest";
 import { barcodeScannerKey } from "../../../application/BarcodeScanner";
 import { isbnApiKey, type IsbnAnswer } from "../../../application/IsbnApi";
@@ -31,8 +31,6 @@ const sourcesDown: IsbnAnswer = {
 const neverRead = new Promise<string | null>(() => {});
 
 describe("IsbnView", () => {
-  let mounted: VueWrapper;
-
   it("renders the title and the hint", () => {
     const screen = open(new FakeIsbnApi(unknownIsbn));
 
@@ -277,27 +275,30 @@ describe("IsbnView", () => {
   it("stops the camera when the screen goes away", async () => {
     // Given
     const scanner = new FakeBarcodeScanner(true, neverRead);
-    open(new FakeIsbnApi(unknownIsbn), scanner);
+    const view = mountView(new FakeIsbnApi(unknownIsbn), scanner);
     await flushPromises();
 
     // When
-    mounted.unmount();
+    view.unmount();
 
     // Then
     expect(scanner.stops).toBe(1);
   });
 
-  function open(
+  function open(api: FakeIsbnApi, scanner?: FakeBarcodeScanner) {
+    return within(mountView(api, scanner).element as HTMLElement);
+  }
+
+  function mountView(
     api: FakeIsbnApi,
     scanner: FakeBarcodeScanner = new FakeBarcodeScanner(false),
   ) {
-    mounted = mount(IsbnView, {
+    return mount(IsbnView, {
       global: {
         plugins: [createLibrisI18n()],
         provide: { [isbnApiKey]: api, [barcodeScannerKey]: scanner },
       },
     });
-    return within(mounted.element as HTMLElement);
   }
 
   async function ask(screen: Screen, text: string) {
