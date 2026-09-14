@@ -145,9 +145,11 @@ without a problem body means Libris itself is unavailable, not the sources.
 `contracteer mock` serves a problem only when the request's `Accept` lists
 `application/problem+json`, which the client always sends.
 
-One source in this feature: the BnF SRU (`recordSchema=unimarcxchange`; the
-role comes from the author field's function code, mapped against the BnF's
-published list; the cover is the catalogue's own,
+One source in this feature: the BnF SRU (`recordSchema=unimarcxchange`; asked
+with the thirteen digits and, when they start with 978, with the ten they
+convert from as well, since a record made before 2007 holds the ten alone;
+the role comes from the author field's function code, mapped against the
+BnF's published list; the cover is the catalogue's own,
 `https://catalogue.bnf.fr/couverture?&appName=NE&idArk=<ark>&couverture=1`
 where `<ark>` is field 003 from `ark:/` on, handed out for every answer
 without checking it, since the catalogue answers an error where it has no
