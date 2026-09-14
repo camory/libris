@@ -21,6 +21,10 @@ interface IsbnResponse {
   sources: Source[];
 }
 
+interface ProblemResponse {
+  type: string;
+}
+
 export class FetchIsbnApi implements IsbnApi {
   constructor(private readonly baseUrl: string) {}
 
@@ -28,8 +32,12 @@ export class FetchIsbnApi implements IsbnApi {
     const response = await fetch(`${this.baseUrl}/api/v1/isbn/${isbn13}`, {
       headers: { Accept: "application/json, application/problem+json" },
     });
-    const body = (await response.json()) as IsbnResponse;
-    return { outcome: "found", edition: editionOf(body) };
+    if (response.status === 200) {
+      const body = (await response.json()) as IsbnResponse;
+      return { outcome: "found", edition: editionOf(body) };
+    }
+    const problem = (await response.json()) as ProblemResponse;
+    return { outcome: "problem", type: problem.type };
   }
 }
 

@@ -36,6 +36,17 @@ describe("FetchIsbnApi", () => {
       sources: expect.toSatisfy(areSources, "a non-empty array of sources"),
     });
   });
+
+  it("answers a problem when no source knows the ISBN", async () => {
+    // Given
+    const api = new FetchIsbnApi(inject("mockBaseUrl"));
+
+    // When
+    const answer = await api.lookUp("9782000000006");
+
+    // Then
+    expect(answer).toEqual({ outcome: "problem", type: "/problems/not-found" });
+  });
 });
 
 function areAuthors(value: unknown) {
