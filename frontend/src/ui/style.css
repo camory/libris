@@ -45,12 +45,19 @@
   --text-button: 16px;
   --text-button--line-height: 1.2;
   --text-button--font-weight: 600;
+  --text-lead: 15px;
+  --text-lead--line-height: 1.4;
+  --text-lead--font-weight: 400;
   --text-body: 14px;
   --text-body--line-height: 1.4;
   --text-body--font-weight: 400;
   --text-label: 13px;
   --text-label--line-height: 1.2;
   --text-label--font-weight: 600;
+  --text-overline: 12px;
+  --text-overline--line-height: 1.2;
+  --text-overline--font-weight: 600;
+  --text-overline--letter-spacing: 0.06em;
 }
 
 body {

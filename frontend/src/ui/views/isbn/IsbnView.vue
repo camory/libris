@@ -4,6 +4,8 @@ import { useI18n } from "vue-i18n";
 import { isbnApiKey } from "../../../application/IsbnApi";
 import { isbn13Of } from "../../../domain/Isbn13";
 import type { SourceEdition } from "../../../domain/SourceEdition";
+import SourceEditionCard from "../../components/SourceEditionCard.vue";
+import SourceEditionCardSkeleton from "../../components/SourceEditionCardSkeleton.vue";
 import IconAlert from "../../components/icons/IconAlert.vue";
 
 const messages = new Map([["/problems/not-found", "isbn.unknown"]]);
@@ -72,7 +74,9 @@ async function search() {
       </button>
     </div>
 
-    <p v-if="edition" class="mt-5 text-card-title">{{ edition.title }}</p>
+    <SourceEditionCardSkeleton v-if="searching" class="mt-5" />
+
+    <SourceEditionCard v-else-if="edition" :edition="edition" class="mt-5" />
 
     <p v-if="message" class="mt-5 flex items-start gap-2 text-body text-danger">
       <IconAlert />

@@ -16,6 +16,31 @@ const fr = {
     invalid: "ISBN invalide",
     unknown: "ISBN inconnu",
     error: "Erreur lors de la recherche, veuillez réessayer plus tard.",
+    card: {
+      series: "{name} · tome {volume}",
+      author: "{name} · {roles}",
+      cover: "Couverture de {title}",
+      collection: "Collection",
+      publisher: "Éditeur",
+      year: "Année",
+      language: "Langue",
+      pages: "Pages",
+      isbn: "ISBN",
+      sources: "Sources",
+    },
+  },
+  language: {
+    fr: "français",
+  },
+  role: {
+    WRITER: "scénario",
+    ARTIST: "dessin",
+    COLOURIST: "couleurs",
+    TRANSLATOR: "traduction",
+  },
+  source: {
+    BNF: "BnF",
+    OPEN_LIBRARY: "Open Library",
   },
 };
 

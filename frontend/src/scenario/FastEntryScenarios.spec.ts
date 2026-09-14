@@ -30,7 +30,7 @@ describe("Fast entry", () => {
     expect(screen.getByText("sha-abc1234")).toBeDefined();
   });
 
-  it.skip("S1 Typed ISBN, found, with hyphens", async () => {
+  it("S1 Typed ISBN, found, with hyphens", async () => {
     // Given
     const screen = open("/isbn");
 
@@ -41,7 +41,7 @@ describe("Fast entry", () => {
     await showsTheOnePieceCard(screen);
   });
 
-  it.skip("S1 Typed ISBN, found, the old ten", async () => {
+  it("S1 Typed ISBN, found, the old ten", async () => {
     // Given
     const screen = open("/isbn");
 
