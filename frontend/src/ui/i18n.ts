@@ -8,6 +8,10 @@ const fr = {
   isbn: {
     title: "Ajouter un ouvrage",
     hint: "Scannez le code-barres ou saisissez l'ISBN.",
+    label: "ISBN",
+    placeholder: "978-2-7234-8852-5",
+    search: "Chercher",
+    invalid: "ISBN invalide",
   },
 };
 
