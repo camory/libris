@@ -196,3 +196,16 @@
   usable for a while says nothing either. Whether a *rien trouvé* message
   arrives after a while, and when, is product behaviour for Tophe (found on
   T019, 2026-09-14).
+- Backend: the BnF finds a record made before 2007 by its ten-digit ISBN
+  only. 9782253098058 (*Le comte de Monte-Cristo*, Livre de Poche, 1995, ark
+  `cb35778232t`) answers zero records to `bib.isbn` with the thirteen digits
+  and one to `bib.isbn adj "2253098051"`; `BnfSource` asks with the thirteen
+  alone, so the book is unknown to it. When the prefix is 978, ask for the
+  ten as well, or instead, before T021 makes the BnF the only source
+  (measured 2026-09-14, for T021's brief).
+- Backend: the same record comes back empty in `unimarcxchange`, the schema
+  `BnfSource` parses: the record slot holds a diagnostic (`erreur de
+  traitement`, details `-20`) and no fields, on every attempt, while
+  `intermarcxchange` and `dublincore` return it whole. A fallback schema for
+  a record that fails in UNIMARC is a decision for the T021 spec conversation
+  (measured 2026-09-14, for T021's brief).
