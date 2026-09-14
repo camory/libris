@@ -86,5 +86,7 @@ const rows = computed(() => {
         <span class="text-right tabular-nums">{{ row.value }}</span>
       </div>
     </div>
+
+    <p v-if="edition.summary" class="text-body">{{ edition.summary }}</p>
   </article>
 </template>

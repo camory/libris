@@ -98,6 +98,18 @@ describe("SourceEditionCard", () => {
     expect(card).not.toContain("inconnu");
   });
 
+  it("shows the summary of the sources, and nothing when they gave none", () => {
+    // Given
+    const summary = "Luffy prend la mer pour devenir le roi des pirates.";
+
+    // When
+    const card = show({ ...onePiece1, summary });
+
+    // Then
+    expect(card).toContain(summary);
+    expect(show(onePiece1)).not.toContain(summary);
+  });
+
   function show(edition: SourceEdition) {
     const wrapper = mount(SourceEditionCard, {
       props: { edition },
