@@ -115,7 +115,7 @@ frontend one; no other task touches the contract (D04).
       `S3 Not an ISBN, wrong length`, `S3 Not an ISBN, wrong check digit`,
       `S4 Unknown ISBN` and `S7 Every source down`.
 
-- [ ] T018 Frontend: the card of the answer.
+- [x] T018 Frontend: the card of the answer.
       A presentational component showing what the sources know: subtitle,
       authors with the French word of their role, série and tome, collection,
       publisher, year, the language in French, page count, the ISBN-13, the

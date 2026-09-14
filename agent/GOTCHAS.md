@@ -160,6 +160,15 @@ was found.
   a `spinbutton` and `type="search"` a `searchbox`. A numeric keyboard comes
   from `inputmode="numeric"`. An accessible name from `<label for>` resolves
   on a detached element tree, so a test needs no `document.body`.
+- Vue's template compiler condenses whitespace: a whitespace-only text node
+  between two elements that holds a newline is dropped, so `textContent` and
+  `wrapper.text()` glue siblings with nothing between them
+  (`CollectionShonen manga`, `tome 1Romance dawn`). Assert the order of the
+  parts by their positions in the normalised text, or query with
+  `@testing-library/dom`, whose default matcher reads an element's own text
+  nodes only. Whitespace beside an interpolation survives as one space, which
+  is what gives `SourceEditionCard`'s heading the boundary
+  `FastEntryScenarios`' `/One piece\D{0,12}1\b/` asks for.
 - The colour roles and the type steps of `docs/DESIGN.md` are Tailwind theme
   tokens in `src/ui/style.css`: custom properties on `:root`, overridden in a
   `prefers-color-scheme: dark` block, exposed through `@theme inline` as

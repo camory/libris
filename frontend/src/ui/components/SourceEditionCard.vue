@@ -22,13 +22,13 @@ const overline = computed(() => {
 });
 
 const authorLines = computed(() => {
-  const roles = new Map<string, string[]>();
+  const words = new Map<string, string[]>();
   for (const author of props.edition.authors) {
-    const said = roles.get(author.name) ?? [];
+    const said = words.get(author.name) ?? [];
     said.push(t(`role.${author.role}`));
-    roles.set(author.name, said);
+    words.set(author.name, said);
   }
-  return [...roles].map(([name, said]) => ({ name, roles: said.join(", ") }));
+  return [...words].map(([name, roles]) => ({ name, roles: roles.join(", ") }));
 });
 
 const languageWord = computed(() => {

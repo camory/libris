@@ -180,3 +180,13 @@
   `search()` awaits it without a `finally`. What the screen says then is a
   scenario of `specs/fast-entry.md` to write with Tophe; the button coming
   back is a `finally` (raised by the reviewer of PR #71, 2026-09-14).
+- Frontend: the silhouette of the card inherits the busy button's bug. A
+  rejected `lookUp` leaves the skeleton standing where the card would be, for
+  ever and saying nothing, exactly as it leaves the button busy (the bullet
+  above); the `finally` that frees the button frees the answer's place too
+  (found on T018, 2026-09-14).
+- Frontend: the `language` section of the `fr` catalogue holds `fr` alone, so
+  a lookup answering any other code shows the code itself in the *Langue* row
+  (`en`). That is the decided fallback, not a bug, but the words are added one
+  at a time with a case each, and the codes that will arrive are the ones the
+  backend's map learns (found on T018, 2026-09-14).

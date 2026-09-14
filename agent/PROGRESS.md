@@ -371,3 +371,37 @@ Format:
 - Left over: nothing of T017. The tab bar of U03, the look of `HomeView` and
   the keyboard's go key are in `agent/PROPOSED.md`. The hint sentence names
   scanning, which T019 ships; it is the spec's own wording and the PR says so.
+
+## 2026-09-14 — T018 the card of the answer — done
+- Did: `SourceEditionCard.vue` shows what the sources know — cover, overline
+  *One piece · tome 1*, title, subtitle, one line per author with the French
+  words of their roles, the six rows, the summary and the source chips — with
+  `SourceEditionCardSkeleton.vue` standing in its place while the lookup runs;
+  `IsbnView` shows both, the words live in `src/ui/i18n.ts`, the sample edition
+  in `src/fixture/SourceEditions.ts`, and the two `S1` scenarios run.
+- Decided:
+  - **The overline lives inside the heading.** `<h2>` holds the série · tome
+    span and the title, so the card has one heading naming the ouvrage and a
+    screen reader reads *One piece · tome 1 Romance dawn* rather than a
+    stray paragraph followed by a title. It is also what makes the scenario's
+    `/One piece\D{0,12}1\b/` match: Vue drops the whitespace between two
+    sibling elements, so a `<p>` above the `<h2>` renders `tome 1Romance dawn`
+    in `textContent` and the word boundary never arrives. The rule is in
+    `agent/GOTCHAS.md`.
+  - **The author line and the overline are `<i18n-t>` and a span.** The middle
+    dot stays a pattern of the `fr` catalogue (*{name} · {roles}*) while the
+    roles keep their `muted` span; `vue-tsc` and the boundaries rules accept
+    the global component with no configuration.
+  - **The words for the API's codes are three sections of the catalogue** —
+    `role`, `source`, `language` — keyed by the code, beside `home` and `isbn`,
+    as the brief proposed; only `language` falls back, through `te()`, and only
+    `fr` is written.
+  - **The card's place is one element.** The skeleton and the card carry the
+    view's `mt-5` through attribute fallthrough instead of a wrapper `<div>`.
+- Deviations from the brief: the overline is a span inside the `<h2>` rather
+  than a paragraph above it, above; every acceptance criterion still holds.
+- Left over: the skeleton is judged by the phone check of the spec's *Done*,
+  since it is `aria-hidden` and carries no text; `S2` waits for T019's camera;
+  two bullets are in `agent/PROPOSED.md` — the silhouette inherits the busy
+  button's endless wait on a rejected lookup, and the `language` section holds
+  one word.
