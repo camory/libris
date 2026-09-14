@@ -328,9 +328,10 @@ Format:
   T017's, and no fake of it exists yet.
 
 ## 2026-09-14 — T017 the lookup screen, typed ISBN — done
-- Did: `ui/views/isbn/IsbnView.vue` and its ten cases (the header, the field
+- Did: `ui/views/isbn/IsbnView.vue` and its eleven cases (the header, the field
   and its label, the *Chercher* button, `isbn13Of` before anything leaves,
-  the title of the answer, the three messages), `fixture/FakeIsbnApi.ts`,
+  the title of the answer, the three messages, the fallback for a problem
+  named like an object member), `fixture/FakeIsbnApi.ts`,
   `ui/components/icons/IconAlert.vue`, the colour roles and the type steps in
   `ui/style.css`, the `/isbn` route, the eight strings of the `fr` catalogue,
   `isbnApi` in `LibrisPorts` and in `bootstrap`, the home page's link, and the
@@ -352,10 +353,12 @@ Format:
     nullable. This is the one thing on the branch the scenarios forced and the
     brief did not foresee.
   - **The tokens carry the scheme, the templates carry role names.** The six
-    roles and the accent are custom properties on `:root` overridden under
+    roles are custom properties on `:root` overridden under
     `prefers-color-scheme: dark`, exposed to Tailwind through `@theme inline`;
-    the type steps are `--text-*` tokens of the same block. No component names
-    a scheme and no class holds a size.
+    the accent is a literal of that block, the same in both schemes; the type
+    steps are `--text-*` tokens of the same block. No component names a
+    scheme and no class holds a colour shade or a type size; the box of a
+    control is written as is.
   - **The busy button is markup, not a component.** A `<span>` with
     `animate-spin` inside the button, and the label switched by the same ref
     that disables it; the field is never disabled.
