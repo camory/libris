@@ -34,6 +34,31 @@ describe("CameraBarcodeScanner", () => {
     expect(available).toBe(false);
   });
 
+  it("reads the ISBN the camera shows", async () => {
+    // Given
+    detectorAnnouncing(["ean_13"], "9782723488525");
+    cameraAllowed();
+
+    // When
+    const read = await new CameraBarcodeScanner().read(video());
+
+    // Then
+    expect(read).toBe("9782723488525");
+  });
+
+  function video() {
+    return document.createElement("video");
+  }
+
+  function cameraAllowed() {
+    const stream = { getTracks: () => [{ stop: () => {} }] };
+    Object.defineProperty(navigator, "mediaDevices", {
+      configurable: true,
+      value: { getUserMedia: () => Promise.resolve(stream) },
+    });
+    vi.spyOn(HTMLMediaElement.prototype, "play").mockResolvedValue();
+  }
+
   function detectorAnnouncing(formats: string[], ...codes: string[]) {
     let reads = 0;
     vi.stubGlobal(

@@ -22,8 +22,14 @@ export class CameraBarcodeScanner implements BarcodeScanner {
     return formats?.includes(format) === true;
   }
 
-  read(): Promise<string | null> {
-    return Promise.resolve(null);
+  async read(into: HTMLVideoElement): Promise<string | null> {
+    const stream = await navigator.mediaDevices.getUserMedia({
+      video: { facingMode: "environment" },
+    });
+    into.srcObject = stream;
+    await into.play();
+    const codes = await new (detector()!)({ formats: [format] }).detect(into);
+    return codes[0]?.rawValue ?? null;
   }
 
   stop(): void {}
