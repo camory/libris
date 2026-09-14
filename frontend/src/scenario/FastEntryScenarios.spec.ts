@@ -64,7 +64,7 @@ describe("Fast entry", () => {
     await showsTheOnePieceCard(screen);
   });
 
-  it.skip("S3 Not an ISBN, wrong length", async () => {
+  it("S3 Not an ISBN, wrong length", async () => {
     // Given
     const screen = open("/isbn");
     const requests = vi.spyOn(globalThis, "fetch");
@@ -78,7 +78,7 @@ describe("Fast entry", () => {
     expect(requests).not.toHaveBeenCalled();
   });
 
-  it.skip("S3 Not an ISBN, wrong check digit", async () => {
+  it("S3 Not an ISBN, wrong check digit", async () => {
     // Given
     const screen = open("/isbn");
     const requests = vi.spyOn(globalThis, "fetch");
@@ -92,7 +92,7 @@ describe("Fast entry", () => {
     expect(requests).not.toHaveBeenCalled();
   });
 
-  it.skip("S4 Unknown ISBN", async () => {
+  it("S4 Unknown ISBN", async () => {
     // Given
     const screen = open("/isbn");
 
@@ -104,7 +104,7 @@ describe("Fast entry", () => {
     expect(field(screen).value).toBe("9782000000006");
   });
 
-  it.skip("S7 Every source down", async () => {
+  it("S7 Every source down", async () => {
     // Given
     const screen = open("/isbn");
 

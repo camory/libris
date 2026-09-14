@@ -1,5 +1,6 @@
 import { createPinia } from "pinia";
 import { createApp, type App } from "vue";
+import type { RouteLocationNormalizedLoaded } from "vue-router";
 import { isbnApiKey, type IsbnApi } from "./application/IsbnApi";
 import { meApiKey, type MeApi } from "./application/MeApi";
 import AppRoot from "./ui/App.vue";
@@ -13,7 +14,11 @@ export interface LibrisPorts {
 
 export function createLibrisApp(ports: LibrisPorts, revision: string): App {
   const app = createApp(AppRoot, { revision });
-  app.use(createPinia()).use(createLibrisRouter()).use(createLibrisI18n());
+  const router = createLibrisRouter();
+  app.use(createPinia()).use(router).use(createLibrisI18n());
+  router.currentRoute.value = router.resolve(
+    router.options.history.location,
+  ) as RouteLocationNormalizedLoaded;
   app.provide(meApiKey, ports.meApi);
   app.provide(isbnApiKey, ports.isbnApi);
   return app;
