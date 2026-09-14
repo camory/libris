@@ -96,9 +96,7 @@ class BnfSource(baseUrl: String, timeout: Duration) : IsbnSource {
 
     private companion object {
         fun queryFor(isbn: Isbn13): String =
-            """${isbnClause(isbn.digits)} or ${isbnClause(isbn.isbn10)}"""
-
-        fun isbnClause(isbn: String?): String = """bib.isbn all "$isbn""""
+            listOfNotNull(isbn.digits, isbn.isbn10).joinToString(" or ") { """bib.isbn all "$it"""" }
 
         fun recordIn(answer: String): UnimarcRecord? {
             val factory = DocumentBuilderFactory.newInstance().apply {

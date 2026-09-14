@@ -138,10 +138,24 @@ class BnfSourceTest {
             listOf("""bib.isbn all "$ONE_PIECE" or bib.isbn all "$ONE_PIECE_TEN"""")
     }
 
+    @Test
+    fun `an ISBN that does not start with 978 is searched on its thirteen digits alone`() {
+        // Given
+        bnf.fails()
+
+        // When
+        source.lookUp(isbn13Of(WITHOUT_A_TEN))
+
+        // Then
+        val request = server.allServeEvents.map { it.request }.single()
+        request.queryParameter("query").values() shouldBe listOf("""bib.isbn all "$WITHOUT_A_TEN"""")
+    }
+
     private companion object {
         const val ONE_PIECE = "9782723488525"
         const val ONE_PIECE_TEN = "2723488527"
         const val UNKNOWN = "9782000000013"
+        const val WITHOUT_A_TEN = "9791000000008"
         const val SRU = "/api/SRU"
         val ONE_PIECE_EDITION = SourceEdition(
             isbn13 = isbn13Of(ONE_PIECE),
