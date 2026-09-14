@@ -2,6 +2,7 @@ import { flushPromises } from "@vue/test-utils";
 import { describe, expect, it } from "vitest";
 import { createLibrisApp } from "./createLibrisApp";
 import type { Reader } from "./domain/Reader";
+import { FakeBarcodeScanner } from "./fixture/FakeBarcodeScanner";
 import { FakeIsbnApi } from "./fixture/FakeIsbnApi";
 import { FakeMeApi } from "./fixture/FakeMeApi";
 
@@ -24,6 +25,7 @@ describe("createLibrisApp", () => {
           outcome: "problem",
           type: "/problems/not-found",
         }),
+        barcodeScanner: new FakeBarcodeScanner(false),
       },
       "sha-abc1234",
     );

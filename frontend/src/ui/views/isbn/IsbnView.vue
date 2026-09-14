@@ -1,24 +1,67 @@
 <script setup lang="ts">
-import { computed, inject, ref } from "vue";
+import {
+  computed,
+  inject,
+  nextTick,
+  onBeforeUnmount,
+  onMounted,
+  ref,
+  useTemplateRef,
+} from "vue";
 import { useI18n } from "vue-i18n";
+import { barcodeScannerKey } from "../../../application/BarcodeScanner";
 import { isbnApiKey } from "../../../application/IsbnApi";
 import { isbn13Of } from "../../../domain/Isbn13";
 import type { SourceEdition } from "../../../domain/SourceEdition";
 import SourceEditionCard from "../../components/SourceEditionCard.vue";
 import SourceEditionCardSkeleton from "../../components/SourceEditionCardSkeleton.vue";
 import IconAlert from "../../components/icons/IconAlert.vue";
+import IconBarcode from "../../components/icons/IconBarcode.vue";
+import IconClose from "../../components/icons/IconClose.vue";
 
 const messages = new Map([["/problems/not-found", "isbn.unknown"]]);
 const refusals = ["isbn.invalid", "isbn.unknown"];
 
 const { t } = useI18n();
 const isbnApi = inject(isbnApiKey)!;
+const barcodeScanner = inject(barcodeScannerKey)!;
 
 const typed = ref("");
 const message = ref<string>();
 const refused = computed(() => refusals.includes(message.value ?? ""));
 const edition = ref<SourceEdition>();
 const searching = ref(false);
+const scanning = ref(false);
+const canScan = ref(false);
+const camera = useTemplateRef<HTMLVideoElement>("camera");
+
+onMounted(async () => {
+  canScan.value = await barcodeScanner.isAvailable();
+  if (canScan.value) {
+    await openCamera();
+  }
+});
+
+onBeforeUnmount(() => barcodeScanner.stop());
+
+async function openCamera() {
+  scanning.value = true;
+  await nextTick();
+  const scanned = await barcodeScanner.read(camera.value!);
+  scanning.value = false;
+  if (scanned !== null) {
+    typed.value = scanned;
+    await search();
+  }
+}
+
+async function toggleCamera() {
+  if (scanning.value) {
+    barcodeScanner.stop();
+    return;
+  }
+  await openCamera();
+}
 
 async function search() {
   edition.value = undefined;
@@ -50,15 +93,27 @@ async function search() {
       <label class="text-label text-muted" for="isbn">
         {{ t("isbn.label") }}
       </label>
-      <input
-        id="isbn"
-        v-model="typed"
-        type="text"
-        inputmode="numeric"
-        :placeholder="t('isbn.placeholder')"
-        class="h-[50px] rounded-xl border-[1.5px] bg-surface px-3.5 text-field tabular-nums placeholder:text-muted"
-        :class="refused ? 'border-danger' : 'border-border'"
-      />
+      <div class="relative">
+        <input
+          id="isbn"
+          v-model="typed"
+          type="text"
+          inputmode="numeric"
+          :placeholder="t('isbn.placeholder')"
+          class="h-[50px] w-full rounded-xl border-[1.5px] bg-surface pr-13 pl-3.5 text-field tabular-nums placeholder:text-muted"
+          :class="refused ? 'border-danger' : 'border-border'"
+        />
+        <button
+          v-if="canScan"
+          type="button"
+          :aria-label="scanning ? t('isbn.closeCamera') : t('isbn.scan')"
+          class="absolute top-1/2 right-[3px] flex size-11 -translate-y-1/2 items-center justify-center rounded-[10px] text-accent"
+          @click="toggleCamera"
+        >
+          <IconClose v-if="scanning" />
+          <IconBarcode v-else />
+        </button>
+      </div>
       <button
         type="button"
         :disabled="searching"
@@ -72,6 +127,33 @@ async function search() {
         ></span>
         {{ searching ? t("isbn.searching") : t("isbn.search") }}
       </button>
+    </div>
+
+    <div
+      v-if="scanning"
+      class="relative mt-5 aspect-[3/4] overflow-hidden rounded-[14px] bg-border"
+    >
+      <video
+        ref="camera"
+        muted
+        playsinline
+        class="size-full object-cover"
+      ></video>
+      <div aria-hidden="true" class="pointer-events-none absolute inset-6">
+        <span
+          class="absolute top-0 left-0 size-8 rounded-tl-[14px] border-t-2 border-l-2 border-accent"
+        ></span>
+        <span
+          class="absolute top-0 right-0 size-8 rounded-tr-[14px] border-t-2 border-r-2 border-accent"
+        ></span>
+        <span
+          class="absolute bottom-0 left-0 size-8 rounded-bl-[14px] border-b-2 border-l-2 border-accent"
+        ></span>
+        <span
+          class="absolute right-0 bottom-0 size-8 rounded-br-[14px] border-r-2 border-b-2 border-accent"
+        ></span>
+        <span class="absolute top-1/2 right-0 left-0 h-0.5 bg-accent"></span>
+      </div>
     </div>
 
     <SourceEditionCardSkeleton v-if="searching" class="mt-5" />

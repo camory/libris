@@ -405,3 +405,48 @@ Format:
   two bullets are in `agent/PROPOSED.md` — the silhouette inherits the busy
   button's endless wait on a rejected lookup, and the `language` section holds
   one word.
+
+## 2026-09-14 — T019 The barcode scan — done
+- Did: the `BarcodeScanner` port and its injection key in `application`, the
+  `CameraBarcodeScanner` adapter in the new `src/infra/camera` over the
+  browser's `BarcodeDetector` and `getUserMedia`, and `FakeBarcodeScanner` in
+  `fixture`; `IsbnView` opens the camera by itself when the detector announces
+  `ean_13`, shows the viewfinder with its icon button toggling between
+  *Scanner le code-barres* and *Fermer la caméra*, and runs T017's lookup with
+  the first code the ISBN rule accepts; `S2 Scanned barcode` runs.
+- Decided:
+  - **The camera opens on arrival, no tap.** `S2` opens `/isbn` and expects
+    the card with no click, and its body may not be edited, so the screen acts
+    before the reader touches it. The mockup's *Ready* state is what a browser
+    with no detector, a refused camera and a pressed cross all show. The pull
+    request asks Tophe to confirm it; wanting the tap instead means changing
+    the scenario, which is a spec conversation.
+  - **`stop()` answers the pending `read()` with `null`, even when a look is
+    in flight and finds a code.** One value, one `if` in the view: `null`
+    means "no code", whether the reader refused the camera, pressed the cross
+    or left the screen, and the screen does the same thing in every case. A
+    look the detector could not take counts as nothing seen and the camera
+    keeps looking; a picture that cannot start gives the camera back with
+    `null`. The fake honours the same contract, which is what lets the view's
+    cases and the adapter's cases tell the same story. (Review fix-ups: the
+    adapter first returned a code after `stop()` and let a rejecting
+    `detect()` or `play()` escape with the stream still open.)
+  - **The adapter keeps the whole loop.** It applies `isbn13Of` itself, so a
+    shelf full of EAN-13s that are not ISBNs never reaches the view and no
+    scan ever shows *ISBN invalide*, and it stops every track of the stream
+    it opened, on success and on `stop()`.
+  - **The icon button is a sibling of the `<input>`** inside a `relative`
+    wrapper, never inside the `<label>`, or its content would join the
+    field's accessible name and the eleven existing cases and the four
+    scenario methods would stop finding *ISBN*.
+- Deviations from the brief: `src/createLibrisApp.spec.ts` changed too, one
+  line, though the brief's file list does not name it — `LibrisPorts` gained a
+  required `barcodeScanner`, so the spec that builds the ports inline no
+  longer compiled. Two view cases passed the moment they were written, since
+  the first cycle's `if (scanned !== null)` branch already covered them; they
+  are committed as `test:` rather than `feat:`.
+- Left over: the camera block's height, a screen that explains a refused
+  camera, and a *rien trouvé* after a long fruitless look are three bullets in
+  `agent/PROPOSED.md`; what jsdom lacks and where Vitest reads its
+  configuration are in `agent/GOTCHAS.md`. The hand check of the spec's *Done*
+  needs HTTPS or `localhost`, since `getUserMedia` exists nowhere else.

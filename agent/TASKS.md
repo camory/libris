@@ -127,7 +127,7 @@ frontend one; no other task touches the contract (D04).
       `S1 Typed ISBN, found, with hyphens` and
       `S1 Typed ISBN, found, the old ten`.
 
-- [ ] T019 Frontend: the barcode scan.
+- [x] T019 Frontend: the barcode scan.
       On `/isbn`, when `BarcodeDetector` announces `ean_13` and the reader
       allows the camera, the camera opens and the first EAN-13 starting with
       978 or 979 runs the lookup of T017 (D05).

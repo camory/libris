@@ -6,7 +6,9 @@ import {
 } from "@testing-library/dom";
 import { flushPromises, mount } from "@vue/test-utils";
 import { describe, expect, it } from "vitest";
+import { barcodeScannerKey } from "../../../application/BarcodeScanner";
 import { isbnApiKey, type IsbnAnswer } from "../../../application/IsbnApi";
+import { FakeBarcodeScanner } from "../../../fixture/FakeBarcodeScanner";
 import { FakeIsbnApi } from "../../../fixture/FakeIsbnApi";
 import { onePiece1 } from "../../../fixture/SourceEditions";
 import { createLibrisI18n } from "../../i18n";
@@ -25,6 +27,8 @@ const sourcesDown: IsbnAnswer = {
   outcome: "problem",
   type: "/problems/sources-unavailable",
 };
+
+const neverRead = new Promise<string | null>(() => {});
 
 describe("IsbnView", () => {
   it("renders the title and the hint", () => {
@@ -178,19 +182,132 @@ describe("IsbnView", () => {
     ).toBe(false);
   });
 
-  function open(api: FakeIsbnApi) {
-    const wrapper = mount(IsbnView, {
+  it("offers the field alone where the browser detects no barcode", async () => {
+    // Given
+    const scanner = new FakeBarcodeScanner(false);
+
+    // When
+    const screen = open(new FakeIsbnApi(unknownIsbn), scanner);
+    await flushPromises();
+
+    // Then
+    expect(
+      screen.queryByRole("button", { name: "Scanner le code-barres" }),
+    ).toBeNull();
+    expect(
+      screen.queryByRole("button", { name: "Fermer la caméra" }),
+    ).toBeNull();
+    expect(scanner.readsInto).toEqual([]);
+  });
+
+  it("opens the camera by itself where the browser detects barcodes", async () => {
+    // Given
+    const scanner = new FakeBarcodeScanner(true, neverRead);
+
+    // When
+    const screen = open(new FakeIsbnApi(unknownIsbn), scanner);
+    await flushPromises();
+
+    // Then
+    expect(
+      screen.getByRole("button", { name: "Fermer la caméra" }),
+    ).toBeDefined();
+    expect(scanner.readsInto).toHaveLength(1);
+  });
+
+  it("runs the lookup with the first code the camera reads", async () => {
+    // Given
+    const api = new FakeIsbnApi(found);
+    const scanner = new FakeBarcodeScanner(true, "9782723488525");
+
+    // When
+    const screen = open(api, scanner);
+    await flushPromises();
+
+    // Then
+    expect(api.asked).toEqual(["9782723488525"]);
+    expect(field(screen).value).toBe("9782723488525");
+    expect(screen.getByText("Romance dawn")).toBeDefined();
+    expect(
+      screen.getByRole("button", { name: "Scanner le code-barres" }),
+    ).toBeDefined();
+  });
+
+  it("closes the camera on the cross and opens it again on the barcode", async () => {
+    // Given
+    const scanner = new FakeBarcodeScanner(true, neverRead);
+    const screen = open(new FakeIsbnApi(unknownIsbn), scanner);
+    await flushPromises();
+
+    // When
+    await press(screen, "Fermer la caméra");
+    await press(screen, "Scanner le code-barres");
+
+    // Then
+    expect(scanner.stops).toBe(1);
+    expect(scanner.readsInto).toHaveLength(2);
+  });
+
+  it("says nothing when the reader refuses the camera", async () => {
+    // Given
+    const scanner = new FakeBarcodeScanner(true, null);
+
+    // When
+    const screen = open(new FakeIsbnApi(unknownIsbn), scanner);
+    await flushPromises();
+
+    // Then
+    expect(
+      screen.queryByRole("button", { name: "Fermer la caméra" }),
+    ).toBeNull();
+    expect(screen.queryByText("ISBN invalide")).toBeNull();
+    expect(screen.queryByText("ISBN inconnu")).toBeNull();
+    expect(
+      screen.queryByText(
+        "Erreur lors de la recherche, veuillez réessayer plus tard.",
+      ),
+    ).toBeNull();
+    expect(
+      screen.getByRole("button", { name: "Scanner le code-barres" }),
+    ).toBeDefined();
+  });
+
+  it("stops the camera when the screen goes away", async () => {
+    // Given
+    const scanner = new FakeBarcodeScanner(true, neverRead);
+    const view = mountView(new FakeIsbnApi(unknownIsbn), scanner);
+    await flushPromises();
+
+    // When
+    view.unmount();
+
+    // Then
+    expect(scanner.stops).toBe(1);
+  });
+
+  function open(api: FakeIsbnApi, scanner?: FakeBarcodeScanner) {
+    return within(mountView(api, scanner).element as HTMLElement);
+  }
+
+  function mountView(
+    api: FakeIsbnApi,
+    scanner: FakeBarcodeScanner = new FakeBarcodeScanner(false),
+  ) {
+    return mount(IsbnView, {
       global: {
         plugins: [createLibrisI18n()],
-        provide: { [isbnApiKey]: api },
+        provide: { [isbnApiKey]: api, [barcodeScannerKey]: scanner },
       },
     });
-    return within(wrapper.element as HTMLElement);
   }
 
   async function ask(screen: Screen, text: string) {
     await fireEvent.input(field(screen), { target: { value: text } });
-    await fireEvent.click(screen.getByRole("button", { name: "Chercher" }));
+    await press(screen, "Chercher");
+  }
+
+  async function press(screen: Screen, name: string) {
+    await fireEvent.click(screen.getByRole("button", { name }));
     await flushPromises();
   }
 
