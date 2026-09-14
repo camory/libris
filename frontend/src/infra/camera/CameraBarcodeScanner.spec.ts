@@ -47,6 +47,22 @@ describe("CameraBarcodeScanner", () => {
     expect(camera.stops).toBe(1);
   });
 
+  it("gives the camera back and reads nothing where the picture cannot start", async () => {
+    // Given
+    detectorAnnouncing(["ean_13"], "9782723488525");
+    const camera = cameraAllowed();
+    vi.spyOn(HTMLMediaElement.prototype, "play").mockRejectedValue(
+      new Error("aborted"),
+    );
+
+    // When
+    const read = await new CameraBarcodeScanner().read(video());
+
+    // Then
+    expect(read).toBeNull();
+    expect(camera.stops).toBe(1);
+  });
+
   it("keeps looking past a code that is not an ISBN", async () => {
     // Given
     detectorAnnouncing(["ean_13"], "1234567890128", "9782723488525");
