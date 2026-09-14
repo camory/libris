@@ -58,6 +58,18 @@ describe("CameraBarcodeScanner", () => {
     expect(read).toBe("9782723488525");
   });
 
+  it("reads nothing where the reader refuses the camera", async () => {
+    // Given
+    detectorAnnouncing(["ean_13"], "9782723488525");
+    cameraRefused();
+
+    // When
+    const read = await new CameraBarcodeScanner().read(video());
+
+    // Then
+    expect(read).toBeNull();
+  });
+
   function video() {
     return document.createElement("video");
   }
@@ -69,6 +81,13 @@ describe("CameraBarcodeScanner", () => {
       value: { getUserMedia: () => Promise.resolve(stream) },
     });
     vi.spyOn(HTMLMediaElement.prototype, "play").mockResolvedValue();
+  }
+
+  function cameraRefused() {
+    Object.defineProperty(navigator, "mediaDevices", {
+      configurable: true,
+      value: { getUserMedia: () => Promise.reject(new Error("refused")) },
+    });
   }
 
   function detectorAnnouncing(formats: string[], ...codes: string[]) {

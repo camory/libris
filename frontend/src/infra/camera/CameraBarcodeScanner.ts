@@ -13,6 +13,16 @@ interface BarcodeDetector {
 const format = "ean_13";
 const betweenLooks = 100;
 
+async function open(): Promise<MediaStream | null> {
+  try {
+    return await navigator.mediaDevices.getUserMedia({
+      video: { facingMode: "environment" },
+    });
+  } catch {
+    return null;
+  }
+}
+
 function pause(): Promise<void> {
   return new Promise((resolve) => setTimeout(resolve, betweenLooks));
 }
@@ -29,9 +39,10 @@ export class CameraBarcodeScanner implements BarcodeScanner {
   }
 
   async read(into: HTMLVideoElement): Promise<string | null> {
-    const stream = await navigator.mediaDevices.getUserMedia({
-      video: { facingMode: "environment" },
-    });
+    const stream = await open();
+    if (stream === null) {
+      return null;
+    }
     into.srcObject = stream;
     await into.play();
     const barcodes = new (detector()!)({ formats: [format] });
