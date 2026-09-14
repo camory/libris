@@ -148,6 +148,25 @@ was found.
   `nginx.conf`.
 - `registerType: "autoUpdate"` on the PWA plugin; after a release the first
   load still shows the previous revision, the second the new one.
+- vue-router's first navigation is asynchronous: `app.use(router)` starts it
+  and nothing of the route is rendered on the tick `mount()` returns, nor
+  after a microtask flush. `FastEntryScenarios`' `open()` queries the host
+  synchronously, so `createLibrisApp` sets `router.currentRoute` from
+  `router.options.history.location` right after `app.use(router)`; the eager
+  navigation still runs, so the history listeners and `isReady()` are wired
+  as usual. Drop that line and every scenario that does not query through
+  `findBy*` fails on an empty host holding the footer alone.
+- `getByRole("textbox")` finds `<input type="text">` only: `type="number"` is
+  a `spinbutton` and `type="search"` a `searchbox`. A numeric keyboard comes
+  from `inputmode="numeric"`. An accessible name from `<label for>` resolves
+  on a detached element tree, so a test needs no `document.body`.
+- The colour roles and the type steps of `docs/DESIGN.md` are Tailwind theme
+  tokens in `src/ui/style.css`: custom properties on `:root`, overridden in a
+  `prefers-color-scheme: dark` block, exposed through `@theme inline` as
+  `--color-*` and `--text-*`. A template names `bg-surface` or `text-body`;
+  a colour shade or a type size written in a class is a step that is missing
+  from the file. The box of a control, `h-[50px]` or `border-[1.5px]`, is
+  not a token and is written as is.
 
 ## Contract and release
 - Contracteer 4.0.0's CLI cannot load an OpenAPI 3.1 document: the contract

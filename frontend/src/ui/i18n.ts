@@ -4,6 +4,18 @@ const fr = {
   home: {
     title: "La bibliothèque de la maison",
     greeting: "Bonjour {name}",
+    add: "Ajouter un ouvrage",
+  },
+  isbn: {
+    title: "Ajouter un ouvrage",
+    hint: "Scannez le code-barres ou saisissez l'ISBN.",
+    label: "ISBN",
+    placeholder: "978-2-7234-8852-5",
+    search: "Chercher",
+    searching: "Recherche en cours…",
+    invalid: "ISBN invalide",
+    unknown: "ISBN inconnu",
+    error: "Erreur lors de la recherche, veuillez réessayer plus tard.",
   },
 };
 

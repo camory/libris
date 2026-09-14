@@ -162,3 +162,21 @@
   year with 214/210 as the fallback; one 214-shaped fixture beside the One
   Piece one. Source adapter only, no spec change (found on Tophe's staging
   test, 2026-09-14).
+- Frontend: the tab bar of U03 is nowhere. `App.vue` carries the footer and
+  a `RouterView` only, so the reader moves between *Accueil* and *Ajouter*
+  through a link in the home view; the bar itself — the two tabs with
+  `IconHome` and `IconPlus`, the active one read from the route, the bottom
+  safe area — is chrome shared by every screen and belongs to a task of its
+  own. That task is also when `HomeView` gets drawn to U02 and U03: it still
+  wears `text-2xl font-bold` and `p-4`, which are not steps of the scale
+  (found on T017, 2026-09-14).
+- Frontend: the lookup screen has a button, not a form, so the go key of the
+  phone keyboard does not start the search. A `<form @submit.prevent>` buys
+  it at the price of a behaviour no scenario describes and of jsdom's own
+  form submission in the tests; the task that adds it is the one that decides
+  what the spec says about the keyboard (found on T017, 2026-09-14).
+- Frontend: a rejected `lookUp` (the network down, the API unreachable)
+  leaves the lookup screen's button busy for ever and says nothing, since
+  `search()` awaits it without a `finally`. What the screen says then is a
+  scenario of `specs/fast-entry.md` to write with Tophe; the button coming
+  back is a `finally` (raised by the reviewer of PR #71, 2026-09-14).
