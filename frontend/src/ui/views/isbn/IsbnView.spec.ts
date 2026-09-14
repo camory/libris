@@ -50,7 +50,7 @@ describe("IsbnView", () => {
     expect(api.asked).toEqual([]);
   });
 
-  it("asks for the ISBN-13 the rule computes and shows the title", async () => {
+  it("asks for the ISBN-13 the rule computes and shows the card", async () => {
     // Given
     const api = new FakeIsbnApi(found);
     const screen = open(api);
@@ -61,7 +61,8 @@ describe("IsbnView", () => {
     // Then
     expect(api.asked).toEqual(["9782723488525"]);
     expect(screen.getByText("Romance dawn")).toBeDefined();
-    expect(screen.queryByText("Glénat")).toBeNull();
+    expect(screen.getByText("Glénat")).toBeDefined();
+    expect(screen.getByText("BnF")).toBeDefined();
   });
 
   it("asks for the ISBN-13 an old ten converts to", async () => {
