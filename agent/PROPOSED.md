@@ -152,3 +152,13 @@
   past it counting as "did not answer" (S6 already says it). Use case and
   merge only, no source changes; the scenarios of `specs/fast-entry.md` to
   write with Tophe (raised after T015, recorded 2026-09-14).
+- Backend: the BnF source reads the publisher and the year from field 210,
+  and records written since about 2019 carry them in field 214 instead
+  (`9782266299763`: `214 $c PKJ $d DL 2019`, no 210; the 2013 One Piece
+  records: 210 only), so a recent book comes back with `publisher` and
+  `publicationYear` null. Every record carries the year in field 100,
+  positions 9 to 12 of subfield a (`20191112d2019…`), never wrapped in
+  "DL" or "impr.". Read 214 then 210 for the publisher, field 100 for the
+  year with 214/210 as the fallback; one 214-shaped fixture beside the One
+  Piece one. Source adapter only, no spec change (found on Tophe's staging
+  test, 2026-09-14).
