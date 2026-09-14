@@ -1,4 +1,5 @@
 const thirteenDigits = /^97[89][0-9]{10}$/;
+const tenCharacters = /^[0-9]{9}[0-9Xx]$/;
 
 export function isbn13Of(text: string): string | null {
   const characters = text.replaceAll("-", "").replaceAll(" ", "");
@@ -10,6 +11,9 @@ export function isbn13Of(text: string): string | null {
 }
 
 function thirteenOf(ten: string): string | null {
+  if (!tenCharacters.test(ten)) {
+    return null;
+  }
   const nine = ten.slice(0, 9);
   const weighted =
     [...nine].reduce(

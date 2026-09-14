@@ -33,6 +33,12 @@ describe("isbn13Of", () => {
     expect(isbn13Of("2723488521")).toBeNull();
   });
 
+  it("refuses a ten whose check digit is not a digit nor X", () => {
+    expect(isbn13Of("000000000\t")).toBeNull();
+    expect(isbn13Of("000000000\n")).toBeNull();
+    expect(isbn13Of("000000000\u00a0")).toBeNull();
+  });
+
   it("refuses a thirteen-digit EAN with another prefix", () => {
     expect(isbn13Of("4006381333931")).toBeNull();
   });
