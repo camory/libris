@@ -23,6 +23,17 @@ describe("CameraBarcodeScanner", () => {
     expect(available).toBe(true);
   });
 
+  it("is unavailable where the detector does not read EAN-13", async () => {
+    // Given
+    detectorAnnouncing(["qr_code"]);
+
+    // When
+    const available = await new CameraBarcodeScanner().isAvailable();
+
+    // Then
+    expect(available).toBe(false);
+  });
+
   function detectorAnnouncing(formats: string[], ...codes: string[]) {
     let reads = 0;
     vi.stubGlobal(

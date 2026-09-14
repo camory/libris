@@ -9,14 +9,17 @@ interface BarcodeDetector {
   detect(source: CanvasImageSource): Promise<{ rawValue: string }[]>;
 }
 
+const format = "ean_13";
+
 function detector(): BarcodeDetectorConstructor | undefined {
   return (globalThis as { BarcodeDetector?: BarcodeDetectorConstructor })
     .BarcodeDetector;
 }
 
 export class CameraBarcodeScanner implements BarcodeScanner {
-  isAvailable(): Promise<boolean> {
-    return Promise.resolve(detector() !== undefined);
+  async isAvailable(): Promise<boolean> {
+    const formats = await detector()?.getSupportedFormats();
+    return formats?.includes(format) === true;
   }
 
   read(): Promise<string | null> {
