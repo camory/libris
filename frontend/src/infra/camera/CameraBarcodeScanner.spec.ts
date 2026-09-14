@@ -70,17 +70,44 @@ describe("CameraBarcodeScanner", () => {
     expect(read).toBeNull();
   });
 
+  it("gives the camera back and reads nothing once stopped", async () => {
+    // Given
+    detectorAnnouncing(["ean_13"]);
+    const camera = cameraAllowed();
+    const scanner = new CameraBarcodeScanner();
+    const read = scanner.read(video());
+    await tick();
+
+    // When
+    scanner.stop();
+
+    // Then
+    expect(await read).toBeNull();
+    expect(camera.stops).toBe(1);
+  });
+
+  function tick() {
+    return new Promise((resolve) => setTimeout(resolve, 0));
+  }
+
   function video() {
     return document.createElement("video");
   }
 
   function cameraAllowed() {
-    const stream = { getTracks: () => [{ stop: () => {} }] };
+    const camera = { stops: 0 };
+    const track = {
+      stop: () => {
+        camera.stops += 1;
+      },
+    };
+    const stream = { getTracks: () => [track] };
     Object.defineProperty(navigator, "mediaDevices", {
       configurable: true,
       value: { getUserMedia: () => Promise.resolve(stream) },
     });
     vi.spyOn(HTMLMediaElement.prototype, "play").mockResolvedValue();
+    return camera;
   }
 
   function cameraRefused() {

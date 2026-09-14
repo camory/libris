@@ -33,29 +33,45 @@ function detector(): BarcodeDetectorConstructor | undefined {
 }
 
 export class CameraBarcodeScanner implements BarcodeScanner {
+  private stream: MediaStream | null = null;
+  private looking = false;
+
   async isAvailable(): Promise<boolean> {
     const formats = await detector()?.getSupportedFormats();
     return formats?.includes(format) === true;
   }
 
   async read(into: HTMLVideoElement): Promise<string | null> {
-    const stream = await open();
-    if (stream === null) {
+    this.looking = true;
+    this.stream = await open();
+    if (this.stream === null) {
       return null;
     }
-    into.srcObject = stream;
+    into.srcObject = this.stream;
     await into.play();
     const barcodes = new (detector()!)({ formats: [format] });
-    for (;;) {
+    while (this.looking) {
       for (const { rawValue } of await barcodes.detect(into)) {
         const isbn13 = isbn13Of(rawValue);
         if (isbn13 !== null) {
+          this.release();
           return isbn13;
         }
       }
       await pause();
     }
+    this.release();
+    return null;
   }
 
-  stop(): void {}
+  stop(): void {
+    this.looking = false;
+    this.release();
+  }
+
+  private release(): void {
+    const stream = this.stream;
+    this.stream = null;
+    stream?.getTracks().forEach((track) => track.stop());
+  }
 }
