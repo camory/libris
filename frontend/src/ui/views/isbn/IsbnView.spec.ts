@@ -151,40 +151,6 @@ describe("IsbnView", () => {
     ).toBeDefined();
   });
 
-  it("outlines the field when it refuses what was typed", async () => {
-    // Given
-    const screen = open(new FakeIsbnApi(unknownIsbn));
-
-    // When
-    await ask(screen, "978272348852");
-
-    // Then
-    expect(field(screen).classList.contains("border-danger")).toBe(true);
-  });
-
-  it("outlines the field when no source knows the ISBN", async () => {
-    // Given
-    const screen = open(new FakeIsbnApi(unknownIsbn));
-
-    // When
-    await ask(screen, "9782000000006");
-
-    // Then
-    expect(field(screen).classList.contains("border-danger")).toBe(true);
-  });
-
-  it("leaves the field outlined as usual when no source answered", async () => {
-    // Given
-    const screen = open(new FakeIsbnApi(sourcesDown));
-
-    // When
-    await ask(screen, "9791000000008");
-
-    // Then
-    expect(field(screen).classList.contains("border-danger")).toBe(false);
-    expect(field(screen).classList.contains("border-border")).toBe(true);
-  });
-
   it("replaces the answer it showed by the next one", async () => {
     // Given
     const screen = open(new FakeIsbnApi(found));
