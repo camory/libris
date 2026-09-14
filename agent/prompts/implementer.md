@@ -57,10 +57,12 @@ body what the self-review changed, or "nothing".
 
 ## Finish
 1. Tick `{{TASK_ID}}` in `agent/TASKS.md`. Append the diary entry to
-   `agent/PROGRESS.md`: did / decided / deviations / left over. Add to
-   `agent/GOTCHAS.md` each fact of this run a future run must know, one
-   item each in the section it belongs to, and rewrite or remove an item
-   the run proved false.
+   `agent/PROGRESS.md` in the shape its header gives: did in three lines,
+   decided, deviations, left over, about twenty-five lines in all. What was
+   built and how it was verified belong to the pull request body, not to
+   the entry. Add to `agent/GOTCHAS.md` each fact of this run a future run
+   must know, one item each in the section it belongs to, and rewrite or
+   remove an item the run proved false.
 2. Commit, push the branch, open the pull request:
    `gh pr create --base main --title "<type>(<scope>): {{TASK_ID}} <task title>"`,
    a Conventional Commit subject with a D10 scope, since it becomes the

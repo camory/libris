@@ -3,13 +3,19 @@
 Append-only. Newest entry last. One entry per loop iteration (or per human
 session that changed something a future run must know).
 
+An entry is the story of one task in about twenty-five lines, never more
+than forty. It repeats nothing the pull request holds: what was built and
+how it was verified are its body, and the diff is the diff. A fact a future
+run must know goes in `agent/GOTCHAS.md`, not here.
+
 Format:
 
 ```
 ## YYYY-MM-DD — T### short title — status
-- Did: …
-- Decided: … (or "nothing")
-- Left over / gotchas: …
+- Did: what exists now that did not, in three lines at most
+- Decided: one item per choice the brief left open, what and why (or "nothing")
+- Deviations from the brief: what and why (or "none")
+- Left over: what the task leaves to another, and where it is written (or "nothing")
 ```
 
 ---
