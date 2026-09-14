@@ -52,6 +52,14 @@ async function openCamera() {
   }
 }
 
+async function toggleCamera() {
+  if (scanning.value) {
+    barcodeScanner.stop();
+    return;
+  }
+  await openCamera();
+}
+
 async function search() {
   edition.value = undefined;
   message.value = undefined;
@@ -97,6 +105,7 @@ async function search() {
           type="button"
           :aria-label="scanning ? t('isbn.closeCamera') : t('isbn.scan')"
           class="absolute top-1/2 right-[3px] flex size-11 -translate-y-1/2 items-center justify-center rounded-[10px] text-accent"
+          @click="toggleCamera"
         >
           <IconClose v-if="scanning" />
           <IconBarcode v-else />

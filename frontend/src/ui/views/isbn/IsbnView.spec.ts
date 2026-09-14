@@ -235,6 +235,21 @@ describe("IsbnView", () => {
     ).toBeDefined();
   });
 
+  it("closes the camera on the cross and opens it again on the barcode", async () => {
+    // Given
+    const scanner = new FakeBarcodeScanner(true, neverRead);
+    const screen = open(new FakeIsbnApi(unknownIsbn), scanner);
+    await flushPromises();
+
+    // When
+    await press(screen, "Fermer la caméra");
+    await press(screen, "Scanner le code-barres");
+
+    // Then
+    expect(scanner.stops).toBe(1);
+    expect(scanner.readsInto).toHaveLength(2);
+  });
+
   function open(
     api: FakeIsbnApi,
     scanner: FakeBarcodeScanner = new FakeBarcodeScanner(false),
@@ -251,6 +266,11 @@ describe("IsbnView", () => {
   async function ask(screen: Screen, text: string) {
     await fireEvent.input(field(screen), { target: { value: text } });
     await fireEvent.click(screen.getByRole("button", { name: "Chercher" }));
+    await flushPromises();
+  }
+
+  async function press(screen: Screen, name: string) {
+    await fireEvent.click(screen.getByRole("button", { name }));
     await flushPromises();
   }
 
