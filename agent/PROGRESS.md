@@ -450,3 +450,43 @@ Format:
   `agent/PROPOSED.md`; what jsdom lacks and where Vitest reads its
   configuration are in `agent/GOTCHAS.md`. The hand check of the spec's *Done*
   needs HTTPS or `localhost`, since `getUserMedia` exists nowhere else.
+
+## 2026-09-14 — T021 The BnF alone, with its cover — done
+- Did: Open Library left the backend — source, stubs, recordings, the merge
+  rule and their tests deleted, `LIBRIS_OPEN_LIBRARY_URL` with them — and
+  `IsbnLookup` now asks the one `IsbnSource` it is given; `Isbn13` answers the
+  ten digits a 978 ISBN was made from, `BnfSource` searches on both in one
+  CQL `or` query and fills `coverUrl` from control field 003.
+- Decided:
+  - **The ten lives on `Isbn13`, not in the source.** Converting a thirteen to
+    the ten it was made from is a rule of the number, not of the BnF, so
+    `isbn10` is a property of the value type and answers `null` for a 979,
+    which is what makes the query of a 979 a single clause with no branch in
+    `BnfSource`.
+  - **One request, not two.** `bib.isbn all "9782723488525" or bib.isbn all
+    "2723488527"` answers the record in one round trip, measured against the
+    real SRU on 2026-09-14, so the source keeps one request, one timeout and
+    one failure mode.
+  - **The use case takes one source, not a list of one.** `List<IsbnSource>`
+    with a single element would keep the shape of the merge rule alive with
+    no rule behind it; the bean keeps the name `bnfSource` and loses its
+    `@Order`, since order has nothing left to order.
+  - **The cover URL is built, never fetched.** `coverUrlOf` sits beside
+    `authorRoleOf` and cuts the ark out of the control field from `ark:/` on;
+    a record with no 003, or one holding the old `FRBNF…` number, gives no
+    cover, and what the card shows then is T022.
+  - **`FastEntryScenarios` was edited**, which a task normally may not do: the
+    spec conversation for the one-source answer already happened (#73, #76)
+    and the brief authorises it. The two S6 cases and S5 went with the rule;
+    the past-the-timeout case became the second S7.
+- Deviations from the brief: none in substance; the plan's step 1 became two
+  cycles (the ten, then the 979 that has none) and its steps 7 to 10 one
+  commit, since nothing compiles between the deletions and the tests that
+  follow them.
+- Left over: the contract's `200_FOUND` example still carries an Open Library
+  cover and two sources, and the frontend fixtures still name Open Library —
+  both are bullets in `agent/PROPOSED.md`, with the one that matters most: a
+  book whose UNIMARC record comes back as a diagnostic (`9782253098058`) is
+  now answered as an unknown ISBN, since no second source is left to know it.
+  The hand check of the phase therefore needs a pre-2007 book the BnF serves
+  whole in `unimarcxchange`.

@@ -209,3 +209,22 @@
   `intermarcxchange` and `dublincore` return it whole. A fallback schema for
   a record that fails in UNIMARC is a decision for the T021 spec conversation
   (measured 2026-09-14, for T021's brief).
+- Contract: `ONE_PIECE_1`, the `200_FOUND` example of `libris-api` `v0.3.0`,
+  still carries an Open Library cover and `["BNF", "OPEN_LIBRARY"]`, while
+  since T021 Libris answers the catalogue's cover and `["BNF"]` alone. The
+  contract only checks the shape, so `ApiContractTest` passes as it stands,
+  but the example now describes an answer the application cannot give. Give
+  the example the catalogue's cover URL and the single source on the next
+  release of `camory/libris-api`, with Tophe (found on T021, 2026-09-14).
+- Backend: a book whose UNIMARC record is a diagnostic is now unknown. The
+  BnF answers `9782253098058` (*Le comte de Monte-Cristo*) with an empty
+  record in `unimarcxchange` and the whole record in `intermarcxchange`;
+  with Open Library gone, nothing else answers, so the card says the ISBN is
+  unknown for a book the catalogue holds. The fallback schema bullet above
+  is what fixes it (found on T021, 2026-09-14).
+- Frontend: Open Library still shows on the frontend side. `SourceEditions.ts`
+  gives its fixtures a `covers.openlibrary.org` cover, `SourceEditionCard`'s
+  cases name Open Library, and the scenario spec lists two sources; the
+  backend answers one source and a `catalogue.bnf.fr` cover since T021. The
+  words the card shows come from the API, so nothing is broken, but the
+  fixtures no longer look like an answer (found on T021, 2026-09-14).
