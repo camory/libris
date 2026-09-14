@@ -47,6 +47,20 @@ describe("FetchIsbnApi", () => {
     // Then
     expect(answer).toEqual({ outcome: "problem", type: "/problems/not-found" });
   });
+
+  it("answers a problem when no source answered", async () => {
+    // Given
+    const api = new FetchIsbnApi(inject("mockBaseUrl"));
+
+    // When
+    const answer = await api.lookUp("9791000000008");
+
+    // Then
+    expect(answer).toEqual({
+      outcome: "problem",
+      type: "/problems/sources-unavailable",
+    });
+  });
 });
 
 function areAuthors(value: unknown) {
