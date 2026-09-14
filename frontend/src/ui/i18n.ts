@@ -4,6 +4,7 @@ const fr = {
   home: {
     title: "La bibliothèque de la maison",
     greeting: "Bonjour {name}",
+    add: "Ajouter un ouvrage",
   },
   isbn: {
     title: "Ajouter un ouvrage",
