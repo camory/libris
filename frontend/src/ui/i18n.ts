@@ -19,6 +19,7 @@ const fr = {
     card: {
       series: "{name} · tome {volume}",
       author: "{name} · {roles}",
+      cover: "Couverture de {title}",
       collection: "Collection",
       publisher: "Éditeur",
       year: "Année",

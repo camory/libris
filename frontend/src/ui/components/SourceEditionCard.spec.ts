@@ -1,3 +1,4 @@
+import { within } from "@testing-library/dom";
 import { mount } from "@vue/test-utils";
 import { describe, expect, it } from "vitest";
 import type { SourceEdition } from "../../domain/SourceEdition";
@@ -110,11 +111,33 @@ describe("SourceEditionCard", () => {
     expect(show(onePiece1)).not.toContain(summary);
   });
 
+  it("shows the cover the sources gave, named after the ouvrage", () => {
+    // When
+    const covers = screen(onePiece1).getAllByRole("img");
+
+    // Then
+    expect(covers).toHaveLength(1);
+    expect(covers[0].getAttribute("src")).toBe(
+      "https://covers.openlibrary.org/b/isbn/9782723488525-L.jpg",
+    );
+    expect(covers[0].getAttribute("alt")).toContain("Romance dawn");
+    expect(
+      screen({ ...onePiece1, coverUrl: null }).queryAllByRole("img"),
+    ).toEqual([]);
+  });
+
   function show(edition: SourceEdition) {
-    const wrapper = mount(SourceEditionCard, {
+    return card(edition).text().replace(/\s+/g, " ");
+  }
+
+  function screen(edition: SourceEdition) {
+    return within(card(edition).element as HTMLElement);
+  }
+
+  function card(edition: SourceEdition) {
+    return mount(SourceEditionCard, {
       props: { edition },
       global: { plugins: [createLibrisI18n()] },
     });
-    return wrapper.text().replace(/\s+/g, " ");
   }
 });

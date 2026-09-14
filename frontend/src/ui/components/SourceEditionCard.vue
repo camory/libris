@@ -54,26 +54,36 @@ const rows = computed(() => {
   <article
     class="flex flex-col gap-3.5 rounded-[14px] border border-border bg-surface p-4"
   >
-    <div class="flex flex-col gap-1.5">
-      <p v-if="overline" class="text-overline uppercase text-accent">
-        {{ overline }}
-      </p>
-      <h2 class="text-card-title">{{ edition.title }}</h2>
-      <p v-if="edition.subtitle" class="text-lead text-muted">
-        {{ edition.subtitle }}
-      </p>
-      <i18n-t
-        v-for="line in authorLines"
-        :key="line.name"
-        keypath="isbn.card.author"
-        tag="p"
-        class="text-body"
-      >
-        <template #name>{{ line.name }}</template>
-        <template #roles>
-          <span class="text-muted">{{ line.roles }}</span>
-        </template>
-      </i18n-t>
+    <div class="flex gap-3.5">
+      <img
+        v-if="edition.coverUrl"
+        :src="edition.coverUrl"
+        :alt="t('isbn.card.cover', { title: edition.title })"
+        class="h-[149px] w-24 shrink-0 rounded-md bg-border object-contain"
+      />
+      <div v-else class="h-[149px] w-24 shrink-0 rounded-md bg-border"></div>
+
+      <div class="flex min-w-0 flex-col gap-1.5">
+        <p v-if="overline" class="text-overline uppercase text-accent">
+          {{ overline }}
+        </p>
+        <h2 class="text-card-title">{{ edition.title }}</h2>
+        <p v-if="edition.subtitle" class="text-lead text-muted">
+          {{ edition.subtitle }}
+        </p>
+        <i18n-t
+          v-for="line in authorLines"
+          :key="line.name"
+          keypath="isbn.card.author"
+          tag="p"
+          class="text-body"
+        >
+          <template #name>{{ line.name }}</template>
+          <template #roles>
+            <span class="text-muted">{{ line.roles }}</span>
+          </template>
+        </i18n-t>
+      </div>
     </div>
 
     <div>
