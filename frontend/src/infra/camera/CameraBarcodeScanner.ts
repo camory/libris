@@ -58,7 +58,11 @@ export class CameraBarcodeScanner implements BarcodeScanner {
     await into.play();
     const barcodes = new (detector()!)({ formats: [format] });
     while (this.looking) {
-      for (const { rawValue } of await look(barcodes, into)) {
+      const seen = await look(barcodes, into);
+      if (!this.looking) {
+        break;
+      }
+      for (const { rawValue } of seen) {
         const isbn13 = isbn13Of(rawValue);
         if (isbn13 !== null) {
           this.release();
