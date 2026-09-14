@@ -130,3 +130,16 @@
   contract does not declare it, so the task that adds it is the one that
   decides how it is exercised — and it is also when the two clients' shared
   request shape is worth extracting (found on T016, 2026-09-14).
+- Frontend: the tab bar of U03 is nowhere. `App.vue` carries the footer and
+  a `RouterView` only, so the reader moves between *Accueil* and *Ajouter*
+  through a link in the home view; the bar itself — the two tabs with
+  `IconHome` and `IconPlus`, the active one read from the route, the bottom
+  safe area — is chrome shared by every screen and belongs to a task of its
+  own. That task is also when `HomeView` gets drawn to U02 and U03: it still
+  wears `text-2xl font-bold` and `p-4`, which are not steps of the scale
+  (found on T017, 2026-09-14).
+- Frontend: the lookup screen has a button, not a form, so the go key of the
+  phone keyboard does not start the search. A `<form @submit.prevent>` buys
+  it at the price of a behaviour no scenario describes and of jsdom's own
+  form submission in the tests; the task that adds it is the one that decides
+  what the spec says about the keyboard (found on T017, 2026-09-14).

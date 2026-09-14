@@ -99,7 +99,7 @@ frontend one; no other task touches the contract (D04).
       Realises the rule of S3 and the client half of S1, S4, S7; un-skips
       nothing.
 
-- [ ] T017 Frontend: the lookup screen, typed ISBN.
+- [x] T017 Frontend: the lookup screen, typed ISBN.
       The route `/isbn` and its view: the field labelled `ISBN`, the
       `Chercher` button, the rule applied before anything leaves, the title
       of the answer shown, and the three messages of the scenarios taken from
