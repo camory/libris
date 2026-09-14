@@ -135,6 +135,19 @@ describe("IsbnView", () => {
     ).toBeDefined();
   });
 
+  it("replaces the answer it showed by the next one", async () => {
+    // Given
+    const screen = open(new FakeIsbnApi(found));
+    await ask(screen, "978-2-7234-8852-5");
+
+    // When
+    await ask(screen, "978272348852");
+
+    // Then
+    expect(screen.getByText("ISBN invalide")).toBeDefined();
+    expect(screen.queryByText("Romance dawn")).toBeNull();
+  });
+
   function open(api: FakeIsbnApi) {
     const wrapper = mount(IsbnView, {
       global: {

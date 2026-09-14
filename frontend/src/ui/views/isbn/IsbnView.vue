@@ -18,6 +18,8 @@ const message = ref<string>();
 const edition = ref<SourceEdition>();
 
 async function search() {
+  edition.value = undefined;
+  message.value = undefined;
   const isbn13 = isbn13Of(typed.value);
   if (isbn13 === null) {
     message.value = "isbn.invalid";
