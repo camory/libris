@@ -6,6 +6,10 @@ import { isbn13Of } from "../../../domain/Isbn13";
 import type { SourceEdition } from "../../../domain/SourceEdition";
 import IconAlert from "../../components/icons/IconAlert.vue";
 
+const messages: Record<string, string> = {
+  "/problems/not-found": "isbn.unknown",
+};
+
 const { t } = useI18n();
 const isbnApi = inject(isbnApiKey)!;
 
@@ -22,6 +26,8 @@ async function search() {
   const answer = await isbnApi.lookUp(isbn13);
   if (answer.outcome === "found") {
     edition.value = answer.edition;
+  } else {
+    message.value = messages[answer.type];
   }
 }
 </script>

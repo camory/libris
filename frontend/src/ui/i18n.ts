@@ -12,6 +12,7 @@ const fr = {
     placeholder: "978-2-7234-8852-5",
     search: "Chercher",
     invalid: "ISBN invalide",
+    unknown: "ISBN inconnu",
   },
 };
 

@@ -88,6 +88,17 @@ describe("IsbnView", () => {
     expect(screen.getByText("Romance dawn")).toBeDefined();
   });
 
+  it("says the ISBN is unknown when no source knows it", async () => {
+    // Given
+    const screen = open(new FakeIsbnApi(unknownIsbn));
+
+    // When
+    await ask(screen, "9782000000006");
+
+    // Then
+    expect(screen.getByText("ISBN inconnu")).toBeDefined();
+  });
+
   function open(api: FakeIsbnApi) {
     const wrapper = mount(IsbnView, {
       global: {
