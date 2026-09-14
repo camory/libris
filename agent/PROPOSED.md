@@ -130,6 +130,38 @@
   contract does not declare it, so the task that adds it is the one that
   decides how it is exercised — and it is also when the two clients' shared
   request shape is worth extracting (found on T016, 2026-09-14).
+- Backend: the cover is a guess. `merge` builds Open Library's cover URL by
+  ISBN for every answer, so a lookup the BnF alone answered hands out an
+  Open Library URL, and a book Open Library has no cover for shows a 200
+  with a 1×1 GIF (`9782266299763`, measured on 2026-09-14). The edition
+  document already fetched carries `covers: [id]` when a cover exists, so the
+  Open Library source can fill `coverUrl` by cover id or leave it null, and
+  the merge take the first source that has one, like every other field; no
+  request added. The BnF catalogue has an undocumented cover servlet
+  (`catalogue.bnf.fr/couverture?&appName=NE&idArk=<003>&couverture=1`, a JPEG
+  of ~800 KB, HTTP 500 when absent), a second step once the screen shows how
+  many books stay coverless. A spec change to `specs/fast-entry.md` lines 84,
+  104 and 187, to write with Tophe (found on Tophe's staging test,
+  2026-09-14).
+- Backend: the lookup's time is the sum of its sources, and the timeout is
+  per HTTP request. `IsbnLookup` asks the sources one after the other, and a
+  source's lookup is one edition request plus one per author, each with its
+  own timeout, so a 3 s timeout gave a 5.4 s answer on staging (2026-09-14,
+  Open Library not knowing the book). D02's "answers within the timeout"
+  needs the sources asked in parallel and one deadline per lookup, a source
+  past it counting as "did not answer" (S6 already says it). Use case and
+  merge only, no source changes; the scenarios of `specs/fast-entry.md` to
+  write with Tophe (raised after T015, recorded 2026-09-14).
+- Backend: the BnF source reads the publisher and the year from field 210,
+  and records written since about 2019 carry them in field 214 instead
+  (`9782266299763`: `214 $c PKJ $d DL 2019`, no 210; the 2013 One Piece
+  records: 210 only), so a recent book comes back with `publisher` and
+  `publicationYear` null. Every record carries the year in field 100,
+  positions 9 to 12 of subfield a (`20191112d2019…`), never wrapped in
+  "DL" or "impr.". Read 214 then 210 for the publisher, field 100 for the
+  year with 214/210 as the fallback; one 214-shaped fixture beside the One
+  Piece one. Source adapter only, no spec change (found on Tophe's staging
+  test, 2026-09-14).
 - Frontend: the tab bar of U03 is nowhere. `App.vue` carries the footer and
   a `RouterView` only, so the reader moves between *Accueil* and *Ajouter*
   through a link in the home view; the bar itself — the two tabs with
