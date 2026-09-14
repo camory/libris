@@ -265,8 +265,7 @@ describe("IsbnView", () => {
 
   async function ask(screen: Screen, text: string) {
     await fireEvent.input(field(screen), { target: { value: text } });
-    await fireEvent.click(screen.getByRole("button", { name: "Chercher" }));
-    await flushPromises();
+    await press(screen, "Chercher");
   }
 
   async function press(screen: Screen, name: string) {
