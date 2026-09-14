@@ -274,6 +274,19 @@ describe("IsbnView", () => {
     ).toBeDefined();
   });
 
+  it("stops the camera when the screen goes away", async () => {
+    // Given
+    const scanner = new FakeBarcodeScanner(true, neverRead);
+    open(new FakeIsbnApi(unknownIsbn), scanner);
+    await flushPromises();
+
+    // When
+    mounted.unmount();
+
+    // Then
+    expect(scanner.stops).toBe(1);
+  });
+
   function open(
     api: FakeIsbnApi,
     scanner: FakeBarcodeScanner = new FakeBarcodeScanner(false),

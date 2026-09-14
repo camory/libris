@@ -3,6 +3,7 @@ import {
   computed,
   inject,
   nextTick,
+  onBeforeUnmount,
   onMounted,
   ref,
   useTemplateRef,
@@ -40,6 +41,8 @@ onMounted(async () => {
     await openCamera();
   }
 });
+
+onBeforeUnmount(() => barcodeScanner.stop());
 
 async function openCamera() {
   scanning.value = true;
