@@ -169,7 +169,7 @@ class BnfSourceTest {
             language = "fr",
             pageCount = 203,
             summary = null,
-            coverUrl = null,
+            coverUrl = "https://catalogue.bnf.fr/couverture?&appName=NE&idArk=ark:/12148/cb43636708p&couverture=1",
         )
         val TIMEOUT: Duration = ofMillis(200)
         val WARM_UP_TIMEOUT: Duration = ofSeconds(20)
