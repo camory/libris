@@ -5,6 +5,10 @@ const fr = {
     title: "La bibliothèque de la maison",
     greeting: "Bonjour {name}",
   },
+  isbn: {
+    title: "Ajouter un ouvrage",
+    hint: "Scannez le code-barres ou saisissez l'ISBN.",
+  },
 };
 
 export function createLibrisI18n() {
