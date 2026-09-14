@@ -123,3 +123,10 @@
   language at a time, with the recordings that exercise it; a whole ISO
   639-2 to 639-1 table would be code no test asks for. To revisit if the
   library turns out to hold much beyond French (found on 2026-09-13).
+- Frontend: `FetchIsbnApi` has no `onUnauthenticated` callback. D06 gives the
+  API client one and T012 wired it for `/me` only, so a reader whose Authelia
+  session expires while on the lookup screen sees the promise reject instead
+  of a navigation to `/session`. The mock cannot produce a 401 and the
+  contract does not declare it, so the task that adds it is the one that
+  decides how it is exercised — and it is also when the two clients' shared
+  request shape is worth extracting (found on T016, 2026-09-14).

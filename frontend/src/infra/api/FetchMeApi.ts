@@ -17,7 +17,7 @@ export class FetchMeApi implements MeApi {
 
   async currentReader(): Promise<Reader> {
     const response = await fetch(`${this.baseUrl}/api/v1/me`, {
-      headers: { Accept: "application/json" },
+      headers: { Accept: "application/json, application/problem+json" },
     });
     if (response.status === 401) {
       this.onUnauthenticated();
