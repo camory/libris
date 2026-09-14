@@ -5,6 +5,20 @@ import { onePiece1 } from "../../fixture/SourceEditions";
 import { createLibrisI18n } from "../i18n";
 import SourceEditionCard from "./SourceEditionCard.vue";
 
+const barelyKnown: SourceEdition = {
+  ...onePiece1,
+  subtitle: null,
+  authors: [],
+  series: null,
+  collection: null,
+  publisher: null,
+  publicationYear: null,
+  language: null,
+  pageCount: null,
+  summary: null,
+  coverUrl: null,
+};
+
 describe("SourceEditionCard", () => {
   it("shows the series and the volume, the title and the subtitle", () => {
     // When
@@ -69,6 +83,18 @@ describe("SourceEditionCard", () => {
     }
     expect(card).toContain("ISBN");
     expect(card).toContain("9782723488525");
+    expect(card).not.toContain("inconnu");
+  });
+
+  it("shows the title and the ISBN of an edition the sources barely know", () => {
+    // When
+    const card = show(barelyKnown);
+
+    // Then
+    expect(card).toContain("Romance dawn");
+    expect(card).toContain("9782723488525");
+    expect(card).not.toContain("tome");
+    expect(card).not.toContain("·");
     expect(card).not.toContain("inconnu");
   });
 
