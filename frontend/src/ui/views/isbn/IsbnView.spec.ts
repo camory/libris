@@ -217,6 +217,24 @@ describe("IsbnView", () => {
     expect(scanner.readsInto).toHaveLength(1);
   });
 
+  it("runs the lookup with the first code the camera reads", async () => {
+    // Given
+    const api = new FakeIsbnApi(found);
+    const scanner = new FakeBarcodeScanner(true, "9782723488525");
+
+    // When
+    const screen = open(api, scanner);
+    await flushPromises();
+
+    // Then
+    expect(api.asked).toEqual(["9782723488525"]);
+    expect(field(screen).value).toBe("9782723488525");
+    expect(screen.getByText("Romance dawn")).toBeDefined();
+    expect(
+      screen.getByRole("button", { name: "Scanner le code-barres" }),
+    ).toBeDefined();
+  });
+
   function open(
     api: FakeIsbnApi,
     scanner: FakeBarcodeScanner = new FakeBarcodeScanner(false),
