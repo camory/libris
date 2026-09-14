@@ -13,16 +13,6 @@ interface BarcodeDetector {
 const format = "ean_13";
 const betweenLooks = 100;
 
-async function open(): Promise<MediaStream | null> {
-  try {
-    return await navigator.mediaDevices.getUserMedia({
-      video: { facingMode: "environment" },
-    });
-  } catch {
-    return null;
-  }
-}
-
 function pause(): Promise<void> {
   return new Promise((resolve) => setTimeout(resolve, betweenLooks));
 }
@@ -32,6 +22,16 @@ function look(
   into: HTMLVideoElement,
 ): Promise<{ rawValue: string }[]> {
   return barcodes.detect(into).catch(() => []);
+}
+
+function firstIsbnAmong(seen: { rawValue: string }[]): string | null {
+  for (const { rawValue } of seen) {
+    const isbn13 = isbn13Of(rawValue);
+    if (isbn13 !== null) {
+      return isbn13;
+    }
+  }
+  return null;
 }
 
 function detector(): BarcodeDetectorConstructor | undefined {
@@ -50,42 +50,34 @@ export class CameraBarcodeScanner implements BarcodeScanner {
 
   async read(into: HTMLVideoElement): Promise<string | null> {
     this.looking = true;
-    this.stream = await open();
-    if (this.stream === null) {
-      return null;
-    }
-    into.srcObject = this.stream;
     try {
+      this.stream = await navigator.mediaDevices.getUserMedia({
+        video: { facingMode: "environment" },
+      });
+      into.srcObject = this.stream;
       await into.play();
-    } catch {
-      this.release();
-      return null;
-    }
-    const barcodes = new (detector()!)({ formats: [format] });
-    while (this.looking) {
-      const seen = await look(barcodes, into);
-      if (!this.looking) {
-        break;
-      }
-      for (const { rawValue } of seen) {
-        const isbn13 = isbn13Of(rawValue);
-        if (isbn13 !== null) {
-          this.release();
+      const barcodes = new (detector()!)({ formats: [format] });
+      while (this.looking) {
+        const isbn13 = firstIsbnAmong(await look(barcodes, into));
+        if (isbn13 !== null && this.looking) {
           return isbn13;
         }
+        await pause();
       }
-      await pause();
+      return null;
+    } catch {
+      return null;
+    } finally {
+      this.release();
     }
-    this.release();
-    return null;
   }
 
   stop(): void {
-    this.looking = false;
     this.release();
   }
 
   private release(): void {
+    this.looking = false;
     const stream = this.stream;
     this.stream = null;
     stream?.getTracks().forEach((track) => track.stop());
