@@ -19,7 +19,7 @@ describe("FetchIsbnApi", () => {
     const answer = await api.lookUp("9782723488525");
 
     // Then
-    assert(answer.outcome === "found");
+    assert(answer.outcome === "found", `the answer is a ${answer.outcome}`);
     expect(answer.edition).toEqual({
       isbn13: expect.any(String),
       title: expect.any(String),
