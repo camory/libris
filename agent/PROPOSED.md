@@ -181,3 +181,18 @@
   (`en`). That is the decided fallback, not a bug, but the words are added one
   at a time with a case each, and the codes that will arrive are the ones the
   backend's map learns (found on T018, 2026-09-14).
+- Frontend: the camera block of the lookup screen is a fixed portrait ratio
+  (`aspect-[3/4]`) under the *Chercher* button, because the spec's "fills the
+  space between the button and the tab bar" needs the tab bar of U03 and a
+  full-height page column, neither of which exists. The task that builds the
+  tab bar replaces the ratio with that space (found on T019, 2026-09-14).
+- Frontend: a reader who refuses the camera sees the camera block disappear
+  and nothing else; the screen never says why, and the words for a refused
+  camera are in no document. A sentence under the field, or a state of the
+  icon button, is a scenario of `specs/fast-entry.md` to write with Tophe
+  (found on T019, 2026-09-14).
+- Frontend: the camera keeps looking for ever past codes the ISBN rule
+  refuses, which is what a viewfinder does, but a shelf that answers nothing
+  usable for a while says nothing either. Whether a *rien trouvé* message
+  arrives after a while, and when, is product behaviour for Tophe (found on
+  T019, 2026-09-14).

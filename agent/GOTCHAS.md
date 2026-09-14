@@ -176,6 +176,31 @@ was found.
   a colour shade or a type size written in a class is a step that is missing
   from the file. The box of a control, `h-[50px]` or `border-[1.5px]`, is
   not a token and is written as is.
+- Vitest reads its configuration from the working directory: run it from
+  `frontend/`, never from the repository root. From the root it still finds
+  the spec files but runs them under the default `node` environment, and
+  every DOM global is missing (`ReferenceError: HTMLMediaElement is not
+  defined`, `document is not defined`) on tests that are green one directory
+  down.
+- jsdom has no camera and no media element behind `<video>`:
+  `navigator.mediaDevices` is undefined, so an adapter that reaches it must
+  do so inside a `try`; a test installs it with `Object.defineProperty(…, {
+  configurable: true })` and removes it with `Reflect.deleteProperty` in an
+  `afterEach`, since `vi.stubGlobal` does not reach a property of
+  `navigator`. `HTMLMediaElement.prototype.play` is jsdom's
+  `notImplementedMethod` and prints an error unless it is replaced
+  (`vi.spyOn(HTMLMediaElement.prototype, "play").mockResolvedValue()`).
+  `srcObject` is implemented nowhere in jsdom, so assigning a plain object
+  with `getTracks()` to it is an ordinary property assignment: no IDL
+  conversion, no throw.
+- `BarcodeDetector` is not in TypeScript's DOM library. The two interfaces
+  the camera adapter needs are written in
+  `src/infra/camera/CameraBarcodeScanner.ts` and are not `declare global`:
+  an ambient declaration would tell every file the type exists on every
+  browser. The global is read through a function on each call, never captured
+  in a module constant, so a `vi.stubGlobal("BarcodeDetector", …)` installed
+  after the module loads is seen, and `vi.unstubAllGlobals()` is enough to
+  forget it.
 
 ## Contract and release
 - Contracteer 4.0.0's CLI cannot load an OpenAPI 3.1 document: the contract
