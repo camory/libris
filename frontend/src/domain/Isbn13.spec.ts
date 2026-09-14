@@ -18,4 +18,9 @@ describe("isbn13Of", () => {
   it("refuses a text of the wrong length", () => {
     expect(isbn13Of("978272348852")).toBeNull();
   });
+
+  it("converts the old ten", () => {
+    expect(isbn13Of("2723488527")).toBe("9782723488525");
+    expect(isbn13Of("2-7234-8852-7")).toBe("9782723488525");
+  });
 });
