@@ -28,4 +28,8 @@ describe("isbn13Of", () => {
     expect(isbn13Of("080442957X")).toBe("9780804429573");
     expect(isbn13Of("080442957x")).toBe("9780804429573");
   });
+
+  it("refuses a ten whose check digit is wrong", () => {
+    expect(isbn13Of("2723488521")).toBeNull();
+  });
 });
