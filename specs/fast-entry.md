@@ -11,18 +11,18 @@ feature, and this one shows first how good the sources are.
 **S1 Typed ISBN, found** · frontend, backend
 
 ```gherkin
-Given an ISBN the sources know
+Given an ISBN the BnF knows
 
 When the reader asks for it, typed with or without hyphens or spaces,
      thirteen digits or the old ten
 
-Then Libris answers what the sources know: title, subtitle, authors with their
+Then Libris answers what the BnF knows: title, subtitle, authors with their
      roles, series and tome, collection, publisher, publication year, language,
-     page count, summary, cover, the ISBN-13, and which sources answered
+     page count, summary, cover, the ISBN-13, and the source
 ```
 
 Proof: contract example `ONE_PIECE_1` verified by Contracteer on both sides;
-backend scenario test over stubbed sources; frontend scenario test of the
+backend scenario test over a stubbed source; frontend scenario test of the
 screen against `contracteer mock`.
 
 **S2 Scanned barcode** · frontend
@@ -59,67 +59,30 @@ check is the contract example `400_NOT_AN_ISBN`, verified on both sides.
 **S4 Unknown ISBN** · frontend, backend
 
 ```gherkin
-Given an ISBN no source knows
+Given an ISBN the BnF does not know
 
 When the reader asks for it
 
-Then Libris answers that no source knows it
+Then Libris answers that the ISBN is unknown
 ```
 
-Proof: backend scenario test over stubbed sources answering nothing, the
+Proof: backend scenario test over a stubbed source answering nothing, the
 not-found problem; frontend scenario test against `contracteer mock` with
 `404_UNKNOWN_ISBN`, the message.
 
-**S5 Merged answer** · backend
+**S7 The source down** · frontend, backend
 
 ```gherkin
-Given an ISBN both the BnF and Open Library know
-
-When the reader asks for it
-
-Then the answer carries the BnF's value for every field the BnF gives
-
-And Open Library's for the fields the BnF leaves empty
-
-And Open Library's cover by ISBN
-
-And lists both sources
-```
-
-Proof: backend scenario test over stubbed sources, one recorded BnF record
-with fields blanked that Open Library fills; unit tests of the merge rule,
-field by field, in the implementer's loop.
-
-**S6 One source down** · backend
-
-```gherkin
-Given a source that fails or does not answer in time while the other answers
+Given the BnF failing or not answering in time
 
 When the reader asks for an ISBN
 
-Then the answer carries what the source that replied knows
-
-And lists only that source
-
-And keeps Open Library's cover by ISBN, whichever source is down
+Then Libris answers that the source is unavailable, to try again later
 ```
 
-Proof: backend scenario test with one stub failing, then one stub answering
-past the timeout.
-
-**S7 Every source down** · frontend, backend
-
-```gherkin
-Given every source failing or not answering in time
-
-When the reader asks for an ISBN
-
-Then Libris answers that the sources are unavailable, to try again later
-```
-
-Proof: backend scenario test with both stubs failing, the sources-unavailable
-problem; frontend scenario test against `contracteer mock` with
-`503_SOURCES_DOWN`, the message.
+Proof: backend scenario test with the stubbed source failing, then answering
+past the timeout, the sources-unavailable problem; frontend scenario test
+against `contracteer mock` with `503_SOURCES_DOWN`, the message.
 
 ## Screen
 
@@ -145,7 +108,8 @@ States:
   closes it.
 - **Searching**: the button reads *Recherche en cours…* with a spinner and
   accepts nothing; a grey placeholder of the card takes its place below.
-- **Found** (S1): the card. Cover at the left; at its right the series and
+- **Found** (S1): the card. Cover at the left, or its stand-in when the BnF
+  has none or the image does not load; at its right the series and
   tome (*One piece · tome 1*), the title, the subtitle, the authors each with
   their roles (*Eiichirō Oda · scénario, dessin*); then one row per field,
   *Collection*, *Éditeur*, *Année*, *Langue*, *Pages*, *ISBN*; then
@@ -181,17 +145,20 @@ without a problem body means Libris itself is unavailable, not the sources.
 `contracteer mock` serves a problem only when the request's `Accept` lists
 `application/problem+json`, which the client always sends.
 
-Sources in this feature: the BnF SRU (`recordSchema=unimarcxchange`; the
+One source in this feature: the BnF SRU (`recordSchema=unimarcxchange`; the
 role comes from the author field's function code, mapped against the BnF's
-published list) and Open Library (`/isbn/<isbn>.json`, authors fetched by
-key, cover `covers.openlibrary.org/b/isbn/<isbn>-L.jpg`).
-Google Books waits for PRD open question 6.
+published list; the cover is the catalogue's own,
+`https://catalogue.bnf.fr/couverture?&appName=NE&idArk=<ark>&couverture=1`
+where `<ark>` is field 003 from `ark:/` on, handed out for every answer
+without checking it, since the catalogue answers an error where it has no
+picture and the card shows the stand-in then).
+Open Library and Google Books come later, each with its own scenarios.
 
 ## Done
 
 On the Pixel, from the installed app, through the home page's link to the
 lookup screen: scan a manga and a BD and read both
-cards, sources included; type an ISBN-10 by hand and read its card; type a
+cards, the source included; type an ISBN-10 by hand and read its card; type a
 wrong ISBN and read the message.
 
 ## Tasks
@@ -205,3 +172,6 @@ wrong ISBN and read the message.
 - T017 — S3, S4, S7 — frontend
 - T018 — S1 — frontend
 - T019 — S2 — frontend
+- T021 — the cover of S1, the one source of S4 and S7, Open Library and the
+  merge retired — backend
+- T022 — the stand-in of the cover in the Found state — frontend

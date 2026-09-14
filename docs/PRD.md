@@ -190,11 +190,11 @@ Priorities: **P1** = needed before the family uses it, **P2** = soon after,
   the form from public metadata sources; then add the ouvrage to a bookshelf
   in one step.
 - Sources arrive one at a time, each degrading gracefully when it fails or
-  knows nothing: Open Library and the BnF SRU first (the BnF is the one that
-  gives roles, series and collection for French titles), Google Books if an
-  API key is configured, the cover by ISBN from Open Library. Sites without an
-  API (Bedetheque, BDGest, Babelio) are candidates for later, subject to their
-  terms of use.
+  knows nothing: the BnF SRU first and alone, the one that gives roles,
+  series and collection for French titles, with the catalogue's own cover.
+  Open Library and Google Books (with an API key) come later, each with its
+  own scenarios. Sites without an API (Bedetheque, BDGest, Babelio) are
+  candidates for later, subject to their terms of use.
 - Delivered in two specs: `specs/fast-entry.md` is the lookup alone, showing
   what the sources know; adding the ouvrage to a bookshelf from that card is
   the next spec.
@@ -248,5 +248,6 @@ Priorities: **P1** = needed before the family uses it, **P2** = soon after,
    (see `docs/ARCHITECTURE.md` D06).
 5. ~~Deleting an item that still has copies~~ — resolved 2026-09-11: nobody
    deletes an edition; removing the last copy deletes it (§3).
-6. Google Books refuses anonymous requests (daily quota of zero). Configure an
-   API key on the server, or leave it out?
+6. ~~Google Books~~ — resolved 2026-09-14: deferred with the source itself;
+   it refuses anonymous requests (daily quota of zero), so it comes with an
+   API key on the server, or not at all.

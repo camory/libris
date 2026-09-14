@@ -32,7 +32,7 @@ phone / browser ──► https://libris.amory.fr
         │
    Gordien (existing): hourly pg_dump + restic
 
-   backend ──► Google Books / Open Library / BnF   (outbound, optional, P2)
+   backend ──► BnF                                 (outbound, optional, P2)
 ```
 
 ## Decisions
@@ -69,7 +69,7 @@ Packages under `fr.amory.libris`:
 - `infra.persistence` — the port implementations over `JdbcClient`: the SQL
   of every insert, update, lookup, search and listing, and the row-to-aggregate
   mapping, which is the aggregate's constructor.
-- `infra.lookup` — Google Books, Open Library and BnF clients (P2).
+- `infra.lookup` — the BnF client (P2); Open Library and Google Books later.
 
 Enforced by ArchUnit rules in the test suite (see D07):
 1. `domain` depends only on the Kotlin/Java standard libraries and the uuid
