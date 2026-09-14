@@ -4,7 +4,6 @@ import fr.amory.libris.application.LookupResult.Found
 import fr.amory.libris.application.LookupResult.SourcesUnavailable
 import fr.amory.libris.application.LookupResult.UnknownIsbn
 import fr.amory.libris.domain.lookup.Source.BNF
-import fr.amory.libris.domain.lookup.Source.OPEN_LIBRARY
 import fr.amory.libris.domain.lookup.SourceAnswer.Failed
 import fr.amory.libris.domain.lookup.SourceAnswer.Known
 import fr.amory.libris.domain.lookup.SourceAnswer.NothingKnown
@@ -16,58 +15,22 @@ import org.junit.jupiter.api.Test
 
 class IsbnLookupTest {
     @Test
-    fun `the sources that know answer what they know together, in the order they were asked`() {
+    fun `the source that knows answers what it knows, and names itself`() {
         // Given
-        val lookup = IsbnLookup(
-            listOf(
-                SourceAnswering(BNF, Known(A_SOURCE_EDITION.copy(title = "Romance dawn"))),
-                SourceAnswering(OPEN_LIBRARY, Known(A_SOURCE_EDITION.copy(title = "Tome 01", pageCount = 207))),
-            ),
-        )
+        val edition = A_SOURCE_EDITION.copy(title = "Romance dawn")
+        val lookup = IsbnLookup(SourceAnswering(BNF, Known(edition)))
 
         // When
         val result = lookup.lookUp(isbn13Of("9782723488525"))
 
         // Then
-        result shouldBe Found(
-            A_SOURCE_EDITION.copy(
-                title = "Romance dawn",
-                pageCount = 207,
-                coverUrl = "https://covers.openlibrary.org/b/isbn/9782723488525-L.jpg",
-            ),
-            listOf(BNF, OPEN_LIBRARY),
-        )
+        result shouldBe Found(edition, listOf(BNF))
     }
 
     @Test
-    fun `a source that failed takes no part in the answer`() {
+    fun `a source knowing nothing answers that the ISBN is unknown`() {
         // Given
-        val lookup = IsbnLookup(
-            listOf(
-                SourceAnswering(BNF, Known(A_SOURCE_EDITION.copy(title = "Romance dawn"))),
-                SourceAnswering(OPEN_LIBRARY, Failed),
-            ),
-        )
-
-        // When
-        val result = lookup.lookUp(isbn13Of("9782723488525"))
-
-        // Then
-        result shouldBe Found(
-            A_SOURCE_EDITION.copy(
-                title = "Romance dawn",
-                coverUrl = "https://covers.openlibrary.org/b/isbn/9782723488525-L.jpg",
-            ),
-            listOf(BNF),
-        )
-    }
-
-    @Test
-    fun `no source knowing the ISBN answers that it is unknown`() {
-        // Given
-        val lookup = IsbnLookup(
-            listOf(SourceAnswering(BNF, NothingKnown), SourceAnswering(OPEN_LIBRARY, NothingKnown)),
-        )
+        val lookup = IsbnLookup(SourceAnswering(BNF, NothingKnown))
 
         // When
         val result = lookup.lookUp(isbn13Of("9782000000013"))
@@ -77,26 +40,14 @@ class IsbnLookupTest {
     }
 
     @Test
-    fun `every source having failed answers that no source replied`() {
+    fun `a source having failed answers that no source replied`() {
         // Given
-        val lookup = IsbnLookup(listOf(SourceAnswering(BNF, Failed), SourceAnswering(OPEN_LIBRARY, Failed)))
+        val lookup = IsbnLookup(SourceAnswering(BNF, Failed))
 
         // When
         val result = lookup.lookUp(isbn13Of("9782723488525"))
 
         // Then
         result shouldBe SourcesUnavailable
-    }
-
-    @Test
-    fun `one source failing while the other knows nothing answers that the ISBN is unknown`() {
-        // Given
-        val lookup = IsbnLookup(listOf(SourceAnswering(BNF, Failed), SourceAnswering(OPEN_LIBRARY, NothingKnown)))
-
-        // When
-        val result = lookup.lookUp(isbn13Of("9782000000013"))
-
-        // Then
-        result shouldBe UnknownIsbn
     }
 }
