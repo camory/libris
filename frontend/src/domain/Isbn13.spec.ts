@@ -23,4 +23,9 @@ describe("isbn13Of", () => {
     expect(isbn13Of("2723488527")).toBe("9782723488525");
     expect(isbn13Of("2-7234-8852-7")).toBe("9782723488525");
   });
+
+  it("converts a ten whose check digit is X, in either case", () => {
+    expect(isbn13Of("080442957X")).toBe("9780804429573");
+    expect(isbn13Of("080442957x")).toBe("9780804429573");
+  });
 });
