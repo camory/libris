@@ -34,16 +34,17 @@ describe("CameraBarcodeScanner", () => {
     expect(available).toBe(false);
   });
 
-  it("reads the ISBN the camera shows", async () => {
+  it("reads the ISBN the camera shows and gives the camera back", async () => {
     // Given
     detectorAnnouncing(["ean_13"], "9782723488525");
-    cameraAllowed();
+    const camera = cameraAllowed();
 
     // When
     const read = await new CameraBarcodeScanner().read(video());
 
     // Then
     expect(read).toBe("9782723488525");
+    expect(camera.stops).toBe(1);
   });
 
   it("keeps looking past a code that is not an ISBN", async () => {
