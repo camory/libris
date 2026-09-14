@@ -43,15 +43,12 @@ describe("HomeView", () => {
   });
 
   it("links to the screen that adds an ouvrage", () => {
-    // Given
-    const wrapper = mountHomeView(chloe);
+    const screen = within(mountHomeView(chloe).element as HTMLElement);
 
-    // When
-    const link = within(wrapper.element as HTMLElement).getByRole("link", {
-      name: "Ajouter un ouvrage",
-    });
-
-    // Then
-    expect(link.getAttribute("href")).toBe("/isbn");
+    expect(
+      screen
+        .getByRole("link", { name: "Ajouter un ouvrage" })
+        .getAttribute("href"),
+    ).toBe("/isbn");
   });
 });
