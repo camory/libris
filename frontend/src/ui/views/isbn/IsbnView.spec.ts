@@ -184,6 +184,24 @@ describe("IsbnView", () => {
     ).toBe(false);
   });
 
+  it("offers the field alone where the browser detects no barcode", async () => {
+    // Given
+    const scanner = new FakeBarcodeScanner(false);
+
+    // When
+    const screen = open(new FakeIsbnApi(unknownIsbn), scanner);
+    await flushPromises();
+
+    // Then
+    expect(
+      screen.queryByRole("button", { name: "Scanner le code-barres" }),
+    ).toBeNull();
+    expect(
+      screen.queryByRole("button", { name: "Fermer la caméra" }),
+    ).toBeNull();
+    expect(scanner.readsInto).toEqual([]);
+  });
+
   it("opens the camera by itself where the browser detects barcodes", async () => {
     // Given
     const scanner = new FakeBarcodeScanner(true, neverRead);

@@ -31,9 +31,15 @@ const refused = computed(() => refusals.includes(message.value ?? ""));
 const edition = ref<SourceEdition>();
 const searching = ref(false);
 const scanning = ref(false);
+const canScan = ref(false);
 const camera = useTemplateRef<HTMLVideoElement>("camera");
 
-onMounted(openCamera);
+onMounted(async () => {
+  canScan.value = await barcodeScanner.isAvailable();
+  if (canScan.value) {
+    await openCamera();
+  }
+});
 
 async function openCamera() {
   scanning.value = true;
@@ -87,6 +93,7 @@ async function search() {
           :class="refused ? 'border-danger' : 'border-border'"
         />
         <button
+          v-if="canScan"
           type="button"
           :aria-label="scanning ? t('isbn.closeCamera') : t('isbn.scan')"
           class="absolute top-1/2 right-[3px] flex size-11 -translate-y-1/2 items-center justify-center rounded-[10px] text-accent"
