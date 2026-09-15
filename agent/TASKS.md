@@ -161,6 +161,21 @@ frontend one; no other task touches the contract (D04).
       that errors. No scenario un-skipped, S1's two already pass.
       Realises the stand-in of the Found state.
 
+- [ ] T023 Both sides: the ISBN, one class for both writings.
+      The PRD calls it an ISBN: `Isbn13` becomes `Isbn` on both sides, the
+      value being the thirteen digits, and holds every rule of the
+      identifier: made from either writing, the thirteen digits or the old
+      ten ending in a digit or X, separators dropped, each writing checked
+      with its own rule; the thirteen digits exposed; the ten, for 978
+      alone, derived with its own check digit. The frontend's `isbn13Of`
+      moves into it.
+      The API admits thirteen digits alone, as the contract's pattern
+      says: the controller keeps that check and answers `400_NOT_AN_ISBN`
+      to a ten; no contract edit.
+      Unit tests on both sides over the writings and the refusals, the
+      existing ones kept; nothing else changes behaviour.
+      Realises the rule of S3 again; un-skips nothing.
+
 *Done (Tophe, on the Pixel, from the installed app): scan a manga and a BD
 and read both cards, the source included; type an ISBN-10 by hand and read its
 card; type a wrong ISBN and read the message.*

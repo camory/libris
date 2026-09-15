@@ -228,3 +228,18 @@
   backend answers one source and a `catalogue.bnf.fr` cover since T021. The
   words the card shows come from the API, so nothing is broken, but the
   fixtures no longer look like an answer (found on T021, 2026-09-14).
+- Frontend: an expired session during a lookup leaves the search hanging.
+  `FetchIsbnApi` has no 401 branch, unlike `FetchMeApi`, so the body parse
+  throws, `search()` in `IsbnView` never releases `searching`, and the button
+  stays disabled with its spinner until the app is relaunched (seen by Tophe
+  on the Pixel, in production, 2026-09-15). Give the lookup client the same
+  `onUnauthenticated` as the me client, release `searching` in a `finally`
+  with the generic message, and add the expired session to the spec as a
+  scenario with Tophe.
+- Auth: OpenID Connect instead of the portal's headers. Authelia is an OIDC
+  provider; the PWA would hold a token, refresh it silently and send it as a
+  bearer, the backend validating it instead of trusting `Remote-*`. Not
+  worth its cost for one client behind one portal: the trigger is a second
+  client of the API, a share target, a native app or a script, or the day the
+  backend must know the reader without a proxy in front. A new architecture
+  decision when it comes (Tophe, 2026-09-15).

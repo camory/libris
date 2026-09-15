@@ -177,3 +177,5 @@ wrong ISBN and read the message.
 - T021 — the cover of S1, the one source of S4 and S7, Open Library and the
   merge retired — backend
 - T022 — the stand-in of the cover in the Found state — frontend
+- T023 — the rule of S3 under the PRD's name, both writings in one class
+  — both sides
