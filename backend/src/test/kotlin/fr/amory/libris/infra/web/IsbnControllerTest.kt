@@ -41,6 +41,32 @@ class IsbnControllerTest @Autowired constructor(
     }
 
     @Test
+    fun `the thirteen digits with separators are not the writing the API admits`() {
+        // Given
+        given(visit.visit("tophe", "tophe@amory.fr", "Tophe")).willReturn(TOPHE)
+
+        // When
+        val body = lookUp("978-2-7234-8852-5")
+
+        // Then
+        body?.get("type") shouldBe "/problems/validation"
+        verifyNoInteractions(lookup)
+    }
+
+    @Test
+    fun `the thirteen digits followed by a space are not the writing the API admits`() {
+        // Given
+        given(visit.visit("tophe", "tophe@amory.fr", "Tophe")).willReturn(TOPHE)
+
+        // When
+        val body = lookUp("9782723488525 ")
+
+        // Then
+        body?.get("type") shouldBe "/problems/validation"
+        verifyNoInteractions(lookup)
+    }
+
+    @Test
     fun `a thirteen-digit EAN that is not an ISBN is refused`() {
         // Given
         given(visit.visit("tophe", "tophe@amory.fr", "Tophe")).willReturn(TOPHE)
