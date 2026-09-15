@@ -6,7 +6,6 @@ import com.github.tomakehurst.wiremock.http.RequestMethod.GET
 import fr.amory.libris.domain.AuthorRole.ARTIST
 import fr.amory.libris.domain.AuthorRole.TRANSLATOR
 import fr.amory.libris.domain.AuthorRole.WRITER
-import fr.amory.libris.domain.lookup.Source.BNF
 import fr.amory.libris.domain.lookup.SourceAnswer.Failed
 import fr.amory.libris.domain.lookup.SourceAnswer.Known
 import fr.amory.libris.domain.lookup.SourceAnswer.NothingKnown
@@ -30,11 +29,6 @@ class BnfSourceTest {
     @AfterEach
     fun forgetTheStubs() {
         server.resetAll()
-    }
-
-    @Test
-    fun `the source names itself`() {
-        source.source shouldBe BNF
     }
 
     @Test

@@ -606,10 +606,13 @@ Format:
   - **The launch condition was taken as met.** Nothing in the tree names the
     deployed revision — `deploy/compose.yaml` takes its tag from `LIBRIS_TAG` —
     so there was no evidence against the brief's assumption to stop on.
-- Deviations from the brief: none.
+- Deviations from the brief: one, on Tophe's review. The brief kept `Source`
+  and `IsbnSource.source` for T024; Tophe judged them not worth keeping, since
+  the enum existed to fill the field this task removes and the order of the
+  sources in T024 is the order of the beans, not a name. Both left in a
+  fix-up commit with the BnF's *names itself* case and the GOTCHAS item that
+  explained the gap; `LibrisApplicationTest` asserts the only source by type.
 - Left over: merging is not deploying. This backend stops sending `sources`
   the moment it runs, and the frontend that stopped reading it (T025) must be
-  in production first; releasing and deploying are Tophe's step. No main code
-  reads `IsbnSource.source` until T024 merges in the order of the sources —
-  the gap the brief accepted, in `agent/GOTCHAS.md`. S5 and S6 stay skipped
-  for T024.
+  in production first; releasing and deploying are Tophe's step. S5 and S6
+  stay skipped for T024.

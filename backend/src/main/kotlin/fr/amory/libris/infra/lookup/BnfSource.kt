@@ -6,7 +6,6 @@ import fr.amory.libris.domain.AuthorRole.TRANSLATOR
 import fr.amory.libris.domain.AuthorRole.WRITER
 import fr.amory.libris.domain.Isbn
 import fr.amory.libris.domain.lookup.IsbnSource
-import fr.amory.libris.domain.lookup.Source.BNF
 import fr.amory.libris.domain.lookup.SourceAnswer
 import fr.amory.libris.domain.lookup.SourceAnswer.Failed
 import fr.amory.libris.domain.lookup.SourceAnswer.Known
@@ -39,8 +38,6 @@ internal fun coverUrlOf(controlField: String?): String? =
         ?.let { COVER_BEFORE + controlField.substring(it) + COVER_AFTER }
 
 class BnfSource(baseUrl: String, timeout: Duration) : IsbnSource {
-    override val source = BNF
-
     private val http = sourceRestClient(baseUrl, timeout)
 
     override fun lookUp(isbn: Isbn): SourceAnswer =

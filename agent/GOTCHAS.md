@@ -79,11 +79,6 @@ was found.
   in `build/libs`; the image's build stage runs `bootJar` only.
 
 ## Backend tests
-- `Source` and `IsbnSource.source` name which source a port implementation is,
-  not which sources an answer admits: since T026 no main code reads them, and
-  `BnfSourceTest` (*the source names itself*) and `LibrisApplicationTest` are
-  what keep them alive until T024 merges in the order of the sources. Neither
-  is dead code.
 - The first HTTP request and the first XML parse of a JVM cost more than a
   second. A client test with a short timeout warms the client once in
   `@BeforeAll` under a long timeout, then resets the stubs. A delay stub
