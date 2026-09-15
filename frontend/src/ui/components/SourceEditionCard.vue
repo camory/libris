@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed } from "vue";
+import { computed, ref } from "vue";
 import { useI18n } from "vue-i18n";
 import type { SourceEdition } from "../../domain/SourceEdition";
 import IconBook from "./icons/IconBook.vue";
@@ -7,6 +7,12 @@ import IconBook from "./icons/IconBook.vue";
 const props = defineProps<{ edition: SourceEdition }>();
 
 const { t, te } = useI18n();
+
+const coverFailed = ref(false);
+
+const cover = computed(() =>
+  coverFailed.value ? null : props.edition.coverUrl,
+);
 
 const overline = computed(() => {
   const series = props.edition.series;
@@ -61,10 +67,11 @@ const rows = computed(() => {
   >
     <div class="flex gap-3.5">
       <img
-        v-if="edition.coverUrl"
-        :src="edition.coverUrl"
+        v-if="cover"
+        :src="cover"
         :alt="t('isbn.card.cover', { title: edition.title })"
         class="h-[149px] w-24 shrink-0 rounded-md bg-border object-contain"
+        @error="coverFailed = true"
       />
       <div
         v-else

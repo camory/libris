@@ -1,6 +1,7 @@
 import { within } from "@testing-library/dom";
 import { mount } from "@vue/test-utils";
 import { describe, expect, it } from "vitest";
+import { nextTick } from "vue";
 import type { SourceEdition } from "../../domain/SourceEdition";
 import { onePiece1 } from "../../fixture/SourceEditions";
 import { createLibrisI18n } from "../i18n";
@@ -135,6 +136,20 @@ describe("SourceEditionCard", () => {
     expect(
       within(wrapper.element as HTMLElement).queryAllByRole("img"),
     ).toEqual([]);
+    expect(wrapper.findComponent(IconBook).exists()).toBe(true);
+  });
+
+  it("shows a book icon when the cover does not load", async () => {
+    // Given
+    const wrapper = card(onePiece1);
+    const shown = within(wrapper.element as HTMLElement);
+
+    // When
+    shown.getByRole("img").dispatchEvent(new Event("error"));
+    await nextTick();
+
+    // Then
+    expect(shown.queryAllByRole("img")).toEqual([]);
     expect(wrapper.findComponent(IconBook).exists()).toBe(true);
   });
 
