@@ -18,6 +18,26 @@ class IsbnTest {
     }
 
     @Test
+    fun `the thirteen-digit writing is thirteen digits whose check digit is right`() {
+        // Given / When / Then
+        Isbn.ofThirteenDigits("9782723488525")?.digits shouldBe "9782723488525"
+        Isbn.ofThirteenDigits("9791000000008")?.digits shouldBe "9791000000008"
+    }
+
+    @Test
+    fun `the thirteen-digit writing admits nothing else`() {
+        // Given / When / Then
+        Isbn.ofThirteenDigits("978-2-7234-8852-5") shouldBe null
+        Isbn.ofThirteenDigits("9782723488525 ") shouldBe null
+        Isbn.ofThirteenDigits("2723488527") shouldBe null
+        Isbn.ofThirteenDigits("9782723488526") shouldBe null
+        Isbn.ofThirteenDigits("978272348852") shouldBe null
+        Isbn.ofThirteenDigits("97827234885250") shouldBe null
+        Isbn.ofThirteenDigits("９７８２７２３４８８５２５") shouldBe null
+        Isbn.ofThirteenDigits("") shouldBe null
+    }
+
+    @Test
     fun `a 978 ISBN converts to the ten digits it was made from`() {
         // Given / When / Then
         Isbn.of("9782723488525")?.isbn10 shouldBe "2723488527"

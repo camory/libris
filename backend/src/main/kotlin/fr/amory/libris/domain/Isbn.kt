@@ -15,7 +15,9 @@ value class Isbn private constructor(val digits: String) {
         private const val TEN_MODULUS = 11
         private const val TEN_FIRST_WEIGHT = 10
 
-        fun of(text: String): Isbn? = when {
+        fun of(text: String): Isbn? = ofThirteenDigits(text)
+
+        fun ofThirteenDigits(text: String): Isbn? = when {
             text.length != LENGTH -> null
             !text.all { it in '0'..'9' } -> null
             text.last().digitToInt() != checkDigitOf(text.dropLast(1)) -> null
