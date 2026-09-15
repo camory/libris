@@ -11,7 +11,8 @@
     stroke-linejoin="round"
     aria-hidden="true"
   >
-    <path d="M6.5 3H19.5v18H6.5A2 2 0 0 1 4.5 19v-14A2 2 0 0 1 6.5 3Z" />
-    <path d="M4.5 19A2 2 0 0 1 6.5 17H19.5" />
+    <path d="M12 6C10.2 4.6 7.8 4 3.5 4.5v14c4.3-.5 6.7.1 8.5 1.5" />
+    <path d="M12 6c1.8-1.4 4.2-2 8.5-1.5v14c-4.3-.5-6.7.1-8.5 1.5" />
+    <path d="M12 6v14" />
   </svg>
 </template>
