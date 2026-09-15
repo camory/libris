@@ -1,7 +1,5 @@
 export type AuthorRole = "WRITER" | "ARTIST" | "COLOURIST" | "TRANSLATOR";
 
-export type Source = "BNF" | "OPEN_LIBRARY";
-
 export interface SourceAuthor {
   name: string;
   role: AuthorRole;
@@ -25,5 +23,4 @@ export interface SourceEdition {
   pageCount: number | null;
   summary: string | null;
   coverUrl: string | null;
-  sources: Source[];
 }
