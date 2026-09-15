@@ -4,6 +4,7 @@ import com.github.tomakehurst.wiremock.WireMockServer
 import com.github.tomakehurst.wiremock.core.WireMockConfiguration.options
 import fr.amory.libris.domain.AuthorRole.WRITER
 import fr.amory.libris.domain.lookup.SourceAnswer.Known
+import fr.amory.libris.domain.lookup.SourceAnswer.NothingKnown
 import fr.amory.libris.domain.lookup.SourceAuthor
 import fr.amory.libris.domain.lookup.SourceEdition
 import fr.amory.libris.fixture.OpenLibraryStubs
@@ -98,9 +99,22 @@ class OpenLibrarySourceTest {
         answer shouldBe Known(MONTE_CRISTO_EDITION.copy(authors = emptyList()))
     }
 
+    @Test
+    fun `an ISBN Open Library does not know is nothing known`() {
+        // Given
+        openLibrary.doesNotKnow(UNKNOWN)
+
+        // When
+        val answer = source.lookUp(isbnOf(UNKNOWN))
+
+        // Then
+        answer shouldBe NothingKnown
+    }
+
     private companion object {
         const val SPACE_WARS = "9782380751673"
         const val MONTE_CRISTO = "9782253098058"
+        const val UNKNOWN = "9782000000013"
         val MONTE_CRISTO_EDITION = SourceEdition(
             isbn = isbnOf(MONTE_CRISTO),
             title = "Le comte de Monte-Cristo",

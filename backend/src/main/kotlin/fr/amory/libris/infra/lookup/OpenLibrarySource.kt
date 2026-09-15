@@ -6,8 +6,10 @@ import fr.amory.libris.domain.lookup.IsbnSource
 import fr.amory.libris.domain.lookup.SourceAnswer
 import fr.amory.libris.domain.lookup.SourceAnswer.Failed
 import fr.amory.libris.domain.lookup.SourceAnswer.Known
+import fr.amory.libris.domain.lookup.SourceAnswer.NothingKnown
 import fr.amory.libris.domain.lookup.SourceAuthor
 import fr.amory.libris.domain.lookup.SourceEdition
+import org.springframework.web.client.HttpClientErrorException.NotFound
 import org.springframework.web.client.RestClientException
 import tools.jackson.databind.JsonNode
 import tools.jackson.databind.exc.JsonNodeException
@@ -24,6 +26,8 @@ class OpenLibrarySource(baseUrl: String, timeout: Duration) : IsbnSource {
     override fun lookUp(isbn: Isbn): SourceAnswer =
         try {
             answerFor(isbn)
+        } catch (ignored: NotFound) {
+            NothingKnown
         } catch (ignored: RestClientException) {
             Failed
         } catch (ignored: JsonNodeException) {
