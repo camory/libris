@@ -634,9 +634,11 @@ Format:
 - Decided:
   - **The work is picked on the last segment of the edition's `key`.** The
     edition document writes `/books/OL50534552M`, the search writes
-    `OL50534552M`; the recorded 9782253098058 answer lists a first work with
-    736 edition keys that does not hold it, so the case is only red on an
-    implementation that takes the first work if the key match is real.
+    `OL50534552M`. Both works of the recorded 9782253098058 search carry
+    the same author, so `the authors come from the work that holds the
+    edition` stays green on an implementation that takes the first work;
+    the case that is red on it is `a search naming no work holding the
+    edition gives no authors`.
   - **`NotFound` is caught before `RestClientException`.** Spring's
     `HttpClientErrorException.NotFound` is a `RestClientException`; in the
     other order Open Library's miss would have read as a failure.
