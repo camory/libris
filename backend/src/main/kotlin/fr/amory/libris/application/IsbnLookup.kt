@@ -5,11 +5,14 @@ import fr.amory.libris.application.LookupResult.SourcesUnavailable
 import fr.amory.libris.application.LookupResult.UnknownIsbn
 import fr.amory.libris.domain.Isbn
 import fr.amory.libris.domain.lookup.IsbnSource
+import fr.amory.libris.domain.lookup.SourceAnswer
 import fr.amory.libris.domain.lookup.SourceAnswer.Failed
 import fr.amory.libris.domain.lookup.SourceAnswer.Known
 import fr.amory.libris.domain.lookup.SourceEdition
 import fr.amory.libris.domain.lookup.merge
 import org.springframework.stereotype.Service
+import java.util.concurrent.Callable
+import java.util.concurrent.Executors.newVirtualThreadPerTaskExecutor
 
 sealed class LookupResult {
     data class Found(val edition: SourceEdition) : LookupResult()
@@ -22,7 +25,7 @@ sealed class LookupResult {
 @Service
 class IsbnLookup(private val sources: List<IsbnSource>) {
     fun lookUp(isbn: Isbn): LookupResult {
-        val answers = sources.map { it.lookUp(isbn) }
+        val answers = askEverySource(isbn)
         val editions = answers.filterIsInstance<Known>().map { it.edition }
         return when {
             editions.isNotEmpty() -> Found(merge(editions))
@@ -30,4 +33,9 @@ class IsbnLookup(private val sources: List<IsbnSource>) {
             else -> UnknownIsbn
         }
     }
+
+    private fun askEverySource(isbn: Isbn): List<SourceAnswer> =
+        newVirtualThreadPerTaskExecutor().use { executor ->
+            executor.invokeAll(sources.map { source -> Callable { source.lookUp(isbn) } }).map { it.get() }
+        }
 }

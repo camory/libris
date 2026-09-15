@@ -8,9 +8,11 @@ import fr.amory.libris.domain.lookup.SourceAnswer.Known
 import fr.amory.libris.domain.lookup.SourceAnswer.NothingKnown
 import fr.amory.libris.fixture.A_SOURCE_EDITION
 import fr.amory.libris.fixture.SourceAnswering
+import fr.amory.libris.fixture.SourceAnsweringAtRendezvous
 import fr.amory.libris.fixture.isbnOf
 import io.kotest.matchers.shouldBe
 import org.junit.jupiter.api.Test
+import java.util.concurrent.CyclicBarrier
 
 class IsbnLookupTest {
     @Test
@@ -81,5 +83,23 @@ class IsbnLookupTest {
 
         // Then
         result shouldBe UnknownIsbn
+    }
+
+    @Test
+    fun `every source is asked at once`() {
+        // Given
+        val rendezvous = CyclicBarrier(2)
+        val lookup = IsbnLookup(
+            listOf(
+                SourceAnsweringAtRendezvous(rendezvous, Known(A_SOURCE_EDITION.copy(title = "Romance dawn"))),
+                SourceAnsweringAtRendezvous(rendezvous, Known(A_SOURCE_EDITION.copy(pageCount = 207))),
+            ),
+        )
+
+        // When
+        val result = lookup.lookUp(isbnOf("9782723488525"))
+
+        // Then
+        result shouldBe Found(A_SOURCE_EDITION.copy(title = "Romance dawn", pageCount = 207))
     }
 }
