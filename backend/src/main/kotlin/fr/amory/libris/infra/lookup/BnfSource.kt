@@ -4,7 +4,7 @@ import fr.amory.libris.domain.AuthorRole
 import fr.amory.libris.domain.AuthorRole.ARTIST
 import fr.amory.libris.domain.AuthorRole.TRANSLATOR
 import fr.amory.libris.domain.AuthorRole.WRITER
-import fr.amory.libris.domain.Isbn13
+import fr.amory.libris.domain.Isbn
 import fr.amory.libris.domain.lookup.IsbnSource
 import fr.amory.libris.domain.lookup.Source.BNF
 import fr.amory.libris.domain.lookup.SourceAnswer
@@ -43,7 +43,7 @@ class BnfSource(baseUrl: String, timeout: Duration) : IsbnSource {
 
     private val http = sourceRestClient(baseUrl, timeout)
 
-    override fun lookUp(isbn: Isbn13): SourceAnswer =
+    override fun lookUp(isbn: Isbn): SourceAnswer =
         try {
             answerFor(isbn)
         } catch (ignored: RestClientException) {
@@ -52,15 +52,15 @@ class BnfSource(baseUrl: String, timeout: Duration) : IsbnSource {
             Failed
         }
 
-    private fun answerFor(isbn: Isbn13): SourceAnswer =
+    private fun answerFor(isbn: Isbn): SourceAnswer =
         recordIn(search(isbn))?.let { answerFrom(isbn, it) } ?: NothingKnown
 
-    private fun answerFrom(isbn: Isbn13, record: UnimarcRecord): SourceAnswer =
+    private fun answerFrom(isbn: Isbn, record: UnimarcRecord): SourceAnswer =
         record.value("200", "a")?.let { Known(editionOf(isbn, it, record)) } ?: Failed
 
-    private fun editionOf(isbn: Isbn13, title: String, record: UnimarcRecord): SourceEdition =
+    private fun editionOf(isbn: Isbn, title: String, record: UnimarcRecord): SourceEdition =
         SourceEdition(
-            isbn13 = isbn,
+            isbn = isbn,
             title = title,
             subtitle = record.value("200", "e"),
             authors = authorsOf(record),
@@ -88,7 +88,7 @@ class BnfSource(baseUrl: String, timeout: Duration) : IsbnSource {
     private fun seriesOf(record: UnimarcRecord): SourceSeries? =
         record.value("461", "t")?.let { SourceSeries(it, record.value("461", "v")?.toIntOrNull()) }
 
-    private fun search(isbn: Isbn13): String = http.get()
+    private fun search(isbn: Isbn): String = http.get()
         .uri { uri ->
             uri.queryParam("version", "1.2")
                 .queryParam("operation", "searchRetrieve")
@@ -102,7 +102,7 @@ class BnfSource(baseUrl: String, timeout: Duration) : IsbnSource {
         .orEmpty()
 
     private companion object {
-        fun queryFor(isbn: Isbn13): String =
+        fun queryFor(isbn: Isbn): String =
             listOfNotNull(isbn.digits, isbn.isbn10).joinToString(" or ") { """bib.isbn all "$it"""" }
 
         fun recordIn(answer: String): UnimarcRecord? {

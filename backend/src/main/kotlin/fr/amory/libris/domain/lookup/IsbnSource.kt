@@ -1,9 +1,9 @@
 package fr.amory.libris.domain.lookup
 
-import fr.amory.libris.domain.Isbn13
+import fr.amory.libris.domain.Isbn
 
 interface IsbnSource {
     val source: Source
 
-    fun lookUp(isbn: Isbn13): SourceAnswer
+    fun lookUp(isbn: Isbn): SourceAnswer
 }

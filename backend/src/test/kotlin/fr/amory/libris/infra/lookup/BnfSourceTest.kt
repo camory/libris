@@ -14,7 +14,7 @@ import fr.amory.libris.domain.lookup.SourceAuthor
 import fr.amory.libris.domain.lookup.SourceEdition
 import fr.amory.libris.domain.lookup.SourceSeries
 import fr.amory.libris.fixture.BnfStubs
-import fr.amory.libris.fixture.isbn13Of
+import fr.amory.libris.fixture.isbnOf
 import io.kotest.matchers.shouldBe
 import org.junit.jupiter.api.AfterAll
 import org.junit.jupiter.api.AfterEach
@@ -43,7 +43,7 @@ class BnfSourceTest {
         bnf.knows(ONE_PIECE)
 
         // When
-        val answer = source.lookUp(isbn13Of(ONE_PIECE))
+        val answer = source.lookUp(isbnOf(ONE_PIECE))
 
         // Then
         answer shouldBe Known(ONE_PIECE_EDITION)
@@ -55,7 +55,7 @@ class BnfSourceTest {
         bnf.partiallyKnows(ONE_PIECE)
 
         // When
-        val answer = source.lookUp(isbn13Of(ONE_PIECE))
+        val answer = source.lookUp(isbnOf(ONE_PIECE))
 
         // Then
         answer shouldBe Known(ONE_PIECE_EDITION.copy(publicationYear = null, pageCount = null))
@@ -67,7 +67,7 @@ class BnfSourceTest {
         bnf.doesNotKnow(UNKNOWN)
 
         // When
-        val answer = source.lookUp(isbn13Of(UNKNOWN))
+        val answer = source.lookUp(isbnOf(UNKNOWN))
 
         // Then
         answer shouldBe NothingKnown
@@ -79,7 +79,7 @@ class BnfSourceTest {
         bnf.fails()
 
         // When
-        val answer = source.lookUp(isbn13Of(ONE_PIECE))
+        val answer = source.lookUp(isbnOf(ONE_PIECE))
 
         // Then
         answer shouldBe Failed
@@ -91,7 +91,7 @@ class BnfSourceTest {
         bnf.answersUnreadably(ONE_PIECE)
 
         // When
-        val answer = source.lookUp(isbn13Of(ONE_PIECE))
+        val answer = source.lookUp(isbnOf(ONE_PIECE))
 
         // Then
         answer shouldBe Failed
@@ -103,7 +103,7 @@ class BnfSourceTest {
         bnf.answersTooLate(ONE_PIECE)
 
         // When
-        val answer = source.lookUp(isbn13Of(ONE_PIECE))
+        val answer = source.lookUp(isbnOf(ONE_PIECE))
 
         // Then
         answer shouldBe Failed
@@ -131,7 +131,7 @@ class BnfSourceTest {
         bnf.knows(ONE_PIECE)
 
         // When
-        source.lookUp(isbn13Of(ONE_PIECE))
+        source.lookUp(isbnOf(ONE_PIECE))
 
         // Then
         val request = server.allServeEvents.map { it.request }.single()
@@ -151,7 +151,7 @@ class BnfSourceTest {
         bnf.fails()
 
         // When
-        source.lookUp(isbn13Of(WITHOUT_A_TEN))
+        source.lookUp(isbnOf(WITHOUT_A_TEN))
 
         // Then
         val request = server.allServeEvents.map { it.request }.single()
@@ -167,7 +167,7 @@ class BnfSourceTest {
         const val ONE_PIECE_COVER =
             "https://catalogue.bnf.fr/couverture?&appName=NE&idArk=ark:/12148/cb43636708p&couverture=1"
         val ONE_PIECE_EDITION = SourceEdition(
-            isbn13 = isbn13Of(ONE_PIECE),
+            isbn = isbnOf(ONE_PIECE),
             title = "Romance dawn",
             subtitle = "à l'aube d'une grande aventure",
             authors = listOf(SourceAuthor("Eiichirō Oda", WRITER)),
@@ -190,7 +190,7 @@ class BnfSourceTest {
         fun startWireMock() {
             server.start()
             bnf.knows(ONE_PIECE)
-            BnfSource(server.baseUrl() + SRU, WARM_UP_TIMEOUT).lookUp(isbn13Of(ONE_PIECE))
+            BnfSource(server.baseUrl() + SRU, WARM_UP_TIMEOUT).lookUp(isbnOf(ONE_PIECE))
             server.resetAll()
         }
 

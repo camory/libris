@@ -15,7 +15,7 @@ import fr.amory.libris.domain.lookup.Source.OPEN_LIBRARY
 import fr.amory.libris.domain.lookup.SourceAuthor
 import fr.amory.libris.domain.lookup.SourceEdition
 import fr.amory.libris.domain.lookup.SourceSeries
-import fr.amory.libris.fixture.isbn13Of
+import fr.amory.libris.fixture.isbnOf
 import fr.amory.libris.infra.web.WebSliceTest
 import jakarta.servlet.Filter
 import jakarta.servlet.http.HttpServletRequest
@@ -31,7 +31,7 @@ import org.springframework.core.Ordered
 import org.springframework.test.context.bean.override.mockito.MockitoBean
 
 private val ONE_PIECE_1 = SourceEdition(
-    isbn13 = isbn13Of("9782723488525"),
+    isbn = isbnOf("9782723488525"),
     title = "Romance dawn",
     subtitle = "à l'aube d'une grande aventure",
     authors = listOf(SourceAuthor("Eiichirō Oda", WRITER), SourceAuthor("Eiichirō Oda", ARTIST)),
@@ -57,9 +57,9 @@ class ApiContractTest @Autowired constructor(
     fun `the API matches the contract`() {
         given(visit.visit("contracteer", "contracteer@amory.fr", "Contracteer"))
             .willReturn(Reader(username = "contracteer", email = "contracteer@amory.fr", displayName = "Contracteer"))
-        given(lookup.lookUp(isbn13Of("9782723488525"))).willReturn(Found(ONE_PIECE_1, listOf(BNF, OPEN_LIBRARY)))
-        given(lookup.lookUp(isbn13Of("9782000000006"))).willReturn(UnknownIsbn)
-        given(lookup.lookUp(isbn13Of("9791000000008"))).willReturn(SourcesUnavailable)
+        given(lookup.lookUp(isbnOf("9782723488525"))).willReturn(Found(ONE_PIECE_1, listOf(BNF, OPEN_LIBRARY)))
+        given(lookup.lookUp(isbnOf("9782000000006"))).willReturn(UnknownIsbn)
+        given(lookup.lookUp(isbnOf("9791000000008"))).willReturn(SourcesUnavailable)
     }
 
     @TestConfiguration

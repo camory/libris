@@ -5,7 +5,7 @@ import fr.amory.libris.application.LookupResult.Found
 import fr.amory.libris.application.LookupResult.SourcesUnavailable
 import fr.amory.libris.application.LookupResult.UnknownIsbn
 import fr.amory.libris.domain.AuthorRole
-import fr.amory.libris.domain.Isbn13
+import fr.amory.libris.domain.Isbn
 import fr.amory.libris.domain.lookup.Source
 import fr.amory.libris.domain.lookup.SourceEdition
 import org.springframework.http.HttpStatus
@@ -65,7 +65,7 @@ private fun ProblemDetail.asResponse(): ResponseEntity<Any> = ResponseEntity.sta
 class IsbnController(private val lookup: IsbnLookup) {
     @GetMapping("/api/v1/isbn/{isbn}")
     fun isbn(@PathVariable isbn: String): ResponseEntity<Any> {
-        val isbn13 = Isbn13.of(isbn) ?: return notAnIsbn().asResponse()
+        val isbn13 = Isbn.of(isbn) ?: return notAnIsbn().asResponse()
         return when (val result = lookup.lookUp(isbn13)) {
             is Found -> ResponseEntity.ok(responseOf(result.edition, result.sources))
             UnknownIsbn -> problem(NOT_FOUND, NOT_FOUND_PROBLEM).asResponse()
@@ -78,7 +78,7 @@ class IsbnController(private val lookup: IsbnLookup) {
     }
 
     private fun responseOf(edition: SourceEdition, sources: List<Source>): IsbnResponse = IsbnResponse(
-        isbn13 = edition.isbn13.digits,
+        isbn13 = edition.isbn.digits,
         title = edition.title,
         subtitle = edition.subtitle,
         authors = edition.authors.map { IsbnAuthorResponse(it.name, it.role) },

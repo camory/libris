@@ -1,7 +1,7 @@
 package fr.amory.libris.domain
 
 @JvmInline
-value class Isbn13 private constructor(val digits: String) {
+value class Isbn private constructor(val digits: String) {
     val isbn10: String?
         get() = digits.takeIf { it.startsWith(TEN_PREFIX) }
             ?.substring(TEN_PREFIX.length, LENGTH - 1)
@@ -15,11 +15,11 @@ value class Isbn13 private constructor(val digits: String) {
         private const val TEN_MODULUS = 11
         private const val TEN_FIRST_WEIGHT = 10
 
-        fun of(text: String): Isbn13? = when {
+        fun of(text: String): Isbn? = when {
             text.length != LENGTH -> null
             !text.all { it in '0'..'9' } -> null
             text.last().digitToInt() != checkDigitOf(text.dropLast(1)) -> null
-            else -> Isbn13(text)
+            else -> Isbn(text)
         }
 
         private fun checkDigitOf(body: String): Int {

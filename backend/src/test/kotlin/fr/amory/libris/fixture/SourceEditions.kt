@@ -3,7 +3,7 @@ package fr.amory.libris.fixture
 import fr.amory.libris.domain.lookup.SourceEdition
 
 val A_SOURCE_EDITION = SourceEdition(
-    isbn13 = isbn13Of("9782723488525"),
+    isbn = isbnOf("9782723488525"),
     title = "Un ouvrage",
     subtitle = null,
     authors = emptyList(),
