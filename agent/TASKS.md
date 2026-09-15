@@ -176,6 +176,29 @@ frontend one; no other task touches the contract (D04).
       existing ones kept; nothing else changes behaviour.
       Realises the rule of S3 again; un-skips nothing.
 
+- [ ] T024 Backend: Open Library back, in two requests.
+      The merge rule and the use case over several sources return from
+      the history of T014 and T021: the first source's value wins for
+      every field it gives, the next fills what it leaves empty, `sources`
+      lists the ones that know; not-found when a source replied and none
+      knows, sources-unavailable when none replied (D02). One change: the
+      use case asks every source at once, each on a virtual thread of the
+      JDK, and merges in the order of the sources; proven by two fakes
+      that each wait to be asked before either answers.
+      `OpenLibrarySource` returns reshaped, with `LIBRIS_OPEN_LIBRARY_URL`:
+      the edition document (`/isbn/<isbn>.json`, redirect followed) for
+      the fields, then one search request
+      (`/search.json?isbn=<isbn>&fields=key,author_name,edition_key`) for
+      the authors, all writers, from the one work whose `edition_key` holds
+      the edition's key, none when no work does; never a request per
+      author; the cover by ISBN as before.
+      Tested over recorded answers: 9782380751673 (edition and search),
+      and 9782253098058 for the pick of the work, whose search answer
+      lists two works and only the second holds the edition; the merge
+      rule field by field; the use case over fakes as T014 had it. No
+      contract edit: `OPEN_LIBRARY` is in `v0.3.0` already.
+      Realises S5 and S6, S4 and S7 over two sources; un-skips S5 and S6.
+
 *Done (Tophe, on the Pixel, from the installed app): scan a manga and a BD
 and read both cards, the source included; type an ISBN-10 by hand and read its
 card; type a wrong ISBN and read the message.*

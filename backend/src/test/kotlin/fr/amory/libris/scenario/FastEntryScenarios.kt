@@ -2,7 +2,9 @@ package fr.amory.libris.scenario
 
 import com.github.tomakehurst.wiremock.WireMockServer
 import fr.amory.libris.fixture.BnfStubs
+import fr.amory.libris.fixture.OpenLibraryStubs
 import io.kotest.matchers.shouldBe
+import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Qualifier
@@ -18,12 +20,15 @@ class FastEntryScenarios @Autowired constructor(
     private val http: RestTestClient,
     private val environment: Environment,
     @Qualifier("bnf") bnfServer: WireMockServer,
+    @Qualifier("openLibrary") openLibraryServer: WireMockServer,
 ) {
     private val bnf = BnfStubs(bnfServer)
+    private val openLibrary = OpenLibraryStubs(openLibraryServer)
 
     @Test
     fun `the application runs over the stubbed sources`() {
         environment.getProperty("LIBRIS_BNF_URL") shouldBe "${bnf.baseUrl}/api/SRU"
+        environment.getProperty("LIBRIS_OPEN_LIBRARY_URL") shouldBe openLibrary.baseUrl
         environment.getProperty("LIBRIS_SOURCE_TIMEOUT") shouldBe "1s"
     }
 
@@ -50,7 +55,7 @@ class FastEntryScenarios @Autowired constructor(
                   "language": "fr",
                   "pageCount": 203,
                   "summary": null,
-                  "coverUrl": "https://catalogue.bnf.fr/couverture?&appName=NE&idArk=ark:/12148/cb43636708p&couverture=1",
+                  "coverUrl": "$ONE_PIECE_COVER",
                   "sources": ["BNF"]
                 }
                 """,
@@ -62,6 +67,7 @@ class FastEntryScenarios @Autowired constructor(
     fun `S4 Unknown ISBN`() {
         // Given
         bnf.doesNotKnow("9782000000013")
+        openLibrary.doesNotKnow("9782000000013")
         // When
         val response = ask("9782000000013")
         // Then
@@ -71,9 +77,78 @@ class FastEntryScenarios @Autowired constructor(
     }
 
     @Test
-    fun `S7 The source down`() {
+    @Disabled("T024")
+    fun `S5 Merged answer`() {
+        // Given
+        bnf.partiallyKnows("9782723488525")
+        openLibrary.knows("9782723488525")
+        // When
+        val response = ask("9782723488525")
+        // Then
+        response.expectStatus().isOk()
+            .expectBody()
+            .jsonPath("$.title").isEqualTo("Romance dawn")
+            .jsonPath("$.authors[0].name").isEqualTo("Eiichirō Oda")
+            .jsonPath("$.pageCount").isEqualTo(207)
+            .jsonPath("$.publicationYear").isEqualTo(2013)
+            .jsonPath("$.coverUrl").isEqualTo(ONE_PIECE_COVER)
+            .jsonPath("$.sources").isEqualTo(listOf("BNF", "OPEN_LIBRARY"))
+    }
+
+    @Test
+    @Disabled("T024")
+    fun `S5 Merged answer, from Open Library alone`() {
+        // Given
+        bnf.doesNotKnow("9782380751673")
+        openLibrary.knows("9782380751673")
+        // When
+        val response = ask("9782380751673")
+        // Then
+        response.expectStatus().isOk()
+            .expectHeader().contentType(APPLICATION_JSON)
+            .expectBody()
+            .jsonPath("$.title").isEqualTo("Space Wars - Chapitre 1")
+            .jsonPath("$.authors[*].name").isEqualTo(listOf("Baba", "Stéphane Lapuss'", "Tartuff"))
+            .jsonPath("$.publisher").isEqualTo("KENNES EDITIONS")
+            .jsonPath("$.coverUrl").isEqualTo("https://covers.openlibrary.org/b/isbn/9782380751673-L.jpg")
+            .jsonPath("$.sources").isEqualTo(listOf("OPEN_LIBRARY"))
+    }
+
+    @Test
+    @Disabled("T024")
+    fun `S6 One source down`() {
         // Given
         bnf.fails()
+        openLibrary.knows("9782380751673")
+        // When
+        val response = ask("9782380751673")
+        // Then
+        response.expectStatus().isOk()
+            .expectBody()
+            .jsonPath("$.title").isEqualTo("Space Wars - Chapitre 1")
+            .jsonPath("$.sources").isEqualTo(listOf("OPEN_LIBRARY"))
+    }
+
+    @Test
+    @Disabled("T024")
+    fun `S6 One source down, past the timeout`() {
+        // Given
+        bnf.knows("9782723488525")
+        openLibrary.answersTooLate("9782723488525")
+        // When
+        val response = ask("9782723488525")
+        // Then
+        response.expectStatus().isOk()
+            .expectBody()
+            .jsonPath("$.title").isEqualTo("Romance dawn")
+            .jsonPath("$.sources").isEqualTo(listOf("BNF"))
+    }
+
+    @Test
+    fun `S7 Every source down`() {
+        // Given
+        bnf.fails()
+        openLibrary.fails()
         // When
         val response = ask("9782723488525")
         // Then
@@ -83,9 +158,10 @@ class FastEntryScenarios @Autowired constructor(
     }
 
     @Test
-    fun `S7 The source down, past the timeout`() {
+    fun `S7 Every source down, past the timeout`() {
         // Given
         bnf.answersTooLate("9782723488525")
+        openLibrary.fails()
         // When
         val response = ask("9782723488525")
         // Then
@@ -101,6 +177,8 @@ class FastEntryScenarios @Autowired constructor(
         .exchange()
 
     private companion object {
+        const val ONE_PIECE_COVER =
+            "https://catalogue.bnf.fr/couverture?&appName=NE&idArk=ark:/12148/cb43636708p&couverture=1"
         val READER = mapOf(
             "Remote-User" to listOf("juliette"),
             "Remote-Name" to listOf("Juliette"),
