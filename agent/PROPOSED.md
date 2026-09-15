@@ -242,3 +242,13 @@
   two answers; the day a screen shows the card for two editions in a row
   without unmounting it, that screen's task adds the reset and the case that
   proves it (decided on T022, 2026-09-15).
+- Frontend: the domain `Isbn` derives no ISBN-10. The backend's does, for the
+  BnF's CQL query; nothing on the frontend reads a ten, so no test of T023
+  motivated the property. The day a screen shows the ten of a book, its task
+  adds `isbn10` to `frontend/src/domain/Isbn.ts` with the case that wants it
+  (decided on T023, 2026-09-15).
+- Docs: `docs/ARCHITECTURE.md`'s D02 still lists `Isbn13` among what lives at
+  the root of `domain`; the class is `Isbn` since T023. The run proposed the
+  one-word amendment in its pull request body rather than editing the document
+  (CLAUDE.md); Tophe settles it on the review (found on T023, 2026-09-15).
+

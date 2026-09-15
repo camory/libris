@@ -64,9 +64,9 @@ private fun ProblemDetail.asResponse(): ResponseEntity<Any> = ResponseEntity.sta
 @RestController
 class IsbnController(private val lookup: IsbnLookup) {
     @GetMapping("/api/v1/isbn/{isbn}")
-    fun isbn(@PathVariable isbn: String): ResponseEntity<Any> {
-        val isbn13 = Isbn.ofThirteenDigits(isbn) ?: return notAnIsbn().asResponse()
-        return when (val result = lookup.lookUp(isbn13)) {
+    fun isbn(@PathVariable("isbn") text: String): ResponseEntity<Any> {
+        val isbn = Isbn.ofThirteenDigits(text) ?: return notAnIsbn().asResponse()
+        return when (val result = lookup.lookUp(isbn)) {
             is Found -> ResponseEntity.ok(responseOf(result.edition, result.sources))
             UnknownIsbn -> problem(NOT_FOUND, NOT_FOUND_PROBLEM).asResponse()
             SourcesUnavailable -> problem(SERVICE_UNAVAILABLE, SOURCES_UNAVAILABLE_PROBLEM).asResponse()
