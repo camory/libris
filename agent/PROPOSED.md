@@ -228,3 +228,11 @@
   backend answers one source and a `catalogue.bnf.fr` cover since T021. The
   words the card shows come from the API, so nothing is broken, but the
   fixtures no longer look like an answer (found on T021, 2026-09-14).
+- Frontend: an expired session during a lookup leaves the search hanging.
+  `FetchIsbnApi` has no 401 branch, unlike `FetchMeApi`, so the body parse
+  throws, `search()` in `IsbnView` never releases `searching`, and the button
+  stays disabled with its spinner until the app is relaunched (seen by Tophe
+  on the Pixel, in production, 2026-09-15). Give the lookup client the same
+  `onUnauthenticated` as the me client, release `searching` in a `finally`
+  with the generic message, and add the expired session to the spec as a
+  scenario with Tophe.
