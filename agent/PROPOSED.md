@@ -236,10 +236,3 @@
   `onUnauthenticated` as the me client, release `searching` in a `finally`
   with the generic message, and add the expired session to the spec as a
   scenario with Tophe.
-- Auth: OpenID Connect instead of the portal's headers. Authelia is an OIDC
-  provider; the PWA would hold a token, refresh it silently and send it as a
-  bearer, the backend validating it instead of trusting `Remote-*`. Not
-  worth its cost for one client behind one portal: the trigger is a second
-  client of the API, a share target, a native app or a script, or the day the
-  backend must know the reader without a proxy in front. A new architecture
-  decision when it comes (Tophe, 2026-09-15).
