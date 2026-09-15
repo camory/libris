@@ -200,6 +200,12 @@ was found.
   `srcObject` is implemented nowhere in jsdom, so assigning a plain object
   with `getTracks()` to it is an ordinary property assignment: no IDL
   conversion, no throw.
+- jsdom loads no image: an `<img>` with a `src` fires neither `load` nor
+  `error`, whatever the URL, so a test of what a broken cover shows dispatches
+  `new Event("error")` on the element itself and awaits `nextTick()`. Vue Test
+  Utils' `findComponent(SomeIcon)` is how a rendered icon is asserted: an
+  `aria-hidden` SVG carries no text and no role, so no `getBy*` query reaches
+  it.
 - `BarcodeDetector` is not in TypeScript's DOM library. The two interfaces
   the camera adapter needs are written in
   `src/infra/camera/CameraBarcodeScanner.ts` and are not `declare global`:

@@ -236,3 +236,9 @@
   `onUnauthenticated` as the me client, release `searching` in a `finally`
   with the generic message, and add the expired session to the spec as a
   scenario with Tophe.
+- Frontend: `SourceEditionCard` never forgets a cover that failed. The card
+  remembers the failure in a ref and no `watch` resets it when `edition`
+  changes, which is sound today because `IsbnView` unmounts the card between
+  two answers; the day a screen shows the card for two editions in a row
+  without unmounting it, that screen's task adds the reset and the case that
+  proves it (decided on T022, 2026-09-15).
