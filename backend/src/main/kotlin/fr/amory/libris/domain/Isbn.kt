@@ -21,25 +21,25 @@ value class Isbn private constructor(val digits: String) {
         fun of(text: String): Isbn? {
             val characters = text.filterNot { it in SEPARATORS }
             return if (characters.length == TEN_LENGTH) {
-                ofTenCharacters(characters)
+                ofTen(characters)
             } else {
-                ofThirteenDigits(characters)
+                ofThirteen(characters)
             }
         }
 
-        private fun ofThirteenDigits(text: String): Isbn? = when {
+        private fun ofThirteen(text: String): Isbn? = when {
             !THIRTEEN_DIGITS.matches(text) -> null
             text.last().digitToInt() != checkDigitOf(text.dropLast(1)) -> null
             else -> Isbn(text)
         }
 
-        private fun ofTenCharacters(text: String): Isbn? {
+        private fun ofTen(text: String): Isbn? {
             val nine = text.dropLast(1)
             if (!nine.all { it in '0'..'9' } || text.last().uppercaseChar() != tenCheckDigitOf(nine)) {
                 return null
             }
             val twelve = TEN_PREFIX + nine
-            return ofThirteenDigits(twelve + checkDigitOf(twelve))
+            return ofThirteen(twelve + checkDigitOf(twelve))
         }
 
         private fun checkDigitOf(body: String): Int {
