@@ -153,7 +153,7 @@ frontend one; no other task touches the contract (D04).
       Realises the cover of S1 and the one-source S4 and S7; un-skips
       nothing.
 
-- [ ] T022 Frontend: the stand-in of the cover.
+- [x] T022 Frontend: the stand-in of the cover.
       In `SourceEditionCard`, the cover block holds an outlined book icon,
       `ui/components/icons/IconBook.vue`, when `coverUrl` is null and when the
       image fails to load (U05, U06); the picture, when it loads, as before.

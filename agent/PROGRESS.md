@@ -490,3 +490,30 @@ Format:
   now answered as an unknown ISBN, since no second source is left to know it.
   The hand check of the phase therefore needs a pre-2007 book the BnF serves
   whole in `unimarcxchange`.
+
+## 2026-09-15 — T022 The stand-in of the cover — done
+- Did: `IconBook.vue` joins the three icons, an outlined book on the 24 grid
+  drawn at 40; `SourceEditionCard`'s cover block is now one element holding
+  the picture or, when there is none and when the image errors, that icon.
+- Decided:
+  - **The three cases the brief left to the code are one `v-if`.** The image
+    shows when `edition.coverUrl` is there and the card's `coverFailed` ref is
+    false, the icon otherwise, so "no cover" and "the cover did not load" are
+    the same branch and the same stand-in, which is what U06 asks for.
+  - **The cover block became a box that holds one of the two.** Before, the
+    `<img>` was itself the 96 by 149 box and the empty `v-else` div repeated
+    its four classes; U06 says "the same block", so the box moved out and the
+    image fills it with `object-contain`, unstretched as before. The
+    `bg-border` behind the picture, the radius and the size are unchanged.
+  - **`text-muted opacity-60` is given by the card, not by the icon.** The
+    icon names no colour, like its three neighbours; the card fades the icon
+    alone, never the `border` block behind it.
+- Deviations from the brief: none in substance. The first green gave the image
+  a `cover` computed folding the URL and the failure together; the self-review
+  dropped it for the brief's shape, a `v-if` reading both, one indirection
+  less.
+- Left over: the failure is remembered for the life of the card and is not
+  reset when the prop changes — a bullet in `agent/PROPOSED.md` for the day a
+  screen shows two editions in a row without unmounting. What jsdom does with
+  an `<img>` is in `agent/GOTCHAS.md`. The fixtures' Open Library cover URL,
+  already proposed on T021, is untouched.

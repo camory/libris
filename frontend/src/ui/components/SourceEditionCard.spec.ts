@@ -1,9 +1,11 @@
 import { within } from "@testing-library/dom";
 import { mount } from "@vue/test-utils";
 import { describe, expect, it } from "vitest";
+import { nextTick } from "vue";
 import type { SourceEdition } from "../../domain/SourceEdition";
 import { onePiece1 } from "../../fixture/SourceEditions";
 import { createLibrisI18n } from "../i18n";
+import IconBook from "./icons/IconBook.vue";
 import SourceEditionCard from "./SourceEditionCard.vue";
 
 const barelyKnown: SourceEdition = {
@@ -124,6 +126,32 @@ describe("SourceEditionCard", () => {
     expect(
       screen({ ...onePiece1, coverUrl: null }).queryAllByRole("img"),
     ).toEqual([]);
+    expect(card(onePiece1).findComponent(IconBook).exists()).toBe(false);
+  });
+
+  it("shows a book icon when the sources gave no cover", () => {
+    // When
+    const wrapper = card({ ...onePiece1, coverUrl: null });
+
+    // Then
+    expect(
+      within(wrapper.element as HTMLElement).queryAllByRole("img"),
+    ).toEqual([]);
+    expect(wrapper.findComponent(IconBook).exists()).toBe(true);
+  });
+
+  it("shows a book icon when the cover does not load", async () => {
+    // Given
+    const wrapper = card(onePiece1);
+    const shown = within(wrapper.element as HTMLElement);
+
+    // When
+    shown.getByRole("img").dispatchEvent(new Event("error"));
+    await nextTick();
+
+    // Then
+    expect(shown.queryAllByRole("img")).toEqual([]);
+    expect(wrapper.findComponent(IconBook).exists()).toBe(true);
   });
 
   it("shows one chip per source, after the word Sources, acting on nothing", () => {

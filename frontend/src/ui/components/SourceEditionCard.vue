@@ -1,11 +1,14 @@
 <script setup lang="ts">
-import { computed } from "vue";
+import { computed, ref } from "vue";
 import { useI18n } from "vue-i18n";
 import type { SourceEdition } from "../../domain/SourceEdition";
+import IconBook from "./icons/IconBook.vue";
 
 const props = defineProps<{ edition: SourceEdition }>();
 
 const { t, te } = useI18n();
+
+const coverFailed = ref(false);
 
 const overline = computed(() => {
   const series = props.edition.series;
@@ -59,13 +62,18 @@ const rows = computed(() => {
     class="flex flex-col gap-3.5 rounded-[14px] border border-border bg-surface p-4"
   >
     <div class="flex gap-3.5">
-      <img
-        v-if="edition.coverUrl"
-        :src="edition.coverUrl"
-        :alt="t('isbn.card.cover', { title: edition.title })"
-        class="h-[149px] w-24 shrink-0 rounded-md bg-border object-contain"
-      />
-      <div v-else class="h-[149px] w-24 shrink-0 rounded-md bg-border"></div>
+      <div
+        class="flex h-[149px] w-24 shrink-0 items-center justify-center rounded-md bg-border"
+      >
+        <img
+          v-if="edition.coverUrl && !coverFailed"
+          :src="edition.coverUrl"
+          :alt="t('isbn.card.cover', { title: edition.title })"
+          class="h-full w-full rounded-md object-contain"
+          @error="coverFailed = true"
+        />
+        <IconBook v-else class="text-muted opacity-60" />
+      </div>
 
       <div class="flex min-w-0 flex-col gap-1.5">
         <h2 class="flex flex-col gap-1.5 text-card-title">
