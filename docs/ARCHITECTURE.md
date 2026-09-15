@@ -134,9 +134,17 @@ release it implements:
   nothing about the contract itself. Before touching it, read
   <https://contracteer.dev/latest>. A gap in Contracteer blocks the task with
   a question; it is never worked around.
-- Order of work: contract released, then backend, then frontend. A release may
-  describe operations no side implements yet: each gate checks only the
-  release its side pins.
+- Order of work: the contract is released first, then each side moves in its
+  own task, and the second side moves only once the first is deployed. The
+  order of the sides follows the change, so that the pair running at any
+  moment stays compatible: an operation or a response field added goes
+  backend first; a response field removed goes frontend first; a request
+  field added goes backend first, optional until the frontend sends it. Only
+  a change no order keeps compatible moves both sides at once, and the
+  release says so. What keeps the pair compatible: the frontend reads the
+  fields it knows and ignores the rest; the backend sends only what its pinned
+  release declares. A release may describe operations no side implements yet:
+  each gate checks only the release its side pins.
 
 ### D05 — Frontend: Vue 3 + Vite + TypeScript, light hexagon
 Vue 3 with `<script setup>`, Vite, TypeScript strict, Vue Router, Pinia (only
