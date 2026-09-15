@@ -112,16 +112,5 @@ const rows = computed(() => {
     </div>
 
     <p v-if="edition.summary" class="text-body">{{ edition.summary }}</p>
-
-    <div class="flex flex-wrap items-center gap-2">
-      <span class="text-label text-muted">{{ t("isbn.card.sources") }}</span>
-      <span
-        v-for="source in edition.sources"
-        :key="source"
-        class="rounded-full border border-border px-2.5 py-1 text-label"
-      >
-        {{ t(`source.${source}`) }}
-      </span>
-    </div>
   </article>
 </template>

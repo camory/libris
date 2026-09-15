@@ -154,16 +154,14 @@ describe("SourceEditionCard", () => {
     expect(wrapper.findComponent(IconBook).exists()).toBe(true);
   });
 
-  it("shows one chip per source, after the word Sources, acting on nothing", () => {
+  it("never says which source answered", () => {
     // When
     const card = show(onePiece1);
 
     // Then
-    const parts = ["Sources", "BnF", "Open Library"];
-    const positions = parts.map((part) => card.indexOf(part));
-    expect(positions).not.toContain(-1);
-    expect(positions).toEqual([...positions].sort((a, b) => a - b));
-    expect(screen(onePiece1).queryAllByRole("button")).toEqual([]);
+    expect(card).not.toContain("Sources");
+    expect(card).not.toContain("BnF");
+    expect(card).not.toContain("Open Library");
   });
 
   it("shows the série alone when the sources gave it no tome", () => {
