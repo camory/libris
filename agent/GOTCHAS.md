@@ -98,8 +98,15 @@ was found.
 - `ArchitectureTest`'s port rule matches any non-interface class assignable
   to a domain interface, so the variants of a sealed *interface* in `domain`
   break it: a state is a sealed *class*.
-- A bean of `infra.lookup` may not be named `openLibrary` or `bnf`: the
-  scenario harness owns those names for its WireMock servers.
+- A bean of `infra.lookup` may not be named `bnf`: the scenario harness owns
+  that name for its WireMock server.
+- A marcxchange `controlfield` is not a `datafield`: it has a `tag` and text,
+  no subfield, and `getElementsByTagNameNS(MARCXCHANGE, "datafield")` never
+  sees it. The BnF writes the record's ark in control field 003, as a whole
+  URL (`http://catalogue.bnf.fr/ark:/12148/cb43636708p`).
+- `BnfStubs` matches the search by `withQueryParam("query", containing(isbn))`,
+  so a stub keeps matching when the query grows clauses; assert the query in
+  full from `server.allServeEvents` instead.
 - A problem detail is built in the controller (`ProblemDetail.forStatus`
   with `type`) and answered as a `ResponseEntity` body; Spring writes
   `application/problem+json` and derives `title` from the status. No advice,

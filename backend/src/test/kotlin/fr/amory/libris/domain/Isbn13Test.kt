@@ -18,6 +18,19 @@ class Isbn13Test {
     }
 
     @Test
+    fun `a 978 ISBN converts to the ten digits it was made from`() {
+        // Given / When / Then
+        Isbn13.of("9782723488525")?.isbn10 shouldBe "2723488527"
+        Isbn13.of("9782253098058")?.isbn10 shouldBe "2253098051"
+        Isbn13.of("9780804429573")?.isbn10 shouldBe "080442957X"
+    }
+
+    @Test
+    fun `an ISBN that does not start with 978 converts to no ten`() {
+        Isbn13.of("9791000000008")?.isbn10 shouldBe null
+    }
+
+    @Test
     fun `a text of another length is not an ISBN-13`() {
         // Given / When / Then
         Isbn13.of("978272348852") shouldBe null

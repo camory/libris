@@ -28,8 +28,15 @@ private val ROLES = mapOf("070" to WRITER, "440" to ARTIST, "730" to TRANSLATOR)
 private val LANGUAGES = mapOf("fre" to "fr")
 private val YEAR = Regex("\\d{4}")
 private val PAGES = Regex("(\\d+)\\s*p\\.")
+private const val ARK = "ark:/"
+private const val COVER_BEFORE = "https://catalogue.bnf.fr/couverture?&appName=NE&idArk="
+private const val COVER_AFTER = "&couverture=1"
 
 internal fun authorRoleOf(functionCode: String?): AuthorRole = ROLES[functionCode] ?: WRITER
+
+internal fun coverUrlOf(controlField: String?): String? =
+    controlField?.indexOf(ARK)?.takeIf { it >= 0 }
+        ?.let { COVER_BEFORE + controlField.substring(it) + COVER_AFTER }
 
 class BnfSource(baseUrl: String, timeout: Duration) : IsbnSource {
     override val source = BNF
@@ -64,7 +71,7 @@ class BnfSource(baseUrl: String, timeout: Duration) : IsbnSource {
             language = LANGUAGES[record.value("101", "a")],
             pageCount = PAGES.find(record.value("215", "a").orEmpty())?.groupValues?.get(1)?.toIntOrNull(),
             summary = null,
-            coverUrl = null,
+            coverUrl = coverUrlOf(record.control("003")),
         )
 
     private fun authorsOf(record: UnimarcRecord): List<SourceAuthor> =
@@ -87,7 +94,7 @@ class BnfSource(baseUrl: String, timeout: Duration) : IsbnSource {
                 .queryParam("operation", "searchRetrieve")
                 .queryParam("recordSchema", "unimarcxchange")
                 .queryParam("maximumRecords", "1")
-                .queryParam("query", """bib.isbn all "${isbn.digits}"""")
+                .queryParam("query", queryFor(isbn))
                 .build()
         }
         .retrieve()
@@ -95,6 +102,9 @@ class BnfSource(baseUrl: String, timeout: Duration) : IsbnSource {
         .orEmpty()
 
     private companion object {
+        fun queryFor(isbn: Isbn13): String =
+            listOfNotNull(isbn.digits, isbn.isbn10).joinToString(" or ") { """bib.isbn all "$it"""" }
+
         fun recordIn(answer: String): UnimarcRecord? {
             val factory = DocumentBuilderFactory.newInstance().apply {
                 isNamespaceAware = true
@@ -102,8 +112,15 @@ class BnfSource(baseUrl: String, timeout: Duration) : IsbnSource {
             }
             val document = factory.newDocumentBuilder().parse(InputSource(StringReader(answer)))
             val record = document.getElementsByTagNameNS(MARCXCHANGE, "record").item(0) as Element?
-            return record?.let { UnimarcRecord(fieldsOf(it)) }
+            return record?.let { UnimarcRecord(controlsOf(it), fieldsOf(it)) }
         }
+
+        fun controlsOf(record: Element): List<Pair<String, String>> =
+            record.getElementsByTagNameNS(MARCXCHANGE, "controlfield").let { controls ->
+                (0 until controls.length).map { index ->
+                    (controls.item(index) as Element).let { it.getAttribute("tag") to it.textContent }
+                }
+            }
 
         fun fieldsOf(record: Element): List<UnimarcField> =
             record.getElementsByTagNameNS(MARCXCHANGE, "datafield").let { fields ->
@@ -122,7 +139,12 @@ class BnfSource(baseUrl: String, timeout: Duration) : IsbnSource {
     }
 }
 
-private class UnimarcRecord(private val fields: List<UnimarcField>) {
+private class UnimarcRecord(
+    private val controls: List<Pair<String, String>>,
+    private val fields: List<UnimarcField>,
+) {
+    fun control(tag: String): String? = controls.firstOrNull { it.first == tag }?.second
+
     fun value(tag: String, code: String): String? = fields.firstOrNull { it.tag == tag }?.value(code)
 
     fun fields(tags: Set<String>): List<UnimarcField> = fields.filter { it.tag in tags }

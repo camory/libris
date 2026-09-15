@@ -119,6 +119,13 @@ class BnfSourceTest {
     }
 
     @Test
+    fun `a control field without an ark names no cover`() {
+        coverUrlOf("http://catalogue.bnf.fr/ark:/12148/cb43636708p") shouldBe ONE_PIECE_COVER
+        coverUrlOf("FRBNF436367080000000") shouldBe null
+        coverUrlOf(null) shouldBe null
+    }
+
+    @Test
     fun `looking up an ISBN sends one search on the SRU endpoint`() {
         // Given
         bnf.knows(ONE_PIECE)
@@ -134,13 +141,31 @@ class BnfSourceTest {
         request.queryParameter("operation").values() shouldBe listOf("searchRetrieve")
         request.queryParameter("recordSchema").values() shouldBe listOf("unimarcxchange")
         request.queryParameter("maximumRecords").values() shouldBe listOf("1")
-        request.queryParameter("query").values() shouldBe listOf("""bib.isbn all "$ONE_PIECE"""")
+        request.queryParameter("query").values() shouldBe
+            listOf("""bib.isbn all "$ONE_PIECE" or bib.isbn all "$ONE_PIECE_TEN"""")
+    }
+
+    @Test
+    fun `an ISBN that does not start with 978 is searched on its thirteen digits alone`() {
+        // Given
+        bnf.fails()
+
+        // When
+        source.lookUp(isbn13Of(WITHOUT_A_TEN))
+
+        // Then
+        val request = server.allServeEvents.map { it.request }.single()
+        request.queryParameter("query").values() shouldBe listOf("""bib.isbn all "$WITHOUT_A_TEN"""")
     }
 
     private companion object {
         const val ONE_PIECE = "9782723488525"
+        const val ONE_PIECE_TEN = "2723488527"
         const val UNKNOWN = "9782000000013"
+        const val WITHOUT_A_TEN = "9791000000008"
         const val SRU = "/api/SRU"
+        const val ONE_PIECE_COVER =
+            "https://catalogue.bnf.fr/couverture?&appName=NE&idArk=ark:/12148/cb43636708p&couverture=1"
         val ONE_PIECE_EDITION = SourceEdition(
             isbn13 = isbn13Of(ONE_PIECE),
             title = "Romance dawn",
@@ -153,7 +178,7 @@ class BnfSourceTest {
             language = "fr",
             pageCount = 203,
             summary = null,
-            coverUrl = null,
+            coverUrl = ONE_PIECE_COVER,
         )
         val TIMEOUT: Duration = ofMillis(200)
         val WARM_UP_TIMEOUT: Duration = ofSeconds(20)

@@ -135,7 +135,7 @@ frontend one; no other task touches the contract (D04).
       alone, and the camera stops when the screen goes away.
       Realises S2; un-skips `S2 Scanned barcode`.
 
-- [ ] T021 Backend: the BnF alone, with its cover.
+- [x] T021 Backend: the BnF alone, with its cover.
       Open Library leaves: `OpenLibrarySource`, `LIBRIS_OPEN_LIBRARY_URL`,
       the merge rule and their tests go; the use case asks the one source
       and `sources` lists `BNF` (D02). `OPEN_LIBRARY` stays in the contract,
