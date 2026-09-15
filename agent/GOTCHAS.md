@@ -104,6 +104,21 @@ was found.
   no subfield, and `getElementsByTagNameNS(MARCXCHANGE, "datafield")` never
   sees it. The BnF writes the record's ark in control field 003, as a whole
   URL (`http://catalogue.bnf.fr/ark:/12148/cb43636708p`).
+- `RestClient`'s `retrieve().body()` throws `HttpClientErrorException.NotFound`
+  on a 404, and `NotFound` is a `RestClientException`: a source that tells a
+  miss from a failure catches `NotFound` first, or every miss reads as a
+  failure.
+- WireMock serves the most recently added matching stub, so
+  `OpenLibraryStubs.answers("/search.json", body)` called after `knows(isbn)`
+  replaces the recorded search of that lookup.
+- Open Library writes the edition's own `key` as a path (`/books/OL50534552M`)
+  and the search's `edition_key` as bare keys (`OL50534552M`): matching one
+  against the other needs the last segment.
+- `@Order` on the `@Bean` methods of a `@Configuration` orders the
+  `List<T>` Spring injects; the order of the methods in the file does not.
+- A test double that proves two calls overlap waits on a `CyclicBarrier` with
+  a bounded `await(timeout, unit)`: sequential code then fails with
+  `TimeoutException` instead of hanging the suite forever.
 - `BnfStubs` matches the search by `withQueryParam("query", containing(isbn))`,
   so a stub keeps matching when the query grows clauses; assert the query in
   full from `server.allServeEvents` instead.

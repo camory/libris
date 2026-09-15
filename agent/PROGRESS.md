@@ -616,3 +616,56 @@ Format:
   the moment it runs, and the frontend that stopped reading it (T025) must be
   in production first; releasing and deploying are Tophe's step. S5 and S6
   stay skipped for T024.
+
+
+## 2026-09-15 — T024 Open Library back, in two requests — done
+- Did: `domain/lookup/Merge.kt` came back as a free function over a list of
+  editions — the first source's value for every field it gives, the next
+  filling the empties, the authors whole from the first source that has any,
+  the cover an ordinary merged field; `IsbnLookup` took the list of ports and
+  asks them all at once on `Executors.newVirtualThreadPerTaskExecutor()`
+  through `invokeAll`, which hands the answers back in the order of the
+  sources, and still tells `Found` from `UnknownIsbn` and `SourcesUnavailable`
+  from the answers alone; `OpenLibrarySource` returned in its two-request
+  shape (the edition document for the fields, one search for the authors of
+  the work whose `edition_key` holds the edition's key, the cover built from
+  the ISBN), wired second behind the BnF with `LIBRIS_OPEN_LIBRARY_URL`. The
+  four scenario methods Tophe left skipped are green untouched.
+- Decided:
+  - **The work is picked on the last segment of the edition's `key`.** The
+    edition document writes `/books/OL50534552M`, the search writes
+    `OL50534552M`. Both works of the recorded 9782253098058 search carry
+    the same author, so `the authors come from the work that holds the
+    edition` stays green on an implementation that takes the first work;
+    the case that is red on it is `a search naming no work holding the
+    edition gives no authors`.
+  - **`NotFound` is caught before `RestClientException`.** Spring's
+    `HttpClientErrorException.NotFound` is a `RestClientException`; in the
+    other order Open Library's miss would have read as a failure.
+  - **`@Order(1)` and `@Order(2)` order the injected list**, not the order of
+    the `@Bean` methods in `LookupConfig`, and `LibrisApplicationTest` asserts
+    the two classes in order rather than trusting it.
+  - **The rendezvous fake waits with a bound.** `CyclicBarrier.await(2 s)`
+    makes a sequential use case fail with `TimeoutException` in two seconds
+    instead of hanging the suite; the case was watched red on the old
+    single-source code before the executor arrived.
+- Deviations from the brief: two, both in the shape of tests, no criterion
+  weakened.
+  - The criterion asks `MergeTest` for *one case per field group*. It has two
+    whole-edition cases instead — both sources give every field, then the
+    first leaves every field empty — which assert all ten fields at once, plus
+    the named author, series, cover and ISBN cases. The brief's own test plan
+    sends the file back from T014's history "and adapt", and that is the shape
+    it had; a case per field would have been ten copies of one assertion.
+  - The four failure cases of `OpenLibrarySourceTest` (failing edition,
+    failing search, unreadable body, past the timeout) were written after the
+    catches that answer `Failed`, which arrived with the first case of the
+    adapter, so they passed on the first run instead of being red first. They
+    are kept: each one pins a distinct path out of the adapter, and the 404
+    case, the only failure case that needed production code, was red before
+    it.
+- Left over: nothing of the task. A 404 answered by `/search.json` would read
+  as `NothingKnown`, since the adapter catches around both requests at once —
+  no case can make it wrong today, and the bullet is in `agent/PROPOSED.md`.
+  Merging is not deploying: the phase's *Done* asks Tophe to type
+  9782380751673 on a deployed Libris, which is his step.

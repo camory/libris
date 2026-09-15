@@ -2,6 +2,7 @@ package fr.amory.libris
 
 import fr.amory.libris.domain.lookup.IsbnSource
 import fr.amory.libris.infra.lookup.BnfSource
+import fr.amory.libris.infra.lookup.OpenLibrarySource
 import fr.amory.libris.infra.lookup.SourcesProperties
 import io.kotest.matchers.shouldBe
 import org.junit.jupiter.api.Test
@@ -32,12 +33,13 @@ class LibrisApplicationTest @Autowired constructor(
     fun `the sources are configured with their defaults`() {
         sources shouldBe SourcesProperties(
             bnfUrl = "https://catalogue.bnf.fr/api/SRU",
+            openLibraryUrl = "https://openlibrary.org",
             timeout = ofSeconds(5),
         )
     }
 
     @Test
-    fun `the BnF is the only source`() {
-        isbnSources.map { it::class } shouldBe listOf(BnfSource::class)
+    fun `the BnF is asked before Open Library`() {
+        isbnSources.map { it::class } shouldBe listOf(BnfSource::class, OpenLibrarySource::class)
     }
 }

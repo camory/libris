@@ -257,3 +257,10 @@
   and reformatting it would put a line of noise in a task that only moves the
   pin; the next task that touches the file runs `npm run format` on it (found
   on T025, 2026-09-15).
+- Backend: `OpenLibrarySource` reads a 404 as `NothingKnown` whoever answered
+  it, so a 404 on `/search.json` would say the ISBN is unknown instead of
+  failing. Open Library's search answers 200 with no doc when it finds
+  nothing, so no case of T024 could make it wrong; the day the two requests
+  need telling apart, the adapter catches around each one (found on T024,
+  2026-09-15).
+
