@@ -28,7 +28,6 @@ class IsbnTest {
     fun `a thirteen-digit EAN with another prefix is not an ISBN`() {
         // Given / When / Then
         Isbn.of("4006381333931") shouldBe null
-        Isbn.ofThirteenDigits("4006381333931") shouldBe null
     }
 
     @Test
@@ -56,26 +55,6 @@ class IsbnTest {
         Isbn.of("000000000\t") shouldBe null
         Isbn.of("000000000\n") shouldBe null
         Isbn.of("000000000\u00a0") shouldBe null
-    }
-
-    @Test
-    fun `the thirteen-digit writing is thirteen digits whose check digit is right`() {
-        // Given / When / Then
-        Isbn.ofThirteenDigits("9782723488525")?.digits shouldBe "9782723488525"
-        Isbn.ofThirteenDigits("9791000000008")?.digits shouldBe "9791000000008"
-    }
-
-    @Test
-    fun `the thirteen-digit writing admits nothing else`() {
-        // Given / When / Then
-        Isbn.ofThirteenDigits("978-2-7234-8852-5") shouldBe null
-        Isbn.ofThirteenDigits("9782723488525 ") shouldBe null
-        Isbn.ofThirteenDigits("2723488527") shouldBe null
-        Isbn.ofThirteenDigits("9782723488526") shouldBe null
-        Isbn.ofThirteenDigits("978272348852") shouldBe null
-        Isbn.ofThirteenDigits("97827234885250") shouldBe null
-        Isbn.ofThirteenDigits("９７８２７２３４８８５２５") shouldBe null
-        Isbn.ofThirteenDigits("") shouldBe null
     }
 
     @Test

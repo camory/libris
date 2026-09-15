@@ -520,22 +520,28 @@ Format:
 
 ## 2026-09-15 — T023 The ISBN in one class, both writings — done
 - Did: `Isbn13` is `Isbn` on both sides, one class holding every rule of the
-  identifier — both writings in, the thirteen digits out — with `of` for what
-  a reader types or a barcode carries and `ofThirteenDigits` for what the
-  API's path admits; the frontend's `isbn13Of` became `Isbn.of` on a nominal
-  class, and the view, the barcode adapter and the controller ask it.
+  identifier — both writings in, the thirteen digits out — with one factory,
+  `of`, for what a reader types or a barcode carries; the frontend's
+  `isbn13Of` became `Isbn.of` on a nominal class, and the view, the barcode
+  adapter and the controller ask it. The writing the API's path admits is the
+  controller's rule: it matches the contract's pattern before asking `Isbn.of`.
 - Decided:
-  - **The Bookland prefix is a rule of both factories.** The two halves
+  - **The writing of the path is the controller's rule, not a second
+    factory.** The run had added `Isbn.ofThirteenDigits` for it; Tophe's
+    review moved the check to the controller, where the contract's pattern
+    is, and the cases about the writing to `IsbnControllerTest`. The domain
+    answers whether a text is an ISBN, the API which writing it admits.
+  - **The Bookland prefix is a rule of the domain.** The two halves
     disagreed: the backend took any thirteen digits with a right check digit,
     the frontend only a `97[89]` one. The frontend's rule stands, because the
     contract's path pattern is `^97[89][0-9]{10}$`, the PRD ties the ISBN to
     the EAN-13 barcode, and S2 reads only 978 and 979 codes. The one visible
     change: `GET /api/v1/isbn/4006381333931` answers 400 instead of asking
     the BnF — a request the contract's pattern already excluded.
-  - **`Isbn.ofTenCharacters` answers through `ofThirteenDigits`.** The ten
-    writing verifies its own mod-11 check, builds the twelve and then hands
-    the result to the thirteen rule rather than constructing an `Isbn`
-    itself, so no path into the value skips the rule the API's path names.
+  - **The ten writing answers through the thirteen rule.** It verifies its
+    own mod-11 check, builds the twelve and then hands the result to the
+    thirteen rule rather than constructing an `Isbn` itself, so no path into
+    the value skips the check digit and the prefix.
   - **`SourceEdition.isbn13` became `isbn`.** The type says thirteen no more.
     The JSON field stays `isbn13`, as does the frontend type mirroring it.
 - Deviations from the brief: none in substance. The brief's step 7 named one

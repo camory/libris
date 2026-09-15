@@ -27,7 +27,7 @@ value class Isbn private constructor(val digits: String) {
             }
         }
 
-        fun ofThirteenDigits(text: String): Isbn? = when {
+        private fun ofThirteenDigits(text: String): Isbn? = when {
             !THIRTEEN_DIGITS.matches(text) -> null
             text.last().digitToInt() != checkDigitOf(text.dropLast(1)) -> null
             else -> Isbn(text)
