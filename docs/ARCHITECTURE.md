@@ -200,7 +200,8 @@ session, no BCrypt.
   are Authelia's set of an old convention); the standard is OIDC, which
   Authelia also serves. Moving to OIDC later replaces that one filter by the
   mapping of the `preferred_username`, `email`, `name` and `groups` claims,
-  and nothing else. Deferred: it needs a client registered in Authelia, a
+  and nothing else. Deferred until Libris leaves the household and must
+  know its readers on its own: it needs a client registered in Authelia, a
   redirect flow, and the installed PWA's behaviour checked (see the risk
   below).
 - Trust boundary: in production the backend publishes no port and is reachable
