@@ -553,3 +553,35 @@ Format:
   an amendment in the pull request body since a run does not edit the
   document. No scenario moved; S5 and S6 stay skipped for T024.
 
+
+## 2026-09-15 — T025 The Found state without its sources — done
+- Did: the frontend pins release `v0.4.0` of the contract, whose `Isbn` schema
+  declares twelve fields; `sources` and the `Source` type left `IsbnResponse`,
+  `SourceEdition` and `onePiece1`, and the *Sources* row with its chips left
+  `SourceEditionCard`, the summary now the card's last part (U06). The word
+  *Sources* and the names of the two sources left the `fr` catalogue with it
+  (U08). The client still hands the parsed body through, so the `v0.3.0`
+  backend in production keeps being read whole until T026 ships.
+- Decided:
+  - **The compatibility case builds its client on a host that resolves
+    nowhere**, `http://an-older-backend`, not on `inject("mockBaseUrl")` as
+    `FetchMeApi`'s stubbed case does. On the mock's base URL the case would
+    pass whether or not `vi.stubGlobal` installed, the mock answering the same
+    `ONE_PIECE_1` example; on a dead host the stub is the only thing that can
+    answer, so the case fails loudly when it stops being installed.
+  - **The view's third assertion is deleted, not replaced.** Title and
+    publisher still prove the card is on screen; inventing another word to
+    assert would add a claim the task did not ask for.
+- Deviations from the brief: one. `src/ui/views/isbn/IsbnView.spec.ts` is a
+  tenth changed file, against the criterion that lists nine: its case *asks
+  for the ISBN-13 the rule computes and shows the card* ended on
+  `expect(screen.getByText("BnF")).toBeDefined()`, a word the card no longer
+  shows. The brief did not name the file. The edit is one deleted line, of the
+  same kind and for the same reason as the two the brief authorises in
+  `FastEntryScenarios.spec.ts`, and it contradicts no document, so the run
+  deviated rather than blocking. The pull request states it.
+- Left over: the backend still sends `sources` and still pins `v0.3.0`; T026
+  moves it once this frontend is deployed, which is Tophe's step. Prettier
+  disagrees with `frontend/vitest.global-setup.ts`, on `main` already and not
+  in the gate — a bullet in `agent/PROPOSED.md`. The three places that assert
+  a word of the card are in `agent/GOTCHAS.md`.

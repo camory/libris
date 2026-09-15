@@ -251,4 +251,9 @@
   the root of `domain`; the class is `Isbn` since T023. The run proposed the
   one-word amendment in its pull request body rather than editing the document
   (CLAUDE.md); Tophe settles it on the review (found on T023, 2026-09-15).
-
+- Frontend: Prettier disagrees with `frontend/vitest.global-setup.ts`, the
+  pinned URL sitting past the print width in its array. It is not in the gate
+  (`npm test` runs `vue-tsc`, ESLint and Vitest), it is already so on `main`,
+  and reformatting it would put a line of noise in a task that only moves the
+  pin; the next task that touches the file runs `npm run format` on it (found
+  on T025, 2026-09-15).

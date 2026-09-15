@@ -178,7 +178,7 @@ deployed; no other task touches the contract (D04).
       existing ones kept; nothing else changes behaviour.
       Realises the rule of S3 again; un-skips nothing.
 
-- [ ] T025 Frontend: the Found state without its sources.
+- [x] T025 Frontend: the Found state without its sources.
       The frontend pin moves to `v0.4.0` in `vitest.global-setup.ts`: the
       API client's test against the mock fails, the mock answering no
       `sources`. Then `sources` leaves `IsbnResponse`, `SourceEdition` and
