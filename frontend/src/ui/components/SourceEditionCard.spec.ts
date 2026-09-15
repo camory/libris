@@ -4,6 +4,7 @@ import { describe, expect, it } from "vitest";
 import type { SourceEdition } from "../../domain/SourceEdition";
 import { onePiece1 } from "../../fixture/SourceEditions";
 import { createLibrisI18n } from "../i18n";
+import IconBook from "./icons/IconBook.vue";
 import SourceEditionCard from "./SourceEditionCard.vue";
 
 const barelyKnown: SourceEdition = {
@@ -124,6 +125,17 @@ describe("SourceEditionCard", () => {
     expect(
       screen({ ...onePiece1, coverUrl: null }).queryAllByRole("img"),
     ).toEqual([]);
+  });
+
+  it("shows a book icon when the sources gave no cover", () => {
+    // When
+    const wrapper = card({ ...onePiece1, coverUrl: null });
+
+    // Then
+    expect(
+      within(wrapper.element as HTMLElement).queryAllByRole("img"),
+    ).toEqual([]);
+    expect(wrapper.findComponent(IconBook).exists()).toBe(true);
   });
 
   it("shows one chip per source, after the word Sources, acting on nothing", () => {

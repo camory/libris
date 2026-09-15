@@ -2,6 +2,7 @@
 import { computed } from "vue";
 import { useI18n } from "vue-i18n";
 import type { SourceEdition } from "../../domain/SourceEdition";
+import IconBook from "./icons/IconBook.vue";
 
 const props = defineProps<{ edition: SourceEdition }>();
 
@@ -65,7 +66,12 @@ const rows = computed(() => {
         :alt="t('isbn.card.cover', { title: edition.title })"
         class="h-[149px] w-24 shrink-0 rounded-md bg-border object-contain"
       />
-      <div v-else class="h-[149px] w-24 shrink-0 rounded-md bg-border"></div>
+      <div
+        v-else
+        class="flex h-[149px] w-24 shrink-0 items-center justify-center rounded-md bg-border"
+      >
+        <IconBook class="text-muted opacity-60" />
+      </div>
 
       <div class="flex min-w-0 flex-col gap-1.5">
         <h2 class="flex flex-col gap-1.5 text-card-title">
