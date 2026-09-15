@@ -20,8 +20,11 @@ value class Isbn private constructor(val digits: String) {
 
         fun of(text: String): Isbn? {
             val characters = text.filterNot { it in SEPARATORS }
-            val digits = if (characters.length == TEN_LENGTH) thirteenOf(characters) else characters
-            return digits?.let { ofThirteenDigits(it) }
+            return if (characters.length == TEN_LENGTH) {
+                ofTenCharacters(characters)
+            } else {
+                ofThirteenDigits(characters)
+            }
         }
 
         fun ofThirteenDigits(text: String): Isbn? = when {
@@ -30,13 +33,13 @@ value class Isbn private constructor(val digits: String) {
             else -> Isbn(text)
         }
 
-        private fun thirteenOf(ten: String): String? {
-            val nine = ten.dropLast(1)
-            if (!nine.all { it in '0'..'9' } || ten.last().uppercaseChar() != tenCheckDigitOf(nine)) {
+        private fun ofTenCharacters(text: String): Isbn? {
+            val nine = text.dropLast(1)
+            if (!nine.all { it in '0'..'9' } || text.last().uppercaseChar() != tenCheckDigitOf(nine)) {
                 return null
             }
             val twelve = TEN_PREFIX + nine
-            return twelve + checkDigitOf(twelve)
+            return ofThirteenDigits(twelve + checkDigitOf(twelve))
         }
 
         private fun checkDigitOf(body: String): Int {

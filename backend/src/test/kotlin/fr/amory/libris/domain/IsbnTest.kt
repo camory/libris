@@ -5,7 +5,7 @@ import org.junit.jupiter.api.Test
 
 class IsbnTest {
     @Test
-    fun `an ISBN-13 exposes its thirteen digits`() {
+    fun `an ISBN exposes its thirteen digits`() {
         Isbn.of("9782723488525")?.digits shouldBe "9782723488525"
     }
 
@@ -92,16 +92,17 @@ class IsbnTest {
     }
 
     @Test
-    fun `a text of another length is not an ISBN-13`() {
+    fun `a text of another length is not an ISBN`() {
         // Given / When / Then
         Isbn.of("978272348852") shouldBe null
         Isbn.of("97827234885250") shouldBe null
     }
 
     @Test
-    fun `a text that is not digits only is not an ISBN-13`() {
+    fun `a text that is not digits only is not an ISBN`() {
         // Given / When / Then
         Isbn.of("97827234885X5") shouldBe null
+        Isbn.of("978-2-7234-8852-X") shouldBe null
         Isbn.of("９７８２７２３４８８５２５") shouldBe null
         Isbn.of("") shouldBe null
     }
