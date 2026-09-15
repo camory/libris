@@ -10,8 +10,6 @@ import fr.amory.libris.application.ReaderVisit
 import fr.amory.libris.domain.AuthorRole.ARTIST
 import fr.amory.libris.domain.AuthorRole.WRITER
 import fr.amory.libris.domain.Reader
-import fr.amory.libris.domain.lookup.Source.BNF
-import fr.amory.libris.domain.lookup.Source.OPEN_LIBRARY
 import fr.amory.libris.domain.lookup.SourceAuthor
 import fr.amory.libris.domain.lookup.SourceEdition
 import fr.amory.libris.domain.lookup.SourceSeries
@@ -57,7 +55,7 @@ class ApiContractTest @Autowired constructor(
     fun `the API matches the contract`() {
         given(visit.visit("contracteer", "contracteer@amory.fr", "Contracteer"))
             .willReturn(Reader(username = "contracteer", email = "contracteer@amory.fr", displayName = "Contracteer"))
-        given(lookup.lookUp(isbnOf("9782723488525"))).willReturn(Found(ONE_PIECE_1, listOf(BNF, OPEN_LIBRARY)))
+        given(lookup.lookUp(isbnOf("9782723488525"))).willReturn(Found(ONE_PIECE_1))
         given(lookup.lookUp(isbnOf("9782000000006"))).willReturn(UnknownIsbn)
         given(lookup.lookUp(isbnOf("9791000000008"))).willReturn(SourcesUnavailable)
     }

@@ -15,7 +15,7 @@ import org.junit.jupiter.api.Test
 
 class IsbnLookupTest {
     @Test
-    fun `the source that knows answers what it knows, and names itself`() {
+    fun `the source that knows answers what it knows`() {
         // Given
         val edition = A_SOURCE_EDITION.copy(title = "Romance dawn")
         val lookup = IsbnLookup(SourceAnswering(BNF, Known(edition)))
@@ -24,7 +24,7 @@ class IsbnLookupTest {
         val result = lookup.lookUp(isbnOf("9782723488525"))
 
         // Then
-        result shouldBe Found(edition, listOf(BNF))
+        result shouldBe Found(edition)
     }
 
     @Test
