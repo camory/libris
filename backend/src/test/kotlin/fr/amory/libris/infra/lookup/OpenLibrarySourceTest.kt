@@ -54,7 +54,7 @@ class OpenLibrarySourceTest {
                 language = null,
                 pageCount = 64,
                 summary = null,
-                coverUrl = "https://covers.openlibrary.org/b/isbn/9782380751673-L.jpg",
+                coverUrl = "https://covers.openlibrary.org/b/isbn/9782380751673-L.jpg?default=false",
             ),
         )
     }
@@ -177,7 +177,7 @@ class OpenLibrarySourceTest {
             language = null,
             pageCount = null,
             summary = null,
-            coverUrl = "https://covers.openlibrary.org/b/isbn/9782253098058-L.jpg",
+            coverUrl = "https://covers.openlibrary.org/b/isbn/9782253098058-L.jpg?default=false",
         )
         val ANOTHER_WORK = """
             {"docs": [{"key": "/works/OL36287W", "author_name": ["Alexandre Dumas"],

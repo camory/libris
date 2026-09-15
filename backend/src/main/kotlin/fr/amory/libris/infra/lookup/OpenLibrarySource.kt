@@ -48,7 +48,7 @@ class OpenLibrarySource(baseUrl: String, timeout: Duration) : IsbnSource {
         language = null,
         pageCount = edition["number_of_pages"]?.asInt(),
         summary = null,
-        coverUrl = "$COVERS/${isbn.digits}-L.jpg",
+        coverUrl = "$COVERS/${isbn.digits}-L.jpg?default=false",
     )
 
     private fun authorsOf(edition: JsonNode, search: JsonNode): List<SourceAuthor> {
