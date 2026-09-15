@@ -11,7 +11,7 @@ import {
 import { useI18n } from "vue-i18n";
 import { barcodeScannerKey } from "../../../application/BarcodeScanner";
 import { isbnApiKey } from "../../../application/IsbnApi";
-import { isbn13Of } from "../../../domain/Isbn13";
+import { Isbn } from "../../../domain/Isbn";
 import type { SourceEdition } from "../../../domain/SourceEdition";
 import SourceEditionCard from "../../components/SourceEditionCard.vue";
 import SourceEditionCardSkeleton from "../../components/SourceEditionCardSkeleton.vue";
@@ -66,7 +66,7 @@ async function toggleCamera() {
 async function search() {
   edition.value = undefined;
   message.value = undefined;
-  const isbn13 = isbn13Of(typed.value);
+  const isbn13 = Isbn.of(typed.value)?.digits ?? null;
   if (isbn13 === null) {
     message.value = "isbn.invalid";
     return;
