@@ -189,7 +189,7 @@ deployed; no other task touches the contract (D04).
       behaviour; un-skips nothing.
       Realises the Found state of S1 as the spec now reads it.
 
-- [ ] T026 Backend: the answer without its sources.
+- [x] T026 Backend: the answer without its sources.
       Launched once T025 is deployed. The backend pin moves to `v0.4.0` in
       `ApiContractTest`: Contracteer refuses the `sources` the answer still
       carries. Then `sources` leaves `IsbnResponse`, the controller and

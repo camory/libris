@@ -79,6 +79,11 @@ was found.
   in `build/libs`; the image's build stage runs `bootJar` only.
 
 ## Backend tests
+- `Source` and `IsbnSource.source` name which source a port implementation is,
+  not which sources an answer admits: since T026 no main code reads them, and
+  `BnfSourceTest` (*the source names itself*) and `LibrisApplicationTest` are
+  what keep them alive until T024 merges in the order of the sources. Neither
+  is dead code.
 - The first HTTP request and the first XML parse of a JVM cost more than a
   second. A client test with a short timeout warms the client once in
   `@BeforeAll` under a long timeout, then resets the stubs. A delay stub
@@ -225,6 +230,11 @@ was found.
   forget it.
 
 ## Contract and release
+- A pin bump that takes a response field away is a red of the existing
+  verification, not a new case: the schema's `additionalProperties: false` is
+  what refuses it, and the 200 scenario fails with `Additional properties are
+  not allowed. Unexpected properties: '<field>'` while the other scenarios
+  stay green.
 - Contracteer 4.0.0's CLI cannot load an OpenAPI 3.1 document: the contract
   stays 3.0.3 and `nullable` is the 3.0 keyword. On an operation without
   parameters a response example creates no scenario; the verifier emits one
