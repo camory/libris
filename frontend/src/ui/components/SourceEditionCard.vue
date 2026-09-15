@@ -10,10 +10,6 @@ const { t, te } = useI18n();
 
 const coverFailed = ref(false);
 
-const cover = computed(() =>
-  coverFailed.value ? null : props.edition.coverUrl,
-);
-
 const overline = computed(() => {
   const series = props.edition.series;
   if (series === null) {
@@ -70,8 +66,8 @@ const rows = computed(() => {
         class="flex h-[149px] w-24 shrink-0 items-center justify-center rounded-md bg-border"
       >
         <img
-          v-if="cover"
-          :src="cover"
+          v-if="edition.coverUrl && !coverFailed"
+          :src="edition.coverUrl"
           :alt="t('isbn.card.cover', { title: edition.title })"
           class="h-full w-full rounded-md object-contain"
           @error="coverFailed = true"
