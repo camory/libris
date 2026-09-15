@@ -223,9 +223,33 @@ deployed; no other task touches the contract (D04).
       contract edit.
       Realises S5 and S6, S4 and S7 over two sources; un-skips S5 and S6.
 
+- [ ] T027 Backend: the BnF's newer records.
+      Source adapter only, no spec or contract change. Three records the
+      BnF writes otherwise than the One Piece ones: the publisher and the
+      legal-deposit year sit in field 214 instead of 210 since about 2019
+      (9782505125990, Murena tome 13, one 214; 9782505083399, Murena tome
+      11, two of them, the publisher's with second indicator `0`, the
+      printer's with `3`); the year sits in field 100, positions 9 to 12
+      of subfield a, on every record; a provisional record writes the page
+      count without its stop (`215 $a 1 volume 348 p`, 9782371025219) and
+      the series and tome in the title field with no 461 (`200 $a Les
+      Carnets de l'apothicaire $h tome 7`, same record). Read the 214
+      whose second indicator is `0`, then 210, for the publisher; field
+      100 for the year, 214 then 210 as the fallback; accept `p` with or
+      without the stop; when 461 is absent and 200 has a subfield `h` of
+      the shape `tome <n>`, read the series from `$a` and the tome from
+      `$h`, `$a` staying the title. One recording per record, from the
+      live API, beside the One Piece one.
+      Realises S1 as the spec reads it; un-skips nothing.
+
 *Done (Tophe, on the Pixel, from the installed app): scan a manga and a BD
-and read both cards, the source included; type an ISBN-10 by hand and read its
-card; type a wrong ISBN and read the message.*
+and read both cards; type an ISBN-10 by hand and read its card; type a wrong
+ISBN and read the message.*
+
+## Update — specs/update.md
+
+Contract: none, the feature is between the app and its static server. Tasks
+derived by the planner once the mockup is drawn.
 
 ## Done
 

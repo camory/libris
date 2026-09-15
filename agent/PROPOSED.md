@@ -112,12 +112,17 @@
   10 s before the 503; asking in parallel would halve it at the price of an
   executor in `application`. Sequential is the boring choice; a shorter
   default is a product number for Tophe (found on 2026-09-13).
-- Backend: no BnF function code maps to `COLOURIST`. The UNIMARC `$4`
-  codes the recordings carry are `070` (writer), and the role map adds
-  `440` (artist) and `730` (translator); nothing in them names a colourist,
-  and a code invented from nothing would be a guess. To settle with Tophe
-  against a real record of an album whose colourist is credited (found on
-  2026-09-13).
+- Backend: the BnF never says colourist. Three Murena records read on
+  2026-09-16: on 9782505010166 (tome 8, 2010) and 9782505083399 (tome 11,
+  2020) the colourist is prose in the title statement only (`200 $g
+  couleurs, Jérémy Petiqueux`), with no 70x entry and no `$4`; on
+  9782505125990 (tome 13, 2025) he draws and colours and carries the one
+  code `440`. The BnF gives one function per person, so `COLOURIST` has no
+  code to map and stays a role the BnF never produces. The same records
+  code their artists `070` on the 2010 and 2020 ones and `440` on the 2025
+  one, so the card says *scénario* for an artist on a share of BD records;
+  the only correction would parse the `$g` prose, which nothing does
+  (found on 2026-09-13, settled 2026-09-16).
 - Backend: the BnF language map holds one entry, `fre → fr`. The mapping
   from UNIMARC `101$a` to the two-letter code the contract wants grows one
   language at a time, with the recordings that exercise it; a whole ISO
@@ -130,29 +135,6 @@
   contract does not declare it, so the task that adds it is the one that
   decides how it is exercised — and it is also when the two clients' shared
   request shape is worth extracting (found on T016, 2026-09-14).
-- Backend: the BnF source reads the publisher and the year from field 210,
-  and records written since about 2019 carry them in field 214 instead
-  (`9782266299763`: `214 $c PKJ $d DL 2019`, no 210; the 2013 One Piece
-  records: 210 only), so a recent book comes back with `publisher` and
-  `publicationYear` null. Every record carries the year in field 100,
-  positions 9 to 12 of subfield a (`20191112d2019…`), never wrapped in
-  "DL" or "impr.". Read 214 then 210 for the publisher, field 100 for the
-  year with 214/210 as the fallback; one 214-shaped fixture beside the One
-  Piece one. Source adapter only, no spec change (found on Tophe's staging
-  test, 2026-09-14).
-- Backend: the BnF page count needs a full stop. `PAGES` matches `(\d+)\s*p\.`
-  and the provisional legal-deposit records write `215 $a 1 volume 348 p`
-  without one (`9782371025219`, Les Carnets de l'apothicaire tome 7, created
-  2026-06-30, `intermrc` in field 801), so `pageCount` comes back null.
-  Accept `p` with or without the stop; one such fixture. Source adapter only,
-  no spec change (found on Tophe's staging test, 2026-09-14).
-- Backend: the series and the tome can sit in the title field. The same
-  provisional records carry no 461 and write `200 $a Les Carnets de
-  l'apothicaire $h tome 7` instead, so the card shows a bare title and no
-  overline. When 461 is absent and 200 has a subfield `h` of the shape
-  `tome <n>`, read the series from `$a` and the tome from `$h`; whether
-  `$a` then stays the title too is the one question for the task. Source
-  adapter only, no spec change (found on Tophe's staging test, 2026-09-14).
 - Frontend: the tab bar of U03 is nowhere. `App.vue` carries the footer and
   a `RouterView` only, so the reader moves between *Accueil* and *Ajouter*
   through a link in the home view; the bar itself — the two tabs with
@@ -196,13 +178,6 @@
   usable for a while says nothing either. Whether a *rien trouvé* message
   arrives after a while, and when, is product behaviour for Tophe (found on
   T019, 2026-09-14).
-- Backend: the BnF finds a record made before 2007 by its ten-digit ISBN
-  only. 9782253098058 (*Le comte de Monte-Cristo*, Livre de Poche, 1995, ark
-  `cb35778232t`) answers zero records to `bib.isbn` with the thirteen digits
-  and one to `bib.isbn adj "2253098051"`; `BnfSource` asks with the thirteen
-  alone, so the book is unknown to it. When the prefix is 978, ask for the
-  ten as well, or instead, before T021 makes the BnF the only source
-  (measured 2026-09-14, for T021's brief).
 - Backend: the same record comes back empty in `unimarcxchange`, the schema
   `BnfSource` parses: the record slot holds a diagnostic (`erreur de
   traitement`, details `-20`) and no fields, on every attempt, while
