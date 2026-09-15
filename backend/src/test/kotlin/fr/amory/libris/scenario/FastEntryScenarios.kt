@@ -55,7 +55,7 @@ class FastEntryScenarios @Autowired constructor(
                   "language": "fr",
                   "pageCount": 203,
                   "summary": null,
-                  "coverUrl": "https://catalogue.bnf.fr/couverture?&appName=NE&idArk=ark:/12148/cb43636708p&couverture=1",
+                  "coverUrl": "$ONE_PIECE_COVER",
                   "sources": ["BNF"]
                 }
                 """,
@@ -78,7 +78,26 @@ class FastEntryScenarios @Autowired constructor(
 
     @Test
     @Disabled("T024")
-    fun `S5 A book the BnF lacks`() {
+    fun `S5 Merged answer`() {
+        // Given
+        bnf.partiallyKnows("9782723488525")
+        openLibrary.knows("9782723488525")
+        // When
+        val response = ask("9782723488525")
+        // Then
+        response.expectStatus().isOk()
+            .expectBody()
+            .jsonPath("$.title").isEqualTo("Romance dawn")
+            .jsonPath("$.authors[0].name").isEqualTo("Eiichirō Oda")
+            .jsonPath("$.pageCount").isEqualTo(207)
+            .jsonPath("$.publicationYear").isEqualTo(2013)
+            .jsonPath("$.coverUrl").isEqualTo(ONE_PIECE_COVER)
+            .jsonPath("$.sources").isEqualTo(listOf("BNF", "OPEN_LIBRARY"))
+    }
+
+    @Test
+    @Disabled("T024")
+    fun `S5 Merged answer, from Open Library alone`() {
         // Given
         bnf.doesNotKnow("9782380751673")
         openLibrary.knows("9782380751673")
@@ -89,6 +108,7 @@ class FastEntryScenarios @Autowired constructor(
             .expectHeader().contentType(APPLICATION_JSON)
             .expectBody()
             .jsonPath("$.title").isEqualTo("Space Wars - Chapitre 1")
+            .jsonPath("$.authors[*].name").isEqualTo(listOf("Baba", "Stéphane Lapuss'", "Tartuff"))
             .jsonPath("$.publisher").isEqualTo("KENNES EDITIONS")
             .jsonPath("$.coverUrl").isEqualTo("https://covers.openlibrary.org/b/isbn/9782380751673-L.jpg")
             .jsonPath("$.sources").isEqualTo(listOf("OPEN_LIBRARY"))
@@ -96,7 +116,7 @@ class FastEntryScenarios @Autowired constructor(
 
     @Test
     @Disabled("T024")
-    fun `S6 The BnF down`() {
+    fun `S6 One source down`() {
         // Given
         bnf.fails()
         openLibrary.knows("9782380751673")
@@ -111,17 +131,17 @@ class FastEntryScenarios @Autowired constructor(
 
     @Test
     @Disabled("T024")
-    fun `S6 The BnF down, past the timeout`() {
+    fun `S6 One source down, past the timeout`() {
         // Given
-        bnf.answersTooLate("9782380751673")
-        openLibrary.knows("9782380751673")
+        bnf.knows("9782723488525")
+        openLibrary.answersTooLate("9782723488525")
         // When
-        val response = ask("9782380751673")
+        val response = ask("9782723488525")
         // Then
         response.expectStatus().isOk()
             .expectBody()
-            .jsonPath("$.title").isEqualTo("Space Wars - Chapitre 1")
-            .jsonPath("$.sources").isEqualTo(listOf("OPEN_LIBRARY"))
+            .jsonPath("$.title").isEqualTo("Romance dawn")
+            .jsonPath("$.sources").isEqualTo(listOf("BNF"))
     }
 
     @Test
@@ -157,6 +177,8 @@ class FastEntryScenarios @Autowired constructor(
         .exchange()
 
     private companion object {
+        const val ONE_PIECE_COVER =
+            "https://catalogue.bnf.fr/couverture?&appName=NE&idArk=ark:/12148/cb43636708p&couverture=1"
         val READER = mapOf(
             "Remote-User" to listOf("juliette"),
             "Remote-Name" to listOf("Juliette"),

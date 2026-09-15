@@ -176,18 +176,23 @@ frontend one; no other task touches the contract (D04).
       existing ones kept; nothing else changes behaviour.
       Realises the rule of S3 again; un-skips nothing.
 
-- [ ] T024 Backend: Open Library back, behind the BnF.
-      `OpenLibrarySource` returns from the history of T013 and T021
-      (`/isbn/<isbn>.json` followed to the book document, one request per
-      author, the cover by ISBN), `LIBRIS_OPEN_LIBRARY_URL` with it; the
-      use case asks the BnF first and Open Library only when the BnF
-      answers nothing or fails; no merge: the answer is one source's and
-      `sources` names it (D02). Not-found when a source replied and none
-      knows, sources-unavailable when none replied, as before.
-      Tested over the recorded answers, 9782380751673 the book the BnF
-      lacks; the use case over fakes: the BnF knows and Open Library is
-      not asked, the BnF knows nothing and Open Library knows, the BnF
-      fails and Open Library knows, both know nothing, both fail. No
+- [ ] T024 Backend: Open Library back, in two requests.
+      The merge rule and the use case over several sources return from
+      the history of T014 and T021, unchanged: the first source's value
+      wins for every field it gives, the next fills what it leaves empty,
+      `sources` lists the ones that know; not-found when a source replied
+      and none knows, sources-unavailable when none replied (D02).
+      `OpenLibrarySource` returns reshaped, with `LIBRIS_OPEN_LIBRARY_URL`:
+      the edition document (`/isbn/<isbn>.json`, redirect followed) for
+      the fields, then one search request
+      (`/search.json?isbn=<isbn>&fields=key,author_name,edition_key`) for
+      the authors, all writers, from the one work whose `edition_key` holds
+      the edition's key, none when no work does; never a request per
+      author; the cover by ISBN as before.
+      Tested over recorded answers: 9782380751673 (edition and search),
+      and 9782253098058 for the pick of the work, whose search answer
+      lists two works and only the second holds the edition; the merge
+      rule field by field; the use case over fakes as T014 had it. No
       contract edit: `OPEN_LIBRARY` is in `v0.3.0` already.
       Realises S5 and S6, S4 and S7 over two sources; un-skips S5 and S6.
 

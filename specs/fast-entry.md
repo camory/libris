@@ -70,34 +70,39 @@ Proof: backend scenario test over the stubbed sources answering nothing, the
 not-found problem; frontend scenario test against `contracteer mock` with
 `404_UNKNOWN_ISBN`, the message.
 
-**S5 A book the BnF lacks** · backend
+**S5 Merged answer** · backend
 
 ```gherkin
-Given an ISBN the BnF does not know and Open Library does
+Given an ISBN the BnF or Open Library knows
 
 When the reader asks for it
 
-Then Libris answers what Open Library knows, its cover by ISBN, and Open
-     Library as the only source
+Then the answer carries the BnF's value for every field the BnF gives
+
+And Open Library's for the fields the BnF leaves empty
+
+And lists the sources that know it
 ```
 
-Proof: backend scenario test over the stubbed BnF answering nothing and a
-recorded Open Library answer, 9782380751673 (*Space Wars*, chapitre 1, which
-the catalogue has not recorded); unit tests of the Open Library mapping in
-the implementer's loop.
+Proof: backend scenario test over stubbed sources, one recorded BnF record
+with fields blanked that Open Library fills, and one book the catalogue has
+not recorded, 9782380751673 (*Space Wars*, chapitre 1), answered by Open
+Library alone; unit tests of the merge rule, field by field, and of the Open
+Library mapping in the implementer's loop.
 
-**S6 The BnF down** · backend
+**S6 One source down** · backend
 
 ```gherkin
-Given the BnF failing or not answering in time while Open Library answers
+Given a source that fails or does not answer in time while the other answers
 
 When the reader asks for an ISBN
 
-Then Libris answers what Open Library knows, and Open Library as the only
-     source
+Then the answer carries what the source that replied knows
+
+And lists only that source
 ```
 
-Proof: backend scenario test with the stubbed BnF failing, then answering
+Proof: backend scenario test with one stub failing, then one stub answering
 past the timeout.
 
 **S7 Every source down** · frontend, backend
@@ -183,15 +188,23 @@ BnF's published list; the cover is the catalogue's own,
 `https://catalogue.bnf.fr/couverture?&appName=NE&idArk=<ark>&couverture=1`
 where `<ark>` is field 003 from `ark:/` on, handed out for every answer
 without checking it, since the catalogue answers an error where it has no
-picture and the card shows the stand-in then). Open Library (`/isbn/<isbn>.json`,
-which redirects to the book document, then one request per author; the cover
+picture and the card shows the stand-in then). Open Library, in two requests
+and never one per author: the edition document (`/isbn/<isbn>.json`, which
+redirects to the book record the ISBN index points to) for title, subtitle,
+publisher, publication year and page count; then the search answer
+(`/search.json?isbn=<isbn>&fields=key,author_name,edition_key`) for the
+authors, all writers, taken from the one work whose `edition_key` list holds
+the edition's key, and none when no work does; the cover
 `https://covers.openlibrary.org/b/isbn/<isbn>-L.jpg`, handed out without
-checking it), asked only when the BnF answers nothing or fails. The answer is
-one source's, never a merge, and `sources` names it; not-found when a source
-replied and none knows, sources-unavailable when none replied. Measured on
-2026-09-15: Open Library answers in 0.7 to 1.3 s, misses included, twenty in a
-row without a slow first one. Google Books comes later, with its own
-scenarios.
+checking it. Both sources are asked on every lookup and merged: the first
+source's value wins for every field it gives, the next fills the fields it
+leaves empty, and `sources` lists the ones that know the book; not-found when
+a source replied and none knows, sources-unavailable when none replied.
+Measured on 2026-09-15: Open Library answers each request in 0.5 to 1.3 s,
+misses included, twenty in a row without a slow first one; one ISBN often
+names several edition records and several works there, which is why the
+edition document is asked by ISBN and the work is picked by the edition's
+key. Google Books comes later, with its own scenarios.
 
 
 ## Done
@@ -218,4 +231,4 @@ and read its card, Open Library as the source.
 - T022 — the stand-in of the cover in the Found state — frontend
 - T023 — the rule of S3 under the PRD's name, both writings in one class
   — both sides
-- T024 — S5, S6; S4 and S7 over two sources — backend
+- T024 — S5, S6, the merge rule back; S4 and S7 over two sources — backend

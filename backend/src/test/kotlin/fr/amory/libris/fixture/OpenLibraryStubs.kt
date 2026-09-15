@@ -2,6 +2,7 @@ package fr.amory.libris.fixture
 
 import com.github.tomakehurst.wiremock.WireMockServer
 import com.github.tomakehurst.wiremock.client.ResponseDefinitionBuilder
+import com.github.tomakehurst.wiremock.client.WireMock.equalTo
 import com.github.tomakehurst.wiremock.client.WireMock.get
 import com.github.tomakehurst.wiremock.client.WireMock.notFound
 import com.github.tomakehurst.wiremock.client.WireMock.ok
@@ -15,13 +16,14 @@ class OpenLibraryStubs(private val server: WireMockServer) {
     val baseUrl: String get() = server.baseUrl()
 
     fun knows(isbn: String) {
-        val document = recorded("open-library/books/$isbn.json")
-        val key = JsonPath.read<String>(document, "$.key")
+        val edition = recorded("open-library/books/$isbn.json")
+        val key = JsonPath.read<String>(edition, "$.key")
         server.stubFor(get(urlPathEqualTo("/isbn/$isbn.json")).willReturn(temporaryRedirect("$baseUrl$key.json")))
-        server.stubFor(get(urlPathEqualTo("$key.json")).willReturn(json(document)))
-        JsonPath.read<List<String>>(document, "$.authors[*].key").forEach { author ->
-            server.stubFor(get(urlPathEqualTo("$author.json")).willReturn(json(recorded("open-library$author.json"))))
-        }
+        server.stubFor(get(urlPathEqualTo("$key.json")).willReturn(json(edition)))
+        server.stubFor(
+            get(urlPathEqualTo("/search.json")).withQueryParam("isbn", equalTo(isbn))
+                .willReturn(json(recorded("open-library/search/$isbn.json"))),
+        )
     }
 
     fun doesNotKnow(isbn: String) {
@@ -33,14 +35,6 @@ class OpenLibraryStubs(private val server: WireMockServer) {
 
     fun fails() {
         server.stubFor(get(urlPathMatching("/isbn/.*")).willReturn(serverError()))
-    }
-
-    fun failsOn(path: String) {
-        server.stubFor(get(urlPathEqualTo(path)).willReturn(serverError()))
-    }
-
-    fun answers(path: String, body: String) {
-        server.stubFor(get(urlPathEqualTo(path)).willReturn(json(body)))
     }
 
     fun answersTooLate(isbn: String) {
