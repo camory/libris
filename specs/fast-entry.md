@@ -18,7 +18,7 @@ When the reader asks for it, typed with or without hyphens or spaces,
 
 Then Libris answers what the BnF knows: title, subtitle, authors with their
      roles, series and tome, collection, publisher, publication year, language,
-     page count, summary, cover, the ISBN-13, and the source
+     page count, summary, cover and the ISBN-13
 ```
 
 Proof: contract example `ONE_PIECE_1` verified by Contracteer on both sides;
@@ -80,8 +80,6 @@ When the reader asks for it
 Then the answer carries the BnF's value for every field the BnF gives
 
 And Open Library's for the fields the BnF leaves empty
-
-And lists the sources that know it
 ```
 
 Proof: backend scenario test over stubbed sources, one recorded BnF record
@@ -98,8 +96,6 @@ Given a source that fails or does not answer in time while the other answers
 When the reader asks for an ISBN
 
 Then the answer carries what the source that replied knows
-
-And lists only that source
 ```
 
 Proof: backend scenario test with one stub failing, then one stub answering
@@ -147,9 +143,9 @@ States:
   has none or the image does not load; at its right the series and
   tome (*One piece · tome 1*), the title, the subtitle, the authors each with
   their roles (*Eiichirō Oda · scénario, dessin*); then one row per field,
-  *Collection*, *Éditeur*, *Année*, *Langue*, *Pages*, *ISBN*; then
-  *Sources* followed by one chip per source, *BnF*, *Open Library*. A field
-  the answer leaves empty has no row.
+  *Collection*, *Éditeur*, *Année*, *Langue*, *Pages*, *ISBN*. A field
+  the answer leaves empty has no row. The card never says which source
+  answered.
 - **Not an ISBN** (S3): the field outlined in red and *ISBN invalide* in red
   under it. No request leaves.
 - **Unknown ISBN** (S4): the same, *ISBN inconnu*.
@@ -160,15 +156,16 @@ A message replaces the previous card or message; the field keeps its text.
 
 ## Contract
 
-Release `v0.3.0` of `camory/libris-api`, one read-only operation:
+Release `v0.4.0` of `camory/libris-api`, one read-only operation (`v0.3.0`
+answered the same with a `sources` array; `v0.4.0` drops it):
 
 - `GET /api/v1/isbn/{isbn}` (thirteen digits; the client turns the typed text
   or the barcode into the ISBN-13 first) → `200` `Isbn`: `isbn13`, `title`,
   nullable `subtitle`, `authors` as an array of `IsbnAuthor` `{name, role}`
   with `role` in `WRITER | ARTIST | COLOURIST | TRANSLATOR`, nullable
   `series` as `IsbnSeries` `{name, volumeNumber}`, nullable `collection`,
-  `publisher`, `publicationYear`, `language`, `pageCount`, `summary`,
-  `coverUrl`, and `sources` as an array of `BNF | OPEN_LIBRARY`; `400`
+  `publisher`, `publicationYear`, `language`, `pageCount`, `summary` and
+  `coverUrl`; `400`
   `ValidationProblem` `/problems/validation`, one error on the `isbn` field,
   its code the document's example; `404` `Problem` `/problems/not-found`;
   `503` `Problem` `/problems/sources-unavailable`. Examples `ONE_PIECE_1` (9782723488525),
@@ -199,8 +196,9 @@ the edition's key, and none when no work does; the cover
 checking it. Both sources are asked at once on every lookup, so a lookup
 costs the slower source and not the sum, and merged in their order: the
 first source's value wins for every field it gives, the next fills the
-fields it leaves empty, and `sources` lists the ones that know the book; not-found when
-a source replied and none knows, sources-unavailable when none replied.
+fields it leaves empty; not-found when a source replied and none knows,
+sources-unavailable when none replied. The answer never says which sources
+knew the book: the backend keeps that for the two outcomes alone.
 Measured on 2026-09-15: Open Library answers each request in 0.5 to 1.3 s,
 misses included, twenty in a row without a slow first one; one ISBN often
 names several edition records and several works there, which is why the
@@ -211,10 +209,10 @@ key. Google Books comes later, with its own scenarios.
 ## Done
 
 On the Pixel, from the installed app, through the home page's link to the
-lookup screen: scan a manga and a BD and read both
-cards, the source included; type an ISBN-10 by hand and read its card; type a
-wrong ISBN and read the message; type 9782380751673, a book the BnF lacks,
-and read its card, Open Library as the source.
+lookup screen: scan a manga and a BD and read both cards; type an ISBN-10 by
+hand and read its card; type a wrong ISBN and read the message; type
+9782380751673, a book the BnF lacks, and read its card, filled by Open
+Library alone.
 
 ## Tasks
 
@@ -232,4 +230,7 @@ and read its card, Open Library as the source.
 - T022 — the stand-in of the cover in the Found state — frontend
 - T023 — the rule of S3 under the PRD's name, both writings in one class
   — both sides
+- T025 — the Found state without its sources, the frontend on `v0.4.0`
+  — frontend
+- T026 — the answer without its sources, the backend on `v0.4.0` — backend
 - T024 — S5, S6, the merge rule back; S4 and S7 over two sources — backend

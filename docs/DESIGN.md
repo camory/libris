@@ -50,7 +50,7 @@ One scale, in pixels, each step with its one job:
 | button       | 16 / semibold     | the primary action                              |
 | lead         | 15 / regular      | a subtitle, an empty-state sentence             |
 | body         | 14 / regular      | hints, messages, label/value rows, line 1.4     |
-| label        | 13 / semibold     | a field label, in `muted`; chips, `Sources`     |
+| label        | 13 / semibold     | a field label, in `muted`                       |
 | overline     | 12 / semibold     | uppercase, tracked, in `accent`: série · tome   |
 | tab          | 12 / medium       | the tab bar; semibold on the active tab         |
 
@@ -144,7 +144,7 @@ No toast: an answer stays where it landed until the next one replaces it,
 and it never floats over the page. The camera sheet is a block of the
 content, under the button, not a layer over the page.
 
-### U06 — Cards and chips
+### U06 — Cards
 **Card.** A card shows one thing the app knows, an ouvrage: `surface`, a
 1 px `border`, radius 14, 16 of padding, its parts 14 apart. Top part, side
 by side: the cover at the left, 96 by 149, radius 6, `border` behind it
@@ -159,13 +159,8 @@ dessin*. Middle part: one row per field, `body`, the label at the left in
 padding, a `border` hairline above each row: *Collection*, *Éditeur*,
 *Année*, *Langue*, *Pages*, *ISBN*, in that order. A field with no value has
 no row; a card never says *inconnu*. Then the summary, when there is one,
-as a paragraph in `body`, `text`, line-height 1.4, as long as it is. Bottom
-part: the word *Sources* in the `label` step, `muted`, followed by one chip
-per source.
-
-**Chip.** A word in a pill: `label` step, `text`, a 1 px `border`, radius
-999, 4 by 10 of padding, no background. It states, it does not act: a chip
-is never a button. Chips wrap on their line, 8 apart.
+as a paragraph in `body`, `text`, line-height 1.4, as long as it is. The
+summary is the card's last part.
 
 A card is presentational: props in, nothing out. It shows what it is given
 and decides nothing about it; the words it displays for a role or a
