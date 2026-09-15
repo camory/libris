@@ -14,22 +14,43 @@ import org.junit.jupiter.api.Test
 
 class IsbnLookupTest {
     @Test
-    fun `the source that knows answers what it knows`() {
+    fun `the sources that know answer what they know together, in the order they were asked`() {
         // Given
-        val edition = A_SOURCE_EDITION.copy(title = "Romance dawn")
-        val lookup = IsbnLookup(SourceAnswering(Known(edition)))
+        val lookup = IsbnLookup(
+            listOf(
+                SourceAnswering(Known(A_SOURCE_EDITION.copy(title = "Romance dawn"))),
+                SourceAnswering(Known(A_SOURCE_EDITION.copy(title = "Tome 01", pageCount = 207))),
+            ),
+        )
 
         // When
         val result = lookup.lookUp(isbnOf("9782723488525"))
 
         // Then
-        result shouldBe Found(edition)
+        result shouldBe Found(A_SOURCE_EDITION.copy(title = "Romance dawn", pageCount = 207))
     }
 
     @Test
-    fun `a source knowing nothing answers that the ISBN is unknown`() {
+    fun `a source that failed takes no part in the answer`() {
         // Given
-        val lookup = IsbnLookup(SourceAnswering(NothingKnown))
+        val lookup = IsbnLookup(
+            listOf(
+                SourceAnswering(Failed),
+                SourceAnswering(Known(A_SOURCE_EDITION.copy(title = "Romance dawn"))),
+            ),
+        )
+
+        // When
+        val result = lookup.lookUp(isbnOf("9782723488525"))
+
+        // Then
+        result shouldBe Found(A_SOURCE_EDITION.copy(title = "Romance dawn"))
+    }
+
+    @Test
+    fun `no source knowing the ISBN answers that it is unknown`() {
+        // Given
+        val lookup = IsbnLookup(listOf(SourceAnswering(NothingKnown), SourceAnswering(NothingKnown)))
 
         // When
         val result = lookup.lookUp(isbnOf("9782000000013"))
@@ -39,14 +60,26 @@ class IsbnLookupTest {
     }
 
     @Test
-    fun `a source having failed answers that no source replied`() {
+    fun `every source having failed answers that no source replied`() {
         // Given
-        val lookup = IsbnLookup(SourceAnswering(Failed))
+        val lookup = IsbnLookup(listOf(SourceAnswering(Failed), SourceAnswering(Failed)))
 
         // When
         val result = lookup.lookUp(isbnOf("9782723488525"))
 
         // Then
         result shouldBe SourcesUnavailable
+    }
+
+    @Test
+    fun `one source failing while the other knows nothing answers that the ISBN is unknown`() {
+        // Given
+        val lookup = IsbnLookup(listOf(SourceAnswering(Failed), SourceAnswering(NothingKnown)))
+
+        // When
+        val result = lookup.lookUp(isbnOf("9782000000013"))
+
+        // Then
+        result shouldBe UnknownIsbn
     }
 }
