@@ -200,7 +200,7 @@ deployed; no other task touches the contract (D04).
       else changes behaviour; un-skips nothing.
       Realises S1, S4 and S6 as the spec now reads them.
 
-- [ ] T024 Backend: Open Library back, in two requests.
+- [x] T024 Backend: Open Library back, in two requests.
       The merge rule and the use case over several sources return from
       the history of T014 and T021: the first source's value wins for
       every field it gives, the next fills what it leaves empty; not-found
