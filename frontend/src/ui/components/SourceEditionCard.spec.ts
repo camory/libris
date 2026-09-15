@@ -126,6 +126,7 @@ describe("SourceEditionCard", () => {
     expect(
       screen({ ...onePiece1, coverUrl: null }).queryAllByRole("img"),
     ).toEqual([]);
+    expect(card(onePiece1).findComponent(IconBook).exists()).toBe(false);
   });
 
   it("shows a book icon when the sources gave no cover", () => {
