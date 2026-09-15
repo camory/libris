@@ -20,7 +20,9 @@
 
 Contract: release `v0.3.0` of `camory/libris-api`, one read-only operation,
 `GET /api/v1/isbn/{isbn}`. T020 moves the backend pin to it and T016 the
-frontend one; no other task touches the contract (D04).
+frontend one. Release `v0.4.0` drops `sources` from the answer: T025 moves
+the frontend pin to it, then T026 the backend one, once the frontend is
+deployed; no other task touches the contract (D04).
 
 - [x] T013 Backend: the ISBN-13 value type and the Open Library source.
       `domain`: the ISBN-13 value type — thirteen digits, check digit
@@ -176,12 +178,34 @@ frontend one; no other task touches the contract (D04).
       existing ones kept; nothing else changes behaviour.
       Realises the rule of S3 again; un-skips nothing.
 
+- [ ] T025 Frontend: the Found state without its sources.
+      The frontend pin moves to `v0.4.0` in `vitest.global-setup.ts`: the
+      API client's test against the mock fails, the mock answering no
+      `sources`. Then `sources` leaves `IsbnResponse`, `SourceEdition` and
+      the fixtures; the *Sources* row, its chips and the `isbn.card.sources`
+      text leave `SourceEditionCard` (U06), with the card's tests over them.
+      The client reads the fields it knows and ignores the rest, so a
+      backend still on `v0.3.0` keeps answering it. Nothing else changes
+      behaviour; un-skips nothing.
+      Realises the Found state of S1 as the spec now reads it.
+
+- [ ] T026 Backend: the answer without its sources.
+      Launched once T025 is deployed. The backend pin moves to `v0.4.0` in
+      `ApiContractTest`: Contracteer refuses the `sources` the answer still
+      carries. Then `sources` leaves `IsbnResponse`, the controller and
+      `LookupResult.Found`, which carries the edition alone; the use case
+      keeps knowing which sources replied, since not-found and
+      sources-unavailable depend on it (D02). The scenario tests drop their
+      assertions on `$.sources` and the S1 body its `sources` line. Nothing
+      else changes behaviour; un-skips nothing.
+      Realises S1, S4 and S6 as the spec now reads them.
+
 - [ ] T024 Backend: Open Library back, in two requests.
       The merge rule and the use case over several sources return from
       the history of T014 and T021: the first source's value wins for
-      every field it gives, the next fills what it leaves empty, `sources`
-      lists the ones that know; not-found when a source replied and none
-      knows, sources-unavailable when none replied (D02). One change: the
+      every field it gives, the next fills what it leaves empty; not-found
+      when a source replied and none knows, sources-unavailable when none
+      replied (D02). One change: the
       use case asks every source at once, each on a virtual thread of the
       JDK, and merges in the order of the sources; proven by two fakes
       that each wait to be asked before either answers.
@@ -196,7 +220,7 @@ frontend one; no other task touches the contract (D04).
       and 9782253098058 for the pick of the work, whose search answer
       lists two works and only the second holds the edition; the merge
       rule field by field; the use case over fakes as T014 had it. No
-      contract edit: `OPEN_LIBRARY` is in `v0.3.0` already.
+      contract edit.
       Realises S5 and S6, S4 and S7 over two sources; un-skips S5 and S6.
 
 *Done (Tophe, on the Pixel, from the installed app): scan a manga and a BD
