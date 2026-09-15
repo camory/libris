@@ -161,7 +161,7 @@ frontend one; no other task touches the contract (D04).
       that errors. No scenario un-skipped, S1's two already pass.
       Realises the stand-in of the Found state.
 
-- [ ] T023 Both sides: the ISBN, one class for both writings.
+- [x] T023 Both sides: the ISBN, one class for both writings.
       The PRD calls it an ISBN: `Isbn13` becomes `Isbn` on both sides, the
       value being the thirteen digits, and holds every rule of the
       identifier: made from either writing, the thirteen digits or the old

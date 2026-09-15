@@ -1,5 +1,5 @@
 import type { BarcodeScanner } from "../../application/BarcodeScanner";
-import { isbn13Of } from "../../domain/Isbn13";
+import { Isbn } from "../../domain/Isbn";
 
 interface BarcodeDetectorConstructor {
   new (options: { formats: string[] }): BarcodeDetector;
@@ -26,7 +26,7 @@ function look(
 
 function firstIsbnAmong(seen: { rawValue: string }[]): string | null {
   for (const { rawValue } of seen) {
-    const isbn13 = isbn13Of(rawValue);
+    const isbn13 = Isbn.of(rawValue)?.digits ?? null;
     if (isbn13 !== null) {
       return isbn13;
     }

@@ -91,7 +91,7 @@ was found.
   case a controller of the package takes must be in the class-level
   `@MockitoBean(types = [...])` of every web-slice test, not only the one
   exercised. Mockito stubs a method taking a value class from Kotlin call
-  syntax (`given(lookup.lookUp(isbn13Of("…")))`).
+  syntax (`given(lookup.lookUp(isbnOf("…")))`).
 - A scenario class boots the whole application and commits what its
   requests write; `FreshSchema` on `JdbcSliceTest` and `ScenarioTest` is
   what keeps the JDBC slice from meeting a reader it did not insert.

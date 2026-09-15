@@ -1,13 +1,20 @@
 const thirteenDigits = /^97[89][0-9]{10}$/;
 const tenCharacters = /^[0-9]{9}[0-9Xx]$/;
 
-export function isbn13Of(text: string): string | null {
-  const characters = text.replaceAll("-", "").replaceAll(" ", "");
-  const digits = characters.length === 10 ? thirteenOf(characters) : characters;
-  if (digits === null || !thirteenDigits.test(digits)) {
-    return null;
+export class Isbn {
+  private constructor(readonly digits: string) {}
+
+  static of(text: string): Isbn | null {
+    const characters = text.replaceAll("-", "").replaceAll(" ", "");
+    const digits =
+      characters.length === 10 ? thirteenOf(characters) : characters;
+    if (digits === null || !thirteenDigits.test(digits)) {
+      return null;
+    }
+    return checkDigitOf(digits.slice(0, 12)) === digits.slice(12)
+      ? new Isbn(digits)
+      : null;
   }
-  return checkDigitOf(digits.slice(0, 12)) === digits.slice(12) ? digits : null;
 }
 
 function thirteenOf(ten: string): string | null {

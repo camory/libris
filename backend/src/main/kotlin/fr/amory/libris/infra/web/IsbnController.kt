@@ -5,7 +5,7 @@ import fr.amory.libris.application.LookupResult.Found
 import fr.amory.libris.application.LookupResult.SourcesUnavailable
 import fr.amory.libris.application.LookupResult.UnknownIsbn
 import fr.amory.libris.domain.AuthorRole
-import fr.amory.libris.domain.Isbn13
+import fr.amory.libris.domain.Isbn
 import fr.amory.libris.domain.lookup.Source
 import fr.amory.libris.domain.lookup.SourceEdition
 import org.springframework.http.HttpStatus
@@ -22,6 +22,7 @@ import java.net.URI
 private const val VALIDATION_PROBLEM = "/problems/validation"
 private const val NOT_FOUND_PROBLEM = "/problems/not-found"
 private const val SOURCES_UNAVAILABLE_PROBLEM = "/problems/sources-unavailable"
+private val ISBN_PATH = Regex("97[89][0-9]{10}")
 
 data class ValidationErrorResponse(
     val field: String,
@@ -64,21 +65,23 @@ private fun ProblemDetail.asResponse(): ResponseEntity<Any> = ResponseEntity.sta
 @RestController
 class IsbnController(private val lookup: IsbnLookup) {
     @GetMapping("/api/v1/isbn/{isbn}")
-    fun isbn(@PathVariable isbn: String): ResponseEntity<Any> {
-        val isbn13 = Isbn13.of(isbn) ?: return notAnIsbn().asResponse()
-        return when (val result = lookup.lookUp(isbn13)) {
+    fun isbn(@PathVariable("isbn") text: String): ResponseEntity<Any> {
+        val isbn = isbnOfPath(text) ?: return notAnIsbn().asResponse()
+        return when (val result = lookup.lookUp(isbn)) {
             is Found -> ResponseEntity.ok(responseOf(result.edition, result.sources))
             UnknownIsbn -> problem(NOT_FOUND, NOT_FOUND_PROBLEM).asResponse()
             SourcesUnavailable -> problem(SERVICE_UNAVAILABLE, SOURCES_UNAVAILABLE_PROBLEM).asResponse()
         }
     }
 
+    private fun isbnOfPath(text: String): Isbn? = if (ISBN_PATH.matches(text)) Isbn.of(text) else null
+
     private fun notAnIsbn(): ProblemDetail = problem(BAD_REQUEST, VALIDATION_PROBLEM).apply {
         setProperty("errors", listOf(ValidationErrorResponse(field = "isbn", code = "not-an-isbn")))
     }
 
     private fun responseOf(edition: SourceEdition, sources: List<Source>): IsbnResponse = IsbnResponse(
-        isbn13 = edition.isbn13.digits,
+        isbn13 = edition.isbn.digits,
         title = edition.title,
         subtitle = edition.subtitle,
         authors = edition.authors.map { IsbnAuthorResponse(it.name, it.role) },

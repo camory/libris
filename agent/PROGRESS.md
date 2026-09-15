@@ -517,3 +517,39 @@ Format:
   screen shows two editions in a row without unmounting. What jsdom does with
   an `<img>` is in `agent/GOTCHAS.md`. The fixtures' Open Library cover URL,
   already proposed on T021, is untouched.
+
+## 2026-09-15 — T023 The ISBN in one class, both writings — done
+- Did: `Isbn13` is `Isbn` on both sides, one class holding every rule of the
+  identifier — both writings in, the thirteen digits out — with one factory,
+  `of`, for what a reader types or a barcode carries; the frontend's
+  `isbn13Of` became `Isbn.of` on a nominal class, and the view, the barcode
+  adapter and the controller ask it. The writing the API's path admits is the
+  controller's rule: it matches the contract's pattern before asking `Isbn.of`.
+- Decided:
+  - **The writing of the path is the controller's rule, not a second
+    factory.** The run had added `Isbn.ofThirteenDigits` for it; Tophe's
+    review moved the check to the controller, where the contract's pattern
+    is, and the cases about the writing to `IsbnControllerTest`. The domain
+    answers whether a text is an ISBN, the API which writing it admits.
+  - **The Bookland prefix is a rule of the domain.** The two halves
+    disagreed: the backend took any thirteen digits with a right check digit,
+    the frontend only a `97[89]` one. The frontend's rule stands, because the
+    contract's path pattern is `^97[89][0-9]{10}$`, the PRD ties the ISBN to
+    the EAN-13 barcode, and S2 reads only 978 and 979 codes. The one visible
+    change: `GET /api/v1/isbn/4006381333931` answers 400 instead of asking
+    the BnF — a request the contract's pattern already excluded.
+  - **The ten writing answers through the thirteen rule.** It verifies its
+    own mod-11 check, builds the twelve and then hands the result to the
+    thirteen rule rather than constructing an `Isbn` itself, so no path into
+    the value skips the check digit and the prefix.
+  - **`SourceEdition.isbn13` became `isbn`.** The type says thirteen no more.
+    The JSON field stays `isbn13`, as does the frontend type mirroring it.
+- Deviations from the brief: none in substance. The brief's step 7 named one
+  tidy; the self-review added a second, the controller's local `isbn13` now
+  holding an `Isbn`, so the path variable binds to `text` and the value is
+  `isbn`.
+- Left over: the frontend `Isbn` still derives no ten, and D02 still names
+  `Isbn13` — both are bullets in `agent/PROPOSED.md`, the second proposed as
+  an amendment in the pull request body since a run does not edit the
+  document. No scenario moved; S5 and S6 stay skipped for T024.
+

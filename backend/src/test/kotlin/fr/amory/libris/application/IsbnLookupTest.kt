@@ -9,7 +9,7 @@ import fr.amory.libris.domain.lookup.SourceAnswer.Known
 import fr.amory.libris.domain.lookup.SourceAnswer.NothingKnown
 import fr.amory.libris.fixture.A_SOURCE_EDITION
 import fr.amory.libris.fixture.SourceAnswering
-import fr.amory.libris.fixture.isbn13Of
+import fr.amory.libris.fixture.isbnOf
 import io.kotest.matchers.shouldBe
 import org.junit.jupiter.api.Test
 
@@ -21,7 +21,7 @@ class IsbnLookupTest {
         val lookup = IsbnLookup(SourceAnswering(BNF, Known(edition)))
 
         // When
-        val result = lookup.lookUp(isbn13Of("9782723488525"))
+        val result = lookup.lookUp(isbnOf("9782723488525"))
 
         // Then
         result shouldBe Found(edition, listOf(BNF))
@@ -33,7 +33,7 @@ class IsbnLookupTest {
         val lookup = IsbnLookup(SourceAnswering(BNF, NothingKnown))
 
         // When
-        val result = lookup.lookUp(isbn13Of("9782000000013"))
+        val result = lookup.lookUp(isbnOf("9782000000013"))
 
         // Then
         result shouldBe UnknownIsbn
@@ -45,7 +45,7 @@ class IsbnLookupTest {
         val lookup = IsbnLookup(SourceAnswering(BNF, Failed))
 
         // When
-        val result = lookup.lookUp(isbn13Of("9782723488525"))
+        val result = lookup.lookUp(isbnOf("9782723488525"))
 
         // Then
         result shouldBe SourcesUnavailable
