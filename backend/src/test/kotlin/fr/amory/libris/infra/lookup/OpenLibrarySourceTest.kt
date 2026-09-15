@@ -8,6 +8,7 @@ import fr.amory.libris.domain.lookup.SourceAuthor
 import fr.amory.libris.domain.lookup.SourceEdition
 import fr.amory.libris.fixture.OpenLibraryStubs
 import fr.amory.libris.fixture.isbnOf
+import io.kotest.matchers.collections.shouldContainExactlyInAnyOrder
 import io.kotest.matchers.shouldBe
 import org.junit.jupiter.api.AfterAll
 import org.junit.jupiter.api.AfterEach
@@ -53,6 +54,22 @@ class OpenLibrarySourceTest {
                 summary = null,
                 coverUrl = "https://covers.openlibrary.org/b/isbn/9782380751673-L.jpg",
             ),
+        )
+    }
+
+    @Test
+    fun `looking up an ISBN asks for the edition and one search, never for an author or the cover`() {
+        // Given
+        openLibrary.knows(SPACE_WARS)
+
+        // When
+        source.lookUp(isbnOf(SPACE_WARS))
+
+        // Then
+        server.allServeEvents.map { it.request.url } shouldContainExactlyInAnyOrder listOf(
+            "/isbn/$SPACE_WARS.json",
+            "/books/OL32382513M.json",
+            "/search.json?isbn=$SPACE_WARS&fields=key,author_name,edition_key",
         )
     }
 
