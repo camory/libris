@@ -11,11 +11,12 @@ value class Isbn private constructor(val digits: String) {
         private const val LENGTH = 13
         private const val ODD_WEIGHT = 3
         private const val MODULUS = 10
+        private const val SEPARATORS = "- "
         private const val TEN_PREFIX = "978"
         private const val TEN_MODULUS = 11
         private const val TEN_FIRST_WEIGHT = 10
 
-        fun of(text: String): Isbn? = ofThirteenDigits(text)
+        fun of(text: String): Isbn? = ofThirteenDigits(text.filterNot { it in SEPARATORS })
 
         fun ofThirteenDigits(text: String): Isbn? = when {
             text.length != LENGTH -> null

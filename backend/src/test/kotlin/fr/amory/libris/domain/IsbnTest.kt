@@ -18,6 +18,13 @@ class IsbnTest {
     }
 
     @Test
+    fun `hyphens and spaces are dropped wherever they sit`() {
+        // Given / When / Then
+        Isbn.of("978-2-7234-8852-5")?.digits shouldBe "9782723488525"
+        Isbn.of("978 2 7234 8852 5")?.digits shouldBe "9782723488525"
+    }
+
+    @Test
     fun `the thirteen-digit writing is thirteen digits whose check digit is right`() {
         // Given / When / Then
         Isbn.ofThirteenDigits("9782723488525")?.digits shouldBe "9782723488525"
@@ -60,8 +67,6 @@ class IsbnTest {
     @Test
     fun `a text that is not digits only is not an ISBN-13`() {
         // Given / When / Then
-        Isbn.of("978-2-7234-8852-5") shouldBe null
-        Isbn.of("9782723488525 ") shouldBe null
         Isbn.of("97827234885X5") shouldBe null
         Isbn.of("９７８２７２３４８８５２５") shouldBe null
         Isbn.of("") shouldBe null
