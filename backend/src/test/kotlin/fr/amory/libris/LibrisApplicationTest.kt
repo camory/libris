@@ -1,7 +1,7 @@
 package fr.amory.libris
 
 import fr.amory.libris.domain.lookup.IsbnSource
-import fr.amory.libris.domain.lookup.Source.BNF
+import fr.amory.libris.infra.lookup.BnfSource
 import fr.amory.libris.infra.lookup.SourcesProperties
 import io.kotest.matchers.shouldBe
 import org.junit.jupiter.api.Test
@@ -38,6 +38,6 @@ class LibrisApplicationTest @Autowired constructor(
 
     @Test
     fun `the BnF is the only source`() {
-        isbnSources.map { it.source } shouldBe listOf(BNF)
+        isbnSources.map { it::class } shouldBe listOf(BnfSource::class)
     }
 }

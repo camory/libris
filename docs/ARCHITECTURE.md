@@ -12,6 +12,7 @@
 > D07 rewritten on 2026-09-13: the web slice is proven by Contracteer, values by domain, application and scenario tests; a fresh schema before every database-backed class.
 > D11 amended on 2026-09-13: a validation `code` is documentation until the contract enumerates it; the rationale of keys over wording, and what Spring's problem advice is for.
 > D02 amended on 2026-09-13: the timeout is the source adapter's, the use case never sees time.
+> D11 amended on 2026-09-15: the field rule leaves; a field is added, removed or renamed in the order D04 gives.
 
 ## Overview
 
@@ -477,8 +478,6 @@ API shapes
 Contract
 - Every schema in the contract states `required` and `nullable`
   explicitly, since the frontend types are written by hand from it.
-- A response field is added, never removed or renamed, while the major
-  version stands.
 
 ## Local development (human)
 

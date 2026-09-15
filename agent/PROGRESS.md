@@ -585,3 +585,34 @@ Format:
   disagrees with `frontend/vitest.global-setup.ts`, on `main` already and not
   in the gate — a bullet in `agent/PROPOSED.md`. The three places that assert
   a word of the card are in `agent/GOTCHAS.md`.
+
+
+## 2026-09-15 — T026 The answer without its sources — done
+- Did: the backend pins release `v0.4.0`, whose `Isbn` schema declares twelve
+  fields and allows no other, so `sources` left `IsbnResponse`, `responseOf`
+  and, with it, `LookupResult.Found`, which now carries the edition alone;
+  `IsbnLookup` maps `Known` to `Found(answer.edition)` and still tells the
+  three outcomes apart. The S1 body lost its `sources` line and the four cases
+  skipped for T024 their `$.sources` assertions.
+- Decided:
+  - **The four skipped assertions went with the field, in the same commit as
+    the controller.** The brief left the split of commits open: the scenario
+    file is one edit of one kind — five lines that read a field which stops
+    existing — and splitting it would have put a compiling but false assertion
+    on the branch for one commit.
+  - **Nothing was tidied in the controller.** With `sources` gone `responseOf`
+    takes one parameter and the `when` reads as before; renaming or reshaping
+    anything else would have been a second change the task did not ask for.
+  - **The launch condition was taken as met.** Nothing in the tree names the
+    deployed revision — `deploy/compose.yaml` takes its tag from `LIBRIS_TAG` —
+    so there was no evidence against the brief's assumption to stop on.
+- Deviations from the brief: one, on Tophe's review. The brief kept `Source`
+  and `IsbnSource.source` for T024; Tophe judged them not worth keeping, since
+  the enum existed to fill the field this task removes and the order of the
+  sources in T024 is the order of the beans, not a name. Both left in a
+  fix-up commit with the BnF's *names itself* case and the GOTCHAS item that
+  explained the gap; `LibrisApplicationTest` asserts the only source by type.
+- Left over: merging is not deploying. This backend stops sending `sources`
+  the moment it runs, and the frontend that stopped reading it (T025) must be
+  in production first; releasing and deploying are Tophe's step. S5 and S6
+  stay skipped for T024.

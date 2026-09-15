@@ -55,8 +55,7 @@ class FastEntryScenarios @Autowired constructor(
                   "language": "fr",
                   "pageCount": 203,
                   "summary": null,
-                  "coverUrl": "$ONE_PIECE_COVER",
-                  "sources": ["BNF"]
+                  "coverUrl": "$ONE_PIECE_COVER"
                 }
                 """,
                 JsonCompareMode.STRICT,
@@ -92,7 +91,6 @@ class FastEntryScenarios @Autowired constructor(
             .jsonPath("$.pageCount").isEqualTo(207)
             .jsonPath("$.publicationYear").isEqualTo(2013)
             .jsonPath("$.coverUrl").isEqualTo(ONE_PIECE_COVER)
-            .jsonPath("$.sources").isEqualTo(listOf("BNF", "OPEN_LIBRARY"))
     }
 
     @Test
@@ -111,7 +109,6 @@ class FastEntryScenarios @Autowired constructor(
             .jsonPath("$.authors[*].name").isEqualTo(listOf("Baba", "Stéphane Lapuss'", "Tartuff"))
             .jsonPath("$.publisher").isEqualTo("KENNES EDITIONS")
             .jsonPath("$.coverUrl").isEqualTo("https://covers.openlibrary.org/b/isbn/9782380751673-L.jpg")
-            .jsonPath("$.sources").isEqualTo(listOf("OPEN_LIBRARY"))
     }
 
     @Test
@@ -126,7 +123,6 @@ class FastEntryScenarios @Autowired constructor(
         response.expectStatus().isOk()
             .expectBody()
             .jsonPath("$.title").isEqualTo("Space Wars - Chapitre 1")
-            .jsonPath("$.sources").isEqualTo(listOf("OPEN_LIBRARY"))
     }
 
     @Test
@@ -141,7 +137,6 @@ class FastEntryScenarios @Autowired constructor(
         response.expectStatus().isOk()
             .expectBody()
             .jsonPath("$.title").isEqualTo("Romance dawn")
-            .jsonPath("$.sources").isEqualTo(listOf("BNF"))
     }
 
     @Test

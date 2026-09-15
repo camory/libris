@@ -6,7 +6,6 @@ import fr.amory.libris.application.LookupResult.SourcesUnavailable
 import fr.amory.libris.application.LookupResult.UnknownIsbn
 import fr.amory.libris.domain.AuthorRole
 import fr.amory.libris.domain.Isbn
-import fr.amory.libris.domain.lookup.Source
 import fr.amory.libris.domain.lookup.SourceEdition
 import org.springframework.http.HttpStatus
 import org.springframework.http.HttpStatus.BAD_REQUEST
@@ -52,7 +51,6 @@ data class IsbnResponse(
     val pageCount: Int?,
     val summary: String?,
     val coverUrl: String?,
-    val sources: List<Source>,
 )
 
 private fun problem(status: HttpStatus, type: String): ProblemDetail =
@@ -68,7 +66,7 @@ class IsbnController(private val lookup: IsbnLookup) {
     fun isbn(@PathVariable("isbn") text: String): ResponseEntity<Any> {
         val isbn = isbnOfPath(text) ?: return notAnIsbn().asResponse()
         return when (val result = lookup.lookUp(isbn)) {
-            is Found -> ResponseEntity.ok(responseOf(result.edition, result.sources))
+            is Found -> ResponseEntity.ok(responseOf(result.edition))
             UnknownIsbn -> problem(NOT_FOUND, NOT_FOUND_PROBLEM).asResponse()
             SourcesUnavailable -> problem(SERVICE_UNAVAILABLE, SOURCES_UNAVAILABLE_PROBLEM).asResponse()
         }
@@ -80,7 +78,7 @@ class IsbnController(private val lookup: IsbnLookup) {
         setProperty("errors", listOf(ValidationErrorResponse(field = "isbn", code = "not-an-isbn")))
     }
 
-    private fun responseOf(edition: SourceEdition, sources: List<Source>): IsbnResponse = IsbnResponse(
+    private fun responseOf(edition: SourceEdition): IsbnResponse = IsbnResponse(
         isbn13 = edition.isbn.digits,
         title = edition.title,
         subtitle = edition.subtitle,
@@ -93,6 +91,5 @@ class IsbnController(private val lookup: IsbnLookup) {
         pageCount = edition.pageCount,
         summary = edition.summary,
         coverUrl = edition.coverUrl,
-        sources = sources,
     )
 }
