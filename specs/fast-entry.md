@@ -196,9 +196,10 @@ publisher, publication year and page count; then the search answer
 authors, all writers, taken from the one work whose `edition_key` list holds
 the edition's key, and none when no work does; the cover
 `https://covers.openlibrary.org/b/isbn/<isbn>-L.jpg`, handed out without
-checking it. Both sources are asked on every lookup and merged: the first
-source's value wins for every field it gives, the next fills the fields it
-leaves empty, and `sources` lists the ones that know the book; not-found when
+checking it. Both sources are asked at once on every lookup, so a lookup
+costs the slower source and not the sum, and merged in their order: the
+first source's value wins for every field it gives, the next fills the
+fields it leaves empty, and `sources` lists the ones that know the book; not-found when
 a source replied and none knows, sources-unavailable when none replied.
 Measured on 2026-09-15: Open Library answers each request in 0.5 to 1.3 s,
 misses included, twenty in a row without a slow first one; one ISBN often

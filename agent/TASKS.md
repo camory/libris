@@ -178,10 +178,13 @@ frontend one; no other task touches the contract (D04).
 
 - [ ] T024 Backend: Open Library back, in two requests.
       The merge rule and the use case over several sources return from
-      the history of T014 and T021, unchanged: the first source's value
-      wins for every field it gives, the next fills what it leaves empty,
-      `sources` lists the ones that know; not-found when a source replied
-      and none knows, sources-unavailable when none replied (D02).
+      the history of T014 and T021: the first source's value wins for
+      every field it gives, the next fills what it leaves empty, `sources`
+      lists the ones that know; not-found when a source replied and none
+      knows, sources-unavailable when none replied (D02). One change: the
+      use case asks every source at once, each on a virtual thread of the
+      JDK, and merges in the order of the sources; proven by two fakes
+      that each wait to be asked before either answers.
       `OpenLibrarySource` returns reshaped, with `LIBRIS_OPEN_LIBRARY_URL`:
       the edition document (`/isbn/<isbn>.json`, redirect followed) for
       the fields, then one search request
