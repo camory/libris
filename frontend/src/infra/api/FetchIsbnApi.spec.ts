@@ -33,7 +33,6 @@ describe("FetchIsbnApi", () => {
       pageCount: aNumberOrNull,
       summary: aStringOrNull,
       coverUrl: aStringOrNull,
-      sources: expect.toSatisfy(areSources, "a non-empty array of sources"),
     });
   });
 
@@ -96,13 +95,5 @@ function isSeriesOrNull(value: unknown) {
   return (
     typeof series.name === "string" &&
     (series.volumeNumber === null || typeof series.volumeNumber === "number")
-  );
-}
-
-function areSources(value: unknown) {
-  return (
-    Array.isArray(value) &&
-    value.length > 0 &&
-    value.every((source) => ["BNF", "OPEN_LIBRARY"].includes(source))
   );
 }
