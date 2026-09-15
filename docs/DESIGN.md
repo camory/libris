@@ -135,7 +135,7 @@ the same size as the thing it announces, so nothing jumps when the answer
 lands. It appears with the busy button (U04) and leaves with it.
 
 **Empty state.** A screen with nothing to show yet centres an outlined icon,
-40, `muted` at 60 %, over one sentence in the `lead` step, `muted`, 28 of
+48, `muted` at 60 %, over one sentence in the `lead` step, `muted`, 28 of
 padding around. The sentence says what will fill the space, not that it is
 empty. The lookup screen has none: before the first search, the space under
 the button is simply empty.
@@ -149,7 +149,7 @@ content, under the button, not a layer over the page.
 1 px `border`, radius 14, 16 of padding, its parts 14 apart. Top part, side
 by side: the cover at the left, 96 by 149, radius 6, `border` behind it
 while it loads, never stretched; when there is none, or the image does not
-load, the same block holds an outlined book icon, 40, `muted` at 60 %,
+load, the same block holds an outlined book icon, 48, `muted` at 60 %,
 centred, the stand-in of U05's empty state; at its right,
 stacked 6 apart, the overline (série · tome, U02), the card title, the
 subtitle in `lead` `muted`, and one line per author in `body`, the name in
@@ -173,7 +173,7 @@ language come from the `fr` catalogue, keyed by the code the API answers.
 
 ### U07 — Icons: hand-drawn, inline, no library
 An icon is an inline SVG on a 24 grid, stroke 1.8, round caps and joins,
-`currentColor`, no fill; 22 for the alert of a message, 40 for an empty
+`currentColor`, no fill; 22 for the alert of a message, 48 for an empty
 state (U05). Each is its own component under `ui/components/icons`, named
 by what it shows (`IconHome`, `IconBarcode`, `IconClose`, `IconPlus`,
 `IconAlert`, `IconBook`), drawn once and reused. No icon font, no icon

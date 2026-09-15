@@ -1,8 +1,8 @@
 <template>
   <svg
     class="shrink-0"
-    width="40"
-    height="40"
+    width="48"
+    height="48"
     viewBox="0 0 24 24"
     fill="none"
     stroke="currentColor"
