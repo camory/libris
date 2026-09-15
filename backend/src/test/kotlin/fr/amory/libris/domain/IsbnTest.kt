@@ -25,6 +25,13 @@ class IsbnTest {
     }
 
     @Test
+    fun `a thirteen-digit EAN with another prefix is not an ISBN`() {
+        // Given / When / Then
+        Isbn.of("4006381333931") shouldBe null
+        Isbn.ofThirteenDigits("4006381333931") shouldBe null
+    }
+
+    @Test
     fun `an ISBN-10 is converted to the thirteen digits it became`() {
         // Given / When / Then
         Isbn.of("2723488527")?.digits shouldBe "9782723488525"

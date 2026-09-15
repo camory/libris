@@ -40,6 +40,19 @@ class IsbnControllerTest @Autowired constructor(
         verifyNoInteractions(lookup)
     }
 
+    @Test
+    fun `a thirteen-digit EAN that is not an ISBN is refused`() {
+        // Given
+        given(visit.visit("tophe", "tophe@amory.fr", "Tophe")).willReturn(TOPHE)
+
+        // When
+        val body = lookUp("4006381333931")
+
+        // Then
+        body?.get("type") shouldBe "/problems/validation"
+        verifyNoInteractions(lookup)
+    }
+
     private fun lookUp(isbn: String): Map<String, Any>? =
         client.get()
             .uri("/api/v1/isbn/{isbn}", isbn)

@@ -9,6 +9,7 @@ value class Isbn private constructor(val digits: String) {
 
     companion object {
         private const val LENGTH = 13
+        private val THIRTEEN_DIGITS = Regex("97[89][0-9]{10}")
         private const val ODD_WEIGHT = 3
         private const val MODULUS = 10
         private const val SEPARATORS = "- "
@@ -24,8 +25,7 @@ value class Isbn private constructor(val digits: String) {
         }
 
         fun ofThirteenDigits(text: String): Isbn? = when {
-            text.length != LENGTH -> null
-            !text.all { it in '0'..'9' } -> null
+            !THIRTEEN_DIGITS.matches(text) -> null
             text.last().digitToInt() != checkDigitOf(text.dropLast(1)) -> null
             else -> Isbn(text)
         }
