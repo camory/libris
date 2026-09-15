@@ -73,8 +73,52 @@ class OpenLibrarySourceTest {
         )
     }
 
+    @Test
+    fun `the authors come from the work that holds the edition`() {
+        // Given
+        openLibrary.knows(MONTE_CRISTO)
+
+        // When
+        val answer = source.lookUp(isbnOf(MONTE_CRISTO))
+
+        // Then
+        answer shouldBe Known(MONTE_CRISTO_EDITION)
+    }
+
+    @Test
+    fun `a search naming no work holding the edition gives no authors`() {
+        // Given
+        openLibrary.knows(MONTE_CRISTO)
+        openLibrary.answers("/search.json", ANOTHER_WORK)
+
+        // When
+        val answer = source.lookUp(isbnOf(MONTE_CRISTO))
+
+        // Then
+        answer shouldBe Known(MONTE_CRISTO_EDITION.copy(authors = emptyList()))
+    }
+
     private companion object {
         const val SPACE_WARS = "9782380751673"
+        const val MONTE_CRISTO = "9782253098058"
+        val MONTE_CRISTO_EDITION = SourceEdition(
+            isbn = isbnOf(MONTE_CRISTO),
+            title = "Le comte de Monte-Cristo",
+            subtitle = "Tome 1",
+            authors = listOf(SourceAuthor("Alexandre Dumas", WRITER)),
+            series = null,
+            collection = null,
+            publisher = "Le Livre de Poche",
+            publicationYear = 2003,
+            language = null,
+            pageCount = null,
+            summary = null,
+            coverUrl = "https://covers.openlibrary.org/b/isbn/9782253098058-L.jpg",
+        )
+        val ANOTHER_WORK = """
+            {"docs": [{"key": "/works/OL36287W", "author_name": ["Alexandre Dumas"],
+                       "edition_key": ["OL7318447M"]}]}
+        """.trimIndent()
         val TIMEOUT: Duration = ofMillis(200)
         val WARM_UP_TIMEOUT: Duration = ofSeconds(20)
         val server = WireMockServer(options().dynamicPort())

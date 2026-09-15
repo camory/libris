@@ -36,7 +36,7 @@ class OpenLibrarySource(baseUrl: String, timeout: Duration) : IsbnSource {
         isbn = isbn,
         title = edition.required("title").asString(),
         subtitle = edition["subtitle"]?.asString(),
-        authors = authorsOf(isbn),
+        authors = authorsOf(edition, search(isbn)),
         series = null,
         collection = null,
         publisher = edition.path("publishers").values().firstOrNull()?.asString(),
@@ -47,12 +47,14 @@ class OpenLibrarySource(baseUrl: String, timeout: Duration) : IsbnSource {
         coverUrl = "$COVERS/${isbn.digits}-L.jpg",
     )
 
-    private fun authorsOf(isbn: Isbn): List<SourceAuthor> =
-        works(isbn).firstOrNull()?.path("author_name")?.values()
+    private fun authorsOf(edition: JsonNode, search: JsonNode): List<SourceAuthor> {
+        val key = edition["key"]?.asString()?.substringAfterLast("/")
+        return search.path("docs").values()
+            .firstOrNull { work -> work.path("edition_key").values().any { it.asString() == key } }
+            ?.path("author_name")?.values()
             ?.map { SourceAuthor(it.asString(), WRITER) }
             .orEmpty()
-
-    private fun works(isbn: Isbn): List<JsonNode> = search(isbn).path("docs").values().toList()
+    }
 
     private fun search(isbn: Isbn): JsonNode = http.get()
         .uri { uri ->
