@@ -225,11 +225,6 @@ was found.
   forget it.
 
 ## Contract and release
-- A pin bump that takes a response field away is a red of the existing
-  verification, not a new case: the schema's `additionalProperties: false` is
-  what refuses it, and the 200 scenario fails with `Additional properties are
-  not allowed. Unexpected properties: '<field>'` while the other scenarios
-  stay green.
 - Contracteer 4.0.0's CLI cannot load an OpenAPI 3.1 document: the contract
   stays 3.0.3 and `nullable` is the 3.0 keyword. On an operation without
   parameters a response example creates no scenario; the verifier emits one
