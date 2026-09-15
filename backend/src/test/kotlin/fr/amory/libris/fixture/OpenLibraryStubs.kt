@@ -37,6 +37,10 @@ class OpenLibraryStubs(private val server: WireMockServer) {
         server.stubFor(get(urlPathMatching("/isbn/.*")).willReturn(serverError()))
     }
 
+    fun failsOn(path: String) {
+        server.stubFor(get(urlPathEqualTo(path)).willReturn(serverError()))
+    }
+
     fun answers(path: String, body: String) {
         server.stubFor(get(urlPathEqualTo(path)).willReturn(json(body)))
     }

@@ -3,6 +3,7 @@ package fr.amory.libris.infra.lookup
 import com.github.tomakehurst.wiremock.WireMockServer
 import com.github.tomakehurst.wiremock.core.WireMockConfiguration.options
 import fr.amory.libris.domain.AuthorRole.WRITER
+import fr.amory.libris.domain.lookup.SourceAnswer.Failed
 import fr.amory.libris.domain.lookup.SourceAnswer.Known
 import fr.amory.libris.domain.lookup.SourceAnswer.NothingKnown
 import fr.amory.libris.domain.lookup.SourceAuthor
@@ -109,6 +110,55 @@ class OpenLibrarySourceTest {
 
         // Then
         answer shouldBe NothingKnown
+    }
+
+    @Test
+    fun `an Open Library that fails on the edition is a failure`() {
+        // Given
+        openLibrary.fails()
+
+        // When
+        val answer = source.lookUp(isbnOf(SPACE_WARS))
+
+        // Then
+        answer shouldBe Failed
+    }
+
+    @Test
+    fun `an Open Library that fails on the search is a failure`() {
+        // Given
+        openLibrary.knows(SPACE_WARS)
+        openLibrary.failsOn("/search.json")
+
+        // When
+        val answer = source.lookUp(isbnOf(SPACE_WARS))
+
+        // Then
+        answer shouldBe Failed
+    }
+
+    @Test
+    fun `an answer that cannot be read is a failure`() {
+        // Given
+        openLibrary.answers("/isbn/$SPACE_WARS.json", "")
+
+        // When
+        val answer = source.lookUp(isbnOf(SPACE_WARS))
+
+        // Then
+        answer shouldBe Failed
+    }
+
+    @Test
+    fun `an Open Library that answers past the timeout is a failure`() {
+        // Given
+        openLibrary.answersTooLate(SPACE_WARS)
+
+        // When
+        val answer = source.lookUp(isbnOf(SPACE_WARS))
+
+        // Then
+        answer shouldBe Failed
     }
 
     private companion object {
