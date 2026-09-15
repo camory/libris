@@ -1,5 +1,5 @@
 import type { IsbnApi, IsbnAnswer } from "../../application/IsbnApi";
-import type { AuthorRole, Source } from "../../domain/SourceEdition";
+import type { AuthorRole } from "../../domain/SourceEdition";
 
 interface IsbnResponse {
   isbn13: string;
@@ -14,7 +14,6 @@ interface IsbnResponse {
   pageCount: number | null;
   summary: string | null;
   coverUrl: string | null;
-  sources: Source[];
 }
 
 interface ProblemResponse {

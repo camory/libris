@@ -66,7 +66,6 @@ describe("IsbnView", () => {
     expect(api.asked).toEqual(["9782723488525"]);
     expect(screen.getByText("Romance dawn")).toBeDefined();
     expect(screen.getByText("Glénat")).toBeDefined();
-    expect(screen.getByText("BnF")).toBeDefined();
   });
 
   it("asks for the ISBN-13 an old ten converts to", async () => {

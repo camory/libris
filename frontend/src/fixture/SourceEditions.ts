@@ -16,5 +16,4 @@ export const onePiece1: SourceEdition = {
   pageCount: 203,
   summary: null,
   coverUrl: "https://covers.openlibrary.org/b/isbn/9782723488525-L.jpg",
-  sources: ["BNF", "OPEN_LIBRARY"],
 };

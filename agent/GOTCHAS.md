@@ -206,6 +206,15 @@ was found.
   Utils' `findComponent(SomeIcon)` is how a rendered icon is asserted: an
   `aria-hidden` SVG carries no text and no role, so no `getBy*` query reaches
   it.
+- A word `SourceEditionCard` displays is asserted in three files, not one:
+  the card's own spec, `IsbnView.spec.ts` (*asks for the ISBN-13 the rule
+  computes and shows the card*) and `FastEntryScenarios.spec.ts`
+  (`showsTheOnePieceCard`). Taking a word off the card reds all three; grep the
+  word over `src/` before calling the change done.
+- A case that stubs `fetch` and still builds its client on
+  `inject("mockBaseUrl")` passes whether or not the stub installed, the mock
+  answering the same example: give such a client a base URL that resolves
+  nowhere, so the stub is the only thing that can answer.
 - `BarcodeDetector` is not in TypeScript's DOM library. The two interfaces
   the camera adapter needs are written in
   `src/infra/camera/CameraBarcodeScanner.ts` and are not `declare global`:

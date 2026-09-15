@@ -170,8 +170,6 @@ describe("Fast entry", () => {
     expect(card).toContain("français");
     expect(card).toContain("203");
     expect(card).toContain("9782723488525");
-    expect(card).toContain("BnF");
-    expect(card).toContain("Open Library");
     const covers = screen
       .getAllByRole("img")
       .map((image) => image.getAttribute("src"));
