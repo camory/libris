@@ -53,7 +53,7 @@ class ApiContractTest @Autowired constructor(
     private val visit: ReaderVisit,
     private val lookup: IsbnLookup,
 ) {
-    @ContracteerTest(openApiDoc = "https://raw.githubusercontent.com/camory/libris-api/v0.3.0/openapi.yaml")
+    @ContracteerTest(openApiDoc = "https://raw.githubusercontent.com/camory/libris-api/v0.4.0/openapi.yaml")
     fun `the API matches the contract`() {
         given(visit.visit("contracteer", "contracteer@amory.fr", "Contracteer"))
             .willReturn(Reader(username = "contracteer", email = "contracteer@amory.fr", displayName = "Contracteer"))
