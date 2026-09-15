@@ -25,6 +25,33 @@ class IsbnTest {
     }
 
     @Test
+    fun `an ISBN-10 is converted to the thirteen digits it became`() {
+        // Given / When / Then
+        Isbn.of("2723488527")?.digits shouldBe "9782723488525"
+        Isbn.of("2-7234-8852-7")?.digits shouldBe "9782723488525"
+    }
+
+    @Test
+    fun `an ISBN-10 whose check character is X is converted, in either case`() {
+        // Given / When / Then
+        Isbn.of("080442957X")?.digits shouldBe "9780804429573"
+        Isbn.of("080442957x")?.digits shouldBe "9780804429573"
+    }
+
+    @Test
+    fun `an ISBN-10 whose check character is wrong is not an ISBN`() {
+        Isbn.of("2723488521") shouldBe null
+    }
+
+    @Test
+    fun `an ISBN-10 whose check character is neither a digit nor X is not an ISBN`() {
+        // Given / When / Then
+        Isbn.of("000000000\t") shouldBe null
+        Isbn.of("000000000\n") shouldBe null
+        Isbn.of("000000000\u00a0") shouldBe null
+    }
+
+    @Test
     fun `the thirteen-digit writing is thirteen digits whose check digit is right`() {
         // Given / When / Then
         Isbn.ofThirteenDigits("9782723488525")?.digits shouldBe "9782723488525"

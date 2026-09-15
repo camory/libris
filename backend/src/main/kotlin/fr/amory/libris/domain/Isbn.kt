@@ -13,16 +13,30 @@ value class Isbn private constructor(val digits: String) {
         private const val MODULUS = 10
         private const val SEPARATORS = "- "
         private const val TEN_PREFIX = "978"
+        private const val TEN_LENGTH = 10
         private const val TEN_MODULUS = 11
         private const val TEN_FIRST_WEIGHT = 10
 
-        fun of(text: String): Isbn? = ofThirteenDigits(text.filterNot { it in SEPARATORS })
+        fun of(text: String): Isbn? {
+            val characters = text.filterNot { it in SEPARATORS }
+            val digits = if (characters.length == TEN_LENGTH) thirteenOf(characters) else characters
+            return digits?.let { ofThirteenDigits(it) }
+        }
 
         fun ofThirteenDigits(text: String): Isbn? = when {
             text.length != LENGTH -> null
             !text.all { it in '0'..'9' } -> null
             text.last().digitToInt() != checkDigitOf(text.dropLast(1)) -> null
             else -> Isbn(text)
+        }
+
+        private fun thirteenOf(ten: String): String? {
+            val nine = ten.dropLast(1)
+            if (!nine.all { it in '0'..'9' } || ten.last().uppercaseChar() != tenCheckDigitOf(nine)) {
+                return null
+            }
+            val twelve = TEN_PREFIX + nine
+            return twelve + checkDigitOf(twelve)
         }
 
         private fun checkDigitOf(body: String): Int {
