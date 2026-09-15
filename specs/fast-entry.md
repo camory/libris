@@ -59,29 +59,59 @@ check is the contract example `400_NOT_AN_ISBN`, verified on both sides.
 **S4 Unknown ISBN** · frontend, backend
 
 ```gherkin
-Given an ISBN the BnF does not know
+Given an ISBN no source knows
 
 When the reader asks for it
 
 Then Libris answers that the ISBN is unknown
 ```
 
-Proof: backend scenario test over a stubbed source answering nothing, the
+Proof: backend scenario test over the stubbed sources answering nothing, the
 not-found problem; frontend scenario test against `contracteer mock` with
 `404_UNKNOWN_ISBN`, the message.
 
-**S7 The source down** · frontend, backend
+**S5 A book the BnF lacks** · backend
 
 ```gherkin
-Given the BnF failing or not answering in time
+Given an ISBN the BnF does not know and Open Library does
+
+When the reader asks for it
+
+Then Libris answers what Open Library knows, its cover by ISBN, and Open
+     Library as the only source
+```
+
+Proof: backend scenario test over the stubbed BnF answering nothing and a
+recorded Open Library answer, 9782380751673 (*Space Wars*, chapitre 1, which
+the catalogue has not recorded); unit tests of the Open Library mapping in
+the implementer's loop.
+
+**S6 The BnF down** · backend
+
+```gherkin
+Given the BnF failing or not answering in time while Open Library answers
 
 When the reader asks for an ISBN
 
-Then Libris answers that the source is unavailable, to try again later
+Then Libris answers what Open Library knows, and Open Library as the only
+     source
 ```
 
-Proof: backend scenario test with the stubbed source failing, then answering
-past the timeout, the sources-unavailable problem; frontend scenario test
+Proof: backend scenario test with the stubbed BnF failing, then answering
+past the timeout.
+
+**S7 Every source down** · frontend, backend
+
+```gherkin
+Given every source failing or not answering in time
+
+When the reader asks for an ISBN
+
+Then Libris answers that the sources are unavailable, to try again later
+```
+
+Proof: backend scenario test with the stubbed sources failing, then the BnF
+answering past the timeout, the sources-unavailable problem; frontend scenario test
 against `contracteer mock` with `503_SOURCES_DOWN`, the message.
 
 ## Screen
@@ -145,7 +175,7 @@ without a problem body means Libris itself is unavailable, not the sources.
 `contracteer mock` serves a problem only when the request's `Accept` lists
 `application/problem+json`, which the client always sends.
 
-One source in this feature: the BnF SRU (`recordSchema=unimarcxchange`; asked
+Two sources, asked in order. The BnF SRU (`recordSchema=unimarcxchange`; asked
 with the thirteen digits and, when they start with 978, with the ten they
 convert from as well, since a record made before 2007 holds the ten alone;
 the role comes from the author field's function code, mapped against the
@@ -153,15 +183,24 @@ BnF's published list; the cover is the catalogue's own,
 `https://catalogue.bnf.fr/couverture?&appName=NE&idArk=<ark>&couverture=1`
 where `<ark>` is field 003 from `ark:/` on, handed out for every answer
 without checking it, since the catalogue answers an error where it has no
-picture and the card shows the stand-in then).
-Open Library and Google Books come later, each with its own scenarios.
+picture and the card shows the stand-in then). Open Library (`/isbn/<isbn>.json`,
+which redirects to the book document, then one request per author; the cover
+`https://covers.openlibrary.org/b/isbn/<isbn>-L.jpg`, handed out without
+checking it), asked only when the BnF answers nothing or fails. The answer is
+one source's, never a merge, and `sources` names it; not-found when a source
+replied and none knows, sources-unavailable when none replied. Measured on
+2026-09-15: Open Library answers in 0.7 to 1.3 s, misses included, twenty in a
+row without a slow first one. Google Books comes later, with its own
+scenarios.
+
 
 ## Done
 
 On the Pixel, from the installed app, through the home page's link to the
 lookup screen: scan a manga and a BD and read both
 cards, the source included; type an ISBN-10 by hand and read its card; type a
-wrong ISBN and read the message.
+wrong ISBN and read the message; type 9782380751673, a book the BnF lacks,
+and read its card, Open Library as the source.
 
 ## Tasks
 
@@ -179,3 +218,4 @@ wrong ISBN and read the message.
 - T022 — the stand-in of the cover in the Found state — frontend
 - T023 — the rule of S3 under the PRD's name, both writings in one class
   — both sides
+- T024 — S5, S6; S4 and S7 over two sources — backend

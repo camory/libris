@@ -176,6 +176,21 @@ frontend one; no other task touches the contract (D04).
       existing ones kept; nothing else changes behaviour.
       Realises the rule of S3 again; un-skips nothing.
 
+- [ ] T024 Backend: Open Library back, behind the BnF.
+      `OpenLibrarySource` returns from the history of T013 and T021
+      (`/isbn/<isbn>.json` followed to the book document, one request per
+      author, the cover by ISBN), `LIBRIS_OPEN_LIBRARY_URL` with it; the
+      use case asks the BnF first and Open Library only when the BnF
+      answers nothing or fails; no merge: the answer is one source's and
+      `sources` names it (D02). Not-found when a source replied and none
+      knows, sources-unavailable when none replied, as before.
+      Tested over the recorded answers, 9782380751673 the book the BnF
+      lacks; the use case over fakes: the BnF knows and Open Library is
+      not asked, the BnF knows nothing and Open Library knows, the BnF
+      fails and Open Library knows, both know nothing, both fail. No
+      contract edit: `OPEN_LIBRARY` is in `v0.3.0` already.
+      Realises S5 and S6, S4 and S7 over two sources; un-skips S5 and S6.
+
 *Done (Tophe, on the Pixel, from the installed app): scan a manga and a BD
 and read both cards, the source included; type an ISBN-10 by hand and read its
 card; type a wrong ISBN and read the message.*
