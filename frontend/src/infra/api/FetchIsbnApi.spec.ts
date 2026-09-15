@@ -1,4 +1,4 @@
-import { assert, describe, expect, inject, it } from "vitest";
+import { afterEach, assert, describe, expect, inject, it, vi } from "vitest";
 import { FetchIsbnApi } from "./FetchIsbnApi";
 
 const aStringOrNull = expect.toSatisfy(
@@ -11,6 +11,10 @@ const aNumberOrNull = expect.toSatisfy(
 );
 
 describe("FetchIsbnApi", () => {
+  afterEach(() => {
+    vi.unstubAllGlobals();
+  });
+
   it("answers what the sources know about the ISBN", async () => {
     // Given
     const api = new FetchIsbnApi(inject("mockBaseUrl"));
@@ -72,6 +76,47 @@ describe("FetchIsbnApi", () => {
     expect(answer).toEqual({
       outcome: "problem",
       type: "/problems/validation",
+    });
+  });
+
+  it("reads the fields it knows when the answer carries one it does not", async () => {
+    // Given
+    const api = new FetchIsbnApi("http://an-older-backend");
+    const body = {
+      isbn13: "9782723488525",
+      title: "Romance dawn",
+      subtitle: "à l'aube d'une grande aventure",
+      authors: [
+        { name: "Eiichirō Oda", role: "WRITER" },
+        { name: "Eiichirō Oda", role: "ARTIST" },
+      ],
+      series: { name: "One piece", volumeNumber: 1 },
+      collection: "Shonen manga",
+      publisher: "Glénat",
+      publicationYear: 2013,
+      language: "fr",
+      pageCount: 203,
+      summary: null,
+      coverUrl: "https://covers.openlibrary.org/b/isbn/9782723488525-L.jpg",
+      sources: ["BNF", "OPEN_LIBRARY"],
+    };
+    vi.stubGlobal("fetch", () =>
+      Promise.resolve(new Response(JSON.stringify(body), { status: 200 })),
+    );
+
+    // When
+    const answer = await api.lookUp("9782723488525");
+
+    // Then
+    assert(answer.outcome === "found", `the answer is a ${answer.outcome}`);
+    expect(answer.edition).toMatchObject({
+      isbn13: "9782723488525",
+      title: "Romance dawn",
+      authors: [
+        { name: "Eiichirō Oda", role: "WRITER" },
+        { name: "Eiichirō Oda", role: "ARTIST" },
+      ],
+      coverUrl: "https://covers.openlibrary.org/b/isbn/9782723488525-L.jpg",
     });
   });
 });
