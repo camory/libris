@@ -248,11 +248,82 @@ ISBN and read the message.*
 
 ## Update — specs/update.md
 
-Contract: none, the feature is between the app and its static server. Tasks
-derived by the planner once the mockup is drawn.
+Contract: none, the feature is between the app and its own static server; no
+pin moves and no task of the phase touches `camory/libris-api` (D04).
+
+- [ ] T028 Frontend: the worker the app asks about.
+      `application`: the `AppUpdate` port and its injection key, which
+      announces that a newer version is waiting and nothing else yet (D05).
+      `infra/pwa`: the adapter over `navigator.serviceWorker` — it registers
+      the worker and announces the one already waiting when the app starts,
+      the one that becomes waiting while it runs, and nothing at all where
+      the browser has no service worker.
+      `vite.config.ts` turns the plugin from `autoUpdate` to `prompt` and
+      injects no registration script of its own, so a new worker waits for
+      the reader instead of taking over on the next load; `bootstrap` builds
+      the adapter over the real registration and `createLibrisApp` provides
+      it, `main.ts` still the only module reading `import.meta.env` (D05).
+      The adapter's spec stubs `navigator.serviceWorker` the way
+      `CameraBarcodeScanner`'s stubs `navigator.mediaDevices` (D07).
+      Nothing shows the announcement until T029, and a version deployed
+      between the two is taken when every window of the app is closed.
+      Realises the registration S1, S2 and S3 stand on; un-skips nothing.
+
+- [ ] T029 Frontend: the banner of a new version.
+      Precondition (human): `frontend/src/scenario/UpdateScenarios.spec.ts`,
+      one skipped test per scenario it realises, bearing the scenario's exact
+      title, over a stubbed registration (D07).
+      `ui/components`: the banner of U09 — a refresh icon, the sentence
+      *Nouvelle version disponible* and the text button *Mettre à jour* at
+      the right, every word from the `fr` catalogue (U04, U07, U08); the
+      shell shows it above the header of whatever screen is on, and shows
+      nothing while no version waits.
+      The tap tells the waiting worker to take over: the banner reads
+      *Mise à jour…* with a spinner in place of the icon and no button, and
+      the app reloads once when the new worker takes control. Nothing
+      reloads before the tap and the screen keeps what it shows.
+      Component tests over the three states of the banner, the adapter's
+      spec over the take-over and the single reload.
+      Realises S1, S2 and S4; un-skips `S1 A new version is ready`,
+      `S2 The reader updates` and `S4 Nothing new`.
+
+- [ ] T030 Frontend: the check while the app stays open.
+      The adapter asks the server for a newer worker an hour after its last
+      check and whenever the app comes back to the foreground, a foreground
+      check starting the hour again; it asks nothing while the app is hidden
+      and stops asking when it goes away.
+      A unit test with fake timers and a stubbed registration: the hour, the
+      return to the foreground, the hour restarted by it, and no check in
+      between (D07).
+      Neither the banner, the port, the words nor the contract change.
+      Realises S3; un-skips nothing, S3's proof being that unit test.
+
+*Done (Tophe, on the Pixel, from the installed app): deploy a version, bring
+the app back to the foreground and read the row; tap it and get the new
+version, once.*
 
 ## Done
 
 - Phase 0 — Foundations, T001 to T012, done 2026-09-10 with `v0.1.3` on the
   Pixel: `/api/v1/me` deployed behind Authelia, the PWA installable, the
   expired session handled. Reviewed by Tophe on 2026-09-08.
+
+## Questions for the human
+
+- **The scenario tests of `specs/update.md` are not in the tree.** D07 has
+  Tophe write them with the spec, committed skipped; `frontend/src/scenario`
+  holds `FastEntryScenarios.spec.ts` alone. T029 cites three of them and is
+  the precondition's only holder: T028 runs without it.
+- **Staging.** S2's proof and the spec's *Done* ask for a deploy of staging,
+  while D09 knows one environment, the Kimsufi box. No task depends on the
+  answer; the hand check is Tophe's step either way.
+- **The tab bar of U03 is built by no task.** The *Screen* section of
+  `specs/fast-entry.md` puts it at the bottom of the lookup screen and the
+  home page reaches `/isbn` by a link instead; it is a bullet of
+  `agent/PROPOSED.md`, with the camera block's height and `HomeView`'s type
+  steps hanging on it. Promote it and the phase gains a task.
+- **No spec yet**, so nothing is planned for them: PRD §4.1 catalogue, §4.2
+  search, §4.3 bookshelves and copies, §4.4 reading, §4.5 series tracking,
+  §4.6 wishlist, §4.9 import and export, §4.10 administration, the offline
+  browsing of §4.8, and the second spec §4.7 announces, adding the ouvrage of
+  the card to a bookshelf.

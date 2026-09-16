@@ -95,4 +95,7 @@ to the foreground: the row shows; tap it: the new version, once.
 
 ## Tasks
 
-Filled by the planner.
+- T028 — the registration S1, S2 and S3 stand on, no scenario of its own
+  — frontend
+- T029 — S1, S2, S4 — frontend
+- T030 — S3 — frontend
