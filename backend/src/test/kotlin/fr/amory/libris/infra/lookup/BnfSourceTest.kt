@@ -102,6 +102,33 @@ class BnfSourceTest {
     }
 
     @Test
+    fun `a provisional record is what the BnF knows about it`() {
+        // Given
+        bnf.knows(APOTHICAIRE)
+
+        // When
+        val answer = source.lookUp(isbnOf(APOTHICAIRE))
+
+        // Then
+        answer shouldBe Known(
+            SourceEdition(
+                isbn = isbnOf(APOTHICAIRE),
+                title = "Les Carnets de l'apothicaire",
+                subtitle = null,
+                authors = listOf(SourceAuthor("Natsu Hyūga", WRITER)),
+                series = SourceSeries("Les Carnets de l'apothicaire", 7),
+                collection = null,
+                publisher = "Lumen",
+                publicationYear = 2026,
+                language = "fr",
+                pageCount = 348,
+                summary = null,
+                coverUrl = APOTHICAIRE_COVER,
+            ),
+        )
+    }
+
+    @Test
     fun `the publisher is the 214 the second indicator marks, wherever it sits`() {
         // Given
         bnf.answers(PRINTER_FIRST, PRINTER_BEFORE_PUBLISHER)
@@ -258,6 +285,7 @@ class BnfSourceTest {
         const val ONE_PIECE_TEN = "2723488527"
         const val NERONIA = "9782505125990"
         const val LEMURIA = "9782505083399"
+        const val APOTHICAIRE = "9782371025219"
         const val PRINTER_FIRST = "9782999999992"
         const val UNKNOWN = "9782000000013"
         const val WITHOUT_A_TEN = "9791000000008"
@@ -268,6 +296,8 @@ class BnfSourceTest {
             "https://catalogue.bnf.fr/couverture?&appName=NE&idArk=ark:/12148/cb486302521&couverture=1"
         const val LEMURIA_COVER =
             "https://catalogue.bnf.fr/couverture?&appName=NE&idArk=ark:/12148/cb46810645h&couverture=1"
+        const val APOTHICAIRE_COVER =
+            "https://catalogue.bnf.fr/couverture?&appName=NE&idArk=ark:/12148/cb48801192z&couverture=1"
         val PRINTER_BEFORE_PUBLISHER = """
             <srw:searchRetrieveResponse xmlns:srw="http://www.loc.gov/zing/srw/">
             <mxc:record xmlns:mxc="info:lc/xmlns/marcxchange-v2" format="UNIMARC" type="Bibliographic">

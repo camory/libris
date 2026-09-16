@@ -26,7 +26,7 @@ private val AUTHOR_TAGS = setOf("700", "701", "702")
 private val ROLES = mapOf("070" to WRITER, "440" to ARTIST, "730" to TRANSLATOR)
 private val LANGUAGES = mapOf("fre" to "fr")
 private val YEAR = Regex("\\d{4}")
-private val PAGES = Regex("(\\d+)\\s*p\\.")
+private val PAGES = Regex("(\\d+)\\s*p\\.?")
 private val TOME = Regex("tome (\\d+)")
 private const val YEAR_AT = 9
 private const val YEAR_LENGTH = 4
@@ -100,6 +100,12 @@ class BnfSource(baseUrl: String, timeout: Duration) : IsbnSource {
 
     private fun seriesOf(record: UnimarcRecord): SourceSeries? =
         record.value("461", "t")?.let { SourceSeries(it, record.value("461", "v")?.toIntOrNull()) }
+            ?: titleStatementSeriesOf(record)
+
+    private fun titleStatementSeriesOf(record: UnimarcRecord): SourceSeries? =
+        tomeOf(record.value("200", "h"))?.let { tome ->
+            record.value("200", "a")?.let { SourceSeries(it, tome) }
+        }
 
     private fun search(isbn: Isbn): String = http.get()
         .uri { uri ->
