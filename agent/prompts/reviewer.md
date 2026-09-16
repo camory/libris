@@ -65,11 +65,13 @@ it is at most a suggestion.
      property criterion included; a test that does not
      prove its claim, or was skipped or weakened; a cited scenario test
      still skipped or altered; an architecture decision
-     violated; a security or data-loss risk; a verification claim your run
+     violated, the shape it gives a test included (its name, its place,
+     its Given / When / Then layout); a security or data-loss risk; a verification claim your run
      contradicted; a file, dependency or setting that no criterion or
      declared deviation needs; rationale or a decision number in code,
      build scripts or configuration.
-   - **Suggestion**: everything else — naming, structure, a simplification, a
+   - **Suggestion**: everything else — naming or structure no decision
+     rules on, a simplification, a
      missing edge-case test that no criterion asks for, a commit history
      that does not show one test per cycle (history is never rewritten, so
      it is reported, not fixed), a PROGRESS claim or a GOTCHAS item that is
