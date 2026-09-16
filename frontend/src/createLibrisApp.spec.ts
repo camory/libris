@@ -57,6 +57,7 @@ describe("createLibrisApp", () => {
     // Then
     const shown = host.textContent ?? "";
     expect(shown).toContain("Accueil");
+    expect(shown).toContain("Ajouter");
     expect(shown.indexOf("sha-abc1234")).toBeLessThan(shown.indexOf("Accueil"));
 
     app.unmount();
