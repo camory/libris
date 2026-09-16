@@ -41,4 +41,31 @@ describe("createLibrisApp", () => {
 
     app.unmount();
   });
+
+  it("shows the tab bar under the footer", async () => {
+    // Given
+    const host = document.createElement("div");
+    const app = createLibrisApp(
+      {
+        meApi: new FakeMeApi(chloe),
+        isbnApi: new FakeIsbnApi({
+          outcome: "problem",
+          type: "/problems/not-found",
+        }),
+        barcodeScanner: new FakeBarcodeScanner(false),
+      },
+      "sha-abc1234",
+    );
+
+    // When
+    app.mount(host);
+    await flushPromises();
+
+    // Then
+    const shown = host.textContent ?? "";
+    expect(shown).toContain("Accueil");
+    expect(shown.indexOf("sha-abc1234")).toBeLessThan(shown.indexOf("Accueil"));
+
+    app.unmount();
+  });
 });
