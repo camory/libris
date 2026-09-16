@@ -45,7 +45,7 @@ _Avoid_: item, book (as the entity), publication, work, volume.
 **Kind**:
 What an edition is: `BOOK` (any book that is neither of the other two), `BD`,
 `MANGA`. Decides the words on screen (livre, album, tome) and the author roles
-the form offers.
+the form offers. Proposed by the lookup, confirmed by the reader on the form.
 _Avoid_: type, category, genre, format.
 
 **Series**:
@@ -125,6 +125,13 @@ notes),
   lookup lands on the existing one, whatever its capitalisation.
 - An Author is linked to an edition once per role; an author who wrote and
   drew has two links. When a lookup gives no role, the role is `WRITER`.
+- The kind is proposed by the lookup and confirmed by the reader. The BnF
+  record says whether a book is a comic strip and which language it was
+  translated from: a comic strip translated from Japanese, Korean or Chinese
+  is a `MANGA`, any other comic strip a `BD`, everything else a `BOOK`. When
+  no source says, the form proposes `BOOK`. The reader can always change it,
+  and a corrected kind is never overwritten by a later lookup. No kind comes
+  from scraping a site.
 - A Copy belongs to exactly one Edition and sits on exactly one Bookshelf. It
   has no owner of its own: it is the bookshelf's.
 - A Bookshelf has at least one owner at all times and is visible only to its
@@ -251,3 +258,7 @@ Priorities: **P1** = needed before the family uses it, **P2** = soon after,
 6. ~~Google Books~~ — resolved 2026-09-14: deferred with the source itself;
    it refuses anonymous requests (daily quota of zero), so it comes with an
    API key on the server, or not at all.
+7. ~~Where the kind comes from~~ — resolved 2026-09-16: proposed by the
+   lookup from what the BnF record says, confirmed on the form (§3). It is a
+   field of the ISBN answer, so it starts with a contract release, and it
+   lands with the spec that adds the ouvrage to a bookshelf.
