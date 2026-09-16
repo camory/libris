@@ -235,3 +235,5 @@ Library alone.
 - T026 — the answer without its sources, the backend on `v0.4.0` — backend
 - T024 — S5, S6, the merge rule back; S4 and S7 over two sources — backend
 - T027 — S1 as the spec reads it, the BnF's newer records — backend
+- T030 — the tab bar of the *Screen* section, no scenario of its own
+  — frontend
