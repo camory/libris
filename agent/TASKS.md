@@ -223,7 +223,7 @@ deployed; no other task touches the contract (D04).
       contract edit.
       Realises S5 and S6, S4 and S7 over two sources; un-skips S5 and S6.
 
-- [ ] T027 Backend: the BnF's newer records.
+- [x] T027 Backend: the BnF's newer records.
       Source adapter only, no spec or contract change. Three records the
       BnF writes otherwise than the One Piece ones: the publisher and the
       legal-deposit year sit in field 214 instead of 210 since about 2019

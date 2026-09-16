@@ -225,4 +225,8 @@
   nothing, so no case of T024 could make it wrong; the day the two requests
   need telling apart, the adapter catches around each one (found on T024,
   2026-09-15).
-
+- Backend: the BnF's `330 $a` is a summary and no source fills
+  `SourceEdition.summary`. 9782371025219 carries some six hundred characters
+  of publisher's blurb there, which the card has a place for; the day the
+  summary is wanted, its task decides what to do with prose that long
+  (found on T027, 2026-09-16).

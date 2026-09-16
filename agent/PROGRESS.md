@@ -669,3 +669,36 @@ Format:
   no case can make it wrong today, and the bullet is in `agent/PROPOSED.md`.
   Merging is not deploying: the phase's *Done* asks Tophe to type
   9782380751673 on a deployed Libris, which is his step.
+
+
+## 2026-09-16 — T027 The BnF's newer records — done
+- Did: `BnfSource` reads the publisher from the 214 whose second indicator is
+  `0` and falls back to 210; the publication year from field `100 $a`,
+  positions 9 to 12, falling back to the publication field's `$d`; a page
+  count written with or without the stop after `p`; and, when a record carries
+  no 461, the series from `200 $a` with the tome from `200 $h`. `UnimarcField`
+  carries its second indicator and `UnimarcRecord` answers for a field by tag
+  and indicator. Three records recorded from the live API.
+- Decided:
+  - **The year is wired through the publication field, not through 210.** The
+    backlog line reads the fallback from "214 then 210", and the field the
+    publisher comes from is the field whose `$d` names the year; the two are
+    read once per edition. No recorded record exercises the fallback, whose
+    proof is the unit case over the two texts.
+  - **A `$h` that names no tome gives no series.** The rule reads the series
+    from the title statement only when the part number is of the shape
+    `tome <n>`; the hand-written record of the indicator case has a `200 $a`,
+    no `$h` and no 461, and answers no series at all.
+  - **The partial recording lost its field 100.** With the year read from 100,
+    `9782723488525-without-pages-and-year.xml` would have named 2013 and the
+    file's name would have stopped being true; its 215 and its `210 $d` were
+    already blanked for the same reason. `S5 Merged answer` is untouched: its
+    2013 comes from Open Library.
+  - **The hand-written body holds a `200 $a` and two 214 fields and nothing
+    else**, under an invented ISBN, and is not saved as a recording: it is the
+    only case that is red on an implementation taking the first 214.
+- Deviations from the brief: none.
+- Left over: nothing of the task. The BnF's `330 $a` summary stays unread and
+  is in `agent/PROPOSED.md`; 9782371025219 is provisional and the catalogue
+  will replace it, which `agent/GOTCHAS.md` now says.
+
