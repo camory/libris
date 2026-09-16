@@ -14,21 +14,24 @@ const chloe: Reader = {
   role: "READER",
 };
 
+const librisApp = () =>
+  createLibrisApp(
+    {
+      meApi: new FakeMeApi(chloe),
+      isbnApi: new FakeIsbnApi({
+        outcome: "problem",
+        type: "/problems/not-found",
+      }),
+      barcodeScanner: new FakeBarcodeScanner(false),
+    },
+    "sha-abc1234",
+  );
+
 describe("createLibrisApp", () => {
   it("renders the home view over the ports it is given", async () => {
     // Given
     const host = document.createElement("div");
-    const app = createLibrisApp(
-      {
-        meApi: new FakeMeApi(chloe),
-        isbnApi: new FakeIsbnApi({
-          outcome: "problem",
-          type: "/problems/not-found",
-        }),
-        barcodeScanner: new FakeBarcodeScanner(false),
-      },
-      "sha-abc1234",
-    );
+    const app = librisApp();
 
     // When
     app.mount(host);
@@ -45,17 +48,7 @@ describe("createLibrisApp", () => {
   it("shows the tab bar under the footer", async () => {
     // Given
     const host = document.createElement("div");
-    const app = createLibrisApp(
-      {
-        meApi: new FakeMeApi(chloe),
-        isbnApi: new FakeIsbnApi({
-          outcome: "problem",
-          type: "/problems/not-found",
-        }),
-        barcodeScanner: new FakeBarcodeScanner(false),
-      },
-      "sha-abc1234",
-    );
+    const app = librisApp();
 
     // When
     app.mount(host);
