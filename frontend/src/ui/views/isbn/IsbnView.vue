@@ -83,7 +83,7 @@ async function search() {
 </script>
 
 <template>
-  <main class="mx-auto w-full max-w-120 px-5 pb-5">
+  <main class="mx-auto flex min-h-full w-full max-w-120 flex-col px-5 pb-5">
     <header class="pt-5 pb-3">
       <h1 class="text-page-title">{{ t("isbn.title") }}</h1>
       <p class="text-body text-muted">{{ t("isbn.hint") }}</p>
@@ -131,7 +131,7 @@ async function search() {
 
     <div
       v-if="scanning"
-      class="relative mt-5 aspect-[3/4] overflow-hidden rounded-[14px] bg-border"
+      class="relative mt-5 min-h-0 flex-1 overflow-hidden rounded-[14px] bg-border"
     >
       <video
         ref="camera"
