@@ -13,8 +13,10 @@ describe("AppTabBar", () => {
   });
 
   it("shows one tab per top-level screen, in order", async () => {
+    // When
     const { screen } = await open("/");
 
+    // Then
     const tabs = screen.getAllByRole("link");
     expect(tabs).toHaveLength(2);
     expect(tabs[0]).toBe(screen.getByRole("link", { name: "Accueil" }));
@@ -23,24 +25,30 @@ describe("AppTabBar", () => {
   });
 
   it("marks Accueil as the screen shown at the root", async () => {
+    // When
     const { screen } = await open("/");
 
+    // Then
     expect(screen.getByRole("link", { current: "page" })).toBe(
       screen.getByRole("link", { name: "Accueil" }),
     );
   });
 
   it("marks Ajouter as the screen shown on the lookup screen", async () => {
+    // When
     const { screen } = await open("/isbn");
 
+    // Then
     expect(screen.getByRole("link", { current: "page" })).toBe(
       screen.getByRole("link", { name: "Ajouter" }),
     );
   });
 
   it("shows a house over Accueil and a plus over Ajouter", async () => {
+    // When
     const { wrapper } = await open("/");
 
+    // Then
     expect(wrapper.findComponent(IconHome).exists()).toBe(true);
     expect(wrapper.findComponent(IconPlus).exists()).toBe(true);
   });
