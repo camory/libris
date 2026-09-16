@@ -36,10 +36,12 @@ was found.
   `docker compose --env-file agent/.env -f agent/compose.yaml up -d postgres`.
   `backend/.env` points the host gate at that database, and `FreshSchema`
   wipes it: what was entered by hand through `bootRun` is gone after a gate.
-- This box has no `contracteer` binary and an old Node: the frontend gate
-  and the Contracteer CLI run inside the sandbox image
+- Tophe's host box has no `contracteer` binary and an old Node: from the host,
+  the frontend gate and the Contracteer CLI run inside the sandbox image
   (`docker run --rm --network none -v "$PWD":/work -w /work/frontend
-  libris-agent:local 'npm test'`).
+  libris-agent:local 'npm test'`). The sandbox itself is the other way round:
+  Node 24, `npm` and `/usr/local/bin/contracteer` are there and there is no
+  `docker`, so a run inside it calls the gate directly.
 
 ## Backend build and detekt
 - Spring Boot 4.1.1 names: `spring-boot-starter-webmvc`,
@@ -246,6 +248,26 @@ was found.
   `inject("mockBaseUrl")` passes whether or not the stub installed, the mock
   answering the same example: give such a client a base URL that resolves
   nowhere, so the stub is the only thing that can answer.
+- `/` is a prefix of every path, so `router-link-active` sits on a link to `/`
+  on every screen. What follows the screen shown is the *exactly* active link:
+  `RouterLink` writes `aria-current="page"` and `router-link-exact-active` on
+  it alone. A test reads it with `getByRole("link", { current: "page" })`, a
+  template styles it with `exact-active-class`.
+- Two Tailwind utilities for the same property on the same element are settled
+  by the order Tailwind emits them, not by the order in the attribute. Where a
+  state must win — the active tab's colour and weight over the bar's — put the
+  common value on the ancestor, to be inherited, and the state's value on the
+  element: its own declaration beats an inherited one whatever the order.
+- `App.vue` is the full-height shell: `h-dvh` flex column, a
+  `min-h-0 flex-1 overflow-y-auto` wrapper around `RouterView`, then the footer
+  and the tab bar. A view that fills the screen writes `min-h-full` on its
+  `<main>`, never `h-full`, or content longer than the viewport is clipped
+  instead of scrolling.
+- Mounting a component that holds a `RouterLink` needs the route settled first:
+  `await router.push(path)` and `await router.isReady()` before `mount`, then
+  `window.history.replaceState(null, "", "/")` in an `afterEach`, since
+  `createWebHistory` writes to jsdom's real history and a leftover path makes a
+  later spec mount the wrong screen.
 - `BarcodeDetector` is not in TypeScript's DOM library. The two interfaces
   the camera adapter needs are written in
   `src/infra/camera/CameraBarcodeScanner.ts` and are not `declare global`:
