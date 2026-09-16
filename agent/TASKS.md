@@ -16,10 +16,9 @@
 >
 > Follow-ups and ideas go to `agent/PROPOSED.md`, never here.
 
-## Fast entry — specs/fast-entry.md
+## Screen — docs/DESIGN.md
 
-The spec's *Done* was checked by Tophe on 2026-09-16; T030 is the last task
-of the phase, the bar the lookup screen is reached from.
+One task outside any phase, the bar every screen is reached from.
 
 - [ ] T030 Frontend: the tab bar.
       `ui/components`: the tab bar of U03 — on `surface` with a `border`
@@ -98,7 +97,7 @@ version, once.*
 - Phase 1 — Fast entry, T013 to T027, done 2026-09-16 with the build of T027
   (`68154ac`) on the Pixel: a manga and a BD scanned and both cards read, an
   ISBN-10 typed, a wrong ISBN's message, 9782380751673 filled by Open Library
-  alone. T030, the tab bar, closes the phase's *Screen* section after it.
+  alone.
 
 ## Questions for the human
 
