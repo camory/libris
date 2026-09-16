@@ -27,6 +27,7 @@ private val ROLES = mapOf("070" to WRITER, "440" to ARTIST, "730" to TRANSLATOR)
 private val LANGUAGES = mapOf("fre" to "fr")
 private val YEAR = Regex("\\d{4}")
 private val PAGES = Regex("(\\d+)\\s*p\\.")
+private val TOME = Regex("tome (\\d+)")
 private const val YEAR_AT = 9
 private const val YEAR_LENGTH = 4
 private const val PUBLISHER_INDICATOR = "0"
@@ -39,6 +40,9 @@ internal fun authorRoleOf(functionCode: String?): AuthorRole = ROLES[functionCod
 internal fun publicationYearOf(dateOfPublication: String?, publication: String?): Int? =
     dateOfPublication?.drop(YEAR_AT)?.take(YEAR_LENGTH)?.takeIf { YEAR.matches(it) }?.toInt()
         ?: YEAR.find(publication.orEmpty())?.value?.toIntOrNull()
+
+internal fun tomeOf(partNumber: String?): Int? =
+    TOME.find(partNumber.orEmpty())?.groupValues?.get(1)?.toIntOrNull()
 
 internal fun coverUrlOf(controlField: String?): String? =
     controlField?.indexOf(ARK)?.takeIf { it >= 0 }

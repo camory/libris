@@ -207,6 +207,13 @@ class BnfSourceTest {
     }
 
     @Test
+    fun `a tome is read from the title statement only when it names one`() {
+        tomeOf("tome 7") shouldBe 7
+        tomeOf("chapitre treizième") shouldBe null
+        tomeOf(null) shouldBe null
+    }
+
+    @Test
     fun `a control field without an ark names no cover`() {
         coverUrlOf("http://catalogue.bnf.fr/ark:/12148/cb43636708p") shouldBe ONE_PIECE_COVER
         coverUrlOf("FRBNF436367080000000") shouldBe null
