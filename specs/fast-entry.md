@@ -214,6 +214,8 @@ hand and read its card; type a wrong ISBN and read the message; type
 9782380751673, a book the BnF lacks, and read its card, filled by Open
 Library alone.
 
+Checked by Tophe on 2026-09-16, with the build of T027.
+
 ## Tasks
 
 - T013 — the ISBN-13 value type and the Open Library source, no scenario
