@@ -241,6 +241,14 @@ class BnfSourceTest {
     }
 
     @Test
+    fun `a page count is read from the extent, plates not being pages`() {
+        pageCountOf("1 vol. (203 p.)") shouldBe 203
+        pageCountOf("1 volume 348 p") shouldBe 348
+        pageCountOf("1 vol. (32 pl.)") shouldBe null
+        pageCountOf(null) shouldBe null
+    }
+
+    @Test
     fun `a control field without an ark names no cover`() {
         coverUrlOf("http://catalogue.bnf.fr/ark:/12148/cb43636708p") shouldBe ONE_PIECE_COVER
         coverUrlOf("FRBNF436367080000000") shouldBe null

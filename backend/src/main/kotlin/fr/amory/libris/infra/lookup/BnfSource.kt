@@ -26,7 +26,7 @@ private val AUTHOR_TAGS = setOf("700", "701", "702")
 private val ROLES = mapOf("070" to WRITER, "440" to ARTIST, "730" to TRANSLATOR)
 private val LANGUAGES = mapOf("fre" to "fr")
 private val YEAR = Regex("\\d{4}")
-private val PAGES = Regex("(\\d+)\\s*p\\.?")
+private val PAGES = Regex("(\\d+)\\s*p\\b")
 private val TOME = Regex("tome (\\d+)")
 private const val YEAR_AT = 9
 private const val YEAR_LENGTH = 4
@@ -43,6 +43,9 @@ internal fun publicationYearOf(dateOfPublication: String?, publication: String?)
 
 internal fun tomeOf(partNumber: String?): Int? =
     TOME.find(partNumber.orEmpty())?.groupValues?.get(1)?.toIntOrNull()
+
+internal fun pageCountOf(extent: String?): Int? =
+    PAGES.find(extent.orEmpty())?.groupValues?.get(1)?.toIntOrNull()
 
 internal fun coverUrlOf(controlField: String?): String? =
     controlField?.indexOf(ARK)?.takeIf { it >= 0 }
@@ -78,7 +81,7 @@ class BnfSource(baseUrl: String, timeout: Duration) : IsbnSource {
             publisher = publication?.value("c"),
             publicationYear = publicationYearOf(record.value("100", "a"), publication?.value("d")),
             language = LANGUAGES[record.value("101", "a")],
-            pageCount = PAGES.find(record.value("215", "a").orEmpty())?.groupValues?.get(1)?.toIntOrNull(),
+            pageCount = pageCountOf(record.value("215", "a")),
             summary = null,
             coverUrl = coverUrlOf(record.control("003")),
         )
