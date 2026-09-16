@@ -27,11 +27,17 @@ private val ROLES = mapOf("070" to WRITER, "440" to ARTIST, "730" to TRANSLATOR)
 private val LANGUAGES = mapOf("fre" to "fr")
 private val YEAR = Regex("\\d{4}")
 private val PAGES = Regex("(\\d+)\\s*p\\.")
+private const val YEAR_AT = 9
+private const val YEAR_LENGTH = 4
 private const val ARK = "ark:/"
 private const val COVER_BEFORE = "https://catalogue.bnf.fr/couverture?&appName=NE&idArk="
 private const val COVER_AFTER = "&couverture=1"
 
 internal fun authorRoleOf(functionCode: String?): AuthorRole = ROLES[functionCode] ?: WRITER
+
+internal fun publicationYearOf(dateOfPublication: String?, publication: String?): Int? =
+    dateOfPublication?.drop(YEAR_AT)?.take(YEAR_LENGTH)?.takeIf { YEAR.matches(it) }?.toInt()
+        ?: YEAR.find(publication.orEmpty())?.value?.toIntOrNull()
 
 internal fun coverUrlOf(controlField: String?): String? =
     controlField?.indexOf(ARK)?.takeIf { it >= 0 }
@@ -64,7 +70,7 @@ class BnfSource(baseUrl: String, timeout: Duration) : IsbnSource {
             series = seriesOf(record),
             collection = record.value("410", "t"),
             publisher = record.value("210", "c"),
-            publicationYear = YEAR.find(record.value("210", "d").orEmpty())?.value?.toIntOrNull(),
+            publicationYear = publicationYearOf(record.value("100", "a"), record.value("210", "d")),
             language = LANGUAGES[record.value("101", "a")],
             pageCount = PAGES.find(record.value("215", "a").orEmpty())?.groupValues?.get(1)?.toIntOrNull(),
             summary = null,

@@ -113,6 +113,15 @@ class BnfSourceTest {
     }
 
     @Test
+    fun `the publication year is what the date of publication names`() {
+        publicationYearOf("20251023d2025    m  y0frey50      ba", "DL 2025") shouldBe 2025
+        publicationYearOf("20260630u2026    a  y0frey50      ba", null) shouldBe 2026
+        publicationYearOf(null, "impr. 2013") shouldBe 2013
+        publicationYearOf("2025", "DL 2020") shouldBe 2020
+        publicationYearOf(null, null) shouldBe null
+    }
+
+    @Test
     fun `a control field without an ark names no cover`() {
         coverUrlOf("http://catalogue.bnf.fr/ark:/12148/cb43636708p") shouldBe ONE_PIECE_COVER
         coverUrlOf("FRBNF436367080000000") shouldBe null
