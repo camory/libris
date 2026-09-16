@@ -4,6 +4,8 @@ import { afterEach, describe, expect, it } from "vitest";
 import { createLibrisI18n } from "../i18n";
 import { createLibrisRouter } from "../router";
 import AppTabBar from "./AppTabBar.vue";
+import IconHome from "./icons/IconHome.vue";
+import IconPlus from "./icons/IconPlus.vue";
 
 describe("AppTabBar", () => {
   afterEach(() => {
@@ -11,7 +13,7 @@ describe("AppTabBar", () => {
   });
 
   it("shows one tab per top-level screen, in order", async () => {
-    const screen = await open("/");
+    const { screen } = await open("/");
 
     const tabs = screen.getAllByRole("link");
     expect(tabs).toHaveLength(2);
@@ -21,7 +23,7 @@ describe("AppTabBar", () => {
   });
 
   it("marks Accueil as the screen shown at the root", async () => {
-    const screen = await open("/");
+    const { screen } = await open("/");
 
     expect(screen.getByRole("link", { current: "page" })).toBe(
       screen.getByRole("link", { name: "Accueil" }),
@@ -29,11 +31,18 @@ describe("AppTabBar", () => {
   });
 
   it("marks Ajouter as the screen shown on the lookup screen", async () => {
-    const screen = await open("/isbn");
+    const { screen } = await open("/isbn");
 
     expect(screen.getByRole("link", { current: "page" })).toBe(
       screen.getByRole("link", { name: "Ajouter" }),
     );
+  });
+
+  it("shows a house over Accueil and a plus over Ajouter", async () => {
+    const { wrapper } = await open("/");
+
+    expect(wrapper.findComponent(IconHome).exists()).toBe(true);
+    expect(wrapper.findComponent(IconPlus).exists()).toBe(true);
   });
 
   async function open(path: string) {
@@ -43,6 +52,6 @@ describe("AppTabBar", () => {
     const wrapper = mount(AppTabBar, {
       global: { plugins: [createLibrisI18n(), router] },
     });
-    return within(wrapper.element as HTMLElement);
+    return { wrapper, screen: within(wrapper.element as HTMLElement) };
   }
 });

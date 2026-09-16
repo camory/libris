@@ -1,5 +1,7 @@
 <script setup lang="ts">
 import { useI18n } from "vue-i18n";
+import IconHome from "./icons/IconHome.vue";
+import IconPlus from "./icons/IconPlus.vue";
 
 const { t } = useI18n();
 </script>
@@ -14,6 +16,7 @@ const { t } = useI18n();
         class="flex h-14 flex-1 flex-col items-center justify-center gap-2"
         exact-active-class="font-semibold text-accent"
       >
+        <IconHome />
         {{ t("tabs.home") }}
       </RouterLink>
       <RouterLink
@@ -21,6 +24,7 @@ const { t } = useI18n();
         class="flex h-14 flex-1 flex-col items-center justify-center gap-2"
         exact-active-class="font-semibold text-accent"
       >
+        <IconPlus />
         {{ t("tabs.add") }}
       </RouterLink>
     </div>
