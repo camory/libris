@@ -704,21 +704,22 @@ Format:
 
 
 ## 2026-09-16 — T030 The tab bar — done
-- Did: `AppTabBar.vue` shows a house linking to `/` and a barcode linking to
-  `/isbn`, each an icon alone with *Accueil* or *Ajouter* as its `aria-label`,
-  on `surface` with a hairline above, 48 tall with the icons at 28, and a
-  bottom padding of `max(16px, env(safe-area-inset-bottom))`; `App.vue` became the full-height
+- Did: `AppTabBar.vue` shows *Accueil* under a house linking to `/` and, raised
+  in the middle of the bar, a barcode in an `accent` circle linking to `/isbn`
+  with *Ajouter* as its `aria-label`, on `surface` with a hairline above, 56
+  tall, and a bottom padding of `max(16px, env(safe-area-inset-bottom))`; `App.vue` became the full-height
   shell that scrolls the view and holds the footer and the bar; `HomeView` was
   redrawn to the column and the type scale, and the lookup screen's camera
   block now grows into the space left instead of keeping a ratio. New entries
   `tabs.home` and `tabs.add`.
 - Decided:
-  - **Icons only on the bar** (Tophe, on review): the run drew each tab as its
-    icon over its word, a house and a plus, with a `tab` step of 12 px added
-    to U02. The review settled on the icon alone, the word as the link's
-    `aria-label`, and the barcode the field already uses instead of a plus;
-    `IconPlus` and the `tab` step were removed, U02, U03 and U07 and the
-    spec's *Screen* section amended in the same pull request.
+  - **The bar after BDGest's** (Tophe, on review): the run drew two equal
+    tabs, a house and a plus, each its icon over its word. The review settled
+    on the shape of BDGest's bar: the house tab with its label on the left,
+    and in the middle a raised `accent` circle holding the barcode the field
+    already uses, *Ajouter* as its `aria-label`, no plus; three columns, the
+    third empty until a screen claims it. `IconPlus` was removed, U02, U03
+    and U07 and the spec's *Screen* section amended in the same pull request.
   - **The inactive look is inherited, the active look is the element's own.**
     `text-muted` sits on the `<nav>` and `text-accent` in
     `exact-active-class` on the anchor, so the active tab wins by the

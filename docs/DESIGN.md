@@ -52,6 +52,7 @@ One scale, in pixels, each step with its one job:
 | body         | 14 / regular      | hints, messages, label/value rows, line 1.4     |
 | label        | 13 / semibold     | a field label, in `muted`                       |
 | overline     | 12 / semibold     | uppercase, tracked, in `accent`: série · tome   |
+| tab          | 12 / medium       | the tab bar; semibold on the active tab         |
 
 A screen uses the steps and nothing between them: no 17, no 21. A step that
 no job fits is added here, not improvised in a component. Weight carries the
@@ -68,12 +69,16 @@ Every screen is one column, designed at 390 px wide and read top to bottom:
    `bg`. This is the part that scrolls; header, footer and tab bar stay put.
 3. **Footer**: the revision, `label` step, `muted`, centred, one line; it
    sits under the content and above the tab bar on every screen.
-4. **Tab bar**: on `surface` with a `border` hairline above, one tab per
-   top-level screen, equal widths: *Accueil* (a house) and *Ajouter* (a
-   barcode). A tab is its icon alone, drawn at 28, 48 tall, `accent` when
-   it is the screen shown and `muted` otherwise; it is a link and its
-   `aria-label` is the name of its screen. Below it the padding the phone's
-   home indicator needs (the bottom safe area, 16 at least).
+4. **Tab bar**: on `surface` with a `border` hairline above, 56 tall, in
+   three equal columns. A tab is its icon, drawn at 24, over its label in
+   the `tab` step, `accent` and semibold when it is the screen shown and
+   `muted` otherwise: *Accueil* (a house) in the first column. The middle
+   column holds the way to add an ouvrage, *Ajouter*: a 56 circle on
+   `accent`, the barcode in white at 28, raised 20 above the hairline; a
+   link, its `aria-label` the name of its screen, always on `accent`. The
+   third column is empty until a screen claims it. Below the bar the
+   padding the phone's home indicator needs (the bottom safe area, 16 at
+   least).
 
 Spacing has three sizes: 20 between blocks, 14 inside a card, 8 between a
 control and what belongs to it (a label and its field, a field and its
@@ -172,8 +177,8 @@ language come from the `fr` catalogue, keyed by the code the API answers.
 
 ### U07 — Icons: hand-drawn, inline, no library
 An icon is an inline SVG on a 24 grid, stroke 1.8, round caps and joins,
-`currentColor`, no fill; 22 for the alert of a message, 28 on the tab bar,
-48 for an empty state (U05). Each is its own component under `ui/components/icons`, named
+`currentColor`, no fill; 22 for the alert of a message, 24 on a tab, 28
+in the circle of the tab bar, 48 for an empty state (U05). Each is its own component under `ui/components/icons`, named
 by what it shows (`IconHome`, `IconBarcode`, `IconClose`, `IconAlert`,
 `IconBook`), drawn once and reused. No icon font, no icon
 package (D05: no UI library).
