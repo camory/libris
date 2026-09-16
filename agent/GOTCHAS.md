@@ -104,6 +104,22 @@ was found.
   no subfield, and `getElementsByTagNameNS(MARCXCHANGE, "datafield")` never
   sees it. The BnF writes the record's ark in control field 003, as a whole
   URL (`http://catalogue.bnf.fr/ark:/12148/cb43636708p`).
+- A marcxchange `datafield` carries `ind1` and `ind2`, one character each and
+  a space when empty, and two fields of a record may share a tag: the BnF
+  writes the publisher's 214 with `ind2="0"` and the printer's with `ind2="3"`,
+  in either order. Field `100 $a` is fixed-length and holds the date of
+  publication at positions 9 to 12, after the eight digits of the date the
+  record was entered and one letter.
+- The BnF writes a provisional record before the book is published:
+  9782371025219 carries no 461 and names its series in `200 $a` and its tome
+  in `200 $h` (`tome 7`), writes its page count without the stop
+  (`1 volume 348 p`) and marks its date of publication `u`. The catalogue
+  replaces such a record with a final one, so its recording drifts from the
+  live API.
+- `BnfStubs.answers(isbn, body)` serves a body written in the test,
+  `knows(isbn)` the recording of that ISBN under
+  `backend/src/test/resources/scenarios/bnf/`. A hand-written body is not
+  saved there: it is not a recording.
 - `RestClient`'s `retrieve().body()` throws `HttpClientErrorException.NotFound`
   on a 404, and `NotFound` is a `RestClientException`: a source that tells a
   miss from a failure catches `NotFound` first, or every miss reads as a
