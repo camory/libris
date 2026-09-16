@@ -8,7 +8,7 @@ const { t } = useI18n();
 
 <template>
   <nav
-    class="border-t border-border bg-surface pb-[max(16px,env(safe-area-inset-bottom))] text-muted"
+    class="border-t border-border bg-surface pb-[env(safe-area-inset-bottom)] text-muted"
   >
     <div class="mx-auto grid w-full max-w-120 grid-cols-3">
       <RouterLink

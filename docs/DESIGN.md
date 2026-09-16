@@ -75,8 +75,8 @@ Every screen is one column, designed at 390 px wide and read top to bottom:
    middle column holds the way to add an ouvrage, *Ajouter*: a 44 circle on
    `accent` centred in the bar, the barcode in white at 32, always on
    `accent`. The third column is empty until a screen claims it. Below the
-   bar the padding the phone's home indicator needs (the bottom safe area,
-   16 at least).
+   bar the padding the phone's home indicator needs, the bottom safe area
+   and nothing more: without one the bar ends at the screen.
 
 Spacing has three sizes: 20 between blocks, 14 inside a card, 8 between a
 control and what belongs to it (a label and its field, a field and its
