@@ -62,21 +62,23 @@ class BnfSource(baseUrl: String, timeout: Duration) : IsbnSource {
     private fun answerFrom(isbn: Isbn, record: UnimarcRecord): SourceAnswer =
         record.value("200", "a")?.let { Known(editionOf(isbn, it, record)) } ?: Failed
 
-    private fun editionOf(isbn: Isbn, title: String, record: UnimarcRecord): SourceEdition =
-        SourceEdition(
+    private fun editionOf(isbn: Isbn, title: String, record: UnimarcRecord): SourceEdition {
+        val publication = publicationOf(record)
+        return SourceEdition(
             isbn = isbn,
             title = title,
             subtitle = record.value("200", "e"),
             authors = authorsOf(record),
             series = seriesOf(record),
             collection = record.value("410", "t"),
-            publisher = publicationOf(record)?.value("c"),
-            publicationYear = publicationYearOf(record.value("100", "a"), publicationOf(record)?.value("d")),
+            publisher = publication?.value("c"),
+            publicationYear = publicationYearOf(record.value("100", "a"), publication?.value("d")),
             language = LANGUAGES[record.value("101", "a")],
             pageCount = PAGES.find(record.value("215", "a").orEmpty())?.groupValues?.get(1)?.toIntOrNull(),
             summary = null,
             coverUrl = coverUrlOf(record.control("003")),
         )
+    }
 
     private fun publicationOf(record: UnimarcRecord): UnimarcField? =
         record.field("214", PUBLISHER_INDICATOR) ?: record.field("210")
