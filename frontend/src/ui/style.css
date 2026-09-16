@@ -58,9 +58,6 @@
   --text-overline--line-height: 1.2;
   --text-overline--font-weight: 600;
   --text-overline--letter-spacing: 0.06em;
-  --text-tab: 12px;
-  --text-tab--line-height: 1.2;
-  --text-tab--font-weight: 500;
 }
 
 body {
