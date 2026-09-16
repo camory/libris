@@ -140,7 +140,7 @@ class BnfSourceTest {
         answer shouldBe Known(
             SourceEdition(
                 isbn = isbnOf(PRINTER_FIRST),
-                title = "Lemuria",
+                title = "Un livre",
                 subtitle = null,
                 authors = emptyList(),
                 series = null,
@@ -300,16 +300,14 @@ class BnfSourceTest {
             "https://catalogue.bnf.fr/couverture?&appName=NE&idArk=ark:/12148/cb48801192z&couverture=1"
         val PRINTER_BEFORE_PUBLISHER = """
             <srw:searchRetrieveResponse xmlns:srw="http://www.loc.gov/zing/srw/">
-            <mxc:record xmlns:mxc="info:lc/xmlns/marcxchange-v2" format="UNIMARC" type="Bibliographic">
+            <mxc:record xmlns:mxc="info:lc/xmlns/marcxchange-v2">
             <mxc:datafield tag="200" ind1="1" ind2=" ">
-            <mxc:subfield code="a">Lemuria</mxc:subfield>
+            <mxc:subfield code="a">Un livre</mxc:subfield>
             </mxc:datafield>
             <mxc:datafield tag="214" ind1=" " ind2="3">
-            <mxc:subfield code="a">91-Massy-Palaiseau</mxc:subfield>
             <mxc:subfield code="c">Impr. PPO graphic</mxc:subfield>
             </mxc:datafield>
             <mxc:datafield tag="214" ind1=" " ind2="0">
-            <mxc:subfield code="a">[Bruxelles]</mxc:subfield>
             <mxc:subfield code="c">Dargaud Benelux</mxc:subfield>
             </mxc:datafield>
             </mxc:record>
