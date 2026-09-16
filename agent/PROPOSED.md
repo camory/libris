@@ -135,14 +135,6 @@
   contract does not declare it, so the task that adds it is the one that
   decides how it is exercised — and it is also when the two clients' shared
   request shape is worth extracting (found on T016, 2026-09-14).
-- Frontend: the tab bar of U03 is nowhere. `App.vue` carries the footer and
-  a `RouterView` only, so the reader moves between *Accueil* and *Ajouter*
-  through a link in the home view; the bar itself — the two tabs with
-  `IconHome` and `IconPlus`, the active one read from the route, the bottom
-  safe area — is chrome shared by every screen and belongs to a task of its
-  own. That task is also when `HomeView` gets drawn to U02 and U03: it still
-  wears `text-2xl font-bold` and `p-4`, which are not steps of the scale
-  (found on T017, 2026-09-14).
 - Frontend: the lookup screen has a button, not a form, so the go key of the
   phone keyboard does not start the search. A `<form @submit.prevent>` buys
   it at the price of a behaviour no scenario describes and of jsdom's own
@@ -163,11 +155,6 @@
   (`en`). That is the decided fallback, not a bug, but the words are added one
   at a time with a case each, and the codes that will arrive are the ones the
   backend's map learns (found on T018, 2026-09-14).
-- Frontend: the camera block of the lookup screen is a fixed portrait ratio
-  (`aspect-[3/4]`) under the *Chercher* button, because the spec's "fills the
-  space between the button and the tab bar" needs the tab bar of U03 and a
-  full-height page column, neither of which exists. The task that builds the
-  tab bar replaces the ratio with that space (found on T019, 2026-09-14).
 - Frontend: a reader who refuses the camera sees the camera block disappear
   and nothing else; the screen never says why, and the words for a refused
   camera are in no document. A sentence under the field, or a state of the

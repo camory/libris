@@ -95,4 +95,5 @@ to the foreground: the row shows; tap it: the new version, once.
 
 ## Tasks
 
-Filled by the planner.
+- T028 — the registration and the banner: S1, S2, S4 — frontend
+- T029 — S3 — frontend
