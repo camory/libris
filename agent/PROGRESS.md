@@ -706,8 +706,8 @@ Format:
 ## 2026-09-16 — T030 The tab bar — done
 - Did: `AppTabBar.vue` shows a house linking to `/` and a barcode linking to
   `/isbn`, each an icon alone with *Accueil* or *Ajouter* as its `aria-label`,
-  on `surface` with a hairline above, 56 tall and a bottom padding of
-  `max(16px, env(safe-area-inset-bottom))`; `App.vue` became the full-height
+  on `surface` with a hairline above, 48 tall with the icons at 28, and a
+  bottom padding of `max(16px, env(safe-area-inset-bottom))`; `App.vue` became the full-height
   shell that scrolls the view and holds the footer and the bar; `HomeView` was
   redrawn to the column and the type scale, and the lookup screen's camera
   block now grows into the space left instead of keeping a ratio. New entries

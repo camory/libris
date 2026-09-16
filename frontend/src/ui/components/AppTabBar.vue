@@ -14,18 +14,18 @@ const { t } = useI18n();
       <RouterLink
         to="/"
         :aria-label="t('tabs.home')"
-        class="flex h-14 flex-1 items-center justify-center"
+        class="flex h-12 flex-1 items-center justify-center"
         exact-active-class="text-accent"
       >
-        <IconHome />
+        <IconHome class="size-7" />
       </RouterLink>
       <RouterLink
         to="/isbn"
         :aria-label="t('tabs.add')"
-        class="flex h-14 flex-1 items-center justify-center"
+        class="flex h-12 flex-1 items-center justify-center"
         exact-active-class="text-accent"
       >
-        <IconBarcode />
+        <IconBarcode class="size-7" />
       </RouterLink>
     </div>
   </nav>
