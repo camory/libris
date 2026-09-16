@@ -39,6 +39,10 @@ const fr = {
     COLOURIST: "couleurs",
     TRANSLATOR: "traduction",
   },
+  tabs: {
+    home: "Accueil",
+    add: "Ajouter",
+  },
 };
 
 export function createLibrisI18n() {
