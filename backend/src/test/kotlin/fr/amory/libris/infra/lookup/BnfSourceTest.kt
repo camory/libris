@@ -71,6 +71,33 @@ class BnfSourceTest {
     }
 
     @Test
+    fun `the publisher is the 214 the second indicator marks, wherever it sits`() {
+        // Given
+        bnf.answers(PRINTER_FIRST, PRINTER_BEFORE_PUBLISHER)
+
+        // When
+        val answer = source.lookUp(isbnOf(PRINTER_FIRST))
+
+        // Then
+        answer shouldBe Known(
+            SourceEdition(
+                isbn = isbnOf(PRINTER_FIRST),
+                title = "Lemuria",
+                subtitle = null,
+                authors = emptyList(),
+                series = null,
+                collection = null,
+                publisher = "Dargaud Benelux",
+                publicationYear = null,
+                language = null,
+                pageCount = null,
+                summary = null,
+                coverUrl = null,
+            ),
+        )
+    }
+
+    @Test
     fun `a record without pages and year gives neither`() {
         // Given
         bnf.partiallyKnows(ONE_PIECE)
@@ -192,6 +219,7 @@ class BnfSourceTest {
         const val ONE_PIECE = "9782723488525"
         const val ONE_PIECE_TEN = "2723488527"
         const val NERONIA = "9782505125990"
+        const val PRINTER_FIRST = "9782999999992"
         const val UNKNOWN = "9782000000013"
         const val WITHOUT_A_TEN = "9791000000008"
         const val SRU = "/api/SRU"
@@ -199,6 +227,23 @@ class BnfSourceTest {
             "https://catalogue.bnf.fr/couverture?&appName=NE&idArk=ark:/12148/cb43636708p&couverture=1"
         const val NERONIA_COVER =
             "https://catalogue.bnf.fr/couverture?&appName=NE&idArk=ark:/12148/cb486302521&couverture=1"
+        val PRINTER_BEFORE_PUBLISHER = """
+            <srw:searchRetrieveResponse xmlns:srw="http://www.loc.gov/zing/srw/">
+            <mxc:record xmlns:mxc="info:lc/xmlns/marcxchange-v2" format="UNIMARC" type="Bibliographic">
+            <mxc:datafield tag="200" ind1="1" ind2=" ">
+            <mxc:subfield code="a">Lemuria</mxc:subfield>
+            </mxc:datafield>
+            <mxc:datafield tag="214" ind1=" " ind2="3">
+            <mxc:subfield code="a">91-Massy-Palaiseau</mxc:subfield>
+            <mxc:subfield code="c">Impr. PPO graphic</mxc:subfield>
+            </mxc:datafield>
+            <mxc:datafield tag="214" ind1=" " ind2="0">
+            <mxc:subfield code="a">[Bruxelles]</mxc:subfield>
+            <mxc:subfield code="c">Dargaud Benelux</mxc:subfield>
+            </mxc:datafield>
+            </mxc:record>
+            </srw:searchRetrieveResponse>
+        """.trimIndent()
         val ONE_PIECE_EDITION = SourceEdition(
             isbn = isbnOf(ONE_PIECE),
             title = "Romance dawn",

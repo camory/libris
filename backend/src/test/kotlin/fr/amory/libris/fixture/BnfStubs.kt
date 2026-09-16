@@ -31,7 +31,7 @@ class BnfStubs(private val server: WireMockServer) {
         server.stubFor(get(urlPathEqualTo(SRU)).willReturn(serverError()))
     }
 
-    private fun answers(isbn: String, envelope: String) {
+    fun answers(isbn: String, envelope: String) {
         server.stubFor(
             get(urlPathEqualTo(SRU))
                 .withQueryParam("query", containing(isbn))

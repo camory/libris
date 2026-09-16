@@ -29,6 +29,7 @@ private val YEAR = Regex("\\d{4}")
 private val PAGES = Regex("(\\d+)\\s*p\\.")
 private const val YEAR_AT = 9
 private const val YEAR_LENGTH = 4
+private const val PUBLISHER_INDICATOR = "0"
 private const val ARK = "ark:/"
 private const val COVER_BEFORE = "https://catalogue.bnf.fr/couverture?&appName=NE&idArk="
 private const val COVER_AFTER = "&couverture=1"
@@ -69,13 +70,16 @@ class BnfSource(baseUrl: String, timeout: Duration) : IsbnSource {
             authors = authorsOf(record),
             series = seriesOf(record),
             collection = record.value("410", "t"),
-            publisher = record.value("214", "c") ?: record.value("210", "c"),
-            publicationYear = publicationYearOf(record.value("100", "a"), record.value("210", "d")),
+            publisher = publicationOf(record)?.value("c"),
+            publicationYear = publicationYearOf(record.value("100", "a"), publicationOf(record)?.value("d")),
             language = LANGUAGES[record.value("101", "a")],
             pageCount = PAGES.find(record.value("215", "a").orEmpty())?.groupValues?.get(1)?.toIntOrNull(),
             summary = null,
             coverUrl = coverUrlOf(record.control("003")),
         )
+
+    private fun publicationOf(record: UnimarcRecord): UnimarcField? =
+        record.field("214", PUBLISHER_INDICATOR) ?: record.field("210")
 
     private fun authorsOf(record: UnimarcRecord): List<SourceAuthor> =
         record.fields(AUTHOR_TAGS).mapNotNull { field ->
@@ -134,6 +138,7 @@ class BnfSource(baseUrl: String, timeout: Duration) : IsbnSource {
             field.getElementsByTagNameNS(MARCXCHANGE, "subfield").let { subfields ->
                 UnimarcField(
                     tag = field.getAttribute("tag"),
+                    indicator2 = field.getAttribute("ind2"),
                     subfields = (0 until subfields.length).map { index ->
                         (subfields.item(index) as Element).let { it.getAttribute("code") to it.textContent }
                     },
@@ -148,11 +153,20 @@ private class UnimarcRecord(
 ) {
     fun control(tag: String): String? = controls.firstOrNull { it.first == tag }?.second
 
-    fun value(tag: String, code: String): String? = fields.firstOrNull { it.tag == tag }?.value(code)
+    fun value(tag: String, code: String): String? = field(tag)?.value(code)
+
+    fun field(tag: String): UnimarcField? = fields.firstOrNull { it.tag == tag }
+
+    fun field(tag: String, indicator2: String): UnimarcField? =
+        fields.firstOrNull { it.tag == tag && it.indicator2 == indicator2 }
 
     fun fields(tags: Set<String>): List<UnimarcField> = fields.filter { it.tag in tags }
 }
 
-private class UnimarcField(val tag: String, private val subfields: List<Pair<String, String>>) {
+private class UnimarcField(
+    val tag: String,
+    val indicator2: String,
+    private val subfields: List<Pair<String, String>>,
+) {
     fun value(code: String): String? = subfields.firstOrNull { it.first == code }?.second
 }
