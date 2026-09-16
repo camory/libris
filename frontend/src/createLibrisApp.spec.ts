@@ -1,3 +1,4 @@
+import { within } from "@testing-library/dom";
 import { flushPromises } from "@vue/test-utils";
 import { describe, expect, it } from "vitest";
 import { createLibrisApp } from "./createLibrisApp";
@@ -55,10 +56,13 @@ describe("createLibrisApp", () => {
     await flushPromises();
 
     // Then
-    const shown = host.textContent ?? "";
-    expect(shown).toContain("Accueil");
-    expect(shown).toContain("Ajouter");
-    expect(shown.indexOf("sha-abc1234")).toBeLessThan(shown.indexOf("Accueil"));
+    const screen = within(host);
+    const revision = screen.getByText("sha-abc1234");
+    const home = screen.getByRole("link", { name: "Accueil" });
+    screen.getByRole("link", { name: "Ajouter" });
+    expect(revision.compareDocumentPosition(home)).toBe(
+      Node.DOCUMENT_POSITION_FOLLOWING,
+    );
 
     app.unmount();
   });

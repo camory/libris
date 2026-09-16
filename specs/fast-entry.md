@@ -127,8 +127,9 @@ Top to bottom on a phone: the title *Ajouter un ouvrage* and the line
 numeric keyboard, placeholder `978-2-7234-8852-5`, the typed text kept as
 typed; inside the field at the right, a barcode icon when the browser has a
 `BarcodeDetector`, nothing otherwise; under the field the button *Chercher*,
-full width; then the state of the lookup; at the bottom the tab bar,
-*Accueil* and *Ajouter*, the latter active on this screen.
+full width; then the state of the lookup; at the bottom the tab bar, a
+house for *Accueil* and a barcode for *Ajouter*, the latter active on this
+screen.
 
 States:
 

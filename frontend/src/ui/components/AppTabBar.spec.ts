@@ -4,8 +4,8 @@ import { afterEach, describe, expect, it } from "vitest";
 import { createLibrisI18n } from "../i18n";
 import { createLibrisRouter } from "../router";
 import AppTabBar from "./AppTabBar.vue";
+import IconBarcode from "./icons/IconBarcode.vue";
 import IconHome from "./icons/IconHome.vue";
-import IconPlus from "./icons/IconPlus.vue";
 
 describe("AppTabBar", () => {
   afterEach(() => {
@@ -44,13 +44,13 @@ describe("AppTabBar", () => {
     );
   });
 
-  it("shows a house over Accueil and a plus over Ajouter", async () => {
+  it("shows a house for Accueil and a barcode for Ajouter", async () => {
     // When
     const { wrapper } = await open("/");
 
     // Then
     expect(wrapper.findComponent(IconHome).exists()).toBe(true);
-    expect(wrapper.findComponent(IconPlus).exists()).toBe(true);
+    expect(wrapper.findComponent(IconBarcode).exists()).toBe(true);
   });
 
   async function open(path: string) {
