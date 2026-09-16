@@ -110,6 +110,10 @@ French, *Scanner le code-barres*, *Fermer la caméra*. An icon button that
 toggles a state changes its icon, the barcode becomes a cross, and its label
 with it.
 
+**Text button.** A verb in the infinitive, `button` step, `accent`, no
+border, no background, 44 tall, 12 of side padding. It lives in a banner
+(U09) and nowhere else: on a screen the action is the primary button.
+
 Every control is at least 44 tall and wide, reachable one-handed at the
 bottom half of the screen: the field, its button and the tab bar are the
 lowest things on the page, the title is the highest.
@@ -195,3 +199,15 @@ space before `:`, `;` and `?`, guillemets « » for quotes, the middle dot
 
 Proper names keep their own spelling and case, *Open Library*, *BnF*,
 *Eiichirō Oda*; a title of an ouvrage is shown as the source gives it.
+
+### U09 — Banner: what the app says, above every screen
+When the app has something to tell the reader that is no screen's answer, a
+new version is ready, it says it in a banner above the header of every
+screen: `surface` with a `border` hairline below, 20 of padding at the
+left, 8 at the right, 5 above and below; an icon, 22, in `accent`, one
+sentence in `body`, `text`, 8 apart, and one text button (U04) at the
+right. It is part of the page: it pushes the screen down, floats over
+nothing and stays until the reader acts. One banner at a time, owned by the
+app shell, not by a screen. While its action runs the sentence becomes the
+action in progress with an ellipsis, a spinner takes the icon's place and
+the button leaves.

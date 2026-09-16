@@ -4,7 +4,7 @@
 last deployed version in one tap, at a moment of their choosing, instead of
 relaunching the app until it happens. Now, because every merge is a deploy
 and the family will see the versions go by.
-**Status:** draft
+**Status:** planned
 
 ## Scenarios
 
@@ -69,17 +69,20 @@ Proof: frontend scenario test with a stubbed registration.
 
 ## Screen
 
-Mockup to draw with Tophe. Proposal: the row is a block of the content at
-the top of every screen, under the title, *Nouvelle version disponible* at
-the left and the action *Mettre à jour* at the right; it is not a layer over
-the page and it does not float (U05). No version number: the reader has no
-use for a commit hash.
+Mockup: <https://claude.ai/artifact/NigsrfVApjWpLAVvENrrVo>, one artboard per
+state below, drawn with Tophe on 2026-09-16; not exported, the text here is
+what the implementer builds from. No route of its own: the banner of U09
+above the header of every screen, owned by the app shell.
+
+Top to bottom: the banner, a refresh icon, *Nouvelle version disponible* and
+the text button *Mettre à jour* at the right; then the screen as it is.
 
 States:
 
-- **Ready** (S1): the row.
-- **Updating** (S2): the action reads *Mise à jour…* until the reload.
-- **Current** (S4): no row.
+- **Ready** (S1): the banner.
+- **Updating** (S2): the banner reads *Mise à jour…* with a spinner in place
+  of the icon and no button, until the reload.
+- **Current** (S4): no banner.
 
 ## Contract
 
