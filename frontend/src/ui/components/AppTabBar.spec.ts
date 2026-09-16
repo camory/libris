@@ -20,6 +20,22 @@ describe("AppTabBar", () => {
     expect(tabs.map((tab) => tab.getAttribute("href"))).toEqual(["/", "/isbn"]);
   });
 
+  it("marks Accueil as the screen shown at the root", async () => {
+    const screen = await open("/");
+
+    expect(screen.getByRole("link", { current: "page" })).toBe(
+      screen.getByRole("link", { name: "Accueil" }),
+    );
+  });
+
+  it("marks Ajouter as the screen shown on the lookup screen", async () => {
+    const screen = await open("/isbn");
+
+    expect(screen.getByRole("link", { current: "page" })).toBe(
+      screen.getByRole("link", { name: "Ajouter" }),
+    );
+  });
+
   async function open(path: string) {
     const router = createLibrisRouter();
     await router.push(path);
