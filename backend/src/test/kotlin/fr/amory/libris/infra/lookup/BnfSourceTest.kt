@@ -44,6 +44,33 @@ class BnfSourceTest {
     }
 
     @Test
+    fun `a record whose publisher sits in field 214 is what the BnF knows about it`() {
+        // Given
+        bnf.knows(NERONIA)
+
+        // When
+        val answer = source.lookUp(isbnOf(NERONIA))
+
+        // Then
+        answer shouldBe Known(
+            SourceEdition(
+                isbn = isbnOf(NERONIA),
+                title = "Les Neronia",
+                subtitle = null,
+                authors = listOf(SourceAuthor("Jean Dufaux", WRITER), SourceAuthor("Jérémy", ARTIST)),
+                series = SourceSeries("Murena", 13),
+                collection = null,
+                publisher = "Dargaud Benelux",
+                publicationYear = 2025,
+                language = "fr",
+                pageCount = 52,
+                summary = null,
+                coverUrl = NERONIA_COVER,
+            ),
+        )
+    }
+
+    @Test
     fun `a record without pages and year gives neither`() {
         // Given
         bnf.partiallyKnows(ONE_PIECE)
@@ -164,11 +191,14 @@ class BnfSourceTest {
     private companion object {
         const val ONE_PIECE = "9782723488525"
         const val ONE_PIECE_TEN = "2723488527"
+        const val NERONIA = "9782505125990"
         const val UNKNOWN = "9782000000013"
         const val WITHOUT_A_TEN = "9791000000008"
         const val SRU = "/api/SRU"
         const val ONE_PIECE_COVER =
             "https://catalogue.bnf.fr/couverture?&appName=NE&idArk=ark:/12148/cb43636708p&couverture=1"
+        const val NERONIA_COVER =
+            "https://catalogue.bnf.fr/couverture?&appName=NE&idArk=ark:/12148/cb486302521&couverture=1"
         val ONE_PIECE_EDITION = SourceEdition(
             isbn = isbnOf(ONE_PIECE),
             title = "Romance dawn",

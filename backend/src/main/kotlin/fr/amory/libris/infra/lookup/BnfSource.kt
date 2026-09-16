@@ -69,7 +69,7 @@ class BnfSource(baseUrl: String, timeout: Duration) : IsbnSource {
             authors = authorsOf(record),
             series = seriesOf(record),
             collection = record.value("410", "t"),
-            publisher = record.value("210", "c"),
+            publisher = record.value("214", "c") ?: record.value("210", "c"),
             publicationYear = publicationYearOf(record.value("100", "a"), record.value("210", "d")),
             language = LANGUAGES[record.value("101", "a")],
             pageCount = PAGES.find(record.value("215", "a").orEmpty())?.groupValues?.get(1)?.toIntOrNull(),
