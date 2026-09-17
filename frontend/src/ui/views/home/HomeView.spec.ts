@@ -2,6 +2,7 @@ import { within } from "@testing-library/dom";
 import { flushPromises, mount } from "@vue/test-utils";
 import { describe, expect, it } from "vitest";
 import { meApiKey } from "../../../application/MeApi";
+import { revisionKey } from "../../../application/Revision";
 import type { Reader } from "../../../domain/Reader";
 import { FakeMeApi } from "../../../fixture/FakeMeApi";
 import { createLibrisI18n } from "../../i18n";
@@ -20,7 +21,7 @@ const mountHomeView = (reader: Reader) =>
   mount(HomeView, {
     global: {
       plugins: [createLibrisI18n(), createLibrisRouter()],
-      provide: { [meApiKey]: new FakeMeApi(reader) },
+      provide: { [meApiKey]: new FakeMeApi(reader), [revisionKey]: "sha-abc1234" },
     },
   });
 
@@ -50,5 +51,17 @@ describe("HomeView", () => {
         .getByRole("link", { name: "Ajouter un ouvrage" })
         .getAttribute("href"),
     ).toBe("/isbn");
+  });
+
+  it("shows the revision at the foot of the page", () => {
+    // When
+    const screen = within(mountHomeView(chloe).element as HTMLElement);
+
+    // Then
+    const revision = screen.getByText("sha-abc1234");
+    const link = screen.getByRole("link", { name: "Ajouter un ouvrage" });
+    expect(link.compareDocumentPosition(revision)).toBe(
+      Node.DOCUMENT_POSITION_FOLLOWING,
+    );
   });
 });

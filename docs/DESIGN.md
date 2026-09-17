@@ -58,7 +58,7 @@ no job fits is added here, not improvised in a component. Weight carries the
 hierarchy; colour (`text`, `muted`, `accent`) carries the role; size does the
 rest.
 
-### U03 — Page: header, content, footer, tab bar
+### U03 — Page: header, content, tab bar
 Every screen is one column, designed at 390 px wide and read top to bottom:
 
 1. **Header**: the page title and, under it, one hint sentence in `body`,
@@ -66,10 +66,9 @@ Every screen is one column, designed at 390 px wide and read top to bottom:
    12 below. Nothing else lives there: no back arrow, no action button. It
    belongs to its screen and scrolls with the content.
 2. **Content**: the blocks of the screen, 20 apart, 20 of side padding, on
-   `bg`. Header and content scroll together; footer and tab bar stay put.
-3. **Footer**: the revision, `label` step, `muted`, centred, one line; it
-   sits under the content and above the tab bar on every screen.
-4. **Tab bar**: on `surface` with a `border` hairline above, 48 tall, in
+   `bg`. Header and content scroll together; the tab bar stays put. The
+   home page ends with the revision, `label` step, `muted`, one line.
+3. **Tab bar**: on `surface` with a `border` hairline above, 48 tall, in
    three equal columns. A tab is its icon alone, drawn at 32, `accent` when
    it is the screen shown and `muted` otherwise; a link, its `aria-label`
    the name of its screen: *Accueil* (a house) in the first column. The

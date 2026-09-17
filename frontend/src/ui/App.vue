@@ -1,8 +1,5 @@
 <script setup lang="ts">
-import AppFooter from "./components/AppFooter.vue";
 import AppTabBar from "./components/AppTabBar.vue";
-
-defineProps<{ revision: string }>();
 </script>
 
 <template>
@@ -10,7 +7,6 @@ defineProps<{ revision: string }>();
     <div class="min-h-0 flex-1 overflow-y-auto">
       <RouterView />
     </div>
-    <AppFooter :revision="revision" />
     <AppTabBar />
   </div>
 </template>

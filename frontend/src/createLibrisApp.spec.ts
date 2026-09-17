@@ -46,7 +46,7 @@ describe("createLibrisApp", () => {
     app.unmount();
   });
 
-  it("shows the tab bar under the footer", async () => {
+  it("shows the tab bar under the screen", async () => {
     // Given
     const host = document.createElement("div");
     const app = librisApp();

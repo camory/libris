@@ -195,7 +195,7 @@ was found.
   `router.options.history.location` right after `app.use(router)`; the eager
   navigation still runs, so the history listeners and `isReady()` are wired
   as usual. Drop that line and every scenario that does not query through
-  `findBy*` fails on an empty host holding the footer alone.
+  `findBy*` fails on an empty host holding the tab bar alone.
 - `getByRole("textbox")` finds `<input type="text">` only: `type="number"` is
   a `spinbutton` and `type="search"` a `searchbox`. A numeric keyboard comes
   from `inputmode="numeric"`. An accessible name from `<label for>` resolves
@@ -259,8 +259,8 @@ was found.
   common value on the ancestor, to be inherited, and the state's value on the
   element: its own declaration beats an inherited one whatever the order.
 - `App.vue` is the full-height shell: `h-dvh` flex column, a
-  `min-h-0 flex-1 overflow-y-auto` wrapper around `RouterView`, then the footer
-  and the tab bar. A view that fills the screen writes `min-h-full` on its
+  `min-h-0 flex-1 overflow-y-auto` wrapper around `RouterView`, then the tab
+  bar. A view that fills the screen writes `min-h-full` on its
   `<main>`, never `h-full`, or content longer than the viewport is clipped
   instead of scrolling.
 - Mounting a component that holds a `RouterLink` needs the route settled first:

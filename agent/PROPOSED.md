@@ -61,7 +61,7 @@
 - Frontend: reload on a new service worker. `registerSW.js` only registers;
   with `registerType: "autoUpdate"` the new worker takes over on the first
   load after a release but the page shown came from the old precache, so
-  the footer shows the previous revision until a second load. Register
+  the home page shows the previous revision until a second load. Register
   through `virtual:pwa-register` and reload when the new worker takes
   control, or show a "new version" notice (seen by Tophe on 2026-09-10 with
   the first release).
@@ -230,11 +230,6 @@
   of publisher's blurb there, which the card has a place for; the day the
   summary is wanted, its task decides what to do with prose that long
   (found on T027, 2026-09-16).
-- Frontend: the footer still wears the scaffold's look, `p-4 text-sm`, while
-  U03 gives it the `label` step, the `muted` role and the centred column like
-  the rest of the page. T030 drew the bar under it and left it alone, its brief
-  putting the footer out of scope; the next task on the shell redraws it, with
-  `AppFooter.spec.ts` green untouched (found on T030, 2026-09-16).
 - Frontend: the six icons of `src/ui/components/icons/` repeat the same
   eleven-line `<svg>` shell (the 24 grid, `stroke-width` 1.8, the round caps,
   `aria-hidden`), differing only by their paths and, for `IconBook`, by the
