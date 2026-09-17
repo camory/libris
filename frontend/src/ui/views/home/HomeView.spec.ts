@@ -2,10 +2,10 @@ import { within } from "@testing-library/dom";
 import { flushPromises, mount } from "@vue/test-utils";
 import { describe, expect, it } from "vitest";
 import { meApiKey } from "../../../application/MeApi";
+import { revisionKey } from "../../../application/Revision";
 import type { Reader } from "../../../domain/Reader";
 import { FakeMeApi } from "../../../fixture/FakeMeApi";
 import { createLibrisI18n } from "../../i18n";
-import { revisionKey } from "../../revision";
 import { createLibrisRouter } from "../../router";
 import HomeView from "./HomeView.vue";
 

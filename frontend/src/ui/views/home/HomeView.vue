@@ -2,8 +2,8 @@
 import { inject, ref } from "vue";
 import { useI18n } from "vue-i18n";
 import { meApiKey } from "../../../application/MeApi";
+import { revisionKey } from "../../../application/Revision";
 import type { Reader } from "../../../domain/Reader";
-import { revisionKey } from "../../revision";
 
 const { t } = useI18n();
 const reader = ref<Reader>();

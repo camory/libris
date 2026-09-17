@@ -7,9 +7,9 @@ import {
 } from "./application/BarcodeScanner";
 import { isbnApiKey, type IsbnApi } from "./application/IsbnApi";
 import { meApiKey, type MeApi } from "./application/MeApi";
+import { revisionKey } from "./application/Revision";
 import AppRoot from "./ui/App.vue";
 import { createLibrisI18n } from "./ui/i18n";
-import { revisionKey } from "./ui/revision";
 import { createLibrisRouter } from "./ui/router";
 
 export interface LibrisPorts {
