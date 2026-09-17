@@ -230,3 +230,15 @@
   of publisher's blurb there, which the card has a place for; the day the
   summary is wanted, its task decides what to do with prose that long
   (found on T027, 2026-09-16).
+- Frontend: the footer still wears the scaffold's look, `p-4 text-sm`, while
+  U03 gives it the `label` step, the `muted` role and the centred column like
+  the rest of the page. T030 drew the bar under it and left it alone, its brief
+  putting the footer out of scope; the next task on the shell redraws it, with
+  `AppFooter.spec.ts` green untouched (found on T030, 2026-09-16).
+- Frontend: the six icons of `src/ui/components/icons/` repeat the same
+  eleven-line `<svg>` shell (the 24 grid, `stroke-width` 1.8, the round caps,
+  `aria-hidden`), differing only by their paths and, for `IconBook`, by the
+  drawn size. A shared shell the icons pass their paths to would keep the grid
+  and the stroke in one place; six files are still cheaper to read than to
+  abstract, so the day a seventh arrives is the day to weigh it (found on
+  T030, 2026-09-16).

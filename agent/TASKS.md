@@ -20,7 +20,7 @@
 
 One task outside any phase, the bar every screen is reached from.
 
-- [ ] T030 Frontend: the tab bar.
+- [x] T030 Frontend: the tab bar.
       `ui/components`: the tab bar of U03 — on `surface` with a `border`
       hairline above, two tabs of equal width, *Accueil* with a house icon
       to `/` and *Ajouter* with a plus icon to `/isbn`, each its icon over
