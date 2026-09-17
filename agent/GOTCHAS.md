@@ -188,6 +188,11 @@ was found.
   `nginx.conf`.
 - `registerType: "autoUpdate"` on the PWA plugin; after a release the first
   load still shows the previous revision, the second the new one.
+- jsdom 30 seals `window.location`: neither `reload` nor `location` itself
+  can be redefined or spied, so a reload or a redirect is proven by handing
+  the adapter a function from `bootstrap` and passing a fake in its spec;
+  `navigator.serviceWorker` is absent and is stubbed with
+  `Object.defineProperty`, like `navigator.mediaDevices`.
 - vue-router's first navigation is asynchronous: `app.use(router)` starts it
   and nothing of the route is rendered on the tick `mount()` returns, nor
   after a microtask flush. `FastEntryScenarios`' `open()` queries the host

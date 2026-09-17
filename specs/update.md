@@ -37,9 +37,9 @@ Then the app reloads once
 And the row is gone
 ```
 
-Proof: frontend scenario test with a stubbed registration and a stubbed
-reload (the waiting worker is told to take over, then one reload); checked by
-hand on the Pixel after a deploy of staging.
+Proof: frontend scenario test with a stubbed registration (the waiting
+worker is told to take over; the single reload once it took control is the
+adapter's own test); checked by hand on the Pixel after a deploy of staging.
 
 **S3 The app checks while it stays open** · frontend
 
