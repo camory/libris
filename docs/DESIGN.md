@@ -63,9 +63,10 @@ Every screen is one column, designed at 390 px wide and read top to bottom:
 
 1. **Header**: the page title and, under it, one hint sentence in `body`,
    `muted`, ending with a full stop. Padding 20 at the sides, 20 above,
-   12 below. Nothing else lives there: no back arrow, no action button.
+   12 below. Nothing else lives there: no back arrow, no action button. It
+   belongs to its screen and scrolls with the content.
 2. **Content**: the blocks of the screen, 20 apart, 20 of side padding, on
-   `bg`. This is the part that scrolls; header, footer and tab bar stay put.
+   `bg`. Header and content scroll together; footer and tab bar stay put.
 3. **Footer**: the revision, `label` step, `muted`, centred, one line; it
    sits under the content and above the tab bar on every screen.
 4. **Tab bar**: on `surface` with a `border` hairline above, 48 tall, in
