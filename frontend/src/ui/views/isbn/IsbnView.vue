@@ -137,7 +137,7 @@ async function search() {
         ref="camera"
         muted
         playsinline
-        class="size-full object-cover"
+        class="absolute inset-0 size-full object-cover"
       ></video>
       <div aria-hidden="true" class="pointer-events-none absolute inset-6">
         <span

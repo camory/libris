@@ -119,8 +119,10 @@ against `contracteer mock` with `503_SOURCES_DOWN`, the message.
 
 Mockups: <https://claude.ai/code/artifact/900be65c-b8a0-4766-a8b3-23ceb4e19422>,
 one artboard per state below, exported as `specs/fast-entry/<n>-<state>.jpg`
-in the same order. Route `/isbn`, reached from the home page's link and from
-the tab bar.
+in the same order; *Ready* and *Camera open* are screenshots of the screen on
+the Pixel instead (`.png`, taken on the review of T030), and the tab bar in
+the six others predates the bar of U03. Route `/isbn`, reached from the home
+page's link and from the tab bar.
 
 Top to bottom on a phone: the title *Ajouter un ouvrage* and the line
 *Scannez le code-barres ou saisissez l'ISBN.*; the field labelled *ISBN*,
@@ -136,8 +138,10 @@ States:
 - **Ready**: nothing under the button.
 - **Camera open** (S2): the icon turns into a cross; the camera view, with
   corner brackets, fills the space between the button and the tab bar,
-  centred. The first EAN-13 read closes it and runs the lookup; the cross
-  closes it.
+  centred. The camera opens by itself on arrival when the browser has a
+  detector and the reader allowed it; *Ready* is the screen without a
+  detector, after a refused camera or after the cross. The first EAN-13 read
+  closes it and runs the lookup; the cross closes it.
 - **Searching**: the button reads *Recherche en cours…* with a spinner and
   accepts nothing; a grey placeholder of the card takes its place below.
 - **Found** (S1): the card. Cover at the left, or its stand-in when the BnF
