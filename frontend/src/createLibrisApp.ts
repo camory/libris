@@ -9,6 +9,7 @@ import { isbnApiKey, type IsbnApi } from "./application/IsbnApi";
 import { meApiKey, type MeApi } from "./application/MeApi";
 import AppRoot from "./ui/App.vue";
 import { createLibrisI18n } from "./ui/i18n";
+import { revisionKey } from "./ui/revision";
 import { createLibrisRouter } from "./ui/router";
 
 export interface LibrisPorts {
@@ -27,5 +28,6 @@ export function createLibrisApp(ports: LibrisPorts, revision: string): App {
   app.provide(meApiKey, ports.meApi);
   app.provide(isbnApiKey, ports.isbnApi);
   app.provide(barcodeScannerKey, ports.barcodeScanner);
+  app.provide(revisionKey, revision);
   return app;
 }

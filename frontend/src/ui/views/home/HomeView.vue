@@ -3,11 +3,13 @@ import { inject, ref } from "vue";
 import { useI18n } from "vue-i18n";
 import { meApiKey } from "../../../application/MeApi";
 import type { Reader } from "../../../domain/Reader";
+import { revisionKey } from "../../revision";
 
 const { t } = useI18n();
 const reader = ref<Reader>();
 
 const meApi = inject(meApiKey)!;
+const revision = inject(revisionKey)!;
 
 meApi.currentReader().then((current) => {
   reader.value = current;
@@ -26,5 +28,7 @@ meApi.currentReader().then((current) => {
     <RouterLink to="/isbn" class="text-body text-accent">
       {{ t("home.add") }}
     </RouterLink>
+
+    <p class="mt-5 text-label text-muted">{{ revision }}</p>
   </main>
 </template>
