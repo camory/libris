@@ -739,3 +739,17 @@ Format:
 - Left over: nothing of the task. The footer keeps the scaffold's look
   (`p-4 text-sm`), which the brief puts out of scope; it is in
   `agent/PROPOSED.md`.
+
+## 2026-09-17 — The footer retired, the revision on the home page — done
+- Did: `App.vue` is the scrolling view over the tab bar and nothing else;
+  `AppFooter.vue` and its spec are gone. The revision reaches `HomeView`
+  through `revisionKey` (`application/Revision.ts`, beside the port keys, the
+  only place a view may import from), provided by `createLibrisApp`,
+  and ends the home page in the `label` step, `muted`. U03 and D09 say so.
+  Written with Tophe on the review of T030, no task line: two cycles, gate
+  green.
+- Decided: **nothing needs to stay visible under every screen.** The footer
+  held only the revision, a support aid for Tophe; the update banner (U09)
+  will tell the reader when a newer version exists, so the line moves to the
+  foot of the home page and every screen gets its height back.
+- Left over: nothing.

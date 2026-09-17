@@ -19,7 +19,7 @@ export interface LibrisPorts {
 }
 
 export function createLibrisApp(ports: LibrisPorts, revision: string): App {
-  const app = createApp(AppRoot, { revision });
+  const app = createApp(AppRoot);
   const router = createLibrisRouter();
   app.use(createPinia()).use(router).use(createLibrisI18n());
   router.currentRoute.value = router.resolve(

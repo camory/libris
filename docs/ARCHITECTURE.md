@@ -161,7 +161,7 @@ offline with a clear message. No sync queue.
 `main.ts` alone reads `import.meta.env` and `window`; every other module
 receives its configuration as an argument. The API client takes its base URL
 from its constructor: `bootstrap` passes the origin it is given and a spec
-passes the mock's. The footer's revision comes from `VITE_APP_VERSION`, the
+passes the mock's. The revision the home page shows comes from `VITE_APP_VERSION`, the
 one `VITE_*` variable; no other exists until a task needs one.
 `createLibrisApp(ports, revision)` builds the application with a router, i18n
 and Pinia of its own over the given port implementations;
@@ -357,8 +357,9 @@ deliberately lacks), no other service. A test that needs more blocks the task.
 - Every image carries the OCI labels (`version`, `revision`, `created`,
   `source`); `version` is the `sha-<short sha>` tag, since a re-tagged image
   cannot know its release name. The application exposes that revision: the
-  backend on `/actuator/info` (Spring Boot build info), the frontend in a
-  footer. The release name lives in the registry and in `deploy/.env`.
+  backend on `/actuator/info` (Spring Boot build info), the frontend at the
+  foot of the home page. The release name lives in the registry and in
+  `deploy/.env`.
 - `deploy/` holds the production compose: PostgreSQL 18, backend and frontend
   pulled by `LIBRIS_TAG` from an uncommitted `.env`, joined to the existing
   Traefik network, no published ports, no labels, named volumes for data and
