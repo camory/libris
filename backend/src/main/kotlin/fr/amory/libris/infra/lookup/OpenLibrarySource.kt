@@ -38,6 +38,7 @@ class OpenLibrarySource(baseUrl: String, timeout: Duration) : IsbnSource {
 
     private fun editionOf(isbn: Isbn, edition: JsonNode): SourceEdition = SourceEdition(
         isbn = isbn,
+        kind = null,
         title = edition.required("title").asString(),
         subtitle = edition["subtitle"]?.asString(),
         authors = authorsOf(edition, search(isbn)),

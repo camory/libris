@@ -58,6 +58,7 @@ class BnfSourceTest {
         answer shouldBe Known(
             SourceEdition(
                 isbn = isbnOf(NERONIA),
+                kind = BD,
                 title = "Les Neronia",
                 subtitle = null,
                 authors = listOf(SourceAuthor("Jean Dufaux", WRITER), SourceAuthor("Jérémy", ARTIST)),
@@ -85,6 +86,7 @@ class BnfSourceTest {
         answer shouldBe Known(
             SourceEdition(
                 isbn = isbnOf(LEMURIA),
+                kind = BD,
                 title = "Lemuria",
                 subtitle = null,
                 authors = listOf(
@@ -116,6 +118,7 @@ class BnfSourceTest {
         answer shouldBe Known(
             SourceEdition(
                 isbn = isbnOf(APOTHICAIRE),
+                kind = BOOK,
                 title = "Les Carnets de l'apothicaire",
                 subtitle = null,
                 authors = listOf(SourceAuthor("Natsu Hyūga", WRITER)),
@@ -143,6 +146,7 @@ class BnfSourceTest {
         answer shouldBe Known(
             SourceEdition(
                 isbn = isbnOf(PRINTER_FIRST),
+                kind = BOOK,
                 title = "Un livre",
                 subtitle = null,
                 authors = emptyList(),
@@ -337,6 +341,7 @@ class BnfSourceTest {
         """.trimIndent()
         val ONE_PIECE_EDITION = SourceEdition(
             isbn = isbnOf(ONE_PIECE),
+            kind = MANGA,
             title = "Romance dawn",
             subtitle = "à l'aube d'une grande aventure",
             authors = listOf(SourceAuthor("Eiichirō Oda", WRITER)),

@@ -40,6 +40,7 @@ class OpenLibrarySourceTest {
         answer shouldBe Known(
             SourceEdition(
                 isbn = isbnOf(SPACE_WARS),
+                kind = null,
                 title = "Space Wars - Chapitre 1",
                 subtitle = null,
                 authors = listOf(
@@ -167,6 +168,7 @@ class OpenLibrarySourceTest {
         const val UNKNOWN = "9782000000013"
         val MONTE_CRISTO_EDITION = SourceEdition(
             isbn = isbnOf(MONTE_CRISTO),
+            kind = null,
             title = "Le comte de Monte-Cristo",
             subtitle = "Tome 1",
             authors = listOf(SourceAuthor("Alexandre Dumas", WRITER)),

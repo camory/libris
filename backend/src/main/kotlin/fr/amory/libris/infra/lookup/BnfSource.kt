@@ -88,6 +88,7 @@ class BnfSource(baseUrl: String, timeout: Duration) : IsbnSource {
         val publication = publicationOf(record)
         return SourceEdition(
             isbn = isbn,
+            kind = kindOf(record.value("105", "a"), record.value("101", "c")),
             title = title,
             subtitle = record.value("200", "e"),
             authors = authorsOf(record),

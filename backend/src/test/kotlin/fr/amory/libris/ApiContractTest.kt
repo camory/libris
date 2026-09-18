@@ -9,6 +9,7 @@ import fr.amory.libris.application.LookupResult.UnknownIsbn
 import fr.amory.libris.application.ReaderVisit
 import fr.amory.libris.domain.AuthorRole.ARTIST
 import fr.amory.libris.domain.AuthorRole.WRITER
+import fr.amory.libris.domain.Kind.MANGA
 import fr.amory.libris.domain.Reader
 import fr.amory.libris.domain.lookup.SourceAuthor
 import fr.amory.libris.domain.lookup.SourceEdition
@@ -30,6 +31,7 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean
 
 private val ONE_PIECE_1 = SourceEdition(
     isbn = isbnOf("9782723488525"),
+    kind = MANGA,
     title = "Romance dawn",
     subtitle = "à l'aube d'une grande aventure",
     authors = listOf(SourceAuthor("Eiichirō Oda", WRITER), SourceAuthor("Eiichirō Oda", ARTIST)),
