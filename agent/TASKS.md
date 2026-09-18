@@ -147,11 +147,14 @@ frontend pin moves in T038. No other task touches the contract (D04).
       book by `isbn13` and creates it on the way when the house lacks it,
       then puts a copy on that bookshelf and answers it; it refuses a
       bookshelf the reader is not a member of, and refuses an `isbn13` that
-      is not an ISBN-13, as the lookup refuses its path.
+      is not an ISBN-13, as the lookup refuses its path; without an
+      `isbn13` there is nothing to match, so the house gets a new book every
+      time.
       Tests over fake repositories: the house lacking the ISBN (S2); another
       reader adding an ISBN the house holds, whose copy is the edition's
       second on a second bookshelf, and the same reader adding it again, the
-      house still holding one book for that ISBN (S3); the two refusals.
+      house still holding one book for that ISBN (S3); the two refusals; the
+      add without ISBN.
       Realises S2 and S3 on the backend; un-skips `S2 The ouvrage is added`
       and `S3 A known ISBN reaches the existing edition`.
 
