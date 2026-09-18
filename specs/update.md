@@ -17,8 +17,7 @@ When a newer version is deployed
      and the app checks
 
 Then one row says that a new version is ready, with the action to update
-
-And the screen keeps what it shows, nothing reloads
+	And the screen keeps what it shows, nothing reloads
 ```
 
 Proof: frontend scenario test with a stubbed service worker registration
@@ -33,8 +32,7 @@ When the reader taps the action
 
 Then the app reloads once
      and runs the new version
-
-And the row is gone
+	And the row is gone
 ```
 
 Proof: frontend scenario test with a stubbed registration (the waiting
