@@ -58,11 +58,12 @@ pin moves and no task of the phase touches `camory/libris-api` (D04).
       `vite.config.ts` turns the plugin from `autoUpdate` to `prompt` and
       injects no registration script of its own, so a new worker waits for
       the reader instead of taking over on the next load; `bootstrap` builds
-      the adapter over the real registration and `createLibrisApp` provides
-      it, `main.ts` still the only module reading `import.meta.env` (D05).
+      the adapter over the real registration and hands it the reload, as it
+      hands `FetchMeApi` the redirect, and `createLibrisApp` provides it,
+      `main.ts` still the only module reading `import.meta.env` (D05).
       The adapter's spec stubs `navigator.serviceWorker` the way
-      `CameraBarcodeScanner`'s stubs `navigator.mediaDevices`, the reload
-      stubbed too (D07).
+      `CameraBarcodeScanner`'s stubs `navigator.mediaDevices` and passes a
+      fake reload; jsdom seals `window.location` (D07).
       `ui/components`: the banner of U09 — a refresh icon, the sentence
       *Nouvelle version disponible* and the text button *Mettre à jour* at
       the right, every word from the `fr` catalogue (U04, U07, U08); the
@@ -101,10 +102,6 @@ version, once.*
 
 ## Questions for the human
 
-- **The scenario tests of `specs/update.md` are not in the tree.** D07 has
-  Tophe write them with the spec, committed skipped; `frontend/src/scenario`
-  holds `FastEntryScenarios.spec.ts` alone. T028 cites three of them and is
-  the precondition's only holder: T029 runs without it.
 - **Staging.** S2's proof and the spec's *Done* ask for a deploy of staging,
   while D09 knows one environment, the Kimsufi box. No task depends on the
   answer; the hand check is Tophe's step either way.
