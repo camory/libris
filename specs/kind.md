@@ -135,4 +135,7 @@ word, and *tome* when it belongs to a series.
 
 ## Tasks
 
-Filled by the planner.
+- T031 — S1, S2, S3, S4, the rule and the field, the backend on `v0.5.0`
+  — backend
+- T032 — S1, S2, S3, the words of the card, the frontend on `v0.5.0`
+  — frontend
