@@ -63,10 +63,9 @@ first: the answer gains a field (D04).
       none did, so the field is never absent.
       `infra.web`: the answer carries `kind`, and Contracteer verifies
       `ONE_PIECE_1` with `kind: MANGA`.
-      S4 needs a recording this tree lacks: record beside the others, under
-      `backend/src/test/resources/scenarios/bnf/`, the BnF answer of a
-      provisional record carrying no field 105; the ISBN Open Library alone
-      knows is already recorded (`9782380751673`).
+      S4 runs over the recorded answer of `9782380751673`, the ISBN Open
+      Library alone knows; the record without a field 105 is the rule's
+      unit test, and no new recording.
       Realises S1, S2, S3, S4; un-skips the four tests of `KindScenarios.kt`.
 
 - [ ] T032 Frontend: the card in the words of its kind.
@@ -267,12 +266,6 @@ second account of the family, scan it and read the card without a place.*
   application tasks T033, T035 and T036, before the API exists in T037. If
   the class is written over HTTP instead, the four tests can only be
   un-skipped in T037 and the phase's lines need one pass of the planner.
-- **A provisional BnF record for S4 of the kind spec.** Every recording in
-  the tree carries a field 105, the Apothicaire's included, so T031 has to
-  record a new answer, and a headless run cannot invent an ISBN that still
-  answers a provisional legal-deposit record. Naming one, or accepting that
-  S4 rests on the Open Library-alone case and the rule's unit test, is
-  Tophe's call.
 - **No spec yet**, so nothing is planned for them: PRD §4.1 catalogue beyond
   the add of `specs/bookshelf.md`, §4.2 search, §4.3 bookshelves and copies
   beyond the default bookshelf — other bookshelves, members, the `VIEWER`
