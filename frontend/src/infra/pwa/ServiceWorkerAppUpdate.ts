@@ -33,13 +33,17 @@ export class ServiceWorkerAppUpdate implements AppUpdate {
 
   private watch(registration: ServiceWorkerRegistration): void {
     this.found(registration.waiting);
+    this.whenInstalled(registration.installing);
     registration.addEventListener("updatefound", () => {
-      const installing = registration.installing;
-      installing?.addEventListener("statechange", () => {
-        if (installing.state === "installed") {
-          this.found(installing);
-        }
-      });
+      this.whenInstalled(registration.installing);
+    });
+  }
+
+  private whenInstalled(worker: ServiceWorker | null): void {
+    worker?.addEventListener("statechange", () => {
+      if (worker.state === "installed") {
+        this.found(worker);
+      }
     });
   }
 

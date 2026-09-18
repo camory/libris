@@ -14,7 +14,7 @@ describe("ServiceWorkerAppUpdate", () => {
     await settled();
 
     // When
-    browser.aNewerVersionIsFound();
+    await browser.aNewerVersionIsFound();
     await settled();
 
     // Then
@@ -36,6 +36,20 @@ describe("ServiceWorkerAppUpdate", () => {
     expect(announced).toHaveBeenCalledTimes(1);
   });
 
+  it("announces the version found before the registration settles", async () => {
+    // Given
+    const browser = browserRunningAWorker();
+    const announced = vi.fn();
+    new ServiceWorkerAppUpdate(vi.fn()).onNewVersion(announced);
+
+    // When
+    await browser.aNewerVersionIsFound();
+    await settled();
+
+    // Then
+    expect(announced).toHaveBeenCalledTimes(1);
+  });
+
   it("announces nothing when the first worker installs", async () => {
     // Given
     const browser = browserInstallingItsFirstWorker();
@@ -44,7 +58,7 @@ describe("ServiceWorkerAppUpdate", () => {
     await settled();
 
     // When
-    browser.aNewerVersionIsFound();
+    await browser.aNewerVersionIsFound();
     await settled();
 
     // Then
@@ -58,7 +72,7 @@ describe("ServiceWorkerAppUpdate", () => {
     const update = new ServiceWorkerAppUpdate(reload);
     update.onNewVersion(vi.fn());
     await settled();
-    const newWorker = browser.aNewerVersionIsFound();
+    const newWorker = await browser.aNewerVersionIsFound();
     await settled();
 
     // When
@@ -166,10 +180,11 @@ describe("ServiceWorkerAppUpdate", () => {
         container.dispatchEvent(new Event("controllerchange"));
       },
 
-      aNewerVersionIsFound() {
+      async aNewerVersionIsFound() {
         const worker = aWorker("installing");
         registration.installing = worker;
         registration.dispatchEvent(new Event("updatefound"));
+        await Promise.resolve();
         worker.state = "installed";
         registration.installing = null;
         registration.waiting = worker;
