@@ -19,6 +19,8 @@ export class ServiceWorkerAppUpdate implements AppUpdate {
     document.addEventListener("visibilitychange", () => {
       if (document.visibilityState === "visible") {
         this.check();
+      } else {
+        this.cancelCheck();
       }
     });
     navigator.serviceWorker
@@ -50,10 +52,15 @@ export class ServiceWorkerAppUpdate implements AppUpdate {
     this.scheduleCheck();
   }
 
-  private scheduleCheck(): void {
+  private cancelCheck(): void {
     if (this.pendingCheck !== null) {
       clearTimeout(this.pendingCheck);
+      this.pendingCheck = null;
     }
+  }
+
+  private scheduleCheck(): void {
+    this.cancelCheck();
     this.pendingCheck = setTimeout(() => {
       this.check();
     }, betweenChecks);

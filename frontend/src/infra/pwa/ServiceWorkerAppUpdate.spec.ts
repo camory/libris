@@ -241,6 +241,21 @@ describe("ServiceWorkerAppUpdate", () => {
     expect(browser.asked).toHaveBeenCalledTimes(2);
   });
 
+  it("asks nothing while the app is hidden", async () => {
+    // Given
+    vi.useFakeTimers();
+    const browser = browserRunningAWorker();
+    new ServiceWorkerAppUpdate(vi.fn());
+    await vi.advanceTimersByTimeAsync(0);
+
+    // When
+    theAppGoesToTheBackground();
+    await vi.advanceTimersByTimeAsync(2 * betweenChecks);
+
+    // Then
+    expect(browser.asked).not.toHaveBeenCalled();
+  });
+
   function theAppGoesToTheBackground() {
     theAppIs("hidden");
   }
