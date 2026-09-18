@@ -21,6 +21,21 @@ describe("ServiceWorkerAppUpdate", () => {
     expect(announced).toHaveBeenCalledTimes(1);
   });
 
+  it("announces the version already waiting when the app starts", async () => {
+    // Given
+    const browser = browserRunningAWorker();
+    browser.aVersionIsAlreadyWaiting();
+    const update = new ServiceWorkerAppUpdate(vi.fn());
+    await settled();
+
+    // When
+    const announced = vi.fn();
+    update.onNewVersion(announced);
+
+    // Then
+    expect(announced).toHaveBeenCalledTimes(1);
+  });
+
   function browserRunningAWorker() {
     const container = new EventTarget() as FakeContainer;
     container.controller = aWorker("activated");
@@ -34,6 +49,10 @@ describe("ServiceWorkerAppUpdate", () => {
     });
 
     return {
+      aVersionIsAlreadyWaiting() {
+        registration.waiting = aWorker("installed");
+      },
+
       aNewerVersionIsFound() {
         const worker = aWorker("installing");
         registration.installing = worker;
