@@ -6,6 +6,7 @@ export class ServiceWorkerAppUpdate implements AppUpdate {
   private announce: (() => void) | null = null;
   private waiting: ServiceWorker | null = null;
   private reloaded = false;
+  private registration: ServiceWorkerRegistration | null = null;
 
   constructor(private readonly reload: () => void) {
     if (!("serviceWorker" in navigator)) {
@@ -13,6 +14,11 @@ export class ServiceWorkerAppUpdate implements AppUpdate {
     }
     navigator.serviceWorker.addEventListener("controllerchange", () => {
       this.takeOver();
+    });
+    document.addEventListener("visibilitychange", () => {
+      if (document.visibilityState === "visible") {
+        this.check();
+      }
     });
     navigator.serviceWorker
       .register("/sw.js")
@@ -34,6 +40,7 @@ export class ServiceWorkerAppUpdate implements AppUpdate {
   }
 
   private watch(registration: ServiceWorkerRegistration): void {
+    this.registration = registration;
     this.found(registration.waiting);
     this.whenInstalled(registration.installing);
     registration.addEventListener("updatefound", () => {
@@ -44,9 +51,13 @@ export class ServiceWorkerAppUpdate implements AppUpdate {
 
   private scheduleCheck(registration: ServiceWorkerRegistration): void {
     setTimeout(() => {
-      void registration.update();
+      this.check();
       this.scheduleCheck(registration);
     }, betweenChecks);
+  }
+
+  private check(): void {
+    void this.registration?.update();
   }
 
   private whenInstalled(worker: ServiceWorker | null): void {

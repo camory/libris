@@ -10,6 +10,7 @@ describe("ServiceWorkerAppUpdate", () => {
   afterEach(() => {
     vi.useRealTimers();
     Reflect.deleteProperty(navigator, "serviceWorker");
+    Reflect.deleteProperty(document, "visibilityState");
   });
 
   it("announces the version that becomes ready while the app runs", async () => {
@@ -203,6 +204,38 @@ describe("ServiceWorkerAppUpdate", () => {
     // Then
     expect(browser.asked).toHaveBeenCalledTimes(2);
   });
+
+  it("asks the server when the app comes back to the foreground", async () => {
+    // Given
+    vi.useFakeTimers();
+    const browser = browserRunningAWorker();
+    new ServiceWorkerAppUpdate(vi.fn());
+    await vi.advanceTimersByTimeAsync(0);
+    theAppGoesToTheBackground();
+
+    // When
+    theAppComesBackToTheForeground();
+    await vi.advanceTimersByTimeAsync(0);
+
+    // Then
+    expect(browser.asked).toHaveBeenCalledTimes(1);
+  });
+
+  function theAppGoesToTheBackground() {
+    theAppIs("hidden");
+  }
+
+  function theAppComesBackToTheForeground() {
+    theAppIs("visible");
+  }
+
+  function theAppIs(visibility: string) {
+    Object.defineProperty(document, "visibilityState", {
+      configurable: true,
+      get: () => visibility,
+    });
+    document.dispatchEvent(new Event("visibilitychange"));
+  }
 
   function browserRefusingToRegister() {
     const container = new EventTarget() as FakeContainer;
