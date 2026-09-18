@@ -27,6 +27,16 @@ describe("AppUpdateBanner", () => {
     expect(wrapper.emitted("update")).toHaveLength(1);
   });
 
+  it("says the update is running and takes no second order", () => {
+    // When
+    const { wrapper, screen } = open("updating");
+
+    // Then
+    screen.getByText("Mise à jour…");
+    expect(screen.queryByRole("button")).toBeNull();
+    expect(wrapper.findComponent(IconRefresh).exists()).toBe(false);
+  });
+
   function open(state: "none" | "ready" | "updating") {
     const wrapper = mount(AppUpdateBanner, {
       global: { plugins: [createLibrisI18n()] },
