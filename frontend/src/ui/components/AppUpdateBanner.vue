@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { useI18n } from "vue-i18n";
+import BusySpinner from "./BusySpinner.vue";
 import IconRefresh from "./icons/IconRefresh.vue";
 
 export type UpdateState = "none" | "ready" | "updating";
@@ -16,11 +17,7 @@ const { t } = useI18n();
       class="mx-auto flex w-full max-w-120 items-center gap-2 py-1.25 pr-2 pl-5"
     >
       <IconRefresh v-if="state === 'ready'" class="text-accent" />
-      <span
-        v-else
-        aria-hidden="true"
-        class="size-5.5 shrink-0 animate-spin rounded-full border-2 border-accent/30 border-t-accent"
-      ></span>
+      <BusySpinner v-else class="size-5.5 text-accent" />
       <span class="flex-1 text-body text-text">{{
         state === "ready" ? t("update.available") : t("update.installing")
       }}</span>

@@ -3,6 +3,7 @@ import { mount } from "@vue/test-utils";
 import { describe, expect, it } from "vitest";
 import { createLibrisI18n } from "../i18n";
 import AppUpdateBanner, { type UpdateState } from "./AppUpdateBanner.vue";
+import BusySpinner from "./BusySpinner.vue";
 import IconRefresh from "./icons/IconRefresh.vue";
 
 describe("AppUpdateBanner", () => {
@@ -35,6 +36,7 @@ describe("AppUpdateBanner", () => {
 
     // Then
     screen.getByText("Mise à jour…");
+    expect(wrapper.findComponent(BusySpinner).exists()).toBe(true);
     expect(screen.queryByRole("button")).toBeNull();
     expect(wrapper.findComponent(IconRefresh).exists()).toBe(false);
   });
