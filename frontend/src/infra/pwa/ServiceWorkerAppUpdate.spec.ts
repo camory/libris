@@ -256,6 +256,21 @@ describe("ServiceWorkerAppUpdate", () => {
     expect(browser.asked).not.toHaveBeenCalled();
   });
 
+  it("asks nothing while the app has been hidden since it started", async () => {
+    // Given
+    vi.useFakeTimers();
+    const browser = browserRunningAWorker();
+    theAppIs("hidden");
+    new ServiceWorkerAppUpdate(vi.fn());
+    await vi.advanceTimersByTimeAsync(0);
+
+    // When
+    await vi.advanceTimersByTimeAsync(2 * betweenChecks);
+
+    // Then
+    expect(browser.asked).not.toHaveBeenCalled();
+  });
+
   it("keeps asking when a check fails", async () => {
     // Given
     vi.useFakeTimers();
@@ -289,11 +304,16 @@ describe("ServiceWorkerAppUpdate", () => {
   });
 
   function theAppGoesToTheBackground() {
-    theAppIs("hidden");
+    theAppBecomes("hidden");
   }
 
   function theAppComesBackToTheForeground() {
-    theAppIs("visible");
+    theAppBecomes("visible");
+  }
+
+  function theAppBecomes(visibility: string) {
+    theAppIs(visibility);
+    document.dispatchEvent(new Event("visibilitychange"));
   }
 
   function theAppIs(visibility: string) {
@@ -301,7 +321,6 @@ describe("ServiceWorkerAppUpdate", () => {
       configurable: true,
       get: () => visibility,
     });
-    document.dispatchEvent(new Event("visibilitychange"));
   }
 
   function browserRefusingToRegister() {

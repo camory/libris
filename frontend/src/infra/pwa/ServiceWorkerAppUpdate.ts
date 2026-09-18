@@ -77,6 +77,9 @@ export class ServiceWorkerAppUpdate implements AppUpdate {
 
   private scheduleCheck(): void {
     this.cancelCheck();
+    if (document.visibilityState !== "visible") {
+      return;
+    }
     this.pendingCheck = setTimeout(() => {
       this.check();
     }, betweenChecks);
