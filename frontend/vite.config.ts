@@ -8,7 +8,8 @@ export default defineConfig(({ mode }) => ({
     vue(),
     tailwindcss(),
     VitePWA({
-      registerType: "autoUpdate",
+      registerType: "prompt",
+      injectRegister: false,
       useCredentials: true,
       workbox: {
         navigateFallbackDenylist: [/^\/session$/],
