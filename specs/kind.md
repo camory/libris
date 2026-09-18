@@ -111,10 +111,9 @@ Release `v0.5.0` of `camory/libris-api`, before the bookshelf spec's
 reuse, and changes no byte of an answer, since a JSON body carries no
 schema name: both sides move to `v0.5.0` in any order.
 
-- `GET /api/v1/isbn/{isbn}` → `200` `Edition`, the schema `Isbn` renamed:
+- `GET /api/v1/isbn/{isbn}` → `200` `IsbnLookup`, the schema `Isbn` renamed:
   the same fields, plus `kind`, required, never null, one of
-  `BOOK | BD | MANGA`. `IsbnAuthor` becomes `EditionAuthor`, `IsbnSeries`
-  `EditionSeries`.
+  `BOOK | BD | MANGA`. `IsbnAuthor` becomes `Author`, `IsbnSeries` `Series`.
 - `ValidationProblem` is folded into `Problem`, which gains an optional
   `errors`, the array of `{field, code}` the validation problem carried;
   `type` stays the slug the client switches on and `status` an integer. The

@@ -40,7 +40,10 @@ rejected: do not reintroduce them.
 One published version of a work, the thing an ISBN-13 identifies. Two editions
 of the same novel are two editions. Has a kind.
 *On screen*: ouvrage (kind-neutral); livre, BD, manga by kind.
-_Avoid_: item, book (as the entity), publication, work, volume.
+The API has no schema of that name yet: the lookup answers an `IsbnLookup`,
+what an ISBN identifies, with no id since nothing may be stored; a stored
+edition addressed by id will be a `Book`.
+_Avoid_: item, book (as the domain entity), publication, work, volume.
 
 **Kind**:
 What an edition is: `BOOK` (any book that is neither of the other two), `BD`,
