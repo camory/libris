@@ -12,17 +12,20 @@ export class ServiceWorkerAppUpdate implements AppUpdate {
     navigator.serviceWorker.addEventListener("controllerchange", () => {
       this.takeOver();
     });
-    navigator.serviceWorker.register("/sw.js").then((registration) => {
-      this.found(registration.waiting);
-      registration.addEventListener("updatefound", () => {
-        const installing = registration.installing;
-        installing?.addEventListener("statechange", () => {
-          if (installing.state === "installed") {
-            this.found(installing);
-          }
+    navigator.serviceWorker
+      .register("/sw.js")
+      .then((registration) => {
+        this.found(registration.waiting);
+        registration.addEventListener("updatefound", () => {
+          const installing = registration.installing;
+          installing?.addEventListener("statechange", () => {
+            if (installing.state === "installed") {
+              this.found(installing);
+            }
+          });
         });
-      });
-    });
+      })
+      .catch(() => {});
   }
 
   onNewVersion(announce: () => void): void {

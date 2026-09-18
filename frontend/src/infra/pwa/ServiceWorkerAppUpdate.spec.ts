@@ -114,6 +114,29 @@ describe("ServiceWorkerAppUpdate", () => {
     expect(announced).not.toHaveBeenCalled();
   });
 
+  it("announces nothing when the registration fails", async () => {
+    // Given
+    browserRefusingToRegister();
+    const announced = vi.fn();
+
+    // When
+    new ServiceWorkerAppUpdate(vi.fn()).onNewVersion(announced);
+    await settled();
+
+    // Then
+    expect(announced).not.toHaveBeenCalled();
+  });
+
+  function browserRefusingToRegister() {
+    const container = new EventTarget() as FakeContainer;
+    container.controller = aWorker("activated");
+    container.register = () => Promise.reject(new Error("no worker"));
+    Object.defineProperty(navigator, "serviceWorker", {
+      configurable: true,
+      value: container,
+    });
+  }
+
   function browserRunningAWorker() {
     return aBrowser(aWorker("activated"));
   }
