@@ -36,9 +36,32 @@ describe("ServiceWorkerAppUpdate", () => {
     expect(announced).toHaveBeenCalledTimes(1);
   });
 
+  it("announces nothing when the first worker installs", async () => {
+    // Given
+    const browser = browserInstallingItsFirstWorker();
+    const announced = vi.fn();
+    new ServiceWorkerAppUpdate(vi.fn()).onNewVersion(announced);
+    await settled();
+
+    // When
+    browser.aNewerVersionIsFound();
+    await settled();
+
+    // Then
+    expect(announced).not.toHaveBeenCalled();
+  });
+
   function browserRunningAWorker() {
+    return aBrowser(aWorker("activated"));
+  }
+
+  function browserInstallingItsFirstWorker() {
+    return aBrowser(null);
+  }
+
+  function aBrowser(controller: FakeWorker | null) {
     const container = new EventTarget() as FakeContainer;
-    container.controller = aWorker("activated");
+    container.controller = controller;
     const registration = new EventTarget() as FakeRegistration;
     registration.installing = null;
     registration.waiting = null;

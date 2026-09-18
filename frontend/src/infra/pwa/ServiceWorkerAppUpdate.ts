@@ -28,7 +28,7 @@ export class ServiceWorkerAppUpdate implements AppUpdate {
   install(): void {}
 
   private found(worker: ServiceWorker | null): void {
-    if (worker === null) {
+    if (worker === null || navigator.serviceWorker.controller === null) {
       return;
     }
     this.waiting = worker;
