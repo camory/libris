@@ -37,6 +37,15 @@ describe("AppUpdateBanner", () => {
     expect(wrapper.findComponent(IconRefresh).exists()).toBe(false);
   });
 
+  it("shows nothing while no version waits", () => {
+    // When
+    const { wrapper } = open("none");
+
+    // Then
+    expect(wrapper.text()).toBe("");
+    expect(wrapper.find("*").exists()).toBe(false);
+  });
+
   function open(state: "none" | "ready" | "updating") {
     const wrapper = mount(AppUpdateBanner, {
       global: { plugins: [createLibrisI18n()] },

@@ -9,7 +9,7 @@ const { t } = useI18n();
 </script>
 
 <template>
-  <div class="border-b border-border bg-surface">
+  <div v-if="state !== 'none'" class="border-b border-border bg-surface">
     <div
       class="mx-auto flex w-full max-w-120 items-center gap-2 py-[5px] pr-2 pl-5"
     >
