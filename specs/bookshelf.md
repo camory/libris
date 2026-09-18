@@ -120,12 +120,12 @@ replaces the card.
 ## Contract
 
 Release `v0.6.0` of `camory/libris-api`, after the kind spec's `v0.5.0`,
-which gives the lookup answer its `kind`, renames its schemas `Edition`,
-`EditionAuthor` and `EditionSeries`, and folds `ValidationProblem` into one
+which gives the lookup answer its `kind`, renames its schemas `IsbnLookup`,
+`Author` and `Series`, and folds `ValidationProblem` into one
 `Problem` schema with an optional `errors`. Nothing of `v0.6.0` changes the
 bytes of an existing answer: two fields are added, one operation.
 
-- `Edition` gains `copies`, an array of `Copy`, `readOnly`, empty when the
+- `IsbnLookup` gains `copies`, an array of `Copy`, `readOnly`, empty when the
   reader's bookshelves hold none: the copies of the edition on the
   bookshelves the reader belongs to. `ONE_PIECE_1` answers an empty array; a
   new example `ONE_PIECE_1_OWNED`, on an ISBN of its own, answers two copies
@@ -133,7 +133,7 @@ bytes of an existing answer: two fields are added, one operation.
 - `CurrentReader` gains `defaultBookshelf`, a `Bookshelf` `{id, name}`,
   required, so the app knows where the add goes from its first request.
 - `POST /api/v1/bookshelves/{id}/copies`, `id` the bookshelf's uuid; the
-  body is an `Edition`, the lookup answer sent back as it is, `copies` left
+  body is an `IsbnLookup`, the lookup answer sent back as it is, `copies` left
   out since it is `readOnly` → `201` `Copy` `{id, bookshelf}` with the
   bookshelf's `{id, name}`; `400` `Problem` `/problems/validation` with one
   error per refused field, the ISBN-13 checked as on the lookup; `404`
