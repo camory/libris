@@ -262,13 +262,6 @@ second account of the family, scan it and read the card without a place.*
   staging, as the update spec's did, while D09 knows one environment, the
   Kimsufi box. No task depends on the answer; the hand check is Tophe's step
   either way.
-- **The shape of the bookshelf scenario tests.** `specs/bookshelf.md` asks
-  for its backend proofs "over fake repositories", while
-  `FastEntryScenarios.kt` runs the whole application over HTTP with a real
-  schema. The task lines follow the spec: S1 to S4 are un-skipped by the
-  application tasks T033, T035 and T036, before the API exists in T037. If
-  the class is written over HTTP instead, the four tests can only be
-  un-skipped in T037 and the phase's lines need one pass of the planner.
 - **No spec yet**, so nothing is planned for them: PRD §4.1 catalogue beyond
   the add of `specs/bookshelf.md`, §4.2 search, §4.3 bookshelves and copies
   beyond the default bookshelf — other bookshelves, members, the `VIEWER`
