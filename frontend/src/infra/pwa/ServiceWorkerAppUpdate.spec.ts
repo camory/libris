@@ -3,6 +3,7 @@ import { ServiceWorkerAppUpdate } from "./ServiceWorkerAppUpdate";
 
 describe("ServiceWorkerAppUpdate", () => {
   afterEach(() => {
+    vi.useRealTimers();
     Reflect.deleteProperty(navigator, "serviceWorker");
   });
 
@@ -180,6 +181,7 @@ describe("ServiceWorkerAppUpdate", () => {
     const registration = new EventTarget() as FakeRegistration;
     registration.installing = null;
     registration.waiting = null;
+    registration.update = vi.fn().mockResolvedValue(undefined);
     container.register = () => Promise.resolve(registration);
     Object.defineProperty(navigator, "serviceWorker", {
       configurable: true,
@@ -227,6 +229,7 @@ describe("ServiceWorkerAppUpdate", () => {
   type FakeRegistration = EventTarget & {
     installing: FakeWorker | null;
     waiting: FakeWorker | null;
+    update: ReturnType<typeof vi.fn>;
   };
 
   type FakeContainer = EventTarget & {
