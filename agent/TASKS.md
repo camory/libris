@@ -16,28 +16,6 @@
 >
 > Follow-ups and ideas go to `agent/PROPOSED.md`, never here.
 
-## Screen — docs/DESIGN.md
-
-One task outside any phase, the bar every screen is reached from.
-
-- [x] T030 Frontend: the tab bar.
-      `ui/components`: the tab bar of U03 — on `surface` with a `border`
-      hairline above, two tabs of equal width, *Accueil* with a house icon
-      to `/` and *Ajouter* with a plus icon to `/isbn`, each its icon over
-      its label, 56 tall, `accent` on the screen shown and `muted`
-      otherwise, the bottom safe area under it; every word from the `fr`
-      catalogue (U04, U07, U08), the two icons beside `IconBarcode`.
-      `App.vue` shows it under the footer on every screen, the active tab
-      read from the route; the home page keeps its link to `/isbn`.
-      The same task draws `HomeView` to U02 and U03, its title and padding
-      on the scale's steps, and gives the lookup screen a full-height column
-      so the camera view fills the space between the *Chercher* button and
-      the tab bar, in place of the fixed `aspect-[3/4]` ratio.
-      Component test over the active tab per route; the lookup screen's
-      tests unchanged.
-      Realises the *Screen* section of the spec, the bar the lookup screen
-      is reached from; un-skips nothing.
-
 ## Kind — specs/kind.md
 
 Contract: release `v0.5.0` of `camory/libris-api`, published on 2026-09-18.
@@ -252,6 +230,9 @@ second account of the family, scan it and read the card without a place.*
   (`68154ac`) on the Pixel: a manga and a BD scanned and both cards read, an
   ISBN-10 typed, a wrong ISBN's message, 9782380751673 filled by Open Library
   alone.
+- Screen, T030, done 2026-09-17, `docs/DESIGN.md`: the tab bar of U03 every
+  screen is reached from, redrawn on Tophe's review and checked on the
+  Pixel.
 - Update, T028 to T029, done 2026-09-18, `specs/update.md`: the banner of a
   waiting version, the reader's order to install it and the check while the
   app stays open, checked on the Pixel from the installed app.
