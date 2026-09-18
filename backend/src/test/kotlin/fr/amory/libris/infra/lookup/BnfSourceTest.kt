@@ -6,6 +6,9 @@ import com.github.tomakehurst.wiremock.http.RequestMethod.GET
 import fr.amory.libris.domain.AuthorRole.ARTIST
 import fr.amory.libris.domain.AuthorRole.TRANSLATOR
 import fr.amory.libris.domain.AuthorRole.WRITER
+import fr.amory.libris.domain.Kind.BD
+import fr.amory.libris.domain.Kind.BOOK
+import fr.amory.libris.domain.Kind.MANGA
 import fr.amory.libris.domain.lookup.SourceAnswer.Failed
 import fr.amory.libris.domain.lookup.SourceAnswer.Known
 import fr.amory.libris.domain.lookup.SourceAnswer.NothingKnown
@@ -213,6 +216,17 @@ class BnfSourceTest {
 
         // Then
         answer shouldBe Failed
+    }
+
+    @Test
+    fun `the kind is what the form of contents and the language translated from name`() {
+        kindOf("||||t   00|a|", "jpn") shouldBe MANGA
+        kindOf("||||t   00|a|", "kor") shouldBe MANGA
+        kindOf("||||t   00|a|", "chi") shouldBe MANGA
+        kindOf("||||t   00|a|", "eng") shouldBe BD
+        kindOf("||||t   00|a|", null) shouldBe BD
+        kindOf("||||z   00|||", null) shouldBe BOOK
+        kindOf(null, null) shouldBe BOOK
     }
 
     @Test

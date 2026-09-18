@@ -5,6 +5,10 @@ import fr.amory.libris.domain.AuthorRole.ARTIST
 import fr.amory.libris.domain.AuthorRole.TRANSLATOR
 import fr.amory.libris.domain.AuthorRole.WRITER
 import fr.amory.libris.domain.Isbn
+import fr.amory.libris.domain.Kind
+import fr.amory.libris.domain.Kind.BD
+import fr.amory.libris.domain.Kind.BOOK
+import fr.amory.libris.domain.Kind.MANGA
 import fr.amory.libris.domain.lookup.IsbnSource
 import fr.amory.libris.domain.lookup.SourceAnswer
 import fr.amory.libris.domain.lookup.SourceAnswer.Failed
@@ -25,6 +29,10 @@ private const val MARCXCHANGE = "info:lc/xmlns/marcxchange-v2"
 private val AUTHOR_TAGS = setOf("700", "701", "702")
 private val ROLES = mapOf("070" to WRITER, "440" to ARTIST, "730" to TRANSLATOR)
 private val LANGUAGES = mapOf("fre" to "fr")
+private val MANGA_LANGUAGES = setOf("jpn", "kor", "chi")
+private const val COMIC_STRIP = 't'
+private const val FORM_AT = 4
+private const val FORM_LENGTH = 4
 private val YEAR = Regex("\\d{4}")
 private val PAGES = Regex("(\\d+)\\s*p\\b")
 private val TOME = Regex("tome (\\d+)")
@@ -34,6 +42,13 @@ private const val PUBLISHER_INDICATOR = "0"
 private const val ARK = "ark:/"
 private const val COVER_BEFORE = "https://catalogue.bnf.fr/couverture?&appName=NE&idArk="
 private const val COVER_AFTER = "&couverture=1"
+
+internal fun kindOf(codedData: String?, translatedFrom: String?): Kind =
+    when {
+        COMIC_STRIP !in codedData.orEmpty().drop(FORM_AT).take(FORM_LENGTH) -> BOOK
+        translatedFrom in MANGA_LANGUAGES -> MANGA
+        else -> BD
+    }
 
 internal fun authorRoleOf(functionCode: String?): AuthorRole = ROLES[functionCode] ?: WRITER
 
