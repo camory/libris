@@ -51,6 +51,27 @@ describe("ServiceWorkerAppUpdate", () => {
     expect(announced).not.toHaveBeenCalled();
   });
 
+  it("tells the waiting worker to take over on the order", async () => {
+    // Given
+    const browser = browserRunningAWorker();
+    const reload = vi.fn();
+    const update = new ServiceWorkerAppUpdate(reload);
+    update.onNewVersion(vi.fn());
+    await settled();
+    const newWorker = browser.aNewerVersionIsFound();
+    await settled();
+
+    // When
+    update.install();
+
+    // Then
+    expect(newWorker.postMessage).toHaveBeenCalledTimes(1);
+    expect(newWorker.postMessage).toHaveBeenCalledWith({
+      type: "SKIP_WAITING",
+    });
+    expect(reload).not.toHaveBeenCalled();
+  });
+
   function browserRunningAWorker() {
     return aBrowser(aWorker("activated"));
   }
