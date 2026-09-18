@@ -186,13 +186,25 @@ was found.
 - `npm run format` passes `--ignore-path ../.gitignore`, or Prettier
   rewrites `dist/` and `coverage/`; `prettier --check` cannot parse
   `nginx.conf`.
-- `registerType: "autoUpdate"` on the PWA plugin; after a release the first
-  load still shows the previous revision, the second the new one.
+- `registerType: "prompt"` and `injectRegister: false` on the PWA plugin: no
+  `registerSW.js` is emitted, the app registers `/sw.js` itself through
+  `ServiceWorkerAppUpdate`, and Workbox writes the `SKIP_WAITING` message
+  listener into `dist/sw.js` exactly because `skipWaiting` stays false. A new
+  worker waits for the reader's order instead of taking over on the next load.
+- A worker can already be `installing` when `register()`'s promise resolves:
+  its `updatefound` fired before anything could listen. An adapter that only
+  listens for `updatefound` misses that version and the scenario *S2 The
+  reader updates* fails, because its harness finds the new version on the tick
+  that mounts the app. Watch `registration.installing` when the promise
+  resolves as well as on `updatefound`.
 - jsdom 30 seals `window.location`: neither `reload` nor `location` itself
   can be redefined or spied, so a reload or a redirect is proven by handing
   the adapter a function from `bootstrap` and passing a fake in its spec;
   `navigator.serviceWorker` is absent and is stubbed with
-  `Object.defineProperty`, like `navigator.mediaDevices`.
+  `Object.defineProperty`, like `navigator.mediaDevices`. A real
+  `location.reload()` — what `bootstrap` hands the adapter in the Update
+  scenarios — logs `Not implemented: navigation to another Document` on the
+  console and nothing else: the run stays green.
 - vue-router's first navigation is asynchronous: `app.use(router)` starts it
   and nothing of the route is rendered on the tick `mount()` returns, nor
   after a microtask flush. `FastEntryScenarios`' `open()` queries the host
@@ -220,7 +232,9 @@ was found.
   `--color-*` and `--text-*`. A template names `bg-surface` or `text-body`;
   a colour shade or a type size written in a class is a step that is missing
   from the file. The box of a control, `h-[50px]` or `border-[1.5px]`, is
-  not a token and is written as is.
+  not a token and is written as is. Tailwind 4's spacing scale is dynamic, so
+  an odd-but-regular length is a fraction of it rather than an arbitrary
+  value: `py-1.25` is 5 and `size-5.5` is 22.
 - Vitest reads its configuration from the working directory: run it from
   `frontend/`, never from the repository root. From the root it still finds
   the spec files but runs them under the default `node` environment, and

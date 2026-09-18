@@ -13,6 +13,7 @@ import { barcodeScannerKey } from "../../../application/BarcodeScanner";
 import { isbnApiKey } from "../../../application/IsbnApi";
 import { Isbn } from "../../../domain/Isbn";
 import type { SourceEdition } from "../../../domain/SourceEdition";
+import BusySpinner from "../../components/BusySpinner.vue";
 import SourceEditionCard from "../../components/SourceEditionCard.vue";
 import SourceEditionCardSkeleton from "../../components/SourceEditionCardSkeleton.vue";
 import IconAlert from "../../components/icons/IconAlert.vue";
@@ -120,11 +121,7 @@ async function search() {
         class="flex h-[50px] items-center justify-center gap-2 rounded-xl bg-accent text-button text-white active:bg-accent-pressed disabled:opacity-70"
         @click="search"
       >
-        <span
-          v-if="searching"
-          aria-hidden="true"
-          class="size-4 animate-spin rounded-full border-2 border-white/30 border-t-white"
-        ></span>
+        <BusySpinner v-if="searching" class="size-4" />
         {{ searching ? t("isbn.searching") : t("isbn.search") }}
       </button>
     </div>

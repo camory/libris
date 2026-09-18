@@ -13,7 +13,7 @@ describe("Update", () => {
     Reflect.deleteProperty(navigator, "serviceWorker");
   });
 
-  it.skip("S1 A new version is ready", async () => {
+  it("S1 A new version is ready", async () => {
     // Given
     const browser = browserRunsTheApp();
     const screen = open("/");
@@ -28,7 +28,7 @@ describe("Update", () => {
     expect(screen.getByText(/^Bonjour /)).toBeDefined();
   });
 
-  it.skip("S2 The reader updates", async () => {
+  it("S2 The reader updates", async () => {
     // Given
     const browser = browserRunsTheApp();
     const screen = open("/");
@@ -49,7 +49,7 @@ describe("Update", () => {
     expect(screen.queryByRole("button", { name: "Mettre à jour" })).toBeNull();
   });
 
-  it.skip("S4 Nothing new", async () => {
+  it("S4 Nothing new", async () => {
     // Given
     browserRunsTheApp();
 

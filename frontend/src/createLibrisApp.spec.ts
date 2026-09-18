@@ -3,6 +3,7 @@ import { flushPromises } from "@vue/test-utils";
 import { describe, expect, it } from "vitest";
 import { createLibrisApp } from "./createLibrisApp";
 import type { Reader } from "./domain/Reader";
+import { FakeAppUpdate } from "./fixture/FakeAppUpdate";
 import { FakeBarcodeScanner } from "./fixture/FakeBarcodeScanner";
 import { FakeIsbnApi } from "./fixture/FakeIsbnApi";
 import { FakeMeApi } from "./fixture/FakeMeApi";
@@ -24,6 +25,7 @@ const librisApp = () =>
         type: "/problems/not-found",
       }),
       barcodeScanner: new FakeBarcodeScanner(false),
+      appUpdate: new FakeAppUpdate(),
     },
     "sha-abc1234",
   );

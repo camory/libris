@@ -43,6 +43,11 @@ const fr = {
     home: "Accueil",
     add: "Ajouter",
   },
+  update: {
+    available: "Nouvelle version disponible",
+    install: "Mettre à jour",
+    installing: "Mise à jour…",
+  },
 };
 
 export function createLibrisI18n() {
