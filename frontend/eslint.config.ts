@@ -27,6 +27,7 @@ export default tseslint.config(
       ],
       "boundaries/files": [
         { category: "router", pattern: "src/ui/router.ts" },
+        { category: "shell", pattern: "src/ui/App.vue" },
         { category: "test", pattern: "**/*.spec.ts" },
       ],
     },
@@ -70,6 +71,10 @@ export default tseslint.config(
             {
               from: { element: { type: "ui-shell" } },
               allow: { to: { element: { type: "ui-components" } } },
+            },
+            {
+              from: { file: { categories: "shell" } },
+              allow: { to: { element: { type: "application" } } },
             },
             {
               from: { file: { categories: "router" } },
