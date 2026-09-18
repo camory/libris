@@ -1,5 +1,7 @@
 import type { AppUpdate } from "../../application/AppUpdate";
 
+export const betweenChecks = 3_600_000;
+
 export class ServiceWorkerAppUpdate implements AppUpdate {
   private announce: (() => void) | null = null;
   private waiting: ServiceWorker | null = null;
@@ -37,6 +39,9 @@ export class ServiceWorkerAppUpdate implements AppUpdate {
     registration.addEventListener("updatefound", () => {
       this.whenInstalled(registration.installing);
     });
+    setTimeout(() => {
+      void registration.update();
+    }, betweenChecks);
   }
 
   private whenInstalled(worker: ServiceWorker | null): void {

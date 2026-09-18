@@ -1,5 +1,10 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { ServiceWorkerAppUpdate } from "./ServiceWorkerAppUpdate";
+import {
+  betweenChecks,
+  ServiceWorkerAppUpdate,
+} from "./ServiceWorkerAppUpdate";
+
+const aMinute = 60_000;
 
 describe("ServiceWorkerAppUpdate", () => {
   afterEach(() => {
@@ -157,6 +162,20 @@ describe("ServiceWorkerAppUpdate", () => {
     expect(announced).not.toHaveBeenCalled();
   });
 
+  it("asks for a newer version an hour after it registered", async () => {
+    // Given
+    vi.useFakeTimers();
+    const browser = browserRunningAWorker();
+    new ServiceWorkerAppUpdate(vi.fn());
+    await vi.advanceTimersByTimeAsync(0);
+
+    // When
+    await vi.advanceTimersByTimeAsync(betweenChecks);
+
+    // Then
+    expect(browser.asked).toHaveBeenCalledTimes(1);
+  });
+
   function browserRefusingToRegister() {
     const container = new EventTarget() as FakeContainer;
     container.controller = aWorker("activated");
@@ -189,6 +208,8 @@ describe("ServiceWorkerAppUpdate", () => {
     });
 
     return {
+      asked: registration.update,
+
       aVersionIsAlreadyWaiting() {
         registration.waiting = aWorker("installed");
       },
