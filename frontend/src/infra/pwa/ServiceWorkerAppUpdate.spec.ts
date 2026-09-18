@@ -221,6 +221,26 @@ describe("ServiceWorkerAppUpdate", () => {
     expect(browser.asked).toHaveBeenCalledTimes(1);
   });
 
+  it("starts the hour again when it checks on coming back", async () => {
+    // Given
+    vi.useFakeTimers();
+    const browser = browserRunningAWorker();
+    new ServiceWorkerAppUpdate(vi.fn());
+    await vi.advanceTimersByTimeAsync(betweenChecks / 2);
+    theAppGoesToTheBackground();
+    theAppComesBackToTheForeground();
+    await vi.advanceTimersByTimeAsync(0);
+
+    // When
+    await vi.advanceTimersByTimeAsync(betweenChecks - aMinute);
+    const beforeTheHourWasUp = browser.asked.mock.calls.length;
+    await vi.advanceTimersByTimeAsync(aMinute);
+
+    // Then
+    expect(beforeTheHourWasUp).toBe(1);
+    expect(browser.asked).toHaveBeenCalledTimes(2);
+  });
+
   function theAppGoesToTheBackground() {
     theAppIs("hidden");
   }

@@ -7,6 +7,7 @@ export class ServiceWorkerAppUpdate implements AppUpdate {
   private waiting: ServiceWorker | null = null;
   private reloaded = false;
   private registration: ServiceWorkerRegistration | null = null;
+  private pendingCheck: ReturnType<typeof setTimeout> | null = null;
 
   constructor(private readonly reload: () => void) {
     if (!("serviceWorker" in navigator)) {
@@ -46,18 +47,21 @@ export class ServiceWorkerAppUpdate implements AppUpdate {
     registration.addEventListener("updatefound", () => {
       this.whenInstalled(registration.installing);
     });
-    this.scheduleCheck(registration);
+    this.scheduleCheck();
   }
 
-  private scheduleCheck(registration: ServiceWorkerRegistration): void {
-    setTimeout(() => {
+  private scheduleCheck(): void {
+    if (this.pendingCheck !== null) {
+      clearTimeout(this.pendingCheck);
+    }
+    this.pendingCheck = setTimeout(() => {
       this.check();
-      this.scheduleCheck(registration);
     }, betweenChecks);
   }
 
   private check(): void {
     void this.registration?.update();
+    this.scheduleCheck();
   }
 
   private whenInstalled(worker: ServiceWorker | null): void {
