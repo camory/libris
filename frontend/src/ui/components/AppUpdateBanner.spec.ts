@@ -2,7 +2,7 @@ import { fireEvent, within } from "@testing-library/dom";
 import { mount } from "@vue/test-utils";
 import { describe, expect, it } from "vitest";
 import { createLibrisI18n } from "../i18n";
-import AppUpdateBanner from "./AppUpdateBanner.vue";
+import AppUpdateBanner, { type UpdateState } from "./AppUpdateBanner.vue";
 import IconRefresh from "./icons/IconRefresh.vue";
 
 describe("AppUpdateBanner", () => {
@@ -21,7 +21,9 @@ describe("AppUpdateBanner", () => {
     const { wrapper, screen } = open("ready");
 
     // When
-    await fireEvent.click(screen.getByRole("button", { name: "Mettre à jour" }));
+    await fireEvent.click(
+      screen.getByRole("button", { name: "Mettre à jour" }),
+    );
 
     // Then
     expect(wrapper.emitted("update")).toHaveLength(1);
@@ -46,7 +48,7 @@ describe("AppUpdateBanner", () => {
     expect(wrapper.find("*").exists()).toBe(false);
   });
 
-  function open(state: "none" | "ready" | "updating") {
+  function open(state: UpdateState) {
     const wrapper = mount(AppUpdateBanner, {
       global: { plugins: [createLibrisI18n()] },
       props: { state },

@@ -2,10 +2,12 @@
 import { inject, ref } from "vue";
 import { appUpdateKey } from "../application/AppUpdate";
 import AppTabBar from "./components/AppTabBar.vue";
-import AppUpdateBanner from "./components/AppUpdateBanner.vue";
+import AppUpdateBanner, {
+  type UpdateState,
+} from "./components/AppUpdateBanner.vue";
 
 const appUpdate = inject(appUpdateKey)!;
-const state = ref<"none" | "ready" | "updating">("none");
+const state = ref<UpdateState>("none");
 appUpdate.onNewVersion(() => {
   state.value = "ready";
 });

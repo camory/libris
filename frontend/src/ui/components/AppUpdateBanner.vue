@@ -2,7 +2,9 @@
 import { useI18n } from "vue-i18n";
 import IconRefresh from "./icons/IconRefresh.vue";
 
-defineProps<{ state: "none" | "ready" | "updating" }>();
+export type UpdateState = "none" | "ready" | "updating";
+
+defineProps<{ state: UpdateState }>();
 defineEmits<{ update: [] }>();
 
 const { t } = useI18n();
