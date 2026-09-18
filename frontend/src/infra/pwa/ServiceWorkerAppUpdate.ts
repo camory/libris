@@ -52,6 +52,22 @@ export class ServiceWorkerAppUpdate implements AppUpdate {
     this.scheduleCheck();
   }
 
+  private whenInstalled(worker: ServiceWorker | null): void {
+    worker?.addEventListener("statechange", () => {
+      if (worker.state === "installed") {
+        this.found(worker);
+      }
+    });
+  }
+
+  private takeOver(): void {
+    if (this.reloaded) {
+      return;
+    }
+    this.reloaded = true;
+    this.reload();
+  }
+
   private cancelCheck(): void {
     if (this.pendingCheck !== null) {
       clearTimeout(this.pendingCheck);
@@ -69,22 +85,6 @@ export class ServiceWorkerAppUpdate implements AppUpdate {
   private check(): void {
     this.registration?.update().catch(() => {});
     this.scheduleCheck();
-  }
-
-  private whenInstalled(worker: ServiceWorker | null): void {
-    worker?.addEventListener("statechange", () => {
-      if (worker.state === "installed") {
-        this.found(worker);
-      }
-    });
-  }
-
-  private takeOver(): void {
-    if (this.reloaded) {
-      return;
-    }
-    this.reloaded = true;
-    this.reload();
   }
 
   private found(worker: ServiceWorker | null): void {
