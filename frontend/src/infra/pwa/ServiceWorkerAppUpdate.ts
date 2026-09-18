@@ -5,6 +5,9 @@ export class ServiceWorkerAppUpdate implements AppUpdate {
   private waiting: ServiceWorker | null = null;
 
   constructor(private readonly reload: () => void) {
+    navigator.serviceWorker.addEventListener("controllerchange", () => {
+      this.reload();
+    });
     navigator.serviceWorker.register("/sw.js").then((registration) => {
       this.found(registration.waiting);
       registration.addEventListener("updatefound", () => {

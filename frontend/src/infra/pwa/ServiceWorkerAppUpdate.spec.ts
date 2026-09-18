@@ -72,6 +72,20 @@ describe("ServiceWorkerAppUpdate", () => {
     expect(reload).not.toHaveBeenCalled();
   });
 
+  it("reloads once when the new worker takes control", async () => {
+    // Given
+    const browser = browserRunningAWorker();
+    const reload = vi.fn();
+    new ServiceWorkerAppUpdate(reload);
+    await settled();
+
+    // When
+    browser.theNewWorkerTakesControl();
+
+    // Then
+    expect(reload).toHaveBeenCalledTimes(1);
+  });
+
   function browserRunningAWorker() {
     return aBrowser(aWorker("activated"));
   }
@@ -95,6 +109,10 @@ describe("ServiceWorkerAppUpdate", () => {
     return {
       aVersionIsAlreadyWaiting() {
         registration.waiting = aWorker("installed");
+      },
+
+      theNewWorkerTakesControl() {
+        container.dispatchEvent(new Event("controllerchange"));
       },
 
       aNewerVersionIsFound() {
