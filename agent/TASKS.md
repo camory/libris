@@ -43,7 +43,7 @@ One task outside any phase, the bar every screen is reached from.
 Contract: none, the feature is between the app and its own static server; no
 pin moves and no task of the phase touches `camory/libris-api` (D04).
 
-- [ ] T028 Frontend: the new version and its banner.
+- [x] T028 Frontend: the new version and its banner.
       Precondition (human): `frontend/src/scenario/UpdateScenarios.spec.ts`,
       one skipped test per scenario it realises, bearing the scenario's exact
       title, over a stubbed registration (D07).

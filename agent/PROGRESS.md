@@ -753,3 +753,37 @@ Format:
   will tell the reader when a newer version exists, so the line moves to the
   foot of the home page and every screen gets its height back.
 - Left over: nothing.
+
+## 2026-09-18 — T028 The new version and its banner — done
+- Did: `application/AppUpdate.ts` declares the port (`onNewVersion`,
+  `install`) and its key; `infra/pwa/ServiceWorkerAppUpdate.ts` registers
+  `/sw.js`, keeps the worker that reaches `installed` while a controller is
+  already running, sends `{ type: "SKIP_WAITING" }` on the order and reloads
+  once on `controllerchange`; `ui/components/AppUpdateBanner.vue` draws U09
+  from a `state` prop, `App.vue` holds that state and the three words come
+  from the catalogue. The plugin moved to `registerType: "prompt"` with
+  `injectRegister: false`, `nginx.conf` lost its `/registerSW.js` block, and
+  the three Update scenarios are un-skipped and green: thirteen cycles, gate
+  green, 90 tests.
+- Decided:
+  - **The shell owns the banner, so the shell injects the port.** No view
+    owns chrome that stands above every screen, and a store for two refs
+    would be a layer for nothing. `eslint.config.ts` widens `src/ui/App.vue`
+    alone through a `shell` category; the same import from `src/ui/i18n.ts`
+    is still refused, which the mutation probe proved. D05 rule 4 says the
+    views alone inject the ports: the pull request proposes its amendment.
+  - **A worker can be installing before the adapter can listen.** `S2` finds
+    the new version on the tick that mounts the app, so `updatefound` fires
+    while `register()`'s promise is still pending and the announcement is
+    lost. The adapter watches `registration.installing` when the promise
+    resolves too; that is the ninth adapter case.
+  - **The first install says nothing.** A worker reaching `installed` with no
+    controller in charge is the app's first worker, not a newer version. The
+    scenarios cannot catch it — their container always has a controller — so
+    it has its own case.
+- Deviations from the brief: the ninth adapter case above, which the brief's
+  eight did not foresee; `FakeAppUpdate` is the port's two methods and no
+  more, the `announce()` and the order count the brief sketches having no
+  caller now that `createLibrisApp.spec.ts` keeps its two cases.
+- Left over: nothing of the task. The D05 amendment and the update that never
+  finishes are in `agent/PROPOSED.md`.

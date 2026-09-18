@@ -237,3 +237,16 @@
   and the stroke in one place; six files are still cheaper to read than to
   abstract, so the day a seventh arrives is the day to weigh it (found on
   T030, 2026-09-16).
+- Frontend: `docs/ARCHITECTURE.md` D05 rule 4 says the views alone inject the
+  ports; T028 gave `src/ui/App.vue` the update port, which is chrome no view
+  owns, and `eslint.config.ts` widened that one file. The amendment is
+  proposed in T028's pull request: the day it is settled with Tophe, the rule
+  and the plugin's `shell` category say the same thing (found on T028,
+  2026-09-18).
+- Frontend: nothing tells the reader an update that does not finish. The
+  banner's `updating` state ends only on the reload, so a worker that never
+  activates leaves *Mise à jour…* on the screen for ever; `specs/update.md`
+  describes no such state and the adapter waits without a deadline. The day it
+  is seen in the wild, its task decides what the reader is told and how long
+  the app waits (found on T028, 2026-09-18).
+
