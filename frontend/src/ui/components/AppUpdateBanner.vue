@@ -11,13 +11,13 @@ const { t } = useI18n();
 <template>
   <div v-if="state !== 'none'" class="border-b border-border bg-surface">
     <div
-      class="mx-auto flex w-full max-w-120 items-center gap-2 py-[5px] pr-2 pl-5"
+      class="mx-auto flex w-full max-w-120 items-center gap-2 py-1.25 pr-2 pl-5"
     >
       <IconRefresh v-if="state === 'ready'" class="text-accent" />
       <span
         v-else
         aria-hidden="true"
-        class="size-[22px] shrink-0 animate-spin rounded-full border-2 border-accent/30 border-t-accent"
+        class="size-5.5 shrink-0 animate-spin rounded-full border-2 border-accent/30 border-t-accent"
       ></span>
       <span class="flex-1 text-body text-text">{{
         state === "ready" ? t("update.available") : t("update.installing")
