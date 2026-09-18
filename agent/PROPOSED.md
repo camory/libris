@@ -244,3 +244,13 @@
   is seen in the wild, its task decides what the reader is told and how long
   the app waits (found on T028, 2026-09-18).
 
+- Frontend: every case of `ServiceWorkerAppUpdate.spec.ts` builds an adapter
+  that adds a `visibilitychange` listener to the shared jsdom `document` and
+  never removes it, so one dispatched event wakes every adapter of the cases
+  before, each with the registration it captured. The run's cases do not see
+  it, each asserting on its own fresh spy, but a case counting timers cannot
+  be written (17 stale adapters armed an hour each on the review fix-up), and
+  `check()` still re-arms with a `null` registration for the same reason: no
+  case can observe it. The day either matters, the adapter gets a way to stop
+  listening (an `AbortController` on its listeners) that the spec's
+  `afterEach` calls (found on T029, 2026-09-18).

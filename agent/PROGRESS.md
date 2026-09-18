@@ -824,3 +824,8 @@ Format:
   Android background may fire before the network is back, and the next answer
   is then an hour away; the pull request says so, and a retry is a spec
   conversation, not a fix inside a run.
+- Fix-ups on review with Tophe: a guard in `scheduleCheck()` so an app hidden
+  before its registration resolved arms nothing, with its case; the
+  no-service-worker case named for what it asserts; the null-registration
+  re-arm left as is, the spec's leaked `document` listeners making it
+  unobservable (in `agent/PROPOSED.md`).
