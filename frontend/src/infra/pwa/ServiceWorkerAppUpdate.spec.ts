@@ -1,0 +1,75 @@
+import { afterEach, describe, expect, it, vi } from "vitest";
+import { ServiceWorkerAppUpdate } from "./ServiceWorkerAppUpdate";
+
+describe("ServiceWorkerAppUpdate", () => {
+  afterEach(() => {
+    Reflect.deleteProperty(navigator, "serviceWorker");
+  });
+
+  it("announces the version that becomes ready while the app runs", async () => {
+    // Given
+    const browser = browserRunningAWorker();
+    const announced = vi.fn();
+    new ServiceWorkerAppUpdate(vi.fn()).onNewVersion(announced);
+    await settled();
+
+    // When
+    browser.aNewerVersionIsFound();
+    await settled();
+
+    // Then
+    expect(announced).toHaveBeenCalledTimes(1);
+  });
+
+  function browserRunningAWorker() {
+    const container = new EventTarget() as FakeContainer;
+    container.controller = aWorker("activated");
+    const registration = new EventTarget() as FakeRegistration;
+    registration.installing = null;
+    registration.waiting = null;
+    container.register = () => Promise.resolve(registration);
+    Object.defineProperty(navigator, "serviceWorker", {
+      configurable: true,
+      value: container,
+    });
+
+    return {
+      aNewerVersionIsFound() {
+        const worker = aWorker("installing");
+        registration.installing = worker;
+        registration.dispatchEvent(new Event("updatefound"));
+        worker.state = "installed";
+        registration.installing = null;
+        registration.waiting = worker;
+        worker.dispatchEvent(new Event("statechange"));
+        return worker;
+      },
+    };
+  }
+
+  type FakeWorker = EventTarget & {
+    state: string;
+    postMessage: ReturnType<typeof vi.fn>;
+  };
+
+  type FakeRegistration = EventTarget & {
+    installing: FakeWorker | null;
+    waiting: FakeWorker | null;
+  };
+
+  type FakeContainer = EventTarget & {
+    controller: FakeWorker | null;
+    register: () => Promise<FakeRegistration>;
+  };
+
+  function aWorker(state: string): FakeWorker {
+    const worker = new EventTarget() as FakeWorker;
+    worker.state = state;
+    worker.postMessage = vi.fn();
+    return worker;
+  }
+
+  function settled(): Promise<void> {
+    return new Promise((resolve) => setTimeout(resolve, 0));
+  }
+});
