@@ -188,7 +188,8 @@ injects the port; tests provide fakes. Enforced by `eslint-plugin-boundaries`:
 2. `application` imports `domain` and its own ports, never `infra` or `ui`.
 3. `infra` imports `domain` and `application` ports, never `ui`.
 4. `ui/components` import `domain` and other components only; `ui/views` may
-   import `application`.
+   import `application`, and the app shell may inject the ports of the chrome
+   it owns.
 5. Nothing imports `ui/views`, not even another view; the router alone does.
    Each view lives in its own folder under `ui/views`.
 

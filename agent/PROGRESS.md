@@ -785,5 +785,8 @@ Format:
   eight did not foresee; `FakeAppUpdate` is the port's two methods and no
   more, the `announce()` and the order count the brief sketches having no
   caller now that `createLibrisApp.spec.ts` keeps its two cases.
-- Left over: nothing of the task. The D05 amendment and the update that never
-  finishes are in `agent/PROPOSED.md`.
+- Left over: nothing of the task. The update that never finishes is in
+  `agent/PROPOSED.md`.
+- Fix-ups on review with Tophe: the state type declared once, the failed
+  install as a tenth adapter case, `BusySpinner` shared by the busy button and
+  the banner, and D05 rule 4 amended for the app shell.
