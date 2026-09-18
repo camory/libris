@@ -286,7 +286,7 @@ describe("ServiceWorkerAppUpdate", () => {
     expect(browser.asked).toHaveBeenCalledTimes(2);
   });
 
-  it("asks nothing where the browser has no service worker", async () => {
+  it("announces nothing when time passes without a service worker", async () => {
     // Given
     vi.useFakeTimers();
     const update = new ServiceWorkerAppUpdate(vi.fn());
