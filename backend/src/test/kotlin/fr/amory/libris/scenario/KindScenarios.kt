@@ -3,7 +3,6 @@ package fr.amory.libris.scenario
 import com.github.tomakehurst.wiremock.WireMockServer
 import fr.amory.libris.fixture.BnfStubs
 import fr.amory.libris.fixture.OpenLibraryStubs
-import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Qualifier
@@ -21,7 +20,6 @@ class KindScenarios @Autowired constructor(
     private val openLibrary = OpenLibraryStubs(openLibraryServer)
 
     @Test
-    @Disabled("T031")
     fun `S1 A manga`() {
         // Given
         bnf.knows("9782723488525")
@@ -34,7 +32,6 @@ class KindScenarios @Autowired constructor(
     }
 
     @Test
-    @Disabled("T031")
     fun `S2 A BD`() {
         // Given
         bnf.knows("9782505083399")
@@ -47,7 +44,6 @@ class KindScenarios @Autowired constructor(
     }
 
     @Test
-    @Disabled("T031")
     fun `S3 A book`() {
         // Given
         bnf.knows("9782371025219")
@@ -60,7 +56,6 @@ class KindScenarios @Autowired constructor(
     }
 
     @Test
-    @Disabled("T031")
     fun `S4 No record says`() {
         // Given
         bnf.doesNotKnow("9782380751673")
