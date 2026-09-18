@@ -190,6 +190,20 @@ describe("ServiceWorkerAppUpdate", () => {
     expect(browser.asked).not.toHaveBeenCalled();
   });
 
+  it("asks again an hour after the last check", async () => {
+    // Given
+    vi.useFakeTimers();
+    const browser = browserRunningAWorker();
+    new ServiceWorkerAppUpdate(vi.fn());
+    await vi.advanceTimersByTimeAsync(0);
+
+    // When
+    await vi.advanceTimersByTimeAsync(2 * betweenChecks);
+
+    // Then
+    expect(browser.asked).toHaveBeenCalledTimes(2);
+  });
+
   function browserRefusingToRegister() {
     const container = new EventTarget() as FakeContainer;
     container.controller = aWorker("activated");

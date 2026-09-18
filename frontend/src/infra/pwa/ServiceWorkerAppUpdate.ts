@@ -39,8 +39,13 @@ export class ServiceWorkerAppUpdate implements AppUpdate {
     registration.addEventListener("updatefound", () => {
       this.whenInstalled(registration.installing);
     });
+    this.scheduleCheck(registration);
+  }
+
+  private scheduleCheck(registration: ServiceWorkerRegistration): void {
     setTimeout(() => {
       void registration.update();
+      this.scheduleCheck(registration);
     }, betweenChecks);
   }
 
