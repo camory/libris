@@ -790,3 +790,42 @@ Format:
 - Fix-ups on review with Tophe: the state type declared once, the failed
   install as a tenth adapter case, `BusySpinner` shared by the busy button and
   the banner, and D05 rule 4 amended for the app shell.
+
+## 2026-09-18 — T029 The check while the app stays open — done
+- Did: `infra/pwa/ServiceWorkerAppUpdate.ts` keeps the registration once it
+  resolves and holds a clock of its own: `betweenChecks` (one hour) arms a
+  `setTimeout` that calls `registration.update()`, catches its refusal and
+  arms the next hour; a `visibilitychange` listener on `document` checks and
+  restarts the hour when the app is visible, and cancels the pending check
+  when it is hidden, so nothing survives the app going away. Eight cases in
+  the adapter's spec, over fake timers and an `update` spy on the file's own
+  stubbed registration: eight cycles, gate green, 99 tests.
+- Decided:
+  - **The rejection a spy returns is not an unhandled one.** Vitest's `vi.fn`
+    attaches its own handler to the promise it records, so a rejecting
+    `update()` left uncaught raises nothing the spec can see: *keeps asking
+    when a check fails* is green whether or not the `catch` is there. Its
+    proof is the mutation probe instead — a schedule re-armed inside
+    `.then()` reds the case at one call *and* makes the run report an
+    unhandled error — and the gate's own silence on the committed tree.
+  - **The restarted hour is proven from half an hour in.** The foreground
+    return written at t=0, as the brief sketched it, passes against an adapter
+    that ignores the foreground entirely: the hour armed by the registration
+    was already about to fire. The case lets half the hour pass first, so the
+    pending check and the restarted one fall an hour apart and only the
+    cancel-and-re-arm keeps the count at one.
+  - **`check()` arms the next hour whether or not it had a registration to
+    ask.** The one `null` guard the brief allows is the optional call;
+    splitting the schedule on it would be a branch no case motivates.
+- Deviations from the brief: none of substance. The brief counts eight
+  existing cases in the adapter's spec and 90 on `main`; the file holds ten,
+  the run counted 99 with the eight new ones, so `main` carried 91.
+- Left over: nothing of the task. The first foreground check after a long
+  Android background may fire before the network is back, and the next answer
+  is then an hour away; the pull request says so, and a retry is a spec
+  conversation, not a fix inside a run.
+- Fix-ups on review with Tophe: a guard in `scheduleCheck()` so an app hidden
+  before its registration resolved arms nothing, with its case; the
+  no-service-worker case named for what it asserts; the null-registration
+  re-arm left as is, the spec's leaked `document` listeners making it
+  unobservable (in `agent/PROPOSED.md`).

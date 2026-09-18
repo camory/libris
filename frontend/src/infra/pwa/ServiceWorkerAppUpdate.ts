@@ -1,9 +1,13 @@
 import type { AppUpdate } from "../../application/AppUpdate";
 
+export const betweenChecks = 3_600_000;
+
 export class ServiceWorkerAppUpdate implements AppUpdate {
   private announce: (() => void) | null = null;
   private waiting: ServiceWorker | null = null;
   private reloaded = false;
+  private registration: ServiceWorkerRegistration | null = null;
+  private pendingCheck: ReturnType<typeof setTimeout> | null = null;
 
   constructor(private readonly reload: () => void) {
     if (!("serviceWorker" in navigator)) {
@@ -11,6 +15,13 @@ export class ServiceWorkerAppUpdate implements AppUpdate {
     }
     navigator.serviceWorker.addEventListener("controllerchange", () => {
       this.takeOver();
+    });
+    document.addEventListener("visibilitychange", () => {
+      if (document.visibilityState === "visible") {
+        this.check();
+      } else {
+        this.cancelCheck();
+      }
     });
     navigator.serviceWorker
       .register("/sw.js")
@@ -32,11 +43,13 @@ export class ServiceWorkerAppUpdate implements AppUpdate {
   }
 
   private watch(registration: ServiceWorkerRegistration): void {
+    this.registration = registration;
     this.found(registration.waiting);
     this.whenInstalled(registration.installing);
     registration.addEventListener("updatefound", () => {
       this.whenInstalled(registration.installing);
     });
+    this.scheduleCheck();
   }
 
   private whenInstalled(worker: ServiceWorker | null): void {
@@ -53,6 +66,28 @@ export class ServiceWorkerAppUpdate implements AppUpdate {
     }
     this.reloaded = true;
     this.reload();
+  }
+
+  private cancelCheck(): void {
+    if (this.pendingCheck !== null) {
+      clearTimeout(this.pendingCheck);
+      this.pendingCheck = null;
+    }
+  }
+
+  private scheduleCheck(): void {
+    this.cancelCheck();
+    if (document.visibilityState !== "visible") {
+      return;
+    }
+    this.pendingCheck = setTimeout(() => {
+      this.check();
+    }, betweenChecks);
+  }
+
+  private check(): void {
+    this.registration?.update().catch(() => {});
+    this.scheduleCheck();
   }
 
   private found(worker: ServiceWorker | null): void {

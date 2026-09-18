@@ -1,9 +1,16 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { ServiceWorkerAppUpdate } from "./ServiceWorkerAppUpdate";
+import {
+  betweenChecks,
+  ServiceWorkerAppUpdate,
+} from "./ServiceWorkerAppUpdate";
+
+const aMinute = 60_000;
 
 describe("ServiceWorkerAppUpdate", () => {
   afterEach(() => {
+    vi.useRealTimers();
     Reflect.deleteProperty(navigator, "serviceWorker");
+    Reflect.deleteProperty(document, "visibilityState");
   });
 
   it("announces the version that becomes ready while the app runs", async () => {
@@ -156,6 +163,166 @@ describe("ServiceWorkerAppUpdate", () => {
     expect(announced).not.toHaveBeenCalled();
   });
 
+  it("asks for a newer version an hour after it registered", async () => {
+    // Given
+    vi.useFakeTimers();
+    const browser = browserRunningAWorker();
+    new ServiceWorkerAppUpdate(vi.fn());
+    await vi.advanceTimersByTimeAsync(0);
+
+    // When
+    await vi.advanceTimersByTimeAsync(betweenChecks);
+
+    // Then
+    expect(browser.asked).toHaveBeenCalledTimes(1);
+  });
+
+  it("asks nothing before the hour is up", async () => {
+    // Given
+    vi.useFakeTimers();
+    const browser = browserRunningAWorker();
+    new ServiceWorkerAppUpdate(vi.fn());
+    await vi.advanceTimersByTimeAsync(0);
+
+    // When
+    await vi.advanceTimersByTimeAsync(betweenChecks - aMinute);
+
+    // Then
+    expect(browser.asked).not.toHaveBeenCalled();
+  });
+
+  it("asks again an hour after the last check", async () => {
+    // Given
+    vi.useFakeTimers();
+    const browser = browserRunningAWorker();
+    new ServiceWorkerAppUpdate(vi.fn());
+    await vi.advanceTimersByTimeAsync(0);
+
+    // When
+    await vi.advanceTimersByTimeAsync(2 * betweenChecks);
+
+    // Then
+    expect(browser.asked).toHaveBeenCalledTimes(2);
+  });
+
+  it("asks the server when the app comes back to the foreground", async () => {
+    // Given
+    vi.useFakeTimers();
+    const browser = browserRunningAWorker();
+    new ServiceWorkerAppUpdate(vi.fn());
+    await vi.advanceTimersByTimeAsync(0);
+    theAppGoesToTheBackground();
+
+    // When
+    theAppComesBackToTheForeground();
+    await vi.advanceTimersByTimeAsync(0);
+
+    // Then
+    expect(browser.asked).toHaveBeenCalledTimes(1);
+  });
+
+  it("starts the hour again when it checks on coming back", async () => {
+    // Given
+    vi.useFakeTimers();
+    const browser = browserRunningAWorker();
+    new ServiceWorkerAppUpdate(vi.fn());
+    await vi.advanceTimersByTimeAsync(betweenChecks / 2);
+    theAppGoesToTheBackground();
+    theAppComesBackToTheForeground();
+    await vi.advanceTimersByTimeAsync(0);
+
+    // When
+    await vi.advanceTimersByTimeAsync(betweenChecks - aMinute);
+    const beforeTheHourWasUp = browser.asked.mock.calls.length;
+    await vi.advanceTimersByTimeAsync(aMinute);
+
+    // Then
+    expect(beforeTheHourWasUp).toBe(1);
+    expect(browser.asked).toHaveBeenCalledTimes(2);
+  });
+
+  it("asks nothing while the app is hidden", async () => {
+    // Given
+    vi.useFakeTimers();
+    const browser = browserRunningAWorker();
+    new ServiceWorkerAppUpdate(vi.fn());
+    await vi.advanceTimersByTimeAsync(0);
+
+    // When
+    theAppGoesToTheBackground();
+    await vi.advanceTimersByTimeAsync(2 * betweenChecks);
+
+    // Then
+    expect(browser.asked).not.toHaveBeenCalled();
+  });
+
+  it("asks nothing while the app has been hidden since it started", async () => {
+    // Given
+    vi.useFakeTimers();
+    const browser = browserRunningAWorker();
+    theAppIs("hidden");
+    new ServiceWorkerAppUpdate(vi.fn());
+    await vi.advanceTimersByTimeAsync(0);
+
+    // When
+    await vi.advanceTimersByTimeAsync(2 * betweenChecks);
+
+    // Then
+    expect(browser.asked).not.toHaveBeenCalled();
+  });
+
+  it("keeps asking when a check fails", async () => {
+    // Given
+    vi.useFakeTimers();
+    const browser = browserRunningAWorker();
+    browser.theServerCannotBeReached();
+    new ServiceWorkerAppUpdate(vi.fn());
+    await vi.advanceTimersByTimeAsync(0);
+
+    // When
+    await vi.advanceTimersByTimeAsync(2 * betweenChecks);
+
+    // Then
+    expect(browser.asked).toHaveBeenCalledTimes(2);
+  });
+
+  it("announces nothing when time passes without a service worker", async () => {
+    // Given
+    vi.useFakeTimers();
+    const update = new ServiceWorkerAppUpdate(vi.fn());
+    const announced = vi.fn();
+    update.onNewVersion(announced);
+
+    // When
+    await vi.advanceTimersByTimeAsync(2 * betweenChecks);
+    theAppGoesToTheBackground();
+    theAppComesBackToTheForeground();
+    await vi.advanceTimersByTimeAsync(0);
+
+    // Then
+    expect(announced).not.toHaveBeenCalled();
+  });
+
+  function theAppGoesToTheBackground() {
+    theAppBecomes("hidden");
+  }
+
+  function theAppComesBackToTheForeground() {
+    theAppBecomes("visible");
+  }
+
+  function theAppBecomes(visibility: string) {
+    theAppIs(visibility);
+    document.dispatchEvent(new Event("visibilitychange"));
+  }
+
+  function theAppIs(visibility: string) {
+    Object.defineProperty(document, "visibilityState", {
+      configurable: true,
+      get: () => visibility,
+    });
+  }
+
   function browserRefusingToRegister() {
     const container = new EventTarget() as FakeContainer;
     container.controller = aWorker("activated");
@@ -180,6 +347,7 @@ describe("ServiceWorkerAppUpdate", () => {
     const registration = new EventTarget() as FakeRegistration;
     registration.installing = null;
     registration.waiting = null;
+    registration.update = vi.fn().mockResolvedValue(undefined);
     container.register = () => Promise.resolve(registration);
     Object.defineProperty(navigator, "serviceWorker", {
       configurable: true,
@@ -187,6 +355,12 @@ describe("ServiceWorkerAppUpdate", () => {
     });
 
     return {
+      asked: registration.update,
+
+      theServerCannotBeReached() {
+        registration.update.mockRejectedValue(new Error("offline"));
+      },
+
       aVersionIsAlreadyWaiting() {
         registration.waiting = aWorker("installed");
       },
@@ -227,6 +401,7 @@ describe("ServiceWorkerAppUpdate", () => {
   type FakeRegistration = EventTarget & {
     installing: FakeWorker | null;
     waiting: FakeWorker | null;
+    update: ReturnType<typeof vi.fn>;
   };
 
   type FakeContainer = EventTarget & {
