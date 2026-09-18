@@ -1,4 +1,4 @@
-import { within } from "@testing-library/dom";
+import { fireEvent, within } from "@testing-library/dom";
 import { mount } from "@vue/test-utils";
 import { describe, expect, it } from "vitest";
 import { createLibrisI18n } from "../i18n";
@@ -14,6 +14,17 @@ describe("AppUpdateBanner", () => {
     screen.getByText("Nouvelle version disponible");
     screen.getByRole("button", { name: "Mettre à jour" });
     expect(wrapper.findComponent(IconRefresh).exists()).toBe(true);
+  });
+
+  it("gives the order on the tap", async () => {
+    // Given
+    const { wrapper, screen } = open("ready");
+
+    // When
+    await fireEvent.click(screen.getByRole("button", { name: "Mettre à jour" }));
+
+    // Then
+    expect(wrapper.emitted("update")).toHaveLength(1);
   });
 
   function open(state: "none" | "ready" | "updating") {
