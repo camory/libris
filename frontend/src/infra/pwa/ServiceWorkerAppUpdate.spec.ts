@@ -176,6 +176,20 @@ describe("ServiceWorkerAppUpdate", () => {
     expect(browser.asked).toHaveBeenCalledTimes(1);
   });
 
+  it("asks nothing before the hour is up", async () => {
+    // Given
+    vi.useFakeTimers();
+    const browser = browserRunningAWorker();
+    new ServiceWorkerAppUpdate(vi.fn());
+    await vi.advanceTimersByTimeAsync(0);
+
+    // When
+    await vi.advanceTimersByTimeAsync(betweenChecks - aMinute);
+
+    // Then
+    expect(browser.asked).not.toHaveBeenCalled();
+  });
+
   function browserRefusingToRegister() {
     const container = new EventTarget() as FakeContainer;
     container.controller = aWorker("activated");
