@@ -75,7 +75,7 @@ pin moves and no task of the phase touches `camory/libris-api` (D04).
       Realises S1, S2 and S4; un-skips `S1 A new version is ready`,
       `S2 The reader updates` and `S4 Nothing new`.
 
-- [ ] T029 Frontend: the check while the app stays open.
+- [x] T029 Frontend: the check while the app stays open.
       The adapter asks the server for a newer worker an hour after its last
       check and whenever the app comes back to the foreground, a foreground
       check starting the hour again; it asks nothing while the app is hidden

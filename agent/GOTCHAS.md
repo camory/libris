@@ -287,6 +287,25 @@ was found.
   `window.history.replaceState(null, "", "/")` in an `afterEach`, since
   `createWebHistory` writes to jsdom's real history and a leftover path makes a
   later spec mount the wrong screen.
+- With `vi.useFakeTimers()` on, a helper that waits on a real timer never
+  resolves: the `settled()` of `ServiceWorkerAppUpdate.spec.ts` leaves the
+  case to fail on Vitest's five-second timeout.
+  `await vi.advanceTimersByTimeAsync(0)` is what flushes a pending
+  registration promise — it drains the microtask queue as well as the
+  zero-delay timers — and `await vi.advanceTimersByTimeAsync(betweenChecks)`
+  runs a timer whose callback chains another promise. `vi.useRealTimers()`
+  belongs in the file's `afterEach`, or the next case starts on frozen time.
+- `document.visibilityState` is stubbed like `navigator.serviceWorker`:
+  `Object.defineProperty(document, "visibilityState", { configurable: true,
+  get: () => "hidden" })` shadows jsdom's accessor, a handler reading it
+  during a dispatched `visibilitychange` sees the stubbed value, and
+  `Reflect.deleteProperty(document, "visibilityState")` in the `afterEach`
+  puts jsdom's back.
+- A `vi.fn()` attaches its own handler to the promise it returns, so a
+  rejection a spy hands back is never an unhandled one: a case whose stub
+  rejects stays green whether or not the code catches. Prove the catch by
+  mutation — the run reports `Unhandled Errors` and exits non-zero when the
+  rejection really escapes.
 - `BarcodeDetector` is not in TypeScript's DOM library. The two interfaces
   the camera adapter needs are written in
   `src/infra/camera/CameraBarcodeScanner.ts` and are not `declare global`:
