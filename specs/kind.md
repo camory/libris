@@ -74,10 +74,10 @@ When the reader asks for it
 Then Libris answers the kind BOOK
 ```
 
-A provisional legal-deposit record of the BnF, which carries no field
-105. An ISBN the BnF lacks, answered by Open Library alone, takes the same
-path. Proof: backend scenario test over a recorded provisional record; unit
-test of the kind rule in the implementer's loop.
+A BnF record without field 105, or an ISBN the BnF lacks, answered by
+Open Library alone, 9782380751673. Proof: backend scenario test over the
+recorded answer of that ISBN; unit test of the kind rule over a record
+without field 105 in the implementer's loop.
 
 ## Screen
 
@@ -135,4 +135,7 @@ word, and *tome* when it belongs to a series.
 
 ## Tasks
 
-Filled by the planner.
+- T031 — S1, S2, S3, S4, the rule and the field, the backend on `v0.5.0`
+  — backend
+- T032 — S1, S2, S3, the words of the card, the frontend on `v0.5.0`
+  — frontend
