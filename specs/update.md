@@ -4,7 +4,7 @@
 last deployed version in one tap, at a moment of their choosing, instead of
 relaunching the app until it happens. Now, because every merge is a deploy
 and the family will see the versions go by.
-**Status:** planned
+**Status:** done 2026-09-18
 
 ## Scenarios
 
@@ -90,6 +90,8 @@ Nothing: the feature is between the app and its own static server.
 
 Deploy a version on staging, open the installed app on the phone, bring it
 to the foreground: the row shows; tap it: the new version, once.
+
+Checked by Tophe on 2026-09-18, on the Pixel, with the deploy of T029.
 
 ## Tasks
 
