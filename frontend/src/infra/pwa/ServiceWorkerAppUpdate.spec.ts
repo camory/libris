@@ -101,6 +101,19 @@ describe("ServiceWorkerAppUpdate", () => {
     expect(reload).toHaveBeenCalledTimes(1);
   });
 
+  it("does nothing where the browser has no service worker", () => {
+    // Given
+    const announced = vi.fn();
+
+    // When
+    const update = new ServiceWorkerAppUpdate(vi.fn());
+    update.onNewVersion(announced);
+    update.install();
+
+    // Then
+    expect(announced).not.toHaveBeenCalled();
+  });
+
   function browserRunningAWorker() {
     return aBrowser(aWorker("activated"));
   }

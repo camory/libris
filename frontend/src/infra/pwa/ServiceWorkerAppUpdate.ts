@@ -6,6 +6,9 @@ export class ServiceWorkerAppUpdate implements AppUpdate {
   private reloaded = false;
 
   constructor(private readonly reload: () => void) {
+    if (!("serviceWorker" in navigator)) {
+      return;
+    }
     navigator.serviceWorker.addEventListener("controllerchange", () => {
       this.takeOver();
     });
