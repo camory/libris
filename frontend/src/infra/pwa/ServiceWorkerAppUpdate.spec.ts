@@ -271,6 +271,23 @@ describe("ServiceWorkerAppUpdate", () => {
     expect(browser.asked).toHaveBeenCalledTimes(2);
   });
 
+  it("asks nothing where the browser has no service worker", async () => {
+    // Given
+    vi.useFakeTimers();
+    const update = new ServiceWorkerAppUpdate(vi.fn());
+    const announced = vi.fn();
+    update.onNewVersion(announced);
+
+    // When
+    await vi.advanceTimersByTimeAsync(2 * betweenChecks);
+    theAppGoesToTheBackground();
+    theAppComesBackToTheForeground();
+    await vi.advanceTimersByTimeAsync(0);
+
+    // Then
+    expect(announced).not.toHaveBeenCalled();
+  });
+
   function theAppGoesToTheBackground() {
     theAppIs("hidden");
   }
