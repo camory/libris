@@ -23,7 +23,7 @@ T031 moves the backend pin and T032 the frontend one, each as its line spells
 out; no other task of the phase touches the contract (D04). The backend goes
 first: the answer gains a field (D04).
 
-- [ ] T031 Backend: the kind of a scanned ouvrage.
+- [x] T031 Backend: the kind of a scanned ouvrage.
       Precondition (human): the scenario class
       `backend/src/test/kotlin/fr/amory/libris/scenario/KindScenarios.kt`,
       one skipped test per scenario, each bearing the scenario's exact
