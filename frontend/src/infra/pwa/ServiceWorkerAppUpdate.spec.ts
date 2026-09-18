@@ -256,6 +256,21 @@ describe("ServiceWorkerAppUpdate", () => {
     expect(browser.asked).not.toHaveBeenCalled();
   });
 
+  it("keeps asking when a check fails", async () => {
+    // Given
+    vi.useFakeTimers();
+    const browser = browserRunningAWorker();
+    browser.theServerCannotBeReached();
+    new ServiceWorkerAppUpdate(vi.fn());
+    await vi.advanceTimersByTimeAsync(0);
+
+    // When
+    await vi.advanceTimersByTimeAsync(2 * betweenChecks);
+
+    // Then
+    expect(browser.asked).toHaveBeenCalledTimes(2);
+  });
+
   function theAppGoesToTheBackground() {
     theAppIs("hidden");
   }
@@ -305,6 +320,10 @@ describe("ServiceWorkerAppUpdate", () => {
 
     return {
       asked: registration.update,
+
+      theServerCannotBeReached() {
+        registration.update.mockRejectedValue(new Error("offline"));
+      },
 
       aVersionIsAlreadyWaiting() {
         registration.waiting = aWorker("installed");

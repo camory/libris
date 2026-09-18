@@ -67,7 +67,7 @@ export class ServiceWorkerAppUpdate implements AppUpdate {
   }
 
   private check(): void {
-    void this.registration?.update();
+    this.registration?.update().catch(() => {});
     this.scheduleCheck();
   }
 
