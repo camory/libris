@@ -50,6 +50,21 @@ describe("ServiceWorkerAppUpdate", () => {
     expect(announced).toHaveBeenCalledTimes(1);
   });
 
+  it("announces nothing when the new version fails to install", async () => {
+    // Given
+    const browser = browserRunningAWorker();
+    const announced = vi.fn();
+    new ServiceWorkerAppUpdate(vi.fn()).onNewVersion(announced);
+    await settled();
+
+    // When
+    await browser.aNewerVersionFailsToInstall();
+    await settled();
+
+    // Then
+    expect(announced).not.toHaveBeenCalled();
+  });
+
   it("announces nothing when the first worker installs", async () => {
     // Given
     const browser = browserInstallingItsFirstWorker();
@@ -178,6 +193,16 @@ describe("ServiceWorkerAppUpdate", () => {
 
       theNewWorkerTakesControl() {
         container.dispatchEvent(new Event("controllerchange"));
+      },
+
+      async aNewerVersionFailsToInstall() {
+        const worker = aWorker("installing");
+        registration.installing = worker;
+        registration.dispatchEvent(new Event("updatefound"));
+        await Promise.resolve();
+        worker.state = "redundant";
+        registration.installing = null;
+        worker.dispatchEvent(new Event("statechange"));
       },
 
       async aNewerVersionIsFound() {
