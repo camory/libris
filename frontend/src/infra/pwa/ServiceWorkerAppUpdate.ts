@@ -3,10 +3,11 @@ import type { AppUpdate } from "../../application/AppUpdate";
 export class ServiceWorkerAppUpdate implements AppUpdate {
   private announce: (() => void) | null = null;
   private waiting: ServiceWorker | null = null;
+  private reloaded = false;
 
   constructor(private readonly reload: () => void) {
     navigator.serviceWorker.addEventListener("controllerchange", () => {
-      this.reload();
+      this.takeOver();
     });
     navigator.serviceWorker.register("/sw.js").then((registration) => {
       this.found(registration.waiting);
@@ -30,6 +31,14 @@ export class ServiceWorkerAppUpdate implements AppUpdate {
 
   install(): void {
     this.waiting?.postMessage({ type: "SKIP_WAITING" });
+  }
+
+  private takeOver(): void {
+    if (this.reloaded) {
+      return;
+    }
+    this.reloaded = true;
+    this.reload();
   }
 
   private found(worker: ServiceWorker | null): void {

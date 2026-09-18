@@ -86,6 +86,21 @@ describe("ServiceWorkerAppUpdate", () => {
     expect(reload).toHaveBeenCalledTimes(1);
   });
 
+  it("reloads no more than once", async () => {
+    // Given
+    const browser = browserRunningAWorker();
+    const reload = vi.fn();
+    new ServiceWorkerAppUpdate(reload);
+    await settled();
+    browser.theNewWorkerTakesControl();
+
+    // When
+    browser.theNewWorkerTakesControl();
+
+    // Then
+    expect(reload).toHaveBeenCalledTimes(1);
+  });
+
   function browserRunningAWorker() {
     return aBrowser(aWorker("activated"));
   }
