@@ -15,15 +15,7 @@ export class ServiceWorkerAppUpdate implements AppUpdate {
     navigator.serviceWorker
       .register("/sw.js")
       .then((registration) => {
-        this.found(registration.waiting);
-        registration.addEventListener("updatefound", () => {
-          const installing = registration.installing;
-          installing?.addEventListener("statechange", () => {
-            if (installing.state === "installed") {
-              this.found(installing);
-            }
-          });
-        });
+        this.watch(registration);
       })
       .catch(() => {});
   }
@@ -37,6 +29,18 @@ export class ServiceWorkerAppUpdate implements AppUpdate {
 
   install(): void {
     this.waiting?.postMessage({ type: "SKIP_WAITING" });
+  }
+
+  private watch(registration: ServiceWorkerRegistration): void {
+    this.found(registration.waiting);
+    registration.addEventListener("updatefound", () => {
+      const installing = registration.installing;
+      installing?.addEventListener("statechange", () => {
+        if (installing.state === "installed") {
+          this.found(installing);
+        }
+      });
+    });
   }
 
   private takeOver(): void {
