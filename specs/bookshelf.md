@@ -25,7 +25,7 @@ Proof: backend scenario test over the reader use case with fake repositories.
 **S2 The ouvrage is added** · frontend, backend
 
 ```gherkin
-Given the card of an ISBN the catalogue lacks and a source knows
+Given the card of an ISBN the house lacks and a source knows
 
 When the reader adds it
 
@@ -35,18 +35,18 @@ Then an edition exists with what the card shows, kind included
 ```
 
 Proof: contract example `ADD_ONE_PIECE_1` verified by Contracteer on both
-sides; backend scenario test over a fake catalogue; frontend scenario test
+sides; backend scenario test over fake repositories; frontend scenario test
 against `contracteer mock`.
 
 **S3 A known ISBN reaches the existing edition** · backend
 
 ```gherkin
-Given an edition in the catalogue
+Given an edition the house holds
 
 When a reader adds the ouvrage of its ISBN
 
 Then a copy sits on their default bookshelf
-	And the catalogue still holds one edition for that ISBN
+	And the house still holds one edition for that ISBN
 ```
 
 Two cases: another reader, whose copy is the edition's second on a second
@@ -56,22 +56,22 @@ Proof: backend scenario test, one per case.
 **S4 The ouvrage is already in a bookshelf** · frontend, backend
 
 ```gherkin
-Given an edition in the catalogue, with copies on bookshelves the reader
+Given an edition the house holds, with copies on bookshelves the reader
       belongs to and on one they do not
 
 When the reader asks for its ISBN
 
-Then Libris answers the edition as the catalogue holds it, without asking
+Then Libris answers the edition as the house holds it, without asking
      the sources
 	And its copies on the reader's bookshelves, each with the name of its
 	    bookshelf, and none of the other
 	And the card says where the copies are
 ```
 
-An edition the catalogue holds whose copies are all on bookshelves the reader
+An edition the house holds whose copies are all on bookshelves the reader
 does not belong to answers the same, with no copy: the card shows the edition
-without a place. Proof: contract example `ONE_PIECE_1_OWNED` verified by
-Contracteer on both sides; backend scenario test over a fake catalogue with
+without a place. Proof: contract example `ONE_PIECE_2_OWNED` verified by
+Contracteer on both sides; backend scenario test over fake repositories with
 sources that must not be asked; frontend scenario test against
 `contracteer mock`.
 
@@ -125,29 +125,39 @@ which gives the lookup answer its `kind`, renames its schemas `IsbnLookup`,
 `Problem` schema with an optional `errors`. Nothing of `v0.6.0` changes the
 bytes of an existing answer: two fields are added, one operation.
 
-- `IsbnLookup` gains `copies`, an array of `Copy`, `readOnly`, empty when the
+- `IsbnLookup` gains `copies`, an array of `Copy`, required, empty when the
   reader's bookshelves hold none: the copies of the edition on the
   bookshelves the reader belongs to. `ONE_PIECE_1` answers an empty array; a
-  new example `ONE_PIECE_1_OWNED`, on an ISBN of its own, answers two copies
-  on two bookshelves.
+  new example `ONE_PIECE_2_OWNED`, *One Piece* tome 2 on its own ISBN,
+  answers two copies on two bookshelves, *Bibliothèque de Léa* and *Salon*.
 - `CurrentReader` gains `defaultBookshelf`, a `Bookshelf` `{id, name}`,
   required, so the app knows where the add goes from its first request.
-- `POST /api/v1/bookshelves/{id}/copies`, `id` the bookshelf's uuid; the
-  body is an `IsbnLookup`, the lookup answer sent back as it is, `copies` left
-  out since it is `readOnly` → `201` `Copy` `{id, bookshelf}` with the
+- `POST /api/v1/bookshelves/{id}/books`, `id` the bookshelf's uuid; the
+  body is a `NewBook`, the book as the reader submits it: the fields of
+  `IsbnLookup` without `copies`, and `isbn13` nullable, since a book typed
+  by hand may have none → `201` `Copy` `{id, bookshelf}` with the
   bookshelf's `{id, name}`; `400` `Problem` `/problems/validation` with one
-  error per refused field, the ISBN-13 checked as on the lookup; `404`
-  `Problem` `/problems/not-found` when the reader owns no such bookshelf, a
-  bookshelf being visible only to its members. Examples `ADD_ONE_PIECE_1`,
-  `400_NOT_AN_ISBN` (the body of `ADD_ONE_PIECE_1` with a wrong check
-  digit), `404_NOT_MY_BOOKSHELF`.
+  error per refused field, `isbn13` checked as the lookup checks its `isbn`;
+  `404` `Problem` `/problems/not-found` when the reader owns no such
+  bookshelf, a bookshelf being visible only to its members. Examples
+  `ADD_ONE_PIECE_1`, `400_NOT_AN_ISBN` (the body of `ADD_ONE_PIECE_1` with a
+  wrong check digit), `404_NOT_MY_BOOKSHELF` (the body of `ADD_ONE_PIECE_1`
+  on another bookshelf's id).
+- Every request and response body example lives under
+  `components/examples`, named after what it holds, `OnePiece1`,
+  `NewOnePiece1`, `CopyOfOnePiece1`, `NotMyBookshelf`; the operations keep
+  the scenario keys and point at them. A path parameter's value stays on its
+  parameter.
 
 `Copy` and `Bookshelf` are the domain's names and appear wherever the
 domain does: the same `Copy` in the lookup answer and in the add's answer,
-the same `Bookshelf` on the reader and on the copy. The backend matches the
-edition by `isbn13` and creates it on the way when unknown, with the series
-and the authors matched by name as PRD §3 says; it never stores the body's
-`copies`, which the mock and the verifier do not send.
+the same `Bookshelf` on the reader and on the copy. `NewBook` is not the
+lookup answer sent back: it is what the reader submits, from the card in
+this feature, from a form later. The backend matches the edition by
+`isbn13` and creates it on the way when unknown, with the series and the
+authors matched by name as PRD §3 says. The verifier adds two cases of its
+own on the add, a path `id` that is not a uuid and a body of the wrong
+types, both answered `400` with a `Problem`.
 
 ## Done
 

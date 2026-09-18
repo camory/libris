@@ -320,6 +320,18 @@ was found.
   stays 3.0.3 and `nullable` is the 3.0 keyword. On an operation without
   parameters a response example creates no scenario; the verifier emits one
   generated case.
+- On an operation with a `format: uuid` path parameter or a typed body, the
+  verifier adds cases of its own, `auto: path 'id' type mismatch` and `auto:
+  body type mismatch`, and expects `400` with the declared problem body for
+  each: the backend must answer a `Problem` to a malformed uuid and to a body
+  of the wrong types, not Spring's plain 400.
+- Contracteer honours `readOnly`: the mock answers `400` to a request whose
+  body carries a read-only field, even empty. The contract avoids `readOnly`
+  and gives a request its own schema instead.
+- Body examples live under `components/examples` and the operations point at
+  them with `$ref`; the mock and the verifier resolve them. YAML anchors and
+  the `<<` merge key stay out of the document: `<<` is YAML 1.1, and a raw
+  reader sees the anchor, not the body.
 - A release is `git tag vX.Y.Z <merge sha> && git push origin vX.Y.Z`, then
   `gh release create vX.Y.Z --title vX.Y.Z --generate-notes`; `--target
   <sha>` is refused. Tag only after the CI run on `main` has pushed the
