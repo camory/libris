@@ -1,4 +1,4 @@
-# Libris — Product Requirements (DRAFT v0.3, 2026-09-11)
+# Libris — Product Requirements (DRAFT v0.4, 2026-09-18)
 
 > Status: **draft for review by Tophe**. The agentic loop treats this file as
 > the source of truth for *what* to build. Edit it freely before the first run;
@@ -84,13 +84,15 @@ There is no closed list and no separate notion of genre.
 _Avoid_: genre, category, subject, keyword, label.
 
 **Reader**:
-A person of the household, created on first visit from the Authelia account.
+A person of the household, created on first visit from the Authelia account,
+with a default bookshelf.
 *On screen*: lecteur.
 _Avoid_: user, account, member (as the entity), profile.
 
 **Bookshelf**:
 A named place where copies sit, with members. *Chambre de Léa*, *salon*,
-*cave*.
+*cave*. A reader's first one is created with them, named after them
+(*Bibliothèque de Léa*), and is their default.
 *On screen*: bibliothèque.
 _Avoid_: library, shelf, location, collection.
 
@@ -100,9 +102,10 @@ A reader's part in a bookshelf, with a role: `OWNER` or `VIEWER`.
 _Avoid_: user, participant, guest (in code), share.
 
 **Copy**:
-One physical instance of an edition, sitting on one bookshelf.
+One physical instance of an edition, sitting on one bookshelf. Digital copies
+are not modelled in v1.
 *On screen*: exemplaire.
-_Avoid_: item, instance, book, copie.
+_Avoid_: item, instance, book, copie, format.
 
 Shaped with their own feature, later: **Reading state** (a link between a
 reader and a copy: to read, reading, finished, abandoned, with rating and
@@ -135,10 +138,14 @@ notes),
 - A Bookshelf has at least one owner at all times and is visible only to its
   members. Owners add, edit and remove its copies and manage its members;
   viewers see them.
+- A Reader has one default bookshelf, which they own: the one created with
+  them on their first visit, named after them. Adding an ouvrage in one step
+  puts the copy there.
 - A reader sees and searches the copies of every bookshelf they belong to:
   that is their catalogue.
 - Adding an ouvrage from a scan creates the edition when its ISBN is unknown,
-  and a copy on the bookshelf the reader chose.
+  and a copy on the reader's default bookshelf, or on another bookshelf they
+  own when they choose one.
 - Nobody deletes an edition. A member removes a copy from a bookshelf; when
   the last copy goes, the edition goes with it. An edition exists only while a
   copy or, later, a wish refers to it.
@@ -154,8 +161,8 @@ Priorities: **P1** = needed before the family uses it, **P2** = soon after,
 - Add an ouvrage to a bookshelf: the edition is created if its ISBN is
   unknown, with kind, title, subtitle, series and volume number, authors by
   role, publisher, collection, publication year, ISBN-13, language, page
-  count, summary, cover URL and tags; the copy is created on the chosen
-  bookshelf.
+  count, summary, cover URL and tags; the copy is created on the reader's
+  default bookshelf, or on another bookshelf they own when they choose one.
 - View and edit an edition; remove a copy from a bookshelf, which deletes the
   edition when it was the last copy.
 - List the catalogue with filters (kind, series, bookshelf, tag; reading
@@ -171,9 +178,10 @@ Priorities: **P1** = needed before the family uses it, **P2** = soon after,
 - Backed by PostgreSQL full-text search; no separate search service.
 
 ### 4.3 Bookshelves and copies (P1)
-- A reader creates bookshelves and is their owner; an owner invites other
-  readers as owner or viewer, and removes them. A bookshelf is visible only to
-  its members and keeps at least one owner.
+- A reader's first bookshelf is created on their first visit, named after
+  them, and is their default. A reader creates other bookshelves and is their
+  owner; an owner invites other readers as owner or viewer, and removes them.
+  A bookshelf is visible only to its members and keeps at least one owner.
 - A copy sits on one bookshelf and may be moved to another the reader owns.
   It has a condition and an acquisition date.
 - Mark a copy as lent (to whom, since when) and as returned.
@@ -201,8 +209,8 @@ Priorities: **P1** = needed before the family uses it, **P2** = soon after,
   own scenarios. Sites without an API (Bedetheque, BDGest, Babelio) are
   candidates for later, subject to their terms of use.
 - Delivered in two specs: `specs/fast-entry.md` is the lookup alone, showing
-  what the sources know; adding the ouvrage to a bookshelf from that card is
-  the next spec.
+  what the sources know; `specs/bookshelf.md` adds the ouvrage to the
+  reader's default bookshelf from that card.
 
 ### 4.8 PWA behaviour (P1 for install, P2 for offline)
 - Installable on Android home screens, with icons and a splash screen.
@@ -243,8 +251,9 @@ Priorities: **P1** = needed before the family uses it, **P2** = soon after,
 
 ## 7. Open questions for Tophe
 
-1. Should digital copies (e-books, PDFs) be modelled as copies with a
-   `format` field, or excluded from v1?
+1. ~~Digital copies~~ — resolved 2026-09-18: excluded from v1; a copy is
+   physical (§3). A digital copy, if it ever comes, is a feature of its own,
+   after e-book reading and file storage leave §6.
 2. ~~Cover images~~ — resolved 2026-09-11: a cover URL on the edition, filled
    by the lookup or by hand; storing our own images is a later feature.
 3. Is a barcode-scan lookup source for BD needed beyond BnF? (Bedetheque has

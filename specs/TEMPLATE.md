@@ -7,7 +7,8 @@ why now.
 ## Scenarios
 
 One block per scenario, Gherkin keywords, one clause per line, a blank line
-between Given, When and Then, `And` for each further clause. A scenario for
+between Given, When and Then, `And` for each further clause, on the next
+line, indented with a tab. A scenario for
 both sides uses words that hold on both, "the reader asks", "Libris answers";
 the proof line says what each side checks. IDs are stable: task lines,
 briefs, reviews and the scenario tests cite them, and a scenario test bears
@@ -23,8 +24,7 @@ Given …
 When …
 
 Then …
-
-And …
+	And …
 ```
 
 Proof: contract example `<name>` verified by Contracteer on both sides |

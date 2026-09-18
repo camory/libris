@@ -48,8 +48,7 @@ Given a reader on the lookup screen
 When they submit a text of the wrong length or with a wrong check digit
 
 Then the screen says beside the field that this is not an ISBN
-
-And no request leaves
+	And no request leaves
 ```
 
 Proof: unit test of the ISBN rule (thirteen digits kept, ten converted, check
@@ -78,8 +77,7 @@ Given an ISBN the BnF or Open Library knows
 When the reader asks for it
 
 Then the answer carries the BnF's value for every field the BnF gives
-
-And Open Library's for the fields the BnF leaves empty
+	And Open Library's for the fields the BnF leaves empty
 ```
 
 Proof: backend scenario test over stubbed sources, one recorded BnF record
