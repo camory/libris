@@ -7,7 +7,6 @@ import fr.amory.libris.application.LookupResult.UnknownIsbn
 import fr.amory.libris.domain.AuthorRole
 import fr.amory.libris.domain.Isbn
 import fr.amory.libris.domain.Kind
-import fr.amory.libris.domain.Kind.BOOK
 import fr.amory.libris.domain.lookup.SourceEdition
 import org.springframework.http.HttpStatus
 import org.springframework.http.HttpStatus.BAD_REQUEST
@@ -83,7 +82,7 @@ class IsbnController(private val lookup: IsbnLookup) {
 
     private fun responseOf(edition: SourceEdition): IsbnResponse = IsbnResponse(
         isbn13 = edition.isbn.digits,
-        kind = edition.kind ?: BOOK,
+        kind = edition.kind,
         title = edition.title,
         subtitle = edition.subtitle,
         authors = edition.authors.map { IsbnAuthorResponse(it.name, it.role) },

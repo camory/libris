@@ -3,6 +3,7 @@ package fr.amory.libris.infra.lookup
 import com.github.tomakehurst.wiremock.WireMockServer
 import com.github.tomakehurst.wiremock.core.WireMockConfiguration.options
 import fr.amory.libris.domain.AuthorRole.WRITER
+import fr.amory.libris.domain.Kind.BOOK
 import fr.amory.libris.domain.lookup.SourceAnswer.Failed
 import fr.amory.libris.domain.lookup.SourceAnswer.Known
 import fr.amory.libris.domain.lookup.SourceAnswer.NothingKnown
@@ -40,7 +41,7 @@ class OpenLibrarySourceTest {
         answer shouldBe Known(
             SourceEdition(
                 isbn = isbnOf(SPACE_WARS),
-                kind = null,
+                kind = BOOK,
                 title = "Space Wars - Chapitre 1",
                 subtitle = null,
                 authors = listOf(
@@ -168,7 +169,7 @@ class OpenLibrarySourceTest {
         const val UNKNOWN = "9782000000013"
         val MONTE_CRISTO_EDITION = SourceEdition(
             isbn = isbnOf(MONTE_CRISTO),
-            kind = null,
+            kind = BOOK,
             title = "Le comte de Monte-Cristo",
             subtitle = "Tome 1",
             authors = listOf(SourceAuthor("Alexandre Dumas", WRITER)),

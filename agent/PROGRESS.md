@@ -842,6 +842,7 @@ Format:
     no default, so every construction site had to state its kind and the
     compiler listed them; `edition.kind ?: BOOK` in `responseOf` is the only
     `BOOK` the run writes, and *S4 No record says* is its end-to-end proof.
+    Undone on review, see the fix-up below.
   - **The rule reads the slice, not the whole field.** `COMIC_STRIP !in
     codedData.orEmpty().drop(4).take(4)` mirrors `publicationYearOf`'s slice,
     keeps a `t` elsewhere in the coded data out of the answer, and gives the
@@ -859,3 +860,7 @@ Format:
   `STRICT` and the case asserts one field more than before.
 - Left over: nothing of the task. T032 carries the field to the frontend;
   nothing stores a kind yet, which the bookshelf brings.
+- Fix-up on review with Tophe: no kind is ever unknown, since everything the
+  rule does not mark is a book, so `SourceEdition.kind` is non-null and no
+  default exists anywhere. Open Library answers `BOOK`, the merge takes the
+  first source's kind as it takes the title, the controller copies it.
