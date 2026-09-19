@@ -2,10 +2,7 @@ import { within } from "@testing-library/dom";
 import { mount } from "@vue/test-utils";
 import { describe, expect, it } from "vitest";
 import { nextTick } from "vue";
-import type {
-  SourceAuthor,
-  SourceEdition,
-} from "../../domain/SourceEdition";
+import type { SourceAuthor, SourceEdition } from "../../domain/SourceEdition";
 import { onePiece1 } from "../../fixture/SourceEditions";
 import { createLibrisI18n } from "../i18n";
 import IconBook from "./icons/IconBook.vue";

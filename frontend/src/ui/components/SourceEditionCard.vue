@@ -27,7 +27,9 @@ const overline = computed(() => {
 const authorLines = computed(() => {
   const played = new Map<string, AuthorRole[]>();
   for (const author of props.edition.authors) {
-    played.set(author.name, [...(played.get(author.name) ?? []), author.role]);
+    const roles = played.get(author.name) ?? [];
+    roles.push(author.role);
+    played.set(author.name, roles);
   }
   const authors = [...played].map(([name, roles]) => ({ name, roles }));
   const sets = new Set(authors.map(({ roles }) => [...roles].sort().join()));
