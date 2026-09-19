@@ -3,10 +3,8 @@ package fr.amory.libris.domain
 import com.fasterxml.uuid.Generators
 import java.util.UUID
 
-data class Reader(
+data class Bookshelf(
     val id: UUID = Generators.timeBasedEpochGenerator().generate(),
-    val username: String,
-    val email: String,
-    val displayName: String,
-    val defaultBookshelfId: UUID? = null,
+    val name: String,
+    val members: List<Member>,
 )
