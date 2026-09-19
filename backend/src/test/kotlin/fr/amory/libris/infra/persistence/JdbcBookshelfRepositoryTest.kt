@@ -45,6 +45,17 @@ class JdbcBookshelfRepositoryTest @Autowired constructor(
         read shouldBe listOf(leas)
     }
 
+    @Test
+    fun `a reader who is a member of no bookshelf reads none`() {
+        // Given
+        val marc = reader("marc", "Marc")
+        bookshelves.insert(Bookshelf(name = "Bibliothèque de Marc", members = listOf(Member(marc.id, OWNER))))
+        val lea = reader("lea", "Léa")
+
+        // When, Then
+        bookshelves.findByMember(lea.id) shouldBe emptyList()
+    }
+
     private fun reader(username: String, displayName: String): Reader {
         val reader = Reader(username = username, email = "$username@amory.fr", displayName = displayName)
         readers.insert(reader)
