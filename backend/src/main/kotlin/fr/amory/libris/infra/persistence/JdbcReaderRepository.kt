@@ -9,7 +9,8 @@ import org.springframework.stereotype.Repository
 import java.util.UUID
 
 private const val INSERT_READER =
-    "insert into reader (id, username, email, display_name) values (:id, :username, :email, :displayName)"
+    "insert into reader (id, username, email, display_name, default_bookshelf_id) " +
+        "values (:id, :username, :email, :displayName, :defaultBookshelfId)"
 
 private const val UPDATE_READER =
     "update reader set username = :username, email = :email, display_name = :displayName, " +
@@ -28,6 +29,7 @@ class JdbcReaderRepository(private val jdbcClient: JdbcClient) : ReaderRepositor
                 .param("username", reader.username)
                 .param("email", reader.email)
                 .param("displayName", reader.displayName)
+                .param("defaultBookshelfId", reader.defaultBookshelfId)
                 .update()
         } catch (duplicate: DuplicateKeyException) {
             throw DuplicateUsernameException(reader.username, duplicate)

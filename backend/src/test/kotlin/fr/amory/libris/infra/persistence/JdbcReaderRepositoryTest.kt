@@ -46,6 +46,25 @@ class JdbcReaderRepositoryTest @Autowired constructor(
     }
 
     @Test
+    fun `an inserted reader is read back with the bookshelf they default to`() {
+        // Given
+        val bookshelf = Bookshelf(name = "Bibliothèque de Juliette", members = emptyList())
+        bookshelves.insert(bookshelf)
+        val juliette = Reader(
+            username = "juliette",
+            email = "juliette@amory.fr",
+            displayName = "Juliette",
+            defaultBookshelfId = bookshelf.id,
+        )
+
+        // When
+        readers.insert(juliette)
+
+        // Then
+        readers.findByUsername("juliette") shouldBe juliette
+    }
+
+    @Test
     fun `an updated reader keeps their columns and takes the bookshelf as their default`() {
         // Given
         val juliette = Reader(username = "juliette", email = "juliette@amory.fr", displayName = "Juliette")
