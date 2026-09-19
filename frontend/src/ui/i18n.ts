@@ -19,7 +19,10 @@ const fr = {
     unknown: "ISBN inconnu",
     error: "Erreur lors de la recherche, veuillez réessayer plus tard.",
     card: {
-      series: "{name} · tome {volume}",
+      series: {
+        BD: "{name} · album {volume}",
+        MANGA: "{name} · tome {volume}",
+      },
       author: "{name} · {roles}",
       cover: "Couverture de {title}",
       collection: "Collection",

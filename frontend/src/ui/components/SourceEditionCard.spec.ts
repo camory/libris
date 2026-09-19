@@ -22,6 +22,18 @@ const barelyKnown: SourceEdition = {
   coverUrl: null,
 };
 
+const asterix1: SourceEdition = {
+  ...onePiece1,
+  kind: "BD",
+  title: "Astérix le Gaulois",
+  subtitle: null,
+  authors: [
+    { name: "René Goscinny", role: "WRITER" },
+    { name: "Albert Uderzo", role: "ARTIST" },
+  ],
+  series: { name: "Astérix", volumeNumber: 1 },
+};
+
 describe("SourceEditionCard", () => {
   it("shows the series and the volume, the title and the subtitle", () => {
     // When
@@ -31,6 +43,15 @@ describe("SourceEditionCard", () => {
     expect(card).toContain("One piece · tome 1");
     expect(card).toContain("Romance dawn");
     expect(card).toContain("à l'aube d'une grande aventure");
+  });
+
+  it("shows the volume of a BD as an album", () => {
+    // When
+    const card = show(asterix1);
+
+    // Then
+    expect(card).toContain("Astérix · album 1");
+    expect(card).not.toContain("tome");
   });
 
   it("shows one line per author, with the French words of its roles", () => {
