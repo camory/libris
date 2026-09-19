@@ -898,3 +898,6 @@ Format:
   — the grouping moving to `domain` the day a second screen names authors,
   and the two files still unformatted on `main`. Nothing stores a kind yet;
   the bookshelf brings it over `v0.6.0`.
+- Fix-up on review with Tophe: a role an answer lists twice for one author
+  is kept once while grouping, so the key compares sets and the words never
+  repeat; its case added, 112 tests.

@@ -28,7 +28,9 @@ const authorLines = computed(() => {
   const played = new Map<string, AuthorRole[]>();
   for (const author of props.edition.authors) {
     const roles = played.get(author.name) ?? [];
-    roles.push(author.role);
+    if (!roles.includes(author.role)) {
+      roles.push(author.role);
+    }
     played.set(author.name, roles);
   }
   const authors = [...played].map(([name, roles]) => ({ name, roles }));

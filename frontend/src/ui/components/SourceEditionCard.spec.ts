@@ -162,6 +162,25 @@ describe("SourceEditionCard", () => {
     expect(card).not.toContain("scénario");
   });
 
+  it("names an author listed twice under one role once, with the role once", () => {
+    // Given
+    const listedTwice: SourceEdition = {
+      ...onePiece1,
+      authors: [
+        { name: "Eiichirō Oda", role: "WRITER" },
+        { name: "Eiichirō Oda", role: "WRITER" },
+        { name: "Boichi", role: "WRITER" },
+      ],
+    };
+
+    // When
+    const card = show(listedTwice);
+
+    // Then
+    expect(card).toContain("Eiichirō Oda, Boichi");
+    expect(card).not.toContain("scénario");
+  });
+
   it("tells apart the authors whose sets of roles differ", () => {
     // Given
     const drawnTogether: SourceEdition = {
