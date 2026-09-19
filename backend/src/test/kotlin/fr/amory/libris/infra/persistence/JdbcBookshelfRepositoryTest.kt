@@ -28,6 +28,23 @@ class JdbcBookshelfRepositoryTest @Autowired constructor(
         bookshelves.findByMember(lea.id) shouldBe listOf(bookshelf)
     }
 
+    @Test
+    fun `a reader reads the bookshelves they are a member of and no other`() {
+        // Given
+        val lea = reader("lea", "Léa")
+        val marc = reader("marc", "Marc")
+        val leas = Bookshelf(name = "Bibliothèque de Léa", members = listOf(Member(lea.id, OWNER)))
+        val marcs = Bookshelf(name = "Bibliothèque de Marc", members = listOf(Member(marc.id, OWNER)))
+        bookshelves.insert(leas)
+        bookshelves.insert(marcs)
+
+        // When
+        val read = bookshelves.findByMember(lea.id)
+
+        // Then
+        read shouldBe listOf(leas)
+    }
+
     private fun reader(username: String, displayName: String): Reader {
         val reader = Reader(username = username, email = "$username@amory.fr", displayName = displayName)
         readers.insert(reader)
