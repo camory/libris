@@ -2,6 +2,8 @@ package fr.amory.libris.infra.persistence
 
 import fr.amory.libris.domain.Bookshelf
 import fr.amory.libris.domain.DuplicateUsernameException
+import fr.amory.libris.domain.Member
+import fr.amory.libris.domain.MemberRole.VIEWER
 import fr.amory.libris.fixture.readerOwning
 import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.matchers.shouldBe
@@ -30,6 +32,26 @@ class JdbcReaderRepositoryTest @Autowired constructor(
 
         // Then
         readers.findByUsername("juliette") shouldBe juliette
+    }
+
+    @Test
+    fun `a reader is read back with every bookshelf they are a member of, their default among them`() {
+        // Given
+        val theirs = Bookshelf(name = "Bibliothèque de Juliette")
+        val leas = Bookshelf(name = "Bibliothèque de Léa")
+        bookshelves.insert(theirs)
+        bookshelves.insert(leas)
+        val juliette = readerOwning(theirs, "juliette", "Juliette").let {
+            it.copy(memberships = it.memberships + Member(leas.id, VIEWER))
+        }
+
+        // When
+        readers.insert(juliette)
+
+        // Then
+        val read = requireNotNull(readers.findByUsername("juliette"))
+        read.memberships.toSet() shouldBe juliette.memberships.toSet()
+        read.copy(memberships = juliette.memberships) shouldBe juliette
     }
 
     @Test
