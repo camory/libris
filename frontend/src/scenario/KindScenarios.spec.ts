@@ -18,7 +18,7 @@ describe("Kind", () => {
     window.history.replaceState(null, "", "/");
   });
 
-  it.skip("S1 A manga", async () => {
+  it("S1 A manga", async () => {
     // Given
     const screen = open("/isbn");
 
