@@ -307,7 +307,9 @@ session, no BCrypt.
   the spec, committed skipped. A task un-skips the scenario tests its line
   cites and changes nothing else in them; the inside, ports, use cases,
   adapters and their tests, is the run's. A scenario test that has to
-  change is a spec conversation, not a task.
+  change is a spec conversation, not a task, with one exception: a scenario
+  of another spec that compares a whole answer gains the field a task adds
+  to it, declared in the pull request.
 - One test source set and one `test` task. No suffix sorts tests by what
   they need: a test that needs the database gets it from D08 like any other.
   Test classes are named after the Libris code they exercise. Tests live

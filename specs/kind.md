@@ -4,16 +4,16 @@
 livre, a BD or a manga, and the words on it follow, without the reader
 choosing. Now, because the bookshelf spec stores the edition with its kind,
 and the lookup is the only place that can fill it.
-**Status:** draft
+**Status:** done 2026-09-19
 
 ## Scenarios
 
 The kind is read from the BnF record alone: field 105 says whether the
 ouvrage is a comic strip, field 101 which language it was translated from.
-Open Library never names a kind: its subjects are free text, differ inside
-one series (Murena's first chapter carries none, its fifth *Bandes
-dessinées*) and file the Apothicaire light novel under its manga (measured
-2026-09-18).
+Open Library never names a kind, so its edition is a book: its subjects
+are free text, differ inside one series (Murena's first chapter carries
+none, its fifth *Bandes dessinées*) and file the Apothicaire light novel
+under its manga (measured 2026-09-18).
 
 **S1 A manga** · frontend, backend
 
@@ -132,6 +132,8 @@ read *Eiichirō Oda* alone under *One piece · tome 1*; scan a BD with a
 writer and an artist, *Astérix*, and read *album* and the two lines with
 *scénario* and *dessin*; scan a novel and read its author without a role
 word, and *tome* when it belongs to a series.
+
+Checked by Tophe on 2026-09-19, on the Pixel, with the deploy of T032.
 
 ## Tasks
 
