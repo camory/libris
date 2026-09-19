@@ -5,16 +5,15 @@ import io.kotest.matchers.shouldBe
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.context.annotation.Import
-import org.springframework.jdbc.core.simple.JdbcClient
+import java.util.UUID
 
 @JdbcSliceTest
 @Import(JdbcBookshelfRepository::class)
 class JdbcBookshelfRepositoryTest @Autowired constructor(
     private val bookshelves: JdbcBookshelfRepository,
-    private val jdbcClient: JdbcClient,
 ) {
     @Test
-    fun `an inserted bookshelf has its row`() {
+    fun `an inserted bookshelf is found by its id`() {
         // Given
         val bookshelf = Bookshelf(name = "Bibliothèque de Léa")
 
@@ -22,11 +21,11 @@ class JdbcBookshelfRepositoryTest @Autowired constructor(
         bookshelves.insert(bookshelf)
 
         // Then
-        val name = jdbcClient
-            .sql("select name from bookshelf where id = :id")
-            .param("id", bookshelf.id)
-            .query(String::class.java)
-            .single()
-        name shouldBe "Bibliothèque de Léa"
+        bookshelves.findById(bookshelf.id) shouldBe bookshelf
+    }
+
+    @Test
+    fun `an unknown id finds no bookshelf`() {
+        bookshelves.findById(UUID.randomUUID()) shouldBe null
     }
 }
