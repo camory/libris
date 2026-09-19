@@ -9,6 +9,10 @@ const aNumberOrNull = expect.toSatisfy(
   (value: unknown) => value === null || typeof value === "number",
   "a number or null",
 );
+const aKind = expect.toSatisfy(
+  (value: unknown) => ["BOOK", "BD", "MANGA"].includes(value as string),
+  "one of the kinds the API answers",
+);
 
 describe("FetchIsbnApi", () => {
   afterEach(() => {
@@ -26,6 +30,7 @@ describe("FetchIsbnApi", () => {
     assert(answer.outcome === "found", `the answer is a ${answer.outcome}`);
     expect(answer.edition).toEqual({
       isbn13: expect.any(String),
+      kind: aKind,
       title: expect.any(String),
       subtitle: aStringOrNull,
       authors: expect.toSatisfy(areAuthors, "authors with a name and a role"),
@@ -84,6 +89,7 @@ describe("FetchIsbnApi", () => {
     const api = new FetchIsbnApi("http://an-older-backend");
     const body = {
       isbn13: "9782723488525",
+      kind: "MANGA",
       title: "Romance dawn",
       subtitle: "à l'aube d'une grande aventure",
       authors: [

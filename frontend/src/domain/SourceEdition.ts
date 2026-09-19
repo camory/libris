@@ -1,5 +1,7 @@
 export type AuthorRole = "WRITER" | "ARTIST" | "COLOURIST" | "TRANSLATOR";
 
+export type Kind = "BOOK" | "BD" | "MANGA";
+
 export interface SourceAuthor {
   name: string;
   role: AuthorRole;
@@ -12,6 +14,7 @@ export interface SourceSeries {
 
 export interface SourceEdition {
   isbn13: string;
+  kind: Kind;
   title: string;
   subtitle: string | null;
   authors: SourceAuthor[];

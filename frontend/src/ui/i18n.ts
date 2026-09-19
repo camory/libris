@@ -19,7 +19,11 @@ const fr = {
     unknown: "ISBN inconnu",
     error: "Erreur lors de la recherche, veuillez réessayer plus tard.",
     card: {
-      series: "{name} · tome {volume}",
+      series: {
+        BOOK: "{name} · tome {volume}",
+        BD: "{name} · album {volume}",
+        MANGA: "{name} · tome {volume}",
+      },
       author: "{name} · {roles}",
       cover: "Couverture de {title}",
       collection: "Collection",
@@ -34,10 +38,24 @@ const fr = {
     fr: "français",
   },
   role: {
-    WRITER: "scénario",
-    ARTIST: "dessin",
-    COLOURIST: "couleurs",
-    TRANSLATOR: "traduction",
+    BOOK: {
+      WRITER: "texte",
+      ARTIST: "illustration",
+      COLOURIST: "couleurs",
+      TRANSLATOR: "traduction",
+    },
+    BD: {
+      WRITER: "scénario",
+      ARTIST: "dessin",
+      COLOURIST: "couleurs",
+      TRANSLATOR: "traduction",
+    },
+    MANGA: {
+      WRITER: "scénario",
+      ARTIST: "dessin",
+      COLOURIST: "couleurs",
+      TRANSLATOR: "traduction",
+    },
   },
   tabs: {
     home: "Accueil",

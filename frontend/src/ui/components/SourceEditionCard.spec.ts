@@ -2,7 +2,7 @@ import { within } from "@testing-library/dom";
 import { mount } from "@vue/test-utils";
 import { describe, expect, it } from "vitest";
 import { nextTick } from "vue";
-import type { SourceEdition } from "../../domain/SourceEdition";
+import type { SourceAuthor, SourceEdition } from "../../domain/SourceEdition";
 import { onePiece1 } from "../../fixture/SourceEditions";
 import { createLibrisI18n } from "../i18n";
 import IconBook from "./icons/IconBook.vue";
@@ -22,6 +22,30 @@ const barelyKnown: SourceEdition = {
   coverUrl: null,
 };
 
+const asterix1: SourceEdition = {
+  ...onePiece1,
+  kind: "BD",
+  title: "Astérix le Gaulois",
+  subtitle: null,
+  authors: [
+    { name: "René Goscinny", role: "WRITER" },
+    { name: "Albert Uderzo", role: "ARTIST" },
+  ],
+  series: { name: "Astérix", volumeNumber: 1 },
+};
+
+const lAmiFritz: SourceEdition = {
+  ...onePiece1,
+  kind: "BOOK",
+  title: "L'ami Fritz",
+  subtitle: null,
+  authors: [
+    { name: "Erckmann", role: "WRITER" },
+    { name: "Chatrian", role: "WRITER" },
+  ],
+  series: { name: "Contes et romans", volumeNumber: 1 },
+};
+
 describe("SourceEditionCard", () => {
   it("shows the series and the volume, the title and the subtitle", () => {
     // When
@@ -33,13 +57,175 @@ describe("SourceEditionCard", () => {
     expect(card).toContain("à l'aube d'une grande aventure");
   });
 
-  it("shows one line per author, with the French words of its roles", () => {
+  it("shows the volume of a BD as an album", () => {
+    // When
+    const card = show(asterix1);
+
+    // Then
+    expect(card).toContain("Astérix · album 1");
+    expect(card).not.toContain("tome");
+  });
+
+  it("shows the volume of a livre as a tome", () => {
+    // When
+    const card = show(lAmiFritz);
+
+    // Then
+    expect(card).toContain("Contes et romans · tome 1");
+    expect(card).not.toContain("album");
+  });
+
+  it("names an author alone when they share their roles with everyone", () => {
     // When
     const card = show(onePiece1);
 
     // Then
-    expect(card).toContain("Eiichirō Oda · scénario, dessin");
+    expect(card).toContain("Eiichirō Oda");
     expect(card.match(/Eiichirō Oda/g)).toHaveLength(1);
+    expect(card).not.toContain("scénario");
+    expect(card).not.toContain("dessin");
+  });
+
+  it("names the authors of one set on one line, separated by commas", () => {
+    // When
+    const card = show(lAmiFritz);
+
+    // Then
+    expect(card).toContain("Erckmann, Chatrian");
+    expect(card).not.toContain("texte");
+  });
+
+  it("says scénario and dessin under a manga", () => {
+    // Given
+    const drawnByAnother: SourceEdition = {
+      ...onePiece1,
+      authors: [
+        { name: "Eiichirō Oda", role: "WRITER" },
+        { name: "Boichi", role: "ARTIST" },
+      ],
+    };
+
+    // When
+    const card = show(drawnByAnother);
+
+    // Then
+    expect(card).toContain("Eiichirō Oda · scénario");
+    expect(card).toContain("Boichi · dessin");
+  });
+
+  it("says scénario and dessin under a BD", () => {
+    // When
+    const card = show(asterix1);
+
+    // Then
+    expect(card).toContain("René Goscinny · scénario");
+    expect(card).toContain("Albert Uderzo · dessin");
+  });
+
+  it("says texte and illustration under a livre", () => {
+    // Given
+    const illustrated: SourceEdition = {
+      ...lAmiFritz,
+      authors: [
+        { name: "Erckmann", role: "WRITER" },
+        { name: "Théophile Schuler", role: "ARTIST" },
+      ],
+    };
+
+    // When
+    const card = show(illustrated);
+
+    // Then
+    expect(card).toContain("Erckmann · texte");
+    expect(card).toContain("Théophile Schuler · illustration");
+    expect(card).not.toContain("scénario");
+    expect(card).not.toContain("dessin");
+  });
+
+  it("reads the same roles in another order as the same set", () => {
+    // Given
+    const inAnyOrder: SourceEdition = {
+      ...onePiece1,
+      authors: [
+        { name: "Eiichirō Oda", role: "WRITER" },
+        { name: "Eiichirō Oda", role: "ARTIST" },
+        { name: "Boichi", role: "ARTIST" },
+        { name: "Boichi", role: "WRITER" },
+      ],
+    };
+
+    // When
+    const card = show(inAnyOrder);
+
+    // Then
+    expect(card).toContain("Eiichirō Oda, Boichi");
+    expect(card).not.toContain("scénario");
+  });
+
+  it("names an author listed twice under one role once, with the role once", () => {
+    // Given
+    const listedTwice: SourceEdition = {
+      ...onePiece1,
+      authors: [
+        { name: "Eiichirō Oda", role: "WRITER" },
+        { name: "Eiichirō Oda", role: "WRITER" },
+        { name: "Boichi", role: "WRITER" },
+      ],
+    };
+
+    // When
+    const card = show(listedTwice);
+
+    // Then
+    expect(card).toContain("Eiichirō Oda, Boichi");
+    expect(card).not.toContain("scénario");
+  });
+
+  it("tells apart the authors whose sets of roles differ", () => {
+    // Given
+    const drawnTogether: SourceEdition = {
+      ...onePiece1,
+      authors: [
+        { name: "Eiichirō Oda", role: "WRITER" },
+        { name: "Eiichirō Oda", role: "ARTIST" },
+        { name: "Boichi", role: "WRITER" },
+      ],
+    };
+
+    // When
+    const card = show(drawnTogether);
+
+    // Then
+    expect(card).toContain("Eiichirō Oda · scénario, dessin");
+    expect(card).toContain("Boichi · scénario");
+  });
+
+  it("shows no author line when the sources named no author", () => {
+    // When
+    const card = show({ ...onePiece1, authors: [] });
+
+    // Then
+    expect(card).not.toContain("Eiichirō Oda");
+    expect(card).toContain("à l'aube d'une grande aventureCollection");
+  });
+
+  it("says couleurs and traduction under every kind", () => {
+    // Given
+    const authors: SourceAuthor[] = [
+      { name: "Jérémy Petiqueux", role: "COLOURIST" },
+      { name: "Sylvain Chollet", role: "TRANSLATOR" },
+    ];
+
+    // When
+    const cards = [onePiece1, asterix1, lAmiFritz].map((edition) =>
+      show({ ...edition, authors }),
+    );
+
+    // Then
+    for (const card of cards) {
+      expect(card).toContain("Jérémy Petiqueux · couleurs");
+      expect(card).toContain("Sylvain Chollet · traduction");
+    }
   });
 
   it("shows one row per field, in the order of the card", () => {

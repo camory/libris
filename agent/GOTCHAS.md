@@ -269,6 +269,15 @@ was found.
   Utils' `findComponent(SomeIcon)` is how a rendered icon is asserted: an
   `aria-hidden` SVG carries no text and no role, so no `getBy*` query reaches
   it.
+- `vue-i18n`'s `t` answers an unknown key with the key itself, so a catalogue
+  entry a component builds and never wrote renders on the screen as
+  `role.BOOK.WRITER` or `isbn.card.series.BOOK`. Nothing throws and no type
+  catches it — `t` takes a template string — so the only proof of a key that
+  exists is a case asserting the French word it holds.
+- `grep -rn <text> frontend` walks `frontend/node_modules`, so a search for a
+  version or a package name answers pages of changelogs. `git grep -n <text>
+  -- frontend` searches the tracked tree alone, which is what a criterion
+  about this repository means.
 - A word `SourceEditionCard` displays is asserted in three files, not one:
   the card's own spec, `IsbnView.spec.ts` (*asks for the ISBN-13 the rule
   computes and shows the card*) and `FastEntryScenarios.spec.ts`

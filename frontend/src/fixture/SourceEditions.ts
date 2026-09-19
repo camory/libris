@@ -2,6 +2,7 @@ import type { SourceEdition } from "../domain/SourceEdition";
 
 export const onePiece1: SourceEdition = {
   isbn13: "9782723488525",
+  kind: "MANGA",
   title: "Romance dawn",
   subtitle: "à l'aube d'une grande aventure",
   authors: [

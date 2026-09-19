@@ -213,12 +213,6 @@
   the root of `domain`; the class is `Isbn` since T023. The run proposed the
   one-word amendment in its pull request body rather than editing the document
   (CLAUDE.md); Tophe settles it on the review (found on T023, 2026-09-15).
-- Frontend: Prettier disagrees with `frontend/vitest.global-setup.ts`, the
-  pinned URL sitting past the print width in its array. It is not in the gate
-  (`npm test` runs `vue-tsc`, ESLint and Vitest), it is already so on `main`,
-  and reformatting it would put a line of noise in a task that only moves the
-  pin; the next task that touches the file runs `npm run format` on it (found
-  on T025, 2026-09-15).
 - Backend: `OpenLibrarySource` reads a 404 as `NothingKnown` whoever answered
   it, so a 404 on `/search.json` would say the ISBN is unknown instead of
   failing. Open Library's search answers 200 with no doc when it finds
@@ -254,3 +248,15 @@
   case can observe it. The day either matters, the adapter gets a way to stop
   listening (an `AbortController` on its listeners) that the spec's
   `afterEach` calls (found on T029, 2026-09-18).
+
+- Frontend: the grouping of the authors by their set of roles lives in
+  `SourceEditionCard`'s `authorLines`, where the catalogue's words are
+  reachable. The day a second screen names authors, the part that does not
+  need the words — grouping by name and comparing the sets of role codes —
+  moves to `domain` with a spec of its own, and the components keep the
+  formatting of their lines (decided on T032, 2026-09-19).
+- Frontend: `src/ui/views/home/HomeView.spec.ts` and
+  `src/scenario/KindScenarios.spec.ts` are unformatted on `main`; the gate does
+  not run Prettier, so `npm run format` rewrites them whenever it is run whole.
+  The task that next edits either file formats it, as T032 did for
+  `vitest.global-setup.ts` (found on T032, 2026-09-19).

@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed, ref } from "vue";
 import { useI18n } from "vue-i18n";
-import type { SourceEdition } from "../../domain/SourceEdition";
+import type { AuthorRole, SourceEdition } from "../../domain/SourceEdition";
 import IconBook from "./icons/IconBook.vue";
 
 const props = defineProps<{ edition: SourceEdition }>();
@@ -18,20 +18,32 @@ const overline = computed(() => {
   if (series.volumeNumber === null) {
     return series.name;
   }
-  return t("isbn.card.series", {
+  return t(`isbn.card.series.${props.edition.kind}`, {
     name: series.name,
     volume: series.volumeNumber,
   });
 });
 
 const authorLines = computed(() => {
-  const words = new Map<string, string[]>();
+  const played = new Map<string, AuthorRole[]>();
   for (const author of props.edition.authors) {
-    const said = words.get(author.name) ?? [];
-    said.push(t(`role.${author.role}`));
-    words.set(author.name, said);
+    const roles = played.get(author.name) ?? [];
+    if (!roles.includes(author.role)) {
+      roles.push(author.role);
+    }
+    played.set(author.name, roles);
   }
-  return [...words].map(([name, roles]) => ({ name, roles: roles.join(", ") }));
+  const authors = [...played].map(([name, roles]) => ({ name, roles }));
+  const sets = new Set(authors.map(({ roles }) => [...roles].sort().join()));
+  if (sets.size === 1) {
+    return [{ name: authors.map(({ name }) => name).join(", "), roles: null }];
+  }
+  return authors.map(({ name, roles }) => ({
+    name,
+    roles: roles
+      .map((role) => t(`role.${props.edition.kind}.${role}`))
+      .join(", "),
+  }));
 });
 
 const languageWord = computed(() => {
@@ -85,18 +97,20 @@ const rows = computed(() => {
         <p v-if="edition.subtitle" class="text-lead text-muted">
           {{ edition.subtitle }}
         </p>
-        <i18n-t
-          v-for="line in authorLines"
-          :key="line.name"
-          keypath="isbn.card.author"
-          tag="p"
-          class="text-body"
-        >
-          <template #name>{{ line.name }}</template>
-          <template #roles>
-            <span class="text-muted">{{ line.roles }}</span>
-          </template>
-        </i18n-t>
+        <template v-for="line in authorLines" :key="line.name">
+          <i18n-t
+            v-if="line.roles"
+            keypath="isbn.card.author"
+            tag="p"
+            class="text-body"
+          >
+            <template #name>{{ line.name }}</template>
+            <template #roles>
+              <span class="text-muted">{{ line.roles }}</span>
+            </template>
+          </i18n-t>
+          <p v-else class="text-body">{{ line.name }}</p>
+        </template>
       </div>
     </div>
 

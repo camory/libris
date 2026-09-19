@@ -864,3 +864,40 @@ Format:
   rule does not mark is a book, so `SourceEdition.kind` is non-null and no
   default exists anywhere. Open Library answers `BOOK`, the merge takes the
   first source's kind as it takes the title, the controller copies it.
+
+## 2026-09-19 — T032 The card in the words of its kind — done
+- Did: the frontend pin moved to `v0.5.0`, `SourceEdition` gained
+  `kind: Kind` read straight off the answer by `FetchIsbnApi`, and the `fr`
+  catalogue grew a series pattern and a block of four role words per kind, so
+  `SourceEditionCard` builds `isbn.card.series.<kind>` and
+  `role.<kind>.<role>` and holds no French word and no branch on a kind. Its
+  `authorLines` now groups the authors by name, compares their whole sets of
+  roles and answers either one line of names or a line per author with its
+  words. Eleven cycles, `S1 A manga` un-skipped, gate green: 14 files, 111
+  tests, no skip.
+- Decided:
+  - **The grouping branch is a rendering shape, not two computeds.** The
+    computed answers `{ name, roles }` with `roles: null` for the shared-set
+    line, and the template picks `i18n-t` or a plain `<p>` on it. One list,
+    one `v-for`, and the case *shows no author line…* falls out of the empty
+    list with no guard.
+  - **The canonical key is the sorted role codes, the display order the
+    answer's.** A mutation check proved the point: dropping `.sort()` left
+    all 21 cases green, so the run added *reads the same roles in another
+    order as the same set*, watched it red against the unsorted variant, and
+    put the sort back — 22 green. The words still read *scénario, dessin* in
+    the order the BnF gave them.
+  - **Every kind carries its full set of words, as the brief asked.** The
+    reviewer is asked to weigh the six repeated words (*couleurs* and
+    *traduction* three times, the manga's pattern repeating the livre's)
+    against a shared entry that the first divergence would have to split.
+- Deviations from the brief: none. The test plan's order held cycle for
+  cycle, including the pin red opening the task and Prettier over
+  `vitest.global-setup.ts` alone at the end.
+- Left over: nothing of the task. Two follow-ups went to `agent/PROPOSED.md`
+  — the grouping moving to `domain` the day a second screen names authors,
+  and the two files still unformatted on `main`. Nothing stores a kind yet;
+  the bookshelf brings it over `v0.6.0`.
+- Fix-up on review with Tophe: a role an answer lists twice for one author
+  is kept once while grouping, so the key compares sets and the words never
+  repeat; its case added, 112 tests.
