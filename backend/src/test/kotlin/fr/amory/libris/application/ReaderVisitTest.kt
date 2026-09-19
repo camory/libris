@@ -7,6 +7,7 @@ import fr.amory.libris.fixture.BookshelvesInMemory
 import fr.amory.libris.fixture.ReadersInMemory
 import io.kotest.matchers.shouldBe
 import org.junit.jupiter.api.Test
+import java.util.UUID
 
 class ReaderVisitTest {
     @Test
@@ -45,7 +46,14 @@ class ReaderVisitTest {
         val readers = ReadersInMemory()
         val bookshelves = BookshelvesInMemory()
         val visit = ReaderVisit(readers, FirstVisit(readers, bookshelves))
-        readers.insert(Reader(username = "juliette", email = "juliette@amory.fr", displayName = "Juliette"))
+        readers.insert(
+            Reader(
+                username = "juliette",
+                email = "juliette@amory.fr",
+                displayName = "Juliette",
+                defaultBookshelfId = UUID.randomUUID(),
+            ),
+        )
 
         // When
         visit.visit("juliette", "juliette@amory.fr", "Juliette")
@@ -57,7 +65,12 @@ class ReaderVisitTest {
     @Test
     fun `a first visit that loses the race to another one returns the reader it stored`() {
         // Given
-        val winner = Reader(username = "juliette", email = "juliette@amory.fr", displayName = "Juliette")
+        val winner = Reader(
+            username = "juliette",
+            email = "juliette@amory.fr",
+            displayName = "Juliette",
+            defaultBookshelfId = UUID.randomUUID(),
+        )
         val readers = ReadersLosingTheRace(winner)
         val visit = ReaderVisit(readers, FirstVisit(readers, BookshelvesInMemory()))
 
@@ -76,8 +89,6 @@ private class ReadersLosingTheRace(private val winner: Reader) : ReaderRepositor
         raceLost = true
         throw DuplicateUsernameException(reader.username)
     }
-
-    override fun update(reader: Reader) = Unit
 
     override fun findByUsername(username: String): Reader? = winner.takeIf { raceLost }
 }

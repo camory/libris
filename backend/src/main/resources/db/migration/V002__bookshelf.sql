@@ -11,4 +11,4 @@ create table bookshelf_member (
 );
 
 alter table reader
-    add column default_bookshelf_id uuid references bookshelf (id);
+    add column default_bookshelf_id uuid not null references bookshelf (id) deferrable initially deferred;

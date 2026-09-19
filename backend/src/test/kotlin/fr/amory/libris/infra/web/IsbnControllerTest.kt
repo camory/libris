@@ -18,6 +18,7 @@ private val TOPHE = Reader(
     username = "tophe",
     email = "tophe@amory.fr",
     displayName = "Tophe",
+    defaultBookshelfId = UUID.fromString("01991c3a-5b7e-7c1d-8f2a-3d4e5f607191"),
 )
 
 @WebSliceTest
