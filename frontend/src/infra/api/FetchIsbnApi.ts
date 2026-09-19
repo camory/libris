@@ -1,8 +1,9 @@
 import type { IsbnApi, IsbnAnswer } from "../../application/IsbnApi";
-import type { AuthorRole } from "../../domain/SourceEdition";
+import type { AuthorRole, Kind } from "../../domain/SourceEdition";
 
 interface IsbnResponse {
   isbn13: string;
+  kind: Kind;
   title: string;
   subtitle: string | null;
   authors: { name: string; role: AuthorRole }[];
