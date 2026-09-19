@@ -36,7 +36,9 @@ const authorLines = computed(() => {
   }
   return authors.map(({ name, roles }) => ({
     name,
-    roles: roles.map((role) => t(`role.${role}`)).join(", "),
+    roles: roles
+      .map((role) => t(`role.${props.edition.kind}.${role}`))
+      .join(", "),
   }));
 });
 

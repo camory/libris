@@ -95,6 +95,53 @@ describe("SourceEditionCard", () => {
     expect(card).not.toContain("texte");
   });
 
+  it("says scénario and dessin under a manga", () => {
+    // Given
+    const drawnByAnother: SourceEdition = {
+      ...onePiece1,
+      authors: [
+        { name: "Eiichirō Oda", role: "WRITER" },
+        { name: "Boichi", role: "ARTIST" },
+      ],
+    };
+
+    // When
+    const card = show(drawnByAnother);
+
+    // Then
+    expect(card).toContain("Eiichirō Oda · scénario");
+    expect(card).toContain("Boichi · dessin");
+  });
+
+  it("says scénario and dessin under a BD", () => {
+    // When
+    const card = show(asterix1);
+
+    // Then
+    expect(card).toContain("René Goscinny · scénario");
+    expect(card).toContain("Albert Uderzo · dessin");
+  });
+
+  it("says texte and illustration under a livre", () => {
+    // Given
+    const illustrated: SourceEdition = {
+      ...lAmiFritz,
+      authors: [
+        { name: "Erckmann", role: "WRITER" },
+        { name: "Théophile Schuler", role: "ARTIST" },
+      ],
+    };
+
+    // When
+    const card = show(illustrated);
+
+    // Then
+    expect(card).toContain("Erckmann · texte");
+    expect(card).toContain("Théophile Schuler · illustration");
+    expect(card).not.toContain("scénario");
+    expect(card).not.toContain("dessin");
+  });
+
   it("shows one row per field, in the order of the card", () => {
     // When
     const card = show(onePiece1);

@@ -38,10 +38,18 @@ const fr = {
     fr: "français",
   },
   role: {
-    WRITER: "scénario",
-    ARTIST: "dessin",
-    COLOURIST: "couleurs",
-    TRANSLATOR: "traduction",
+    BOOK: {
+      WRITER: "texte",
+      ARTIST: "illustration",
+    },
+    BD: {
+      WRITER: "scénario",
+      ARTIST: "dessin",
+    },
+    MANGA: {
+      WRITER: "scénario",
+      ARTIST: "dessin",
+    },
   },
   tabs: {
     home: "Accueil",
