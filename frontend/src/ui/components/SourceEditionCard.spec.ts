@@ -145,6 +145,26 @@ describe("SourceEditionCard", () => {
     expect(card).not.toContain("dessin");
   });
 
+  it("reads the same roles in another order as the same set", () => {
+    // Given
+    const inAnyOrder: SourceEdition = {
+      ...onePiece1,
+      authors: [
+        { name: "Eiichirō Oda", role: "WRITER" },
+        { name: "Eiichirō Oda", role: "ARTIST" },
+        { name: "Boichi", role: "ARTIST" },
+        { name: "Boichi", role: "WRITER" },
+      ],
+    };
+
+    // When
+    const card = show(inAnyOrder);
+
+    // Then
+    expect(card).toContain("Eiichirō Oda, Boichi");
+    expect(card).not.toContain("scénario");
+  });
+
   it("tells apart the authors whose sets of roles differ", () => {
     // Given
     const drawnTogether: SourceEdition = {
