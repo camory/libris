@@ -6,13 +6,14 @@ import fr.amory.libris.domain.ReaderRepository
 import org.springframework.stereotype.Service
 
 @Service
-class ReaderVisit(private val readers: ReaderRepository) {
+class ReaderVisit(
+    private val readers: ReaderRepository,
+    private val firstVisit: FirstVisit,
+) {
     fun visit(username: String, email: String, displayName: String): Reader {
         readers.findByUsername(username)?.let { return it }
-        val reader = Reader(username = username, email = email, displayName = displayName)
         return try {
-            readers.insert(reader)
-            reader
+            firstVisit.welcome(username, email, displayName)
         } catch (duplicate: DuplicateUsernameException) {
             readers.findByUsername(username) ?: throw duplicate
         }
