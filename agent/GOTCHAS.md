@@ -28,9 +28,16 @@ was found.
   REST (`gh api -X PUT repos/camory/libris/pulls/N/merge -f
   merge_method=squash`) when `gh pr merge` is throttled.
 - The sandbox PostgreSQL survives between runs (tmpfs: gone when the
-  container is recreated). Editing an applied migration breaks every context
-  start with a Flyway checksum mismatch until the database is recreated;
-  D11 forbids editing a merged one anyway.
+  container is recreated). Editing a migration the database has applied breaks
+  every context start with a Flyway checksum mismatch, and `FreshSchema` does
+  not rescue it: Flyway's autoconfiguration validates and migrates while the
+  context loads, before any `@BeforeAll` cleans, so every database-backed class
+  fails whole with `initializationError` and `Failed to load
+  ApplicationContext`, and running one slice class alone changes nothing.
+  Restoring the file's bytes is the cheap fix as long as the edited version
+  never applied; otherwise the database must be recreated. D11 forbids editing
+  a merged migration anyway, and the price of the trap is that a constraint a
+  migration declares cannot be mutation-checked once it has run.
 - The loop takes the agent PostgreSQL down at the end of a run; a host gate
   then fails with connection refused until
   `docker compose --env-file agent/.env -f agent/compose.yaml up -d postgres`.
@@ -97,6 +104,12 @@ was found.
 - A scenario class boots the whole application and commits what its
   requests write; `FreshSchema` on `JdbcSliceTest` and `ScenarioTest` is
   what keeps the JDBC slice from meeting a reader it did not insert.
+- `ArchitectureTest`'s application rule lists the packages `application` may
+  see, Spring included: `org.springframework.stereotype..` and
+  `org.springframework.transaction.annotation..`, and nothing else of Spring.
+  One `@Transactional` on one method of one use case reds the rule three times
+  before its package is listed; a use case that needs another Spring
+  annotation either widens the rule in the same cycle or does not carry it.
 - `ArchitectureTest`'s port rule matches any non-interface class assignable
   to a domain interface, so the variants of a sealed *interface* in `domain`
   break it: a state is a sealed *class*.

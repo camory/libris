@@ -24,7 +24,7 @@ after `v0.5.0`. The backend pin moves once, in T037, with the whole of
 added fields are required; T033 to T036 build what that task then serves. The
 frontend pin moves in T038. No other task touches the contract (D04).
 
-- [ ] T033 Backend: the bookshelf created with the reader.
+- [x] T033 Backend: the bookshelf created with the reader.
       Precondition (human): the scenario class
       `backend/src/test/kotlin/fr/amory/libris/scenario/BookshelfScenarios.kt`,
       one skipped test per backend scenario, each bearing the scenario's

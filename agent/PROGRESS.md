@@ -901,3 +901,40 @@ Format:
 - Fix-up on review with Tophe: a role an answer lists twice for one author
   is kept once while grouping, so the key compares sets and the words never
   repeat; its case added, 112 tests.
+
+## 2026-09-19 — T033 The bookshelf created with the reader — done
+- Did: `Bookshelf`, `Member`, `MemberRole` and `BookshelfRepository` in
+  `domain`, `V002__bookshelf.sql` with `JdbcBookshelfRepository`, the reader's
+  default column and `ReaderRepository.update`, and `FirstVisit`, the bean
+  whose one `@Transactional` method welcomes a reader Libris has never seen
+  with the bookshelf they own. Eight cycles, the gate green, the six
+  `BookshelfScenarios` tests still skipped.
+- Decided:
+  - **`FirstVisit` is the transaction boundary and `ReaderVisit` keeps the
+    race.** The brief named both traps and both held: a boundary must be a
+    bean's method called from another bean, and PostgreSQL aborts the
+    transaction on the unique violation, so the `DuplicateUsernameException`
+    catch and its second `findByUsername` stay in `ReaderVisit`, outside.
+    `ReaderVisit` is left plain: find, delegate, catch.
+  - **The reader's default is a nullable column and a nullable field with
+    `= null`.** It keeps every existing `Reader(...)` construction site out of
+    the diff, which is what keeps `infra.web` untouched; `me` builds its own
+    `CurrentReaderResponse`, so the new field reaches no answer.
+  - **One join query, grouped in Kotlin, ordered by the bookshelf's name then
+    the member's reader id.** The order the slice test asserts is the order the
+    SQL states, never the one the database happens to give.
+  - **`update` writes the whole row.** One statement sets the four columns, so
+    the new case of `JdbcReaderRepositoryTest` proves both that the other
+    columns survive and that `findByUsername` maps the new one.
+- Deviations from the brief: three, all of order, none of substance.
+  `JdbcReaderRepository.update` was written at step 1, where the port's new
+  method forced it to compile, though its test only arrives at step 5. Step 4
+  was run as four cycles, one case and one commit each, the migration whole in
+  the first. Steps 1 to 3 leave `LibrisApplicationTest` and the scenario
+  classes red — `FirstVisit` wants a `BookshelfRepository` bean that arrives
+  with the adapter at step 4 — which the plan's order makes unavoidable.
+- Left over: the readers stored before this task keep no default bookshelf and
+  T037 makes the field required; the question went to `agent/PROPOSED.md` as
+  the brief asked. The brief's advice for a migration edited after a run — run
+  a slice class alone, it cleans and migrates — is false and cost a mutation
+  check; the true shape of the trap is now in `agent/GOTCHAS.md`.
