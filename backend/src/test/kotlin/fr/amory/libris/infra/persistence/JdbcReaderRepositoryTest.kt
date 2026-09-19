@@ -85,7 +85,8 @@ class JdbcReaderRepositoryTest @Autowired constructor(
         // When, Then
         shouldThrow<DataIntegrityViolationException> {
             jdbcClient
-                .sql("insert into reader_bookshelf (reader_id, bookshelf_id, role) values (:reader, :bookshelf, 'LENDER')")
+                .sql("insert into reader_bookshelf (reader_id, bookshelf_id, role) values (:reader, :bookshelf, :role)")
+                .param("role", "LENDER")
                 .param("reader", juliette.id)
                 .param("bookshelf", another.id)
                 .update()

@@ -9,13 +9,13 @@ import fr.amory.libris.application.LookupResult.UnknownIsbn
 import fr.amory.libris.application.ReaderVisit
 import fr.amory.libris.domain.AuthorRole.ARTIST
 import fr.amory.libris.domain.AuthorRole.WRITER
-import fr.amory.libris.domain.Kind.MANGA
 import fr.amory.libris.domain.Bookshelf
+import fr.amory.libris.domain.Kind.MANGA
 import fr.amory.libris.domain.lookup.SourceAuthor
 import fr.amory.libris.domain.lookup.SourceEdition
 import fr.amory.libris.domain.lookup.SourceSeries
-import fr.amory.libris.fixture.readerOwning
 import fr.amory.libris.fixture.isbnOf
+import fr.amory.libris.fixture.readerOwning
 import fr.amory.libris.infra.web.WebSliceTest
 import jakarta.servlet.Filter
 import jakarta.servlet.http.HttpServletRequest
