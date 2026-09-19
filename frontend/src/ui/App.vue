@@ -19,7 +19,7 @@ function update() {
 </script>
 
 <template>
-  <div class="flex h-dvh flex-col">
+  <div class="fixed inset-0 flex flex-col">
     <AppUpdateBanner :state="state" @update="update" />
     <div class="min-h-0 flex-1 overflow-y-auto">
       <RouterView />
