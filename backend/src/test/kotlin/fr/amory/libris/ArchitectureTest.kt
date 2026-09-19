@@ -38,6 +38,7 @@ class ArchitectureTest {
                 "kotlin..",
                 "org.jetbrains.annotations..",
                 "org.springframework.stereotype..",
+                "org.springframework.transaction.annotation..",
                 "..domain..",
                 "..application..",
             )
