@@ -1,6 +1,9 @@
 package fr.amory.libris.infra.persistence
 
+import fr.amory.libris.domain.Bookshelf
 import fr.amory.libris.domain.DuplicateUsernameException
+import fr.amory.libris.domain.Member
+import fr.amory.libris.domain.MemberRole.OWNER
 import fr.amory.libris.domain.Reader
 import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.matchers.shouldBe
@@ -9,9 +12,10 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.context.annotation.Import
 
 @JdbcSliceTest
-@Import(JdbcReaderRepository::class)
+@Import(JdbcReaderRepository::class, JdbcBookshelfRepository::class)
 class JdbcReaderRepositoryTest @Autowired constructor(
     private val readers: JdbcReaderRepository,
+    private val bookshelves: JdbcBookshelfRepository,
 ) {
     @Test
     fun `an inserted reader is found by their username`() {
@@ -39,5 +43,20 @@ class JdbcReaderRepositoryTest @Autowired constructor(
         shouldThrow<DuplicateUsernameException> {
             readers.insert(Reader(username = "juliette", email = "juju@amory.fr", displayName = "Juju"))
         }
+    }
+
+    @Test
+    fun `an updated reader keeps their columns and takes the bookshelf as their default`() {
+        // Given
+        val juliette = Reader(username = "juliette", email = "juliette@amory.fr", displayName = "Juliette")
+        readers.insert(juliette)
+        val bookshelf = Bookshelf(name = "Bibliothèque de Juliette", members = listOf(Member(juliette.id, OWNER)))
+        bookshelves.insert(bookshelf)
+
+        // When
+        readers.update(juliette.copy(defaultBookshelfId = bookshelf.id))
+
+        // Then
+        readers.findByUsername("juliette") shouldBe juliette.copy(defaultBookshelfId = bookshelf.id)
     }
 }
