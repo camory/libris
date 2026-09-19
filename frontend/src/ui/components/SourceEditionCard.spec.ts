@@ -75,13 +75,15 @@ describe("SourceEditionCard", () => {
     expect(card).not.toContain("album");
   });
 
-  it("shows one line per author, with the French words of its roles", () => {
+  it("names an author alone when they share their roles with everyone", () => {
     // When
     const card = show(onePiece1);
 
     // Then
-    expect(card).toContain("Eiichirō Oda · scénario, dessin");
+    expect(card).toContain("Eiichirō Oda");
     expect(card.match(/Eiichirō Oda/g)).toHaveLength(1);
+    expect(card).not.toContain("scénario");
+    expect(card).not.toContain("dessin");
   });
 
   it("shows one row per field, in the order of the card", () => {
