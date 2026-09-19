@@ -32,7 +32,7 @@ const authorLines = computed(() => {
   const authors = [...played].map(([name, roles]) => ({ name, roles }));
   const sets = new Set(authors.map(({ roles }) => [...roles].sort().join()));
   if (sets.size === 1) {
-    return authors.map(({ name }) => ({ name, roles: null }));
+    return [{ name: authors.map(({ name }) => name).join(", "), roles: null }];
   }
   return authors.map(({ name, roles }) => ({
     name,

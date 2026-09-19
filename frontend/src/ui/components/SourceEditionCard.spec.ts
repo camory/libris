@@ -86,6 +86,15 @@ describe("SourceEditionCard", () => {
     expect(card).not.toContain("dessin");
   });
 
+  it("names the authors of one set on one line, separated by commas", () => {
+    // When
+    const card = show(lAmiFritz);
+
+    // Then
+    expect(card).toContain("Erckmann, Chatrian");
+    expect(card).not.toContain("texte");
+  });
+
   it("shows one row per field, in the order of the card", () => {
     // When
     const card = show(onePiece1);
