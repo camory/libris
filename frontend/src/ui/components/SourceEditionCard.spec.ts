@@ -145,6 +145,34 @@ describe("SourceEditionCard", () => {
     expect(card).not.toContain("dessin");
   });
 
+  it("tells apart the authors whose sets of roles differ", () => {
+    // Given
+    const drawnTogether: SourceEdition = {
+      ...onePiece1,
+      authors: [
+        { name: "Eiichirō Oda", role: "WRITER" },
+        { name: "Eiichirō Oda", role: "ARTIST" },
+        { name: "Boichi", role: "WRITER" },
+      ],
+    };
+
+    // When
+    const card = show(drawnTogether);
+
+    // Then
+    expect(card).toContain("Eiichirō Oda · scénario, dessin");
+    expect(card).toContain("Boichi · scénario");
+  });
+
+  it("shows no author line when the sources named no author", () => {
+    // When
+    const card = show({ ...onePiece1, authors: [] });
+
+    // Then
+    expect(card).not.toContain("Eiichirō Oda");
+    expect(card).toContain("à l'aube d'une grande aventureCollection");
+  });
+
   it("says couleurs and traduction under every kind", () => {
     // Given
     const authors: SourceAuthor[] = [
