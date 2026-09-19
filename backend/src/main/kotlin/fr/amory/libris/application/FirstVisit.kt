@@ -6,7 +6,6 @@ import fr.amory.libris.domain.Member
 import fr.amory.libris.domain.MemberRole.OWNER
 import fr.amory.libris.domain.Reader
 import fr.amory.libris.domain.ReaderRepository
-import fr.amory.libris.domain.newId
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
@@ -17,20 +16,15 @@ class FirstVisit(
 ) {
     @Transactional
     fun welcome(username: String, email: String, displayName: String): Reader {
-        val bookshelfId = newId()
-        val reader = Reader(
-            username = username,
-            email = email,
-            displayName = displayName,
-            defaultBookshelfId = bookshelfId,
-        )
+        val reader = Reader(username = username, email = email, displayName = displayName)
+        readers.insert(reader)
         val bookshelf = Bookshelf(
-            id = bookshelfId,
             name = "Bibliothèque de $displayName",
             members = listOf(Member(reader.id, OWNER)),
         )
-        readers.insert(reader)
         bookshelves.insert(bookshelf)
-        return reader
+        val welcomed = reader.copy(defaultBookshelfId = bookshelf.id)
+        readers.update(welcomed)
+        return welcomed
     }
 }

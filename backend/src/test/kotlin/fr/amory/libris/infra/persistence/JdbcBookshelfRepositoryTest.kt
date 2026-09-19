@@ -79,14 +79,7 @@ class JdbcBookshelfRepositoryTest @Autowired constructor(
     }
 
     private fun reader(username: String, displayName: String): Reader {
-        val default = Bookshelf(name = "Bibliothèque de $displayName", members = emptyList())
-        bookshelves.insert(default)
-        val reader = Reader(
-            username = username,
-            email = "$username@amory.fr",
-            displayName = displayName,
-            defaultBookshelfId = default.id,
-        )
+        val reader = Reader(username = username, email = "$username@amory.fr", displayName = displayName)
         readers.insert(reader)
         return reader
     }

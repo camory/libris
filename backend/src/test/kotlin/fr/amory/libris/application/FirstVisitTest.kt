@@ -20,9 +20,10 @@ class FirstVisitTest {
         val lea = firstVisit.welcome("lea", "lea@amory.fr", "Léa")
 
         // Then
+        val defaultBookshelf = requireNotNull(lea.defaultBookshelfId)
         bookshelves.stored shouldBe listOf(
             Bookshelf(
-                id = lea.defaultBookshelfId,
+                id = defaultBookshelf,
                 name = "Bibliothèque de Léa",
                 members = listOf(Member(lea.id, OWNER)),
             ),

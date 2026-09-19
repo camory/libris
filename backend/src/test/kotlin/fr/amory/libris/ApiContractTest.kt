@@ -28,7 +28,6 @@ import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Import
 import org.springframework.core.Ordered
 import org.springframework.test.context.bean.override.mockito.MockitoBean
-import java.util.UUID
 
 private val ONE_PIECE_1 = SourceEdition(
     isbn = isbnOf("9782723488525"),
@@ -57,14 +56,7 @@ class ApiContractTest @Autowired constructor(
     @ContracteerTest(openApiDoc = "https://raw.githubusercontent.com/camory/libris-api/v0.5.0/openapi.yaml")
     fun `the API matches the contract`() {
         given(visit.visit("contracteer", "contracteer@amory.fr", "Contracteer"))
-            .willReturn(
-                Reader(
-                    username = "contracteer",
-                    email = "contracteer@amory.fr",
-                    displayName = "Contracteer",
-                    defaultBookshelfId = UUID.randomUUID(),
-                ),
-            )
+            .willReturn(Reader(username = "contracteer", email = "contracteer@amory.fr", displayName = "Contracteer"))
         given(lookup.lookUp(isbnOf("9782723488525"))).willReturn(Found(ONE_PIECE_1))
         given(lookup.lookUp(isbnOf("9782000000006"))).willReturn(UnknownIsbn)
         given(lookup.lookUp(isbnOf("9791000000008"))).willReturn(SourcesUnavailable)

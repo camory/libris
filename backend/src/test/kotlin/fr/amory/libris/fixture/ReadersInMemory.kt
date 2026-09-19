@@ -12,6 +12,10 @@ class ReadersInMemory : ReaderRepository {
         stored[reader.username] = reader
     }
 
+    override fun update(reader: Reader) {
+        stored[reader.username] = reader
+    }
+
     override fun findByUsername(username: String): Reader? = stored[username]
 
     fun clear() = stored.clear()

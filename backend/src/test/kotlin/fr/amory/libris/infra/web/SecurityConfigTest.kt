@@ -9,7 +9,6 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpStatus
 import org.springframework.test.context.bean.override.mockito.MockitoBean
 import org.springframework.test.web.servlet.client.RestTestClient
-import java.util.UUID
 
 @WebSliceTest
 @MockitoBean(types = [ReaderVisit::class, IsbnLookup::class])
@@ -75,14 +74,7 @@ class SecurityConfigTest @Autowired constructor(
     fun `a write carrying the X-Requested-With header reaches the application`() {
         // Given
         given(visit.visit("tophe", "tophe@amory.fr", "Tophe"))
-            .willReturn(
-                Reader(
-                    username = "tophe",
-                    email = "tophe@amory.fr",
-                    displayName = "Tophe",
-                    defaultBookshelfId = UUID.randomUUID(),
-                ),
-            )
+            .willReturn(Reader(username = "tophe", email = "tophe@amory.fr", displayName = "Tophe"))
 
         // When, Then
         client.post()
