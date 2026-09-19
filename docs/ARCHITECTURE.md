@@ -300,9 +300,8 @@ session, no BCrypt.
 - Each feature spec has one scenario test class per side,
   `fr.amory.libris.scenario` on the backend and `src/scenario` on the
   frontend, one method per scenario or case, bearing its exact title. The
-  backend boots the whole application over WireMock stubs of the sources,
-  or runs the use cases over fake repositories when the spec's proofs say
-  so; the frontend boots it through `bootstrap` over `contracteer mock`. A
+  backend boots the whole application over WireMock stubs of the sources;
+  the frontend boots it through `bootstrap` over `contracteer mock`. A
   scenario asserts the exact values its spec names: with the domain and
   application tests, it is where values are proven. Tophe writes them with
   the spec, committed skipped. A task un-skips the scenario tests its line

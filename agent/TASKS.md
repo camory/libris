@@ -28,7 +28,8 @@ frontend pin moves in T038. No other task touches the contract (D04).
       Precondition (human): the scenario class
       `backend/src/test/kotlin/fr/amory/libris/scenario/BookshelfScenarios.kt`,
       one skipped test per backend scenario, each bearing the scenario's
-      exact title, over fake repositories as the spec's proofs ask (D07).
+      exact title, over HTTP like the other scenario classes, so it compiles
+      before the inside exists; T037 un-skips it (D07).
       `domain`: `Bookshelf` with its name and its members, a member joining a
       reader to a bookshelf with a role, `OWNER` the only role this phase
       creates, and the repository that stores one and reads a reader's
@@ -42,7 +43,8 @@ frontend pin moves in T038. No other task touches the contract (D04).
       is answered as before.
       No contract edit and no change to any answer: `me` keeps its body until
       T037 (D04).
-      Realises S1; un-skips `S1 The first visit creates the bookshelf`.
+      Realises S1; un-skips nothing, its scenario test waiting for the API of
+      T037.
 
 - [ ] T034 Backend: the house's book stored.
       `domain`: `Book`, an edition the house holds — the fields the lookup
@@ -77,8 +79,8 @@ frontend pin moves in T038. No other task touches the contract (D04).
       second on a second bookshelf, and the same reader adding it again, the
       house still holding one book for that ISBN (S3); the two refusals; the
       add without ISBN.
-      Realises S2 and S3 on the backend; un-skips `S2 The ouvrage is added`
-      and `S3 A known ISBN reaches the existing edition`.
+      Realises S2 and S3 on the backend; un-skips nothing, their scenario
+      tests waiting for the API of T037.
 
 - [ ] T036 Backend: the lookup answers the house's book.
       `application`: the lookup takes the reader who asks and looks in the
@@ -94,8 +96,8 @@ frontend pin moves in T038. No other task touches the contract (D04).
       to a reader; no new table and no migration.
       Tests over fake repositories with sources that must not be asked, one
       per case of S4.
-      Realises S4 on the backend; un-skips
-      `S4 The ouvrage is already in a bookshelf`.
+      Realises S4 on the backend; un-skips nothing, its scenario test waiting
+      for the API of T037.
 
 - [ ] T037 Backend: the API of the bookshelf, on `v0.6.0`.
       `ApiContractTest` pins `v0.6.0`: the backend's one bump, and one task,
@@ -116,8 +118,10 @@ frontend pin moves in T038. No other task touches the contract (D04).
       case of `infra.web` mocked (`agent/GOTCHAS.md`); Contracteer verifies
       `ADD_ONE_PIECE_1`, `400_NOT_AN_ISBN`, `404_NOT_MY_BOOKSHELF` and
       `ONE_PIECE_2_OWNED`.
-      Carries S2, S3 and S4 to the API; un-skips nothing, their scenario
-      tests being the ones T035 and T036 un-skipped.
+      Carries S1 to S4 to the API; un-skips the tests of
+      `BookshelfScenarios.kt`, `S1 The first visit creates the bookshelf`,
+      `S2 The ouvrage is added`, `S3 A known ISBN reaches the existing
+      edition` and `S4 The ouvrage is already in a bookshelf`.
 
 - [ ] T038 Frontend: the copies on the card, on `v0.6.0`.
       Precondition (human):

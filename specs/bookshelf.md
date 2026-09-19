@@ -20,7 +20,8 @@ Then their profile exists
 	And it is their default bookshelf
 ```
 
-Proof: backend scenario test over the reader use case with fake repositories.
+Proof: backend scenario test over HTTP, the reader's answer naming their
+default bookshelf.
 
 **S2 The ouvrage is added** · frontend, backend
 
@@ -35,8 +36,8 @@ Then an edition exists with what the card shows, kind included
 ```
 
 Proof: contract example `ADD_ONE_PIECE_1` verified by Contracteer on both
-sides; backend scenario test over fake repositories; frontend scenario test
-against `contracteer mock`.
+sides; backend scenario test over HTTP; frontend scenario test against
+`contracteer mock`.
 
 **S3 A known ISBN reaches the existing edition** · backend
 
@@ -51,7 +52,7 @@ Then a copy sits on their default bookshelf
 
 Two cases: another reader, whose copy is the edition's second on a second
 bookshelf; the same reader again, whose second copy sits beside the first.
-Proof: backend scenario test, one per case.
+Proof: backend scenario test over HTTP, one per case.
 
 **S4 The ouvrage is already in a bookshelf** · frontend, backend
 
@@ -71,9 +72,8 @@ Then Libris answers the edition as the house holds it, without asking
 An edition the house holds whose copies are all on bookshelves the reader
 does not belong to answers the same, with no copy: the card shows the edition
 without a place. Proof: contract example `ONE_PIECE_2_OWNED` verified by
-Contracteer on both sides; backend scenario test over fake repositories with
-sources that must not be asked; frontend scenario test against
-`contracteer mock`.
+Contracteer on both sides; backend scenario test over HTTP with sources
+that must not be asked; frontend scenario test against `contracteer mock`.
 
 **S5 Libris unavailable during the add** · frontend
 
