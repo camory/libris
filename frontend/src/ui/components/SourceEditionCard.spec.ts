@@ -2,7 +2,10 @@ import { within } from "@testing-library/dom";
 import { mount } from "@vue/test-utils";
 import { describe, expect, it } from "vitest";
 import { nextTick } from "vue";
-import type { SourceEdition } from "../../domain/SourceEdition";
+import type {
+  SourceAuthor,
+  SourceEdition,
+} from "../../domain/SourceEdition";
 import { onePiece1 } from "../../fixture/SourceEditions";
 import { createLibrisI18n } from "../i18n";
 import IconBook from "./icons/IconBook.vue";
@@ -140,6 +143,25 @@ describe("SourceEditionCard", () => {
     expect(card).toContain("Théophile Schuler · illustration");
     expect(card).not.toContain("scénario");
     expect(card).not.toContain("dessin");
+  });
+
+  it("says couleurs and traduction under every kind", () => {
+    // Given
+    const authors: SourceAuthor[] = [
+      { name: "Jérémy Petiqueux", role: "COLOURIST" },
+      { name: "Sylvain Chollet", role: "TRANSLATOR" },
+    ];
+
+    // When
+    const cards = [onePiece1, asterix1, lAmiFritz].map((edition) =>
+      show({ ...edition, authors }),
+    );
+
+    // Then
+    for (const card of cards) {
+      expect(card).toContain("Jérémy Petiqueux · couleurs");
+      expect(card).toContain("Sylvain Chollet · traduction");
+    }
   });
 
   it("shows one row per field, in the order of the card", () => {

@@ -41,14 +41,20 @@ const fr = {
     BOOK: {
       WRITER: "texte",
       ARTIST: "illustration",
+      COLOURIST: "couleurs",
+      TRANSLATOR: "traduction",
     },
     BD: {
       WRITER: "scénario",
       ARTIST: "dessin",
+      COLOURIST: "couleurs",
+      TRANSLATOR: "traduction",
     },
     MANGA: {
       WRITER: "scénario",
       ARTIST: "dessin",
+      COLOURIST: "couleurs",
+      TRANSLATOR: "traduction",
     },
   },
   tabs: {
