@@ -46,7 +46,7 @@ first: the answer gains a field (D04).
       unit test, and no new recording.
       Realises S1, S2, S3, S4; un-skips the four tests of `KindScenarios.kt`.
 
-- [ ] T032 Frontend: the card in the words of its kind.
+- [x] T032 Frontend: the card in the words of its kind.
       Precondition (human): `frontend/src/scenario/KindScenarios.spec.ts`,
       one skipped test bearing the exact title of `S1 A manga`, against
       `contracteer mock` (D07).
