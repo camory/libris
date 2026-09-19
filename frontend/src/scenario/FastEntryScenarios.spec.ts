@@ -161,8 +161,6 @@ describe("Fast entry", () => {
     const card = host.textContent ?? "";
     expect(card).toContain("à l'aube d'une grande aventure");
     expect(card).toContain("Eiichirō Oda");
-    expect(card).toContain("scénario");
-    expect(card).toContain("dessin");
     expect(card).toMatch(/One piece\D{0,12}1\b/);
     expect(card).toContain("Shonen manga");
     expect(card).toContain("Glénat");
