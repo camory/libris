@@ -20,6 +20,7 @@ const fr = {
     error: "Erreur lors de la recherche, veuillez réessayer plus tard.",
     card: {
       series: {
+        BOOK: "{name} · tome {volume}",
         BD: "{name} · album {volume}",
         MANGA: "{name} · tome {volume}",
       },

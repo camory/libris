@@ -34,6 +34,18 @@ const asterix1: SourceEdition = {
   series: { name: "Astérix", volumeNumber: 1 },
 };
 
+const lAmiFritz: SourceEdition = {
+  ...onePiece1,
+  kind: "BOOK",
+  title: "L'ami Fritz",
+  subtitle: null,
+  authors: [
+    { name: "Erckmann", role: "WRITER" },
+    { name: "Chatrian", role: "WRITER" },
+  ],
+  series: { name: "Contes et romans", volumeNumber: 1 },
+};
+
 describe("SourceEditionCard", () => {
   it("shows the series and the volume, the title and the subtitle", () => {
     // When
@@ -52,6 +64,15 @@ describe("SourceEditionCard", () => {
     // Then
     expect(card).toContain("Astérix · album 1");
     expect(card).not.toContain("tome");
+  });
+
+  it("shows the volume of a livre as a tome", () => {
+    // When
+    const card = show(lAmiFritz);
+
+    // Then
+    expect(card).toContain("Contes et romans · tome 1");
+    expect(card).not.toContain("album");
   });
 
   it("shows one line per author, with the French words of its roles", () => {
