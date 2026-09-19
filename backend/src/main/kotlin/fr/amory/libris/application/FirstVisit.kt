@@ -16,15 +16,16 @@ class FirstVisit(
 ) {
     @Transactional
     fun welcome(username: String, email: String, displayName: String): Reader {
-        val reader = Reader(username = username, email = email, displayName = displayName)
-        readers.insert(reader)
-        val bookshelf = Bookshelf(
-            name = "Bibliothèque de $displayName",
-            members = listOf(Member(reader.id, OWNER)),
+        val bookshelf = Bookshelf(name = "Bibliothèque de $displayName")
+        val reader = Reader(
+            username = username,
+            email = email,
+            displayName = displayName,
+            memberships = listOf(Member(bookshelf.id, OWNER)),
+            defaultBookshelfId = bookshelf.id,
         )
         bookshelves.insert(bookshelf)
-        val welcomed = reader.copy(defaultBookshelfId = bookshelf.id)
-        readers.update(welcomed)
-        return welcomed
+        readers.insert(reader)
+        return reader
     }
 }

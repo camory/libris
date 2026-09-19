@@ -2,7 +2,8 @@ package fr.amory.libris.infra.web
 
 import fr.amory.libris.application.IsbnLookup
 import fr.amory.libris.application.ReaderVisit
-import fr.amory.libris.domain.Reader
+import fr.amory.libris.domain.Bookshelf
+import fr.amory.libris.fixture.readerOwning
 import org.junit.jupiter.api.Test
 import org.mockito.BDDMockito.given
 import org.springframework.beans.factory.annotation.Autowired
@@ -74,7 +75,7 @@ class SecurityConfigTest @Autowired constructor(
     fun `a write carrying the X-Requested-With header reaches the application`() {
         // Given
         given(visit.visit("tophe", "tophe@amory.fr", "Tophe"))
-            .willReturn(Reader(username = "tophe", email = "tophe@amory.fr", displayName = "Tophe"))
+            .willReturn(readerOwning(Bookshelf(name = "Bibliothèque de Tophe"), "tophe", "Tophe"))
 
         // When, Then
         client.post()

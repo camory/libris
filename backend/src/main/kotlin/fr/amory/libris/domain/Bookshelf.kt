@@ -6,5 +6,4 @@ import java.util.UUID
 data class Bookshelf(
     val id: UUID = Generators.timeBasedEpochGenerator().generate(),
     val name: String,
-    val members: List<Member>,
 )

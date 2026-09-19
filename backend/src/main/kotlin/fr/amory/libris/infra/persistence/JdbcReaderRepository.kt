@@ -12,10 +12,6 @@ private const val INSERT_READER =
     "insert into reader (id, username, email, display_name, default_bookshelf_id) " +
         "values (:id, :username, :email, :displayName, :defaultBookshelfId)"
 
-private const val UPDATE_READER =
-    "update reader set username = :username, email = :email, display_name = :displayName, " +
-        "default_bookshelf_id = :defaultBookshelfId where id = :id"
-
 private const val FIND_READER_BY_USERNAME =
     "select id, username, email, display_name, default_bookshelf_id from reader where username = :username"
 
@@ -36,17 +32,6 @@ class JdbcReaderRepository(private val jdbcClient: JdbcClient) : ReaderRepositor
         }
     }
 
-    override fun update(reader: Reader) {
-        jdbcClient
-            .sql(UPDATE_READER)
-            .param("id", reader.id)
-            .param("username", reader.username)
-            .param("email", reader.email)
-            .param("displayName", reader.displayName)
-            .param("defaultBookshelfId", reader.defaultBookshelfId)
-            .update()
-    }
-
     override fun findByUsername(username: String): Reader? =
         jdbcClient
             .sql(FIND_READER_BY_USERNAME)
@@ -57,6 +42,7 @@ class JdbcReaderRepository(private val jdbcClient: JdbcClient) : ReaderRepositor
                     username = rs.getString("username"),
                     email = rs.getString("email"),
                     displayName = rs.getString("display_name"),
+                    memberships = emptyList(),
                     defaultBookshelfId = rs.getObject("default_bookshelf_id", UUID::class.java),
                 )
             }

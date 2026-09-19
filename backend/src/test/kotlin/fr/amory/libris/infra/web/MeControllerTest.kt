@@ -2,7 +2,8 @@ package fr.amory.libris.infra.web
 
 import fr.amory.libris.application.IsbnLookup
 import fr.amory.libris.application.ReaderVisit
-import fr.amory.libris.domain.Reader
+import fr.amory.libris.domain.Bookshelf
+import fr.amory.libris.fixture.readerOwning
 import io.kotest.matchers.shouldBe
 import org.junit.jupiter.api.Test
 import org.mockito.BDDMockito.given
@@ -12,16 +13,16 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean
 import org.springframework.test.web.servlet.client.RestTestClient
 import java.util.UUID
 
-private val TOPHE = Reader(
+private val TOPHE = readerOwning(
+    Bookshelf(id = UUID.fromString("01991c3a-5b7e-7c1d-8f2a-3d4e5f607191"), name = "Bibliothèque de Tophe"),
     id = UUID.fromString("01991c3a-5b7e-7c1d-8f2a-3d4e5f607181"),
     username = "tophe",
-    email = "tophe@amory.fr",
     displayName = "Tophe",
 )
-private val JULIETTE = Reader(
+private val JULIETTE = readerOwning(
+    Bookshelf(id = UUID.fromString("01991c3a-5b7e-7c1d-8f2a-3d4e5f607192"), name = "Bibliothèque de Juliette"),
     id = UUID.fromString("01991c3a-5b7e-7c1d-8f2a-3d4e5f607182"),
     username = "juliette",
-    email = "juliette@amory.fr",
     displayName = "Juliette",
 )
 

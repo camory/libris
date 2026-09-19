@@ -2,25 +2,28 @@ package fr.amory.libris.infra.persistence
 
 import fr.amory.libris.domain.Bookshelf
 import fr.amory.libris.domain.DuplicateUsernameException
-import fr.amory.libris.domain.Member
-import fr.amory.libris.domain.MemberRole.OWNER
-import fr.amory.libris.domain.Reader
+import fr.amory.libris.fixture.readerOwning
 import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.matchers.shouldBe
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.context.annotation.Import
+import org.springframework.dao.DataIntegrityViolationException
+import org.springframework.jdbc.core.simple.JdbcClient
 
 @JdbcSliceTest
 @Import(JdbcReaderRepository::class, JdbcBookshelfRepository::class)
 class JdbcReaderRepositoryTest @Autowired constructor(
     private val readers: JdbcReaderRepository,
     private val bookshelves: JdbcBookshelfRepository,
+    private val jdbcClient: JdbcClient,
 ) {
     @Test
-    fun `an inserted reader is found by their username`() {
+    fun `an inserted reader is read back whole, the bookshelves they are a member of included`() {
         // Given
-        val juliette = Reader(username = "juliette", email = "juliette@amory.fr", displayName = "Juliette")
+        val bookshelf = Bookshelf(name = "Bibliothèque de Juliette")
+        bookshelves.insert(bookshelf)
+        val juliette = readerOwning(bookshelf, "juliette", "Juliette")
 
         // When
         readers.insert(juliette)
@@ -37,45 +40,33 @@ class JdbcReaderRepositoryTest @Autowired constructor(
     @Test
     fun `a second reader with the same username is refused`() {
         // Given
-        readers.insert(Reader(username = "juliette", email = "juliette@amory.fr", displayName = "Juliette"))
+        val bookshelf = Bookshelf(name = "Bibliothèque de Juliette")
+        bookshelves.insert(bookshelf)
+        readers.insert(readerOwning(bookshelf, "juliette", "Juliette"))
 
         // When, Then
         shouldThrow<DuplicateUsernameException> {
-            readers.insert(Reader(username = "juliette", email = "juju@amory.fr", displayName = "Juju"))
+            readers.insert(readerOwning(bookshelf, "juliette", "Juju", email = "juju@amory.fr"))
         }
     }
 
     @Test
-    fun `an inserted reader is read back with the bookshelf they default to`() {
+    fun `a member of a role the product does not know is refused`() {
         // Given
-        val bookshelf = Bookshelf(name = "Bibliothèque de Juliette", members = emptyList())
+        val bookshelf = Bookshelf(name = "Bibliothèque de Juliette")
         bookshelves.insert(bookshelf)
-        val juliette = Reader(
-            username = "juliette",
-            email = "juliette@amory.fr",
-            displayName = "Juliette",
-            defaultBookshelfId = bookshelf.id,
-        )
-
-        // When
+        val juliette = readerOwning(bookshelf, "juliette", "Juliette")
         readers.insert(juliette)
+        val another = Bookshelf(name = "Bibliothèque de Léa")
+        bookshelves.insert(another)
 
-        // Then
-        readers.findByUsername("juliette") shouldBe juliette
-    }
-
-    @Test
-    fun `an updated reader keeps their columns and takes the bookshelf as their default`() {
-        // Given
-        val juliette = Reader(username = "juliette", email = "juliette@amory.fr", displayName = "Juliette")
-        readers.insert(juliette)
-        val bookshelf = Bookshelf(name = "Bibliothèque de Juliette", members = listOf(Member(juliette.id, OWNER)))
-        bookshelves.insert(bookshelf)
-
-        // When
-        readers.update(juliette.copy(defaultBookshelfId = bookshelf.id))
-
-        // Then
-        readers.findByUsername("juliette") shouldBe juliette.copy(defaultBookshelfId = bookshelf.id)
+        // When, Then
+        shouldThrow<DataIntegrityViolationException> {
+            jdbcClient
+                .sql("insert into reader_bookshelf (reader_id, bookshelf_id, role) values (:reader, :bookshelf, 'LENDER')")
+                .param("reader", juliette.id)
+                .param("bookshelf", another.id)
+                .update()
+        }
     }
 }

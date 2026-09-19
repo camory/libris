@@ -10,10 +10,11 @@ import fr.amory.libris.application.ReaderVisit
 import fr.amory.libris.domain.AuthorRole.ARTIST
 import fr.amory.libris.domain.AuthorRole.WRITER
 import fr.amory.libris.domain.Kind.MANGA
-import fr.amory.libris.domain.Reader
+import fr.amory.libris.domain.Bookshelf
 import fr.amory.libris.domain.lookup.SourceAuthor
 import fr.amory.libris.domain.lookup.SourceEdition
 import fr.amory.libris.domain.lookup.SourceSeries
+import fr.amory.libris.fixture.readerOwning
 import fr.amory.libris.fixture.isbnOf
 import fr.amory.libris.infra.web.WebSliceTest
 import jakarta.servlet.Filter
@@ -56,7 +57,7 @@ class ApiContractTest @Autowired constructor(
     @ContracteerTest(openApiDoc = "https://raw.githubusercontent.com/camory/libris-api/v0.5.0/openapi.yaml")
     fun `the API matches the contract`() {
         given(visit.visit("contracteer", "contracteer@amory.fr", "Contracteer"))
-            .willReturn(Reader(username = "contracteer", email = "contracteer@amory.fr", displayName = "Contracteer"))
+            .willReturn(readerOwning(Bookshelf(name = "Bibliothèque de Contracteer"), "contracteer", "Contracteer"))
         given(lookup.lookUp(isbnOf("9782723488525"))).willReturn(Found(ONE_PIECE_1))
         given(lookup.lookUp(isbnOf("9782000000006"))).willReturn(UnknownIsbn)
         given(lookup.lookUp(isbnOf("9791000000008"))).willReturn(SourcesUnavailable)

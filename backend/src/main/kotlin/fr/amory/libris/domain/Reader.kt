@@ -8,5 +8,12 @@ data class Reader(
     val username: String,
     val email: String,
     val displayName: String,
-    val defaultBookshelfId: UUID? = null,
-)
+    val memberships: List<Member>,
+    val defaultBookshelfId: UUID,
+) {
+    init {
+        require(memberships.any { it.bookshelfId == defaultBookshelfId }) {
+            "the default bookshelf of $username is none of their bookshelves"
+        }
+    }
+}
