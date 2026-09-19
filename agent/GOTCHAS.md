@@ -334,6 +334,11 @@ was found.
   in a module constant, so a `vi.stubGlobal("BarcodeDetector", …)` installed
   after the module loads is seen, and `vi.unstubAllGlobals()` is enough to
   forget it.
+- Chrome on Android resolves a viewport unit (`dvh`) stale right after
+  `location.reload()` in the installed app, until the next resize: a shell
+  measured in it lays its tab bar out below the window after the update's
+  reload (seen on the Pixel 2026-09-19). The shell is `fixed` at the four
+  edges of the window instead.
 
 ## Contract and release
 - Contracteer 4.0.0's CLI cannot load an OpenAPI 3.1 document: the contract

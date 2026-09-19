@@ -59,7 +59,10 @@ hierarchy; colour (`text`, `muted`, `accent`) carries the role; size does the
 rest.
 
 ### U03 — Page: header, content, tab bar
-Every screen is one column, designed at 390 px wide and read top to bottom:
+Every screen is one column, designed at 390 px wide and read top to bottom.
+The shell that holds it, the update banner, the content and the tab bar, is
+pinned to the window, `fixed` at its four edges, never measured in a
+viewport unit:
 
 1. **Header**: the page title and, under it, one hint sentence in `body`,
    `muted`, ending with a full stop. Padding 20 at the sides, 20 above,
@@ -159,9 +162,12 @@ while it loads, never stretched; when there is none, or the image does not
 load, the same block holds an outlined book icon, 48, `muted` at 60 %,
 centred, the stand-in of U05's empty state; at its right,
 stacked 6 apart, the overline (série · tome, U02), the card title, the
-subtitle in `lead` `muted`, and one line per author in `body`, the name in
-`text` and its roles after a middle dot in `muted`: *Eiichirō Oda · scénario,
-dessin*. Middle part: one row per field, `body`, the label at the left in
+subtitle in `lead` `muted`, and the authors in `body`, grouped by their
+whole set of roles: the names alone on one line, separated by commas, when
+every author shares one set (*Eiichirō Oda*, *Erckmann, Chatrian*),
+otherwise one line per author, the name in `text` and its roles after a
+middle dot in `muted` (*René Goscinny · scénario*, *Albert Uderzo ·
+dessin*). Middle part: one row per field, `body`, the label at the left in
 `muted` and the value at the right in `text`, right-aligned, 7 of vertical
 padding, a `border` hairline above each row: *Collection*, *Éditeur*,
 *Année*, *Langue*, *Pages*, *ISBN*, in that order. A field with no value has
@@ -172,6 +178,11 @@ summary is the card's last part.
 A card is presentational: props in, nothing out. It shows what it is given
 and decides nothing about it; the words it displays for a role or a
 language come from the `fr` catalogue, keyed by the code the API answers.
+When another field of the answer chooses the word, the kind naming a role
+or a volume, the choice lives in the key (`role.MANGA.WRITER`,
+`isbn.card.series.BD`) and every value of that field carries its full set
+of words, so the catalogue reads as the spec's table and the component
+picks an entry and never branches.
 
 ### U07 — Icons: hand-drawn, inline, no library
 An icon is an inline SVG on a 24 grid, stroke 1.8, round caps and joins,

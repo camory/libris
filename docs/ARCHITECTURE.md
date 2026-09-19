@@ -300,14 +300,17 @@ session, no BCrypt.
 - Each feature spec has one scenario test class per side,
   `fr.amory.libris.scenario` on the backend and `src/scenario` on the
   frontend, one method per scenario or case, bearing its exact title. The
-  backend boots the whole application over WireMock stubs of the sources;
-  the frontend boots it through `bootstrap` over `contracteer mock`. A
+  backend boots the whole application over WireMock stubs of the sources,
+  or runs the use cases over fake repositories when the spec's proofs say
+  so; the frontend boots it through `bootstrap` over `contracteer mock`. A
   scenario asserts the exact values its spec names: with the domain and
   application tests, it is where values are proven. Tophe writes them with
   the spec, committed skipped. A task un-skips the scenario tests its line
   cites and changes nothing else in them; the inside, ports, use cases,
   adapters and their tests, is the run's. A scenario test that has to
-  change is a spec conversation, not a task.
+  change is a spec conversation, not a task, with one exception: a scenario
+  of another spec that compares a whole answer gains the field a task adds
+  to it, declared in the pull request.
 - One test source set and one `test` task. No suffix sorts tests by what
   they need: a test that needs the database gets it from D08 like any other.
   Test classes are named after the Libris code they exercise. Tests live

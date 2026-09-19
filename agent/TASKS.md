@@ -16,62 +16,6 @@
 >
 > Follow-ups and ideas go to `agent/PROPOSED.md`, never here.
 
-## Kind — specs/kind.md
-
-Contract: release `v0.5.0` of `camory/libris-api`, published on 2026-09-18.
-T031 moves the backend pin and T032 the frontend one, each as its line spells
-out; no other task of the phase touches the contract (D04). The backend goes
-first: the answer gains a field (D04).
-
-- [x] T031 Backend: the kind of a scanned ouvrage.
-      Precondition (human): the scenario class
-      `backend/src/test/kotlin/fr/amory/libris/scenario/KindScenarios.kt`,
-      one skipped test per scenario, each bearing the scenario's exact
-      title (D07).
-      `ApiContractTest` pins `v0.5.0`, the only contract edit of the task;
-      the renamed schemas and the folded `ValidationProblem` change no byte
-      of an answer, so the `400` of the lookup stays as it is (D04).
-      `domain`: `Kind`, and the rule over a BnF record — a comic strip,
-      marked in field 105, translated from Japanese, Korean or Chinese, read
-      from field 101 `$c`, is a `MANGA`; any other comic strip a `BD`;
-      everything else a `BOOK`. Unit tests of the rule, the comic strip
-      translated from English among them (D02).
-      `infra.lookup`: the BnF source carries the kind it read, Open Library
-      names none, and the merge answers the kind a source named, `BOOK` when
-      none did, so the field is never absent.
-      `infra.web`: the answer carries `kind`, and Contracteer verifies
-      `ONE_PIECE_1` with `kind: MANGA`.
-      S4 runs over the recorded answer of `9782380751673`, the ISBN Open
-      Library alone knows; the record without a field 105 is the rule's
-      unit test, and no new recording.
-      Realises S1, S2, S3, S4; un-skips the four tests of `KindScenarios.kt`.
-
-- [x] T032 Frontend: the card in the words of its kind.
-      Precondition (human): `frontend/src/scenario/KindScenarios.spec.ts`,
-      one skipped test bearing the exact title of `S1 A manga`, against
-      `contracteer mock` (D07).
-      `vitest.global-setup.ts` pins `v0.5.0`, the only contract edit of the
-      task (D04).
-      `domain` and `infra/api`: `SourceEdition` gains its `kind`, read from
-      the answer by `FetchIsbnApi` (D05).
-      `ui`: `SourceEditionCard` writes the series line with *tome* for a
-      livre and a manga and *album* for a BD; the authors are grouped by
-      their whole set of roles — the names alone on one line, separated by
-      commas, when every author shares one set, otherwise one line per author
-      with their role words; the role words follow the kind, texte and
-      illustration for a livre, scénario and dessin for a BD and a manga,
-      couleurs and traduction unchanged; every word from the `fr` catalogue
-      (U04, U07, U08).
-      Component tests over the three kinds and over authors whose role sets
-      differ; a word the card shows is asserted in three files
-      (`agent/GOTCHAS.md`).
-      Realises S1, S2, S3; un-skips `S1 A manga`.
-
-*Done (Tophe, on the Pixel, from the installed app): scan One Piece 1 and
-read Eiichirō Oda alone under One piece · tome 1; scan an Astérix and read
-album and the two lines scénario and dessin; scan a novel and read its author
-without a role word.*
-
 ## Bookshelf — specs/bookshelf.md
 
 Contract: release `v0.6.0` of `camory/libris-api`, published on 2026-09-18,
@@ -236,6 +180,9 @@ second account of the family, scan it and read the card without a place.*
 - Update, T028 to T029, done 2026-09-18, `specs/update.md`: the banner of a
   waiting version, the reader's order to install it and the check while the
   app stays open, checked on the Pixel from the installed app.
+- Kind, T031 to T032, done 2026-09-19, `specs/kind.md`: the kind read from
+  the BnF record and answered on every lookup, the card in the words of its
+  kind, checked on the Pixel from the installed app.
 
 ## Questions for the human
 
