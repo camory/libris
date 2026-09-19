@@ -2,6 +2,7 @@ package fr.amory.libris.domain.lookup
 
 fun merge(editions: List<SourceEdition>): SourceEdition = SourceEdition(
     isbn = editions.first().isbn,
+    kind = editions.first().kind,
     title = editions.first().title,
     subtitle = editions.firstNotNullOfOrNull { it.subtitle },
     authors = editions.firstOrNull { it.authors.isNotEmpty() }?.authors.orEmpty(),

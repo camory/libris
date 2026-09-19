@@ -146,6 +146,17 @@ was found.
   no exception, no `spring.mvc.problemdetails.enabled`.
 - `/actuator/health` answers `{"groups":["liveness","readiness"],
   "status":"UP"}`, not the bare status.
+- `FastEntryScenarios > S1 Typed ISBN, found` compares the whole `200` body
+  with `JsonCompareMode.STRICT`, so a field added to `IsbnResponse` reds it
+  with `AssertionError: Unexpected: <field>` wherever else the task is green.
+  A task that adds a response field names the field in that JSON too; only the
+  full gate sees it, never the class the task is working in.
+- UNIMARC field 105 `$a` is fixed-length coded data whose form-of-contents
+  codes sit at positions 4 to 7, `t` marking a comic strip; a record without
+  the field names no form. The language an ouvrage was translated from is
+  field 101 `$c`, in the BnF's own three-letter codes (`jpn`, `kor`, `chi`),
+  which are not the ISO 639-1 codes the `LANGUAGES` map of `BnfSource`
+  answers for the `language` field.
 
 ## Frontend build and tests
 - Two TypeScript programs: `tsconfig.app.json` (`src/`, `vite/client` types)

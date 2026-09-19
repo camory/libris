@@ -2,6 +2,7 @@ package fr.amory.libris.infra.lookup
 
 import fr.amory.libris.domain.AuthorRole.WRITER
 import fr.amory.libris.domain.Isbn
+import fr.amory.libris.domain.Kind.BOOK
 import fr.amory.libris.domain.lookup.IsbnSource
 import fr.amory.libris.domain.lookup.SourceAnswer
 import fr.amory.libris.domain.lookup.SourceAnswer.Failed
@@ -38,6 +39,7 @@ class OpenLibrarySource(baseUrl: String, timeout: Duration) : IsbnSource {
 
     private fun editionOf(isbn: Isbn, edition: JsonNode): SourceEdition = SourceEdition(
         isbn = isbn,
+        kind = BOOK,
         title = edition.required("title").asString(),
         subtitle = edition["subtitle"]?.asString(),
         authors = authorsOf(edition, search(isbn)),

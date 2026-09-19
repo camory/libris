@@ -3,6 +3,8 @@ package fr.amory.libris.domain.lookup
 import fr.amory.libris.domain.AuthorRole.ARTIST
 import fr.amory.libris.domain.AuthorRole.TRANSLATOR
 import fr.amory.libris.domain.AuthorRole.WRITER
+import fr.amory.libris.domain.Kind.BD
+import fr.amory.libris.domain.Kind.MANGA
 import fr.amory.libris.fixture.A_SOURCE_EDITION
 import fr.amory.libris.fixture.isbnOf
 import io.kotest.matchers.shouldBe
@@ -110,6 +112,19 @@ class MergeTest {
 
         // Then
         merged.series shouldBe SourceSeries("One piece", null)
+    }
+
+    @Test
+    fun `the kind is the first source's`() {
+        // Given
+        val first = A_SOURCE_EDITION.copy(kind = MANGA)
+        val second = A_SOURCE_EDITION.copy(kind = BD)
+
+        // When
+        val merged = merge(listOf(first, second))
+
+        // Then
+        merged.kind shouldBe MANGA
     }
 
     @Test

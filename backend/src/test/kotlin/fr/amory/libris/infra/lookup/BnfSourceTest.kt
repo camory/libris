@@ -6,6 +6,9 @@ import com.github.tomakehurst.wiremock.http.RequestMethod.GET
 import fr.amory.libris.domain.AuthorRole.ARTIST
 import fr.amory.libris.domain.AuthorRole.TRANSLATOR
 import fr.amory.libris.domain.AuthorRole.WRITER
+import fr.amory.libris.domain.Kind.BD
+import fr.amory.libris.domain.Kind.BOOK
+import fr.amory.libris.domain.Kind.MANGA
 import fr.amory.libris.domain.lookup.SourceAnswer.Failed
 import fr.amory.libris.domain.lookup.SourceAnswer.Known
 import fr.amory.libris.domain.lookup.SourceAnswer.NothingKnown
@@ -55,6 +58,7 @@ class BnfSourceTest {
         answer shouldBe Known(
             SourceEdition(
                 isbn = isbnOf(NERONIA),
+                kind = BD,
                 title = "Les Neronia",
                 subtitle = null,
                 authors = listOf(SourceAuthor("Jean Dufaux", WRITER), SourceAuthor("Jérémy", ARTIST)),
@@ -82,6 +86,7 @@ class BnfSourceTest {
         answer shouldBe Known(
             SourceEdition(
                 isbn = isbnOf(LEMURIA),
+                kind = BD,
                 title = "Lemuria",
                 subtitle = null,
                 authors = listOf(
@@ -113,6 +118,7 @@ class BnfSourceTest {
         answer shouldBe Known(
             SourceEdition(
                 isbn = isbnOf(APOTHICAIRE),
+                kind = BOOK,
                 title = "Les Carnets de l'apothicaire",
                 subtitle = null,
                 authors = listOf(SourceAuthor("Natsu Hyūga", WRITER)),
@@ -140,6 +146,7 @@ class BnfSourceTest {
         answer shouldBe Known(
             SourceEdition(
                 isbn = isbnOf(PRINTER_FIRST),
+                kind = BOOK,
                 title = "Un livre",
                 subtitle = null,
                 authors = emptyList(),
@@ -213,6 +220,17 @@ class BnfSourceTest {
 
         // Then
         answer shouldBe Failed
+    }
+
+    @Test
+    fun `the kind is what the form of contents and the language translated from name`() {
+        kindOf("||||t   00|a|", "jpn") shouldBe MANGA
+        kindOf("||||t   00|a|", "kor") shouldBe MANGA
+        kindOf("||||t   00|a|", "chi") shouldBe MANGA
+        kindOf("||||t   00|a|", "eng") shouldBe BD
+        kindOf("||||t   00|a|", null) shouldBe BD
+        kindOf("||||z   00|||", null) shouldBe BOOK
+        kindOf(null, null) shouldBe BOOK
     }
 
     @Test
@@ -323,6 +341,7 @@ class BnfSourceTest {
         """.trimIndent()
         val ONE_PIECE_EDITION = SourceEdition(
             isbn = isbnOf(ONE_PIECE),
+            kind = MANGA,
             title = "Romance dawn",
             subtitle = "à l'aube d'une grande aventure",
             authors = listOf(SourceAuthor("Eiichirō Oda", WRITER)),

@@ -1,9 +1,11 @@
 package fr.amory.libris.domain.lookup
 
 import fr.amory.libris.domain.Isbn
+import fr.amory.libris.domain.Kind
 
 data class SourceEdition(
     val isbn: Isbn,
+    val kind: Kind,
     val title: String,
     val subtitle: String?,
     val authors: List<SourceAuthor>,
