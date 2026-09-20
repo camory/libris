@@ -10,11 +10,11 @@
 > D02 amended on 2026-09-12: the domain may be split by concern into sub-packages; `domain.lookup` is the first.
 > D10 amended on 2026-09-12: members imported, not qualified, when the bare name is unambiguous.
 > D07 rewritten on 2026-09-13: the web slice is proven by Contracteer, values by domain, application and scenario tests; a fresh schema before every database-backed class.
-> D02 amended on 2026-09-20: two bounded contexts, `bibliography` and `library`, each with `domain`, `application` and `infrastructure`; the port and the preview of the lookup stay in the domain.
-> D11 amended on 2026-09-20: an aggregate takes its id; the id is a value class minted by its own `new()`.
 > D11 amended on 2026-09-13: a validation `code` is documentation until the contract enumerates it; the rationale of keys over wording, and what Spring's problem advice is for.
 > D02 amended on 2026-09-13: the timeout is the source adapter's, the use case never sees time.
 > D11 amended on 2026-09-15: the field rule leaves; a field is added, removed or renamed in the order D04 gives.
+> D02 amended on 2026-09-20: two bounded contexts, `bibliography` and `library`, each with `domain`, `application` and `infrastructure`; the port and the preview of the lookup stay in the domain.
+> D11 amended on 2026-09-20: an aggregate takes its id; the id is a value class minted by its own `new()`.
 > D11 amended on 2026-09-21: an enumeration column carries no CHECK; the Kotlin enum is its one source of truth.
 > D11 amended on 2026-09-21: the children an aggregate owns sit in a table named after the child (`membership`); a join between aggregates keeps both sides' names.
 
