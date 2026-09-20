@@ -977,6 +977,10 @@ Format:
   - **The role has one source of truth, the Kotlin enum.** No `CHECK` on
     `membership.role`; the case that inserted `LENDER` through `JdbcClient`
     is gone with it.
+  - **A blank name never reaches `Contribution` or `SeriesEntry`.** Both
+    refuse one, so the BnF and Open Library clients leave out a contributor
+    or a series whose name is blank, one case each over a hand-written
+    record.
   - **Precedence between sources is the domain's** (Tophe, same evening):
     `Source { BNF, OPEN_LIBRARY }` in `bibliography.domain.lookup`, declared
     in order of precedence; the port names its source and
