@@ -26,7 +26,9 @@ was found.
   `gh api -X PATCH repos/camory/libris/pulls/N`. `gh` GraphQL calls are
   rate-limited: poll `gh pr checks` every 30 s or more, and merge through
   REST (`gh api -X PUT repos/camory/libris/pulls/N/merge -f
-  merge_method=squash`) when `gh pr merge` is throttled.
+  merge_method=squash`) when `gh pr merge` is throttled. `gh pr edit` fails
+  on this repository with a GraphQL error about classic projects; a body is
+  updated with `gh api -X PATCH repos/camory/libris/pulls/N -F body=@file`.
 - The sandbox PostgreSQL survives between runs (tmpfs: gone when the
   container is recreated). Editing a migration the database has applied breaks
   every context start with a Flyway checksum mismatch, and `FreshSchema` does
