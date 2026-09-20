@@ -1013,8 +1013,10 @@ Format:
   reference moved from `membership.reader_id` to `reader.default_bookshelf_id`,
   the welcome inserting the reader first, the slice tests inserting their
   readers before their bookshelves, and a new slice case: a membership of a
-  reader Libris does not know is refused, red on the old schema. Gate green:
-  117 tests, 6 skipped.
+  reader Libris does not know is refused, red on the old schema. Then a
+  blank `Remote-Name` falls back to the username as a missing one does, so
+  no bookshelf is named *Bibliothèque de* nothing; one case in
+  `MeControllerTest`, red with a 500 first. Gate green: 118 tests, 6 skipped.
 - Decided, with Tophe: the reference checked at commit is the one crossed
   once per reader, the default; the membership's reader, which every later
   use case will write, is checked at the statement, in the slice too.
@@ -1023,8 +1025,7 @@ Format:
   is recreated before this PR deploys and the `agent/PROPOSED.md` item still
   saying "nullable" must follow; D11 still says enumerations carry a `CHECK`
   and join tables are named after both sides, neither amended; the ArchUnit
-  application rule admits `@Transactional`; a blank `Remote-Name` persists a
-  bookshelf named *Bibliothèque de* nothing; the blank-name rule is written
+  application rule admits `@Transactional`; the blank-name rule is written
   in seven places; the scenario classes' import rewrite is undeclared;
   `agent/GOTCHAS.md` still names `BnfSource`; the amendment log of
   `docs/ARCHITECTURE.md` is out of order; sixteen commits carry the harness
