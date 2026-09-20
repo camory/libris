@@ -43,7 +43,8 @@ class RemoteHeaderAuthenticationFilter(private val readerVisit: ReaderVisit) : O
             add(SimpleGrantedAuthority(READER_AUTHORITY))
             if (ADMIN_GROUP in groups) add(SimpleGrantedAuthority(ADMIN_AUTHORITY))
         }
-        val reader = readerVisit.visit(username, email, request.getHeader("Remote-Name") ?: username)
+        val displayName = request.getHeader("Remote-Name")?.takeUnless { it.isBlank() } ?: username
+        val reader = readerVisit.visit(username, email, displayName)
         return PreAuthenticatedAuthenticationToken(reader, "N/A", authorities)
     }
 }

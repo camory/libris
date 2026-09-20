@@ -118,6 +118,25 @@ class MeControllerTest @Autowired constructor(
     }
 
     @Test
+    fun `a reader whose display name is blank visits under their username`() {
+        // Given
+        given(visit.visit("juliette", "juliette@amory.fr", "juliette"))
+            .willReturn(JULIETTE.copy(displayName = "juliette"))
+        val headers = listOf(
+            "Remote-User" to "juliette",
+            "Remote-Name" to " ",
+            "Remote-Email" to "juliette@amory.fr",
+            "Remote-Groups" to "family",
+        )
+
+        // When
+        val body = me(headers)
+
+        // Then
+        body?.get("displayName") shouldBe "juliette"
+    }
+
+    @Test
     fun `the answer is the reader of the visit, not the one of the headers`() {
         // Given
         given(visit.visit("juliette", "juju@amory.fr", "Juju")).willReturn(JULIETTE)
