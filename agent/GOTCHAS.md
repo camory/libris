@@ -38,11 +38,12 @@ was found.
   never applied; otherwise the database must be recreated. D11 forbids editing
   a merged migration anyway, and the price of the trap is that a constraint a
   migration declares cannot be mutation-checked once it has run.
-- `membership.reader_id` references `reader` `deferrable initially deferred`:
-  the bookshelf and its memberships are inserted before the reader whose
-  default it is, and PostgreSQL checks the reference at commit. A JDBC slice
-  test rolls back, so that check never runs there: a membership of a reader
-  the test never inserts is not refused.
+- `reader.default_bookshelf_id` references `bookshelf` `deferrable initially
+  deferred`: the reader is inserted before the bookshelf that is their
+  default, and PostgreSQL checks the reference at commit. A JDBC slice test
+  rolls back, so that check never runs there: a reader whose default
+  bookshelf the test never inserts is not refused. `membership.reader_id` is
+  checked at the statement, in the slice too.
 - The loop takes the agent PostgreSQL down at the end of a run; a host gate
   then fails with connection refused until
   `docker compose --env-file agent/.env -f agent/compose.yaml up -d postgres`.
