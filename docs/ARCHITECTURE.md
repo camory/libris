@@ -85,7 +85,7 @@ Enforced by ArchUnit rules in the test suite (see D07):
 1. `domain` depends only on the Kotlin/Java standard libraries and the uuid
    generator of D11.
 2. `application` depends only on `domain` (plus `@Service` and Spring's
-   transaction package).
+   `TransactionOperations`, never `@Transactional`).
 3. `infrastructure.*` packages depend on `domain` and `application`, never
    on each other.
 4. No cycles between contexts, and `bibliography` never depends on

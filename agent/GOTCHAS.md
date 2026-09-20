@@ -116,13 +116,14 @@ was found.
 - A scenario class boots the whole application and commits what its
   requests write; `FreshSchema` on `JdbcSliceTest` and `ScenarioTest` is
   what keeps the JDBC slice from meeting a reader it did not insert.
-- `ArchitectureTest`'s application rule lists the packages `application` may
-  see, Spring included: `org.springframework.stereotype..` and
-  `org.springframework.transaction..`, and nothing else of Spring. The whole
-  transaction package, not only its annotations: the lambda given to
-  `TransactionOperations` takes a `TransactionStatus`, and the rule reads
-  lambda parameters. A use case that needs another Spring type either widens
-  the rule in the same cycle or does not carry it.
+- `ArchitectureTest`'s application rule lists what `application` may see of
+  Spring: `org.springframework.stereotype..`,
+  `org.springframework.transaction.support..` and the one type
+  `TransactionStatus`, which the lambda given to `TransactionOperations`
+  takes, since the rule reads lambda parameters. `@Transactional` is outside
+  the list on purpose: a boundary is `TransactionOperations`, never the
+  annotation. A use case that needs another Spring type either widens the
+  rule in the same cycle or does not carry it.
 - `ArchitectureTest`'s port rule matches any non-interface class assignable
   to a domain interface, so the variants of a sealed *interface* in `domain`
   break it: a state is a sealed *class*.
