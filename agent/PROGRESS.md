@@ -955,9 +955,10 @@ Format:
 - Decided, with Tophe:
   - **The bookshelf owns its memberships.** `Bookshelf(id, name,
     memberships)` with `Membership(readerId, role)`; `Reader(id, username,
-    email, displayName)`.
+    email, displayName, defaultBookshelfId)`.
   - **An aggregate takes its id.** `ReaderId` and `BookshelfId` are value
-    classes with a `new()`; the use case mints them.
+    classes with a `new()`; the use case mints them, so it holds both ids before
+    either insert.
   - **`FirstVisit` folded into `ReaderVisit`** through an injected
     `TransactionOperations`: the welcome runs in `executeWithoutResult`, the
     find and the duplicate catch stay outside, which keeps both traps of
@@ -966,13 +967,16 @@ Format:
     root package: `MeController` reads its authority constants and it reads
     `ReaderVisit`, which would have been a cycle between the root and the
     context.
-  - **The reader has no default bookshelf** (Tophe, later the same evening):
-    `Reader(id, username, email, displayName)`, no column, no cross-aggregate
-    invariant left; the reader is inserted before the bookshelf that names
-    them, and `membership.reader_id` is a plain reference. The contract still
-    answers `CurrentReader.defaultBookshelf` and `BookshelfScenarios` reads
-    it: how `me` finds it without a reference is a question for T037 and the
-    contract.
+  - **The reader keeps their default bookshelf.** Removed on a word of
+    Tophe's, restored on his next: `Reader(id, username, email, displayName,
+    defaultBookshelfId)`, the column not null. The bookshelf is inserted
+    before the reader whose default it is, so `membership.reader_id` is
+    `deferrable initially deferred`. The invariant "the default is one of
+    yours" spans two aggregates and stays out of the constructor: the use
+    case that creates both guarantees it.
+  - **The role has one source of truth, the Kotlin enum.** No `CHECK` on
+    `membership.role`; the case that inserted `LENDER` through `JdbcClient`
+    is gone with it.
   - **Precedence between sources is the domain's** (Tophe, same evening):
     `Source { BNF, OPEN_LIBRARY }` in `bibliography.domain.lookup`, declared
     in order of precedence; the port names its source and
