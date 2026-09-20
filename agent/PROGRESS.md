@@ -978,3 +978,5 @@ Format:
   arrive with the task that needs them. The naming rule
   *Bibliothèque de …* moved into `Bookshelf.ownedBy(owner, ownerName, id)`
   on Tophe's call the same evening; `ReaderVisit` only mints the two ids.
+  Then, on his call too, a bookshelf without an OWNER membership is refused
+  by the constructor; the bookshelf query joins its memberships inner.
