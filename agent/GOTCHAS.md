@@ -183,7 +183,7 @@ was found.
   codes sit at positions 4 to 7, `t` marking a comic strip; a record without
   the field names no form. The language an ouvrage was translated from is
   field 101 `$c`, in the BnF's own three-letter codes (`jpn`, `kor`, `chi`),
-  which are not the ISO 639-1 codes the `LANGUAGES` map of `BnfSource`
+  which are not the ISO 639-1 codes the `LANGUAGES` map of `BnfEditionLookup`
   answers for the `language` field.
 
 ## Frontend build and tests
