@@ -14,7 +14,9 @@ import java.util.concurrent.Callable
 import java.util.concurrent.Executors.newVirtualThreadPerTaskExecutor
 
 @Service
-class LookupEditionByIsbn(private val lookups: List<ExternalEditionLookup>) {
+class LookupEditionByIsbn(lookups: List<ExternalEditionLookup>) {
+    private val lookups = lookups.sortedBy { it.source }
+
     fun lookUp(isbn: Isbn): EditionLookupResult {
         val results = askEveryLookup(isbn)
         val previews = results.filterIsInstance<Known>().map { it.preview }

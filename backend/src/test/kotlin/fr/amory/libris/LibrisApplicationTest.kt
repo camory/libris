@@ -1,8 +1,5 @@
 package fr.amory.libris
 
-import fr.amory.libris.bibliography.domain.lookup.ExternalEditionLookup
-import fr.amory.libris.bibliography.infrastructure.lookup.BnfEditionLookup
-import fr.amory.libris.bibliography.infrastructure.lookup.OpenLibraryEditionLookup
 import fr.amory.libris.bibliography.infrastructure.lookup.SourcesProperties
 import io.kotest.matchers.shouldBe
 import org.junit.jupiter.api.Test
@@ -18,7 +15,6 @@ import java.time.Duration.ofSeconds
 class LibrisApplicationTest @Autowired constructor(
     private val client: RestTestClient,
     private val sources: SourcesProperties,
-    private val isbnSources: List<ExternalEditionLookup>,
 ) {
     @Test
     fun `the application starts and reports itself healthy`() {
@@ -36,10 +32,5 @@ class LibrisApplicationTest @Autowired constructor(
             openLibraryUrl = "https://openlibrary.org",
             timeout = ofSeconds(5),
         )
-    }
-
-    @Test
-    fun `the BnF is asked before Open Library`() {
-        isbnSources.map { it::class } shouldBe listOf(BnfEditionLookup::class, OpenLibraryEditionLookup::class)
     }
 }

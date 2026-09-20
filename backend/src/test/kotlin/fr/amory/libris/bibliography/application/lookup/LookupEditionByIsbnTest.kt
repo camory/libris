@@ -6,6 +6,8 @@ import fr.amory.libris.bibliography.application.lookup.EditionLookupResult.Unkno
 import fr.amory.libris.bibliography.domain.lookup.ExternalLookupResult.Failed
 import fr.amory.libris.bibliography.domain.lookup.ExternalLookupResult.Known
 import fr.amory.libris.bibliography.domain.lookup.ExternalLookupResult.NothingKnown
+import fr.amory.libris.bibliography.domain.lookup.Source.BNF
+import fr.amory.libris.bibliography.domain.lookup.Source.OPEN_LIBRARY
 import fr.amory.libris.bibliography.fixture.A_PREVIEW
 import fr.amory.libris.bibliography.fixture.LookupAnswering
 import fr.amory.libris.bibliography.fixture.LookupAnsweringAtRendezvous
@@ -16,12 +18,12 @@ import java.util.concurrent.CyclicBarrier
 
 class LookupEditionByIsbnTest {
     @Test
-    fun `the sources that know answer what they know together, in the order they were asked`() {
+    fun `the BnF takes precedence over Open Library, whatever the order they were given`() {
         // Given
         val lookup = LookupEditionByIsbn(
             listOf(
-                LookupAnswering(Known(A_PREVIEW.copy(title = "Romance dawn"))),
-                LookupAnswering(Known(A_PREVIEW.copy(title = "Tome 01", pageCount = 207))),
+                LookupAnswering(Known(A_PREVIEW.copy(title = "Tome 01", pageCount = 207)), OPEN_LIBRARY),
+                LookupAnswering(Known(A_PREVIEW.copy(title = "Romance dawn")), BNF),
             ),
         )
 

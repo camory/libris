@@ -10,6 +10,7 @@ import fr.amory.libris.bibliography.domain.lookup.ExternalLookupResult
 import fr.amory.libris.bibliography.domain.lookup.ExternalLookupResult.Failed
 import fr.amory.libris.bibliography.domain.lookup.ExternalLookupResult.Known
 import fr.amory.libris.bibliography.domain.lookup.ExternalLookupResult.NothingKnown
+import fr.amory.libris.bibliography.domain.lookup.Source.OPEN_LIBRARY
 import org.springframework.web.client.HttpClientErrorException.NotFound
 import org.springframework.web.client.RestClientException
 import tools.jackson.databind.JsonNode
@@ -22,6 +23,7 @@ private const val SEARCH_FIELDS = "key,author_name,edition_key"
 private val YEAR = Regex("\\d{4}")
 
 class OpenLibraryEditionLookup(baseUrl: String, timeout: Duration) : ExternalEditionLookup {
+    override val source = OPEN_LIBRARY
     private val http = sourceRestClient(baseUrl, timeout)
 
     override fun lookUp(isbn: Isbn): ExternalLookupResult =

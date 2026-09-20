@@ -17,6 +17,7 @@ import fr.amory.libris.bibliography.domain.lookup.ExternalLookupResult
 import fr.amory.libris.bibliography.domain.lookup.ExternalLookupResult.Failed
 import fr.amory.libris.bibliography.domain.lookup.ExternalLookupResult.Known
 import fr.amory.libris.bibliography.domain.lookup.ExternalLookupResult.NothingKnown
+import fr.amory.libris.bibliography.domain.lookup.Source.BNF
 import org.springframework.web.client.RestClientException
 import org.w3c.dom.Element
 import org.xml.sax.InputSource
@@ -67,6 +68,7 @@ internal fun coverUrlOf(controlField: String?): String? =
         ?.let { COVER_BEFORE + controlField.substring(it) + COVER_AFTER }
 
 class BnfEditionLookup(baseUrl: String, timeout: Duration) : ExternalEditionLookup {
+    override val source = BNF
     private val http = sourceRestClient(baseUrl, timeout)
 
     override fun lookUp(isbn: Isbn): ExternalLookupResult =
