@@ -15,6 +15,7 @@
 > D11 amended on 2026-09-13: a validation `code` is documentation until the contract enumerates it; the rationale of keys over wording, and what Spring's problem advice is for.
 > D02 amended on 2026-09-13: the timeout is the source adapter's, the use case never sees time.
 > D11 amended on 2026-09-15: the field rule leaves; a field is added, removed or renamed in the order D04 gives.
+> D11 amended on 2026-09-21: an enumeration column carries no CHECK; the Kotlin enum is its one source of truth.
 
 ## Overview
 
@@ -440,9 +441,10 @@ Schema
 - snake_case, singular table names (`edition`, `copy`, `bookshelf`). Join
   tables are named after both sides (`edition_author`), with the role column
   on them.
-- Enumerations stored as text with a CHECK constraint, never as PostgreSQL
-  enum types. Values in UPPER_SNAKE (`BOOK`, `MANGA`, `BD`), identical in
-  Kotlin, SQL and JSON.
+- Enumerations stored as text, never as PostgreSQL enum types, and without
+  a CHECK constraint: the Kotlin enum is the one source of truth, and a row
+  is read through its `valueOf`. Values in UPPER_SNAKE (`BOOK`, `MANGA`,
+  `BD`), identical in Kotlin, SQL and JSON.
 - Foreign keys always declared. Deletes are hard; rows meaningless without
   their parent cascade (author and tag links, copies, reading states, loans).
   Removing the last copy of an edition deletes the edition (PRD §3).
