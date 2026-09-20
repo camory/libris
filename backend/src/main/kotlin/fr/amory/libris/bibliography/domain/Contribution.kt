@@ -7,4 +7,9 @@ data class Contribution(
     init {
         require(name.isNotBlank()) { "a contribution needs a name" }
     }
+
+    companion object {
+        fun of(name: String?, role: ContributionRole): Contribution? =
+            name?.takeUnless { it.isBlank() }?.let { Contribution(it, role) }
+    }
 }

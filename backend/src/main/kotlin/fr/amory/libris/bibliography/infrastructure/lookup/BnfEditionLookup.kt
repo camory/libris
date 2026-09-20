@@ -110,14 +110,11 @@ class BnfEditionLookup(baseUrl: String, timeout: Duration) : ExternalEditionLook
 
     private fun contributionsOf(record: UnimarcRecord): List<Contribution> =
         record.fields(AUTHOR_TAGS).mapNotNull { field ->
-            field.value("a")?.takeIf { it.isNotBlank() }?.let { surname ->
-                val forename = field.value("b")?.takeIf { it.isNotBlank() }
-                Contribution(
-                    name = if (forename == null) surname else "$forename $surname",
-                    role = contributionRoleOf(field.value("4")),
-                )
-            }
+            Contribution.of(nameOf(field), contributionRoleOf(field.value("4")))
         }
+
+    private fun nameOf(field: UnimarcField): String =
+        "${field.value("b").orEmpty()} ${field.value("a").orEmpty()}".trim()
 
     private fun seriesOf(record: UnimarcRecord): SeriesEntry? =
         record.value("461", "t")?.takeIf { it.isNotBlank() }

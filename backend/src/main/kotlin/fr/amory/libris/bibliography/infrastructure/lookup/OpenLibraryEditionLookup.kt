@@ -61,11 +61,7 @@ class OpenLibraryEditionLookup(baseUrl: String, timeout: Duration) : ExternalEdi
         return search.path("docs").values()
             .firstOrNull { work -> work.path("edition_key").values().any { it.asString() == key } }
             ?.path("author_name")?.values()
-            ?.mapNotNull { node ->
-                node.asString()
-                    .takeIf { it.isNotBlank() }
-                    ?.let { Contribution(it, WRITER) }
-            }
+            ?.mapNotNull { node -> Contribution.of(node.asString(), WRITER) }
             .orEmpty()
     }
 
