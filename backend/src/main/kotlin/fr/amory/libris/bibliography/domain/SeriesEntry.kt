@@ -7,4 +7,9 @@ data class SeriesEntry(
     init {
         require(name.isNotBlank()) { "a series entry needs a name" }
     }
+
+    companion object {
+        fun of(name: String?, volumeNumber: Int?): SeriesEntry? =
+            name?.takeUnless { it.isBlank() }?.let { SeriesEntry(it, volumeNumber) }
+    }
 }
