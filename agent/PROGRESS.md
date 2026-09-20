@@ -938,3 +938,43 @@ Format:
   the brief asked. The brief's advice for a migration edited after a run — run
   a slice class alone, it cleans and migrates — is false and cost a mutation
   check; the true shape of the trap is now in `agent/GOTCHAS.md`.
+
+## 2026-09-20 — Domain rework with Tophe: two contexts, the aggregates renamed — done, on the T033 branch
+- Did: the backend split into `bibliography` (`Isbn`, `Kind`,
+  `Contribution`, `ContributionRole`, `SeriesEntry`; `domain.lookup` with
+  `ExternalEditionLookup`, `ExternalLookupResult`, `EditionPreview` and its
+  `merge`; `application.lookup` with `LookupEditionByIsbn` and
+  `EditionLookupResult`; `BnfEditionLookup`, `OpenLibraryEditionLookup`,
+  `IsbnController`) and `library` (`domain.reader` with `Reader`, `ReaderId`,
+  `ReaderRepository`; `domain.bookshelf` with `Bookshelf`, `BookshelfId`,
+  `Membership`, `MembershipRole`, `BookshelfRepository`; `ReaderVisit`; the
+  two JDBC repositories, `MeController`, `SecurityConfig`), each with
+  `domain`, `application`, `infrastructure`. Tests, fixtures and the ArchUnit
+  rules moved with them; `V002__bookshelf.sql` rewritten (never merged).
+  Gate green: 114 tests, the six `BookshelfScenarios` still skipped.
+- Decided, with Tophe:
+  - **The bookshelf owns its memberships.** `Bookshelf(id, name,
+    memberships)` with `Membership(readerId, role)`; `Reader(id, username,
+    email, displayName, defaultBookshelfId)`. The invariant "the default is
+    one of yours" spanned two aggregates and left the constructor: the use
+    case that creates both guarantees it.
+  - **An aggregate takes its id.** `ReaderId` and `BookshelfId` are value
+    classes with a `new()`; the use case mints them, so it holds both ids
+    before either insert.
+  - **`FirstVisit` folded into `ReaderVisit`** through an injected
+    `TransactionOperations`: the welcome runs in `executeWithoutResult`, the
+    find and the duplicate catch stay outside, which keeps both traps of
+    2026-09-19 answered in one class.
+  - **`SecurityConfig` lives in `library.infrastructure.web`**, not in a
+    root package: `MeController` reads its authority constants and it reads
+    `ReaderVisit`, which would have been a cycle between the root and the
+    context.
+  - **The bookshelf is inserted before the reader.** The reader's default
+    references the bookshelf, the membership references the reader; the
+    membership's reference is deferred to commit.
+- Left over: `agent/TASKS.md` task lines T034–T039 still say `infra.*` and
+  `SourceEdition`; `docs/PRD.md` §3 and `specs/bookshelf.md` still say
+  *Member*; `Copy`, `CopyId` and `CopyRepository` of `library.domain.copy`
+  arrive with the task that needs them. The naming rule *Bibliothèque de …*
+  still lives in `ReaderVisit`; whether it becomes a factory of `Bookshelf`
+  is the next question of the review.
