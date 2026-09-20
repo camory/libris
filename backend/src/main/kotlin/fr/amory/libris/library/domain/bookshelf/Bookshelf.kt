@@ -8,6 +8,10 @@ data class Bookshelf(
     val name: String,
     val memberships: List<Membership>,
 ) {
+    init {
+        require(memberships.any { it.role == OWNER }) { "a bookshelf needs an owner" }
+    }
+
     companion object {
         fun ownedBy(owner: ReaderId, ownerName: String, id: BookshelfId): Bookshelf =
             Bookshelf(id, "Bibliothèque de $ownerName", listOf(Membership(owner, OWNER)))

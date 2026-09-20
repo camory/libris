@@ -47,18 +47,6 @@ class JdbcBookshelfRepositoryTest @Autowired constructor(
     }
 
     @Test
-    fun `a bookshelf without any member is read back as such`() {
-        // Given
-        val bookshelf = Bookshelf(BookshelfId.new(), "Bibliothèque de personne", emptyList())
-
-        // When
-        bookshelves.insert(bookshelf)
-
-        // Then
-        bookshelves.findById(bookshelf.id) shouldBe bookshelf
-    }
-
-    @Test
     fun `an unknown id finds no bookshelf`() {
         bookshelves.findById(BookshelfId.new()) shouldBe null
     }

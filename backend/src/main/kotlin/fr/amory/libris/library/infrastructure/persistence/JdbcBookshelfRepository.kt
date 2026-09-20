@@ -19,7 +19,7 @@ private const val FIND_BOOKSHELF_BY_ID =
     """
     select bookshelf.id, bookshelf.name, membership.reader_id, membership.role
     from bookshelf
-    left join membership on membership.bookshelf_id = bookshelf.id
+    join membership on membership.bookshelf_id = bookshelf.id
     where bookshelf.id = :id
     order by membership.reader_id
     """
@@ -27,7 +27,7 @@ private const val FIND_BOOKSHELF_BY_ID =
 private class BookshelfRow(
     val id: BookshelfId,
     val name: String,
-    val membership: Membership?,
+    val membership: Membership,
 )
 
 @Repository
@@ -56,12 +56,13 @@ class JdbcBookshelfRepository(private val jdbcClient: JdbcClient) : BookshelfRep
                 BookshelfRow(
                     id = BookshelfId(rs.getObject("id", UUID::class.java)),
                     name = rs.getString("name"),
-                    membership = rs.getObject("reader_id", UUID::class.java)?.let { readerId ->
-                        Membership(ReaderId(readerId), MembershipRole.valueOf(rs.getString("role")))
-                    },
+                    membership = Membership(
+                        ReaderId(rs.getObject("reader_id", UUID::class.java)),
+                        MembershipRole.valueOf(rs.getString("role")),
+                    ),
                 )
             }
             .list()
             .takeIf { it.isNotEmpty() }
-            ?.let { rows -> Bookshelf(rows.first().id, rows.first().name, rows.mapNotNull { it.membership }) }
+            ?.let { rows -> Bookshelf(rows.first().id, rows.first().name, rows.map { it.membership }) }
 }
