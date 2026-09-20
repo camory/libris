@@ -1034,11 +1034,12 @@ Format:
 - Decided, with Tophe: the reference checked at commit is the one crossed
   once per reader, the default; the membership's reader, which every later
   use case will write, is checked at the statement, in the slice too.
-- Left over, from the review: `V002` cannot run on a `reader` table that
-  holds rows (the `not null` column has no default), so the staging database
-  is recreated before this PR deploys and the `agent/PROPOSED.md` item still
-  saying "nullable" must follow; the scenario classes' import rewrite is
-  undeclared;
+- Decided by Tophe on 2026-09-21: `V002` cannot run on a `reader` table that
+  holds rows (the `not null` column has no default, proven against the
+  sandbox PostgreSQL), and no backfill is written: the staging schema is
+  dropped before this PR deploys. The `agent/PROPOSED.md` item of 2026-09-19
+  is closed by it.
+- Left over, from the review:
   `agent/GOTCHAS.md` still names `BnfSource`; the amendment log of
   `docs/ARCHITECTURE.md` is out of order; sixteen commits carry the harness
   trailer.

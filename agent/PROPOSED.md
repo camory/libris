@@ -260,9 +260,3 @@
   not run Prettier, so `npm run format` rewrites them whenever it is run whole.
   The task that next edits either file formats it, as T032 did for
   `vitest.global-setup.ts` (found on T032, 2026-09-19).
-- Backend: the readers stored before T033 carry no default bookshelf —
-  `V002` adds the column nullable and backfills nothing — and T037 makes
-  `defaultBookshelf` a required field of the `me` answer. Either the migration
-  of a later task gives a bookshelf to every reader that has none, or the
-  staging database is recreated before T037 deploys. A human's call, not a
-  run's (found on T033, 2026-09-19).
