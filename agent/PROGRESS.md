@@ -1019,8 +1019,14 @@ Format:
   `MeControllerTest`, red with a 500 first. Then the ArchUnit application
   rule narrowed from the whole transaction package to its `support` package
   plus `TransactionStatus`: `@Transactional` on the private `welcome` stayed
-  green under the old rule and is red under the new one. Gate green: 118
-  tests, 6 skipped.
+  green under the old rule and is red under the new one. Then the blank-name
+  rule written once per type: `Contribution.of(name, role)` and
+  `SeriesEntry.of(name, volumeNumber)` answer none for a blank or absent name,
+  the two clients `mapNotNull` through them and their five guards are gone;
+  the constructors keep their `require` as last defence. A BnF contributor
+  with a forename and a blank surname, dropped before, is now kept under the
+  forename, a malformed record no test pinned. Gate green: 120 tests, 6
+  skipped.
 - Decided, with Tophe: the reference checked at commit is the one crossed
   once per reader, the default; the membership's reader, which every later
   use case will write, is checked at the statement, in the slice too.
@@ -1028,9 +1034,8 @@ Format:
   holds rows (the `not null` column has no default), so the staging database
   is recreated before this PR deploys and the `agent/PROPOSED.md` item still
   saying "nullable" must follow; D11 still says enumerations carry a `CHECK`
-  and join tables are named after both sides, neither amended; the
-  blank-name rule is written
-  in seven places; the scenario classes' import rewrite is undeclared;
+  and join tables are named after both sides, neither amended; the scenario
+  classes' import rewrite is undeclared;
   `agent/GOTCHAS.md` still names `BnfSource`; the amendment log of
   `docs/ARCHITECTURE.md` is out of order; sixteen commits carry the harness
   trailer.
