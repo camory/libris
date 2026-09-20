@@ -1,6 +1,8 @@
 package fr.amory.libris
 
 import com.tngtech.archunit.core.domain.JavaClass
+import com.tngtech.archunit.core.domain.JavaClass.Predicates.resideInAnyPackage
+import com.tngtech.archunit.core.domain.JavaClass.Predicates.type
 import com.tngtech.archunit.core.domain.JavaClasses
 import com.tngtech.archunit.core.importer.ImportOption
 import com.tngtech.archunit.junit.AnalyzeClasses
@@ -8,6 +10,7 @@ import com.tngtech.archunit.junit.ArchTest
 import com.tngtech.archunit.lang.syntax.ArchRuleDefinition.classes
 import com.tngtech.archunit.lang.syntax.ArchRuleDefinition.noClasses
 import com.tngtech.archunit.library.dependencies.SlicesRuleDefinition.slices
+import org.springframework.transaction.TransactionStatus
 
 @AnalyzeClasses(
     packages = ["fr.amory.libris"],
@@ -33,15 +36,16 @@ class ArchitectureTest {
     fun `the application depends on the domain only`(libris: JavaClasses) {
         classes()
             .that().resideInAPackage("..application..")
-            .should().onlyDependOnClassesThat()
-            .resideInAnyPackage(
-                "java..",
-                "kotlin..",
-                "org.jetbrains.annotations..",
-                "org.springframework.stereotype..",
-                "org.springframework.transaction..",
-                "..domain..",
-                "..application..",
+            .should().onlyDependOnClassesThat(
+                resideInAnyPackage(
+                    "java..",
+                    "kotlin..",
+                    "org.jetbrains.annotations..",
+                    "org.springframework.stereotype..",
+                    "org.springframework.transaction.support..",
+                    "..domain..",
+                    "..application..",
+                ).or(type(TransactionStatus::class.java)),
             )
             .check(libris)
     }
