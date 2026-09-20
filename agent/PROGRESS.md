@@ -1039,7 +1039,9 @@ Format:
   sandbox PostgreSQL), and no backfill is written: the staging schema is
   dropped before this PR deploys. The `agent/PROPOSED.md` item of 2026-09-19
   is closed by it.
-- Left over, from the review:
-  `agent/GOTCHAS.md` still names `BnfSource`; the amendment log of
-  `docs/ARCHITECTURE.md` is out of order; sixteen commits carry the harness
-  trailer.
+- Left over, from the review: sixteen commits of the branch carry the
+  harness trailer and a session line instead of the trailer of `CLAUDE.md`,
+  one revert none, and the two reverts have git's default subject. The
+  branch is pushed, so its history stays; the squash commit on `main` takes
+  the PR title and a message given explicitly to the merge call, with the
+  one trailer.
