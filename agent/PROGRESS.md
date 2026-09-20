@@ -975,6 +975,6 @@ Format:
 - Left over: `agent/TASKS.md` task lines T034–T039 still say `infra.*` and
   `SourceEdition`; `docs/PRD.md` §3 and `specs/bookshelf.md` still say
   *Member*; `Copy`, `CopyId` and `CopyRepository` of `library.domain.copy`
-  arrive with the task that needs them. The naming rule *Bibliothèque de …*
-  still lives in `ReaderVisit`; whether it becomes a factory of `Bookshelf`
-  is the next question of the review.
+  arrive with the task that needs them. The naming rule
+  *Bibliothèque de …* moved into `Bookshelf.ownedBy(owner, ownerName, id)`
+  on Tophe's call the same evening; `ReaderVisit` only mints the two ids.
