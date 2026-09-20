@@ -8,6 +8,9 @@ import fr.amory.libris.library.domain.reader.Reader
 import fr.amory.libris.library.domain.reader.ReaderRepository
 import fr.amory.libris.library.fixture.BookshelvesInMemory
 import fr.amory.libris.library.fixture.ReadersInMemory
+import fr.amory.libris.library.fixture.Transaction
+import fr.amory.libris.library.fixture.TransactionsObserving
+import fr.amory.libris.library.fixture.bookshelfOwnedBy
 import fr.amory.libris.library.fixture.readerNamed
 import io.kotest.matchers.shouldBe
 import org.junit.jupiter.api.Test
@@ -42,6 +45,26 @@ class ReaderVisitTest {
         // Then
         bookshelves.stored shouldBe listOf(
             Bookshelf(lea.defaultBookshelfId, "Bibliothèque de Léa", listOf(Membership(lea.id, OWNER))),
+        )
+    }
+
+    @Test
+    fun `a first visit stores the reader and their bookshelf in one transaction`() {
+        // Given
+        val readers = ReadersInMemory()
+        val bookshelves = BookshelvesInMemory()
+        val transactions = TransactionsObserving { readers.stored to bookshelves.stored }
+        val visit = ReaderVisit(readers, bookshelves, transactions)
+
+        // When
+        val lea = visit.visit("lea", "lea@amory.fr", "Léa")
+
+        // Then
+        transactions.recorded shouldBe listOf(
+            Transaction(
+                before = emptyList<Reader>() to emptyList<Bookshelf>(),
+                after = listOf(lea) to listOf(bookshelfOwnedBy(lea)),
+            ),
         )
     }
 
