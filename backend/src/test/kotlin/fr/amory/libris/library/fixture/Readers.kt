@@ -10,7 +10,8 @@ fun readerNamed(
     displayName: String,
     email: String = "$username@amory.fr",
     id: ReaderId = ReaderId.new(),
-): Reader = Reader(id, username, email, displayName)
+    defaultBookshelfId: BookshelfId = BookshelfId.new(),
+): Reader = Reader(id, username, email, displayName, defaultBookshelfId)
 
-fun bookshelfOwnedBy(reader: Reader, id: BookshelfId = BookshelfId.new()): Bookshelf =
-    Bookshelf.ownedBy(reader.id, reader.displayName, id)
+fun bookshelfOwnedBy(reader: Reader): Bookshelf =
+    Bookshelf.ownedBy(reader.id, reader.displayName, reader.defaultBookshelfId)

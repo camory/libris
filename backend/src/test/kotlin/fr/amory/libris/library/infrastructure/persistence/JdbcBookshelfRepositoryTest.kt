@@ -5,6 +5,7 @@ import fr.amory.libris.library.domain.bookshelf.BookshelfId
 import fr.amory.libris.library.domain.bookshelf.Membership
 import fr.amory.libris.library.domain.bookshelf.MembershipRole.OWNER
 import fr.amory.libris.library.domain.bookshelf.MembershipRole.VIEWER
+import fr.amory.libris.library.domain.reader.ReaderId
 import fr.amory.libris.library.fixture.bookshelfOwnedBy
 import fr.amory.libris.library.fixture.readerNamed
 import io.kotest.assertions.throwables.shouldThrow
@@ -27,16 +28,17 @@ class JdbcBookshelfRepositoryTest @Autowired constructor(
         // Given
         val lea = readerNamed("lea", "Léa")
         val juliette = readerNamed("juliette", "Juliette")
-        readers.insert(lea)
-        readers.insert(juliette)
         val bookshelf = Bookshelf(
-            id = BookshelfId.new(),
+            id = lea.defaultBookshelfId,
             name = "Bibliothèque de Léa",
             memberships = listOf(Membership(lea.id, OWNER), Membership(juliette.id, VIEWER)),
         )
 
         // When
         bookshelves.insert(bookshelf)
+        readers.insert(lea)
+        bookshelves.insert(bookshelfOwnedBy(juliette))
+        readers.insert(juliette)
 
         // Then
         val read = requireNotNull(bookshelves.findById(bookshelf.id))
@@ -53,16 +55,15 @@ class JdbcBookshelfRepositoryTest @Autowired constructor(
     fun `a member of a role the product does not know is refused`() {
         // Given
         val lea = readerNamed("lea", "Léa")
+        bookshelves.insert(bookshelfOwnedBy(lea))
         readers.insert(lea)
-        val bookshelf = bookshelfOwnedBy(lea)
-        bookshelves.insert(bookshelf)
 
         // When, Then
         shouldThrow<DataIntegrityViolationException> {
             jdbcClient
                 .sql("insert into membership (bookshelf_id, reader_id, role) values (:bookshelf, :reader, :role)")
-                .param("bookshelf", bookshelf.id.value)
-                .param("reader", lea.id.value)
+                .param("bookshelf", lea.defaultBookshelfId.value)
+                .param("reader", ReaderId.new().value)
                 .param("role", "LENDER")
                 .update()
         }
