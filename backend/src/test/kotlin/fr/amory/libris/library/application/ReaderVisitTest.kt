@@ -1,6 +1,5 @@
 package fr.amory.libris.library.application
 
-import fr.amory.libris.library.domain.bookshelf.Bookshelf
 import fr.amory.libris.library.domain.bookshelf.Membership
 import fr.amory.libris.library.domain.bookshelf.MembershipRole.OWNER
 import fr.amory.libris.library.domain.reader.DuplicateUsernameException
@@ -40,9 +39,9 @@ class ReaderVisitTest {
         val lea = visit.visit("lea", "lea@amory.fr", "Léa")
 
         // Then
-        bookshelves.stored shouldBe listOf(
-            Bookshelf(lea.defaultBookshelfId, "Bibliothèque de Léa", listOf(Membership(lea.id, OWNER))),
-        )
+        val bookshelf = bookshelves.stored.single()
+        bookshelf.name shouldBe "Bibliothèque de Léa"
+        bookshelf.memberships shouldBe listOf(Membership(lea.id, OWNER))
     }
 
     @Test

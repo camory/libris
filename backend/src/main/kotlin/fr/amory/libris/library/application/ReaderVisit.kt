@@ -26,12 +26,11 @@ class ReaderVisit(
     }
 
     private fun welcome(username: String, email: String, displayName: String): Reader {
-        val readerId = ReaderId.new()
-        val bookshelf = Bookshelf.ownedBy(readerId, displayName, BookshelfId.new())
-        val reader = Reader(readerId, username, email, displayName, bookshelf.id)
+        val reader = Reader(ReaderId.new(), username, email, displayName)
+        val bookshelf = Bookshelf.ownedBy(reader.id, displayName, BookshelfId.new())
         transactions.executeWithoutResult {
-            bookshelves.insert(bookshelf)
             readers.insert(reader)
+            bookshelves.insert(bookshelf)
         }
         return reader
     }

@@ -1,6 +1,5 @@
 package fr.amory.libris.library.infrastructure.persistence
 
-import fr.amory.libris.library.domain.bookshelf.BookshelfId
 import fr.amory.libris.library.domain.reader.DuplicateUsernameException
 import fr.amory.libris.library.domain.reader.Reader
 import fr.amory.libris.library.domain.reader.ReaderId
@@ -11,11 +10,10 @@ import org.springframework.stereotype.Repository
 import java.util.UUID
 
 private const val INSERT_READER =
-    "insert into reader (id, username, email, display_name, default_bookshelf_id) " +
-        "values (:id, :username, :email, :displayName, :defaultBookshelfId)"
+    "insert into reader (id, username, email, display_name) values (:id, :username, :email, :displayName)"
 
 private const val FIND_READER_BY_USERNAME =
-    "select id, username, email, display_name, default_bookshelf_id from reader where username = :username"
+    "select id, username, email, display_name from reader where username = :username"
 
 @Repository
 class JdbcReaderRepository(private val jdbcClient: JdbcClient) : ReaderRepository {
@@ -27,7 +25,6 @@ class JdbcReaderRepository(private val jdbcClient: JdbcClient) : ReaderRepositor
                 .param("username", reader.username)
                 .param("email", reader.email)
                 .param("displayName", reader.displayName)
-                .param("defaultBookshelfId", reader.defaultBookshelfId.value)
                 .update()
         } catch (duplicate: DuplicateKeyException) {
             throw DuplicateUsernameException(reader.username, duplicate)
@@ -44,7 +41,6 @@ class JdbcReaderRepository(private val jdbcClient: JdbcClient) : ReaderRepositor
                     username = rs.getString("username"),
                     email = rs.getString("email"),
                     displayName = rs.getString("display_name"),
-                    defaultBookshelfId = BookshelfId(rs.getObject("default_bookshelf_id", UUID::class.java)),
                 )
             }
             .optional()

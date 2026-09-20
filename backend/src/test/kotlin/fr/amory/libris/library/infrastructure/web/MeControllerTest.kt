@@ -3,7 +3,6 @@ package fr.amory.libris.library.infrastructure.web
 import fr.amory.libris.bibliography.application.lookup.LookupEditionByIsbn
 import fr.amory.libris.fixture.WebSliceTest
 import fr.amory.libris.library.application.ReaderVisit
-import fr.amory.libris.library.domain.bookshelf.BookshelfId
 import fr.amory.libris.library.domain.reader.ReaderId
 import fr.amory.libris.library.fixture.readerNamed
 import io.kotest.matchers.shouldBe
@@ -19,13 +18,11 @@ private val TOPHE = readerNamed(
     username = "tophe",
     displayName = "Tophe",
     id = ReaderId(UUID.fromString("01991c3a-5b7e-7c1d-8f2a-3d4e5f607181")),
-    defaultBookshelfId = BookshelfId(UUID.fromString("01991c3a-5b7e-7c1d-8f2a-3d4e5f607191")),
 )
 private val JULIETTE = readerNamed(
     username = "juliette",
     displayName = "Juliette",
     id = ReaderId(UUID.fromString("01991c3a-5b7e-7c1d-8f2a-3d4e5f607182")),
-    defaultBookshelfId = BookshelfId(UUID.fromString("01991c3a-5b7e-7c1d-8f2a-3d4e5f607192")),
 )
 
 @WebSliceTest

@@ -3,12 +3,9 @@ create table bookshelf (
     name text not null
 );
 
-alter table reader
-    add column default_bookshelf_id uuid not null references bookshelf (id);
-
 create table membership (
     bookshelf_id uuid not null references bookshelf (id) on delete cascade,
-    reader_id    uuid not null references reader (id) deferrable initially deferred,
+    reader_id    uuid not null references reader (id),
     role         text not null check (role in ('OWNER', 'VIEWER')),
     primary key (bookshelf_id, reader_id)
 );
