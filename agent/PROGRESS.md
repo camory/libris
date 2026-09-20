@@ -969,11 +969,12 @@ Format:
     context.
   - **The reader keeps their default bookshelf.** Removed on a word of
     Tophe's, restored on his next: `Reader(id, username, email, displayName,
-    defaultBookshelfId)`, the column not null. The bookshelf is inserted
-    before the reader whose default it is, so `membership.reader_id` is
-    `deferrable initially deferred`. The invariant "the default is one of
-    yours" spans two aggregates and stays out of the constructor: the use
-    case that creates both guarantees it.
+    defaultBookshelfId)`, the column not null. The reader is inserted
+    before the bookshelf that is their default, so `reader.default_bookshelf_id`
+    is `deferrable initially deferred` and a membership's reader is checked
+    at the statement (swapped on the review of 2026-09-21, below). The
+    invariant "the default is one of yours" spans two aggregates and stays
+    out of the constructor: the use case that creates both guarantees it.
   - **The role has one source of truth, the Kotlin enum.** No `CHECK` on
     `membership.role`; the case that inserted `LENDER` through `JdbcClient`
     is gone with it.
@@ -1001,3 +1002,30 @@ Format:
   on Tophe's call the same evening; `ReaderVisit` only mints the two ids.
   Then, on his call too, a bookshelf without an OWNER membership is refused
   by the constructor; the bookshelf query joins its memberships inner.
+
+## 2026-09-21 — Review of PR #113 with Tophe: the transaction proven, the deferred reference swapped — on the T033 branch
+- Did: a deep review of the PR, then two pieces on its findings. The
+  transaction of the welcome is proven by `ReaderVisitTest` over
+  `TransactionsObserving`, a `TransactionOperations` fake that records what
+  the in-memory stores held before and after each `execute`: one transaction,
+  from nothing to the reader and their bookshelf; mutation-checked twice (the
+  wrapper removed, one insert moved out), red both times. Then the deferred
+  reference moved from `membership.reader_id` to `reader.default_bookshelf_id`,
+  the welcome inserting the reader first, the slice tests inserting their
+  readers before their bookshelves, and a new slice case: a membership of a
+  reader Libris does not know is refused, red on the old schema. Gate green:
+  117 tests, 6 skipped.
+- Decided, with Tophe: the reference checked at commit is the one crossed
+  once per reader, the default; the membership's reader, which every later
+  use case will write, is checked at the statement, in the slice too.
+- Left over, from the review: `V002` cannot run on a `reader` table that
+  holds rows (the `not null` column has no default), so the staging database
+  is recreated before this PR deploys and the `agent/PROPOSED.md` item still
+  saying "nullable" must follow; D11 still says enumerations carry a `CHECK`
+  and join tables are named after both sides, neither amended; the ArchUnit
+  application rule admits `@Transactional`; a blank `Remote-Name` persists a
+  bookshelf named *Bibliothèque de* nothing; the blank-name rule is written
+  in seven places; the scenario classes' import rewrite is undeclared;
+  `agent/GOTCHAS.md` still names `BnfSource`; the amendment log of
+  `docs/ARCHITECTURE.md` is out of order; sixteen commits carry the harness
+  trailer.
