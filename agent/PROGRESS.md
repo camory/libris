@@ -987,6 +987,12 @@ Format:
     `LookupEditionByIsbn` sorts its lookups by it. The `@Order` annotations
     and the boot test on the bean order are gone; the unit test gives Open
     Library first and still gets the BnF's title.
+- Deviation from the T033 task line, decided with Tophe: `BookshelfRepository`
+  reads a bookshelf by its id, not the bookshelves a reader is a member of.
+  No use case of this phase reads them (`me` answers from the reader's own
+  reference), so `findByReaderId` waits for the task that lists them;
+  `findById` stays as the read that proves the insert, and the one the
+  add-a-book route will call.
 - Left over: `agent/TASKS.md` task lines T034–T039 still say `infra.*` and
   `SourceEdition`; `docs/PRD.md` §3 and `specs/bookshelf.md` still say
   *Member*; `Copy`, `CopyId` and `CopyRepository` of `library.domain.copy`
