@@ -973,6 +973,12 @@ Format:
     answers `CurrentReader.defaultBookshelf` and `BookshelfScenarios` reads
     it: how `me` finds it without a reference is a question for T037 and the
     contract.
+  - **Precedence between sources is the domain's** (Tophe, same evening):
+    `Source { BNF, OPEN_LIBRARY }` in `bibliography.domain.lookup`, declared
+    in order of precedence; the port names its source and
+    `LookupEditionByIsbn` sorts its lookups by it. The `@Order` annotations
+    and the boot test on the bean order are gone; the unit test gives Open
+    Library first and still gets the BnF's title.
 - Left over: `agent/TASKS.md` task lines T034–T039 still say `infra.*` and
   `SourceEdition`; `docs/PRD.md` §3 and `specs/bookshelf.md` still say
   *Member*; `Copy`, `CopyId` and `CopyRepository` of `library.domain.copy`
