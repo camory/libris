@@ -103,6 +103,21 @@ class OpenLibraryEditionLookupTest {
     }
 
     @Test
+    fun `an author without a name is left out`() {
+        // Given
+        openLibrary.knows(MONTE_CRISTO)
+        openLibrary.answers("/search.json", A_NAMELESS_AUTHOR)
+
+        // When
+        val answer = source.lookUp(isbnOf(MONTE_CRISTO))
+
+        // Then
+        answer shouldBe Known(
+            MONTE_CRISTO_EDITION.copy(contributions = listOf(Contribution("Alexandre Dumas", WRITER))),
+        )
+    }
+
+    @Test
     fun `an ISBN Open Library does not know is nothing known`() {
         // Given
         openLibrary.doesNotKnow(UNKNOWN)
@@ -185,6 +200,10 @@ class OpenLibraryEditionLookupTest {
         val ANOTHER_WORK = """
             {"docs": [{"key": "/works/OL36287W", "author_name": ["Alexandre Dumas"],
                        "edition_key": ["OL7318447M"]}]}
+        """.trimIndent()
+        val A_NAMELESS_AUTHOR = """
+            {"docs": [{"key": "/works/OL15196753W", "author_name": ["Alexandre Dumas", " "],
+                       "edition_key": ["OL50534552M"]}]}
         """.trimIndent()
         val TIMEOUT: Duration = ofMillis(200)
         val WARM_UP_TIMEOUT: Duration = ofSeconds(20)

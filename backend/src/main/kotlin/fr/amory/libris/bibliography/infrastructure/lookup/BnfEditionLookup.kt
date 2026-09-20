@@ -110,8 +110,8 @@ class BnfEditionLookup(baseUrl: String, timeout: Duration) : ExternalEditionLook
 
     private fun contributionsOf(record: UnimarcRecord): List<Contribution> =
         record.fields(AUTHOR_TAGS).mapNotNull { field ->
-            field.value("a")?.let { surname ->
-                val forename = field.value("b")
+            field.value("a")?.takeIf { it.isNotBlank() }?.let { surname ->
+                val forename = field.value("b")?.takeIf { it.isNotBlank() }
                 Contribution(
                     name = if (forename == null) surname else "$forename $surname",
                     role = contributionRoleOf(field.value("4")),
@@ -120,12 +120,13 @@ class BnfEditionLookup(baseUrl: String, timeout: Duration) : ExternalEditionLook
         }
 
     private fun seriesOf(record: UnimarcRecord): SeriesEntry? =
-        record.value("461", "t")?.let { SeriesEntry(it, record.value("461", "v")?.toIntOrNull()) }
+        record.value("461", "t")?.takeIf { it.isNotBlank() }
+            ?.let { SeriesEntry(it, record.value("461", "v")?.toIntOrNull()) }
             ?: titleStatementSeriesOf(record)
 
     private fun titleStatementSeriesOf(record: UnimarcRecord): SeriesEntry? =
         tomeOf(record.value("200", "h"))?.let { tome ->
-            record.value("200", "a")?.let { SeriesEntry(it, tome) }
+            record.value("200", "a")?.takeIf { it.isNotBlank() }?.let { SeriesEntry(it, tome) }
         }
 
     private fun search(isbn: Isbn): String = http.get()

@@ -135,6 +135,20 @@ class BnfEditionLookupTest {
     }
 
     @Test
+    fun `a contributor or a series without a name is left out`() {
+        // Given
+        bnf.answers(BLANK_NAMES, CONTRIBUTOR_AND_SERIES_WITHOUT_A_NAME)
+
+        // When
+        val answer = source.lookUp(isbnOf(BLANK_NAMES))
+
+        // Then
+        val preview = (answer as Known).preview
+        preview.contributions shouldBe listOf(Contribution("Eiichirō Oda", WRITER))
+        preview.series shouldBe null
+    }
+
+    @Test
     fun `the publisher is the 214 the second indicator marks, wherever it sits`() {
         // Given
         bnf.answers(PRINTER_FIRST, PRINTER_BEFORE_PUBLISHER)
@@ -324,6 +338,29 @@ class BnfEditionLookupTest {
             "https://catalogue.bnf.fr/couverture?&appName=NE&idArk=ark:/12148/cb46810645h&couverture=1"
         const val APOTHICAIRE_COVER =
             "https://catalogue.bnf.fr/couverture?&appName=NE&idArk=ark:/12148/cb48801192z&couverture=1"
+        const val BLANK_NAMES = "9782723489898"
+        val CONTRIBUTOR_AND_SERIES_WITHOUT_A_NAME = """
+            <srw:searchRetrieveResponse xmlns:srw="http://www.loc.gov/zing/srw/">
+            <mxc:record xmlns:mxc="info:lc/xmlns/marcxchange-v2">
+            <mxc:datafield tag="200" ind1="1" ind2=" ">
+            <mxc:subfield code="a">Aux prises avec Baggy et ses hommes</mxc:subfield>
+            </mxc:datafield>
+            <mxc:datafield tag="461" ind1=" " ind2=" ">
+            <mxc:subfield code="t"> </mxc:subfield>
+            <mxc:subfield code="v">2</mxc:subfield>
+            </mxc:datafield>
+            <mxc:datafield tag="700" ind1=" " ind2="|">
+            <mxc:subfield code="a"> </mxc:subfield>
+            <mxc:subfield code="4">070</mxc:subfield>
+            </mxc:datafield>
+            <mxc:datafield tag="700" ind1=" " ind2="|">
+            <mxc:subfield code="a">Oda</mxc:subfield>
+            <mxc:subfield code="b">Eiichirō</mxc:subfield>
+            <mxc:subfield code="4">070</mxc:subfield>
+            </mxc:datafield>
+            </mxc:record>
+            </srw:searchRetrieveResponse>
+        """.trimIndent()
         val PRINTER_BEFORE_PUBLISHER = """
             <srw:searchRetrieveResponse xmlns:srw="http://www.loc.gov/zing/srw/">
             <mxc:record xmlns:mxc="info:lc/xmlns/marcxchange-v2">
