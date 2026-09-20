@@ -950,7 +950,9 @@ Format:
   `Membership`, `MembershipRole`, `BookshelfRepository`; `ReaderVisit`; the
   two JDBC repositories, `MeController`, `SecurityConfig`), each with
   `domain`, `application`, `infrastructure`. Tests, fixtures and the ArchUnit
-  rules moved with them; `V002__bookshelf.sql` rewritten (never merged).
+  rules moved with them, and the three scenario classes, which a task may
+  not edit, changed in their fixture imports alone, the fixtures having moved
+  into the contexts; `V002__bookshelf.sql` rewritten (never merged).
   Gate green: 114 tests, the six `BookshelfScenarios` still skipped.
 - Decided, with Tophe:
   - **The bookshelf owns its memberships.** `Bookshelf(id, name,
