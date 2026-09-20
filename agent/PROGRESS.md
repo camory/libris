@@ -955,12 +955,9 @@ Format:
 - Decided, with Tophe:
   - **The bookshelf owns its memberships.** `Bookshelf(id, name,
     memberships)` with `Membership(readerId, role)`; `Reader(id, username,
-    email, displayName, defaultBookshelfId)`. The invariant "the default is
-    one of yours" spanned two aggregates and left the constructor: the use
-    case that creates both guarantees it.
+    email, displayName)`.
   - **An aggregate takes its id.** `ReaderId` and `BookshelfId` are value
-    classes with a `new()`; the use case mints them, so it holds both ids
-    before either insert.
+    classes with a `new()`; the use case mints them.
   - **`FirstVisit` folded into `ReaderVisit`** through an injected
     `TransactionOperations`: the welcome runs in `executeWithoutResult`, the
     find and the duplicate catch stay outside, which keeps both traps of
@@ -969,9 +966,13 @@ Format:
     root package: `MeController` reads its authority constants and it reads
     `ReaderVisit`, which would have been a cycle between the root and the
     context.
-  - **The bookshelf is inserted before the reader.** The reader's default
-    references the bookshelf, the membership references the reader; the
-    membership's reference is deferred to commit.
+  - **The reader has no default bookshelf** (Tophe, later the same evening):
+    `Reader(id, username, email, displayName)`, no column, no cross-aggregate
+    invariant left; the reader is inserted before the bookshelf that names
+    them, and `membership.reader_id` is a plain reference. The contract still
+    answers `CurrentReader.defaultBookshelf` and `BookshelfScenarios` reads
+    it: how `me` finds it without a reference is a question for T037 and the
+    contract.
 - Left over: `agent/TASKS.md` task lines T034–T039 still say `infra.*` and
   `SourceEdition`; `docs/PRD.md` §3 and `specs/bookshelf.md` still say
   *Member*; `Copy`, `CopyId` and `CopyRepository` of `library.domain.copy`
