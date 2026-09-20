@@ -30,8 +30,8 @@ class ReaderVisit(
         val bookshelf = Bookshelf.ownedBy(readerId, displayName, BookshelfId.new())
         val reader = Reader(readerId, username, email, displayName, bookshelf.id)
         transactions.executeWithoutResult {
-            bookshelves.insert(bookshelf)
             readers.insert(reader)
+            bookshelves.insert(bookshelf)
         }
         return reader
     }

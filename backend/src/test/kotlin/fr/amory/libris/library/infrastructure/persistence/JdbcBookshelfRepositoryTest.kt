@@ -7,10 +7,12 @@ import fr.amory.libris.library.domain.bookshelf.MembershipRole.OWNER
 import fr.amory.libris.library.domain.bookshelf.MembershipRole.VIEWER
 import fr.amory.libris.library.fixture.bookshelfOwnedBy
 import fr.amory.libris.library.fixture.readerNamed
+import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.matchers.shouldBe
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.context.annotation.Import
+import org.springframework.dao.DataIntegrityViolationException
 
 @JdbcSliceTest
 @Import(JdbcBookshelfRepository::class, JdbcReaderRepository::class)
@@ -29,16 +31,24 @@ class JdbcBookshelfRepositoryTest @Autowired constructor(
             memberships = listOf(Membership(lea.id, OWNER), Membership(juliette.id, VIEWER)),
         )
 
+        readers.insert(lea)
+        readers.insert(juliette)
+        bookshelves.insert(bookshelfOwnedBy(juliette))
+
         // When
         bookshelves.insert(bookshelf)
-        readers.insert(lea)
-        bookshelves.insert(bookshelfOwnedBy(juliette))
-        readers.insert(juliette)
 
         // Then
         val read = requireNotNull(bookshelves.findById(bookshelf.id))
         read.memberships.toSet() shouldBe bookshelf.memberships.toSet()
         read.copy(memberships = bookshelf.memberships) shouldBe bookshelf
+    }
+
+    @Test
+    fun `a membership of a reader Libris does not know is refused`() {
+        val nobody = readerNamed("nobody", "Nobody")
+
+        shouldThrow<DataIntegrityViolationException> { bookshelves.insert(bookshelfOwnedBy(nobody)) }
     }
 
     @Test

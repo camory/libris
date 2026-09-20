@@ -19,10 +19,10 @@ class JdbcReaderRepositoryTest @Autowired constructor(
     fun `an inserted reader is read back whole`() {
         // Given
         val juliette = readerNamed("juliette", "Juliette")
-        bookshelves.insert(bookshelfOwnedBy(juliette))
 
         // When
         readers.insert(juliette)
+        bookshelves.insert(bookshelfOwnedBy(juliette))
 
         // Then
         readers.findByUsername("juliette") shouldBe juliette
@@ -37,10 +37,9 @@ class JdbcReaderRepositoryTest @Autowired constructor(
     fun `a second reader with the same username is refused`() {
         // Given
         val juliette = readerNamed("juliette", "Juliette")
-        bookshelves.insert(bookshelfOwnedBy(juliette))
         readers.insert(juliette)
+        bookshelves.insert(bookshelfOwnedBy(juliette))
         val juju = readerNamed("juliette", "Juju", email = "juju@amory.fr")
-        bookshelves.insert(bookshelfOwnedBy(juju))
 
         // When, Then
         shouldThrow<DuplicateUsernameException> { readers.insert(juju) }
