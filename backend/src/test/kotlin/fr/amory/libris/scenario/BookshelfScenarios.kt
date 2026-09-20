@@ -4,7 +4,7 @@ import com.github.tomakehurst.wiremock.WireMockServer
 import com.github.tomakehurst.wiremock.client.WireMock.anyRequestedFor
 import com.github.tomakehurst.wiremock.client.WireMock.anyUrl
 import com.jayway.jsonpath.JsonPath
-import fr.amory.libris.fixture.BnfStubs
+import fr.amory.libris.bibliography.fixture.BnfStubs
 import io.kotest.matchers.shouldNotBe
 import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test

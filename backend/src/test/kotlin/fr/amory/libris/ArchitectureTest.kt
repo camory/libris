@@ -6,6 +6,7 @@ import com.tngtech.archunit.core.importer.ImportOption
 import com.tngtech.archunit.junit.AnalyzeClasses
 import com.tngtech.archunit.junit.ArchTest
 import com.tngtech.archunit.lang.syntax.ArchRuleDefinition.classes
+import com.tngtech.archunit.lang.syntax.ArchRuleDefinition.noClasses
 import com.tngtech.archunit.library.dependencies.SlicesRuleDefinition.slices
 
 @AnalyzeClasses(
@@ -38,7 +39,7 @@ class ArchitectureTest {
                 "kotlin..",
                 "org.jetbrains.annotations..",
                 "org.springframework.stereotype..",
-                "org.springframework.transaction.annotation..",
+                "org.springframework.transaction..",
                 "..domain..",
                 "..application..",
             )
@@ -48,7 +49,7 @@ class ArchitectureTest {
     @ArchTest
     fun `the infrastructure packages do not depend on each other`(libris: JavaClasses) {
         slices()
-            .matching("fr.amory.libris.infra.(*)..")
+            .matching("fr.amory.libris.(*).infrastructure.(*)..")
             .should().notDependOnEachOther()
             .check(libris)
     }
@@ -57,15 +58,23 @@ class ArchitectureTest {
     fun `a port of the domain is implemented in the infrastructure only`(libris: JavaClasses) {
         classes()
             .that().implement(JavaClass.Predicates.resideInAPackage("..domain.."))
-            .should().resideInAPackage("..infra..")
+            .should().resideInAPackage("..infrastructure..")
             .check(libris)
     }
 
     @ArchTest
-    fun `the top-level packages are free of cycles`(libris: JavaClasses) {
+    fun `the contexts are free of cycles`(libris: JavaClasses) {
         slices()
             .matching("fr.amory.libris.(*)..")
             .should().beFreeOfCycles()
+            .check(libris)
+    }
+
+    @ArchTest
+    fun `the bibliography knows nothing of the library`(libris: JavaClasses) {
+        noClasses()
+            .that().resideInAPackage("..bibliography..")
+            .should().dependOnClassesThat().resideInAPackage("..library..")
             .check(libris)
     }
 }

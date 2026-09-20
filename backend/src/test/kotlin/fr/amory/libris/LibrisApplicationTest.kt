@@ -1,9 +1,9 @@
 package fr.amory.libris
 
-import fr.amory.libris.domain.lookup.IsbnSource
-import fr.amory.libris.infra.lookup.BnfSource
-import fr.amory.libris.infra.lookup.OpenLibrarySource
-import fr.amory.libris.infra.lookup.SourcesProperties
+import fr.amory.libris.bibliography.domain.lookup.ExternalEditionLookup
+import fr.amory.libris.bibliography.infrastructure.lookup.BnfEditionLookup
+import fr.amory.libris.bibliography.infrastructure.lookup.OpenLibraryEditionLookup
+import fr.amory.libris.bibliography.infrastructure.lookup.SourcesProperties
 import io.kotest.matchers.shouldBe
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
@@ -18,7 +18,7 @@ import java.time.Duration.ofSeconds
 class LibrisApplicationTest @Autowired constructor(
     private val client: RestTestClient,
     private val sources: SourcesProperties,
-    private val isbnSources: List<IsbnSource>,
+    private val isbnSources: List<ExternalEditionLookup>,
 ) {
     @Test
     fun `the application starts and reports itself healthy`() {
@@ -40,6 +40,6 @@ class LibrisApplicationTest @Autowired constructor(
 
     @Test
     fun `the BnF is asked before Open Library`() {
-        isbnSources.map { it::class } shouldBe listOf(BnfSource::class, OpenLibrarySource::class)
+        isbnSources.map { it::class } shouldBe listOf(BnfEditionLookup::class, OpenLibraryEditionLookup::class)
     }
 }

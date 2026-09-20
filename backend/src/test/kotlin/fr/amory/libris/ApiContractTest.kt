@@ -2,21 +2,20 @@ package fr.amory.libris
 
 import dev.contracteer.verifier.junit.ContracteerServerPort
 import dev.contracteer.verifier.junit.ContracteerTest
-import fr.amory.libris.application.IsbnLookup
-import fr.amory.libris.application.LookupResult.Found
-import fr.amory.libris.application.LookupResult.SourcesUnavailable
-import fr.amory.libris.application.LookupResult.UnknownIsbn
-import fr.amory.libris.application.ReaderVisit
-import fr.amory.libris.domain.AuthorRole.ARTIST
-import fr.amory.libris.domain.AuthorRole.WRITER
-import fr.amory.libris.domain.Bookshelf
-import fr.amory.libris.domain.Kind.MANGA
-import fr.amory.libris.domain.lookup.SourceAuthor
-import fr.amory.libris.domain.lookup.SourceEdition
-import fr.amory.libris.domain.lookup.SourceSeries
-import fr.amory.libris.fixture.isbnOf
-import fr.amory.libris.fixture.readerOwning
-import fr.amory.libris.infra.web.WebSliceTest
+import fr.amory.libris.bibliography.application.lookup.EditionLookupResult.Found
+import fr.amory.libris.bibliography.application.lookup.EditionLookupResult.SourcesUnavailable
+import fr.amory.libris.bibliography.application.lookup.EditionLookupResult.UnknownIsbn
+import fr.amory.libris.bibliography.application.lookup.LookupEditionByIsbn
+import fr.amory.libris.bibliography.domain.Contribution
+import fr.amory.libris.bibliography.domain.ContributionRole.ARTIST
+import fr.amory.libris.bibliography.domain.ContributionRole.WRITER
+import fr.amory.libris.bibliography.domain.Kind.MANGA
+import fr.amory.libris.bibliography.domain.SeriesEntry
+import fr.amory.libris.bibliography.domain.lookup.EditionPreview
+import fr.amory.libris.bibliography.fixture.isbnOf
+import fr.amory.libris.fixture.WebSliceTest
+import fr.amory.libris.library.application.ReaderVisit
+import fr.amory.libris.library.fixture.readerNamed
 import jakarta.servlet.Filter
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletRequestWrapper
@@ -30,13 +29,13 @@ import org.springframework.context.annotation.Import
 import org.springframework.core.Ordered
 import org.springframework.test.context.bean.override.mockito.MockitoBean
 
-private val ONE_PIECE_1 = SourceEdition(
+private val ONE_PIECE_1 = EditionPreview(
     isbn = isbnOf("9782723488525"),
     kind = MANGA,
     title = "Romance dawn",
     subtitle = "à l'aube d'une grande aventure",
-    authors = listOf(SourceAuthor("Eiichirō Oda", WRITER), SourceAuthor("Eiichirō Oda", ARTIST)),
-    series = SourceSeries("One piece", 1),
+    contributions = listOf(Contribution("Eiichirō Oda", WRITER), Contribution("Eiichirō Oda", ARTIST)),
+    series = SeriesEntry("One piece", 1),
     collection = "Shonen manga",
     publisher = "Glénat",
     publicationYear = 2013,
@@ -48,16 +47,16 @@ private val ONE_PIECE_1 = SourceEdition(
 
 @WebSliceTest
 @Import(ApiContractTest.FixedReaderHeaders::class)
-@MockitoBean(types = [ReaderVisit::class, IsbnLookup::class])
+@MockitoBean(types = [ReaderVisit::class, LookupEditionByIsbn::class])
 class ApiContractTest @Autowired constructor(
     @field:ContracteerServerPort @param:LocalServerPort val serverPort: Int,
     private val visit: ReaderVisit,
-    private val lookup: IsbnLookup,
+    private val lookup: LookupEditionByIsbn,
 ) {
     @ContracteerTest(openApiDoc = "https://raw.githubusercontent.com/camory/libris-api/v0.5.0/openapi.yaml")
     fun `the API matches the contract`() {
         given(visit.visit("contracteer", "contracteer@amory.fr", "Contracteer"))
-            .willReturn(readerOwning(Bookshelf(name = "Bibliothèque de Contracteer"), "contracteer", "Contracteer"))
+            .willReturn(readerNamed("contracteer", "Contracteer"))
         given(lookup.lookUp(isbnOf("9782723488525"))).willReturn(Found(ONE_PIECE_1))
         given(lookup.lookUp(isbnOf("9782000000006"))).willReturn(UnknownIsbn)
         given(lookup.lookUp(isbnOf("9791000000008"))).willReturn(SourcesUnavailable)
