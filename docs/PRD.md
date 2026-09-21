@@ -99,8 +99,9 @@ A named place where copies sit, with members. *Chambre de Léa*, *salon*,
 *On screen*: bibliothèque.
 _Avoid_: library, shelf, location, collection.
 
-**Member**:
-A reader's part in a bookshelf, with a role: `OWNER` or `VIEWER`.
+**Membership**:
+A reader's part in a bookshelf, with a role: `OWNER` or `VIEWER`; the reader
+is then a member of the bookshelf.
 *On screen*: propriétaire, invité.
 _Avoid_: user, participant, guest (in code), share.
 
