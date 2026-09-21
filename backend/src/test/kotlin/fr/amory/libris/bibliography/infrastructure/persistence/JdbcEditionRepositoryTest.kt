@@ -105,6 +105,11 @@ class JdbcEditionRepositoryTest @Autowired constructor(
         shouldThrow<DataIntegrityViolationException> { editions.insert(again) }
     }
 
+    @Test
+    fun `an ISBN-13 the house does not hold finds no edition`() {
+        editions.findByIsbn(isbnOf(ONE_PIECE_TOME_TWO)) shouldBe null
+    }
+
     private fun rowsOf(table: String): Int =
         jdbcClient.sql("select count(*) from $table").query(Int::class.java).single()
 
