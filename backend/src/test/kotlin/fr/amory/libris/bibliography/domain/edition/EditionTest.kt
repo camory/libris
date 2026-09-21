@@ -10,6 +10,11 @@ import org.junit.jupiter.api.Test
 
 class EditionTest {
     @Test
+    fun `an edition without a title is refused`() {
+        shouldThrow<IllegalArgumentException> { editionBy().copy(title = " ") }
+    }
+
+    @Test
     fun `an author named twice in one role is refused, whatever the capitalisation`() {
         shouldThrow<IllegalArgumentException> {
             editionBy(Contribution("Eiichiro Oda", WRITER), Contribution("EIICHIRO ODA", WRITER))

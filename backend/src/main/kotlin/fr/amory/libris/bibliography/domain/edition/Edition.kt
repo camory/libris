@@ -22,6 +22,7 @@ data class Edition(
     val coverUrl: String?,
 ) {
     init {
+        require(title.isNotBlank()) { "an edition needs a title" }
         require(contributions.distinctBy { it.name.lowercase() to it.role }.size == contributions.size) {
             "an edition names an author once per role"
         }
