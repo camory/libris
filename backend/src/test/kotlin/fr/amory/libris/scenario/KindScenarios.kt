@@ -1,8 +1,8 @@
 package fr.amory.libris.scenario
 
 import com.github.tomakehurst.wiremock.WireMockServer
-import fr.amory.libris.fixture.BnfStubs
-import fr.amory.libris.fixture.OpenLibraryStubs
+import fr.amory.libris.bibliography.fixture.BnfStubs
+import fr.amory.libris.bibliography.fixture.OpenLibraryStubs
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Qualifier

@@ -901,3 +901,147 @@ Format:
 - Fix-up on review with Tophe: a role an answer lists twice for one author
   is kept once while grouping, so the key compares sets and the words never
   repeat; its case added, 112 tests.
+
+## 2026-09-19 — T033 The bookshelf created with the reader — done
+- Did: `Bookshelf`, `Member`, `MemberRole` and `BookshelfRepository` in
+  `domain`, `V002__bookshelf.sql` with `JdbcBookshelfRepository`, the reader's
+  default column and `ReaderRepository.update`, and `FirstVisit`, the bean
+  whose one `@Transactional` method welcomes a reader Libris has never seen
+  with the bookshelf they own. Eight cycles, the gate green, the six
+  `BookshelfScenarios` tests still skipped.
+- Decided:
+  - **`FirstVisit` is the transaction boundary and `ReaderVisit` keeps the
+    race.** The brief named both traps and both held: a boundary must be a
+    bean's method called from another bean, and PostgreSQL aborts the
+    transaction on the unique violation, so the `DuplicateUsernameException`
+    catch and its second `findByUsername` stay in `ReaderVisit`, outside.
+    `ReaderVisit` is left plain: find, delegate, catch.
+  - **The reader's default is a nullable column and a nullable field with
+    `= null`.** It keeps every existing `Reader(...)` construction site out of
+    the diff, which is what keeps `infra.web` untouched; `me` builds its own
+    `CurrentReaderResponse`, so the new field reaches no answer.
+  - **One join query, grouped in Kotlin, ordered by the bookshelf's name then
+    the member's reader id.** The order the slice test asserts is the order the
+    SQL states, never the one the database happens to give.
+  - **`update` writes the whole row.** One statement sets the four columns, so
+    the new case of `JdbcReaderRepositoryTest` proves both that the other
+    columns survive and that `findByUsername` maps the new one.
+- Deviations from the brief: three, all of order, none of substance.
+  `JdbcReaderRepository.update` was written at step 1, where the port's new
+  method forced it to compile, though its test only arrives at step 5. Step 4
+  was run as four cycles, one case and one commit each, the migration whole in
+  the first. Steps 1 to 3 leave `LibrisApplicationTest` and the scenario
+  classes red — `FirstVisit` wants a `BookshelfRepository` bean that arrives
+  with the adapter at step 4 — which the plan's order makes unavoidable.
+- Left over: the readers stored before this task keep no default bookshelf and
+  T037 makes the field required; the question went to `agent/PROPOSED.md` as
+  the brief asked. The brief's advice for a migration edited after a run — run
+  a slice class alone, it cleans and migrates — is false and cost a mutation
+  check; the true shape of the trap is now in `agent/GOTCHAS.md`.
+
+## 2026-09-20 — Domain rework with Tophe: two contexts, the aggregates renamed — done, on the T033 branch
+- Did: the backend split into `bibliography` (`Isbn`, `Kind`,
+  `Contribution`, `ContributionRole`, `SeriesEntry`; `domain.lookup` with
+  `ExternalEditionLookup`, `ExternalLookupResult`, `EditionPreview` and its
+  `merge`; `application.lookup` with `LookupEditionByIsbn` and
+  `EditionLookupResult`; `BnfEditionLookup`, `OpenLibraryEditionLookup`,
+  `IsbnController`) and `library` (`domain.reader` with `Reader`, `ReaderId`,
+  `ReaderRepository`; `domain.bookshelf` with `Bookshelf`, `BookshelfId`,
+  `Membership`, `MembershipRole`, `BookshelfRepository`; `ReaderVisit`; the
+  two JDBC repositories, `MeController`, `SecurityConfig`), each with
+  `domain`, `application`, `infrastructure`. Tests, fixtures and the ArchUnit
+  rules moved with them, and the three scenario classes, which a task may
+  not edit, changed in their fixture imports alone, the fixtures having moved
+  into the contexts; `V002__bookshelf.sql` rewritten (never merged).
+  Gate green: 114 tests, the six `BookshelfScenarios` still skipped.
+- Decided, with Tophe:
+  - **The bookshelf owns its memberships.** `Bookshelf(id, name,
+    memberships)` with `Membership(readerId, role)`; `Reader(id, username,
+    email, displayName, defaultBookshelfId)`.
+  - **An aggregate takes its id.** `ReaderId` and `BookshelfId` are value
+    classes with a `new()`; the use case mints them, so it holds both ids before
+    either insert.
+  - **`FirstVisit` folded into `ReaderVisit`** through an injected
+    `TransactionOperations`: the welcome runs in `executeWithoutResult`, the
+    find and the duplicate catch stay outside, which keeps both traps of
+    2026-09-19 answered in one class.
+  - **`SecurityConfig` lives in `library.infrastructure.web`**, not in a
+    root package: `MeController` reads its authority constants and it reads
+    `ReaderVisit`, which would have been a cycle between the root and the
+    context.
+  - **The reader keeps their default bookshelf.** Removed on a word of
+    Tophe's, restored on his next: `Reader(id, username, email, displayName,
+    defaultBookshelfId)`, the column not null. The reader is inserted
+    before the bookshelf that is their default, so `reader.default_bookshelf_id`
+    is `deferrable initially deferred` and a membership's reader is checked
+    at the statement (swapped on the review of 2026-09-21, below). The
+    invariant "the default is one of yours" spans two aggregates and stays
+    out of the constructor: the use case that creates both guarantees it.
+  - **The role has one source of truth, the Kotlin enum.** No `CHECK` on
+    `membership.role`; the case that inserted `LENDER` through `JdbcClient`
+    is gone with it.
+  - **A blank name never reaches `Contribution` or `SeriesEntry`.** Both
+    refuse one, so the BnF and Open Library clients leave out a contributor
+    or a series whose name is blank, one case each over a hand-written
+    record.
+  - **Precedence between sources is the domain's** (Tophe, same evening):
+    `Source { BNF, OPEN_LIBRARY }` in `bibliography.domain.lookup`, declared
+    in order of precedence; the port names its source and
+    `LookupEditionByIsbn` sorts its lookups by it. The `@Order` annotations
+    and the boot test on the bean order are gone; the unit test gives Open
+    Library first and still gets the BnF's title.
+- Deviation from the T033 task line, decided with Tophe: `BookshelfRepository`
+  reads a bookshelf by its id, not the bookshelves a reader is a member of.
+  No use case of this phase reads them (`me` answers from the reader's own
+  reference), so `findByReaderId` waits for the task that lists them;
+  `findById` stays as the read that proves the insert, and the one the
+  add-a-book route will call.
+- Left over: `agent/TASKS.md` task lines T034–T039 still say `infra.*` and
+  `SourceEdition`; `docs/PRD.md` §3 and `specs/bookshelf.md` still say
+  *Member*; `Copy`, `CopyId` and `CopyRepository` of `library.domain.copy`
+  arrive with the task that needs them. The naming rule
+  *Bibliothèque de …* moved into `Bookshelf.ownedBy(owner, ownerName, id)`
+  on Tophe's call the same evening; `ReaderVisit` only mints the two ids.
+  Then, on his call too, a bookshelf without an OWNER membership is refused
+  by the constructor; the bookshelf query joins its memberships inner.
+
+## 2026-09-21 — Review of PR #113 with Tophe: the transaction proven, the deferred reference swapped — on the T033 branch
+- Did: a deep review of the PR, then two pieces on its findings. The
+  transaction of the welcome is proven by `ReaderVisitTest` over
+  `TransactionsObserving`, a `TransactionOperations` fake that records what
+  the in-memory stores held before and after each `execute`: one transaction,
+  from nothing to the reader and their bookshelf; mutation-checked twice (the
+  wrapper removed, one insert moved out), red both times. Then the deferred
+  reference moved from `membership.reader_id` to `reader.default_bookshelf_id`,
+  the welcome inserting the reader first, the slice tests inserting their
+  readers before their bookshelves, and a new slice case: a membership of a
+  reader Libris does not know is refused, red on the old schema. Then a
+  blank `Remote-Name` falls back to the username as a missing one does, so
+  no bookshelf is named *Bibliothèque de* nothing; one case in
+  `MeControllerTest`, red with a 500 first. Then the ArchUnit application
+  rule narrowed from the whole transaction package to its `support` package
+  plus `TransactionStatus`: `@Transactional` on the private `welcome` stayed
+  green under the old rule and is red under the new one. Then the blank-name
+  rule written once per type: `Contribution.of(name, role)` and
+  `SeriesEntry.of(name, volumeNumber)` answer none for a blank or absent name,
+  the two clients `mapNotNull` through them and their five guards are gone;
+  the constructors keep their `require` as last defence. A BnF contributor
+  with a forename and a blank surname, dropped before, is now kept under the
+  forename, a malformed record no test pinned. Gate green: 120 tests, 6
+  skipped. Then D11 amended twice, with Tophe: an enumeration column carries
+  no CHECK, and the children an aggregate owns sit in a table named after the
+  child, `membership`, a join between aggregates keeping both sides' names.
+- Decided, with Tophe: the reference checked at commit is the one crossed
+  once per reader, the default; the membership's reader, which every later
+  use case will write, is checked at the statement, in the slice too.
+- Decided by Tophe on 2026-09-21: `V002` cannot run on a `reader` table that
+  holds rows (the `not null` column has no default, proven against the
+  sandbox PostgreSQL), and no backfill is written: the staging schema is
+  dropped before this PR deploys. The `agent/PROPOSED.md` item of 2026-09-19
+  is closed by it.
+- Left over, from the review: sixteen commits of the branch carry the
+  harness trailer and a session line instead of the trailer of `CLAUDE.md`,
+  one revert none, and the two reverts have git's default subject. The
+  branch is pushed, so its history stays; the squash commit on `main` takes
+  the PR title and a message given explicitly to the merge call, with the
+  one trailer.

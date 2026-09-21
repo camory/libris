@@ -13,6 +13,10 @@
 > D11 amended on 2026-09-13: a validation `code` is documentation until the contract enumerates it; the rationale of keys over wording, and what Spring's problem advice is for.
 > D02 amended on 2026-09-13: the timeout is the source adapter's, the use case never sees time.
 > D11 amended on 2026-09-15: the field rule leaves; a field is added, removed or renamed in the order D04 gives.
+> D02 amended on 2026-09-20: two bounded contexts, `bibliography` and `library`, each with `domain`, `application` and `infrastructure`; the port and the preview of the lookup stay in the domain.
+> D11 amended on 2026-09-20: an aggregate takes its id; the id is a value class minted by its own `new()`.
+> D11 amended on 2026-09-21: an enumeration column carries no CHECK; the Kotlin enum is its one source of truth.
+> D11 amended on 2026-09-21: the children an aggregate owns sit in a table named after the child (`membership`); a join between aggregates keeps both sides' names.
 
 ## Overview
 
@@ -54,32 +58,41 @@ Spring Boot, Kotlin, JDK 25, one Gradle module. Persistence with
 **Spring JDBC** (`JdbcClient`, hand-written SQL; no Spring Data, no JPA, no
 Exposed, no jOOQ). Migrations with **Flyway**, SQL files, never `ddl-auto`.
 
-Packages under `fr.amory.libris`:
-- `domain` — aggregates as data classes, value types, domain rules, and the
-  ports as plain Kotlin interfaces. Framework-free: no annotation, no
-  framework type; the only library is the uuid generator of D11. What the
-  catalogue owns — the aggregates, `Isbn13`, `AuthorRole` — lives at the
-  root; a concern that only uses them lives in a sub-package, the first being
-  `domain.lookup`: the source port and what a source answers. The port's
-  contract on time: a source answers within `LIBRIS_SOURCE_TIMEOUT` or
-  answers `Failed`; the bound is the adapter's, and the use case never sees
-  time.
-- `application` — use-case services and transaction boundaries. Depends on
-  `domain` only.
-- `infra.web` — controllers, request/response DTOs, problem details.
-- `infra.persistence` — the port implementations over `JdbcClient`: the SQL
-  of every insert, update, lookup, search and listing, and the row-to-aggregate
-  mapping, which is the aggregate's constructor.
-- `infra.lookup` — the BnF client (P2); Open Library and Google Books later.
+Packages under `fr.amory.libris`: one per bounded context, `bibliography`
+(what an edition is and where it is looked up) and `library` (who reads,
+and the bookshelves they keep), each with the same three layers.
+- `<context>.domain` — aggregates as data classes, value types, domain rules,
+  and the ports as plain Kotlin interfaces. Framework-free: no annotation, no
+  framework type; the only library is the uuid generator of D11, used by the
+  id types (`ReaderId.new()`), never by an aggregate, which takes its id.
+  A concern lives in a sub-package: `bibliography.domain.lookup` holds the
+  external lookup port, what it answers, and the `EditionPreview` it answers
+  with; `library.domain.reader` and `library.domain.bookshelf` hold one
+  aggregate each with its repository port. The port's contract on time: a
+  source answers within `LIBRIS_SOURCE_TIMEOUT` or answers `Failed`; the
+  bound is the adapter's, and the use case never sees time.
+- `<context>.application` — use-case services and transaction boundaries,
+  the latter through Spring's `TransactionOperations`. Depends on `domain`
+  only.
+- `<context>.infrastructure.web` — controllers, request/response DTOs,
+  problem details. `library.infrastructure.web` also holds the security
+  filter chain: the identity a request carries is a reader.
+- `<context>.infrastructure.persistence` — the port implementations over
+  `JdbcClient`: the SQL of every insert, update, lookup, search and listing,
+  and the row-to-aggregate mapping, which is the aggregate's constructor.
+- `bibliography.infrastructure.lookup` — the BnF and Open Library clients;
+  Google Books later.
 
 Enforced by ArchUnit rules in the test suite (see D07):
 1. `domain` depends only on the Kotlin/Java standard libraries and the uuid
    generator of D11.
-2. `application` depends only on `domain` (plus `@Service` / `@Transactional`).
-3. `infra.*` packages depend on `domain` and `application`, never on each
-   other.
-4. No cycles between top-level packages.
-5. Ports declared in `domain` are implemented only in `infra`.
+2. `application` depends only on `domain` (plus `@Service` and Spring's
+   `TransactionOperations`, never `@Transactional`).
+3. `infrastructure.*` packages depend on `domain` and `application`, never
+   on each other.
+4. No cycles between contexts, and `bibliography` never depends on
+   `library`.
+5. Ports declared in `domain` are implemented only in `infrastructure`.
 
 Considered and rejected: Ktor and http4k (the human reviewer's fluency is the
 merge gate), Spring Modulith (over-engineering at this size), Spring Data
@@ -259,7 +272,7 @@ session, no BCrypt.
 - Backend, `cd backend && ./gradlew check`: compile with warnings as errors;
   detekt with its formatting ruleset; JUnit 5 unit tests with Kotest
   assertions (JUnit 5 is the only test framework, Kotest is used as an
-  assertion library only); the JDBC slice of `infra.persistence` against
+  assertion library only); the JDBC slice of `infrastructure.persistence` against
   the PostgreSQL of D08; the ArchUnit rules of D02; Contracteer verification
   against the web slice on a real port; one test booting the whole
   application; a Kover coverage report (XML, JaCoCo format).
@@ -269,7 +282,7 @@ session, no BCrypt.
   (LCOV).
 - Each layer is tested in isolation, and a test asserts what its layer
   owns. `domain` and `application` own the behaviour and the values:
-  `application` runs plain JUnit over the fakes of its ports. `infra.web` is
+  `application` runs plain JUnit over the fakes of its ports. `infrastructure.web` is
   proven by the Contracteer test: the web slice, the package with its
   security chain on a real port and no datasource, over stubbed use cases
   whose stubs mirror the document's examples; it proves structure and types,
@@ -278,7 +291,7 @@ session, no BCrypt.
   header, and asserts no value the contract leaves free. A task that
   implements an operation of the contract opens with the pin bump: the new
   verification cases are its first red, the controller their green.
-  `infra.persistence` runs in the JDBC slice against the PostgreSQL of D08,
+  `infrastructure.persistence` runs in the JDBC slice against the PostgreSQL of D08,
   each test in a transaction rolled back at the end. Every class that
   touches the database, the JDBC slice and the scenario classes, starts
   from a schema cleaned and migrated by Flyway before the class. One test
@@ -409,9 +422,10 @@ deliberately lacks), no other service. A test that needs more blocks the task.
 ### D11 — Data and API conventions
 Identifiers
 - Every table has a `uuid` primary key, UUID version 7 via
-  `com.fasterxml.uuid:java-uuid-generator`, generated by the aggregate's
-  constructor as the default of its `id` parameter, so an id is never null
-  and a row read back passes its id explicitly. Persistence ports expose
+  `com.fasterxml.uuid:java-uuid-generator`, wrapped in a value class per
+  aggregate (`ReaderId`, `BookshelfId`) whose `new()` mints it. An aggregate
+  takes its id as a constructor parameter and never generates one: the use
+  case that creates it mints the id, and a row read back passes its own. Persistence ports expose
   `insert` and `update`, each one SQL statement over `JdbcClient`; nothing
   decides between the two from the state of the aggregate. Ids are strings
   in JSON.
@@ -425,12 +439,15 @@ Time
   columns.
 
 Schema
-- snake_case, singular table names (`edition`, `copy`, `bookshelf`). Join
-  tables are named after both sides (`edition_author`), with the role column
-  on them.
-- Enumerations stored as text with a CHECK constraint, never as PostgreSQL
-  enum types. Values in UPPER_SNAKE (`BOOK`, `MANGA`, `BD`), identical in
-  Kotlin, SQL and JSON.
+- snake_case, singular table names (`edition`, `copy`, `bookshelf`). The
+  children an aggregate owns sit in a table named after the child
+  (`membership`, the bookshelf's); a join table between two aggregates is
+  named after both sides (`edition_author`). The role column sits on that
+  table in both cases.
+- Enumerations stored as text, never as PostgreSQL enum types, and without
+  a CHECK constraint: the Kotlin enum is the one source of truth, and a row
+  is read through its `valueOf`. Values in UPPER_SNAKE (`BOOK`, `MANGA`,
+  `BD`), identical in Kotlin, SQL and JSON.
 - Foreign keys always declared. Deletes are hard; rows meaningless without
   their parent cascade (author and tag links, copies, reading states, loans).
   Removing the last copy of an edition deletes the edition (PRD §3).

@@ -26,11 +26,26 @@ was found.
   `gh api -X PATCH repos/camory/libris/pulls/N`. `gh` GraphQL calls are
   rate-limited: poll `gh pr checks` every 30 s or more, and merge through
   REST (`gh api -X PUT repos/camory/libris/pulls/N/merge -f
-  merge_method=squash`) when `gh pr merge` is throttled.
+  merge_method=squash`) when `gh pr merge` is throttled. `gh pr edit` fails
+  on this repository with a GraphQL error about classic projects; a body is
+  updated with `gh api -X PATCH repos/camory/libris/pulls/N -F body=@file`.
 - The sandbox PostgreSQL survives between runs (tmpfs: gone when the
-  container is recreated). Editing an applied migration breaks every context
-  start with a Flyway checksum mismatch until the database is recreated;
-  D11 forbids editing a merged one anyway.
+  container is recreated). Editing a migration the database has applied breaks
+  every context start with a Flyway checksum mismatch, and `FreshSchema` does
+  not rescue it: Flyway's autoconfiguration validates and migrates while the
+  context loads, before any `@BeforeAll` cleans, so every database-backed class
+  fails whole with `initializationError` and `Failed to load
+  ApplicationContext`, and running one slice class alone changes nothing.
+  Restoring the file's bytes is the cheap fix as long as the edited version
+  never applied; otherwise the database must be recreated. D11 forbids editing
+  a merged migration anyway, and the price of the trap is that a constraint a
+  migration declares cannot be mutation-checked once it has run.
+- `reader.default_bookshelf_id` references `bookshelf` `deferrable initially
+  deferred`: the reader is inserted before the bookshelf that is their
+  default, and PostgreSQL checks the reference at commit. A JDBC slice test
+  rolls back, so that check never runs there: a reader whose default
+  bookshelf the test never inserts is not refused. `membership.reader_id` is
+  checked at the statement, in the slice too.
 - The loop takes the agent PostgreSQL down at the end of a run; a host gate
   then fails with connection refused until
   `docker compose --env-file agent/.env -f agent/compose.yaml up -d postgres`.
@@ -89,18 +104,31 @@ was found.
 - Spring injects a test constructor only with `@Autowired` on it. A
   `@SpringBootTest` with explicit `classes` does not detect nested
   `@TestConfiguration` classes: `@Import` them.
-- The web slice (`@WebSliceTest`) component-scans `infra.web`, so every use
-  case a controller of the package takes must be in the class-level
+- The web slice (`@WebSliceTest`, in the `fixture` package) component-scans
+  the `infrastructure.web` package of both contexts, so every use case a
+  controller of either takes must be in the class-level
   `@MockitoBean(types = [...])` of every web-slice test, not only the one
-  exercised. Mockito stubs a method taking a value class from Kotlin call
-  syntax (`given(lookup.lookUp(isbnOf("…")))`).
+  exercised. Its `WebSliceConfiguration` cannot live in the root test
+  package: a `@SpringBootTest` without `classes` looks for one
+  `@SpringBootConfiguration` in the test's own package and finds two there,
+  `@TestComponent` notwithstanding. Mockito stubs a method taking a value
+  class from Kotlin call syntax (`given(lookup.lookUp(isbnOf("…")))`).
 - A scenario class boots the whole application and commits what its
   requests write; `FreshSchema` on `JdbcSliceTest` and `ScenarioTest` is
   what keeps the JDBC slice from meeting a reader it did not insert.
+- `ArchitectureTest`'s application rule lists what `application` may see of
+  Spring: `org.springframework.stereotype..`,
+  `org.springframework.transaction.support..` and the one type
+  `TransactionStatus`, which the lambda given to `TransactionOperations`
+  takes, since the rule reads lambda parameters. `@Transactional` is outside
+  the list on purpose: a boundary is `TransactionOperations`, never the
+  annotation. A use case that needs another Spring type either widens the
+  rule in the same cycle or does not carry it.
 - `ArchitectureTest`'s port rule matches any non-interface class assignable
   to a domain interface, so the variants of a sealed *interface* in `domain`
   break it: a state is a sealed *class*.
-- A bean of `infra.lookup` may not be named `bnf`: the scenario harness owns
+- A bean of `bibliography.infrastructure.lookup` may not be named `bnf`: the
+  scenario harness owns
   that name for its WireMock server.
 - A marcxchange `controlfield` is not a `datafield`: it has a `tag` and text,
   no subfield, and `getElementsByTagNameNS(MARCXCHANGE, "datafield")` never
@@ -155,7 +183,7 @@ was found.
   codes sit at positions 4 to 7, `t` marking a comic strip; a record without
   the field names no form. The language an ouvrage was translated from is
   field 101 `$c`, in the BnF's own three-letter codes (`jpn`, `kor`, `chi`),
-  which are not the ISO 639-1 codes the `LANGUAGES` map of `BnfSource`
+  which are not the ISO 639-1 codes the `LANGUAGES` map of `BnfEditionLookup`
   answers for the `language` field.
 
 ## Frontend build and tests
