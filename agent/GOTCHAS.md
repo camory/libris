@@ -230,7 +230,9 @@ true; the diary keeps the date it was found.
   `WebSliceTest`, and serves both contexts; it was in
   `library.infrastructure.persistence` until T034 moved it. A slice test
   imports the repository it proves with `@Import(Jdbc…Repository::class)` and
-  takes it and `JdbcClient` through an `@Autowired` constructor.
+  takes it through an `@Autowired` constructor, with `JdbcClient` beside it
+  only when a case queries through it: detekt's `UnusedPrivateProperty` fails
+  a constructor argument no case reads.
 
 ## Frontend build and tests
 - Two TypeScript programs: `tsconfig.app.json` (`src/`, `vite/client` types)
