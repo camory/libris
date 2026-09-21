@@ -39,7 +39,7 @@ class JdbcEditionRepositoryTest @Autowired constructor(
     }
 
     @Test
-    fun `an edition with nothing but a kind and a title is read back whole`() {
+    fun `an edition whose optional fields are all absent is read back whole`() {
         // Given
         val edition = bare(onePieceTomeOne())
 
