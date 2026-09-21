@@ -9,10 +9,12 @@ import fr.amory.libris.bibliography.domain.edition.Edition
 import fr.amory.libris.bibliography.domain.edition.EditionId
 import fr.amory.libris.bibliography.fixture.isbnOf
 import fr.amory.libris.fixture.JdbcSliceTest
+import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.matchers.shouldBe
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.context.annotation.Import
+import org.springframework.dao.DataIntegrityViolationException
 import org.springframework.jdbc.core.simple.JdbcClient
 
 private const val ONE_PIECE = "9782723488525"
@@ -88,6 +90,19 @@ class JdbcEditionRepositoryTest @Autowired constructor(
         // Then
         editions.findByIsbn(isbnOf(ONE_PIECE)) shouldBe null
         rowsOf("edition") shouldBe 2
+    }
+
+    @Test
+    fun `a second edition on an ISBN-13 the house holds is refused`() {
+        // Given
+        val edition = onePieceTomeOne()
+        editions.insert(edition)
+
+        // When
+        val again = edition.copy(id = EditionId.new(), title = "Aux prises avec Baggy et ses hommes")
+
+        // Then
+        shouldThrow<DataIntegrityViolationException> { editions.insert(again) }
     }
 
     private fun rowsOf(table: String): Int =
