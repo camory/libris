@@ -33,6 +33,31 @@ class JdbcEditionRepositoryTest @Autowired constructor(
         editions.findByIsbn(isbnOf(ONE_PIECE)) shouldBe edition
     }
 
+    @Test
+    fun `an edition with nothing but a kind and a title is read back whole`() {
+        // Given
+        val edition = bare(onePieceTomeOne())
+
+        // When
+        editions.insert(edition)
+
+        // Then
+        editions.findByIsbn(isbnOf(ONE_PIECE)) shouldBe edition
+    }
+
+    private fun bare(edition: Edition): Edition = edition.copy(
+        subtitle = null,
+        contributions = emptyList(),
+        series = null,
+        collection = null,
+        publisher = null,
+        publicationYear = null,
+        language = null,
+        pageCount = null,
+        summary = null,
+        coverUrl = null,
+    )
+
     private fun onePieceTomeOne(): Edition = Edition(
         id = EditionId.new(),
         isbn = isbnOf(ONE_PIECE),
