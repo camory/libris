@@ -255,21 +255,5 @@ Priorities: **P1** = needed before the family uses it, **P2** = soon after,
 
 ## 7. Open questions for Tophe
 
-1. ~~Digital copies~~ — resolved 2026-09-18: excluded from v1; a copy is
-   physical (§3). A digital copy, if it ever comes, is a feature of its own,
-   after e-book reading and file storage leave §6.
-2. ~~Cover images~~ — resolved 2026-09-11: a cover URL on the edition, filled
-   by the lookup or by hand; storing our own images is a later feature.
-3. Is a barcode-scan lookup source for BD needed beyond BnF? (Bedetheque has
+1. Is a barcode-scan lookup source for BD needed beyond BnF? (Bedetheque has
    no public API.)
-4. ~~Authentication~~ — resolved 2026-09-07: delegated to the existing Authelia
-   (see `docs/ARCHITECTURE.md` D06).
-5. ~~Deleting an item that still has copies~~ — resolved 2026-09-11: nobody
-   deletes an edition; removing the last copy deletes it (§3).
-6. ~~Google Books~~ — resolved 2026-09-14: deferred with the source itself;
-   it refuses anonymous requests (daily quota of zero), so it comes with an
-   API key on the server, or not at all.
-7. ~~Where the kind comes from~~ — resolved 2026-09-16: prefilled by the
-   lookup from what the BnF record says, like the other fields (§3). It is a
-   field of the ISBN answer, so it starts with a contract release, and it
-   lands with the spec that adds the ouvrage to a bookshelf.
