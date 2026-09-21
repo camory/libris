@@ -46,45 +46,49 @@ frontend pin moves in T038. No other task touches the contract (D04).
       Realises S1; un-skips nothing, its scenario test waiting for the API of
       T037.
 
-- [ ] T034 Backend: the house's book stored.
-      `domain`: `Book`, an edition the house holds — the fields the lookup
-      answers and its kind, at most one series with a volume number, its
-      authors each with a role — and the repository that stores one and finds
+- [ ] T034 Backend: the house's edition stored.
+      `bibliography.domain`: `Edition`, what an ISBN identifies as the house
+      holds it — the fields the lookup answers and its kind, at most one
+      series entry with a volume number, its contributions each with a role
+      — with its `EditionId`, and the repository that stores one and finds
       one by its ISBN-13 (D02).
-      `infra.persistence`: `V003__book.sql`, the book, its series, its
-      authors and their roles; a series or an author is matched by name
-      whatever its capitalisation and never doubled (PRD §3), uuid v7 keys
-      and the role as text with a CHECK (D11).
-      Slice test: a book stored and read back whole, and a second book whose
-      series and author names differ only in case landing on the rows of the
-      first.
+      `bibliography.infrastructure.persistence`: `V003__edition.sql`, the
+      edition, its series, its contributions and their roles; a series or a
+      contributor is matched by name whatever its capitalisation and never
+      doubled (PRD §3), uuid v7 keys and the role as text (D11).
+      Slice test: an edition stored and read back whole, and a second edition
+      whose series and contributor names differ only in case landing on the
+      rows of the first.
       Nothing of the API, of the lookup or of any use case changes: this is
       the storage T035 and T036 need.
       Serves S2, S3 and S4; realises none on its own and un-skips nothing.
 
 - [ ] T035 Backend: the ouvrage added to a bookshelf.
-      `domain`: `Copy`, one book on one bookshelf, and its repository;
-      `infra.persistence`: `V004__copy.sql` and the `JdbcClient` repository,
-      proven by a slice test (D02, D11).
-      `application`: the add use case takes the reader, a bookshelf and the
-      ouvrage as the card shows it, kind included; it matches the house's
-      book by `isbn13` and creates it on the way when the house lacks it,
+      `library.domain.copy`: `Copy`, one edition on one bookshelf, with its
+      `CopyId` and its repository;
+      `library.infrastructure.persistence`: `V004__copy.sql` and the
+      `JdbcClient` repository, proven by a slice test (D02, D11).
+      `library.application`: the add use case takes the reader, a bookshelf
+      and the ouvrage as the card shows it, kind included; it matches the
+      house's edition by `isbn13` and creates it on the way when the house
+      lacks it,
       then puts a copy on that bookshelf and answers it; it refuses a
       bookshelf the reader is not a member of, and refuses an `isbn13` that
       is not an ISBN-13, as the lookup refuses its path; without an
-      `isbn13` there is nothing to match, so the house gets a new book every
-      time.
+      `isbn13` there is nothing to match, so the house gets a new edition
+      every time.
       Tests over fake repositories: the house lacking the ISBN (S2); another
       reader adding an ISBN the house holds, whose copy is the edition's
       second on a second bookshelf, and the same reader adding it again, the
-      house still holding one book for that ISBN (S3); the two refusals; the
+      house still holding one edition for that ISBN (S3); the two refusals; the
       add without ISBN.
       Realises S2 and S3 on the backend; un-skips nothing, their scenario
       tests waiting for the API of T037.
 
-- [ ] T036 Backend: the lookup answers the house's book.
-      `application`: the lookup takes the reader who asks and looks in the
-      house first — when a book of that ISBN exists it answers it as the
+- [ ] T036 Backend: the lookup answers the house's edition.
+      `library.application`, since the bibliography knows nothing of the
+      library (D02): the lookup takes the reader who asks and looks in the
+      house first — when an edition of that ISBN exists it answers it as the
       house holds it, with its copies on the bookshelves the reader belongs
       to, each with the name of its bookshelf, and asks no source at all; an
       edition whose copies all sit on bookshelves the reader does not belong
@@ -92,8 +96,8 @@ frontend pin moves in T038. No other task touches the contract (D04).
       When the house lacks the ISBN the lookup behaves as
       `specs/fast-entry.md` says, sources, merge and answers unchanged, and
       the copies are empty; the tests of that spec stay green.
-      The ports read a book by its ISBN-13 and the copies of a book visible
-      to a reader; no new table and no migration.
+      The ports read an edition by its ISBN-13 and the copies of an edition
+      visible to a reader; no new table and no migration.
       Tests over fake repositories with sources that must not be asked, one
       per case of S4.
       Realises S4 on the backend; un-skips nothing, its scenario test waiting
@@ -103,8 +107,9 @@ frontend pin moves in T038. No other task touches the contract (D04).
       `ApiContractTest` pins `v0.6.0`: the backend's one bump, and one task,
       since the verifier reads the whole document and both added fields are
       required — the two fields and the operation land together (D04).
-      `infra.web`: `me` answers `defaultBookshelf` `{id, name}`; the lookup
-      answers `copies`, empty when the reader's bookshelves hold none, the
+      `infrastructure.web` of each context: `me` answers `defaultBookshelf`
+      `{id, name}`; the lookup answers `copies`, empty when the reader's
+      bookshelves hold none, the
       current reader read from the forwarded headers as `me` reads them
       (D06).
       `POST /api/v1/bookshelves/{id}/books`: the body `NewBook` → `201` the
@@ -115,7 +120,7 @@ frontend pin moves in T038. No other task touches the contract (D04).
       a body of the wrong types, both answered `400` with a `Problem` before
       any use case is reached (`agent/GOTCHAS.md`).
       Web-slice tests over the three answers and the two refusals, every use
-      case of `infra.web` mocked (`agent/GOTCHAS.md`); Contracteer verifies
+      case the web slice scans mocked (`agent/GOTCHAS.md`); Contracteer verifies
       `ADD_ONE_PIECE_1`, `400_NOT_AN_ISBN`, `404_NOT_MY_BOOKSHELF` and
       `ONE_PIECE_2_OWNED`.
       Carries S1 to S4 to the API; un-skips the tests of
