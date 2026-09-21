@@ -199,6 +199,21 @@ Format:
   check: it is proven by its case alone.
 - Left over: `update` on `EditionRepository`, the `tag` table, the search
   migration and the promotion of the test's edition helper to a fixture
-  package are in `agent/PROPOSED.md`. `Edition` carries no invariant of its
-  own and no task of this phase deletes an edition, so PRD §3's "when the last
-  copy goes, the edition goes with it" waits for the task that removes a copy.
+  package are in `agent/PROPOSED.md`. No task of this phase deletes an
+  edition, so PRD §3's "when the last copy goes, the edition goes with it"
+  waits for the task that removes a copy.
+
+## 2026-09-21 — Review of PR #117 with Tophe: an author named once per role — on the T034 branch
+- Did: three fix-ups on the review. `Edition` refuses two contributions of one
+  author in one role, whatever the capitalisation of the name, the rule the
+  key of `contribution` and the `author` row matched by `lower(name)` held
+  alone: before it, such an edition failed the insert with a
+  `DuplicateKeyException`. `EditionTest`, two cases, the second (an author
+  holds several roles) proven by a mutation keying the rule on the name alone.
+  Then the reviewer's two suggestions: the slice case of the absent optional
+  fields renamed for what it holds, and the `@JdbcSliceTest` gotcha taking
+  `JdbcClient` only when a case reads it.
+- Left over: sources name an author twice in one role (the card counts a role
+  once since T032), and `Edition` only refuses. What builds an edition from a
+  `NewBook` in T035 decides which contribution is kept; in
+  `agent/PROPOSED.md`.

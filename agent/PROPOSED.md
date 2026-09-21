@@ -286,3 +286,7 @@
   helper of the class. The day a second class needs the same shapes — T035
   creating an edition the house lacks is the likely one — the helper moves to
   `bibliography/fixture/` (found on T034, 2026-09-21).
+- Backend: `Edition` refuses an author named twice in one role, and the
+  sources do name one twice. What builds the edition from a `NewBook` in T035
+  keeps the first of such contributions, as a factory beside the constructor,
+  or the add answers a 500 (found on the review of T034, 2026-09-21).
