@@ -2,21 +2,8 @@
 
 > Read by every agent run. Decisions here are binding until changed by a human.
 > Each decision has an ID so tasks and PRs can reference it.
-> Reviewed decision by decision with Tophe on 2026-09-07.
-> D09 amended on 2026-09-08: image tags, version exposure, hand-managed routing.
-> D09 amended on 2026-09-10: the runbook lives on the server, not in the repository.
-> D06 amended on 2026-09-10: Android only; manifest fetched with credentials; the expired session leaves the app through a network-only path.
-> D11 amended on 2026-09-11: problems carry no wording, the frontend does; every error the API describes has a problem body; a response field is added, never removed or renamed.
-> D02 amended on 2026-09-12: the domain may be split by concern into sub-packages; `domain.lookup` is the first.
-> D10 amended on 2026-09-12: members imported, not qualified, when the bare name is unambiguous.
-> D07 rewritten on 2026-09-13: the web slice is proven by Contracteer, values by domain, application and scenario tests; a fresh schema before every database-backed class.
-> D11 amended on 2026-09-13: a validation `code` is documentation until the contract enumerates it; the rationale of keys over wording, and what Spring's problem advice is for.
-> D02 amended on 2026-09-13: the timeout is the source adapter's, the use case never sees time.
-> D11 amended on 2026-09-15: the field rule leaves; a field is added, removed or renamed in the order D04 gives.
-> D02 amended on 2026-09-20: two bounded contexts, `bibliography` and `library`, each with `domain`, `application` and `infrastructure`; the port and the preview of the lookup stay in the domain.
-> D11 amended on 2026-09-20: an aggregate takes its id; the id is a value class minted by its own `new()`.
-> D11 amended on 2026-09-21: an enumeration column carries no CHECK; the Kotlin enum is its one source of truth.
-> D11 amended on 2026-09-21: the children an aggregate owns sit in a table named after the child (`membership`); a join between aggregates keeps both sides' names.
+> Reviewed decision by decision with Tophe on 2026-09-07; the history of
+> each decision is in git.
 
 ## Overview
 
@@ -31,13 +18,13 @@ phone / browser ──► https://libris.amory.fr
              ▼                               ▼
    backend (Kotlin, Spring Boot,      frontend (Vue PWA,
    JRE 25, no published port)         static, nginx)
-        │             │
-   PostgreSQL 18   covers volume
+        │
+   PostgreSQL 18
    (data volume)
         │
    Gordien (existing): hourly pg_dump + restic
 
-   backend ──► BnF                                 (outbound, optional, P2)
+   backend ──► BnF, Open Library                   (outbound, optional)
 ```
 
 ## Decisions
@@ -53,7 +40,7 @@ pull request the backend and frontend jobs run only when their directory or
 the workflow changed, and the images job builds the sides that ran. A job
 skips itself while its application does not exist.
 
-### D02 — Backend: Kotlin + Spring Boot, light hexagon
+### D02 — Backend: Kotlin + Spring Boot, a hexagon per bounded context
 Spring Boot, Kotlin, JDK 25, one Gradle module. Persistence with
 **Spring JDBC** (`JdbcClient`, hand-written SQL; no Spring Data, no JPA, no
 Exposed, no jOOQ). Migrations with **Flyway**, SQL files, never `ddl-auto`.
@@ -105,9 +92,9 @@ SQLDelight (a second schema definition beside the Flyway files).
 
 ### D03 — Database: PostgreSQL only
 PostgreSQL 18, nothing else. Search is one ranked SQL query over:
-- `edition.search_text`, maintained by the application on every edition
-  save: title, subtitle, series name, author names, tag names. Renaming a
-  series, an author or a tag re-saves its editions.
+- `edition.search_text`, written by the persistence adapter on every insert
+  and update of an edition from the names the aggregate holds: title,
+  subtitle, series name, author names, tag names. The domain never sees it.
 - `edition.search_vector`, a generated column derived from `search_text` and
   indexed with GIN, using two custom text search configurations built on
   `unaccent`: French stemming and plain tokens, so that both "Astérix" and a
@@ -134,8 +121,7 @@ release it implements:
   stubs the use cases with whatever the document's examples reference, before
   every case.
 - Frontend: developed and tested against `contracteer mock <pinned URL>` —
-  the Vite dev proxy, the Vitest global setup and, later, Playwright all
-  point at it. **No code generation**: request and response types are written
+  the Vite dev proxy and the Vitest global setup both point at it. **No code generation**: request and response types are written
   by hand in `frontend/src/infra/api`; the mock is what catches drift.
 - Named examples are optional. They document and disambiguate a request or a
   response; when present, request and response examples share a key and use
@@ -187,7 +173,7 @@ Layers under `frontend/src`:
   orders, reading-state transitions, validation rules). No Vue, no fetch, no
   DOM.
 - `application/` — the use cases as composables, the Pinia stores, and the
-  ports (plain interfaces such as `ItemsApi`).
+  ports (plain interfaces such as `IsbnApi`).
 - `infra/` — port implementations: `infra/api` (hand-written types, one fetch
   client per resource); later `infra/storage` if offline needs more than
   Workbox.
@@ -233,11 +219,13 @@ session, no BCrypt.
   proxy adds them. Integration tests set the headers directly. The
   contract test adds a fixed reader's headers to every request through a
   test configuration of its own.
-- The domain calls the person a `Reader`: one entity, id, username, email
-  and display name, keyed by username. On every request the filter loads the
-  reader by username, creating them from the headers on their first visit,
-  and sets the entity as the principal of the authentication. Controllers
-  receive it with `@AuthenticationPrincipal`; no custom principal class.
+- The domain calls the person a `Reader`: one aggregate, id, username,
+  email, display name and default bookshelf, keyed by username. On every
+  request the filter hands the headers to `ReaderVisit`, which finds the
+  reader by username or, on their first visit, creates them with their
+  bookshelf, and sets the reader as the principal of the authentication.
+  Controllers receive it with `@AuthenticationPrincipal`; no custom
+  principal class.
 - Roles are Spring authorities, never stored: every user Authelia lets
   through is `ROLE_READER`; members of the `libris-admin` group are also
   `ROLE_ADMIN`. The policy (one or two factors) is Authelia's.
@@ -259,10 +247,9 @@ session, no BCrypt.
   intercepts it, logs the reader in and sends them back. Logout is a link
   to Authelia's logout.
 - The contract declares no security scheme: authentication is upstream.
-- Risk to verify on a real phone with the first deployed screen: the portal
-  redirect inside an installed PWA. Android only: nobody in the household
-  has an iPhone. Fallback if it fails: app-native accounts behind Authelia's
-  rule.
+- Android only: nobody in the household has an iPhone. The portal redirect
+  inside the installed PWA was checked on the Pixel with the first deployed
+  screen, on 2026-09-10.
 - The manifest link carries `crossorigin="use-credentials"`: a browser
   fetches a manifest without cookies otherwise, and behind Authelia that
   request is refused, which makes the app uninstallable.
@@ -275,7 +262,7 @@ session, no BCrypt.
   assertion library only); the JDBC slice of `infrastructure.persistence` against
   the PostgreSQL of D08; the ArchUnit rules of D02; Contracteer verification
   against the web slice on a real port; one test booting the whole
-  application; a Kover coverage report (XML, JaCoCo format).
+  application.
 - Frontend, `cd frontend && npm test`: `vue-tsc` type check; ESLint with the
   boundaries rules; Vitest unit tests plus `infra/api` against
   `contracteer mock`, started by the global setup; a V8 coverage report
@@ -334,10 +321,11 @@ session, no BCrypt.
   Then, marked by those three comments, unless it is a single statement. A
   test of framework or library wiring may be written while learning and is
   deleted before the pull request.
-- Coverage: no total threshold. CI reports changed-line coverage with
-  `diff-cover`; informational until the loop runs without human review, then
-  a gate.
-- No end-to-end tests before deployment; then a single Playwright smoke.
+- Coverage: the frontend gate writes a V8 report that nothing reads; the
+  backend has none. No threshold and no gate until the loop runs without
+  human review.
+- No end-to-end tests. The feature-level check is the *Done* of each spec,
+  made by Tophe on the Pixel.
 
 ### D08 — The environment is given, not created
 The build creates no infrastructure. It receives, identically in local dev,
@@ -378,8 +366,8 @@ deliberately lacks), no other service. A test that needs more blocks the task.
   `deploy/.env`.
 - `deploy/` holds the production compose: PostgreSQL 18, backend and frontend
   pulled by `LIBRIS_TAG` from an uncommitted `.env`, joined to the existing
-  Traefik network, no published ports, no labels, named volumes for data and
-  covers. Traefik routing (`libris.amory.fr` to the frontend, `/api` to the
+  Traefik network, no published ports, no labels, one named volume for the
+  data. Traefik routing (`libris.amory.fr` to the frontend, `/api` to the
   backend, the Authelia forward-auth middleware on both routers) and the
   Authelia access rule are declared by hand in the server's Traefik dynamic
   configuration files and Authelia configuration, outside this repository.
@@ -391,7 +379,7 @@ deliberately lacks), no other service. A test that needs more blocks the task.
 - Deploy is manual: set `LIBRIS_TAG`, then `docker compose pull && docker
   compose up -d` on the Kimsufi box. Rollback is the previous tag.
 - Backups are not the app's job: the server's Gordien (hourly `pg_dump` +
-  restic) covers the database and the covers volume. Deployment registers
+  restic) covers the database. Deployment registers
   Libris there; the server's runbook documents the restore.
 
 ### D10 — Conventions
@@ -441,9 +429,11 @@ Time
 Schema
 - snake_case, singular table names (`edition`, `copy`, `bookshelf`). The
   children an aggregate owns sit in a table named after the child
-  (`membership`, the bookshelf's); a join table between two aggregates is
-  named after both sides (`edition_author`). The role column sits on that
-  table in both cases.
+  (`membership`, the bookshelf's; `contribution`, the edition's), and a
+  child that references a shared name row does so by that row's id
+  (`contribution.author_id`). A join table between two aggregates, when one
+  comes, is named after both sides. The role column sits on the child's
+  table.
 - Enumerations stored as text, never as PostgreSQL enum types, and without
   a CHECK constraint: the Kotlin enum is the one source of truth, and a row
   is read through its `valueOf`. Values in UPPER_SNAKE (`BOOK`, `MANGA`,
@@ -499,6 +489,64 @@ API shapes
 Contract
 - Every schema in the contract states `required` and `nullable`
   explicitly, since the frontend types are written by hand from it.
+
+### D12 — The domain model
+- An aggregate keeps its own rules. What must hold for it to exist is
+  checked where it is built, never in a use case: an `init` block when the
+  rule reads the constructor's parameters (`Bookshelf` refuses memberships
+  without an `OWNER`), a factory on the companion when the rule also decides
+  a value (`Bookshelf.ownedBy(owner, ownerName, id)` names the bookshelf
+  after its owner and makes them its one member). A row read back passes
+  through the same constructor, so the database never holds what the domain
+  refuses. A use case that checks a rule an aggregate could check itself has
+  the rule in the wrong place.
+- A rule that spans two aggregates is the use case's. The reader's default
+  bookshelf is one they own: neither `Reader` nor `Bookshelf` can check it
+  alone, so `ReaderVisit` builds both and inserts both inside one
+  `TransactionOperations` block, and that transaction is what guarantees no
+  reader exists without their bookshelf. The use case's test proves the
+  boundary, not only the result: a fake of `TransactionOperations` records
+  what the stores held before and after each block. The schema keeps of such
+  a rule only what a foreign key can say.
+- An aggregate refers to another by its id, never by the object: `Reader`
+  holds a `BookshelfId`, `Membership` a `ReaderId`, and a copy of the
+  library will hold an `EditionId` of the bibliography, across the boundary
+  D02 keeps one-way. A repository reads and writes one aggregate and joins
+  no other; a use case that needs two reads two, each through its own port.
+- A child an aggregate owns has no id and no repository of its own: a
+  `Membership` is a value in the `Bookshelf`'s list, written and read with
+  it by `BookshelfRepository`, in the table D11 names after it. Changing a
+  child is building the aggregate again with the new list and calling
+  `update`; nothing addresses a membership from outside its bookshelf.
+- A value the domain can refuse has two doors. Its constructor `require`s
+  and throws, the last defence against a caller that builds it by hand. A
+  factory `of(...)` on the companion answers `null` for what the domain
+  refuses, and the caller decides what the `null` means: `Isbn.of` for a
+  text typed or scanned, `Contribution.of` and `SeriesEntry.of` for a name a
+  source may leave blank. An adapter maps through `of` and drops or refuses
+  what it answers `null` to; no use case or adapter catches the constructor's
+  exception.
+- A read that spans aggregates or contexts is a query, not an aggregate.
+  It has a port of its own in the `domain` of the context that asks, in the
+  sub-package of its concern like `domain.lookup`, answering a read model:
+  a data class shaped for the answer, with no rule, no id of its own and no
+  repository, that the persistence adapter builds from one query. The
+  lookup's answer with its copies and the names of their bookshelves, and
+  the search over a reader's catalogue, are such reads. No aggregate is
+  rebuilt from a join, and no aggregate carries another's data to spare a
+  query.
+- A series, an author and a tag are values of the edition, not aggregates:
+  `SeriesEntry(name, volumeNumber)` and `Contribution(name, role)` on the
+  `Edition`, matched by name whatever the capitalisation (PRD §3). Each
+  name has a row of its own in persistence, `series`, `author`, `tag`, with
+  a uuid key and never doubled, and the edition's child tables reference
+  it: that row is what a filter or a sort by series reads, and the names on
+  the edition are what its search text is built from on every save. There
+  is no renaming: a name is corrected edition by edition. The series
+  becomes an aggregate with series tracking, when it gains a fact of its
+  own, the number of published volumes; the author when matching moves from
+  the name to the sources' identifiers. Either promotion is a type, a port
+  and a use case of `bibliography`, and no migration, since the row exists.
 
 ## Local development (human)
 
