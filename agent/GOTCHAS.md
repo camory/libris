@@ -1,14 +1,15 @@
 # Libris — Gotchas
 
 What a run must know before it starts, learned on this tree and still true.
-Every role reads this file whole. An item is a fact that costs a cycle when
-unknown: a name, a command, a tool's behaviour, a trap. A rule belongs in
-`docs/ARCHITECTURE.md` or `docs/DESIGN.md`, a follow-up in
-`agent/PROPOSED.md`, the story of a task in `agent/PROGRESS.md`. An item is
-rewritten or removed the day it stops being true; the diary keeps the date it
-was found.
+The two sections marked *every run* are read by every role; the backend
+and frontend sections by a run that changes that side. An item is a fact
+that costs a cycle when unknown: a name, a command, a tool's behaviour, a
+trap. A rule belongs in `docs/ARCHITECTURE.md` or `docs/DESIGN.md`, a
+follow-up in `agent/PROPOSED.md`, the story of a task in
+`agent/PROGRESS.md`. An item is rewritten or removed the day it stops being
+true; the diary keeps the date it was found.
 
-## The sandbox and the tools
+## The sandbox and the tools — every run
 - The proof hook counts any command containing `gradlew … check` or
   `npm test` as a gate run, `--dry-run`, pipes and heredoc text included:
   run the gate plainly, last in its command, and write files with the Write
@@ -22,30 +23,13 @@ was found.
   something else, or stop the process from what started it.
 - `git checkout <file>` reverts to the last commit, not to the working tree:
   commit the cycle before a mutation check.
-- `gh pr edit` fails with a GraphQL error about classic Projects; use
-  `gh api -X PATCH repos/camory/libris/pulls/N`. `gh` GraphQL calls are
-  rate-limited: poll `gh pr checks` every 30 s or more, and merge through
-  REST (`gh api -X PUT repos/camory/libris/pulls/N/merge -f
-  merge_method=squash`) when `gh pr merge` is throttled. `gh pr edit` fails
-  on this repository with a GraphQL error about classic projects; a body is
-  updated with `gh api -X PATCH repos/camory/libris/pulls/N -F body=@file`.
-- The sandbox PostgreSQL survives between runs (tmpfs: gone when the
-  container is recreated). Editing a migration the database has applied breaks
-  every context start with a Flyway checksum mismatch, and `FreshSchema` does
-  not rescue it: Flyway's autoconfiguration validates and migrates while the
-  context loads, before any `@BeforeAll` cleans, so every database-backed class
-  fails whole with `initializationError` and `Failed to load
-  ApplicationContext`, and running one slice class alone changes nothing.
-  Restoring the file's bytes is the cheap fix as long as the edited version
-  never applied; otherwise the database must be recreated. D11 forbids editing
-  a merged migration anyway, and the price of the trap is that a constraint a
-  migration declares cannot be mutation-checked once it has run.
-- `reader.default_bookshelf_id` references `bookshelf` `deferrable initially
-  deferred`: the reader is inserted before the bookshelf that is their
-  default, and PostgreSQL checks the reference at commit. A JDBC slice test
-  rolls back, so that check never runs there: a reader whose default
-  bookshelf the test never inserts is not refused. `membership.reader_id` is
-  checked at the statement, in the slice too.
+- `gh pr edit --body` fails on this repository with a GraphQL error about
+  classic Projects; a body is updated with `gh api -X PATCH
+  repos/camory/libris/pulls/N -F body=@file`. The label form,
+  `gh pr edit N --add-label`, works. `gh` GraphQL calls are rate-limited:
+  poll `gh pr checks` every 30 s or more, and merge through REST
+  (`gh api -X PUT repos/camory/libris/pulls/N/merge -f
+  merge_method=squash`) when `gh pr merge` is throttled.
 - The loop takes the agent PostgreSQL down at the end of a run; a host gate
   then fails with connection refused until
   `docker compose --env-file agent/.env -f agent/compose.yaml up -d postgres`.
@@ -57,6 +41,31 @@ was found.
   libris-agent:local 'npm test'`). The sandbox itself is the other way round:
   Node 24, `npm` and `/usr/local/bin/contracteer` are there and there is no
   `docker`, so a run inside it calls the gate directly.
+
+## Contract and release — every run
+- Contracteer 4.0.0's CLI cannot load an OpenAPI 3.1 document: the contract
+  stays 3.0.3 and `nullable` is the 3.0 keyword. On an operation without
+  parameters a response example creates no scenario; the verifier emits one
+  generated case.
+- On an operation with a `format: uuid` path parameter or a typed body, the
+  verifier adds cases of its own, `auto: path 'id' type mismatch` and `auto:
+  body type mismatch`, and expects `400` with the declared problem body for
+  each: the backend must answer a `Problem` to a malformed uuid and to a body
+  of the wrong types, not Spring's plain 400.
+- Contracteer honours `readOnly`: the mock answers `400` to a request whose
+  body carries a read-only field, even empty. The contract avoids `readOnly`
+  and gives a request its own schema instead.
+- Body examples live under `components/examples` and the operations point at
+  them with `$ref`; the mock and the verifier resolve them. YAML anchors and
+  the `<<` merge key stay out of the document: `<<` is YAML 1.1, and a raw
+  reader sees the anchor, not the body.
+- A release is `git tag vX.Y.Z <merge sha> && git push origin vX.Y.Z`, then
+  `gh release create vX.Y.Z --title vX.Y.Z --generate-notes`; `--target
+  <sha>` is refused. Tag only after the CI run on `main` has pushed the
+  `sha-` images. The ghcr images are public: pulling needs no login.
+- The `images` job proves an image builds, nothing runs it: nginx, the
+  `HEALTHCHECK`, the SPA fallback and the `/session` redirect are exercised
+  only by a deploy and the phone check.
 
 ## Backend build and detekt
 - Spring Boot 4.1.1 names: `spring-boot-starter-webmvc`,
@@ -116,6 +125,23 @@ was found.
 - A scenario class boots the whole application and commits what its
   requests write; `FreshSchema` on `JdbcSliceTest` and `ScenarioTest` is
   what keeps the JDBC slice from meeting a reader it did not insert.
+- The sandbox PostgreSQL survives between runs (tmpfs: gone when the
+  container is recreated). Editing a migration the database has applied breaks
+  every context start with a Flyway checksum mismatch, and `FreshSchema` does
+  not rescue it: Flyway's autoconfiguration validates and migrates while the
+  context loads, before any `@BeforeAll` cleans, so every database-backed class
+  fails whole with `initializationError` and `Failed to load
+  ApplicationContext`, and running one slice class alone changes nothing.
+  Restoring the file's bytes is the cheap fix as long as the edited version
+  never applied; otherwise the database must be recreated. D11 forbids editing
+  a merged migration anyway, and the price of the trap is that a constraint a
+  migration declares cannot be mutation-checked once it has run.
+- `reader.default_bookshelf_id` references `bookshelf` `deferrable initially
+  deferred`: the reader is inserted before the bookshelf that is their
+  default, and PostgreSQL checks the reference at commit. A JDBC slice test
+  rolls back, so that check never runs there: a reader whose default
+  bookshelf the test never inserts is not refused. `membership.reader_id` is
+  checked at the statement, in the slice too.
 - `ArchitectureTest`'s application rule lists what `application` may see of
   Spring: `org.springframework.stereotype..`,
   `org.springframework.transaction.support..` and the one type
@@ -367,28 +393,3 @@ was found.
   measured in it lays its tab bar out below the window after the update's
   reload (seen on the Pixel 2026-09-19). The shell is `fixed` at the four
   edges of the window instead.
-
-## Contract and release
-- Contracteer 4.0.0's CLI cannot load an OpenAPI 3.1 document: the contract
-  stays 3.0.3 and `nullable` is the 3.0 keyword. On an operation without
-  parameters a response example creates no scenario; the verifier emits one
-  generated case.
-- On an operation with a `format: uuid` path parameter or a typed body, the
-  verifier adds cases of its own, `auto: path 'id' type mismatch` and `auto:
-  body type mismatch`, and expects `400` with the declared problem body for
-  each: the backend must answer a `Problem` to a malformed uuid and to a body
-  of the wrong types, not Spring's plain 400.
-- Contracteer honours `readOnly`: the mock answers `400` to a request whose
-  body carries a read-only field, even empty. The contract avoids `readOnly`
-  and gives a request its own schema instead.
-- Body examples live under `components/examples` and the operations point at
-  them with `$ref`; the mock and the verifier resolve them. YAML anchors and
-  the `<<` merge key stay out of the document: `<<` is YAML 1.1, and a raw
-  reader sees the anchor, not the body.
-- A release is `git tag vX.Y.Z <merge sha> && git push origin vX.Y.Z`, then
-  `gh release create vX.Y.Z --title vX.Y.Z --generate-notes`; `--target
-  <sha>` is refused. Tag only after the CI run on `main` has pushed the
-  `sha-` images. The ghcr images are public: pulling needs no login.
-- The `images` job proves an image builds, nothing runs it: nginx, the
-  `HEALTHCHECK`, the SPA fallback and the `/session` redirect are exercised
-  only by a deploy and the phone check.

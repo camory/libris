@@ -15,7 +15,8 @@ must be clean. If the branch or the brief is missing, report `blocked`.
 3. The {{TASK_ID}} line in `agent/TASKS.md` and the spec scenarios the brief
    cites
 4. The last entries of `agent/PROGRESS.md`
-5. `agent/GOTCHAS.md`, whole, before the first command
+5. `agent/GOTCHAS.md`, its *every run* sections and those of the side the
+   brief changes, before the first command
 6. The code and tests the brief points at, before writing anything
 
 ## How to work
