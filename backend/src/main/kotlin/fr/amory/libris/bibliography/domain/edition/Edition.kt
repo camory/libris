@@ -20,4 +20,10 @@ data class Edition(
     val pageCount: Int?,
     val summary: String?,
     val coverUrl: String?,
-)
+) {
+    init {
+        require(contributions.distinctBy { it.name.lowercase() to it.role }.size == contributions.size) {
+            "an edition names an author once per role"
+        }
+    }
+}
