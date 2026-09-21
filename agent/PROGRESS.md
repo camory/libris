@@ -204,12 +204,14 @@ Format:
   waits for the task that removes a copy.
 
 ## 2026-09-21 — Review of PR #117 with Tophe: an author named once per role — on the T034 branch
-- Did: three fix-ups on the review. `Edition` refuses two contributions of one
+- Did: four fix-ups on the review. `Edition` refuses two contributions of one
   author in one role, whatever the capitalisation of the name, the rule the
   key of `contribution` and the `author` row matched by `lower(name)` held
   alone: before it, such an edition failed the insert with a
   `DuplicateKeyException`. `EditionTest`, two cases, the second (an author
   holds several roles) proven by a mutation keying the rule on the name alone.
+  `Edition` refuses a blank title too, as `Contribution` and `SeriesEntry`
+  refuse a blank name; a third case.
   Then the reviewer's two suggestions: the slice case of the absent optional
   fields renamed for what it holds, and the `@JdbcSliceTest` gotcha taking
   `JdbcClient` only when a case reads it.
