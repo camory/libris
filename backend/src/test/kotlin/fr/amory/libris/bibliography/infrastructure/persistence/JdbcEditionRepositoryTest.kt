@@ -13,13 +13,16 @@ import io.kotest.matchers.shouldBe
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.context.annotation.Import
+import org.springframework.jdbc.core.simple.JdbcClient
 
 private const val ONE_PIECE = "9782723488525"
+private const val ONE_PIECE_TOME_TWO = "9782723489898"
 
 @JdbcSliceTest
 @Import(JdbcEditionRepository::class)
 class JdbcEditionRepositoryTest @Autowired constructor(
     private val editions: JdbcEditionRepository,
+    private val jdbcClient: JdbcClient,
 ) {
     @Test
     fun `an inserted edition is read back whole by its ISBN-13`() {
@@ -44,6 +47,37 @@ class JdbcEditionRepositoryTest @Autowired constructor(
         // Then
         editions.findByIsbn(isbnOf(ONE_PIECE)) shouldBe edition
     }
+
+    @Test
+    fun `a series and an author named again in another capitalisation are not doubled`() {
+        // Given
+        val first = onePieceTomeOne()
+        val second = first.copy(
+            id = EditionId.new(),
+            isbn = isbnOf(ONE_PIECE_TOME_TWO),
+            title = "Aux prises avec Baggy et ses hommes",
+            contributions = listOf(
+                Contribution("EIICHIRO ODA", WRITER),
+                Contribution("akiko indei", TRANSLATOR),
+            ),
+            series = SeriesEntry("ONE PIECE", 2),
+        )
+        editions.insert(first)
+
+        // When
+        editions.insert(second)
+
+        // Then
+        rowsOf("series") shouldBe 1
+        rowsOf("author") shouldBe 2
+        editions.findByIsbn(isbnOf(ONE_PIECE_TOME_TWO)) shouldBe second.copy(
+            contributions = first.contributions,
+            series = SeriesEntry("One piece", 2),
+        )
+    }
+
+    private fun rowsOf(table: String): Int =
+        jdbcClient.sql("select count(*) from $table").query(Int::class.java).single()
 
     private fun bare(edition: Edition): Edition = edition.copy(
         subtitle = null,
