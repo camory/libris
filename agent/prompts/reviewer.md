@@ -20,8 +20,9 @@ it is at most a suggestion.
 1. `gh pr view {{PR_NUMBER}} --json title,body,headRefName,files` and
    `gh pr diff {{PR_NUMBER}}`. Read the brief as it is on the branch.
 2. Fetch and check out the head branch. The working tree must be clean.
-   Read `agent/GOTCHAS.md` whole, as it is on the branch, before running
-   anything: it names the traps of the gate and the tools.
+   Read `agent/GOTCHAS.md` as it is on the branch, its *every run* sections
+   and those of the side the diff changes, before running anything: it
+   names the traps of the gate and the tools.
 3. Run the verification the PR body claims (`./gradlew check`, `npm test`,
    `npm run build`, whichever apply) and compare the real output with the
    *How verified* section. A claim contradicted by your own run is blocking.

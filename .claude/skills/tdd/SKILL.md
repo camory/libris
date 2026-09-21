@@ -40,7 +40,7 @@ A **seam** is the public boundary you test at: the interface where you
 observe behaviour without reaching inside. Tests live at seams, never
 against internals. In Libris the seams are the HTTP interface (through the
 test client, matching the pinned contract), the public functions of `domain`
-and `application`, the `infra.persistence` interface against the real
+and `application`, the `infrastructure.persistence` interface against the real
 PostgreSQL, and for the frontend a rendered component, a store, or
 `infra/api` against the Contracteer mock.
 
@@ -72,7 +72,7 @@ if the conflict is structural, report `blocked`.
 ## Mocking
 
 Double Libris code only at its layer seams: a port gets a hand-written
-fake from the `fixture` package, a use case seen from `infra.web` gets a
+fake from the `fixture` package, a use case seen from `infrastructure.web` gets a
 stub. On the frontend the seam is the port: a composable is called with a
 fake of its port, a view is mounted with the fake provided through its
 injection key, never over a mocked module. Never mock a collaborator a

@@ -15,8 +15,9 @@ Tophe on the same repository. Either way, the rules below apply.
 6. `agent/briefs/T###.md` — the planner's brief for that task, when one exists;
    its acceptance criteria define "done"
 7. `agent/PROGRESS.md` — the last few entries: what was just done and left over
-8. `agent/GOTCHAS.md` — read whole: the names, commands and traps of this
-   tree that cost a cycle when unknown
+8. `agent/GOTCHAS.md` — its *every run* sections and those of the side the
+   task changes: the names, commands and traps of this tree that cost a
+   cycle when unknown
 
 Do not invent product behaviour that the spec or the PRD does not describe. If a task
 needs a decision that no document makes, stop and report `blocked` with the
