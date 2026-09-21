@@ -211,6 +211,26 @@ true; the diary keeps the date it was found.
   field 101 `$c`, in the BnF's own three-letter codes (`jpn`, `kor`, `chi`),
   which are not the ISO 639-1 codes the `LANGUAGES` map of `BnfEditionLookup`
   answers for the `language` field.
+- A name row shared by many parents is inserted or matched in one statement:
+  `insert into author (id, name) values (:id, :name) on conflict (lower(name))
+  do update set name = author.name returning id`. The conflict target is the
+  expression the unique index carries, `lower(name)`, not the column; and
+  `do update` is what makes `returning` answer the row that already exists,
+  where `do nothing` answers no row at all and costs a second statement. The
+  row keeps the spelling that created it, so an edition naming it otherwise
+  reads back with that first spelling.
+- `ResultSet.getInt` and `getLong` read a null column as `0`. A nullable
+  integer is read with `rs.getObject("page_count", Int::class.javaObjectType)`,
+  which answers `null`; the mutation to `getInt` reds a case asserting an
+  absent page count only if some case of the class leaves it absent.
+- A unique column that is nullable counts no null in PostgreSQL, so any number
+  of editions without an `isbn13` sit side by side while two editions cannot
+  share one.
+- `@JdbcSliceTest` lives in `fr.amory.libris.fixture` beside `FreshSchema` and
+  `WebSliceTest`, and serves both contexts; it was in
+  `library.infrastructure.persistence` until T034 moved it. A slice test
+  imports the repository it proves with `@Import(Jdbc…Repository::class)` and
+  takes it and `JdbcClient` through an `@Autowired` constructor.
 
 ## Frontend build and tests
 - Two TypeScript programs: `tsconfig.app.json` (`src/`, `vite/client` types)

@@ -164,3 +164,41 @@ Format:
   branch is pushed, so its history stays; the squash commit on `main` takes
   the PR title and a message given explicitly to the merge call, with the
   one trailer.
+
+## 2026-09-21 — T034 The house's edition stored — done
+- Did: `Edition`, `EditionId` and `EditionRepository` in
+  `bibliography.domain.edition`, `V003__edition.sql` with its `edition`,
+  `series`, `author` and `contribution` tables, and `JdbcEditionRepository`,
+  proven by the six cases of `JdbcEditionRepositoryTest`; the slice annotation
+  moved to `fr.amory.libris.fixture`, where both contexts reach it. Seven
+  cycles, the gate green, no use case and no answer of the API touched.
+- Decided:
+  - **The insert-or-match shape the brief suggested holds:** `on conflict
+    (lower(name)) do update set name = <table>.name returning id`, the
+    conflict target being the expression of the unique index. A `do nothing`
+    would have needed a second statement, `returning` answering no row when
+    the name already exists.
+  - **`contribution.position` is written from the index in the list and read
+    back with an `order by`**, so the aggregate read equals the one stored;
+    the mutation to `order by author.name` reds two cases, the helper's two
+    authors sorting against their order on purpose.
+  - **A `series` or an `author` row keeps the spelling that created it**, so
+    the second edition of the shared-names case reads back with the first's
+    capitalisation. Pinned by the case, as the brief asked, rather than left
+    to be discovered by the task that displays a name.
+  - **The search columns of D03 are not in `V003`** (no `search_text`, no
+    `search_vector`, no extension): no test of this phase exercises them and
+    D03 puts the extensions in a migration of their own. Nothing of D03
+    changes; the pull request says so for the reviewer.
+- Deviations from the brief: the cases of steps 3 to 6 passed on their first
+  run instead of failing. Step 2 requires the migration written whole in its
+  cycle, and the adapter that satisfied the first case already covered the
+  four that follow; each was proven to bite by a mutation of the code it
+  claims instead, reverted and re-run green. The nullable unique column is the
+  one exception, a migration already applied being unusable for a mutation
+  check: it is proven by its case alone.
+- Left over: `update` on `EditionRepository`, the `tag` table, the search
+  migration and the promotion of the test's edition helper to a fixture
+  package are in `agent/PROPOSED.md`. `Edition` carries no invariant of its
+  own and no task of this phase deletes an edition, so PRD §3's "when the last
+  copy goes, the edition goes with it" waits for the task that removes a copy.
