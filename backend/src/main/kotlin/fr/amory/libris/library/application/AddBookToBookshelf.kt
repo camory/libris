@@ -20,16 +20,21 @@ class AddBookToBookshelf(
 ) {
     fun add(bookshelf: BookshelfId, book: NewBook): AddBookResult {
         val shelf = checkNotNull(bookshelves.findById(bookshelf))
-        val edition = editionOf(book)
-        editions.insert(edition)
+        val edition = editionFor(book)
         val copy = Copy(CopyId.new(), edition.id, shelf.id)
         copies.insert(copy)
         return Added(copy, shelf)
     }
 
-    private fun editionOf(book: NewBook): Edition = Edition(
+    private fun editionFor(book: NewBook): Edition {
+        val isbn = book.isbn13?.let { Isbn.ofThirteen(it) }
+        isbn?.let { editions.findByIsbn(it) }?.let { return it }
+        return newEdition(book, isbn).also { editions.insert(it) }
+    }
+
+    private fun newEdition(book: NewBook, isbn: Isbn?): Edition = Edition(
         id = EditionId.new(),
-        isbn = book.isbn13?.let { Isbn.ofThirteen(it) },
+        isbn = isbn,
         kind = book.kind,
         title = book.title,
         subtitle = book.subtitle,

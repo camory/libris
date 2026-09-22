@@ -57,6 +57,28 @@ class AddBookToBookshelfTest {
         result shouldBe Added(copy, bookshelf)
     }
 
+    @Test
+    fun `an ISBN the house holds reaches the existing edition`() {
+        // Given
+        val lea = readerNamed("lea", "Léa")
+        val leasBookshelf = bookshelfOwnedBy(lea)
+        bookshelves.insert(leasBookshelf)
+        addBookToBookshelf().add(leasBookshelf.id, onePieceTomeOne())
+        val juliette = readerNamed("juliette", "Juliette")
+        val juliettesBookshelf = bookshelfOwnedBy(juliette)
+        bookshelves.insert(juliettesBookshelf)
+
+        // When
+        val result = addBookToBookshelf().add(juliettesBookshelf.id, onePieceTomeOne())
+
+        // Then
+        val edition = editions.stored.single()
+        val copy = copies.stored.last()
+        copy shouldBe Copy(copy.id, edition.id, juliettesBookshelf.id)
+        copies.stored.map { it.editionId } shouldBe listOf(edition.id, edition.id)
+        result shouldBe Added(copy, juliettesBookshelf)
+    }
+
     private fun addBookToBookshelf(): AddBookToBookshelf = AddBookToBookshelf(editions, copies, bookshelves)
 
     private fun onePieceTomeOne(): NewBook = NewBook(
