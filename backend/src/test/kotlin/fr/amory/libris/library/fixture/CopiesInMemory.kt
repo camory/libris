@@ -1,7 +1,6 @@
 package fr.amory.libris.library.fixture
 
 import fr.amory.libris.bibliography.domain.edition.EditionId
-
 import fr.amory.libris.library.domain.copy.Copy
 import fr.amory.libris.library.domain.copy.CopyRepository
 
