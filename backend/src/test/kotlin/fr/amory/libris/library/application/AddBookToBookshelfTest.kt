@@ -11,6 +11,9 @@ import fr.amory.libris.bibliography.fixture.isbnOf
 import fr.amory.libris.library.application.AddBookResult.Added
 import fr.amory.libris.library.application.AddBookResult.NoSuchBookshelf
 import fr.amory.libris.library.application.AddBookResult.NotAnIsbn
+import fr.amory.libris.library.application.AddBookResult.NotAnOwner
+import fr.amory.libris.library.domain.bookshelf.Membership
+import fr.amory.libris.library.domain.bookshelf.MembershipRole.VIEWER
 import fr.amory.libris.library.domain.copy.Copy
 import fr.amory.libris.library.fixture.BookshelvesInMemory
 import fr.amory.libris.library.fixture.CopiesInMemory
@@ -134,6 +137,25 @@ class AddBookToBookshelfTest {
 
         // Then
         result shouldBe NoSuchBookshelf
+        editions.stored.shouldBeEmpty()
+        copies.stored.shouldBeEmpty()
+    }
+
+    @Test
+    fun `a viewer of the bookshelf cannot add to it`() {
+        // Given
+        val lea = readerNamed("lea", "Léa")
+        val juliette = readerNamed("juliette", "Juliette")
+        val leasBookshelf = bookshelfOwnedBy(lea).let {
+            it.copy(memberships = it.memberships + Membership(juliette.id, VIEWER))
+        }
+        bookshelves.insert(leasBookshelf)
+
+        // When
+        val result = addBookToBookshelf().add(juliette.id, leasBookshelf.id, onePieceTomeOne())
+
+        // Then
+        result shouldBe NotAnOwner
         editions.stored.shouldBeEmpty()
         copies.stored.shouldBeEmpty()
     }

@@ -7,6 +7,7 @@ import fr.amory.libris.bibliography.domain.edition.EditionRepository
 import fr.amory.libris.library.application.AddBookResult.Added
 import fr.amory.libris.library.application.AddBookResult.NoSuchBookshelf
 import fr.amory.libris.library.application.AddBookResult.NotAnIsbn
+import fr.amory.libris.library.application.AddBookResult.NotAnOwner
 import fr.amory.libris.library.domain.bookshelf.Bookshelf
 import fr.amory.libris.library.domain.bookshelf.BookshelfId
 import fr.amory.libris.library.domain.bookshelf.BookshelfRepository
@@ -25,12 +26,11 @@ class AddBookToBookshelf(
     private val transactions: TransactionOperations,
 ) {
     fun add(reader: ReaderId, bookshelf: BookshelfId, book: NewBook): AddBookResult {
-        val shelf = bookshelves
-            .findById(bookshelf)
-            ?.takeIf { found -> found.memberships.any { it.readerId == reader } }
+        val shelf = bookshelves.findById(bookshelf)?.takeIf { it.hasMember(reader) }
         val isbn = book.isbn13?.let { Isbn.ofThirteen(it) }
         return when {
             shelf == null -> NoSuchBookshelf
+            !shelf.isOwnedBy(reader) -> NotAnOwner
             book.isbn13 != null && isbn == null -> NotAnIsbn
             else -> added(shelf, book, isbn)
         }

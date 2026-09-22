@@ -8,5 +8,7 @@ sealed class AddBookResult {
 
     data object NoSuchBookshelf : AddBookResult()
 
+    data object NotAnOwner : AddBookResult()
+
     data object NotAnIsbn : AddBookResult()
 }
