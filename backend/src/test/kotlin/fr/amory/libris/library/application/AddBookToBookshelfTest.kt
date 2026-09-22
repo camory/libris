@@ -14,12 +14,16 @@ import fr.amory.libris.library.application.AddBookResult.NotAnIsbn
 import fr.amory.libris.library.domain.copy.Copy
 import fr.amory.libris.library.fixture.BookshelvesInMemory
 import fr.amory.libris.library.fixture.CopiesInMemory
+import fr.amory.libris.library.fixture.Transaction
+import fr.amory.libris.library.fixture.TransactionsObserving
 import fr.amory.libris.library.fixture.bookshelfOwnedBy
 import fr.amory.libris.library.fixture.readerNamed
 import io.kotest.matchers.collections.shouldBeEmpty
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.shouldNotBe
 import org.junit.jupiter.api.Test
+import org.springframework.transaction.support.TransactionOperations
+import org.springframework.transaction.support.TransactionOperations.withoutTransaction
 
 private const val ONE_PIECE = "9782723488525"
 
@@ -185,7 +189,23 @@ class AddBookToBookshelfTest {
         copies.stored.map { it.editionId } shouldBe listOf(first.id, second.id)
     }
 
-    private fun addBookToBookshelf(): AddBookToBookshelf = AddBookToBookshelf(editions, copies, bookshelves)
+    @Test
+    fun `the edition and the copy land in one transaction`() {
+        // Given
+        val lea = readerNamed("lea", "Léa")
+        val bookshelf = bookshelfOwnedBy(lea)
+        bookshelves.insert(bookshelf)
+        val transactions = TransactionsObserving { editions.stored.size to copies.stored.size }
+
+        // When
+        addBookToBookshelf(transactions).add(lea.id, bookshelf.id, onePieceTomeOne())
+
+        // Then
+        transactions.recorded shouldBe listOf(Transaction(before = 0 to 0, after = 1 to 1))
+    }
+
+    private fun addBookToBookshelf(transactions: TransactionOperations = withoutTransaction()): AddBookToBookshelf =
+        AddBookToBookshelf(editions, copies, bookshelves, transactions)
 
     private fun onePieceTomeOne(): NewBook = NewBook(
         isbn13 = ONE_PIECE,

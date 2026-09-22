@@ -15,12 +15,14 @@ import fr.amory.libris.library.domain.copy.CopyId
 import fr.amory.libris.library.domain.copy.CopyRepository
 import fr.amory.libris.library.domain.reader.ReaderId
 import org.springframework.stereotype.Service
+import org.springframework.transaction.support.TransactionOperations
 
 @Service
 class AddBookToBookshelf(
     private val editions: EditionRepository,
     private val copies: CopyRepository,
     private val bookshelves: BookshelfRepository,
+    private val transactions: TransactionOperations,
 ) {
     fun add(reader: ReaderId, bookshelf: BookshelfId, book: NewBook): AddBookResult {
         val shelf = bookshelves
@@ -35,15 +37,14 @@ class AddBookToBookshelf(
     }
 
     private fun added(shelf: Bookshelf, book: NewBook, isbn: Isbn?): AddBookResult {
-        val edition = editionFor(book, isbn)
+        val held = isbn?.let { editions.findByIsbn(it) }
+        val edition = held ?: newEdition(book, isbn)
         val copy = Copy(CopyId.new(), edition.id, shelf.id)
-        copies.insert(copy)
+        transactions.executeWithoutResult {
+            if (held == null) editions.insert(edition)
+            copies.insert(copy)
+        }
         return Added(copy, shelf)
-    }
-
-    private fun editionFor(book: NewBook, isbn: Isbn?): Edition {
-        isbn?.let { editions.findByIsbn(it) }?.let { return it }
-        return newEdition(book, isbn).also { editions.insert(it) }
     }
 
     private fun newEdition(book: NewBook, isbn: Isbn?): Edition = Edition(
