@@ -51,6 +51,24 @@ class JdbcReaderCopiesTest @Autowired constructor(
         visible shouldBe listOf(CopyOnBookshelf(copy.id, bookshelf.id, "Bibliothèque de Léa"))
     }
 
+    @Test
+    fun `a copy on a bookshelf the reader is not a member of is not answered`() {
+        // Given
+        val lea = readerOf("lea", "Léa")
+        val leasBookshelf = bookshelfOf(lea)
+        val juliette = readerOf("juliette", "Juliette")
+        val juliettesBookshelf = bookshelfOf(juliette)
+        val edition = editionOf(ONE_PIECE, "Romance dawn")
+        val leasCopy = copyOf(edition, leasBookshelf)
+        copyOf(edition, juliettesBookshelf)
+
+        // When
+        val visible = readerCopies.ofEdition(edition.id, lea.id)
+
+        // Then
+        visible shouldBe listOf(CopyOnBookshelf(leasCopy.id, leasBookshelf.id, "Bibliothèque de Léa"))
+    }
+
     private fun readerOf(username: String, displayName: String): Reader =
         readerNamed(username, displayName).also { readers.insert(it) }
 

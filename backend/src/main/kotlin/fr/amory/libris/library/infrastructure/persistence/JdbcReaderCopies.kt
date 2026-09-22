@@ -15,6 +15,7 @@ private const val FIND_COPIES_OF_EDITION =
     SELECT copy.id, bookshelf.id AS bookshelf_id, bookshelf.name
     FROM copy
     JOIN bookshelf ON bookshelf.id = copy.bookshelf_id
+    JOIN membership ON membership.bookshelf_id = bookshelf.id AND membership.reader_id = :readerId
     WHERE copy.edition_id = :editionId
     """
 
@@ -24,6 +25,7 @@ class JdbcReaderCopies(private val jdbcClient: JdbcClient) : ReaderCopies {
         jdbcClient
             .sql(FIND_COPIES_OF_EDITION)
             .param("editionId", editionId.value)
+            .param("readerId", readerId.value)
             .query { rs, _ ->
                 CopyOnBookshelf(
                     copyId = CopyId(rs.getObject("id", UUID::class.java)),
