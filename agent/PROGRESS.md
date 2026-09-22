@@ -278,36 +278,37 @@ Format:
   unique `isbn13` makes the second insert throw, is in `agent/PROPOSED.md`.
 
 ## 2026-09-22 — T036 The lookup answers the house's edition — done
-- Did: `ReaderCopies` and the flat `CopyOnBookshelf` it answers in
-  `library.domain.lookup`, with `JdbcReaderCopies` reading them in one
-  statement over `copy`, `bookshelf` and `membership`; and
-  `LookupIsbnForReader`, the use case answering `IsbnLookupResult` — the
-  house first, with the reader's copies, the sources only when the house
-  lacks the ISBN. Eleven cycles, the gate green.
-- Decided: the query port belongs to the library, the context that asks, and
-  takes the edition's id with the reader's — the copies a reader may see are
-  those on the bookshelves they are a member of, so the membership join is
-  the whole filter and neither the use case nor a case needs a second query.
-- Decided: the rows come ordered by the bookshelf's name then the copy's id;
-  the name is what the screen groups by, and the id makes two copies on one
-  bookshelf a stable list rather than PostgreSQL's insertion order.
-- Decided: the preview of a house edition is built in the use case (private
-  `previewOf`) from the stored `Edition` and the ISBN that was asked, rather
-  than the bibliography growing a preview of what it holds — nothing else
-  needs that yet, and `EditionPreview` is already the shape both branches
-  answer.
-- Decided: `IsbnLookupResult` is the library's own sealed class; the two
-  misses pass through from `EditionLookupResult` rather than the library
-  re-exposing the bibliography's type, which its `Found` carrying the copies
-  could not do anyway.
+- Did: `LookupIsbnForReader` in `library.application`, the use case answering
+  `IsbnLookupResult` — `Held(edition, copies)` when the house holds the ISBN,
+  the copies read through `CopyRepository.findByEditionId` (new) and
+  `BookshelfRepository.findById`, kept when `Bookshelf.hasMember(readerId)`,
+  answered as `CopyView(copyId, bookshelfId, bookshelfName)` ordered by the
+  name of the bookshelf; `NotHeld(sources)` otherwise, carrying the
+  bibliography's `EditionLookupResult` untouched. Eleven cycles by the run,
+  then reworked on Tophe's review, the gate green.
+- Decided on review (Tophe): the run had followed D12's read-model rule to
+  the letter — a `ReaderCopies` query port and a `CopyOnBookshelf` read model
+  in `library.domain.lookup`, a `JdbcReaderCopies` adapter joining `copy`,
+  `bookshelf` and `membership`, and an `IsbnLookupResult` mirroring
+  `EditionLookupResult` with a thirteen-field `previewOf` in the use case.
+  Too much for this read: the repositories serve it in a few queries and the
+  membership rule already lives on the aggregate, so the SQL join was the
+  rule written twice. D12 amended: a read that spans aggregates goes through
+  the repositories and the aggregates' rules first, answered by a data class
+  of `application`; a query port with its read model is for the read the
+  repositories cannot serve, the catalogue search.
+- Decided (Tophe): the use case stays in `library.application`, the library
+  being the context that knows the reader; no root `application` package for
+  one orchestrator. `LookupEditionByIsbn` stays in the bibliography, called
+  as is: the sources, their precedence and the merge are its knowledge.
 - Deviations from the brief: the `readerId` parameter of `lookUp` and the
   `EditionRepository` constructor argument arrived with the cases that read
   them (plan steps 10 and 9) instead of with the first case (step 6) —
   detekt fails a parameter or a constructor argument no case reads, the same
   wait T035 recorded. The delivered signature is the brief's.
-- Left over: nothing of the API — the controller, the JSON of the copies and
-  the pin bump are T037, which also un-skips the six `BookshelfScenarios`
-  tests. T037 must move that controller off `bibliography.infrastructure.web`
-  or give the operation a shape that keeps the dependency legal: the
-  bibliography may never see the library (D02). Nothing new in
-  `agent/PROPOSED.md`.
+- Left over: nothing of the API — the controller, the JSON of the copies
+  (`Edition` and `EditionPreview` both mapped in the web adapter) and the
+  pin bump are T037, which also un-skips the six `BookshelfScenarios`
+  tests. That controller cannot stay in `bibliography.infrastructure.web`,
+  the bibliography may never see the library (D02): it moves to
+  `library.infrastructure.web`. Nothing new in `agent/PROPOSED.md`.

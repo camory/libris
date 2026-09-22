@@ -96,8 +96,8 @@ frontend pin moves in T038. No other task touches the contract (D04).
       When the house lacks the ISBN the lookup behaves as
       `specs/fast-entry.md` says, sources, merge and answers unchanged, and
       the copies are empty; the tests of that spec stay green.
-      The ports read an edition by its ISBN-13 and the copies of an edition
-      visible to a reader; no new table and no migration.
+      The ports read an edition by its ISBN-13 and the copies of an edition;
+      the bookshelf says who its members are; no new table and no migration.
       Tests over fake repositories with sources that must not be asked, one
       per case of S4.
       Realises S4 on the backend; un-skips nothing, its scenario test waiting
