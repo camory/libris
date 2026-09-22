@@ -42,6 +42,21 @@ much of the code base the implementer must understand first.
   line each with what it requires here. The implementer works from these
   lines, not from the documents; a rule missing here is a rule the
   implementer will not apply.
+- **Name what a test can see, and stop there.** The brief names files and
+  public names, the shapes of tables and API answers, the cases and what
+  each proves. It does not write the inside of a class — its private
+  members, its helpers, the order of its statements: that is the
+  implementer's, found in the refactor step of each cycle. *Rules in play*
+  is one line per rule; *Risks and decisions* one paragraph per decision
+  the planner made, each alternative rejected in one line. A brief past
+  250 lines is designing the inside: reread and cut.
+- **Test plan: each step red before it is green, except a guard.** A guard
+  is a case the code of the earlier steps already satisfies, kept so it
+  fails the day the constraint goes — a nullable unique column, a cascade,
+  a fallback. The plan marks a guard as such and names the mutation that
+  makes it red; the implementer runs that mutation, reverts it, and lists
+  it in the PR body. A step that is neither red first nor a named guard is
+  a case weaker than its claim: rewrite it.
 - Fill the **First of its kind** line of the template. It names the kind of
   thing this task introduces and the code base has none of yet — the first
   outbound client, the first configuration setting, the first sub-package of
