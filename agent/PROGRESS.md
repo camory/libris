@@ -203,19 +203,29 @@ Format:
   edition, so PRD §3's "when the last copy goes, the edition goes with it"
   waits for the task that removes a copy.
 
-## 2026-09-21 — Review of PR #117 with Tophe: an author named once per role — on the T034 branch
-- Did: four fix-ups on the review. `Edition` refuses two contributions of one
-  author in one role, whatever the capitalisation of the name, the rule the
-  key of `contribution` and the `author` row matched by `lower(name)` held
-  alone: before it, such an edition failed the insert with a
-  `DuplicateKeyException`. `EditionTest`, two cases, the second (an author
-  holds several roles) proven by a mutation keying the rule on the name alone.
-  `Edition` refuses a blank title too, as `Contribution` and `SeriesEntry`
-  refuse a blank name; a third case.
+## 2026-09-21 — Review of PR #117 with Tophe: the contributions, one per author and role, in the house's order — on the T034 branch
+- Did: the review's fix-ups, then a design pass Tophe led on the
+  contributions. `Contributions` in `bibliography.domain`, built by
+  `Contributions.of(list)` alone: one contribution per author and role, the
+  author matched whatever the capitalisation of the name, the first spelling
+  kept; ordered by `ContributionRole.order` (an explicit field, the
+  declaration order not relied on) then by name, the name compared as one
+  string. `Edition` and `EditionPreview` hold a `Contributions`, so the
+  lookup dedups and orders by construction (`BnfEditionLookupTest`: a person
+  listed under two function codes the house reads as one role is one
+  contribution, red first) and the stored edition too. The `position` column
+  of `contribution` is gone with the source's order: the house defines its
+  own, and the read passes its rows through `Contributions.of`. `V003`
+  edited before any merge, the sandbox database recreated. `Edition` refuses
+  a blank title, as `Contribution` and `SeriesEntry` refuse a blank name.
   Then the reviewer's two suggestions: the slice case of the absent optional
   fields renamed for what it holds, and the `@JdbcSliceTest` gotcha taking
-  `JdbcClient` only when a case reads it.
-- Left over: sources name an author twice in one role (the card counts a role
-  once since T032), and `Edition` only refuses. What builds an edition from a
-  `NewBook` in T035 decides which contribution is kept; in
-  `agent/PROPOSED.md`.
+  `JdbcClient` only when a case reads it. D12 gained the two rules.
+  detekt's `MagicNumber` ignores enumerations now (`ignoreEnums`), for the
+  role's order.
+- Decided by Tophe: the order of the contributions is the house's, role then
+  name, whatever a source's order; no recording names one person twice in
+  one role, the one way it can happen is the BnF client folding every
+  function code it does not know onto `WRITER`.
+- Left over: a richer `ContributionRole` with a fallback role for the codes
+  the house does not know; in `agent/PROPOSED.md`.

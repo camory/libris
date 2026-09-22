@@ -526,6 +526,15 @@ Contract
   source may leave blank. An adapter maps through `of` and drops or refuses
   what it answers `null` to; no use case or adapter catches the constructor's
   exception.
+- A collection with a rule of its own is a type of its own, built through
+  `of(...)` and never by hand: `Contributions.of(list)` keeps one
+  contribution per author and role, the author matched whatever the
+  capitalisation of the name, and orders them by role then by name; the
+  `Edition` and the `EditionPreview` hold a `Contributions`, so neither the
+  lookup, the persistence nor a use case carries the rule, and the order
+  stored or answered is the house's, not a source's. An enumeration whose
+  order carries meaning declares it as a field, `ContributionRole.order`,
+  never through its declaration order.
 - A read that spans aggregates or contexts is a query, not an aggregate.
   It has a port of its own in the `domain` of the context that asks, in the
   sub-package of its concern like `domain.lookup`, answering a read model:
