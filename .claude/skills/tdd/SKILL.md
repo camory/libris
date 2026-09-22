@@ -91,6 +91,9 @@ the module.
 - **Red before green.** Write one failing test. Run it and read the failure:
   it must fail for the reason the test states. Then write only enough code
   to pass it. Don't anticipate the next test or add speculative behaviour.
+  The one exception is a guard the brief marks as such — a case the earlier
+  cycles already satisfy, kept so it fails the day the constraint goes: its
+  red is the mutation the brief names, run and reverted.
 - **Refactor on green, bounded.** Tidy only what the tests written so far
   motivate: a duplicate, a misleading name, a shape the last test made
   awkward. The `code-smells` skill is the catalogue of what "tidy" means.

@@ -23,7 +23,11 @@ must be clean. If the branch or the brief is missing, report `blocked`.
 - Invoke the `tdd` skill before the first test and follow its rules on
   every cycle: the brief's test plan, one test at a time, failing test first,
   smallest implementation, bounded refactor. One cycle, one commit, with a
-  Conventional Commit message.
+  Conventional Commit message. A test green on its first run is either a
+  guard the brief marks as such — run the mutation it names, read the red,
+  revert, list it under *How verified* in the PR body — or a case weaker
+  than its claim: reword the case until it is red, and say so under
+  *Deviations from the brief*.
 - Run the real commands (`./gradlew check`, `npm test`, `npm run build`, as
   applicable) and read their output. Never skip, disable or weaken a test to
   get green. The scenario tests the task cites are un-skipped, never edited;
