@@ -7,4 +7,6 @@ sealed class AddBookResult {
     data class Added(val copy: Copy, val bookshelf: Bookshelf) : AddBookResult()
 
     data object NoSuchBookshelf : AddBookResult()
+
+    data object NotAnIsbn : AddBookResult()
 }

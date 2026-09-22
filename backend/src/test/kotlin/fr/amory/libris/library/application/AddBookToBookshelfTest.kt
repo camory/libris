@@ -10,6 +10,7 @@ import fr.amory.libris.bibliography.fixture.EditionsInMemory
 import fr.amory.libris.bibliography.fixture.isbnOf
 import fr.amory.libris.library.application.AddBookResult.Added
 import fr.amory.libris.library.application.AddBookResult.NoSuchBookshelf
+import fr.amory.libris.library.application.AddBookResult.NotAnIsbn
 import fr.amory.libris.library.domain.copy.Copy
 import fr.amory.libris.library.fixture.BookshelvesInMemory
 import fr.amory.libris.library.fixture.CopiesInMemory
@@ -129,6 +130,22 @@ class AddBookToBookshelfTest {
 
         // Then
         result shouldBe NoSuchBookshelf
+        editions.stored.shouldBeEmpty()
+        copies.stored.shouldBeEmpty()
+    }
+
+    @Test
+    fun `an isbn13 whose check digit is wrong is refused`() {
+        // Given
+        val lea = readerNamed("lea", "Léa")
+        val bookshelf = bookshelfOwnedBy(lea)
+        bookshelves.insert(bookshelf)
+
+        // When
+        val result = addBookToBookshelf().add(lea.id, bookshelf.id, onePieceTomeOne().copy(isbn13 = "9782723488526"))
+
+        // Then
+        result shouldBe NotAnIsbn
         editions.stored.shouldBeEmpty()
         copies.stored.shouldBeEmpty()
     }
