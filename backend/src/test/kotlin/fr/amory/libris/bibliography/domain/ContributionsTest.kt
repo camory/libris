@@ -56,6 +56,9 @@ class ContributionsTest {
         val contributions = Contributions.of(given)
 
         // Then
-        contributions.toList() shouldBe listOf(Contribution("Eiichirō Oda", WRITER), Contribution("Eiichirō Oda", ARTIST))
+        contributions.toList() shouldBe listOf(
+            Contribution("Eiichirō Oda", WRITER),
+            Contribution("Eiichirō Oda", ARTIST),
+        )
     }
 }
