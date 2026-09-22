@@ -247,6 +247,13 @@ Format:
   rule joins a reader and a shelf, it is not the aggregate's own; an unknown
   bookshelf and a bookshelf the reader is not a member of are one
   `NoSuchBookshelf`, as the brief asks.
+- Review with Tophe (2026-09-22): the brief said *member* where the PRD says
+  *owners add*, so the use case asks the aggregate — `Bookshelf.hasMember`
+  and `Bookshelf.isOwnedBy`, the rule beside the memberships it reads — and a
+  viewer is refused with a third result, `NotAnOwner`; a stranger still gets
+  `NoSuchBookshelf`, a bookshelf being visible only to its members. The
+  contract's POST answers no `403`, so where T037 maps `NotAnOwner` is in
+  `agent/PROPOSED.md`.
 - Decided: `add` is one `when` over three outcomes rather than guard clauses,
   detekt's `ReturnCount` allowing two returns and a third refusal being
   likely when the API arrives; the two inserts sit in a private `added(...)`,

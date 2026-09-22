@@ -297,3 +297,9 @@
   catches it nor retries the way `ReaderVisit` does for a username; the task
   that first serves the add over HTTP decides whether a lost race answers the
   copy on the edition the other add stored (found on T035, 2026-09-22).
+- Contract: `POST /api/v1/bookshelves/{id}/books` answers `400` and `404`
+  only, yet `AddBookToBookshelf` refuses a viewer with `NotAnOwner`, a reader
+  who sees the bookshelf. Until a release adds `403`, T037 has to answer that
+  refusal with one of the two; a viewer membership cannot be created before
+  the invite feature, so nothing reaches it yet (found on the review of T035,
+  2026-09-22).
