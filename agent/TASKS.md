@@ -85,7 +85,7 @@ frontend pin moves in T038. No other task touches the contract (D04).
       Realises S2 and S3 on the backend; un-skips nothing, their scenario
       tests waiting for the API of T037.
 
-- [ ] T036 Backend: the lookup answers the house's edition.
+- [x] T036 Backend: the lookup answers the house's edition.
       `library.application`, since the bibliography knows nothing of the
       library (D02): the lookup takes the reader who asks and looks in the
       house first — when an edition of that ISBN exists it answers it as the

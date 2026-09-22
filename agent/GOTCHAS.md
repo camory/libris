@@ -254,6 +254,13 @@ true; the diary keeps the date it was found.
   only when a case queries through it: detekt's `UnusedPrivateProperty` fails
   a constructor argument no case reads.
 
+- `LookupAnswering`, in `bibliography.fixture`, records the ISBNs it was asked
+  and answers them as `asked`, so a case proves a source was never called with
+  `source.asked shouldBe emptyList()`.
+- kotest's `shouldBeInstanceOf<T>()`, from `io.kotest.matchers.types`, answers
+  the value narrowed to `T`: a case asserting one field of a result variant
+  chains onto it and needs no cast.
+
 ## Frontend build and tests
 - Two TypeScript programs: `tsconfig.app.json` (`src/`, `vite/client` types)
   and `tsconfig.node.json` (`vite.config.ts`, `vitest.global-setup.ts`,
