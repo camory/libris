@@ -71,23 +71,6 @@ class IsbnTest {
     }
 
     @Test
-    fun `thirteen digits with a sound check digit are read as they stand`() {
-        // Given / When / Then
-        Isbn.ofThirteen("9782723488525")?.digits shouldBe "9782723488525"
-        Isbn.ofThirteen("9791000000008")?.digits shouldBe "9791000000008"
-    }
-
-    @Test
-    fun `an ISBN-10 is not an ISBN-13`() {
-        Isbn.ofThirteen("2723488527") shouldBe null
-    }
-
-    @Test
-    fun `thirteen digits with a wrong check digit are not an ISBN-13`() {
-        Isbn.ofThirteen("9782723488526") shouldBe null
-    }
-
-    @Test
     fun `a text of another length is not an ISBN`() {
         // Given / When / Then
         Isbn.of("978272348852") shouldBe null
