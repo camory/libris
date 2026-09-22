@@ -150,6 +150,22 @@ class AddBookToBookshelfTest {
         copies.stored.shouldBeEmpty()
     }
 
+    @Test
+    fun `an ISBN-10 is refused`() {
+        // Given
+        val lea = readerNamed("lea", "Léa")
+        val bookshelf = bookshelfOwnedBy(lea)
+        bookshelves.insert(bookshelf)
+
+        // When
+        val result = addBookToBookshelf().add(lea.id, bookshelf.id, onePieceTomeOne().copy(isbn13 = "2723488527"))
+
+        // Then
+        result shouldBe NotAnIsbn
+        editions.stored.shouldBeEmpty()
+        copies.stored.shouldBeEmpty()
+    }
+
     private fun addBookToBookshelf(): AddBookToBookshelf = AddBookToBookshelf(editions, copies, bookshelves)
 
     private fun onePieceTomeOne(): NewBook = NewBook(
