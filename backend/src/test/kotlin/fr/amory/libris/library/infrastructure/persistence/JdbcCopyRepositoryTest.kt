@@ -96,6 +96,42 @@ class JdbcCopyRepositoryTest @Autowired constructor(
         shouldThrow<DataIntegrityViolationException> { copies.insert(copy) }
     }
 
+    @Test
+    fun `the copies of an edition are found, wherever they sit`() {
+        // Given
+        val leasBookshelf = bookshelfOf("lea", "Léa")
+        val juliettesBookshelf = bookshelfOf("juliette", "Juliette")
+        val edition = onePieceTomeOne()
+        editions.insert(edition)
+        val leasCopy = Copy(CopyId.new(), edition.id, leasBookshelf.id)
+        val juliettesCopy = Copy(CopyId.new(), edition.id, juliettesBookshelf.id)
+        copies.insert(leasCopy)
+        copies.insert(juliettesCopy)
+
+        // When
+        val found = copies.findByEditionId(edition.id)
+
+        // Then
+        found.toSet() shouldBe setOf(leasCopy, juliettesCopy)
+    }
+
+    @Test
+    fun `the copies of another edition are not found`() {
+        // Given
+        val bookshelf = bookshelfOf("lea", "Léa")
+        val edition = onePieceTomeOne()
+        editions.insert(edition)
+        val other = onePieceTomeOne().copy(id = EditionId.new(), isbn = isbnOf("9782723489898"))
+        editions.insert(other)
+        copies.insert(Copy(CopyId.new(), other.id, bookshelf.id))
+
+        // When
+        val found = copies.findByEditionId(edition.id)
+
+        // Then
+        found shouldBe emptyList()
+    }
+
     private fun bookshelfOf(username: String, displayName: String): Bookshelf {
         val reader = readerNamed(username, displayName)
         readers.insert(reader)
