@@ -9,11 +9,13 @@ import fr.amory.libris.bibliography.domain.edition.Edition
 import fr.amory.libris.bibliography.fixture.EditionsInMemory
 import fr.amory.libris.bibliography.fixture.isbnOf
 import fr.amory.libris.library.application.AddBookResult.Added
+import fr.amory.libris.library.application.AddBookResult.NoSuchBookshelf
 import fr.amory.libris.library.domain.copy.Copy
 import fr.amory.libris.library.fixture.BookshelvesInMemory
 import fr.amory.libris.library.fixture.CopiesInMemory
 import fr.amory.libris.library.fixture.bookshelfOwnedBy
 import fr.amory.libris.library.fixture.readerNamed
+import io.kotest.matchers.collections.shouldBeEmpty
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.shouldNotBe
 import org.junit.jupiter.api.Test
@@ -97,6 +99,21 @@ class AddBookToBookshelfTest {
         first shouldBe Copy(first.id, edition.id, bookshelf.id)
         second shouldBe Copy(second.id, edition.id, bookshelf.id)
         second.id shouldNotBe first.id
+    }
+
+    @Test
+    fun `a bookshelf id no bookshelf carries is refused`() {
+        // Given
+        val lea = readerNamed("lea", "Léa")
+        val unknown = bookshelfOwnedBy(lea)
+
+        // When
+        val result = addBookToBookshelf().add(unknown.id, onePieceTomeOne())
+
+        // Then
+        result shouldBe NoSuchBookshelf
+        editions.stored.shouldBeEmpty()
+        copies.stored.shouldBeEmpty()
     }
 
     private fun addBookToBookshelf(): AddBookToBookshelf = AddBookToBookshelf(editions, copies, bookshelves)

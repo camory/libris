@@ -5,6 +5,7 @@ import fr.amory.libris.bibliography.domain.edition.Edition
 import fr.amory.libris.bibliography.domain.edition.EditionId
 import fr.amory.libris.bibliography.domain.edition.EditionRepository
 import fr.amory.libris.library.application.AddBookResult.Added
+import fr.amory.libris.library.application.AddBookResult.NoSuchBookshelf
 import fr.amory.libris.library.domain.bookshelf.BookshelfId
 import fr.amory.libris.library.domain.bookshelf.BookshelfRepository
 import fr.amory.libris.library.domain.copy.Copy
@@ -19,7 +20,7 @@ class AddBookToBookshelf(
     private val bookshelves: BookshelfRepository,
 ) {
     fun add(bookshelf: BookshelfId, book: NewBook): AddBookResult {
-        val shelf = checkNotNull(bookshelves.findById(bookshelf))
+        val shelf = bookshelves.findById(bookshelf) ?: return NoSuchBookshelf
         val edition = editionFor(book)
         val copy = Copy(CopyId.new(), edition.id, shelf.id)
         copies.insert(copy)

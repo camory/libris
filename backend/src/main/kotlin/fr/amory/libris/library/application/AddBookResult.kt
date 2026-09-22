@@ -5,4 +5,6 @@ import fr.amory.libris.library.domain.copy.Copy
 
 sealed class AddBookResult {
     data class Added(val copy: Copy, val bookshelf: Bookshelf) : AddBookResult()
+
+    data object NoSuchBookshelf : AddBookResult()
 }
