@@ -50,6 +50,24 @@ class JdbcCopyRepositoryTest @Autowired constructor(
         rowOf(copy.id) shouldBe (edition.id.value to bookshelf.id.value)
     }
 
+    @Test
+    fun `two copies of one edition on one bookshelf stand beside each other`() {
+        // Given
+        val bookshelf = bookshelfOf("lea", "Léa")
+        val edition = onePieceTomeOne()
+        editions.insert(edition)
+        val first = Copy(CopyId.new(), edition.id, bookshelf.id)
+        copies.insert(first)
+
+        // When
+        val second = Copy(CopyId.new(), edition.id, bookshelf.id)
+        copies.insert(second)
+
+        // Then
+        rowOf(first.id) shouldBe (edition.id.value to bookshelf.id.value)
+        rowOf(second.id) shouldBe (edition.id.value to bookshelf.id.value)
+    }
+
     private fun bookshelfOf(username: String, displayName: String): Bookshelf {
         val reader = readerNamed(username, displayName)
         readers.insert(reader)
