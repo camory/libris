@@ -3,6 +3,7 @@ package fr.amory.libris.bibliography.infrastructure.persistence
 import com.fasterxml.uuid.Generators
 import fr.amory.libris.bibliography.domain.Contribution
 import fr.amory.libris.bibliography.domain.ContributionRole
+import fr.amory.libris.bibliography.domain.Contributions
 import fr.amory.libris.bibliography.domain.Isbn
 import fr.amory.libris.bibliography.domain.Kind
 import fr.amory.libris.bibliography.domain.SeriesEntry
@@ -36,8 +37,7 @@ private const val INSERT_AUTHOR =
     """
 
 private const val INSERT_CONTRIBUTION =
-    "insert into contribution (edition_id, author_id, role, position) " +
-        "values (:editionId, :authorId, :role, :position)"
+    "insert into contribution (edition_id, author_id, role) values (:editionId, :authorId, :role)"
 
 private const val FIND_EDITION_BY_ISBN =
     """
@@ -50,7 +50,6 @@ private const val FIND_EDITION_BY_ISBN =
     left join contribution on contribution.edition_id = edition.id
     left join author on author.id = contribution.author_id
     where edition.isbn13 = :isbn13
-    order by contribution.position
     """
 
 private class EditionRow(
@@ -80,13 +79,12 @@ class JdbcEditionRepository(private val jdbcClient: JdbcClient) : EditionReposit
             .param("summary", edition.summary)
             .param("coverUrl", edition.coverUrl)
             .update()
-        edition.contributions.forEachIndexed { position, contribution ->
+        edition.contributions.all.forEach { contribution ->
             jdbcClient
                 .sql(INSERT_CONTRIBUTION)
                 .param("editionId", edition.id.value)
                 .param("authorId", named(INSERT_AUTHOR, contribution.name))
                 .param("role", contribution.role.name)
-                .param("position", position)
                 .update()
         }
     }
@@ -103,7 +101,7 @@ class JdbcEditionRepository(private val jdbcClient: JdbcClient) : EditionReposit
                         kind = Kind.valueOf(rs.getString("kind")),
                         title = rs.getString("title"),
                         subtitle = rs.getString("subtitle"),
-                        contributions = emptyList(),
+                        contributions = Contributions.of(emptyList()),
                         series = SeriesEntry.of(
                             rs.getString("series_name"),
                             rs.getObject("volume_number", Int::class.javaObjectType),
@@ -123,7 +121,7 @@ class JdbcEditionRepository(private val jdbcClient: JdbcClient) : EditionReposit
             }
             .list()
             .takeIf { it.isNotEmpty() }
-            ?.let { rows -> rows.first().edition.copy(contributions = rows.mapNotNull { it.contribution }) }
+            ?.let { rows -> rows.first().edition.copy(contributions = Contributions.of(rows.mapNotNull { it.contribution })) }
 
     private fun named(sql: String, name: String): UUID =
         jdbcClient

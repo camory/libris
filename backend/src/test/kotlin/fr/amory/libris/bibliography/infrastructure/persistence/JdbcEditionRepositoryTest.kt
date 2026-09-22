@@ -3,6 +3,7 @@ package fr.amory.libris.bibliography.infrastructure.persistence
 import fr.amory.libris.bibliography.domain.Contribution
 import fr.amory.libris.bibliography.domain.ContributionRole.TRANSLATOR
 import fr.amory.libris.bibliography.domain.ContributionRole.WRITER
+import fr.amory.libris.bibliography.domain.Contributions
 import fr.amory.libris.bibliography.domain.Kind.MANGA
 import fr.amory.libris.bibliography.domain.SeriesEntry
 import fr.amory.libris.bibliography.domain.edition.Edition
@@ -58,9 +59,8 @@ class JdbcEditionRepositoryTest @Autowired constructor(
             id = EditionId.new(),
             isbn = isbnOf(ONE_PIECE_TOME_TWO),
             title = "Aux prises avec Baggy et ses hommes",
-            contributions = listOf(
-                Contribution("EIICHIRO ODA", WRITER),
-                Contribution("akiko indei", TRANSLATOR),
+            contributions = Contributions.of(
+                listOf(Contribution("EIICHIRO ODA", WRITER), Contribution("akiko indei", TRANSLATOR)),
             ),
             series = SeriesEntry("ONE PIECE", 2),
         )
@@ -115,7 +115,7 @@ class JdbcEditionRepositoryTest @Autowired constructor(
 
     private fun bare(edition: Edition): Edition = edition.copy(
         subtitle = null,
-        contributions = emptyList(),
+        contributions = Contributions.of(emptyList()),
         series = null,
         collection = null,
         publisher = null,
@@ -132,9 +132,8 @@ class JdbcEditionRepositoryTest @Autowired constructor(
         kind = MANGA,
         title = "Romance dawn",
         subtitle = "À l'aube d'une grande aventure",
-        contributions = listOf(
-            Contribution("Eiichiro Oda", WRITER),
-            Contribution("Akiko Indei", TRANSLATOR),
+        contributions = Contributions.of(
+            listOf(Contribution("Akiko Indei", TRANSLATOR), Contribution("Eiichiro Oda", WRITER)),
         ),
         series = SeriesEntry("One piece", 1),
         collection = "Shonen manga",

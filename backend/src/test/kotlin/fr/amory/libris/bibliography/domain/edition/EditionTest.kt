@@ -1,11 +1,8 @@
 package fr.amory.libris.bibliography.domain.edition
 
-import fr.amory.libris.bibliography.domain.Contribution
-import fr.amory.libris.bibliography.domain.ContributionRole.ARTIST
-import fr.amory.libris.bibliography.domain.ContributionRole.WRITER
+import fr.amory.libris.bibliography.domain.Contributions
 import fr.amory.libris.bibliography.domain.Kind.MANGA
 import io.kotest.assertions.throwables.shouldThrow
-import io.kotest.matchers.shouldBe
 import org.junit.jupiter.api.Test
 
 class EditionTest {
@@ -14,32 +11,13 @@ class EditionTest {
         shouldThrow<IllegalArgumentException> { editionBy().copy(title = " ") }
     }
 
-    @Test
-    fun `an author named twice in one role is refused, whatever the capitalisation`() {
-        shouldThrow<IllegalArgumentException> {
-            editionBy(Contribution("Eiichiro Oda", WRITER), Contribution("EIICHIRO ODA", WRITER))
-        }
-    }
-
-    @Test
-    fun `an author holds several roles`() {
-        // Given
-        val contributions = listOf(Contribution("Eiichiro Oda", WRITER), Contribution("Eiichiro Oda", ARTIST))
-
-        // When
-        val edition = editionBy(*contributions.toTypedArray())
-
-        // Then
-        edition.contributions shouldBe contributions
-    }
-
-    private fun editionBy(vararg contributions: Contribution): Edition = Edition(
+    private fun editionBy(): Edition = Edition(
         id = EditionId.new(),
         isbn = null,
         kind = MANGA,
         title = "Romance dawn",
         subtitle = null,
-        contributions = contributions.toList(),
+        contributions = Contributions.of(emptyList()),
         series = null,
         collection = null,
         publisher = null,

@@ -33,6 +33,5 @@ create table contribution (
     edition_id uuid not null references edition (id) on delete cascade,
     author_id  uuid not null references author (id),
     role       text not null,
-    position   int  not null,
     primary key (edition_id, author_id, role)
 );
