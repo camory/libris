@@ -8,14 +8,14 @@ import org.junit.jupiter.api.Test
 class EditionTest {
     @Test
     fun `an edition without a title is refused`() {
-        shouldThrow<IllegalArgumentException> { editionBy().copy(title = " ") }
+        shouldThrow<IllegalArgumentException> { edition(title = " ") }
     }
 
-    private fun editionBy(): Edition = Edition(
+    private fun edition(title: String = "Romance dawn"): Edition = Edition(
         id = EditionId.new(),
         isbn = null,
         kind = MANGA,
-        title = "Romance dawn",
+        title = title,
         subtitle = null,
         contributions = Contributions.of(emptyList()),
         series = null,
