@@ -9,15 +9,20 @@ import fr.amory.libris.bibliography.domain.lookup.EditionPreview
 import fr.amory.libris.library.application.IsbnLookupResult.Found
 import fr.amory.libris.library.application.IsbnLookupResult.SourcesUnavailable
 import fr.amory.libris.library.application.IsbnLookupResult.UnknownIsbn
+import fr.amory.libris.library.domain.lookup.ReaderCopies
+import fr.amory.libris.library.domain.reader.ReaderId
 import org.springframework.stereotype.Service
 
 @Service
 class LookupIsbnForReader(
     private val editions: EditionRepository,
+    private val readerCopies: ReaderCopies,
     private val lookup: LookupEditionByIsbn,
 ) {
-    fun lookUp(isbn: Isbn): IsbnLookupResult =
-        editions.findByIsbn(isbn)?.let { Found(previewOf(it, isbn), emptyList()) } ?: askTheSources(isbn)
+    fun lookUp(readerId: ReaderId, isbn: Isbn): IsbnLookupResult =
+        editions.findByIsbn(isbn)
+            ?.let { Found(previewOf(it, isbn), readerCopies.ofEdition(it.id, readerId)) }
+            ?: askTheSources(isbn)
 
     private fun askTheSources(isbn: Isbn): IsbnLookupResult = when (val answer = lookup.lookUp(isbn)) {
         is EditionLookupResult.Found -> Found(answer.preview, emptyList())
