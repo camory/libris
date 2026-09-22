@@ -50,13 +50,22 @@ much of the code base the implementer must understand first.
   is one line per rule; *Risks and decisions* one paragraph per decision
   the planner made, each alternative rejected in one line. A brief past
   250 lines is designing the inside: reread and cut.
+- **Place a rule where the tree already places it.** Before deciding where
+  a check lives, read how the neighbouring adapter or use case does it: the
+  shape a contract field allows is checked at the web edge, as
+  `IsbnController` does before `Isbn.of`; a value type is the door of the
+  use case, which takes the value, never the text. A brief never widens a
+  visibility (D10) and never gives the use case a rule the aggregate holding
+  the data can answer.
 - **Test plan: each step red before it is green, except a guard.** A guard
   is a case the code of the earlier steps already satisfies, kept so it
   fails the day the constraint goes — a nullable unique column, a cascade,
   a fallback. The plan marks a guard as such and names the mutation that
   makes it red; the implementer runs that mutation, reverts it, and lists
   it in the PR body. A step that is neither red first nor a named guard is
-  a case weaker than its claim: rewrite it.
+  a case weaker than its claim: rewrite it. One step names one case: a step
+  with two cases is two steps, and guards are steps of their own, so that
+  one step is one cycle is one commit.
 - Fill the **First of its kind** line of the template. It names the kind of
   thing this task introduces and the code base has none of yet — the first
   outbound client, the first configuration setting, the first sub-package of
