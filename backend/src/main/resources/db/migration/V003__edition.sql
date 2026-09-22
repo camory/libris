@@ -1,24 +1,24 @@
-create table series (
-    id   uuid primary key,
-    name text not null
+CREATE TABLE series (
+    id   uuid PRIMARY KEY,
+    name text NOT NULL
 );
 
-create unique index series_name_unique on series (lower(name));
+CREATE UNIQUE INDEX series_name_unique ON series (LOWER(name));
 
-create table author (
-    id   uuid primary key,
-    name text not null
+CREATE TABLE author (
+    id   uuid PRIMARY KEY,
+    name text NOT NULL
 );
 
-create unique index author_name_unique on author (lower(name));
+CREATE UNIQUE INDEX author_name_unique ON author (LOWER(name));
 
-create table edition (
-    id               uuid primary key,
-    isbn13           text unique,
-    kind             text not null,
-    title            text not null,
+CREATE TABLE edition (
+    id               uuid PRIMARY KEY,
+    isbn13           text UNIQUE,
+    kind             text NOT NULL,
+    title            text NOT NULL,
     subtitle         text,
-    series_id        uuid references series (id),
+    series_id        uuid REFERENCES series (id),
     volume_number    int,
     collection       text,
     publisher        text,
@@ -29,9 +29,9 @@ create table edition (
     cover_url        text
 );
 
-create table contribution (
-    edition_id uuid not null references edition (id) on delete cascade,
-    author_id  uuid not null references author (id),
-    role       text not null,
-    primary key (edition_id, author_id, role)
+CREATE TABLE contribution (
+    edition_id uuid NOT NULL REFERENCES edition (id) ON DELETE CASCADE,
+    author_id  uuid NOT NULL REFERENCES author (id),
+    role       text NOT NULL,
+    PRIMARY KEY (edition_id, author_id, role)
 );

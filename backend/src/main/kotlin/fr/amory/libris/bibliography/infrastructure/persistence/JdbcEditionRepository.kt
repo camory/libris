@@ -16,40 +16,40 @@ import java.util.UUID
 
 private const val INSERT_EDITION =
     """
-    insert into edition (id, isbn13, kind, title, subtitle, series_id, volume_number, collection,
+    INSERT INTO edition (id, isbn13, kind, title, subtitle, series_id, volume_number, collection,
                          publisher, publication_year, language, page_count, summary, cover_url)
-    values (:id, :isbn13, :kind, :title, :subtitle, :seriesId, :volumeNumber, :collection,
+    VALUES (:id, :isbn13, :kind, :title, :subtitle, :seriesId, :volumeNumber, :collection,
             :publisher, :publicationYear, :language, :pageCount, :summary, :coverUrl)
     """
 
 private const val INSERT_SERIES =
     """
-    insert into series (id, name) values (:id, :name)
-    on conflict (lower(name)) do update set name = series.name
-    returning id
+    INSERT INTO series (id, name) VALUES (:id, :name)
+    ON CONFLICT (LOWER(name)) DO UPDATE SET name = series.name
+    RETURNING id
     """
 
 private const val INSERT_AUTHOR =
     """
-    insert into author (id, name) values (:id, :name)
-    on conflict (lower(name)) do update set name = author.name
-    returning id
+    INSERT INTO author (id, name) VALUES (:id, :name)
+    ON CONFLICT (LOWER(name)) DO UPDATE SET name = author.name
+    RETURNING id
     """
 
 private const val INSERT_CONTRIBUTION =
-    "insert into contribution (edition_id, author_id, role) values (:editionId, :authorId, :role)"
+    "INSERT INTO contribution (edition_id, author_id, role) VALUES (:editionId, :authorId, :role)"
 
 private const val FIND_EDITION_BY_ISBN =
     """
-    select edition.id, edition.isbn13, edition.kind, edition.title, edition.subtitle,
+    SELECT edition.id, edition.isbn13, edition.kind, edition.title, edition.subtitle,
            edition.volume_number, edition.collection, edition.publisher, edition.publication_year,
            edition.language, edition.page_count, edition.summary, edition.cover_url,
-           series.name as series_name, author.name as author_name, contribution.role
-    from edition
-    left join series on series.id = edition.series_id
-    left join contribution on contribution.edition_id = edition.id
-    left join author on author.id = contribution.author_id
-    where edition.isbn13 = :isbn13
+           series.name AS series_name, author.name AS author_name, contribution.role
+    FROM edition
+    LEFT JOIN series ON series.id = edition.series_id
+    LEFT JOIN contribution ON contribution.edition_id = edition.id
+    LEFT JOIN author ON author.id = contribution.author_id
+    WHERE edition.isbn13 = :isbn13
     """
 
 private class EditionRow(

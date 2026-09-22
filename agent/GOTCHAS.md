@@ -35,6 +35,14 @@ true; the diary keeps the date it was found.
   `docker compose --env-file agent/.env -f agent/compose.yaml up -d postgres`.
   `backend/.env` points the host gate at that database, and `FreshSchema`
   wipes it: what was entered by hand through `bootRun` is gone after a gate.
+- Editing a migration the gate database has already applied (the one of the
+  current task, before its PR is merged) fails every JDBC slice with
+  `Validate failed: Migrations have failed validation`: Flyway checks the
+  checksums on context start, before `FreshSchema` cleans. Forget the row
+  first: `DELETE FROM flyway_schema_history WHERE version = '003'` (the
+  version is zero-padded) and drop its tables, through
+  `docker compose --env-file agent/.env -f agent/compose.yaml exec -T
+  postgres psql -U libris -d libris -c "…"`.
 - Tophe's host box has no `contracteer` binary and an old Node: from the host,
   the frontend gate and the Contracteer CLI run inside the sandbox image
   (`docker run --rm --network none -v "$PWD":/work -w /work/frontend

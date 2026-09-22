@@ -10,18 +10,18 @@ import org.springframework.jdbc.core.simple.JdbcClient
 import org.springframework.stereotype.Repository
 import java.util.UUID
 
-private const val INSERT_BOOKSHELF = "insert into bookshelf (id, name) values (:id, :name)"
+private const val INSERT_BOOKSHELF = "INSERT INTO bookshelf (id, name) VALUES (:id, :name)"
 
 private const val INSERT_MEMBERSHIP =
-    "insert into membership (bookshelf_id, reader_id, role) values (:bookshelfId, :readerId, :role)"
+    "INSERT INTO membership (bookshelf_id, reader_id, role) VALUES (:bookshelfId, :readerId, :role)"
 
 private const val FIND_BOOKSHELF_BY_ID =
     """
-    select bookshelf.id, bookshelf.name, membership.reader_id, membership.role
-    from bookshelf
-    join membership on membership.bookshelf_id = bookshelf.id
-    where bookshelf.id = :id
-    order by membership.reader_id
+    SELECT bookshelf.id, bookshelf.name, membership.reader_id, membership.role
+    FROM bookshelf
+    JOIN membership ON membership.bookshelf_id = bookshelf.id
+    WHERE bookshelf.id = :id
+    ORDER BY membership.reader_id
     """
 
 private class BookshelfRow(

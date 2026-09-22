@@ -391,6 +391,10 @@ deliberately lacks), no other service. A test that needs more blocks the task.
   qualified because `getInstance()` alone says nothing.
 - Spring test classes receive their beans through an `@Autowired`
   constructor; no field injection in tests.
+- SQL: keywords and functions in upper case, identifiers in lower
+  snake_case, in migrations and in the statements of the repositories:
+  `SELECT edition.id FROM edition WHERE edition.isbn13 = :isbn13`. A
+  migration already applied is never recased: Flyway checks its checksum.
 - TypeScript: strict; ESLint (with the boundaries rules) and Prettier.
 - Versions: latest stable at scaffold time, pinned — Gradle version catalog
   `gradle/libs.versions.toml` on the backend, exact versions in `package.json`

@@ -111,7 +111,7 @@ class JdbcEditionRepositoryTest @Autowired constructor(
     }
 
     private fun rowsOf(table: String): Int =
-        jdbcClient.sql("select count(*) from $table").query(Int::class.java).single()
+        jdbcClient.sql("SELECT COUNT(*) FROM $table").query(Int::class.java).single()
 
     private fun bare(edition: Edition): Edition = edition.copy(
         subtitle = null,
