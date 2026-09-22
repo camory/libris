@@ -81,10 +81,11 @@ class JdbcEditionRepository(private val jdbcClient: JdbcClient) : EditionReposit
             .param("coverUrl", edition.coverUrl)
             .update()
         edition.contributions.forEach { contribution ->
+            val authorId = authorIdOf(contribution.name)
             jdbcClient
                 .sql(INSERT_CONTRIBUTION)
                 .param("editionId", edition.id.value)
-                .param("authorId", authorIdOf(contribution.name))
+                .param("authorId", authorId)
                 .param("role", contribution.role.name)
                 .update()
         }
