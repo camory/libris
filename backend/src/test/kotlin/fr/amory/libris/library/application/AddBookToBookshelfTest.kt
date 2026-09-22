@@ -10,7 +10,6 @@ import fr.amory.libris.bibliography.fixture.EditionsInMemory
 import fr.amory.libris.bibliography.fixture.isbnOf
 import fr.amory.libris.library.application.AddBookResult.Added
 import fr.amory.libris.library.application.AddBookResult.NoSuchBookshelf
-import fr.amory.libris.library.application.AddBookResult.NotAnIsbn
 import fr.amory.libris.library.application.AddBookResult.NotAnOwner
 import fr.amory.libris.library.domain.bookshelf.Membership
 import fr.amory.libris.library.domain.bookshelf.MembershipRole.VIEWER
@@ -161,44 +160,12 @@ class AddBookToBookshelfTest {
     }
 
     @Test
-    fun `an isbn13 whose check digit is wrong is refused`() {
-        // Given
-        val lea = readerNamed("lea", "Léa")
-        val bookshelf = bookshelfOwnedBy(lea)
-        bookshelves.insert(bookshelf)
-
-        // When
-        val result = addBookToBookshelf().add(lea.id, bookshelf.id, onePieceTomeOne().copy(isbn13 = "9782723488526"))
-
-        // Then
-        result shouldBe NotAnIsbn
-        editions.stored.shouldBeEmpty()
-        copies.stored.shouldBeEmpty()
-    }
-
-    @Test
-    fun `an ISBN-10 is refused`() {
-        // Given
-        val lea = readerNamed("lea", "Léa")
-        val bookshelf = bookshelfOwnedBy(lea)
-        bookshelves.insert(bookshelf)
-
-        // When
-        val result = addBookToBookshelf().add(lea.id, bookshelf.id, onePieceTomeOne().copy(isbn13 = "2723488527"))
-
-        // Then
-        result shouldBe NotAnIsbn
-        editions.stored.shouldBeEmpty()
-        copies.stored.shouldBeEmpty()
-    }
-
-    @Test
     fun `the ouvrage without an ISBN gives the house a new edition every time`() {
         // Given
         val lea = readerNamed("lea", "Léa")
         val bookshelf = bookshelfOwnedBy(lea)
         bookshelves.insert(bookshelf)
-        val withoutIsbn = onePieceTomeOne().copy(isbn13 = null)
+        val withoutIsbn = onePieceTomeOne().copy(isbn = null)
         addBookToBookshelf().add(lea.id, bookshelf.id, withoutIsbn)
 
         // When
@@ -230,7 +197,7 @@ class AddBookToBookshelfTest {
         AddBookToBookshelf(editions, copies, bookshelves, transactions)
 
     private fun onePieceTomeOne(): NewBook = NewBook(
-        isbn13 = ONE_PIECE,
+        isbn = isbnOf(ONE_PIECE),
         kind = MANGA,
         title = "Romance dawn",
         subtitle = "À l'aube d'une grande aventure",

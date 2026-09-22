@@ -1,12 +1,10 @@
 package fr.amory.libris.library.application
 
-import fr.amory.libris.bibliography.domain.Isbn
 import fr.amory.libris.bibliography.domain.edition.Edition
 import fr.amory.libris.bibliography.domain.edition.EditionId
 import fr.amory.libris.bibliography.domain.edition.EditionRepository
 import fr.amory.libris.library.application.AddBookResult.Added
 import fr.amory.libris.library.application.AddBookResult.NoSuchBookshelf
-import fr.amory.libris.library.application.AddBookResult.NotAnIsbn
 import fr.amory.libris.library.application.AddBookResult.NotAnOwner
 import fr.amory.libris.library.domain.bookshelf.Bookshelf
 import fr.amory.libris.library.domain.bookshelf.BookshelfId
@@ -25,31 +23,29 @@ class AddBookToBookshelf(
     private val bookshelves: BookshelfRepository,
     private val transactions: TransactionOperations,
 ) {
-    fun add(reader: ReaderId, bookshelf: BookshelfId, book: NewBook): AddBookResult {
-        val shelf = bookshelves.findById(bookshelf)?.takeIf { it.hasMember(reader) }
-        val isbn = book.isbn13?.let { Isbn.ofThirteen(it) }
+    fun add(readerId: ReaderId, bookshelfId: BookshelfId, book: NewBook): AddBookResult {
+        val bookshelf = bookshelves.findById(bookshelfId)?.takeIf { it.hasMember(readerId) }
         return when {
-            shelf == null -> NoSuchBookshelf
-            !shelf.isOwnedBy(reader) -> NotAnOwner
-            book.isbn13 != null && isbn == null -> NotAnIsbn
-            else -> added(shelf, book, isbn)
+            bookshelf == null -> NoSuchBookshelf
+            !bookshelf.isOwnedBy(readerId) -> NotAnOwner
+            else -> added(bookshelf, book)
         }
     }
 
-    private fun added(shelf: Bookshelf, book: NewBook, isbn: Isbn?): AddBookResult {
-        val held = isbn?.let { editions.findByIsbn(it) }
-        val edition = held ?: newEdition(book, isbn)
-        val copy = Copy(CopyId.new(), edition.id, shelf.id)
+    private fun added(bookshelf: Bookshelf, book: NewBook): AddBookResult {
+        val heldEdition = book.isbn?.let { editions.findByIsbn(it) }
+        val edition = heldEdition ?: newEdition(book)
+        val copy = Copy(CopyId.new(), edition.id, bookshelf.id)
         transactions.executeWithoutResult {
-            if (held == null) editions.insert(edition)
+            if (heldEdition == null) editions.insert(edition)
             copies.insert(copy)
         }
-        return Added(copy, shelf)
+        return Added(copy, bookshelf)
     }
 
-    private fun newEdition(book: NewBook, isbn: Isbn?): Edition = Edition(
+    private fun newEdition(book: NewBook): Edition = Edition(
         id = EditionId.new(),
-        isbn = isbn,
+        isbn = book.isbn,
         kind = book.kind,
         title = book.title,
         subtitle = book.subtitle,

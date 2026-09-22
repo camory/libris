@@ -1,11 +1,12 @@
 package fr.amory.libris.library.application
 
 import fr.amory.libris.bibliography.domain.Contributions
+import fr.amory.libris.bibliography.domain.Isbn
 import fr.amory.libris.bibliography.domain.Kind
 import fr.amory.libris.bibliography.domain.SeriesEntry
 
 data class NewBook(
-    val isbn13: String?,
+    val isbn: Isbn?,
     val kind: Kind,
     val title: String,
     val subtitle: String?,
