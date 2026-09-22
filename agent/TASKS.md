@@ -114,7 +114,9 @@ frontend pin moves in T038. No other task touches the contract (D04).
       (D06).
       `POST /api/v1/bookshelves/{id}/books`: the body `NewBook` → `201` the
       `Copy` with its bookshelf; `400` `/problems/validation` with one error
-      per refused field; `404` `/problems/not-found` when the reader is a
+      per refused field, `isbn13` checked as `IsbnController` checks its path
+      before `Isbn.of`, since `NewBook` takes an `Isbn?` and no use case sees
+      a bad one; `404` `/problems/not-found` when the reader is a
       member of no such bookshelf (D11).
       The verifier adds two cases of its own, an `id` that is not a uuid and
       a body of the wrong types, both answered `400` with a `Problem` before

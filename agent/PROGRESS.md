@@ -253,7 +253,13 @@ Format:
   viewer is refused with a third result, `NotAnOwner`; a stranger still gets
   `NoSuchBookshelf`, a bookshelf being visible only to its members. The
   contract's POST answers no `403`, so where T037 maps `NotAnOwner` is in
-  `agent/PROPOSED.md`.
+  `agent/PROPOSED.md`. Same review: `Isbn.ofThirteen` back to private — a
+  private method made public changes what the value type exposes, and no rule
+  asked for it; `NewBook` carries `isbn: Isbn?`, the value type being the
+  door, so `NotAnIsbn` and its two cases are gone and the `400` of a bad
+  `isbn13` is the T037 controller's, checking the contract's pattern and
+  mapping through `Isbn.of` as `IsbnController` does. Names follow the
+  tree's: an id is `readerId`/`bookshelfId`, the aggregate is `bookshelf`.
 - Decided: `add` is one `when` over three outcomes rather than guard clauses,
   detekt's `ReturnCount` allowing two returns and a third refusal being
   likely when the API arrives; the two inserts sit in a private `added(...)`,
