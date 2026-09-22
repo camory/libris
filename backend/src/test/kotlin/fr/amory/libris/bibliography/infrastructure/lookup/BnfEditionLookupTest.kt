@@ -7,6 +7,7 @@ import fr.amory.libris.bibliography.domain.Contribution
 import fr.amory.libris.bibliography.domain.ContributionRole.ARTIST
 import fr.amory.libris.bibliography.domain.ContributionRole.TRANSLATOR
 import fr.amory.libris.bibliography.domain.ContributionRole.WRITER
+import fr.amory.libris.bibliography.domain.Contributions
 import fr.amory.libris.bibliography.domain.Kind.BD
 import fr.amory.libris.bibliography.domain.Kind.BOOK
 import fr.amory.libris.bibliography.domain.Kind.MANGA
@@ -61,7 +62,12 @@ class BnfEditionLookupTest {
                 kind = BD,
                 title = "Les Neronia",
                 subtitle = null,
-                contributions = listOf(Contribution("Jean Dufaux", WRITER), Contribution("Jérémy", ARTIST)),
+                contributions = Contributions.of(
+                    listOf(
+                        Contribution("Jean Dufaux", WRITER),
+                        Contribution("Jérémy", ARTIST),
+                    ),
+                ),
                 series = SeriesEntry("Murena", 13),
                 collection = null,
                 publisher = "Dargaud Benelux",
@@ -89,10 +95,12 @@ class BnfEditionLookupTest {
                 kind = BD,
                 title = "Lemuria",
                 subtitle = null,
-                contributions = listOf(
-                    Contribution("Jean Dufaux", WRITER),
-                    Contribution("Théo", WRITER),
-                    Contribution("Philippe Delaby", WRITER),
+                contributions = Contributions.of(
+                    listOf(
+                        Contribution("Jean Dufaux", WRITER),
+                        Contribution("Philippe Delaby", WRITER),
+                        Contribution("Théo", WRITER),
+                    ),
                 ),
                 series = SeriesEntry("Murena", 11),
                 collection = null,
@@ -121,7 +129,7 @@ class BnfEditionLookupTest {
                 kind = BOOK,
                 title = "Les Carnets de l'apothicaire",
                 subtitle = null,
-                contributions = listOf(Contribution("Natsu Hyūga", WRITER)),
+                contributions = Contributions.of(listOf(Contribution("Natsu Hyūga", WRITER))),
                 series = SeriesEntry("Les Carnets de l'apothicaire", 7),
                 collection = null,
                 publisher = "Lumen",
@@ -144,8 +152,20 @@ class BnfEditionLookupTest {
 
         // Then
         val preview = (answer as Known).preview
-        preview.contributions shouldBe listOf(Contribution("Eiichirō Oda", WRITER))
+        preview.contributions.all shouldBe listOf(Contribution("Eiichirō Oda", WRITER))
         preview.series shouldBe null
+    }
+
+    @Test
+    fun `a person listed under two codes the house reads as one role is one contribution`() {
+        // Given
+        bnf.answers(BLANK_NAMES, ONE_PERSON_TWICE)
+
+        // When
+        val answer = source.lookUp(isbnOf(BLANK_NAMES))
+
+        // Then
+        (answer as Known).preview.contributions.all shouldBe listOf(Contribution("Eiichirō Oda", WRITER))
     }
 
     @Test
@@ -163,7 +183,7 @@ class BnfEditionLookupTest {
                 kind = BOOK,
                 title = "Un livre",
                 subtitle = null,
-                contributions = emptyList(),
+                contributions = Contributions.of(emptyList()),
                 series = null,
                 collection = null,
                 publisher = "Dargaud Benelux",
@@ -361,6 +381,25 @@ class BnfEditionLookupTest {
             </mxc:record>
             </srw:searchRetrieveResponse>
         """.trimIndent()
+        val ONE_PERSON_TWICE = """
+            <srw:searchRetrieveResponse xmlns:srw="http://www.loc.gov/zing/srw/">
+            <mxc:record xmlns:mxc="info:lc/xmlns/marcxchange-v2">
+            <mxc:datafield tag="200" ind1="1" ind2=" ">
+            <mxc:subfield code="a">Aux prises avec Baggy et ses hommes</mxc:subfield>
+            </mxc:datafield>
+            <mxc:datafield tag="700" ind1=" " ind2="|">
+            <mxc:subfield code="a">Oda</mxc:subfield>
+            <mxc:subfield code="b">Eiichirō</mxc:subfield>
+            <mxc:subfield code="4">070</mxc:subfield>
+            </mxc:datafield>
+            <mxc:datafield tag="702" ind1=" " ind2="|">
+            <mxc:subfield code="a">Oda</mxc:subfield>
+            <mxc:subfield code="b">Eiichirō</mxc:subfield>
+            <mxc:subfield code="4">080</mxc:subfield>
+            </mxc:datafield>
+            </mxc:record>
+            </srw:searchRetrieveResponse>
+        """.trimIndent()
         val PRINTER_BEFORE_PUBLISHER = """
             <srw:searchRetrieveResponse xmlns:srw="http://www.loc.gov/zing/srw/">
             <mxc:record xmlns:mxc="info:lc/xmlns/marcxchange-v2">
@@ -381,7 +420,7 @@ class BnfEditionLookupTest {
             kind = MANGA,
             title = "Romance dawn",
             subtitle = "à l'aube d'une grande aventure",
-            contributions = listOf(Contribution("Eiichirō Oda", WRITER)),
+            contributions = Contributions.of(listOf(Contribution("Eiichirō Oda", WRITER))),
             series = SeriesEntry("One piece", 1),
             collection = "Shonen manga",
             publisher = "Glénat",

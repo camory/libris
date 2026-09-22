@@ -9,6 +9,7 @@ import fr.amory.libris.bibliography.application.lookup.LookupEditionByIsbn
 import fr.amory.libris.bibliography.domain.Contribution
 import fr.amory.libris.bibliography.domain.ContributionRole.ARTIST
 import fr.amory.libris.bibliography.domain.ContributionRole.WRITER
+import fr.amory.libris.bibliography.domain.Contributions
 import fr.amory.libris.bibliography.domain.Kind.MANGA
 import fr.amory.libris.bibliography.domain.SeriesEntry
 import fr.amory.libris.bibliography.domain.lookup.EditionPreview
@@ -34,7 +35,12 @@ private val ONE_PIECE_1 = EditionPreview(
     kind = MANGA,
     title = "Romance dawn",
     subtitle = "à l'aube d'une grande aventure",
-    contributions = listOf(Contribution("Eiichirō Oda", WRITER), Contribution("Eiichirō Oda", ARTIST)),
+    contributions = Contributions.of(
+        listOf(
+            Contribution("Eiichirō Oda", WRITER),
+            Contribution("Eiichirō Oda", ARTIST),
+        ),
+    ),
     series = SeriesEntry("One piece", 1),
     collection = "Shonen manga",
     publisher = "Glénat",

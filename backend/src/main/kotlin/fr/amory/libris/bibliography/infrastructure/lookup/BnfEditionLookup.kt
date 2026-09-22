@@ -5,6 +5,7 @@ import fr.amory.libris.bibliography.domain.ContributionRole
 import fr.amory.libris.bibliography.domain.ContributionRole.ARTIST
 import fr.amory.libris.bibliography.domain.ContributionRole.TRANSLATOR
 import fr.amory.libris.bibliography.domain.ContributionRole.WRITER
+import fr.amory.libris.bibliography.domain.Contributions
 import fr.amory.libris.bibliography.domain.Isbn
 import fr.amory.libris.bibliography.domain.Kind
 import fr.amory.libris.bibliography.domain.Kind.BD
@@ -108,10 +109,11 @@ class BnfEditionLookup(baseUrl: String, timeout: Duration) : ExternalEditionLook
     private fun publicationOf(record: UnimarcRecord): UnimarcField? =
         record.field("214", PUBLISHER_INDICATOR) ?: record.field("210")
 
-    private fun contributionsOf(record: UnimarcRecord): List<Contribution> =
+    private fun contributionsOf(record: UnimarcRecord): Contributions = Contributions.of(
         record.fields(AUTHOR_TAGS).mapNotNull { field ->
             Contribution.of(nameOf(field), contributionRoleOf(field.value("4")))
-        }
+        },
+    )
 
     private fun nameOf(field: UnimarcField): String =
         "${field.value("b").orEmpty()} ${field.value("a").orEmpty()}".trim()

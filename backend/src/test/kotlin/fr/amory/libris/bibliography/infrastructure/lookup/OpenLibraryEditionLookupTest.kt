@@ -4,6 +4,7 @@ import com.github.tomakehurst.wiremock.WireMockServer
 import com.github.tomakehurst.wiremock.core.WireMockConfiguration.options
 import fr.amory.libris.bibliography.domain.Contribution
 import fr.amory.libris.bibliography.domain.ContributionRole.WRITER
+import fr.amory.libris.bibliography.domain.Contributions
 import fr.amory.libris.bibliography.domain.Kind.BOOK
 import fr.amory.libris.bibliography.domain.lookup.EditionPreview
 import fr.amory.libris.bibliography.domain.lookup.ExternalLookupResult.Failed
@@ -44,10 +45,12 @@ class OpenLibraryEditionLookupTest {
                 kind = BOOK,
                 title = "Space Wars - Chapitre 1",
                 subtitle = null,
-                contributions = listOf(
-                    Contribution("Baba", WRITER),
-                    Contribution("Stéphane Lapuss'", WRITER),
-                    Contribution("Tartuff", WRITER),
+                contributions = Contributions.of(
+                    listOf(
+                        Contribution("Baba", WRITER),
+                        Contribution("Stéphane Lapuss'", WRITER),
+                        Contribution("Tartuff", WRITER),
+                    ),
                 ),
                 series = null,
                 collection = null,
@@ -99,7 +102,7 @@ class OpenLibraryEditionLookupTest {
         val answer = source.lookUp(isbnOf(MONTE_CRISTO))
 
         // Then
-        answer shouldBe Known(MONTE_CRISTO_EDITION.copy(contributions = emptyList()))
+        answer shouldBe Known(MONTE_CRISTO_EDITION.copy(contributions = Contributions.of(emptyList())))
     }
 
     @Test
@@ -112,9 +115,8 @@ class OpenLibraryEditionLookupTest {
         val answer = source.lookUp(isbnOf(MONTE_CRISTO))
 
         // Then
-        answer shouldBe Known(
-            MONTE_CRISTO_EDITION.copy(contributions = listOf(Contribution("Alexandre Dumas", WRITER))),
-        )
+        val dumas = Contributions.of(listOf(Contribution("Alexandre Dumas", WRITER)))
+        answer shouldBe Known(MONTE_CRISTO_EDITION.copy(contributions = dumas))
     }
 
     @Test
@@ -187,7 +189,7 @@ class OpenLibraryEditionLookupTest {
             kind = BOOK,
             title = "Le comte de Monte-Cristo",
             subtitle = "Tome 1",
-            contributions = listOf(Contribution("Alexandre Dumas", WRITER)),
+            contributions = Contributions.of(listOf(Contribution("Alexandre Dumas", WRITER))),
             series = null,
             collection = null,
             publisher = "Le Livre de Poche",

@@ -2,6 +2,7 @@ package fr.amory.libris.bibliography.infrastructure.lookup
 
 import fr.amory.libris.bibliography.domain.Contribution
 import fr.amory.libris.bibliography.domain.ContributionRole.WRITER
+import fr.amory.libris.bibliography.domain.Contributions
 import fr.amory.libris.bibliography.domain.Isbn
 import fr.amory.libris.bibliography.domain.Kind.BOOK
 import fr.amory.libris.bibliography.domain.lookup.EditionPreview
@@ -56,13 +57,15 @@ class OpenLibraryEditionLookup(baseUrl: String, timeout: Duration) : ExternalEdi
         coverUrl = "$COVERS/${isbn.digits}-L.jpg?default=false",
     )
 
-    private fun contributionsOf(edition: JsonNode, search: JsonNode): List<Contribution> {
+    private fun contributionsOf(edition: JsonNode, search: JsonNode): Contributions {
         val key = edition["key"]?.asString()?.substringAfterLast("/")
-        return search.path("docs").values()
-            .firstOrNull { work -> work.path("edition_key").values().any { it.asString() == key } }
-            ?.path("author_name")?.values()
-            ?.mapNotNull { node -> Contribution.of(node.asString(), WRITER) }
-            .orEmpty()
+        return Contributions.of(
+            search.path("docs").values()
+                .firstOrNull { work -> work.path("edition_key").values().any { it.asString() == key } }
+                ?.path("author_name")?.values()
+                ?.mapNotNull { node -> Contribution.of(node.asString(), WRITER) }
+                .orEmpty(),
+        )
     }
 
     private fun search(isbn: Isbn): JsonNode = http.get()

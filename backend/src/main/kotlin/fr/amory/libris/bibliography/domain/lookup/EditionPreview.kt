@@ -1,6 +1,6 @@
 package fr.amory.libris.bibliography.domain.lookup
 
-import fr.amory.libris.bibliography.domain.Contribution
+import fr.amory.libris.bibliography.domain.Contributions
 import fr.amory.libris.bibliography.domain.Isbn
 import fr.amory.libris.bibliography.domain.Kind
 import fr.amory.libris.bibliography.domain.SeriesEntry
@@ -10,7 +10,7 @@ data class EditionPreview(
     val kind: Kind,
     val title: String,
     val subtitle: String?,
-    val contributions: List<Contribution>,
+    val contributions: Contributions,
     val series: SeriesEntry?,
     val collection: String?,
     val publisher: String?,
@@ -22,7 +22,7 @@ data class EditionPreview(
 ) {
     fun merge(other: EditionPreview): EditionPreview = copy(
         subtitle = subtitle ?: other.subtitle,
-        contributions = contributions.ifEmpty { other.contributions },
+        contributions = if (contributions.all.isEmpty()) other.contributions else contributions,
         series = series ?: other.series,
         collection = collection ?: other.collection,
         publisher = publisher ?: other.publisher,

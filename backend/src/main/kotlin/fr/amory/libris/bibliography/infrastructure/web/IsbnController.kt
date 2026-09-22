@@ -85,7 +85,7 @@ class IsbnController(private val lookup: LookupEditionByIsbn) {
         kind = preview.kind,
         title = preview.title,
         subtitle = preview.subtitle,
-        authors = preview.contributions.map { IsbnAuthorResponse(it.name, it.role) },
+        authors = preview.contributions.all.map { IsbnAuthorResponse(it.name, it.role) },
         series = preview.series?.let { IsbnSeriesResponse(it.name, it.volumeNumber) },
         collection = preview.collection,
         publisher = preview.publisher,

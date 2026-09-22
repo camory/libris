@@ -121,7 +121,10 @@ class JdbcEditionRepository(private val jdbcClient: JdbcClient) : EditionReposit
             }
             .list()
             .takeIf { it.isNotEmpty() }
-            ?.let { rows -> rows.first().edition.copy(contributions = Contributions.of(rows.mapNotNull { it.contribution })) }
+            ?.let { rows -> rows.first().edition.copy(contributions = contributionsOf(rows)) }
+
+    private fun contributionsOf(rows: List<EditionRow>): Contributions =
+        Contributions.of(rows.mapNotNull { it.contribution })
 
     private fun named(sql: String, name: String): UUID =
         jdbcClient
