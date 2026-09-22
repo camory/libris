@@ -134,6 +134,30 @@ class LookupIsbnForReaderTest {
         result.shouldBeInstanceOf<Found>().copies shouldBe listOf(onLeasBookshelf, inTheSalon)
     }
 
+    @Test
+    fun `an edition whose copies the reader cannot see is answered with no copy`() {
+        // Given
+        val juliette = ReaderId.new()
+        val copies = ReaderCopiesInMemory()
+        val juliettesCopy = CopyOnBookshelf(CopyId.new(), BookshelfId.new(), "Bibliothèque de Juliette")
+        copies.visibleTo(juliette, ROMANCE_DAWN.id, listOf(juliettesCopy))
+        val source = LookupAnswering(Known(A_PREVIEW.copy(title = "Un titre venu d'une source")))
+        val lookup = lookupAsking(
+            source,
+            house = EditionsInMemory().also { it.insert(ROMANCE_DAWN) },
+            copies = copies,
+        )
+
+        // When
+        val result = lookup.lookUp(lea, isbnOf(ONE_PIECE))
+
+        // Then
+        val found = result.shouldBeInstanceOf<Found>()
+        found.preview.title shouldBe "Romance dawn"
+        found.copies shouldBe emptyList()
+        source.asked shouldBe emptyList()
+    }
+
     private fun lookupAsking(
         vararg sources: ExternalEditionLookup,
         house: EditionsInMemory = EditionsInMemory(),
