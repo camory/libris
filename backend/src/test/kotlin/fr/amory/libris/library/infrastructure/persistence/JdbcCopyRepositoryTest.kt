@@ -8,14 +8,17 @@ import fr.amory.libris.bibliography.fixture.isbnOf
 import fr.amory.libris.bibliography.infrastructure.persistence.JdbcEditionRepository
 import fr.amory.libris.fixture.JdbcSliceTest
 import fr.amory.libris.library.domain.bookshelf.Bookshelf
+import fr.amory.libris.library.domain.bookshelf.BookshelfId
 import fr.amory.libris.library.domain.copy.Copy
 import fr.amory.libris.library.domain.copy.CopyId
 import fr.amory.libris.library.fixture.bookshelfOwnedBy
 import fr.amory.libris.library.fixture.readerNamed
+import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.matchers.shouldBe
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.context.annotation.Import
+import org.springframework.dao.DataIntegrityViolationException
 import org.springframework.jdbc.core.simple.JdbcClient
 import java.util.UUID
 
@@ -66,6 +69,31 @@ class JdbcCopyRepositoryTest @Autowired constructor(
         // Then
         rowOf(first.id) shouldBe (edition.id.value to bookshelf.id.value)
         rowOf(second.id) shouldBe (edition.id.value to bookshelf.id.value)
+    }
+
+    @Test
+    fun `a copy of an edition the house does not hold is refused`() {
+        // Given
+        val bookshelf = bookshelfOf("lea", "Léa")
+
+        // When
+        val copy = Copy(CopyId.new(), EditionId.new(), bookshelf.id)
+
+        // Then
+        shouldThrow<DataIntegrityViolationException> { copies.insert(copy) }
+    }
+
+    @Test
+    fun `a copy on a bookshelf Libris does not know is refused`() {
+        // Given
+        val edition = onePieceTomeOne()
+        editions.insert(edition)
+
+        // When
+        val copy = Copy(CopyId.new(), edition.id, BookshelfId.new())
+
+        // Then
+        shouldThrow<DataIntegrityViolationException> { copies.insert(copy) }
     }
 
     private fun bookshelfOf(username: String, displayName: String): Bookshelf {
