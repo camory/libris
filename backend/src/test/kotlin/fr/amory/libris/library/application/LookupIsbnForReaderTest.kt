@@ -2,12 +2,14 @@ package fr.amory.libris.library.application
 
 import fr.amory.libris.bibliography.application.lookup.LookupEditionByIsbn
 import fr.amory.libris.bibliography.domain.lookup.ExternalEditionLookup
+import fr.amory.libris.bibliography.domain.lookup.ExternalLookupResult.Failed
 import fr.amory.libris.bibliography.domain.lookup.ExternalLookupResult.Known
 import fr.amory.libris.bibliography.domain.lookup.ExternalLookupResult.NothingKnown
 import fr.amory.libris.bibliography.fixture.A_PREVIEW
 import fr.amory.libris.bibliography.fixture.LookupAnswering
 import fr.amory.libris.bibliography.fixture.isbnOf
 import fr.amory.libris.library.application.IsbnLookupResult.Found
+import fr.amory.libris.library.application.IsbnLookupResult.SourcesUnavailable
 import fr.amory.libris.library.application.IsbnLookupResult.UnknownIsbn
 import io.kotest.matchers.shouldBe
 import org.junit.jupiter.api.Test
@@ -37,6 +39,18 @@ class LookupIsbnForReaderTest {
 
         // Then
         result shouldBe UnknownIsbn
+    }
+
+    @Test
+    fun `an ISBN whose sources are all down answers that the sources are unavailable`() {
+        // Given
+        val lookup = lookupAsking(LookupAnswering(Failed))
+
+        // When
+        val result = lookup.lookUp(isbnOf(ONE_PIECE))
+
+        // Then
+        result shouldBe SourcesUnavailable
     }
 
     private fun lookupAsking(vararg sources: ExternalEditionLookup): LookupIsbnForReader =
