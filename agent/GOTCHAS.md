@@ -40,9 +40,15 @@ true; the diary keeps the date it was found.
   `Validate failed: Migrations have failed validation`: Flyway checks the
   checksums on context start, before `FreshSchema` cleans. Forget the row
   first: `DELETE FROM flyway_schema_history WHERE version = '003'` (the
-  version is zero-padded) and drop its tables, through
+  version is zero-padded) and drop its tables. From the host:
   `docker compose --env-file agent/.env -f agent/compose.yaml exec -T
-  postgres psql -U libris -d libris -c "…"`.
+  postgres psql -U libris -d libris -c "…"`. Inside the sandbox there is
+  neither `docker` nor `psql`: run the statement through `jshell` and the
+  driver already in the Gradle cache —
+  `jshell --class-path "$(find ~/.gradle/caches -name 'postgresql-*.jar' |
+  head -1)" -q <script>`, the script opening
+  `java.sql.DriverManager.getConnection(System.getenv("LIBRIS_DB_URL"),
+  System.getenv("LIBRIS_DB_USER"), System.getenv("LIBRIS_DB_PASSWORD"))`.
 - Tophe's host box has no `contracteer` binary and an old Node: from the host,
   the frontend gate and the Contracteer CLI run inside the sandbox image
   (`docker run --rm --network none -v "$PWD":/work -w /work/frontend
@@ -105,7 +111,9 @@ true; the diary keeps the date it was found.
   more than six parameters but exempts data classes (a shared fixture is a
   value plus `copy(...)`, not a builder), `SpreadOperator` trips on
   `runApplication(*args)`, `UnusedPrivateProperty` fails a constructor
-  argument no test uses yet (write the case that motivates it first),
+  argument no test uses yet and `UnusedParameter` a function parameter no
+  case reads yet (write the case that motivates it first: a use case reaches
+  the signature its brief names one cycle at a time),
   `SwallowedException` and `TooGenericExceptionCaught` stay quiet when the
   parameter is named `ignored`. An elvis over a platform type Kotlin reads
   as non-null is unreachable code.
@@ -149,7 +157,11 @@ true; the diary keeps the date it was found.
   default, and PostgreSQL checks the reference at commit. A JDBC slice test
   rolls back, so that check never runs there: a reader whose default
   bookshelf the test never inserts is not refused. `membership.reader_id` is
-  checked at the statement, in the slice too.
+  checked at the statement, in the slice too, and so are `copy.edition_id`
+  and `copy.bookshelf_id`: a slice case proves them with
+  `shouldThrow<DataIntegrityViolationException>`, and inserting a copy needs
+  the reader, the bookshelf and the edition rows first, hence four
+  repositories in the `@Import`.
 - `ArchitectureTest`'s application rule lists what `application` may see of
   Spring: `org.springframework.stereotype..`,
   `org.springframework.transaction.support..` and the one type
