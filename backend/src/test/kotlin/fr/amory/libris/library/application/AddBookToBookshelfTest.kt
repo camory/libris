@@ -15,6 +15,7 @@ import fr.amory.libris.library.fixture.CopiesInMemory
 import fr.amory.libris.library.fixture.bookshelfOwnedBy
 import fr.amory.libris.library.fixture.readerNamed
 import io.kotest.matchers.shouldBe
+import io.kotest.matchers.shouldNotBe
 import org.junit.jupiter.api.Test
 
 private const val ONE_PIECE = "9782723488525"
@@ -77,6 +78,25 @@ class AddBookToBookshelfTest {
         copy shouldBe Copy(copy.id, edition.id, juliettesBookshelf.id)
         copies.stored.map { it.editionId } shouldBe listOf(edition.id, edition.id)
         result shouldBe Added(copy, juliettesBookshelf)
+    }
+
+    @Test
+    fun `the same reader adding it again puts a second copy beside the first`() {
+        // Given
+        val lea = readerNamed("lea", "Léa")
+        val bookshelf = bookshelfOwnedBy(lea)
+        bookshelves.insert(bookshelf)
+        addBookToBookshelf().add(bookshelf.id, onePieceTomeOne())
+
+        // When
+        addBookToBookshelf().add(bookshelf.id, onePieceTomeOne())
+
+        // Then
+        val edition = editions.stored.single()
+        val (first, second) = copies.stored
+        first shouldBe Copy(first.id, edition.id, bookshelf.id)
+        second shouldBe Copy(second.id, edition.id, bookshelf.id)
+        second.id shouldNotBe first.id
     }
 
     private fun addBookToBookshelf(): AddBookToBookshelf = AddBookToBookshelf(editions, copies, bookshelves)
