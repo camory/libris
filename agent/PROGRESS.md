@@ -222,7 +222,15 @@ Format:
   fields renamed for what it holds, and the `@JdbcSliceTest` gotcha taking
   `JdbcClient` only when a case reads it. D12 gained the two rules.
   detekt's `MagicNumber` ignores enumerations now (`ignoreEnums`), for the
-  role's order.
+  role's order. Tophe's second review pass: SQL keywords in upper case, the
+  rule in D10 and the three repositories recased (V001 and V002 stay: applied
+  migrations keep their checksum); `Contributions` iterates and answers
+  `isEmpty()`, its list private, so a later `plus` dedups inside the type;
+  the upserts of series and author are two named methods, the series
+  resolved before the edition insert; `EditionTest` builds the edition with
+  the title under test; the ISBN-less case asserts only the two rows. The
+  `on conflict` on series and author stays: it folds names across editions,
+  `Contributions.of` within one.
 - Decided by Tophe: the order of the contributions is the house's, role then
   name, whatever a source's order; no recording names one person twice in
   one role, the one way it can happen is the BnF client folding every
