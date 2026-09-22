@@ -21,6 +21,8 @@ import org.springframework.context.annotation.Import
 
 private const val ONE_PIECE = "9782723488525"
 
+private const val ONE_PIECE_TOME_TWO = "9782723489898"
+
 @JdbcSliceTest
 @Import(
     JdbcReaderCopies::class,
@@ -67,6 +69,23 @@ class JdbcReaderCopiesTest @Autowired constructor(
 
         // Then
         visible shouldBe listOf(CopyOnBookshelf(leasCopy.id, leasBookshelf.id, "Bibliothèque de Léa"))
+    }
+
+    @Test
+    fun `the copies of another edition are not answered`() {
+        // Given
+        val lea = readerOf("lea", "Léa")
+        val bookshelf = bookshelfOf(lea)
+        val tomeOne = editionOf(ONE_PIECE, "Romance dawn")
+        val tomeTwo = editionOf(ONE_PIECE_TOME_TWO, "Aux prises avec Baggy et ses hommes")
+        val copyOfTomeOne = copyOf(tomeOne, bookshelf)
+        copyOf(tomeTwo, bookshelf)
+
+        // When
+        val visible = readerCopies.ofEdition(tomeOne.id, lea.id)
+
+        // Then
+        visible shouldBe listOf(CopyOnBookshelf(copyOfTomeOne.id, bookshelf.id, "Bibliothèque de Léa"))
     }
 
     private fun readerOf(username: String, displayName: String): Reader =
