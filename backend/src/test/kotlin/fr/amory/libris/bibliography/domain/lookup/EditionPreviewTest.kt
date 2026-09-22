@@ -4,6 +4,7 @@ import fr.amory.libris.bibliography.domain.Contribution
 import fr.amory.libris.bibliography.domain.ContributionRole.ARTIST
 import fr.amory.libris.bibliography.domain.ContributionRole.TRANSLATOR
 import fr.amory.libris.bibliography.domain.ContributionRole.WRITER
+import fr.amory.libris.bibliography.domain.Contributions
 import fr.amory.libris.bibliography.domain.Kind.BD
 import fr.amory.libris.bibliography.domain.Kind.MANGA
 import fr.amory.libris.bibliography.domain.SeriesEntry
@@ -18,7 +19,7 @@ class EditionPreviewTest {
         val first = A_PREVIEW.copy(
             title = "Romance dawn",
             subtitle = "à l'aube d'une grande aventure",
-            contributions = listOf(Contribution("Eiichirō Oda", WRITER)),
+            contributions = Contributions.of(listOf(Contribution("Eiichirō Oda", WRITER))),
             series = SeriesEntry("One piece", 1),
             collection = "Shonen manga",
             publisher = "Glénat",
@@ -31,7 +32,7 @@ class EditionPreviewTest {
         val second = A_PREVIEW.copy(
             title = "One Piece - Édition originale Tome 01",
             subtitle = "un autre sous-titre",
-            contributions = listOf(Contribution("Sylvain Chollet", TRANSLATOR)),
+            contributions = Contributions.of(listOf(Contribution("Sylvain Chollet", TRANSLATOR))),
             series = SeriesEntry("One Piece", 2),
             collection = "Shōnen",
             publisher = "Glénat Manga",
@@ -56,7 +57,7 @@ class EditionPreviewTest {
         val second = A_PREVIEW.copy(
             title = "One Piece - Édition originale Tome 01",
             subtitle = "à l'aube d'une grande aventure",
-            contributions = listOf(Contribution("Eiichirō Oda", WRITER)),
+            contributions = Contributions.of(listOf(Contribution("Eiichirō Oda", WRITER))),
             series = SeriesEntry("One piece", 1),
             collection = "Shonen manga",
             publisher = "Glénat",
@@ -77,17 +78,22 @@ class EditionPreviewTest {
     @Test
     fun `the contributions come whole from the first preview that has any`() {
         // Given
-        val first = A_PREVIEW.copy(contributions = emptyList())
-        val second = A_PREVIEW.copy(contributions = listOf(Contribution("Eiichirō Oda", WRITER)))
+        val first = A_PREVIEW.copy(contributions = Contributions.of(emptyList()))
+        val second = A_PREVIEW.copy(contributions = Contributions.of(listOf(Contribution("Eiichirō Oda", WRITER))))
         val third = A_PREVIEW.copy(
-            contributions = listOf(Contribution("Eiichirō Oda", ARTIST), Contribution("Sylvain Chollet", TRANSLATOR)),
+            contributions = Contributions.of(
+                listOf(
+                    Contribution("Eiichirō Oda", ARTIST),
+                    Contribution("Sylvain Chollet", TRANSLATOR),
+                ),
+            ),
         )
 
         // When
         val merged = first.merge(second).merge(third)
 
         // Then
-        merged.contributions shouldBe listOf(Contribution("Eiichirō Oda", WRITER))
+        merged.contributions.toList() shouldBe listOf(Contribution("Eiichirō Oda", WRITER))
     }
 
     @Test

@@ -35,6 +35,14 @@ true; the diary keeps the date it was found.
   `docker compose --env-file agent/.env -f agent/compose.yaml up -d postgres`.
   `backend/.env` points the host gate at that database, and `FreshSchema`
   wipes it: what was entered by hand through `bootRun` is gone after a gate.
+- Editing a migration the gate database has already applied (the one of the
+  current task, before its PR is merged) fails every JDBC slice with
+  `Validate failed: Migrations have failed validation`: Flyway checks the
+  checksums on context start, before `FreshSchema` cleans. Forget the row
+  first: `DELETE FROM flyway_schema_history WHERE version = '003'` (the
+  version is zero-padded) and drop its tables, through
+  `docker compose --env-file agent/.env -f agent/compose.yaml exec -T
+  postgres psql -U libris -d libris -c "…"`.
 - Tophe's host box has no `contracteer` binary and an old Node: from the host,
   the frontend gate and the Contracteer CLI run inside the sandbox image
   (`docker run --rm --network none -v "$PWD":/work -w /work/frontend
@@ -211,6 +219,28 @@ true; the diary keeps the date it was found.
   field 101 `$c`, in the BnF's own three-letter codes (`jpn`, `kor`, `chi`),
   which are not the ISO 639-1 codes the `LANGUAGES` map of `BnfEditionLookup`
   answers for the `language` field.
+- A name row shared by many parents is inserted or matched in one statement:
+  `insert into author (id, name) values (:id, :name) on conflict (lower(name))
+  do update set name = author.name returning id`. The conflict target is the
+  expression the unique index carries, `lower(name)`, not the column; and
+  `do update` is what makes `returning` answer the row that already exists,
+  where `do nothing` answers no row at all and costs a second statement. The
+  row keeps the spelling that created it, so an edition naming it otherwise
+  reads back with that first spelling.
+- `ResultSet.getInt` and `getLong` read a null column as `0`. A nullable
+  integer is read with `rs.getObject("page_count", Int::class.javaObjectType)`,
+  which answers `null`; the mutation to `getInt` reds a case asserting an
+  absent page count only if some case of the class leaves it absent.
+- A unique column that is nullable counts no null in PostgreSQL, so any number
+  of editions without an `isbn13` sit side by side while two editions cannot
+  share one.
+- `@JdbcSliceTest` lives in `fr.amory.libris.fixture` beside `FreshSchema` and
+  `WebSliceTest`, and serves both contexts; it was in
+  `library.infrastructure.persistence` until T034 moved it. A slice test
+  imports the repository it proves with `@Import(Jdbc…Repository::class)` and
+  takes it through an `@Autowired` constructor, with `JdbcClient` beside it
+  only when a case queries through it: detekt's `UnusedPrivateProperty` fails
+  a constructor argument no case reads.
 
 ## Frontend build and tests
 - Two TypeScript programs: `tsconfig.app.json` (`src/`, `vite/client` types)

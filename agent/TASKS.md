@@ -46,7 +46,7 @@ frontend pin moves in T038. No other task touches the contract (D04).
       Realises S1; un-skips nothing, its scenario test waiting for the API of
       T037.
 
-- [ ] T034 Backend: the house's edition stored.
+- [x] T034 Backend: the house's edition stored.
       `bibliography.domain`: `Edition`, what an ISBN identifies as the house
       holds it — the fields the lookup answers and its kind, at most one
       series entry with a volume number, its contributions each with a role

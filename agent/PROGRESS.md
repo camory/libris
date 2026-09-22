@@ -164,3 +164,76 @@ Format:
   branch is pushed, so its history stays; the squash commit on `main` takes
   the PR title and a message given explicitly to the merge call, with the
   one trailer.
+
+## 2026-09-21 — T034 The house's edition stored — done
+- Did: `Edition`, `EditionId` and `EditionRepository` in
+  `bibliography.domain.edition`, `V003__edition.sql` with its `edition`,
+  `series`, `author` and `contribution` tables, and `JdbcEditionRepository`,
+  proven by the six cases of `JdbcEditionRepositoryTest`; the slice annotation
+  moved to `fr.amory.libris.fixture`, where both contexts reach it. Seven
+  cycles, the gate green, no use case and no answer of the API touched.
+- Decided:
+  - **The insert-or-match shape the brief suggested holds:** `on conflict
+    (lower(name)) do update set name = <table>.name returning id`, the
+    conflict target being the expression of the unique index. A `do nothing`
+    would have needed a second statement, `returning` answering no row when
+    the name already exists.
+  - **`contribution.position` is written from the index in the list and read
+    back with an `order by`**, so the aggregate read equals the one stored;
+    the mutation to `order by author.name` reds two cases, the helper's two
+    authors sorting against their order on purpose.
+  - **A `series` or an `author` row keeps the spelling that created it**, so
+    the second edition of the shared-names case reads back with the first's
+    capitalisation. Pinned by the case, as the brief asked, rather than left
+    to be discovered by the task that displays a name.
+  - **The search columns of D03 are not in `V003`** (no `search_text`, no
+    `search_vector`, no extension): no test of this phase exercises them and
+    D03 puts the extensions in a migration of their own. Nothing of D03
+    changes; the pull request says so for the reviewer.
+- Deviations from the brief: the cases of steps 3 to 6 passed on their first
+  run instead of failing. Step 2 requires the migration written whole in its
+  cycle, and the adapter that satisfied the first case already covered the
+  four that follow; each was proven to bite by a mutation of the code it
+  claims instead, reverted and re-run green. The nullable unique column is the
+  one exception, a migration already applied being unusable for a mutation
+  check: it is proven by its case alone.
+- Left over: `update` on `EditionRepository`, the `tag` table, the search
+  migration and the promotion of the test's edition helper to a fixture
+  package are in `agent/PROPOSED.md`. No task of this phase deletes an
+  edition, so PRD §3's "when the last copy goes, the edition goes with it"
+  waits for the task that removes a copy.
+
+## 2026-09-21 — Review of PR #117 with Tophe: the contributions, one per author and role, in the house's order — on the T034 branch
+- Did: the review's fix-ups, then a design pass Tophe led on the
+  contributions. `Contributions` in `bibliography.domain`, built by
+  `Contributions.of(list)` alone: one contribution per author and role, the
+  author matched whatever the capitalisation of the name, the first spelling
+  kept; ordered by `ContributionRole.order` (an explicit field, the
+  declaration order not relied on) then by name, the name compared as one
+  string. `Edition` and `EditionPreview` hold a `Contributions`, so the
+  lookup dedups and orders by construction (`BnfEditionLookupTest`: a person
+  listed under two function codes the house reads as one role is one
+  contribution, red first) and the stored edition too. The `position` column
+  of `contribution` is gone with the source's order: the house defines its
+  own, and the read passes its rows through `Contributions.of`. `V003`
+  edited before any merge, the sandbox database recreated. `Edition` refuses
+  a blank title, as `Contribution` and `SeriesEntry` refuse a blank name.
+  Then the reviewer's two suggestions: the slice case of the absent optional
+  fields renamed for what it holds, and the `@JdbcSliceTest` gotcha taking
+  `JdbcClient` only when a case reads it. D12 gained the two rules.
+  detekt's `MagicNumber` ignores enumerations now (`ignoreEnums`), for the
+  role's order. Tophe's second review pass: SQL keywords in upper case, the
+  rule in D10 and the three repositories recased (V001 and V002 stay: applied
+  migrations keep their checksum); `Contributions` iterates and answers
+  `isEmpty()`, its list private, so a later `plus` dedups inside the type;
+  the upserts of series and author are two named methods, the series
+  resolved before the edition insert; `EditionTest` builds the edition with
+  the title under test; the ISBN-less case asserts only the two rows. The
+  `on conflict` on series and author stays: it folds names across editions,
+  `Contributions.of` within one.
+- Decided by Tophe: the order of the contributions is the house's, role then
+  name, whatever a source's order; no recording names one person twice in
+  one role, the one way it can happen is the BnF client folding every
+  function code it does not know onto `WRITER`.
+- Left over: a richer `ContributionRole` with a fallback role for the codes
+  the house does not know; in `agent/PROPOSED.md`.

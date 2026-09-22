@@ -11,11 +11,11 @@ import org.springframework.stereotype.Repository
 import java.util.UUID
 
 private const val INSERT_READER =
-    "insert into reader (id, username, email, display_name, default_bookshelf_id) " +
-        "values (:id, :username, :email, :displayName, :defaultBookshelfId)"
+    "INSERT INTO reader (id, username, email, display_name, default_bookshelf_id) " +
+        "VALUES (:id, :username, :email, :displayName, :defaultBookshelfId)"
 
 private const val FIND_READER_BY_USERNAME =
-    "select id, username, email, display_name, default_bookshelf_id from reader where username = :username"
+    "SELECT id, username, email, display_name, default_bookshelf_id FROM reader WHERE username = :username"
 
 @Repository
 class JdbcReaderRepository(private val jdbcClient: JdbcClient) : ReaderRepository {

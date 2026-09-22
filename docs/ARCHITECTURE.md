@@ -391,6 +391,10 @@ deliberately lacks), no other service. A test that needs more blocks the task.
   qualified because `getInstance()` alone says nothing.
 - Spring test classes receive their beans through an `@Autowired`
   constructor; no field injection in tests.
+- SQL: keywords and functions in upper case, identifiers in lower
+  snake_case, in migrations and in the statements of the repositories:
+  `SELECT edition.id FROM edition WHERE edition.isbn13 = :isbn13`. A
+  migration already applied is never recased: Flyway checks its checksum.
 - TypeScript: strict; ESLint (with the boundaries rules) and Prettier.
 - Versions: latest stable at scaffold time, pinned — Gradle version catalog
   `gradle/libs.versions.toml` on the backend, exact versions in `package.json`
@@ -526,6 +530,15 @@ Contract
   source may leave blank. An adapter maps through `of` and drops or refuses
   what it answers `null` to; no use case or adapter catches the constructor's
   exception.
+- A collection with a rule of its own is a type of its own, built through
+  `of(...)` and never by hand: `Contributions.of(list)` keeps one
+  contribution per author and role, the author matched whatever the
+  capitalisation of the name, and orders them by role then by name; the
+  `Edition` and the `EditionPreview` hold a `Contributions`, so neither the
+  lookup, the persistence nor a use case carries the rule, and the order
+  stored or answered is the house's, not a source's. An enumeration whose
+  order carries meaning declares it as a field, `ContributionRole.order`,
+  never through its declaration order.
 - A read that spans aggregates or contexts is a query, not an aggregate.
   It has a port of its own in the `domain` of the context that asks, in the
   sub-package of its concern like `domain.lookup`, answering a read model:

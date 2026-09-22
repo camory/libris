@@ -1,5 +1,6 @@
 package fr.amory.libris.bibliography.fixture
 
+import fr.amory.libris.bibliography.domain.Contributions
 import fr.amory.libris.bibliography.domain.Kind.BOOK
 import fr.amory.libris.bibliography.domain.lookup.EditionPreview
 
@@ -8,7 +9,7 @@ val A_PREVIEW = EditionPreview(
     kind = BOOK,
     title = "Un ouvrage",
     subtitle = null,
-    contributions = emptyList(),
+    contributions = Contributions.of(emptyList()),
     series = null,
     collection = null,
     publisher = null,

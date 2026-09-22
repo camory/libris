@@ -260,3 +260,35 @@
   not run Prettier, so `npm run format` rewrites them whenever it is run whole.
   The task that next edits either file formats it, as T032 did for
   `vitest.global-setup.ts` (found on T032, 2026-09-19).
+
+- Backend: `V003__edition.sql` creates none of the search columns D03
+  describes — no `search_text`, no generated `search_vector`, no GIN or
+  trigram index, no `unaccent` and no `pg_trgm` extension. Search is PRD §4.2,
+  which has neither spec nor task, and a column no test exercises is what
+  `CLAUDE.md` forbids; D03 already puts the extensions in a migration of their
+  own. The first search task adds them to the table, and writes `search_text`
+  from the adapter on every insert and update (decided on T034, 2026-09-21).
+- Backend: `EditionRepository` declares `insert` and `findByIsbn` only. D11
+  names `insert` and `update` as the pair a port exposes, and nothing of this
+  phase changes a stored edition; the task that edits one adds `update` with
+  the case that wants it, and with it the question of what happens to the
+  `series` and `author` rows the old values named (found on T034,
+  2026-09-21).
+- Backend: an edition carries no tag. PRD §3 gives it zero or more and D11
+  names a `tag` table, but no lookup answers a tag and no scenario of this
+  phase names one. The task that first shows or sets a tag writes the table,
+  the column and the cases (found on T034, 2026-09-21).
+- Backend: nothing deletes an edition. PRD §3's "when the last copy goes, the
+  edition goes with it" needs the task that removes a copy to decide where the
+  rule lives — the use case or the schema — and what becomes of the `series`
+  and `author` rows no edition names any more (found on T034, 2026-09-21).
+- Backend: the editions `JdbcEditionRepositoryTest` builds come from a private
+  helper of the class. The day a second class needs the same shapes — T035
+  creating an edition the house lacks is the likely one — the helper moves to
+  `bibliography/fixture/` (found on T034, 2026-09-21).
+- Backend and contract: `ContributionRole` knows four roles and the BnF
+  client folds every other function code onto `WRITER`, so a preface writer
+  or a scriptwriter reads as an author. A richer enumeration with a fallback
+  role for the codes the house does not name changes the `role` of the ISBN
+  answer, so it starts with a contract release (decided with Tophe on the
+  review of T034, 2026-09-21).

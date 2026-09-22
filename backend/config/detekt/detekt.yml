@@ -1,3 +1,7 @@
 potential-bugs:
   LateinitUsage:
     active: true
+
+style:
+  MagicNumber:
+    ignoreEnums: true

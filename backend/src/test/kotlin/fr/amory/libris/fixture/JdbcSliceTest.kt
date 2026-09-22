@@ -1,6 +1,5 @@
-package fr.amory.libris.library.infrastructure.persistence
+package fr.amory.libris.fixture
 
-import fr.amory.libris.fixture.FreshSchema
 import org.junit.jupiter.api.extension.ExtendWith
 import org.springframework.boot.autoconfigure.ImportAutoConfiguration
 import org.springframework.boot.flyway.autoconfigure.FlywayAutoConfiguration
