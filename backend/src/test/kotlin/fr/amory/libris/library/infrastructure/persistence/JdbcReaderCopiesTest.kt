@@ -14,6 +14,7 @@ import fr.amory.libris.library.domain.lookup.CopyOnBookshelf
 import fr.amory.libris.library.domain.reader.Reader
 import fr.amory.libris.library.fixture.bookshelfOwnedBy
 import fr.amory.libris.library.fixture.readerNamed
+import io.kotest.matchers.collections.shouldContainExactlyInAnyOrder
 import io.kotest.matchers.shouldBe
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
@@ -86,6 +87,22 @@ class JdbcReaderCopiesTest @Autowired constructor(
 
         // Then
         visible shouldBe listOf(CopyOnBookshelf(copyOfTomeOne.id, bookshelf.id, "Bibliothèque de Léa"))
+    }
+
+    @Test
+    fun `two copies on one bookshelf are answered one by one`() {
+        // Given
+        val lea = readerOf("lea", "Léa")
+        val bookshelf = bookshelfOf(lea)
+        val edition = editionOf(ONE_PIECE, "Romance dawn")
+        val first = copyOf(edition, bookshelf)
+        val second = copyOf(edition, bookshelf)
+
+        // When
+        val visible = readerCopies.ofEdition(edition.id, lea.id)
+
+        // Then
+        visible.map { it.copyId } shouldContainExactlyInAnyOrder listOf(first.id, second.id)
     }
 
     private fun readerOf(username: String, displayName: String): Reader =
