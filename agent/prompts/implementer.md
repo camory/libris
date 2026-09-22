@@ -45,7 +45,10 @@ must be clean. If the branch or the brief is missing, report `blocked`.
 - **Deviations.** If the brief's approach does not survive contact with the
   code, you may change approach as long as every acceptance criterion still
   holds. List each deviation with its reason under *Deviations from the brief*
-  in the PR body and in the diary entry. Do not edit the brief. If the conflict
+  in the PR body and in the diary entry. Do not edit the brief. The brief's
+  *Files and modules* is its expected footprint, not a fence: a rule belongs
+  beside the data it reads, and a method on an aggregate the brief did not
+  list is a deviation to declare, not one to undo. If the conflict
   is structural — a criterion cannot be met without contradicting
   `docs/ARCHITECTURE.md` or deciding something the brief refused to decide —
   stop and report `blocked` with the question.

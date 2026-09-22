@@ -389,6 +389,14 @@ deliberately lacks), no other service. A test that needs more blocks the task.
   not qualified, whenever its bare name is unambiguous: `OPEN_LIBRARY`,
   `Failed`, `RANDOM_PORT`, `ofSeconds(5)`; `MissingNode.getInstance()` stays
   qualified because `getInstance()` alone says nothing.
+- The words of `docs/PRD.md` §3 name variables and parameters as they name
+  types: an aggregate is called by its name, never shortened (`bookshelf`,
+  not `shelf`), and an identifier is the aggregate's name with `Id`
+  (`readerId`, `bookshelfId`), never the bare name (`reader` is a `Reader`).
+- A member's visibility is what the type exposes: a private member is not
+  made public for a new caller. A caller that needs what the private member
+  does either goes through the public door (`Isbn.of`) or the type gains a
+  method of its own, decided in the task's brief.
 - Spring test classes receive their beans through an `@Autowired`
   constructor; no field injection in tests.
 - SQL: keywords and functions in upper case, identifiers in lower
