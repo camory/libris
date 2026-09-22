@@ -17,6 +17,7 @@ private const val FIND_COPIES_OF_EDITION =
     JOIN bookshelf ON bookshelf.id = copy.bookshelf_id
     JOIN membership ON membership.bookshelf_id = bookshelf.id AND membership.reader_id = :readerId
     WHERE copy.edition_id = :editionId
+    ORDER BY bookshelf.name, copy.id
     """
 
 @Repository

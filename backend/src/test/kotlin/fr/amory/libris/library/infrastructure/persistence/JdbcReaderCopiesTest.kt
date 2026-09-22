@@ -8,6 +8,9 @@ import fr.amory.libris.bibliography.fixture.isbnOf
 import fr.amory.libris.bibliography.infrastructure.persistence.JdbcEditionRepository
 import fr.amory.libris.fixture.JdbcSliceTest
 import fr.amory.libris.library.domain.bookshelf.Bookshelf
+import fr.amory.libris.library.domain.bookshelf.BookshelfId
+import fr.amory.libris.library.domain.bookshelf.Membership
+import fr.amory.libris.library.domain.bookshelf.MembershipRole.OWNER
 import fr.amory.libris.library.domain.copy.Copy
 import fr.amory.libris.library.domain.copy.CopyId
 import fr.amory.libris.library.domain.lookup.CopyOnBookshelf
@@ -105,10 +108,33 @@ class JdbcReaderCopiesTest @Autowired constructor(
         visible.map { it.copyId } shouldContainExactlyInAnyOrder listOf(first.id, second.id)
     }
 
+    @Test
+    fun `the copies come ordered by the name of their bookshelf`() {
+        // Given
+        val lea = readerOf("lea", "Léa")
+        val salon = bookshelfOf(lea, "Salon")
+        val leasBookshelf = bookshelfOf(lea)
+        val edition = editionOf(ONE_PIECE, "Romance dawn")
+        val copyInTheSalon = copyOf(edition, salon)
+        val copyOnLeasBookshelf = copyOf(edition, leasBookshelf)
+
+        // When
+        val visible = readerCopies.ofEdition(edition.id, lea.id)
+
+        // Then
+        visible shouldBe listOf(
+            CopyOnBookshelf(copyOnLeasBookshelf.id, leasBookshelf.id, "Bibliothèque de Léa"),
+            CopyOnBookshelf(copyInTheSalon.id, salon.id, "Salon"),
+        )
+    }
+
     private fun readerOf(username: String, displayName: String): Reader =
         readerNamed(username, displayName).also { readers.insert(it) }
 
     private fun bookshelfOf(reader: Reader): Bookshelf = bookshelfOwnedBy(reader).also { bookshelves.insert(it) }
+
+    private fun bookshelfOf(reader: Reader, name: String): Bookshelf =
+        Bookshelf(BookshelfId.new(), name, listOf(Membership(reader.id, OWNER))).also { bookshelves.insert(it) }
 
     private fun copyOf(edition: Edition, bookshelf: Bookshelf): Copy =
         Copy(CopyId.new(), edition.id, bookshelf.id).also { copies.insert(it) }
