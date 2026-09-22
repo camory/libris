@@ -35,7 +35,7 @@ class AddBookToBookshelfTest {
         bookshelves.insert(bookshelf)
 
         // When
-        val result = addBookToBookshelf().add(bookshelf.id, onePieceTomeOne())
+        val result = addBookToBookshelf().add(lea.id, bookshelf.id, onePieceTomeOne())
 
         // Then
         val edition = editions.stored.single()
@@ -66,13 +66,13 @@ class AddBookToBookshelfTest {
         val lea = readerNamed("lea", "Léa")
         val leasBookshelf = bookshelfOwnedBy(lea)
         bookshelves.insert(leasBookshelf)
-        addBookToBookshelf().add(leasBookshelf.id, onePieceTomeOne())
+        addBookToBookshelf().add(lea.id, leasBookshelf.id, onePieceTomeOne())
         val juliette = readerNamed("juliette", "Juliette")
         val juliettesBookshelf = bookshelfOwnedBy(juliette)
         bookshelves.insert(juliettesBookshelf)
 
         // When
-        val result = addBookToBookshelf().add(juliettesBookshelf.id, onePieceTomeOne())
+        val result = addBookToBookshelf().add(juliette.id, juliettesBookshelf.id, onePieceTomeOne())
 
         // Then
         val edition = editions.stored.single()
@@ -88,10 +88,10 @@ class AddBookToBookshelfTest {
         val lea = readerNamed("lea", "Léa")
         val bookshelf = bookshelfOwnedBy(lea)
         bookshelves.insert(bookshelf)
-        addBookToBookshelf().add(bookshelf.id, onePieceTomeOne())
+        addBookToBookshelf().add(lea.id, bookshelf.id, onePieceTomeOne())
 
         // When
-        addBookToBookshelf().add(bookshelf.id, onePieceTomeOne())
+        addBookToBookshelf().add(lea.id, bookshelf.id, onePieceTomeOne())
 
         // Then
         val edition = editions.stored.single()
@@ -108,7 +108,24 @@ class AddBookToBookshelfTest {
         val unknown = bookshelfOwnedBy(lea)
 
         // When
-        val result = addBookToBookshelf().add(unknown.id, onePieceTomeOne())
+        val result = addBookToBookshelf().add(lea.id, unknown.id, onePieceTomeOne())
+
+        // Then
+        result shouldBe NoSuchBookshelf
+        editions.stored.shouldBeEmpty()
+        copies.stored.shouldBeEmpty()
+    }
+
+    @Test
+    fun `a bookshelf the reader is not a member of is refused`() {
+        // Given
+        val lea = readerNamed("lea", "Léa")
+        val leasBookshelf = bookshelfOwnedBy(lea)
+        bookshelves.insert(leasBookshelf)
+        val juliette = readerNamed("juliette", "Juliette")
+
+        // When
+        val result = addBookToBookshelf().add(juliette.id, leasBookshelf.id, onePieceTomeOne())
 
         // Then
         result shouldBe NoSuchBookshelf

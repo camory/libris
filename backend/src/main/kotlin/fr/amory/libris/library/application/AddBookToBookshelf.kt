@@ -11,6 +11,7 @@ import fr.amory.libris.library.domain.bookshelf.BookshelfRepository
 import fr.amory.libris.library.domain.copy.Copy
 import fr.amory.libris.library.domain.copy.CopyId
 import fr.amory.libris.library.domain.copy.CopyRepository
+import fr.amory.libris.library.domain.reader.ReaderId
 import org.springframework.stereotype.Service
 
 @Service
@@ -19,8 +20,9 @@ class AddBookToBookshelf(
     private val copies: CopyRepository,
     private val bookshelves: BookshelfRepository,
 ) {
-    fun add(bookshelf: BookshelfId, book: NewBook): AddBookResult {
-        val shelf = bookshelves.findById(bookshelf) ?: return NoSuchBookshelf
+    fun add(reader: ReaderId, bookshelf: BookshelfId, book: NewBook): AddBookResult {
+        val shelf = bookshelves.findById(bookshelf)
+        if (shelf == null || shelf.memberships.none { it.readerId == reader }) return NoSuchBookshelf
         val edition = editionFor(book)
         val copy = Copy(CopyId.new(), edition.id, shelf.id)
         copies.insert(copy)
