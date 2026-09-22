@@ -22,6 +22,27 @@ class BookshelfTest {
     }
 
     @Test
+    fun `a bookshelf tells its owners from its viewers and from strangers`() {
+        // Given
+        val lea = ReaderId.new()
+        val juliette = ReaderId.new()
+        val stranger = ReaderId.new()
+        val bookshelf = Bookshelf(
+            BookshelfId.new(),
+            "Salon",
+            listOf(Membership(lea, OWNER), Membership(juliette, VIEWER)),
+        )
+
+        // When / Then
+        bookshelf.isOwnedBy(lea) shouldBe true
+        bookshelf.isOwnedBy(juliette) shouldBe false
+        bookshelf.isOwnedBy(stranger) shouldBe false
+        bookshelf.hasMember(lea) shouldBe true
+        bookshelf.hasMember(juliette) shouldBe true
+        bookshelf.hasMember(stranger) shouldBe false
+    }
+
+    @Test
     fun `a bookshelf without an owner is refused`() {
         shouldThrow<IllegalArgumentException> {
             Bookshelf(BookshelfId.new(), "Bibliothèque de personne", listOf(Membership(ReaderId.new(), VIEWER)))

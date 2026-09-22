@@ -237,3 +237,42 @@ Format:
   function code it does not know onto `WRITER`.
 - Left over: a richer `ContributionRole` with a fallback role for the codes
   the house does not know; in `agent/PROPOSED.md`.
+
+## 2026-09-22 — T035 The ouvrage added to a bookshelf — done
+- Did: `library.domain.copy` — `Copy`, `CopyId`, `CopyRepository` —, the
+  `copy` table of `V004` with `JdbcCopyRepository` and its slice, and
+  `AddBookToBookshelf` reading a `NewBook` and answering an `AddBookResult`.
+- Decided: the membership is tested in the use case, on the memberships the
+  bookshelf already carries, and `Bookshelf` gained no method for it — the
+  rule joins a reader and a shelf, it is not the aggregate's own; an unknown
+  bookshelf and a bookshelf the reader is not a member of are one
+  `NoSuchBookshelf`, as the brief asks.
+- Review with Tophe (2026-09-22): the brief said *member* where the PRD says
+  *owners add*, so the use case asks the aggregate — `Bookshelf.hasMember`
+  and `Bookshelf.isOwnedBy`, the rule beside the memberships it reads — and a
+  viewer is refused with a third result, `NotAnOwner`; a stranger still gets
+  `NoSuchBookshelf`, a bookshelf being visible only to its members. The
+  contract's POST answers no `403`, so where T037 maps `NotAnOwner` is in
+  `agent/PROPOSED.md`. Same review: `Isbn.ofThirteen` back to private — a
+  private method made public changes what the value type exposes, and no rule
+  asked for it; `NewBook` carries `isbn: Isbn?`, the value type being the
+  door, so `NotAnIsbn` and its two cases are gone and the `400` of a bad
+  `isbn13` is the T037 controller's, checking the contract's pattern and
+  mapping through `Isbn.of` as `IsbnController` does. Names follow the
+  tree's: an id is `readerId`/`bookshelfId`, the aggregate is `bookshelf`.
+- Decided: `add` is one `when` over three outcomes rather than guard clauses,
+  detekt's `ReturnCount` allowing two returns and a third refusal being
+  likely when the API arrives; the two inserts sit in a private `added(...)`,
+  which is also the transaction block.
+- Decided: the edition is matched by ISBN and, when the house lacks it,
+  minted before the block, so the block holds the two inserts and nothing
+  else; it is entered even when the edition was already held, which keeps one
+  path at the price of an empty transaction.
+- Deviations from the brief: the `reader` parameter of `add` arrived with the
+  membership case (plan step 8) instead of with the first case (step 5) —
+  detekt fails a parameter no case reads, so the signature had to wait for
+  the case that motivates it. The delivered signature is the brief's.
+- Left over: nothing of the API — the controller, the JSON of a copy and the
+  `v0.6.0` pin are T037, which also un-skips the six `BookshelfScenarios`
+  tests, untouched here. Two adds of the same unknown ISBN at once, which the
+  unique `isbn13` makes the second insert throw, is in `agent/PROPOSED.md`.
