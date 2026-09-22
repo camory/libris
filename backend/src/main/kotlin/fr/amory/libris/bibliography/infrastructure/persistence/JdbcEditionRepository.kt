@@ -62,6 +62,7 @@ class JdbcEditionRepository(private val jdbcClient: JdbcClient) : EditionReposit
     private val uuids = Generators.timeBasedEpochGenerator()
 
     override fun insert(edition: Edition) {
+        val seriesId = edition.series?.let { seriesIdOf(it.name) }
         jdbcClient
             .sql(INSERT_EDITION)
             .param("id", edition.id.value)
@@ -69,7 +70,7 @@ class JdbcEditionRepository(private val jdbcClient: JdbcClient) : EditionReposit
             .param("kind", edition.kind.name)
             .param("title", edition.title)
             .param("subtitle", edition.subtitle)
-            .param("seriesId", edition.series?.let { named(INSERT_SERIES, it.name) })
+            .param("seriesId", seriesId)
             .param("volumeNumber", edition.series?.volumeNumber)
             .param("collection", edition.collection)
             .param("publisher", edition.publisher)
@@ -83,7 +84,7 @@ class JdbcEditionRepository(private val jdbcClient: JdbcClient) : EditionReposit
             jdbcClient
                 .sql(INSERT_CONTRIBUTION)
                 .param("editionId", edition.id.value)
-                .param("authorId", named(INSERT_AUTHOR, contribution.name))
+                .param("authorId", authorIdOf(contribution.name))
                 .param("role", contribution.role.name)
                 .update()
         }
@@ -126,9 +127,17 @@ class JdbcEditionRepository(private val jdbcClient: JdbcClient) : EditionReposit
     private fun contributionsOf(rows: List<EditionRow>): Contributions =
         Contributions.of(rows.mapNotNull { it.contribution })
 
-    private fun named(sql: String, name: String): UUID =
+    private fun seriesIdOf(name: String): UUID =
         jdbcClient
-            .sql(sql)
+            .sql(INSERT_SERIES)
+            .param("id", uuids.generate())
+            .param("name", name)
+            .query(UUID::class.java)
+            .single()
+
+    private fun authorIdOf(name: String): UUID =
+        jdbcClient
+            .sql(INSERT_AUTHOR)
             .param("id", uuids.generate())
             .param("name", name)
             .query(UUID::class.java)
