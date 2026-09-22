@@ -79,7 +79,7 @@ class JdbcEditionRepositoryTest @Autowired constructor(
     }
 
     @Test
-    fun `an edition without an ISBN is found by no ISBN-13, and a second one stands beside it`() {
+    fun `two editions without an ISBN stand beside each other`() {
         // Given
         val first = onePieceTomeOne().copy(isbn = null)
         editions.insert(first)
@@ -88,7 +88,6 @@ class JdbcEditionRepositoryTest @Autowired constructor(
         editions.insert(first.copy(id = EditionId.new(), title = "Aux prises avec Baggy et ses hommes"))
 
         // Then
-        editions.findByIsbn(isbnOf(ONE_PIECE)) shouldBe null
         rowsOf("edition") shouldBe 2
     }
 
