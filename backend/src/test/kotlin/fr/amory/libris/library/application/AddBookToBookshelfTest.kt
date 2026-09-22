@@ -166,6 +166,25 @@ class AddBookToBookshelfTest {
         copies.stored.shouldBeEmpty()
     }
 
+    @Test
+    fun `the ouvrage without an ISBN gives the house a new edition every time`() {
+        // Given
+        val lea = readerNamed("lea", "Léa")
+        val bookshelf = bookshelfOwnedBy(lea)
+        bookshelves.insert(bookshelf)
+        val withoutIsbn = onePieceTomeOne().copy(isbn13 = null)
+        addBookToBookshelf().add(lea.id, bookshelf.id, withoutIsbn)
+
+        // When
+        addBookToBookshelf().add(lea.id, bookshelf.id, withoutIsbn)
+
+        // Then
+        val (first, second) = editions.stored
+        second.id shouldNotBe first.id
+        editions.stored.map { it.isbn } shouldBe listOf(null, null)
+        copies.stored.map { it.editionId } shouldBe listOf(first.id, second.id)
+    }
+
     private fun addBookToBookshelf(): AddBookToBookshelf = AddBookToBookshelf(editions, copies, bookshelves)
 
     private fun onePieceTomeOne(): NewBook = NewBook(
