@@ -21,12 +21,18 @@ class ContributionsTest {
         val contributions = Contributions.of(given)
 
         // Then
-        contributions.all shouldBe listOf(
+        contributions.toList() shouldBe listOf(
             Contribution("Jean Dufaux", WRITER),
             Contribution("Théo", WRITER),
             Contribution("Jérémy", ARTIST),
             Contribution("Sylvain Chollet", TRANSLATOR),
         )
+    }
+
+    @Test
+    fun `no contribution is empty, one is not`() {
+        Contributions.of(emptyList()).isEmpty() shouldBe true
+        Contributions.of(listOf(Contribution("Théo", WRITER))).isEmpty() shouldBe false
     }
 
     @Test
@@ -38,7 +44,7 @@ class ContributionsTest {
         val contributions = Contributions.of(given)
 
         // Then
-        contributions.all shouldBe listOf(Contribution("Eiichirō Oda", WRITER))
+        contributions.toList() shouldBe listOf(Contribution("Eiichirō Oda", WRITER))
     }
 
     @Test
@@ -50,6 +56,6 @@ class ContributionsTest {
         val contributions = Contributions.of(given)
 
         // Then
-        contributions.all shouldBe listOf(Contribution("Eiichirō Oda", WRITER), Contribution("Eiichirō Oda", ARTIST))
+        contributions.toList() shouldBe listOf(Contribution("Eiichirō Oda", WRITER), Contribution("Eiichirō Oda", ARTIST))
     }
 }

@@ -152,7 +152,7 @@ class BnfEditionLookupTest {
 
         // Then
         val preview = (answer as Known).preview
-        preview.contributions.all shouldBe listOf(Contribution("Eiichirō Oda", WRITER))
+        preview.contributions.toList() shouldBe listOf(Contribution("Eiichirō Oda", WRITER))
         preview.series shouldBe null
     }
 
@@ -165,7 +165,7 @@ class BnfEditionLookupTest {
         val answer = source.lookUp(isbnOf(BLANK_NAMES))
 
         // Then
-        (answer as Known).preview.contributions.all shouldBe listOf(Contribution("Eiichirō Oda", WRITER))
+        (answer as Known).preview.contributions.toList() shouldBe listOf(Contribution("Eiichirō Oda", WRITER))
     }
 
     @Test

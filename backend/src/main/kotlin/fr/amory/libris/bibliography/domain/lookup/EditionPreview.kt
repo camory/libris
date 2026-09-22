@@ -22,7 +22,7 @@ data class EditionPreview(
 ) {
     fun merge(other: EditionPreview): EditionPreview = copy(
         subtitle = subtitle ?: other.subtitle,
-        contributions = if (contributions.all.isEmpty()) other.contributions else contributions,
+        contributions = if (contributions.isEmpty()) other.contributions else contributions,
         series = series ?: other.series,
         collection = collection ?: other.collection,
         publisher = publisher ?: other.publisher,

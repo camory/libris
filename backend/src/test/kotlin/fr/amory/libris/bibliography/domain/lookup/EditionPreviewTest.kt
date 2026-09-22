@@ -93,7 +93,7 @@ class EditionPreviewTest {
         val merged = first.merge(second).merge(third)
 
         // Then
-        merged.contributions.all shouldBe listOf(Contribution("Eiichirō Oda", WRITER))
+        merged.contributions.toList() shouldBe listOf(Contribution("Eiichirō Oda", WRITER))
     }
 
     @Test
