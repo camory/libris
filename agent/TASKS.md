@@ -86,16 +86,14 @@ frontend pin moves in T038. No other task touches the contract (D04).
       tests waiting for the API of T037.
 
 - [x] T036 Backend: the lookup answers the house's edition.
-      `library.application`, since the bibliography knows nothing of the
-      library (D02): the lookup takes the reader who asks and looks in the
-      house first — when an edition of that ISBN exists it answers it as the
-      house holds it, with its copies on the bookshelves the reader belongs
-      to, each with the name of its bookshelf, and asks no source at all; an
-      edition whose copies all sit on bookshelves the reader does not belong
-      to is answered the same, with no copy.
-      When the house lacks the ISBN the lookup behaves as
-      `specs/fast-entry.md` says, sources, merge and answers unchanged, and
-      the copies are empty; the tests of that spec stay green.
+      The bibliography's lookup looks in the house first — when an edition
+      of that ISBN exists it answers it as the house holds it and asks no
+      source at all; otherwise it behaves as `specs/fast-entry.md` says,
+      sources, merge and answers unchanged, and the tests of that spec stay
+      green. The library's lookup takes the reader who asks and adds to that
+      answer the copies on the bookshelves the reader belongs to, each with
+      the name of its bookshelf; an edition whose copies all sit on
+      bookshelves the reader does not belong to comes with no copy.
       The ports read an edition by its ISBN-13 and the copies of an edition;
       the bookshelf says who its members are; no new table and no migration.
       Tests over fake repositories with sources that must not be asked, one

@@ -278,14 +278,17 @@ Format:
   unique `isbn13` makes the second insert throw, is in `agent/PROPOSED.md`.
 
 ## 2026-09-22 — T036 The lookup answers the house's edition — done
-- Did: `LookupIsbnForReader` in `library.application`, the use case answering
-  `IsbnLookupResult` — `Held(edition, copies)` when the house holds the ISBN,
-  the copies read through `CopyRepository.findByEditionId` (new) and
-  `BookshelfRepository.findById`, kept when `Bookshelf.hasMember(readerId)`,
-  answered as `CopyView(copyId, bookshelfId, bookshelfName)` ordered by the
-  name of the bookshelf; `NotHeld(sources)` otherwise, carrying the
-  bibliography's `EditionLookupResult` untouched. Eleven cycles by the run,
-  then reworked on Tophe's review, the gate green.
+- Did: `LookupEditionByIsbn` (bibliography) looks in the house first through
+  `EditionRepository.findByIsbn` and answers `EditionLookupResult.Held(edition)`
+  without asking a source, the three other answers unchanged; `IsbnController`
+  maps the held edition like a preview. `LookupIsbnForReader` in
+  `library.application.lookup` answers `IsbnLookup(answer, copies)`: the
+  bibliography's answer as is, plus, when held, the copies read through
+  `CopyRepository.findByEditionId` (new) and `BookshelfRepository.findById`,
+  kept when `Bookshelf.hasMember(readerId)`, as
+  `CopyOnBookshelf(copyId, bookshelfId, bookshelfName)` ordered by the name
+  of the bookshelf. Eleven cycles by the run, then reworked on Tophe's
+  review, the gate green.
 - Decided on review (Tophe): the run had followed D12's read-model rule to
   the letter — a `ReaderCopies` query port and a `CopyOnBookshelf` read model
   in `library.domain.lookup`, a `JdbcReaderCopies` adapter joining `copy`,
@@ -297,18 +300,27 @@ Format:
   the repositories and the aggregates' rules first, answered by a data class
   of `application`; a query port with its read model is for the read the
   repositories cannot serve, the catalogue search.
-- Decided (Tophe): the use case stays in `library.application`, the library
-  being the context that knows the reader; no root `application` package for
-  one orchestrator. `LookupEditionByIsbn` stays in the bibliography, called
-  as is: the sources, their precedence and the merge are its knowledge.
+- Decided on review (Tophe): each context answers what it knows. Whether the
+  house holds the ISBN is the bibliography's to say, its `Edition` being the
+  bibliography's aggregate, so the house-first branch moved from the library
+  use case into `LookupEditionByIsbn` — the task line had placed it in the
+  library, and the run obeyed. The library's answer is a product,
+  `IsbnLookup(answer, copies)`, not a second sealed class beside the
+  bibliography's. The use case stays in the library, in its own
+  `application.lookup` sub-package as the bibliography's; no root
+  `application` package for one orchestrator.
+- Lesson for the task lines: a line that names the package and the ports
+  designs the inside; the run delivers it faithfully, wrong or right. The
+  line says what the reader gets and which context answers; the brief and
+  the run find the shape.
 - Deviations from the brief: the `readerId` parameter of `lookUp` and the
   `EditionRepository` constructor argument arrived with the cases that read
   them (plan steps 10 and 9) instead of with the first case (step 6) —
   detekt fails a parameter or a constructor argument no case reads, the same
   wait T035 recorded. The delivered signature is the brief's.
-- Left over: nothing of the API — the controller, the JSON of the copies
-  (`Edition` and `EditionPreview` both mapped in the web adapter) and the
-  pin bump are T037, which also un-skips the six `BookshelfScenarios`
-  tests. That controller cannot stay in `bibliography.infrastructure.web`,
-  the bibliography may never see the library (D02): it moves to
+- Left over: nothing of the API — the JSON of the copies and the pin bump
+  are T037, which also un-skips the six `BookshelfScenarios` tests. The
+  controller serving `LookupIsbnForReader` cannot sit in
+  `bibliography.infrastructure.web`, the bibliography may never see the
+  library (D02): T037 moves `/api/v1/isbn/{isbn}` to
   `library.infrastructure.web`. Nothing new in `agent/PROPOSED.md`.
