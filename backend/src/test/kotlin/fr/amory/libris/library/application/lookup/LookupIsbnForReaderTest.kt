@@ -1,6 +1,9 @@
-package fr.amory.libris.library.application
+package fr.amory.libris.library.application.lookup
 
-import fr.amory.libris.bibliography.application.lookup.EditionLookupResult
+import fr.amory.libris.bibliography.application.lookup.EditionLookupResult.Found
+import fr.amory.libris.bibliography.application.lookup.EditionLookupResult.Held
+import fr.amory.libris.bibliography.application.lookup.EditionLookupResult.SourcesUnavailable
+import fr.amory.libris.bibliography.application.lookup.EditionLookupResult.UnknownIsbn
 import fr.amory.libris.bibliography.application.lookup.LookupEditionByIsbn
 import fr.amory.libris.bibliography.domain.Contribution
 import fr.amory.libris.bibliography.domain.ContributionRole.WRITER
@@ -17,8 +20,6 @@ import fr.amory.libris.bibliography.fixture.A_PREVIEW
 import fr.amory.libris.bibliography.fixture.EditionsInMemory
 import fr.amory.libris.bibliography.fixture.LookupAnswering
 import fr.amory.libris.bibliography.fixture.isbnOf
-import fr.amory.libris.library.application.IsbnLookupResult.Held
-import fr.amory.libris.library.application.IsbnLookupResult.NotHeld
 import fr.amory.libris.library.domain.bookshelf.Bookshelf
 import fr.amory.libris.library.domain.bookshelf.BookshelfId
 import fr.amory.libris.library.domain.bookshelf.Membership
@@ -30,7 +31,6 @@ import fr.amory.libris.library.domain.reader.ReaderId
 import fr.amory.libris.library.fixture.BookshelvesInMemory
 import fr.amory.libris.library.fixture.CopiesInMemory
 import io.kotest.matchers.shouldBe
-import io.kotest.matchers.types.shouldBeInstanceOf
 import org.junit.jupiter.api.Test
 
 private const val ONE_PIECE = "9782723488525"
@@ -58,7 +58,7 @@ class LookupIsbnForReaderTest {
     private val bookshelves = BookshelvesInMemory()
 
     @Test
-    fun `an ISBN the house lacks is answered by the sources`() {
+    fun `an ISBN the house lacks is answered by the sources, with no copy`() {
         // Given
         val lookup = lookupAsking(LookupAnswering(Known(A_PREVIEW.copy(title = "Romance dawn"))))
 
@@ -66,11 +66,11 @@ class LookupIsbnForReaderTest {
         val result = lookup.lookUp(lea, isbnOf(ONE_PIECE))
 
         // Then
-        result shouldBe NotHeld(EditionLookupResult.Found(A_PREVIEW.copy(title = "Romance dawn")))
+        result shouldBe IsbnLookup(Found(A_PREVIEW.copy(title = "Romance dawn")), emptyList())
     }
 
     @Test
-    fun `an ISBN no source knows is answered unknown by the sources`() {
+    fun `an ISBN no source knows is answered unknown, with no copy`() {
         // Given
         val lookup = lookupAsking(LookupAnswering(NothingKnown))
 
@@ -78,11 +78,11 @@ class LookupIsbnForReaderTest {
         val result = lookup.lookUp(lea, isbnOf(ONE_PIECE))
 
         // Then
-        result shouldBe NotHeld(EditionLookupResult.UnknownIsbn)
+        result shouldBe IsbnLookup(UnknownIsbn, emptyList())
     }
 
     @Test
-    fun `an ISBN whose sources are all down is answered sources unavailable`() {
+    fun `an ISBN whose sources are all down is answered sources unavailable, with no copy`() {
         // Given
         val lookup = lookupAsking(LookupAnswering(Failed))
 
@@ -90,21 +90,7 @@ class LookupIsbnForReaderTest {
         val result = lookup.lookUp(lea, isbnOf(ONE_PIECE))
 
         // Then
-        result shouldBe NotHeld(EditionLookupResult.SourcesUnavailable)
-    }
-
-    @Test
-    fun `an ISBN the house holds is answered as the house holds it, without asking the sources`() {
-        // Given
-        val source = LookupAnswering(Known(A_PREVIEW.copy(title = "Un titre venu d'une source")))
-        val lookup = lookupAsking(source, house = EditionsInMemory().also { it.insert(ROMANCE_DAWN) })
-
-        // When
-        val result = lookup.lookUp(lea, isbnOf(ONE_PIECE))
-
-        // Then
-        result shouldBe Held(ROMANCE_DAWN, emptyList())
-        source.asked shouldBe emptyList()
+        result shouldBe IsbnLookup(SourcesUnavailable, emptyList())
     }
 
     @Test
@@ -120,9 +106,9 @@ class LookupIsbnForReaderTest {
         val result = lookup.lookUp(lea, isbnOf(ONE_PIECE))
 
         // Then
-        result.shouldBeInstanceOf<Held>().copies shouldBe listOf(
-            CopyView(onLeasBookshelf.id, leasBookshelf.id, "Bibliothèque de Léa"),
-            CopyView(inTheSalon.id, salon.id, "Salon"),
+        result.copies shouldBe listOf(
+            CopyOnBookshelf(onLeasBookshelf.id, leasBookshelf.id, "Bibliothèque de Léa"),
+            CopyOnBookshelf(inTheSalon.id, salon.id, "Salon"),
         )
     }
 
@@ -132,15 +118,13 @@ class LookupIsbnForReaderTest {
         val juliette = ReaderId.new()
         val juliettesBookshelf = bookshelfOf("Bibliothèque de Juliette", Membership(juliette, OWNER))
         copyOf(ROMANCE_DAWN, juliettesBookshelf)
-        val source = LookupAnswering(Known(A_PREVIEW.copy(title = "Un titre venu d'une source")))
-        val lookup = lookupAsking(source, house = EditionsInMemory().also { it.insert(ROMANCE_DAWN) })
+        val lookup = lookupAsking(house = EditionsInMemory().also { it.insert(ROMANCE_DAWN) })
 
         // When
         val result = lookup.lookUp(lea, isbnOf(ONE_PIECE))
 
         // Then
-        result shouldBe Held(ROMANCE_DAWN, emptyList())
-        source.asked shouldBe emptyList()
+        result shouldBe IsbnLookup(Held(ROMANCE_DAWN), emptyList())
     }
 
     private fun bookshelfOf(name: String, vararg memberships: Membership): Bookshelf =
@@ -152,6 +136,5 @@ class LookupIsbnForReaderTest {
     private fun lookupAsking(
         vararg sources: ExternalEditionLookup,
         house: EditionsInMemory = EditionsInMemory(),
-    ): LookupIsbnForReader =
-        LookupIsbnForReader(house, copies, bookshelves, LookupEditionByIsbn(house, sources.toList()))
+    ): LookupIsbnForReader = LookupIsbnForReader(LookupEditionByIsbn(house, sources.toList()), copies, bookshelves)
 }
