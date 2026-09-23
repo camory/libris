@@ -5,11 +5,8 @@ import fr.amory.libris.bibliography.application.lookup.EditionLookupResult.Held
 import fr.amory.libris.bibliography.application.lookup.EditionLookupResult.SourcesUnavailable
 import fr.amory.libris.bibliography.application.lookup.EditionLookupResult.UnknownIsbn
 import fr.amory.libris.bibliography.application.lookup.LookupEditionByIsbn
-import fr.amory.libris.bibliography.domain.Contribution
-import fr.amory.libris.bibliography.domain.ContributionRole.WRITER
 import fr.amory.libris.bibliography.domain.Contributions
 import fr.amory.libris.bibliography.domain.Kind.MANGA
-import fr.amory.libris.bibliography.domain.SeriesEntry
 import fr.amory.libris.bibliography.domain.edition.Edition
 import fr.amory.libris.bibliography.domain.edition.EditionId
 import fr.amory.libris.bibliography.domain.lookup.ExternalEditionLookup
@@ -31,6 +28,7 @@ import fr.amory.libris.library.domain.reader.ReaderId
 import fr.amory.libris.library.fixture.BookshelvesInMemory
 import fr.amory.libris.library.fixture.CopiesInMemory
 import io.kotest.matchers.shouldBe
+import io.kotest.matchers.types.shouldBeInstanceOf
 import org.junit.jupiter.api.Test
 
 private const val ONE_PIECE = "9782723488525"
@@ -40,16 +38,16 @@ private val ROMANCE_DAWN = Edition(
     isbn = isbnOf(ONE_PIECE),
     kind = MANGA,
     title = "Romance dawn",
-    subtitle = "Tome 01",
-    contributions = Contributions.of(listOf(Contribution("Eiichirō Oda", WRITER))),
-    series = SeriesEntry("One Piece", 1),
-    collection = "Shōnen",
-    publisher = "Glénat",
-    publicationYear = 2013,
-    language = "fr",
-    pageCount = 207,
-    summary = "Luffy rêve de devenir le roi des pirates.",
-    coverUrl = "https://couvertures.amory.fr/one-piece-01.jpg",
+    subtitle = null,
+    contributions = Contributions.of(emptyList()),
+    series = null,
+    collection = null,
+    publisher = null,
+    publicationYear = null,
+    language = null,
+    pageCount = null,
+    summary = null,
+    coverUrl = null,
 )
 
 class LookupIsbnForReaderTest {
@@ -124,7 +122,8 @@ class LookupIsbnForReaderTest {
         val result = lookup.lookUp(lea, isbnOf(ONE_PIECE))
 
         // Then
-        result shouldBe IsbnLookup(Held(ROMANCE_DAWN), emptyList())
+        result.answer.shouldBeInstanceOf<Held>().id shouldBe ROMANCE_DAWN.id
+        result.copies shouldBe emptyList()
     }
 
     private fun bookshelfOf(name: String, vararg memberships: Membership): Bookshelf =

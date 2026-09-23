@@ -7,8 +7,8 @@ import fr.amory.libris.bibliography.domain.ContributionRole.WRITER
 import fr.amory.libris.bibliography.domain.Contributions
 import fr.amory.libris.bibliography.domain.Kind.MANGA
 import fr.amory.libris.bibliography.domain.SeriesEntry
-import fr.amory.libris.bibliography.domain.edition.Edition
 import fr.amory.libris.bibliography.domain.edition.EditionId
+import fr.amory.libris.bibliography.domain.lookup.EditionPreview
 import fr.amory.libris.bibliography.fixture.isbnOf
 import fr.amory.libris.fixture.WebSliceTest
 import fr.amory.libris.library.application.ReaderVisit
@@ -35,8 +35,7 @@ private val TOPHE = readerNamed(
     defaultBookshelfId = BookshelfId(UUID.fromString("01991c3a-5b7e-7c1d-8f2a-3d4e5f607191")),
 )
 
-private val ROMANCE_DAWN = Edition(
-    id = EditionId.new(),
+private val ROMANCE_DAWN = EditionPreview(
     isbn = isbnOf("9782723488525"),
     kind = MANGA,
     title = "Romance dawn",
@@ -63,7 +62,7 @@ class IsbnControllerTest @Autowired constructor(
     fun `an edition the house holds is answered with its fields`() {
         // Given
         given(visit.visit("tophe", "tophe@amory.fr", "Tophe")).willReturn(TOPHE)
-        given(lookup.lookUp(isbnOf("9782723488525"))).willReturn(Held(ROMANCE_DAWN))
+        given(lookup.lookUp(isbnOf("9782723488525"))).willReturn(Held(EditionId.new(), ROMANCE_DAWN))
 
         // When
         val body = lookUp("9782723488525", OK)

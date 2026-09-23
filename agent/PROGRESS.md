@@ -279,9 +279,11 @@ Format:
 
 ## 2026-09-22 — T036 The lookup answers the house's edition — done
 - Did: `LookupEditionByIsbn` (bibliography) looks in the house first through
-  `EditionRepository.findByIsbn` and answers `EditionLookupResult.Held(edition)`
-  without asking a source, the three other answers unchanged; `IsbnController`
-  maps the held edition like a preview. `LookupIsbnForReader` in
+  `EditionRepository.findByIsbn` and answers
+  `EditionLookupResult.Held(id, preview)` without asking a source, the
+  preview built by `EditionPreview.of(edition)` (null for an edition without
+  an ISBN, which the lookup by ISBN never meets), the three other answers
+  unchanged; `IsbnController` keeps its one mapping of a preview. `LookupIsbnForReader` in
   `library.application.lookup` answers `IsbnLookup(answer, copies)`: the
   bibliography's answer as is, plus, when held, the copies read through
   `CopyRepository.findByEditionId` (new) and `BookshelfRepository.findById`,

@@ -5,6 +5,7 @@ import fr.amory.libris.bibliography.application.lookup.EditionLookupResult.Held
 import fr.amory.libris.bibliography.application.lookup.EditionLookupResult.SourcesUnavailable
 import fr.amory.libris.bibliography.application.lookup.EditionLookupResult.UnknownIsbn
 import fr.amory.libris.bibliography.domain.Isbn
+import fr.amory.libris.bibliography.domain.edition.Edition
 import fr.amory.libris.bibliography.domain.edition.EditionRepository
 import fr.amory.libris.bibliography.domain.lookup.EditionPreview
 import fr.amory.libris.bibliography.domain.lookup.ExternalEditionLookup
@@ -22,7 +23,9 @@ class LookupEditionByIsbn(
 ) {
     private val lookups = lookups.sortedBy { it.source }
 
-    fun lookUp(isbn: Isbn): EditionLookupResult = editions.findByIsbn(isbn)?.let { Held(it) } ?: askTheSources(isbn)
+    fun lookUp(isbn: Isbn): EditionLookupResult = editions.findByIsbn(isbn)?.let(::held) ?: askTheSources(isbn)
+
+    private fun held(edition: Edition): Held? = EditionPreview.of(edition)?.let { Held(edition.id, it) }
 
     private fun askTheSources(isbn: Isbn): EditionLookupResult {
         val results = askEveryLookup(isbn)

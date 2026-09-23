@@ -8,7 +8,11 @@ import fr.amory.libris.bibliography.domain.Contributions
 import fr.amory.libris.bibliography.domain.Kind.BD
 import fr.amory.libris.bibliography.domain.Kind.MANGA
 import fr.amory.libris.bibliography.domain.SeriesEntry
+import fr.amory.libris.bibliography.domain.edition.Edition
+import fr.amory.libris.bibliography.domain.edition.EditionId
 import fr.amory.libris.bibliography.fixture.A_PREVIEW
+import fr.amory.libris.bibliography.fixture.isbnOf
+import io.kotest.matchers.nulls.shouldBeNull
 import io.kotest.matchers.shouldBe
 import org.junit.jupiter.api.Test
 
@@ -134,5 +138,73 @@ class EditionPreviewTest {
 
         // Then
         merged.coverUrl shouldBe "https://example.org/une-couverture.jpg"
+    }
+
+    @Test
+    fun `an edition the house holds previews as itself`() {
+        // Given
+        val edition = Edition(
+            id = EditionId.new(),
+            isbn = isbnOf("9782723488525"),
+            kind = MANGA,
+            title = "Romance dawn",
+            subtitle = "Tome 01",
+            contributions = Contributions.of(listOf(Contribution("Eiichirō Oda", WRITER))),
+            series = SeriesEntry("One Piece", 1),
+            collection = "Shōnen",
+            publisher = "Glénat",
+            publicationYear = 2013,
+            language = "fr",
+            pageCount = 207,
+            summary = "Luffy rêve de devenir le roi des pirates.",
+            coverUrl = "https://couvertures.amory.fr/one-piece-01.jpg",
+        )
+
+        // When
+        val preview = EditionPreview.of(edition)
+
+        // Then
+        preview shouldBe EditionPreview(
+            isbn = isbnOf("9782723488525"),
+            kind = MANGA,
+            title = "Romance dawn",
+            subtitle = "Tome 01",
+            contributions = Contributions.of(listOf(Contribution("Eiichirō Oda", WRITER))),
+            series = SeriesEntry("One Piece", 1),
+            collection = "Shōnen",
+            publisher = "Glénat",
+            publicationYear = 2013,
+            language = "fr",
+            pageCount = 207,
+            summary = "Luffy rêve de devenir le roi des pirates.",
+            coverUrl = "https://couvertures.amory.fr/one-piece-01.jpg",
+        )
+    }
+
+    @Test
+    fun `an edition without an ISBN has no preview`() {
+        // Given
+        val edition = Edition(
+            id = EditionId.new(),
+            isbn = null,
+            kind = MANGA,
+            title = "Romance dawn",
+            subtitle = null,
+            contributions = Contributions.of(emptyList()),
+            series = null,
+            collection = null,
+            publisher = null,
+            publicationYear = null,
+            language = null,
+            pageCount = null,
+            summary = null,
+            coverUrl = null,
+        )
+
+        // When
+        val preview = EditionPreview.of(edition)
+
+        // Then
+        preview.shouldBeNull()
     }
 }

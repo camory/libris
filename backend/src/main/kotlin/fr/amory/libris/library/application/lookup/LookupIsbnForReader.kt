@@ -4,7 +4,7 @@ import fr.amory.libris.bibliography.application.lookup.EditionLookupResult
 import fr.amory.libris.bibliography.application.lookup.EditionLookupResult.Held
 import fr.amory.libris.bibliography.application.lookup.LookupEditionByIsbn
 import fr.amory.libris.bibliography.domain.Isbn
-import fr.amory.libris.bibliography.domain.edition.Edition
+import fr.amory.libris.bibliography.domain.edition.EditionId
 import fr.amory.libris.library.domain.bookshelf.BookshelfRepository
 import fr.amory.libris.library.domain.copy.CopyRepository
 import fr.amory.libris.library.domain.reader.ReaderId
@@ -22,10 +22,10 @@ class LookupIsbnForReader(
     }
 
     private fun copiesVisibleTo(readerId: ReaderId, answer: EditionLookupResult): List<CopyOnBookshelf> =
-        if (answer is Held) copiesVisibleTo(readerId, answer.edition) else emptyList()
+        if (answer is Held) copiesVisibleTo(readerId, answer.id) else emptyList()
 
-    private fun copiesVisibleTo(readerId: ReaderId, edition: Edition): List<CopyOnBookshelf> {
-        val copiesOfEdition = copies.findByEditionId(edition.id)
+    private fun copiesVisibleTo(readerId: ReaderId, editionId: EditionId): List<CopyOnBookshelf> {
+        val copiesOfEdition = copies.findByEditionId(editionId)
         return copiesOfEdition
             .map { it.bookshelfId }
             .distinct()
