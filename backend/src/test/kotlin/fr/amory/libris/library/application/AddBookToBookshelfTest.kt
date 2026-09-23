@@ -24,7 +24,6 @@ import io.kotest.matchers.collections.shouldBeEmpty
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.shouldNotBe
 import org.junit.jupiter.api.Test
-import org.springframework.transaction.support.TransactionOperations
 import org.springframework.transaction.support.TransactionOperations.withoutTransaction
 
 private const val ONE_PIECE = "9782723488525"
@@ -33,6 +32,7 @@ class AddBookToBookshelfTest {
     private val editions = EditionsInMemory()
     private val copies = CopiesInMemory()
     private val bookshelves = BookshelvesInMemory()
+    private val addBookToBookshelf = AddBookToBookshelf(editions, copies, bookshelves, withoutTransaction())
 
     @Test
     fun `the house lacking the ISBN gains the edition and the copy`() {
@@ -42,7 +42,7 @@ class AddBookToBookshelfTest {
         bookshelves.insert(bookshelf)
 
         // When
-        val result = addBookToBookshelf().add(lea.id, bookshelf.id, onePieceTomeOne())
+        val result = addBookToBookshelf(lea.id, bookshelf.id, onePieceTomeOne())
 
         // Then
         val edition = editions.stored.single()
@@ -73,13 +73,13 @@ class AddBookToBookshelfTest {
         val lea = readerNamed("lea", "Léa")
         val leasBookshelf = bookshelfOwnedBy(lea)
         bookshelves.insert(leasBookshelf)
-        addBookToBookshelf().add(lea.id, leasBookshelf.id, onePieceTomeOne())
+        addBookToBookshelf(lea.id, leasBookshelf.id, onePieceTomeOne())
         val juliette = readerNamed("juliette", "Juliette")
         val juliettesBookshelf = bookshelfOwnedBy(juliette)
         bookshelves.insert(juliettesBookshelf)
 
         // When
-        val result = addBookToBookshelf().add(juliette.id, juliettesBookshelf.id, onePieceTomeOne())
+        val result = addBookToBookshelf(juliette.id, juliettesBookshelf.id, onePieceTomeOne())
 
         // Then
         val edition = editions.stored.single()
@@ -95,10 +95,10 @@ class AddBookToBookshelfTest {
         val lea = readerNamed("lea", "Léa")
         val bookshelf = bookshelfOwnedBy(lea)
         bookshelves.insert(bookshelf)
-        addBookToBookshelf().add(lea.id, bookshelf.id, onePieceTomeOne())
+        addBookToBookshelf(lea.id, bookshelf.id, onePieceTomeOne())
 
         // When
-        addBookToBookshelf().add(lea.id, bookshelf.id, onePieceTomeOne())
+        addBookToBookshelf(lea.id, bookshelf.id, onePieceTomeOne())
 
         // Then
         val edition = editions.stored.single()
@@ -115,7 +115,7 @@ class AddBookToBookshelfTest {
         val unknown = bookshelfOwnedBy(lea)
 
         // When
-        val result = addBookToBookshelf().add(lea.id, unknown.id, onePieceTomeOne())
+        val result = addBookToBookshelf(lea.id, unknown.id, onePieceTomeOne())
 
         // Then
         result shouldBe NoSuchBookshelf
@@ -132,7 +132,7 @@ class AddBookToBookshelfTest {
         val juliette = readerNamed("juliette", "Juliette")
 
         // When
-        val result = addBookToBookshelf().add(juliette.id, leasBookshelf.id, onePieceTomeOne())
+        val result = addBookToBookshelf(juliette.id, leasBookshelf.id, onePieceTomeOne())
 
         // Then
         result shouldBe NoSuchBookshelf
@@ -151,7 +151,7 @@ class AddBookToBookshelfTest {
         bookshelves.insert(leasBookshelf)
 
         // When
-        val result = addBookToBookshelf().add(juliette.id, leasBookshelf.id, onePieceTomeOne())
+        val result = addBookToBookshelf(juliette.id, leasBookshelf.id, onePieceTomeOne())
 
         // Then
         result shouldBe NotAnOwner
@@ -166,10 +166,10 @@ class AddBookToBookshelfTest {
         val bookshelf = bookshelfOwnedBy(lea)
         bookshelves.insert(bookshelf)
         val withoutIsbn = onePieceTomeOne().copy(isbn = null)
-        addBookToBookshelf().add(lea.id, bookshelf.id, withoutIsbn)
+        addBookToBookshelf(lea.id, bookshelf.id, withoutIsbn)
 
         // When
-        addBookToBookshelf().add(lea.id, bookshelf.id, withoutIsbn)
+        addBookToBookshelf(lea.id, bookshelf.id, withoutIsbn)
 
         // Then
         val (first, second) = editions.stored
@@ -187,14 +187,11 @@ class AddBookToBookshelfTest {
         val transactions = TransactionsObserving { editions.stored.size to copies.stored.size }
 
         // When
-        addBookToBookshelf(transactions).add(lea.id, bookshelf.id, onePieceTomeOne())
+        AddBookToBookshelf(editions, copies, bookshelves, transactions)(lea.id, bookshelf.id, onePieceTomeOne())
 
         // Then
         transactions.recorded shouldBe listOf(Transaction(before = 0 to 0, after = 1 to 1))
     }
-
-    private fun addBookToBookshelf(transactions: TransactionOperations = withoutTransaction()): AddBookToBookshelf =
-        AddBookToBookshelf(editions, copies, bookshelves, transactions)
 
     private fun onePieceTomeOne(): NewBook = NewBook(
         isbn = isbnOf(ONE_PIECE),

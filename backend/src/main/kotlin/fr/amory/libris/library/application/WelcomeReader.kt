@@ -11,12 +11,12 @@ import org.springframework.stereotype.Service
 import org.springframework.transaction.support.TransactionOperations
 
 @Service
-class ReaderVisit(
+class WelcomeReader(
     private val readers: ReaderRepository,
     private val bookshelves: BookshelfRepository,
     private val transactions: TransactionOperations,
 ) {
-    fun visit(username: String, email: String, displayName: String): Reader {
+    operator fun invoke(username: String, email: String, displayName: String): Reader {
         readers.findByUsername(username)?.let { return it }
         return try {
             welcome(username, email, displayName)

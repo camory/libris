@@ -2,7 +2,7 @@ package fr.amory.libris.library.infrastructure.web
 
 import fr.amory.libris.bibliography.application.lookup.LookupEditionByIsbn
 import fr.amory.libris.fixture.WebSliceTest
-import fr.amory.libris.library.application.ReaderVisit
+import fr.amory.libris.library.application.WelcomeReader
 import fr.amory.libris.library.fixture.readerNamed
 import org.junit.jupiter.api.Test
 import org.mockito.BDDMockito.given
@@ -12,10 +12,10 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean
 import org.springframework.test.web.servlet.client.RestTestClient
 
 @WebSliceTest
-@MockitoBean(types = [ReaderVisit::class, LookupEditionByIsbn::class])
+@MockitoBean(types = [WelcomeReader::class, LookupEditionByIsbn::class])
 class SecurityConfigTest @Autowired constructor(
     private val client: RestTestClient,
-    private val visit: ReaderVisit,
+    private val welcomeReader: WelcomeReader,
 ) {
     @Test
     fun `a request without the identity headers is refused`() {
@@ -74,7 +74,7 @@ class SecurityConfigTest @Autowired constructor(
     @Test
     fun `a write carrying the X-Requested-With header reaches the application`() {
         // Given
-        given(visit.visit("tophe", "tophe@amory.fr", "Tophe"))
+        given(welcomeReader("tophe", "tophe@amory.fr", "Tophe"))
             .willReturn(readerNamed("tophe", "Tophe"))
 
         // When, Then

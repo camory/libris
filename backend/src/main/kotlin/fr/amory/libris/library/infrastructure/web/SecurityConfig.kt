@@ -1,6 +1,6 @@
 package fr.amory.libris.library.infrastructure.web
 
-import fr.amory.libris.library.application.ReaderVisit
+import fr.amory.libris.library.application.WelcomeReader
 import jakarta.servlet.FilterChain
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
@@ -22,7 +22,7 @@ private const val ADMIN_GROUP = "libris-admin"
 const val READER_AUTHORITY = "ROLE_READER"
 const val ADMIN_AUTHORITY = "ROLE_ADMIN"
 
-class RemoteHeaderAuthenticationFilter(private val readerVisit: ReaderVisit) : OncePerRequestFilter() {
+class RemoteHeaderAuthenticationFilter(private val welcomeReader: WelcomeReader) : OncePerRequestFilter() {
     override fun shouldNotFilterErrorDispatch(): Boolean = false
 
     override fun doFilterInternal(
@@ -44,7 +44,7 @@ class RemoteHeaderAuthenticationFilter(private val readerVisit: ReaderVisit) : O
             if (ADMIN_GROUP in groups) add(SimpleGrantedAuthority(ADMIN_AUTHORITY))
         }
         val displayName = request.getHeader("Remote-Name")?.takeUnless { it.isBlank() } ?: username
-        val reader = readerVisit.visit(username, email, displayName)
+        val reader = welcomeReader(username, email, displayName)
         return PreAuthenticatedAuthenticationToken(reader, "N/A", authorities)
     }
 }
@@ -52,7 +52,7 @@ class RemoteHeaderAuthenticationFilter(private val readerVisit: ReaderVisit) : O
 @Configuration
 class SecurityConfig {
     @Bean
-    fun filterChain(http: HttpSecurity, readerVisit: ReaderVisit): SecurityFilterChain {
+    fun filterChain(http: HttpSecurity, welcomeReader: WelcomeReader): SecurityFilterChain {
         val unsafeWrite = RequestMatcher {
             it.method != HttpMethod.GET.name() && it.getHeader("X-Requested-With") == null
         }
@@ -60,7 +60,7 @@ class SecurityConfig {
             .csrf { it.disable() }
             .sessionManagement { it.sessionCreationPolicy(SessionCreationPolicy.STATELESS) }
             .addFilterBefore(
-                RemoteHeaderAuthenticationFilter(readerVisit),
+                RemoteHeaderAuthenticationFilter(welcomeReader),
                 UsernamePasswordAuthenticationFilter::class.java,
             )
             .authorizeHttpRequests {

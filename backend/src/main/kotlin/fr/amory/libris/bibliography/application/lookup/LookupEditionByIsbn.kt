@@ -23,7 +23,7 @@ class LookupEditionByIsbn(
 ) {
     private val lookups = lookups.sortedBy { it.source }
 
-    fun lookUp(isbn: Isbn): EditionLookupResult = editions.findByIsbn(isbn)?.let(::held) ?: askTheSources(isbn)
+    operator fun invoke(isbn: Isbn): EditionLookupResult = editions.findByIsbn(isbn)?.let(::held) ?: askTheSources(isbn)
 
     private fun held(edition: Edition): Held? = EditionPreview.of(edition)?.let { Held(edition.id, it) }
 

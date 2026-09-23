@@ -15,7 +15,7 @@ import fr.amory.libris.bibliography.domain.SeriesEntry
 import fr.amory.libris.bibliography.domain.lookup.EditionPreview
 import fr.amory.libris.bibliography.fixture.isbnOf
 import fr.amory.libris.fixture.WebSliceTest
-import fr.amory.libris.library.application.ReaderVisit
+import fr.amory.libris.library.application.WelcomeReader
 import fr.amory.libris.library.fixture.readerNamed
 import jakarta.servlet.Filter
 import jakarta.servlet.http.HttpServletRequest
@@ -53,19 +53,19 @@ private val ONE_PIECE_1 = EditionPreview(
 
 @WebSliceTest
 @Import(ApiContractTest.FixedReaderHeaders::class)
-@MockitoBean(types = [ReaderVisit::class, LookupEditionByIsbn::class])
+@MockitoBean(types = [WelcomeReader::class, LookupEditionByIsbn::class])
 class ApiContractTest @Autowired constructor(
     @field:ContracteerServerPort @param:LocalServerPort val serverPort: Int,
-    private val visit: ReaderVisit,
-    private val lookup: LookupEditionByIsbn,
+    private val welcomeReader: WelcomeReader,
+    private val lookupEditionByIsbn: LookupEditionByIsbn,
 ) {
     @ContracteerTest(openApiDoc = "https://raw.githubusercontent.com/camory/libris-api/v0.5.0/openapi.yaml")
     fun `the API matches the contract`() {
-        given(visit.visit("contracteer", "contracteer@amory.fr", "Contracteer"))
+        given(welcomeReader("contracteer", "contracteer@amory.fr", "Contracteer"))
             .willReturn(readerNamed("contracteer", "Contracteer"))
-        given(lookup.lookUp(isbnOf("9782723488525"))).willReturn(Found(ONE_PIECE_1))
-        given(lookup.lookUp(isbnOf("9782000000006"))).willReturn(UnknownIsbn)
-        given(lookup.lookUp(isbnOf("9791000000008"))).willReturn(SourcesUnavailable)
+        given(lookupEditionByIsbn(isbnOf("9782723488525"))).willReturn(Found(ONE_PIECE_1))
+        given(lookupEditionByIsbn(isbnOf("9782000000006"))).willReturn(UnknownIsbn)
+        given(lookupEditionByIsbn(isbnOf("9791000000008"))).willReturn(SourcesUnavailable)
     }
 
     @TestConfiguration

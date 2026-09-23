@@ -2,7 +2,7 @@ package fr.amory.libris.library.infrastructure.web
 
 import fr.amory.libris.bibliography.application.lookup.LookupEditionByIsbn
 import fr.amory.libris.fixture.WebSliceTest
-import fr.amory.libris.library.application.ReaderVisit
+import fr.amory.libris.library.application.WelcomeReader
 import fr.amory.libris.library.domain.bookshelf.BookshelfId
 import fr.amory.libris.library.domain.reader.ReaderId
 import fr.amory.libris.library.fixture.readerNamed
@@ -29,15 +29,15 @@ private val JULIETTE = readerNamed(
 )
 
 @WebSliceTest
-@MockitoBean(types = [ReaderVisit::class, LookupEditionByIsbn::class])
+@MockitoBean(types = [WelcomeReader::class, LookupEditionByIsbn::class])
 class MeControllerTest @Autowired constructor(
     private val client: RestTestClient,
-    private val visit: ReaderVisit,
+    private val welcomeReader: WelcomeReader,
 ) {
     @Test
     fun `a reader of the admin group is an admin`() {
         // Given
-        given(visit.visit("tophe", "tophe@amory.fr", "Tophe")).willReturn(TOPHE)
+        given(welcomeReader("tophe", "tophe@amory.fr", "Tophe")).willReturn(TOPHE)
         val headers = listOf(
             "Remote-User" to "tophe",
             "Remote-Name" to "Tophe",
@@ -61,7 +61,7 @@ class MeControllerTest @Autowired constructor(
     @Test
     fun `a reader outside the admin group is a plain reader`() {
         // Given
-        given(visit.visit("juliette", "juliette@amory.fr", "Juliette")).willReturn(JULIETTE)
+        given(welcomeReader("juliette", "juliette@amory.fr", "Juliette")).willReturn(JULIETTE)
         val headers = listOf(
             "Remote-User" to "juliette",
             "Remote-Name" to "Juliette",
@@ -85,7 +85,7 @@ class MeControllerTest @Autowired constructor(
     @Test
     fun `a reader without any group is a plain reader`() {
         // Given
-        given(visit.visit("juliette", "juliette@amory.fr", "Juliette")).willReturn(JULIETTE)
+        given(welcomeReader("juliette", "juliette@amory.fr", "Juliette")).willReturn(JULIETTE)
         val headers = listOf(
             "Remote-User" to "juliette",
             "Remote-Name" to "Juliette",
@@ -102,7 +102,7 @@ class MeControllerTest @Autowired constructor(
     @Test
     fun `a reader without a display name visits under their username`() {
         // Given
-        given(visit.visit("juliette", "juliette@amory.fr", "juliette"))
+        given(welcomeReader("juliette", "juliette@amory.fr", "juliette"))
             .willReturn(JULIETTE.copy(displayName = "juliette"))
         val headers = listOf(
             "Remote-User" to "juliette",
@@ -120,7 +120,7 @@ class MeControllerTest @Autowired constructor(
     @Test
     fun `a reader whose display name is blank visits under their username`() {
         // Given
-        given(visit.visit("juliette", "juliette@amory.fr", "juliette"))
+        given(welcomeReader("juliette", "juliette@amory.fr", "juliette"))
             .willReturn(JULIETTE.copy(displayName = "juliette"))
         val headers = listOf(
             "Remote-User" to "juliette",
@@ -139,7 +139,7 @@ class MeControllerTest @Autowired constructor(
     @Test
     fun `the answer is the reader of the visit, not the one of the headers`() {
         // Given
-        given(visit.visit("juliette", "juju@amory.fr", "Juju")).willReturn(JULIETTE)
+        given(welcomeReader("juliette", "juju@amory.fr", "Juju")).willReturn(JULIETTE)
         val headers = listOf(
             "Remote-User" to "juliette",
             "Remote-Name" to "Juju",

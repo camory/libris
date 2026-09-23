@@ -23,7 +23,7 @@ class AddBookToBookshelf(
     private val bookshelves: BookshelfRepository,
     private val transactions: TransactionOperations,
 ) {
-    fun add(readerId: ReaderId, bookshelfId: BookshelfId, book: NewBook): AddBookResult {
+    operator fun invoke(readerId: ReaderId, bookshelfId: BookshelfId, book: NewBook): AddBookResult {
         val bookshelf = bookshelves.findById(bookshelfId)?.takeIf { it.hasMember(readerId) }
         return when {
             bookshelf == null -> NoSuchBookshelf
