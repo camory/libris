@@ -104,29 +104,23 @@ frontend pin moves in T038. No other task touches the contract (D04).
 - [ ] T037 Backend: the API of the bookshelf, on `v0.6.0`.
       `ApiContractTest` pins `v0.6.0`: the backend's one bump, and one task,
       since the verifier reads the whole document and both added fields are
-      required — the two fields and the operation land together (D04).
-      `infrastructure.web` of each context: `me` answers `defaultBookshelf`
-      `{id, name}`; the lookup answers `copies`, empty when the reader's
-      bookshelves hold none, the
-      current reader read from the forwarded headers as `me` reads them
-      (D06).
-      `POST /api/v1/bookshelves/{id}/books`: the body `NewBook` → `201` the
-      `Copy` with its bookshelf; `400` `/problems/validation` with one error
-      per refused field, `isbn13` checked as `IsbnController` checks its path
-      before `Isbn.of`, since `NewBook` takes an `Isbn?` and no use case sees
-      a bad one; `404` `/problems/not-found` when the reader is a
-      member of no such bookshelf (D11).
+      required (D04).
+      `me` answers the reader's `defaultBookshelf` `{id, name}`. The ISBN
+      lookup answers what the library's lookup answers, the copies included,
+      empty when the reader's bookshelves hold none; that endpoint moves to
+      the library's web adapter, since the bibliography may not see the
+      library (D02). `POST /api/v1/bookshelves/{id}/books` takes `NewBook`
+      and answers `201` the `Copy` with its bookshelf; `400`
+      `/problems/validation` with one error per refused field; `404`
+      `/problems/not-found` when the reader is a member of no such bookshelf
+      and, until a release adds `403`, when they see it without owning it
+      (`agent/PROPOSED.md`).
       The verifier adds two cases of its own, an `id` that is not a uuid and
-      a body of the wrong types, both answered `400` with a `Problem` before
-      any use case is reached (`agent/GOTCHAS.md`).
-      Web-slice tests over the three answers and the two refusals, every use
-      case the web slice scans mocked (`agent/GOTCHAS.md`); Contracteer verifies
-      `ADD_ONE_PIECE_1`, `400_NOT_AN_ISBN`, `404_NOT_MY_BOOKSHELF` and
-      `ONE_PIECE_2_OWNED`.
-      Carries S1 to S4 to the API; un-skips the tests of
-      `BookshelfScenarios.kt`, `S1 The first visit creates the bookshelf`,
-      `S2 The ouvrage is added`, `S3 A known ISBN reaches the existing
-      edition` and `S4 The ouvrage is already in a bookshelf`.
+      a body of the wrong types, both answered `400` with a `Problem`
+      (`agent/GOTCHAS.md`). Contracteer verifies `ADD_ONE_PIECE_1`,
+      `400_NOT_AN_ISBN`, `404_NOT_MY_BOOKSHELF` and `ONE_PIECE_2_OWNED`.
+      Carries S1 to S4 to the API; un-skips the six tests of
+      `BookshelfScenarios.kt`.
 
 - [ ] T038 Frontend: the copies on the card, on `v0.6.0`.
       Precondition (human):

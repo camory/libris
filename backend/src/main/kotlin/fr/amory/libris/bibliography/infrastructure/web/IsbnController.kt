@@ -64,11 +64,11 @@ private fun problem(status: HttpStatus, type: String): ProblemDetail =
 private fun ProblemDetail.asResponse(): ResponseEntity<Any> = ResponseEntity.status(status).body(this)
 
 @RestController
-class IsbnController(private val lookup: LookupEditionByIsbn) {
+class IsbnController(private val lookupEditionByIsbn: LookupEditionByIsbn) {
     @GetMapping("/api/v1/isbn/{isbn}")
     fun isbn(@PathVariable("isbn") text: String): ResponseEntity<Any> {
         val isbn = isbnOfPath(text) ?: return notAnIsbn().asResponse()
-        return when (val result = lookup.lookUp(isbn)) {
+        return when (val result = lookupEditionByIsbn(isbn)) {
             is Held -> ResponseEntity.ok(responseOf(result.preview))
             is Found -> ResponseEntity.ok(responseOf(result.preview))
             UnknownIsbn -> problem(NOT_FOUND, NOT_FOUND_PROBLEM).asResponse()

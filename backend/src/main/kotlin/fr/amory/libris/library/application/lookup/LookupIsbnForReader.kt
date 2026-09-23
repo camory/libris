@@ -12,12 +12,12 @@ import org.springframework.stereotype.Service
 
 @Service
 class LookupIsbnForReader(
-    private val editionLookup: LookupEditionByIsbn,
+    private val lookupEditionByIsbn: LookupEditionByIsbn,
     private val copies: CopyRepository,
     private val bookshelves: BookshelfRepository,
 ) {
-    fun lookUp(readerId: ReaderId, isbn: Isbn): IsbnLookup {
-        val answer = editionLookup.lookUp(isbn)
+    operator fun invoke(readerId: ReaderId, isbn: Isbn): IsbnLookup {
+        val answer = lookupEditionByIsbn(isbn)
         return IsbnLookup(answer, copiesVisibleTo(readerId, answer))
     }
 

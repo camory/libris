@@ -221,7 +221,7 @@ session, no BCrypt.
   test configuration of its own.
 - The domain calls the person a `Reader`: one aggregate, id, username,
   email, display name and default bookshelf, keyed by username. On every
-  request the filter hands the headers to `ReaderVisit`, which finds the
+  request the filter hands the headers to `WelcomeReader`, which finds the
   reader by username or, on their first visit, creates them with their
   bookshelf, and sets the reader as the principal of the authentication.
   Controllers receive it with `@AuthenticationPrincipal`; no custom
@@ -393,6 +393,14 @@ deliberately lacks), no other service. A test that needs more blocks the task.
   types: an aggregate is called by its name, never shortened (`bookshelf`,
   not `shelf`), and an identifier is the aggregate's name with `Id`
   (`readerId`, `bookshelfId`), never the bare name (`reader` is a `Reader`).
+- A use case is named by the sentence of what it does, an imperative verb
+  first (`LookupEditionByIsbn`, `AddBookToBookshelf`, `WelcomeReader`), and
+  is called by its name: it exposes `operator fun invoke` and nothing else
+  public, and the variable holding it is the class name in lower camel case,
+  so a call reads as the sentence, `lookupEditionByIsbn(isbn)`,
+  `addBookToBookshelf(readerId, bookshelfId, book)`. A port keeps a verb of
+  its own (`ExternalEditionLookup.lookUp`, `CopyRepository.findByEditionId`):
+  its name says what it is, not what it does.
 - A member's visibility is what the type exposes: a private member is not
   made public for a new caller. A caller that needs what the private member
   does either goes through the public door (`Isbn.of`) or the type gains a
@@ -514,7 +522,7 @@ Contract
   the rule in the wrong place.
 - A rule that spans two aggregates is the use case's. The reader's default
   bookshelf is one they own: neither `Reader` nor `Bookshelf` can check it
-  alone, so `ReaderVisit` builds both and inserts both inside one
+  alone, so `WelcomeReader` builds both and inserts both inside one
   `TransactionOperations` block, and that transaction is what guarantees no
   reader exists without their bookshelf. The use case's test proves the
   boundary, not only the result: a fake of `TransactionOperations` records

@@ -16,15 +16,15 @@ import io.kotest.matchers.shouldBe
 import org.junit.jupiter.api.Test
 import org.springframework.transaction.support.TransactionOperations.withoutTransaction
 
-class ReaderVisitTest {
+class WelcomeReaderTest {
     @Test
     fun `a first visit stores the reader of the headers`() {
         // Given
         val readers = ReadersInMemory()
-        val visit = ReaderVisit(readers, BookshelvesInMemory(), withoutTransaction())
+        val welcomeReader = WelcomeReader(readers, BookshelvesInMemory(), withoutTransaction())
 
         // When
-        val juliette = visit.visit("juliette", "juliette@amory.fr", "Juliette")
+        val juliette = welcomeReader("juliette", "juliette@amory.fr", "Juliette")
 
         // Then
         juliette.username shouldBe "juliette"
@@ -37,10 +37,10 @@ class ReaderVisitTest {
     fun `a first visit creates the bookshelf the reader owns, their default`() {
         // Given
         val bookshelves = BookshelvesInMemory()
-        val visit = ReaderVisit(ReadersInMemory(), bookshelves, withoutTransaction())
+        val welcomeReader = WelcomeReader(ReadersInMemory(), bookshelves, withoutTransaction())
 
         // When
-        val lea = visit.visit("lea", "lea@amory.fr", "Léa")
+        val lea = welcomeReader("lea", "lea@amory.fr", "Léa")
 
         // Then
         bookshelves.stored shouldBe listOf(
@@ -54,10 +54,10 @@ class ReaderVisitTest {
         val readers = ReadersInMemory()
         val bookshelves = BookshelvesInMemory()
         val transactions = TransactionsObserving { readers.stored to bookshelves.stored }
-        val visit = ReaderVisit(readers, bookshelves, transactions)
+        val welcomeReader = WelcomeReader(readers, bookshelves, transactions)
 
         // When
-        val lea = visit.visit("lea", "lea@amory.fr", "Léa")
+        val lea = welcomeReader("lea", "lea@amory.fr", "Léa")
 
         // Then
         transactions.recorded shouldBe listOf(
@@ -71,11 +71,11 @@ class ReaderVisitTest {
     @Test
     fun `a later visit returns the stored reader and keeps the display name Libris owns`() {
         // Given
-        val visit = ReaderVisit(ReadersInMemory(), BookshelvesInMemory(), withoutTransaction())
-        val firstVisit = visit.visit("juliette", "juliette@amory.fr", "Juliette")
+        val welcomeReader = WelcomeReader(ReadersInMemory(), BookshelvesInMemory(), withoutTransaction())
+        val firstVisit = welcomeReader("juliette", "juliette@amory.fr", "Juliette")
 
         // When
-        val laterVisit = visit.visit("juliette", "juju@amory.fr", "Juju")
+        val laterVisit = welcomeReader("juliette", "juju@amory.fr", "Juju")
 
         // Then
         laterVisit shouldBe firstVisit
@@ -86,11 +86,11 @@ class ReaderVisitTest {
         // Given
         val readers = ReadersInMemory()
         val bookshelves = BookshelvesInMemory()
-        val visit = ReaderVisit(readers, bookshelves, withoutTransaction())
+        val welcomeReader = WelcomeReader(readers, bookshelves, withoutTransaction())
         readers.insert(readerNamed("juliette", "Juliette"))
 
         // When
-        visit.visit("juliette", "juliette@amory.fr", "Juliette")
+        welcomeReader("juliette", "juliette@amory.fr", "Juliette")
 
         // Then
         bookshelves.stored shouldBe emptyList()
@@ -101,10 +101,10 @@ class ReaderVisitTest {
         // Given
         val winner = readerNamed("juliette", "Juliette")
         val readers = ReadersLosingTheRace(winner)
-        val visit = ReaderVisit(readers, BookshelvesInMemory(), withoutTransaction())
+        val welcomeReader = WelcomeReader(readers, BookshelvesInMemory(), withoutTransaction())
 
         // When
-        val loser = visit.visit("juliette", "juju@amory.fr", "Juju")
+        val loser = welcomeReader("juliette", "juju@amory.fr", "Juju")
 
         // Then
         loser shouldBe winner

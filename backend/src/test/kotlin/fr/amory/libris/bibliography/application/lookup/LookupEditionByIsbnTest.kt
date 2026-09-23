@@ -45,10 +45,13 @@ class LookupEditionByIsbnTest {
     fun `an ISBN the house holds is answered as the house holds it, without asking the sources`() {
         // Given
         val source = LookupAnswering(Known(A_PREVIEW.copy(title = "Un titre venu d'une source")))
-        val lookup = LookupEditionByIsbn(EditionsInMemory().also { it.insert(ROMANCE_DAWN) }, listOf(source))
+        val lookupEditionByIsbn = LookupEditionByIsbn(
+            EditionsInMemory().also { it.insert(ROMANCE_DAWN) },
+            listOf(source),
+        )
 
         // When
-        val result = lookup.lookUp(isbnOf("9782723488525"))
+        val result = lookupEditionByIsbn(isbnOf("9782723488525"))
 
         // Then
         result shouldBe Held(ROMANCE_DAWN.id, checkNotNull(EditionPreview.of(ROMANCE_DAWN)))
@@ -58,7 +61,7 @@ class LookupEditionByIsbnTest {
     @Test
     fun `the BnF takes precedence over Open Library, whatever the order they were given`() {
         // Given
-        val lookup = LookupEditionByIsbn(
+        val lookupEditionByIsbn = LookupEditionByIsbn(
             EditionsInMemory(),
             listOf(
                 LookupAnswering(Known(A_PREVIEW.copy(title = "Tome 01", pageCount = 207)), OPEN_LIBRARY),
@@ -67,7 +70,7 @@ class LookupEditionByIsbnTest {
         )
 
         // When
-        val result = lookup.lookUp(isbnOf("9782723488525"))
+        val result = lookupEditionByIsbn(isbnOf("9782723488525"))
 
         // Then
         result shouldBe Found(A_PREVIEW.copy(title = "Romance dawn", pageCount = 207))
@@ -76,7 +79,7 @@ class LookupEditionByIsbnTest {
     @Test
     fun `a source that failed takes no part in the answer`() {
         // Given
-        val lookup = LookupEditionByIsbn(
+        val lookupEditionByIsbn = LookupEditionByIsbn(
             EditionsInMemory(),
             listOf(
                 LookupAnswering(Failed),
@@ -85,7 +88,7 @@ class LookupEditionByIsbnTest {
         )
 
         // When
-        val result = lookup.lookUp(isbnOf("9782723488525"))
+        val result = lookupEditionByIsbn(isbnOf("9782723488525"))
 
         // Then
         result shouldBe Found(A_PREVIEW.copy(title = "Romance dawn"))
@@ -94,13 +97,13 @@ class LookupEditionByIsbnTest {
     @Test
     fun `no source knowing the ISBN answers that it is unknown`() {
         // Given
-        val lookup = LookupEditionByIsbn(
+        val lookupEditionByIsbn = LookupEditionByIsbn(
             EditionsInMemory(),
             listOf(LookupAnswering(NothingKnown), LookupAnswering(NothingKnown)),
         )
 
         // When
-        val result = lookup.lookUp(isbnOf("9782000000013"))
+        val result = lookupEditionByIsbn(isbnOf("9782000000013"))
 
         // Then
         result shouldBe UnknownIsbn
@@ -109,10 +112,13 @@ class LookupEditionByIsbnTest {
     @Test
     fun `every source having failed answers that no source replied`() {
         // Given
-        val lookup = LookupEditionByIsbn(EditionsInMemory(), listOf(LookupAnswering(Failed), LookupAnswering(Failed)))
+        val lookupEditionByIsbn = LookupEditionByIsbn(
+            EditionsInMemory(),
+            listOf(LookupAnswering(Failed), LookupAnswering(Failed)),
+        )
 
         // When
-        val result = lookup.lookUp(isbnOf("9782723488525"))
+        val result = lookupEditionByIsbn(isbnOf("9782723488525"))
 
         // Then
         result shouldBe SourcesUnavailable
@@ -121,13 +127,13 @@ class LookupEditionByIsbnTest {
     @Test
     fun `one source failing while the other knows nothing answers that the ISBN is unknown`() {
         // Given
-        val lookup = LookupEditionByIsbn(
+        val lookupEditionByIsbn = LookupEditionByIsbn(
             EditionsInMemory(),
             listOf(LookupAnswering(Failed), LookupAnswering(NothingKnown)),
         )
 
         // When
-        val result = lookup.lookUp(isbnOf("9782000000013"))
+        val result = lookupEditionByIsbn(isbnOf("9782000000013"))
 
         // Then
         result shouldBe UnknownIsbn
@@ -137,7 +143,7 @@ class LookupEditionByIsbnTest {
     fun `every source is asked at once`() {
         // Given
         val rendezvous = CyclicBarrier(2)
-        val lookup = LookupEditionByIsbn(
+        val lookupEditionByIsbn = LookupEditionByIsbn(
             EditionsInMemory(),
             listOf(
                 LookupAnsweringAtRendezvous(rendezvous, Known(A_PREVIEW.copy(title = "Romance dawn"))),
@@ -146,7 +152,7 @@ class LookupEditionByIsbnTest {
         )
 
         // When
-        val result = lookup.lookUp(isbnOf("9782723488525"))
+        val result = lookupEditionByIsbn(isbnOf("9782723488525"))
 
         // Then
         result shouldBe Found(A_PREVIEW.copy(title = "Romance dawn", pageCount = 207))

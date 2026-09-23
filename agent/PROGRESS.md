@@ -326,3 +326,16 @@ Format:
   `bibliography.infrastructure.web`, the bibliography may never see the
   library (D02): T037 moves `/api/v1/isbn/{isbn}` to
   `library.infrastructure.web`. Nothing new in `agent/PROPOSED.md`.
+
+## 2026-09-23 — A use case is called by its name — done
+- Did: the four use cases expose `operator fun invoke` and are held in
+  variables named after them, `lookupEditionByIsbn(isbn)`,
+  `lookupIsbnForReader(readerId, isbn)`, `addBookToBookshelf(readerId,
+  bookshelfId, book)`; `ReaderVisit` renamed `WelcomeReader`, the imperative
+  of what it does. D10 gained the rule; the ports keep their verbs.
+- Decided (Tophe, on the review of T036): `editionLookup.lookUp(isbn)`
+  stuttered — the class was already the sentence. The T037 line rewritten
+  to say what the reader gets and which context answers, the endpoint's
+  move to the library, and the viewer answered `404` until a release adds
+  `403`; no package or port named beyond what the contract fixes.
+

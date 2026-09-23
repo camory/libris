@@ -137,7 +137,8 @@ true; the diary keeps the date it was found.
   package: a `@SpringBootTest` without `classes` looks for one
   `@SpringBootConfiguration` in the test's own package and finds two there,
   `@TestComponent` notwithstanding. Mockito stubs a method taking a value
-  class from Kotlin call syntax (`given(lookup.lookUp(isbnOf("…")))`).
+  class from Kotlin call syntax, `invoke` included
+  (`given(lookupEditionByIsbn(isbnOf("…")))`).
 - A scenario class boots the whole application and commits what its
   requests write; `FreshSchema` on `JdbcSliceTest` and `ScenarioTest` is
   what keeps the JDBC slice from meeting a reader it did not insert.

@@ -11,7 +11,7 @@ import fr.amory.libris.bibliography.domain.edition.EditionId
 import fr.amory.libris.bibliography.domain.lookup.EditionPreview
 import fr.amory.libris.bibliography.fixture.isbnOf
 import fr.amory.libris.fixture.WebSliceTest
-import fr.amory.libris.library.application.ReaderVisit
+import fr.amory.libris.library.application.WelcomeReader
 import fr.amory.libris.library.domain.bookshelf.BookshelfId
 import fr.amory.libris.library.domain.reader.ReaderId
 import fr.amory.libris.library.fixture.readerNamed
@@ -52,17 +52,17 @@ private val ROMANCE_DAWN = EditionPreview(
 )
 
 @WebSliceTest
-@MockitoBean(types = [ReaderVisit::class, LookupEditionByIsbn::class])
+@MockitoBean(types = [WelcomeReader::class, LookupEditionByIsbn::class])
 class IsbnControllerTest @Autowired constructor(
     private val client: RestTestClient,
-    private val visit: ReaderVisit,
-    private val lookup: LookupEditionByIsbn,
+    private val welcomeReader: WelcomeReader,
+    private val lookupEditionByIsbn: LookupEditionByIsbn,
 ) {
     @Test
     fun `an edition the house holds is answered with its fields`() {
         // Given
-        given(visit.visit("tophe", "tophe@amory.fr", "Tophe")).willReturn(TOPHE)
-        given(lookup.lookUp(isbnOf("9782723488525"))).willReturn(Held(EditionId.new(), ROMANCE_DAWN))
+        given(welcomeReader("tophe", "tophe@amory.fr", "Tophe")).willReturn(TOPHE)
+        given(lookupEditionByIsbn(isbnOf("9782723488525"))).willReturn(Held(EditionId.new(), ROMANCE_DAWN))
 
         // When
         val body = lookUp("9782723488525", OK)
@@ -88,53 +88,53 @@ class IsbnControllerTest @Autowired constructor(
     @Test
     fun `the ten of a book is not an ISBN the API admits`() {
         // Given
-        given(visit.visit("tophe", "tophe@amory.fr", "Tophe")).willReturn(TOPHE)
+        given(welcomeReader("tophe", "tophe@amory.fr", "Tophe")).willReturn(TOPHE)
 
         // When
         val body = lookUp("2723488527")
 
         // Then
         body?.get("type") shouldBe "/problems/validation"
-        verifyNoInteractions(lookup)
+        verifyNoInteractions(lookupEditionByIsbn)
     }
 
     @Test
     fun `the thirteen digits with separators are not the writing the API admits`() {
         // Given
-        given(visit.visit("tophe", "tophe@amory.fr", "Tophe")).willReturn(TOPHE)
+        given(welcomeReader("tophe", "tophe@amory.fr", "Tophe")).willReturn(TOPHE)
 
         // When
         val body = lookUp("978-2-7234-8852-5")
 
         // Then
         body?.get("type") shouldBe "/problems/validation"
-        verifyNoInteractions(lookup)
+        verifyNoInteractions(lookupEditionByIsbn)
     }
 
     @Test
     fun `the thirteen digits followed by a space are not the writing the API admits`() {
         // Given
-        given(visit.visit("tophe", "tophe@amory.fr", "Tophe")).willReturn(TOPHE)
+        given(welcomeReader("tophe", "tophe@amory.fr", "Tophe")).willReturn(TOPHE)
 
         // When
         val body = lookUp("9782723488525 ")
 
         // Then
         body?.get("type") shouldBe "/problems/validation"
-        verifyNoInteractions(lookup)
+        verifyNoInteractions(lookupEditionByIsbn)
     }
 
     @Test
     fun `a thirteen-digit EAN that is not an ISBN is refused`() {
         // Given
-        given(visit.visit("tophe", "tophe@amory.fr", "Tophe")).willReturn(TOPHE)
+        given(welcomeReader("tophe", "tophe@amory.fr", "Tophe")).willReturn(TOPHE)
 
         // When
         val body = lookUp("4006381333931")
 
         // Then
         body?.get("type") shouldBe "/problems/validation"
-        verifyNoInteractions(lookup)
+        verifyNoInteractions(lookupEditionByIsbn)
     }
 
     private fun lookUp(isbn: String, status: HttpStatus = BAD_REQUEST): Map<String, Any>? =
