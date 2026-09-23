@@ -152,5 +152,6 @@ class LookupIsbnForReaderTest {
     private fun lookupAsking(
         vararg sources: ExternalEditionLookup,
         house: EditionsInMemory = EditionsInMemory(),
-    ): LookupIsbnForReader = LookupIsbnForReader(house, copies, bookshelves, LookupEditionByIsbn(sources.toList()))
+    ): LookupIsbnForReader =
+        LookupIsbnForReader(house, copies, bookshelves, LookupEditionByIsbn(house, sources.toList()))
 }

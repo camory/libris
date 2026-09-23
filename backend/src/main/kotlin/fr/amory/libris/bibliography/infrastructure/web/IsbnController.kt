@@ -1,12 +1,14 @@
 package fr.amory.libris.bibliography.infrastructure.web
 
 import fr.amory.libris.bibliography.application.lookup.EditionLookupResult.Found
+import fr.amory.libris.bibliography.application.lookup.EditionLookupResult.Held
 import fr.amory.libris.bibliography.application.lookup.EditionLookupResult.SourcesUnavailable
 import fr.amory.libris.bibliography.application.lookup.EditionLookupResult.UnknownIsbn
 import fr.amory.libris.bibliography.application.lookup.LookupEditionByIsbn
 import fr.amory.libris.bibliography.domain.ContributionRole
 import fr.amory.libris.bibliography.domain.Isbn
 import fr.amory.libris.bibliography.domain.Kind
+import fr.amory.libris.bibliography.domain.edition.Edition
 import fr.amory.libris.bibliography.domain.lookup.EditionPreview
 import org.springframework.http.HttpStatus
 import org.springframework.http.HttpStatus.BAD_REQUEST
@@ -68,6 +70,7 @@ class IsbnController(private val lookup: LookupEditionByIsbn) {
     fun isbn(@PathVariable("isbn") text: String): ResponseEntity<Any> {
         val isbn = isbnOfPath(text) ?: return notAnIsbn().asResponse()
         return when (val result = lookup.lookUp(isbn)) {
+            is Held -> ResponseEntity.ok(responseOf(isbn, result.edition))
             is Found -> ResponseEntity.ok(responseOf(result.preview))
             UnknownIsbn -> problem(NOT_FOUND, NOT_FOUND_PROBLEM).asResponse()
             SourcesUnavailable -> problem(SERVICE_UNAVAILABLE, SOURCES_UNAVAILABLE_PROBLEM).asResponse()
@@ -79,6 +82,22 @@ class IsbnController(private val lookup: LookupEditionByIsbn) {
     private fun notAnIsbn(): ProblemDetail = problem(BAD_REQUEST, VALIDATION_PROBLEM).apply {
         setProperty("errors", listOf(ValidationErrorResponse(field = "isbn", code = "not-an-isbn")))
     }
+
+    private fun responseOf(isbn: Isbn, edition: Edition): IsbnResponse = IsbnResponse(
+        isbn13 = isbn.digits,
+        kind = edition.kind,
+        title = edition.title,
+        subtitle = edition.subtitle,
+        authors = edition.contributions.map { IsbnAuthorResponse(it.name, it.role) },
+        series = edition.series?.let { IsbnSeriesResponse(it.name, it.volumeNumber) },
+        collection = edition.collection,
+        publisher = edition.publisher,
+        publicationYear = edition.publicationYear,
+        language = edition.language,
+        pageCount = edition.pageCount,
+        summary = edition.summary,
+        coverUrl = edition.coverUrl,
+    )
 
     private fun responseOf(preview: EditionPreview): IsbnResponse = IsbnResponse(
         isbn13 = preview.isbn.digits,
