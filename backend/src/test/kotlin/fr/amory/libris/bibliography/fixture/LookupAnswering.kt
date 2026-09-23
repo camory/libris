@@ -12,7 +12,14 @@ class LookupAnswering(
     private val answer: ExternalLookupResult,
     override val source: Source = BNF,
 ) : ExternalEditionLookup {
-    override fun lookUp(isbn: Isbn): ExternalLookupResult = answer
+    private val isbns = mutableListOf<Isbn>()
+
+    val asked: List<Isbn> get() = isbns.toList()
+
+    override fun lookUp(isbn: Isbn): ExternalLookupResult {
+        isbns += isbn
+        return answer
+    }
 }
 
 class LookupAnsweringAtRendezvous(

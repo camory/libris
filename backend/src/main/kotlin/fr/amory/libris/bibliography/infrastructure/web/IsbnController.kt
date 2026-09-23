@@ -1,6 +1,7 @@
 package fr.amory.libris.bibliography.infrastructure.web
 
 import fr.amory.libris.bibliography.application.lookup.EditionLookupResult.Found
+import fr.amory.libris.bibliography.application.lookup.EditionLookupResult.Held
 import fr.amory.libris.bibliography.application.lookup.EditionLookupResult.SourcesUnavailable
 import fr.amory.libris.bibliography.application.lookup.EditionLookupResult.UnknownIsbn
 import fr.amory.libris.bibliography.application.lookup.LookupEditionByIsbn
@@ -68,6 +69,7 @@ class IsbnController(private val lookup: LookupEditionByIsbn) {
     fun isbn(@PathVariable("isbn") text: String): ResponseEntity<Any> {
         val isbn = isbnOfPath(text) ?: return notAnIsbn().asResponse()
         return when (val result = lookup.lookUp(isbn)) {
+            is Held -> ResponseEntity.ok(responseOf(result.preview))
             is Found -> ResponseEntity.ok(responseOf(result.preview))
             UnknownIsbn -> problem(NOT_FOUND, NOT_FOUND_PROBLEM).asResponse()
             SourcesUnavailable -> problem(SERVICE_UNAVAILABLE, SOURCES_UNAVAILABLE_PROBLEM).asResponse()

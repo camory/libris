@@ -547,15 +547,19 @@ Contract
   stored or answered is the house's, not a source's. An enumeration whose
   order carries meaning declares it as a field, `ContributionRole.order`,
   never through its declaration order.
-- A read that spans aggregates or contexts is a query, not an aggregate.
-  It has a port of its own in the `domain` of the context that asks, in the
-  sub-package of its concern like `domain.lookup`, answering a read model:
-  a data class shaped for the answer, with no rule, no id of its own and no
-  repository, that the persistence adapter builds from one query. The
-  lookup's answer with its copies and the names of their bookshelves, and
-  the search over a reader's catalogue, are such reads. No aggregate is
-  rebuilt from a join, and no aggregate carries another's data to spare a
-  query.
+- A read that spans aggregates or contexts is the use case's first: it
+  reads each aggregate through its own repository, applies the aggregates'
+  rules (`Bookshelf.hasMember`) and answers a data class of its
+  `application` sub-package shaped for the answer, with no rule and no
+  repository, like `CopyOnBookshelf` for the lookup's copies with the names
+  of their bookshelves. Each context answers what it knows: the bibliography
+  whether the house holds the edition or what the sources say, the library
+  the reader's copies on top of that answer. Only a read the repositories
+  cannot serve within a few queries, the search over a reader's catalogue,
+  gets a query port of its own in the `domain` of the context that asks, in
+  the sub-package of its concern, answering a read model the persistence
+  adapter builds from one query. No aggregate is rebuilt from a join, and no
+  aggregate carries another's data to spare a query.
 - A series, an author and a tag are values of the edition, not aggregates:
   `SeriesEntry(name, volumeNumber)` and `Contribution(name, role)` on the
   `Edition`, matched by name whatever the capitalisation (PRD §3). Each

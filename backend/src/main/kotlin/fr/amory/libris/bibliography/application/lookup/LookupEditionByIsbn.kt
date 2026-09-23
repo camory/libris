@@ -1,9 +1,12 @@
 package fr.amory.libris.bibliography.application.lookup
 
 import fr.amory.libris.bibliography.application.lookup.EditionLookupResult.Found
+import fr.amory.libris.bibliography.application.lookup.EditionLookupResult.Held
 import fr.amory.libris.bibliography.application.lookup.EditionLookupResult.SourcesUnavailable
 import fr.amory.libris.bibliography.application.lookup.EditionLookupResult.UnknownIsbn
 import fr.amory.libris.bibliography.domain.Isbn
+import fr.amory.libris.bibliography.domain.edition.Edition
+import fr.amory.libris.bibliography.domain.edition.EditionRepository
 import fr.amory.libris.bibliography.domain.lookup.EditionPreview
 import fr.amory.libris.bibliography.domain.lookup.ExternalEditionLookup
 import fr.amory.libris.bibliography.domain.lookup.ExternalLookupResult
@@ -14,10 +17,17 @@ import java.util.concurrent.Callable
 import java.util.concurrent.Executors.newVirtualThreadPerTaskExecutor
 
 @Service
-class LookupEditionByIsbn(lookups: List<ExternalEditionLookup>) {
+class LookupEditionByIsbn(
+    private val editions: EditionRepository,
+    lookups: List<ExternalEditionLookup>,
+) {
     private val lookups = lookups.sortedBy { it.source }
 
-    fun lookUp(isbn: Isbn): EditionLookupResult {
+    fun lookUp(isbn: Isbn): EditionLookupResult = editions.findByIsbn(isbn)?.let(::held) ?: askTheSources(isbn)
+
+    private fun held(edition: Edition): Held? = EditionPreview.of(edition)?.let { Held(edition.id, it) }
+
+    private fun askTheSources(isbn: Isbn): EditionLookupResult {
         val results = askEveryLookup(isbn)
         val previews = results.filterIsInstance<Known>().map { it.preview }
         return when {

@@ -276,3 +276,53 @@ Format:
   `v0.6.0` pin are T037, which also un-skips the six `BookshelfScenarios`
   tests, untouched here. Two adds of the same unknown ISBN at once, which the
   unique `isbn13` makes the second insert throw, is in `agent/PROPOSED.md`.
+
+## 2026-09-22 — T036 The lookup answers the house's edition — done
+- Did: `LookupEditionByIsbn` (bibliography) looks in the house first through
+  `EditionRepository.findByIsbn` and answers
+  `EditionLookupResult.Held(id, preview)` without asking a source, the
+  preview built by `EditionPreview.of(edition)` (null for an edition without
+  an ISBN, which the lookup by ISBN never meets), the three other answers
+  unchanged; `IsbnController` keeps its one mapping of a preview. `LookupIsbnForReader` in
+  `library.application.lookup` answers `IsbnLookup(answer, copies)`: the
+  bibliography's answer as is, plus, when held, the copies read through
+  `CopyRepository.findByEditionId` (new) and `BookshelfRepository.findById`,
+  kept when `Bookshelf.hasMember(readerId)`, as
+  `CopyOnBookshelf(copyId, bookshelfId, bookshelfName)` ordered by the name
+  of the bookshelf. Eleven cycles by the run, then reworked on Tophe's
+  review, the gate green.
+- Decided on review (Tophe): the run had followed D12's read-model rule to
+  the letter — a `ReaderCopies` query port and a `CopyOnBookshelf` read model
+  in `library.domain.lookup`, a `JdbcReaderCopies` adapter joining `copy`,
+  `bookshelf` and `membership`, and an `IsbnLookupResult` mirroring
+  `EditionLookupResult` with a thirteen-field `previewOf` in the use case.
+  Too much for this read: the repositories serve it in a few queries and the
+  membership rule already lives on the aggregate, so the SQL join was the
+  rule written twice. D12 amended: a read that spans aggregates goes through
+  the repositories and the aggregates' rules first, answered by a data class
+  of `application`; a query port with its read model is for the read the
+  repositories cannot serve, the catalogue search.
+- Decided on review (Tophe): each context answers what it knows. Whether the
+  house holds the ISBN is the bibliography's to say, its `Edition` being the
+  bibliography's aggregate, so the house-first branch moved from the library
+  use case into `LookupEditionByIsbn` — the task line had placed it in the
+  library, and the run obeyed. The library's answer is a product,
+  `IsbnLookup(answer, copies)`, not a second sealed class beside the
+  bibliography's. The use case stays in the library, in its own
+  `application.lookup` sub-package as the bibliography's; no root
+  `application` package for one orchestrator.
+- Lesson for the task lines: a line that names the package and the ports
+  designs the inside; the run delivers it faithfully, wrong or right. The
+  line says what the reader gets and which context answers; the brief and
+  the run find the shape.
+- Deviations from the brief: the `readerId` parameter of `lookUp` and the
+  `EditionRepository` constructor argument arrived with the cases that read
+  them (plan steps 10 and 9) instead of with the first case (step 6) —
+  detekt fails a parameter or a constructor argument no case reads, the same
+  wait T035 recorded. The delivered signature is the brief's.
+- Left over: nothing of the API — the JSON of the copies and the pin bump
+  are T037, which also un-skips the six `BookshelfScenarios` tests. The
+  controller serving `LookupIsbnForReader` cannot sit in
+  `bibliography.infrastructure.web`, the bibliography may never see the
+  library (D02): T037 moves `/api/v1/isbn/{isbn}` to
+  `library.infrastructure.web`. Nothing new in `agent/PROPOSED.md`.
