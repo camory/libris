@@ -61,18 +61,16 @@ true; the diary keeps the date it was found.
   stays 3.0.3 and `nullable` is the 3.0 keyword. On an operation without
   parameters a response example creates no scenario; the verifier emits one
   generated case.
-- On an operation with a `format: uuid` path parameter or a typed body, the
-  verifier adds cases of its own, `auto: path 'id' type mismatch` and `auto:
-  body type mismatch`, and expects `400` with the declared problem body for
-  each: the backend must answer a `Problem` to a malformed uuid and to a body
-  of the wrong types, not Spring's plain 400.
-- The verifier's `auto: path 'id' type mismatch` sends the id
-  `<<not a string/uuid>>`, encoded with `%2F`. Tomcat rejects an encoded
-  slash by default with its own `text/html` 400, before Spring; with
-  `encodedSolidusHandling` relaxed, Spring Security's `StrictHttpFirewall`
-  rejects it next, and the `/error` dispatch, anonymous, answers `403`. The
-  controller advice sees neither; `ProblemAdviceTest` with a plain non-uuid
-  id is green while the contract case is red.
+- On an operation with a `400` response and a typed body, the verifier adds
+  a case of its own, `auto: body type mismatch`, and expects `400` with the
+  declared problem body: the backend answers a `Problem` to a body of the
+  wrong types, not Spring's plain 400. A `format: uuid` path parameter gets
+  such a case too, `auto: path 'id' type mismatch`, whose value
+  `<<not a string/uuid>>` carries an encoded slash: Tomcat rejects `%2F` by
+  default with its own `text/html` 400 before Spring, and Spring Security's
+  `StrictHttpFirewall` after it. No hand-written `400` scenario removes a
+  generated case. Until Contracteer 4.1.0 the contract types such an id as a
+  string with a uuid pattern, which the verifier does not mutate.
 - Contracteer honours `readOnly`: the mock answers `400` to a request whose
   body carries a read-only field, even empty. The contract avoids `readOnly`
   and gives a request its own schema instead.
