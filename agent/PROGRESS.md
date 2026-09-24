@@ -349,7 +349,7 @@ Format:
   a blank title, author name or series name, one error per field;
   `ProblemAdvice` answers a non-uuid id and an unreadable body as
   `/problems/validation` without `detail`; the six bookshelf scenarios run.
-- Did: every test is green but one contract case, on 18 local commits;
+- Did: every test is green but one contract case, all on local commits;
   nothing pushed, no pull request — the sandbox refuses both on a red gate.
 - Blocked: the verifier's `auto: path 'id' type mismatch` sends
   `<<not a string/uuid>>` as `%2F…`. Tomcat refuses an encoded slash with an
