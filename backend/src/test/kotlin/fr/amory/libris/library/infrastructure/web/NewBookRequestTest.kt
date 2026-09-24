@@ -35,6 +35,15 @@ class NewBookRequestTest {
         request.validate() shouldBe Refused(listOf(ValidationErrorResponse("series", "blank")))
     }
 
+    @Test
+    fun `every refused field has its error`() {
+        val request = romanceDawn(isbn13 = "9782723488526", title = " ")
+
+        request.validate() shouldBe Refused(
+            listOf(ValidationErrorResponse("isbn13", "not-an-isbn"), ValidationErrorResponse("title", "blank")),
+        )
+    }
+
     private fun romanceDawn(
         isbn13: String = "9782723488525",
         title: String = "Romance dawn",
