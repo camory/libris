@@ -43,10 +43,12 @@ class RemoteHeaderAuthenticationFilter(private val welcomeReader: WelcomeReader)
             add(SimpleGrantedAuthority(READER_AUTHORITY))
             if (ADMIN_GROUP in groups) add(SimpleGrantedAuthority(ADMIN_AUTHORITY))
         }
-        val displayName = request.getHeader("Remote-Name")?.takeUnless { it.isBlank() } ?: username
+        val displayName = request.getHeader("Remote-Name")?.let(::utf8)?.takeUnless { it.isBlank() } ?: username
         val reader = welcomeReader(username, email, displayName)
         return PreAuthenticatedAuthenticationToken(reader, "N/A", authorities)
     }
+
+    private fun utf8(header: String): String = String(header.toByteArray(Charsets.ISO_8859_1), Charsets.UTF_8)
 }
 
 @Configuration

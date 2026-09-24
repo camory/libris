@@ -55,7 +55,8 @@ class FastEntryScenarios @Autowired constructor(
                   "language": "fr",
                   "pageCount": 203,
                   "summary": null,
-                  "coverUrl": "$ONE_PIECE_COVER"
+                  "coverUrl": "$ONE_PIECE_COVER",
+                  "copies": []
                 }
                 """,
                 JsonCompareMode.STRICT,

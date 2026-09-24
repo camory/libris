@@ -61,11 +61,16 @@ true; the diary keeps the date it was found.
   stays 3.0.3 and `nullable` is the 3.0 keyword. On an operation without
   parameters a response example creates no scenario; the verifier emits one
   generated case.
-- On an operation with a `format: uuid` path parameter or a typed body, the
-  verifier adds cases of its own, `auto: path 'id' type mismatch` and `auto:
-  body type mismatch`, and expects `400` with the declared problem body for
-  each: the backend must answer a `Problem` to a malformed uuid and to a body
-  of the wrong types, not Spring's plain 400.
+- On an operation with a `400` response and a typed body, the verifier adds
+  a case of its own, `auto: body type mismatch`, and expects `400` with the
+  declared problem body: the backend answers a `Problem` to a body of the
+  wrong types, not Spring's plain 400. A `format: uuid` path parameter gets
+  such a case too, `auto: path 'id' type mismatch`, whose value
+  `<<not a string/uuid>>` carries an encoded slash: Tomcat rejects `%2F` by
+  default with its own `text/html` 400 before Spring, and Spring Security's
+  `StrictHttpFirewall` after it. No hand-written `400` scenario removes a
+  generated case. Until Contracteer 4.1.0 the contract types such an id as a
+  string with a uuid pattern, which the verifier does not mutate.
 - Contracteer honours `readOnly`: the mock answers `400` to a request whose
   body carries a read-only field, even empty. The contract avoids `readOnly`
   and gives a request its own schema instead.
@@ -130,8 +135,9 @@ true; the diary keeps the date it was found.
   `@SpringBootTest` with explicit `classes` does not detect nested
   `@TestConfiguration` classes: `@Import` them.
 - The web slice (`@WebSliceTest`, in the `fixture` package) component-scans
-  the `infrastructure.web` package of both contexts, so every use case a
-  controller of either takes must be in the class-level
+  `library.infrastructure.web`, the only web package since T037 moved the
+  ISBN endpoint there, so every use case a controller of it takes must be in
+  the class-level
   `@MockitoBean(types = [...])` of every web-slice test, not only the one
   exercised. Its `WebSliceConfiguration` cannot live in the root test
   package: a `@SpringBootTest` without `classes` looks for one
@@ -215,10 +221,28 @@ true; the diary keeps the date it was found.
 - `BnfStubs` matches the search by `withQueryParam("query", containing(isbn))`,
   so a stub keeps matching when the query grows clauses; assert the query in
   full from `server.allServeEvents` instead.
-- A problem detail is built in the controller (`ProblemDetail.forStatus`
-  with `type`) and answered as a `ResponseEntity` body; Spring writes
-  `application/problem+json` and derives `title` from the status. No advice,
-  no exception, no `spring.mvc.problemdetails.enabled`.
+- A problem detail is built in the controller with `problem(status, type)`
+  of `Problems.kt` and answered with `.asResponse()`; Spring writes
+  `application/problem+json` and derives `title` from the status.
+  `ProblemAdvice` answers what fails before a controller runs: a path
+  variable of the wrong type and an unreadable body, as
+  `/problems/validation` without `detail`, through one `@ExceptionHandler`
+  of the two exceptions. It extends nothing, so any other framework failure
+  keeps Boot's plain error answer. No `spring.mvc.problemdetails.enabled`.
+- A request that is not a `GET` and carries no `X-Requested-With` is denied,
+  so every test posting through the security chain sends it: the web-slice
+  tests by hand, `ApiContractTest`'s `FixedReaderHeaders` in its map, the
+  scenarios through the `restTestClient` bean of `StubbedSources` as a
+  default header. That bean replaces the autoconfigured client, so a
+  `RestTestClientBuilderCustomizer` would not reach it.
+- The JDK `HttpClient` writes header values as US-ASCII (`Léa` leaves as
+  `L?a`) and Tomcat reads them as ISO-8859-1. The scenario client is built on
+  `SimpleClientHttpRequestFactory`, which sends the UTF-8 bytes, and the
+  security filter decodes `Remote-Name` from ISO-8859-1 bytes to UTF-8; the
+  other `Remote-*` headers are read as they come.
+- The scenario WireMock servers live as long as the context, across classes;
+  `FreshSources` on `ScenarioTest` clears their request journal before each
+  case, so `verify(0, …)` counts only the case's own requests. The stubs stay.
 - `/actuator/health` answers `{"groups":["liveness","readiness"],
   "status":"UP"}`, not the bare status.
 - `FastEntryScenarios > S1 Typed ISBN, found` compares the whole `200` body

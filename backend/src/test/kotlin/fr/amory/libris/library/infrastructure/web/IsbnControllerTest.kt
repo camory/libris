@@ -1,7 +1,6 @@
-package fr.amory.libris.bibliography.infrastructure.web
+package fr.amory.libris.library.infrastructure.web
 
 import fr.amory.libris.bibliography.application.lookup.EditionLookupResult.Held
-import fr.amory.libris.bibliography.application.lookup.LookupEditionByIsbn
 import fr.amory.libris.bibliography.domain.Contribution
 import fr.amory.libris.bibliography.domain.ContributionRole.WRITER
 import fr.amory.libris.bibliography.domain.Contributions
@@ -11,7 +10,11 @@ import fr.amory.libris.bibliography.domain.edition.EditionId
 import fr.amory.libris.bibliography.domain.lookup.EditionPreview
 import fr.amory.libris.bibliography.fixture.isbnOf
 import fr.amory.libris.fixture.WebSliceTest
+import fr.amory.libris.library.application.AddBookToBookshelf
+import fr.amory.libris.library.application.FindDefaultBookshelf
 import fr.amory.libris.library.application.WelcomeReader
+import fr.amory.libris.library.application.lookup.IsbnLookup
+import fr.amory.libris.library.application.lookup.LookupIsbnForReader
 import fr.amory.libris.library.domain.bookshelf.BookshelfId
 import fr.amory.libris.library.domain.reader.ReaderId
 import fr.amory.libris.library.fixture.readerNamed
@@ -52,17 +55,25 @@ private val ROMANCE_DAWN = EditionPreview(
 )
 
 @WebSliceTest
-@MockitoBean(types = [WelcomeReader::class, LookupEditionByIsbn::class])
+@MockitoBean(
+    types = [
+        WelcomeReader::class,
+        LookupIsbnForReader::class,
+        FindDefaultBookshelf::class,
+        AddBookToBookshelf::class,
+    ],
+)
 class IsbnControllerTest @Autowired constructor(
     private val client: RestTestClient,
     private val welcomeReader: WelcomeReader,
-    private val lookupEditionByIsbn: LookupEditionByIsbn,
+    private val lookupIsbnForReader: LookupIsbnForReader,
 ) {
     @Test
     fun `an edition the house holds is answered with its fields`() {
         // Given
         given(welcomeReader("tophe", "tophe@amory.fr", "Tophe")).willReturn(TOPHE)
-        given(lookupEditionByIsbn(isbnOf("9782723488525"))).willReturn(Held(EditionId.new(), ROMANCE_DAWN))
+        given(lookupIsbnForReader(TOPHE.id, isbnOf("9782723488525")))
+            .willReturn(IsbnLookup(Held(EditionId.new(), ROMANCE_DAWN), emptyList()))
 
         // When
         val body = lookUp("9782723488525", OK)
@@ -82,6 +93,7 @@ class IsbnControllerTest @Autowired constructor(
             "pageCount" to 207,
             "summary" to "Luffy rêve de devenir le roi des pirates.",
             "coverUrl" to "https://couvertures.amory.fr/one-piece-01.jpg",
+            "copies" to emptyList<Any>(),
         )
     }
 
@@ -95,7 +107,7 @@ class IsbnControllerTest @Autowired constructor(
 
         // Then
         body?.get("type") shouldBe "/problems/validation"
-        verifyNoInteractions(lookupEditionByIsbn)
+        verifyNoInteractions(lookupIsbnForReader)
     }
 
     @Test
@@ -108,7 +120,7 @@ class IsbnControllerTest @Autowired constructor(
 
         // Then
         body?.get("type") shouldBe "/problems/validation"
-        verifyNoInteractions(lookupEditionByIsbn)
+        verifyNoInteractions(lookupIsbnForReader)
     }
 
     @Test
@@ -121,7 +133,7 @@ class IsbnControllerTest @Autowired constructor(
 
         // Then
         body?.get("type") shouldBe "/problems/validation"
-        verifyNoInteractions(lookupEditionByIsbn)
+        verifyNoInteractions(lookupIsbnForReader)
     }
 
     @Test
@@ -134,7 +146,7 @@ class IsbnControllerTest @Autowired constructor(
 
         // Then
         body?.get("type") shouldBe "/problems/validation"
-        verifyNoInteractions(lookupEditionByIsbn)
+        verifyNoInteractions(lookupIsbnForReader)
     }
 
     private fun lookUp(isbn: String, status: HttpStatus = BAD_REQUEST): Map<String, Any>? =

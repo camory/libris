@@ -303,3 +303,21 @@
   refusal with one of the two; a viewer membership cannot be created before
   the invite feature, so nothing reaches it yet (found on the review of T035,
   2026-09-22).
+- Backend: the add refuses at the edge only what the brief lists; the
+  contract's bounds on `language`, `publicationYear`, `pageCount` and
+  `series.volumeNumber` reach the use case unchecked, and a value the
+  `edition` table refuses would answer `500` (found on T037, 2026-09-24).
+- Backend: the four refusal tests of `IsbnControllerTest` (ten digits,
+  separators, a trailing space, a wrong check digit) assert what the
+  contract already expresses, the path parameter's `pattern` and the
+  `400_NOT_AN_ISBN` example; D07 keeps a hand-written web-slice test for
+  what the contract cannot express only (found on the T037 review,
+  2026-09-24).
+- Backend: only `Remote-Name` is decoded from UTF-8; a non-ASCII
+  `Remote-User`, `Remote-Email` or `Remote-Groups` would be read mangled
+  (found on T037, 2026-09-24).
+- Contract: the bookshelf `id` of `POST /api/v1/bookshelves/{id}/books` is a
+  string with a uuid pattern since `v0.6.1`, because Contracteer 4.0.0's
+  generated case for `format: uuid` carries an encoded slash; put
+  `format: uuid` back when the backend verifies with Contracteer 4.1.0
+  (decided with Tophe on T037, 2026-09-24).

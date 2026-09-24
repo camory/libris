@@ -339,3 +339,59 @@ Format:
   move to the library, and the viewer answered `404` until a release adds
   `403`; no package or port named beyond what the contract fixes.
 
+
+## 2026-09-24 — T037 The API of the bookshelf, on v0.6.1 — done
+- Did: the pin moves to `v0.6.1`; `/api/v1/me` names the default bookshelf,
+  the ISBN endpoint moved to `library.infrastructure.web` and answers the
+  reader's copies, and `POST /api/v1/bookshelves/{id}/books` adds a
+  `NewBook`, `201` the copy, `404` for no such bookshelf and for a viewer.
+- Did: the add refuses a wrong `isbn13` (`isbn13Of`, shared with the lookup),
+  a blank title, author name or series name, one error per field;
+  `ProblemAdvice` answers a non-uuid id and an unreadable body as
+  `/problems/validation` without `detail`; the six bookshelf scenarios run.
+- The run stopped at its turn cap with one contract case red, nothing pushed:
+  the verifier's `auto: path 'id' type mismatch` sends `<<not a string/uuid>>`
+  as `%2F…`. Tomcat refuses an encoded slash with an HTML 400 before Spring;
+  relaxed, Spring Security's `StrictHttpFirewall` refuses it and the
+  anonymous `/error` dispatch answers `403`. No hand-written `400` scenario
+  removes a generated case in Contracteer 4.0.0.
+- Decided (Tophe, 2026-09-24): neither layer is relaxed. The contract's
+  `v0.6.1` types the bookshelf `id` as a string with a uuid pattern instead
+  of `format: uuid`, and says in a comment that this lasts until Contracteer
+  4.1.0; the generated case skips a plain string. No byte of a request or an
+  answer changes. Finished by hand: the pin bump, the gate, this entry.
+- Decided: the `Remote-Name` header is decoded as UTF-8 and the scenario
+  client sends UTF-8 bytes, or S1 read `L?a`; the scenario WireMock journals
+  are cleared before each case by `FreshSources`, or S4's `noSourceWasAsked`
+  counted earlier cases' requests.
+- Deviations from the brief: plan steps 5 and 6 are one commit (the `when`
+  on the result must be exhaustive); steps 7, 9 and 13 were guards, their
+  mutations run and reverted; `Problems.kt` holds the shared problem
+  helpers; the scenario header rides on a `restTestClient` bean, not a
+  `RestTestClientBuilderCustomizer`, since that bean replaces the
+  autoconfigured client; two `style` commits fix detekt slips.
+- Review with Tophe (2026-09-24, on the open PR):
+  - **A controller calls use cases and never a repository**, now a sentence
+    of D02: `FindDefaultBookshelf` stays, a rule-free read of one aggregate
+    being a use case of its own, so the first rule it gains lands there.
+  - **The request validates itself.** `NewBookRequest.validate()` walks each
+    field through its door (`isbn13Of`, `Contribution.of`, `SeriesEntry.of`,
+    and a new `NewBook.of` that answers none on a blank title, with the
+    `require` beside it) and answers `Accepted(book)` or `Refused(errors)`,
+    one error per door that answered none. `NewBookRequestTest` is plain
+    JUnit, one case per refused field and a guard for two at once, mutation
+    run and reverted. The controller reads the answer; `BookshelfControllerTest`
+    is gone whole, the D07 rule being that a hand-written web-slice test
+    exists only for what the contract cannot express: the five refusals now
+    have their unit test, and the not-owner `404` is the contract's one
+    `404`, whose case `ApiContractTest` now stubs with `NotAnOwner`, as the
+    example's name says. The verifier generates no case for a `pattern` or a
+    `minLength` anyway.
+  - **`ProblemAdvice` extends nothing**: one `@ExceptionHandler` of the two
+    exceptions, so the API's error surface is the one the contract states.
+- Contract `v0.6.2`, released with Tophe on the review: `NewBook.title`,
+  `Author.name` and `Series.name` refuse a blank value with a `pattern`
+  beside their `minLength: 1`; the pin follows. The verifier generates no
+  case for it, so the request's unit test stays the proof.
+- Left over: `format: uuid` comes back with Contracteer 4.1.0; items in
+  `agent/PROPOSED.md`.

@@ -65,8 +65,11 @@ and the bookshelves they keep), each with the same three layers.
   the latter through Spring's `TransactionOperations`. Depends on `domain`
   only.
 - `<context>.infrastructure.web` — controllers, request/response DTOs,
-  problem details. `library.infrastructure.web` also holds the security
-  filter chain: the identity a request carries is a reader.
+  problem details. A controller calls use cases and never a repository: a
+  read of one aggregate with no rule is still a use case of its own
+  (`FindDefaultBookshelf`), so the first rule that read gains lands in the
+  use case, not at the edge. `library.infrastructure.web` also holds the
+  security filter chain: the identity a request carries is a reader.
 - `<context>.infrastructure.persistence` — the port implementations over
   `JdbcClient`: the SQL of every insert, update, lookup, search and listing,
   and the row-to-aggregate mapping, which is the aggregate's constructor.

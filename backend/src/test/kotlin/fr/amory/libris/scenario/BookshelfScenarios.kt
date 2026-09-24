@@ -6,7 +6,6 @@ import com.github.tomakehurst.wiremock.client.WireMock.anyUrl
 import com.jayway.jsonpath.JsonPath
 import fr.amory.libris.bibliography.fixture.BnfStubs
 import io.kotest.matchers.shouldNotBe
-import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Qualifier
@@ -24,7 +23,6 @@ class BookshelfScenarios @Autowired constructor(
     private val sources = listOf(bnfServer, openLibraryServer)
 
     @Test
-    @Disabled("T037")
     fun `S1 The first visit creates the bookshelf`() {
         // Given
         val lea = reader("lea", "Léa")
@@ -38,7 +36,6 @@ class BookshelfScenarios @Autowired constructor(
     }
 
     @Test
-    @Disabled("T037")
     fun `S2 The ouvrage is added`() {
         // Given
         val juliette = reader("juliette", "Juliette")
@@ -63,7 +60,6 @@ class BookshelfScenarios @Autowired constructor(
     }
 
     @Test
-    @Disabled("T037")
     fun `S3 A known ISBN reaches the existing edition, another reader`() {
         // Given
         val marc = reader("marc", "Marc")
@@ -82,7 +78,6 @@ class BookshelfScenarios @Autowired constructor(
     }
 
     @Test
-    @Disabled("T037")
     fun `S3 A known ISBN reaches the existing edition, the same reader again`() {
         // Given
         val paul = reader("paul", "Paul")
@@ -100,7 +95,6 @@ class BookshelfScenarios @Autowired constructor(
     }
 
     @Test
-    @Disabled("T037")
     fun `S4 The ouvrage is already in a bookshelf`() {
         // Given
         val rose = reader("rose", "Rose")
@@ -122,7 +116,6 @@ class BookshelfScenarios @Autowired constructor(
     }
 
     @Test
-    @Disabled("T037")
     fun `S4 The ouvrage is already in a bookshelf, none of the reader's`() {
         // Given
         val tom = reader("tom", "Tom")
