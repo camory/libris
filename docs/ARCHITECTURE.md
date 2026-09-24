@@ -2,6 +2,9 @@
 
 > Read by every agent run. Decisions here are binding until changed by a human.
 > Each decision has an ID so tasks and PRs can reference it.
+> A decision states a rule. An example beside it names code that exists, so
+> the rule can be read against the tree; no example decides the shape of code
+> not yet written, which is a spec's or a brief's to decide.
 > Reviewed decision by decision with Tophe on 2026-09-07; the history of
 > each decision is in git.
 
@@ -515,71 +518,64 @@ Contract
   checked where it is built, never in a use case: an `init` block when the
   rule reads the constructor's parameters (`Bookshelf` refuses memberships
   without an `OWNER`), a factory on the companion when the rule also decides
-  a value (`Bookshelf.ownedBy(owner, ownerName, id)` names the bookshelf
-  after its owner and makes them its one member). A row read back passes
-  through the same constructor, so the database never holds what the domain
-  refuses. A use case that checks a rule an aggregate could check itself has
-  the rule in the wrong place.
-- A rule that spans two aggregates is the use case's. The reader's default
-  bookshelf is one they own: neither `Reader` nor `Bookshelf` can check it
-  alone, so `WelcomeReader` builds both and inserts both inside one
-  `TransactionOperations` block, and that transaction is what guarantees no
-  reader exists without their bookshelf. The use case's test proves the
-  boundary, not only the result: a fake of `TransactionOperations` records
-  what the stores held before and after each block. The schema keeps of such
-  a rule only what a foreign key can say.
-- An aggregate refers to another by its id, never by the object: `Reader`
-  holds a `BookshelfId`, `Membership` a `ReaderId`, and a copy of the
-  library will hold an `EditionId` of the bibliography, across the boundary
-  D02 keeps one-way. A repository reads and writes one aggregate and joins
-  no other; a use case that needs two reads two, each through its own port.
-- A child an aggregate owns has no id and no repository of its own: a
-  `Membership` is a value in the `Bookshelf`'s list, written and read with
-  it by `BookshelfRepository`, in the table D11 names after it. Changing a
-  child is building the aggregate again with the new list and calling
-  `update`; nothing addresses a membership from outside its bookshelf.
+  a value (`Bookshelf.ownedBy` names the bookshelf after its owner and makes
+  them its one member). A row read back passes through the same
+  constructor, so the database never holds what the domain refuses. A use
+  case that checks a rule an aggregate could check itself has the rule in
+  the wrong place.
+- A rule that spans two aggregates is the use case's, kept by one
+  transaction: the reader's default bookshelf is one they own, which neither
+  `Reader` nor `Bookshelf` can check alone, so `WelcomeReader` builds both
+  and inserts both inside one `TransactionOperations` block, which is what
+  guarantees no reader exists without their bookshelf. The use case's test
+  proves the boundary, not only the result: its fake of
+  `TransactionOperations` records what the stores held before and after
+  each block. The schema keeps of such a rule only what a foreign key can
+  say.
+- An aggregate refers to another by its id, never by the object, across the
+  boundary D02 keeps one-way as well: a `Copy` of the library holds an
+  `EditionId` of the bibliography. A repository reads and writes one
+  aggregate and joins no other; a use case that needs two reads two, each
+  through its own port.
+- A child an aggregate owns has no id and no repository of its own: it is a
+  value in the aggregate's list, written and read with the aggregate by its
+  repository, in the table D11 names after the child (`membership`).
+  Changing a child is building the aggregate again with the new list and
+  calling `update`; nothing addresses a child from outside its aggregate.
 - A value the domain can refuse has two doors. Its constructor `require`s
   and throws, the last defence against a caller that builds it by hand. A
   factory `of(...)` on the companion answers `null` for what the domain
-  refuses, and the caller decides what the `null` means: `Isbn.of` for a
-  text typed or scanned, `Contribution.of` and `SeriesEntry.of` for a name a
-  source may leave blank. An adapter maps through `of` and drops or refuses
-  what it answers `null` to; no use case or adapter catches the constructor's
+  refuses, and the caller decides what the `null` means: an adapter maps
+  through `of` and drops or refuses what it answers `null` to (`Isbn.of` for
+  a text typed or scanned). No use case or adapter catches the constructor's
   exception.
 - A collection with a rule of its own is a type of its own, built through
-  `of(...)` and never by hand: `Contributions.of(list)` keeps one
-  contribution per author and role, the author matched whatever the
-  capitalisation of the name, and orders them by role then by name; the
-  `Edition` and the `EditionPreview` hold a `Contributions`, so neither the
-  lookup, the persistence nor a use case carries the rule, and the order
-  stored or answered is the house's, not a source's. An enumeration whose
-  order carries meaning declares it as a field, `ContributionRole.order`,
-  never through its declaration order.
+  `of(...)` and never by hand, and held by the aggregate, so that no lookup,
+  persistence or use case carries the rule and the order stored or answered
+  is the house's, not a source's: `Contributions.of(list)` keeps one
+  contribution per author and role, the names matched as PRD §3 matches
+  them, ordered by role then by name. An enumeration whose order carries
+  meaning declares it as a field (`ContributionRole.order`), never through
+  its declaration order.
 - A read that spans aggregates or contexts is the use case's first: it
   reads each aggregate through its own repository, applies the aggregates'
-  rules (`Bookshelf.hasMember`) and answers a data class of its
-  `application` sub-package shaped for the answer, with no rule and no
-  repository, like `CopyOnBookshelf` for the lookup's copies with the names
-  of their bookshelves. Each context answers what it knows: the bibliography
-  whether the house holds the edition or what the sources say, the library
-  the reader's copies on top of that answer. Only a read the repositories
-  cannot serve within a few queries, the search over a reader's catalogue,
-  gets a query port of its own in the `domain` of the context that asks, in
-  the sub-package of its concern, answering a read model the persistence
+  rules and answers a data class of its `application` sub-package shaped
+  for the answer, with no rule and no repository (`CopyOnBookshelf`, the
+  lookup's copies with the names of their bookshelves). Each context answers
+  what it knows: the bibliography whether the house holds the edition or
+  what the sources say, the library the reader's copies on top of that
+  answer. Only a read the repositories cannot serve within a few queries
+  gets a query port of its own, in the `domain` of the context that asks and
+  in the sub-package of its concern, answering a read model the persistence
   adapter builds from one query. No aggregate is rebuilt from a join, and no
   aggregate carries another's data to spare a query.
 - A series, an author and a tag are values of the edition, not aggregates:
   `SeriesEntry(name, volumeNumber)` and `Contribution(name, role)` on the
-  `Edition`, matched by name whatever the capitalisation (PRD §3). Each
-  name has a row of its own in persistence, `series`, `author`, `tag`, with
-  a uuid key and never doubled, and the edition's child tables reference
-  it: that row is what a filter or a sort by series reads, and the names on
-  the edition are what its search text is built from on every save. There
-  is no renaming: a name is corrected edition by edition. The series
-  becomes an aggregate with series tracking, when it gains a fact of its
-  own, the number of published volumes; the author when matching moves from
-  the name to the sources' identifiers. Either promotion is a type, a port
-  and a use case of `bibliography`, and no migration, since the row exists.
+  `Edition`, matched by name as PRD §3 says. Each name has a row of its own
+  in persistence, with a uuid key and never doubled, and the edition's child
+  tables reference it: that row is what a filter or a sort by the name
+  reads. There is no renaming: a name is corrected edition by edition. Such
+  a value becomes an aggregate the day it gains a fact of its own.
 
 ## Local development (human)
 
