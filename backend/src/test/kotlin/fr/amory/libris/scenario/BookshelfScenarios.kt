@@ -24,7 +24,6 @@ class BookshelfScenarios @Autowired constructor(
     private val sources = listOf(bnfServer, openLibraryServer)
 
     @Test
-    @Disabled("T037")
     fun `S1 The first visit creates the bookshelf`() {
         // Given
         val lea = reader("lea", "Léa")

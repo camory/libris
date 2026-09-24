@@ -11,6 +11,7 @@ import fr.amory.libris.bibliography.domain.edition.EditionId
 import fr.amory.libris.bibliography.domain.lookup.EditionPreview
 import fr.amory.libris.bibliography.fixture.isbnOf
 import fr.amory.libris.fixture.WebSliceTest
+import fr.amory.libris.library.application.FindDefaultBookshelf
 import fr.amory.libris.library.application.WelcomeReader
 import fr.amory.libris.library.domain.bookshelf.BookshelfId
 import fr.amory.libris.library.domain.reader.ReaderId
@@ -52,7 +53,7 @@ private val ROMANCE_DAWN = EditionPreview(
 )
 
 @WebSliceTest
-@MockitoBean(types = [WelcomeReader::class, LookupEditionByIsbn::class])
+@MockitoBean(types = [WelcomeReader::class, LookupEditionByIsbn::class, FindDefaultBookshelf::class])
 class IsbnControllerTest @Autowired constructor(
     private val client: RestTestClient,
     private val welcomeReader: WelcomeReader,

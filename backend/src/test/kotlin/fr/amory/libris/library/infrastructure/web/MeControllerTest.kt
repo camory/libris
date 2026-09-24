@@ -2,9 +2,11 @@ package fr.amory.libris.library.infrastructure.web
 
 import fr.amory.libris.bibliography.application.lookup.LookupEditionByIsbn
 import fr.amory.libris.fixture.WebSliceTest
+import fr.amory.libris.library.application.FindDefaultBookshelf
 import fr.amory.libris.library.application.WelcomeReader
 import fr.amory.libris.library.domain.bookshelf.BookshelfId
 import fr.amory.libris.library.domain.reader.ReaderId
+import fr.amory.libris.library.fixture.bookshelfOwnedBy
 import fr.amory.libris.library.fixture.readerNamed
 import io.kotest.matchers.shouldBe
 import org.junit.jupiter.api.Test
@@ -29,15 +31,17 @@ private val JULIETTE = readerNamed(
 )
 
 @WebSliceTest
-@MockitoBean(types = [WelcomeReader::class, LookupEditionByIsbn::class])
+@MockitoBean(types = [WelcomeReader::class, LookupEditionByIsbn::class, FindDefaultBookshelf::class])
 class MeControllerTest @Autowired constructor(
     private val client: RestTestClient,
     private val welcomeReader: WelcomeReader,
+    private val findDefaultBookshelf: FindDefaultBookshelf,
 ) {
     @Test
     fun `a reader of the admin group is an admin`() {
         // Given
         given(welcomeReader("tophe", "tophe@amory.fr", "Tophe")).willReturn(TOPHE)
+        given(findDefaultBookshelf(TOPHE)).willReturn(bookshelfOwnedBy(TOPHE))
         val headers = listOf(
             "Remote-User" to "tophe",
             "Remote-Name" to "Tophe",
@@ -55,6 +59,10 @@ class MeControllerTest @Autowired constructor(
             "displayName" to "Tophe",
             "email" to "tophe@amory.fr",
             "role" to "ADMIN",
+            "defaultBookshelf" to mapOf(
+                "id" to "01991c3a-5b7e-7c1d-8f2a-3d4e5f607191",
+                "name" to "Bibliothèque de Tophe",
+            ),
         )
     }
 
@@ -62,6 +70,7 @@ class MeControllerTest @Autowired constructor(
     fun `a reader outside the admin group is a plain reader`() {
         // Given
         given(welcomeReader("juliette", "juliette@amory.fr", "Juliette")).willReturn(JULIETTE)
+        given(findDefaultBookshelf(JULIETTE)).willReturn(bookshelfOwnedBy(JULIETTE))
         val headers = listOf(
             "Remote-User" to "juliette",
             "Remote-Name" to "Juliette",
@@ -79,6 +88,10 @@ class MeControllerTest @Autowired constructor(
             "displayName" to "Juliette",
             "email" to "juliette@amory.fr",
             "role" to "READER",
+            "defaultBookshelf" to mapOf(
+                "id" to "01991c3a-5b7e-7c1d-8f2a-3d4e5f607192",
+                "name" to "Bibliothèque de Juliette",
+            ),
         )
     }
 
@@ -86,6 +99,7 @@ class MeControllerTest @Autowired constructor(
     fun `a reader without any group is a plain reader`() {
         // Given
         given(welcomeReader("juliette", "juliette@amory.fr", "Juliette")).willReturn(JULIETTE)
+        given(findDefaultBookshelf(JULIETTE)).willReturn(bookshelfOwnedBy(JULIETTE))
         val headers = listOf(
             "Remote-User" to "juliette",
             "Remote-Name" to "Juliette",
@@ -102,8 +116,9 @@ class MeControllerTest @Autowired constructor(
     @Test
     fun `a reader without a display name visits under their username`() {
         // Given
-        given(welcomeReader("juliette", "juliette@amory.fr", "juliette"))
-            .willReturn(JULIETTE.copy(displayName = "juliette"))
+        val juliette = JULIETTE.copy(displayName = "juliette")
+        given(welcomeReader("juliette", "juliette@amory.fr", "juliette")).willReturn(juliette)
+        given(findDefaultBookshelf(juliette)).willReturn(bookshelfOwnedBy(juliette))
         val headers = listOf(
             "Remote-User" to "juliette",
             "Remote-Email" to "juliette@amory.fr",
@@ -120,8 +135,9 @@ class MeControllerTest @Autowired constructor(
     @Test
     fun `a reader whose display name is blank visits under their username`() {
         // Given
-        given(welcomeReader("juliette", "juliette@amory.fr", "juliette"))
-            .willReturn(JULIETTE.copy(displayName = "juliette"))
+        val juliette = JULIETTE.copy(displayName = "juliette")
+        given(welcomeReader("juliette", "juliette@amory.fr", "juliette")).willReturn(juliette)
+        given(findDefaultBookshelf(juliette)).willReturn(bookshelfOwnedBy(juliette))
         val headers = listOf(
             "Remote-User" to "juliette",
             "Remote-Name" to " ",
@@ -140,6 +156,7 @@ class MeControllerTest @Autowired constructor(
     fun `the answer is the reader of the visit, not the one of the headers`() {
         // Given
         given(welcomeReader("juliette", "juju@amory.fr", "Juju")).willReturn(JULIETTE)
+        given(findDefaultBookshelf(JULIETTE)).willReturn(bookshelfOwnedBy(JULIETTE))
         val headers = listOf(
             "Remote-User" to "juliette",
             "Remote-Name" to "Juju",
@@ -157,15 +174,19 @@ class MeControllerTest @Autowired constructor(
             "displayName" to "Juliette",
             "email" to "juliette@amory.fr",
             "role" to "READER",
+            "defaultBookshelf" to mapOf(
+                "id" to "01991c3a-5b7e-7c1d-8f2a-3d4e5f607192",
+                "name" to "Bibliothèque de Juliette",
+            ),
         )
     }
 
-    private fun me(headers: List<Pair<String, String>>): Map<String, String>? =
+    private fun me(headers: List<Pair<String, String>>): Map<String, Any>? =
         client.get()
             .uri("/api/v1/me")
             .headers { headers.forEach { (name, value) -> it.add(name, value) } }
             .exchange()
             .expectStatus().isOk()
-            .expectBody(object : ParameterizedTypeReference<Map<String, String>>() {})
+            .expectBody(object : ParameterizedTypeReference<Map<String, Any>>() {})
             .returnResult().responseBody
 }
