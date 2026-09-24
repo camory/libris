@@ -59,7 +59,7 @@ class ApiContractTest @Autowired constructor(
     private val welcomeReader: WelcomeReader,
     private val lookupEditionByIsbn: LookupEditionByIsbn,
 ) {
-    @ContracteerTest(openApiDoc = "https://raw.githubusercontent.com/camory/libris-api/v0.5.0/openapi.yaml")
+    @ContracteerTest(openApiDoc = "https://raw.githubusercontent.com/camory/libris-api/v0.6.0/openapi.yaml")
     fun `the API matches the contract`() {
         given(welcomeReader("contracteer", "contracteer@amory.fr", "Contracteer"))
             .willReturn(readerNamed("contracteer", "Contracteer"))
@@ -92,6 +92,7 @@ class ApiContractTest @Autowired constructor(
                 "remote-name" to "Contracteer",
                 "remote-email" to "contracteer@amory.fr",
                 "remote-groups" to "family",
+                "x-requested-with" to "XMLHttpRequest",
             )
         }
     }
