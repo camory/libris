@@ -5,7 +5,6 @@ import fr.amory.libris.bibliography.application.lookup.EditionLookupResult.Held
 import fr.amory.libris.bibliography.application.lookup.EditionLookupResult.SourcesUnavailable
 import fr.amory.libris.bibliography.application.lookup.EditionLookupResult.UnknownIsbn
 import fr.amory.libris.bibliography.domain.ContributionRole
-import fr.amory.libris.bibliography.domain.Isbn
 import fr.amory.libris.bibliography.domain.Kind
 import fr.amory.libris.bibliography.domain.lookup.EditionPreview
 import fr.amory.libris.library.application.lookup.CopyOnBookshelf
@@ -22,7 +21,6 @@ import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.RestController
 
 private const val SOURCES_UNAVAILABLE_PROBLEM = "/problems/sources-unavailable"
-private val ISBN_PATH = Regex("97[89][0-9]{10}")
 
 data class IsbnAuthorResponse(
     val name: String,
@@ -55,7 +53,7 @@ data class IsbnResponse(
 class IsbnController(private val lookupIsbnForReader: LookupIsbnForReader) {
     @GetMapping("/api/v1/isbn/{isbn}")
     fun isbn(@AuthenticationPrincipal reader: Reader, @PathVariable("isbn") text: String): ResponseEntity<Any> {
-        val isbn = isbnOfPath(text) ?: return notAnIsbn().asResponse()
+        val isbn = isbn13Of(text) ?: return notAnIsbn().asResponse()
         val lookup = lookupIsbnForReader(reader.id, isbn)
         return when (val result = lookup.answer) {
             is Held -> ResponseEntity.ok(responseOf(result.preview, lookup.copies))
@@ -64,8 +62,6 @@ class IsbnController(private val lookupIsbnForReader: LookupIsbnForReader) {
             SourcesUnavailable -> problem(SERVICE_UNAVAILABLE, SOURCES_UNAVAILABLE_PROBLEM).asResponse()
         }
     }
-
-    private fun isbnOfPath(text: String): Isbn? = if (ISBN_PATH.matches(text)) Isbn.of(text) else null
 
     private fun notAnIsbn(): ProblemDetail = problem(BAD_REQUEST, VALIDATION_PROBLEM).apply {
         setProperty("errors", listOf(ValidationErrorResponse(field = "isbn", code = "not-an-isbn")))

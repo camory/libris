@@ -13,8 +13,10 @@ import fr.amory.libris.library.application.AddBookToBookshelf
 import fr.amory.libris.library.application.NewBook
 import fr.amory.libris.library.domain.bookshelf.BookshelfId
 import fr.amory.libris.library.domain.reader.Reader
+import org.springframework.http.HttpStatus.BAD_REQUEST
 import org.springframework.http.HttpStatus.CREATED
 import org.springframework.http.HttpStatus.NOT_FOUND
+import org.springframework.http.ProblemDetail
 import org.springframework.http.ResponseEntity
 import org.springframework.security.core.annotation.AuthenticationPrincipal
 import org.springframework.web.bind.annotation.PathVariable
@@ -66,18 +68,25 @@ class BookshelfController(private val addBookToBookshelf: AddBookToBookshelf) {
         @AuthenticationPrincipal reader: Reader,
         @PathVariable("id") id: UUID,
         @RequestBody request: NewBookRequest,
-    ): ResponseEntity<Any> = when (val result = addBookToBookshelf(reader.id, BookshelfId(id), bookOf(request))) {
-        is Added -> ResponseEntity.status(CREATED).body(
-            CopyResponse(
-                id = result.copy.id.value.toString(),
-                bookshelf = BookshelfResponse(result.bookshelf.id.value.toString(), result.bookshelf.name),
-            ),
-        )
-        NoSuchBookshelf, NotAnOwner -> problem(NOT_FOUND, NOT_FOUND_PROBLEM).asResponse()
+    ): ResponseEntity<Any> {
+        val isbn = request.isbn13?.let { isbn13Of(it) ?: return notAnIsbn13().asResponse() }
+        return when (val result = addBookToBookshelf(reader.id, BookshelfId(id), bookOf(request, isbn))) {
+            is Added -> ResponseEntity.status(CREATED).body(
+                CopyResponse(
+                    id = result.copy.id.value.toString(),
+                    bookshelf = BookshelfResponse(result.bookshelf.id.value.toString(), result.bookshelf.name),
+                ),
+            )
+            NoSuchBookshelf, NotAnOwner -> problem(NOT_FOUND, NOT_FOUND_PROBLEM).asResponse()
+        }
     }
 
-    private fun bookOf(request: NewBookRequest): NewBook = NewBook(
-        isbn = request.isbn13?.let { Isbn.of(it) },
+    private fun notAnIsbn13(): ProblemDetail = problem(BAD_REQUEST, VALIDATION_PROBLEM).apply {
+        setProperty("errors", listOf(ValidationErrorResponse(field = "isbn13", code = "not-an-isbn")))
+    }
+
+    private fun bookOf(request: NewBookRequest, isbn: Isbn?): NewBook = NewBook(
+        isbn = isbn,
         kind = request.kind,
         title = request.title,
         subtitle = request.subtitle,
