@@ -226,9 +226,9 @@ true; the diary keeps the date it was found.
   `application/problem+json` and derives `title` from the status.
   `ProblemAdvice` answers what fails before a controller runs: a path
   variable of the wrong type and an unreadable body, as
-  `/problems/validation` without `detail`. The other handlers it inherits
-  from `ResponseEntityExceptionHandler` still answer Spring's own problem,
-  `detail` included. No exception, no `spring.mvc.problemdetails.enabled`.
+  `/problems/validation` without `detail`, through one `@ExceptionHandler`
+  of the two exceptions. It extends nothing, so any other framework failure
+  keeps Boot's plain error answer. No `spring.mvc.problemdetails.enabled`.
 - A request that is not a `GET` and carries no `X-Requested-With` is denied,
   so every test posting through the security chain sends it: the web-slice
   tests by hand, `ApiContractTest`'s `FixedReaderHeaders` in its map, the

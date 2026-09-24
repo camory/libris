@@ -307,10 +307,6 @@
   contract's bounds on `language`, `publicationYear`, `pageCount` and
   `series.volumeNumber` reach the use case unchecked, and a value the
   `edition` table refuses would answer `500` (found on T037, 2026-09-24).
-- Backend: `ProblemAdvice` overrides only the type mismatch and the
-  unreadable body; the other handlers of `ResponseEntityExceptionHandler`
-  (a missing header, an unsupported media type, a wrong method) still answer
-  Spring's problem with its `detail` (found on T037, 2026-09-24).
 - Backend: only `Remote-Name` is decoded from UTF-8; a non-ASCII
   `Remote-User`, `Remote-Email` or `Remote-Groups` would be read mangled
   (found on T037, 2026-09-24).
