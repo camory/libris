@@ -104,63 +104,66 @@ frontend pin moves in T038. No other task touches the contract (D04).
 - [ ] T037 Backend: the API of the bookshelf, on `v0.6.0`.
       `ApiContractTest` pins `v0.6.0`: the backend's one bump, and one task,
       since the verifier reads the whole document and both added fields are
-      required (D04).
-      `me` answers the reader's `defaultBookshelf` `{id, name}`. The ISBN
-      lookup is answered by the library, the copies included, empty when the
-      reader's bookshelves hold none (D02).
-      `POST /api/v1/bookshelves/{id}/books` takes `NewBook`
-      and answers `201` the `Copy` with its bookshelf; `400`
-      `/problems/validation` with one error per refused field; `404`
+      required (D04). The reader's answer names their `defaultBookshelf`,
+      its id and name. The ISBN lookup is answered by the library: the
+      bibliography's answer with the reader's copies, each with its
+      bookshelf's id and name, empty when their bookshelves hold none (D02).
+      Adding a book to a bookshelf takes a `NewBook` and answers `201` the
+      copy with its bookshelf; `400` `/problems/validation`, one error per
+      refused field, `isbn13` checked as the lookup checks its ISBN; `404`
       `/problems/not-found` when the reader is a member of no such bookshelf
       and, until a release adds `403`, when they see it without owning it
-      (`agent/PROPOSED.md`).
-      The verifier adds two cases of its own, an `id` that is not a uuid and
-      a body of the wrong types, both answered `400` with a `Problem`
+      (`agent/PROPOSED.md`); a `Problem` too for the verifier's own cases, an
+      id that is not a uuid and a body of the wrong types
       (`agent/GOTCHAS.md`). Contracteer verifies `ADD_ONE_PIECE_1`,
-      `400_NOT_AN_ISBN`, `404_NOT_MY_BOOKSHELF` and `ONE_PIECE_2_OWNED`.
-      Carries S1 to S4 to the API; un-skips the six tests of
-      `BookshelfScenarios.kt`.
+      `400_NOT_AN_ISBN`, `404_NOT_MY_BOOKSHELF` and `ONE_PIECE_2_OWNED`; the
+      fast-entry scenario comparing the whole lookup answer gains its empty
+      `copies`, declared in the pull request (D07).
+      Carries S1 to S4 to the API; un-skips the six backend tests of the
+      bookshelf scenarios.
 
 - [ ] T038 Frontend: the copies on the card, on `v0.6.0`.
-      Precondition (human):
-      `frontend/src/scenario/BookshelfScenarios.spec.ts`, one skipped test
-      per frontend scenario, each bearing the scenario's exact title, against
-      `contracteer mock` (D07).
+      Precondition (human): the frontend tests of the bookshelf scenarios,
+      one skipped test per frontend scenario, each bearing the scenario's
+      exact title, against `contracteer mock` (D07).
       `vitest.global-setup.ts` pins `v0.6.0`, the only contract edit of the
-      task (D04).
-      `domain` and `infra/api`: `SourceEdition` gains its `copies`, each with
-      its bookshelf, read from the answer by `FetchIsbnApi` (D05).
-      `ui`: `SourceEditionCard` shows, between the authors and the field
-      rows, one row per bookshelf of the reader holding a copy, *Dans
-      Bibliothèque de Léa*, followed by *· 2 exemplaires* when it holds more
-      than one, and no row at all when the reader's bookshelves hold none;
-      every word from the `fr` catalogue (U04, U07, U08).
+      task (D04). The lookup's answer, as the app reads it, gains its copies,
+      each with the id and name of its bookshelf (D05).
+      The card shows, between the authors and the field rows, one row per
+      bookshelf of the reader holding a copy, *Dans Bibliothèque de Léa*,
+      followed by *· 2 exemplaires* when it holds more than one, and no row
+      when the reader's bookshelves hold none; every word from the `fr`
+      catalogue (U06, U08).
       Component tests over no copy, one copy, two copies on one bookshelf and
       copies on two bookshelves; a word the card shows is asserted in three
-      files (`agent/GOTCHAS.md`).
+      places (`agent/GOTCHAS.md`).
       Realises S4 on the frontend; un-skips
       `S4 The ouvrage is already in a bookshelf`.
 
 - [ ] T039 Frontend: the ouvrage added from the card.
-      `domain` and `application`: the reader carries their
-      `defaultBookshelf`, read by `MeApi`, so the app knows where the add
-      goes from its first request; a port that adds a book to a bookshelf,
-      with its `infra/api` adapter posting the `NewBook` the card holds, its
-      copies apart, and answering the copy or the failure (D05).
-      `ui`: under the card, the full-width primary button *Ajouter à ma
-      bibliothèque*; while the add runs it reads *Ajout en cours…* with a
-      spinner and accepts nothing; once added, the copies row shows the new
-      copy on the reader's default bookshelf and the button is gone, with no
-      message; when Libris does not answer, *Erreur lors de l'ajout,
-      veuillez réessayer plus tard.* in red under the button, which is back,
-      and the card unchanged. A new lookup replaces the card, its rows and
-      the button (U02, U04, U06).
-      Every word from the `fr` catalogue (U04, U07, U08).
-      Component tests over the four states of the button, a unit test of the
-      adapter over a stubbed `fetch`, and the two scenarios against
-      `contracteer mock`.
-      Realises S2 and S5; un-skips `S2 The ouvrage is added` and
-      `S5 Libris unavailable during the add`.
+      The reader the app knows carries their default bookshelf, read from
+      the reader's answer, so the app knows where the add goes from its first
+      request. The app adds a book to a bookshelf by posting the `NewBook`
+      the card holds, its copies apart, and reads back the copy or a failure,
+      each answer the contract declares proven against `contracteer mock`
+      (D05, D07).
+      Under the card, found or already there, the full-width primary button
+      *Ajouter à ma bibliothèque*; while the add runs it reads *Ajout en
+      cours…* with a spinner and accepts nothing; once added, the copies row
+      shows the new copy on the reader's default bookshelf and the button is
+      gone, with no message. A new lookup replaces the card, its rows and the
+      button. Every word from the `fr` catalogue (U04, U05, U06, U08).
+      Component and view tests over the found, adding and added states.
+      Realises S2 on the frontend; un-skips `S2 The ouvrage is added`.
+
+- [ ] T040 Frontend: the add Libris does not answer.
+      When Libris does not answer the add, *Erreur lors de l'ajout, veuillez
+      réessayer plus tard.* as a message in `danger` under the button, which
+      is back, and the card as it was, no copy added; a new lookup replaces
+      the message with the rest (U04, U05, U08).
+      View test of the not-added state over a failing fake; the scenario with
+      the API failing.
+      Realises S5; un-skips `S5 Libris unavailable during the add`.
 
 *Done (Tophe, on the Pixel, from the installed app): scan One Piece 1 and add
 it, the card shows Dans Bibliothèque de Christophe; scan it again, the row is
@@ -188,8 +191,8 @@ second account of the family, scan it and read the card without a place.*
 
 ## Questions for the human
 
-- **Staging.** The *Done* of both specs planned here asks for a deploy of
-  staging, as the update spec's did, while D09 knows one environment, the
+- **Staging.** The *Done* of `specs/bookshelf.md` asks for the installed
+  app on staging, as the update spec's did, while D09 knows one environment, the
   Kimsufi box. No task depends on the answer; the hand check is Tophe's step
   either way.
 - **No spec yet**, so nothing is planned for them: PRD §4.1 catalogue beyond
@@ -198,3 +201,8 @@ second account of the family, scan it and read the card without a place.*
   role, moving and lending a copy — §4.4 reading, §4.5 series tracking, §4.6
   wishlist, §4.9 import and export, §4.10 administration, and the offline
   browsing of §4.8.
+- **A refused add on the card.** The spec's screen says what the card shows
+  when Libris does not answer the add (S5), not when it answers `400` or
+  `404`, which the card's own ouvrage and the reader's default bookshelf
+  should never draw. T039 reads either as a failure and T040 shows the S5
+  sentence for every failure; say if a refusal should read otherwise.
