@@ -20,6 +20,10 @@ data class NewBook(
     val summary: String?,
     val coverUrl: String?,
 ) {
+    init {
+        require(title.isNotBlank()) { "a new book needs a title" }
+    }
+
     companion object {
         @Suppress("LongParameterList")
         fun of(
