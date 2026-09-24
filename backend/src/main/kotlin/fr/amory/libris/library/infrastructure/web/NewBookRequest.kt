@@ -43,14 +43,14 @@ data class NewBookRequest(
     fun validate(): NewBookValidation {
         val isbn = isbn13?.let { isbn13Of(it) }
         val contributions = authors.map { Contribution.of(it.name, it.role) }
-        val series = series?.let { SeriesEntry.of(it.name, it.volumeNumber) }
+        val seriesEntry = series?.let { SeriesEntry.of(it.name, it.volumeNumber) }
         val book = NewBook.of(
             isbn = isbn,
             kind = kind,
             title = title,
             subtitle = subtitle,
             contributions = Contributions.of(contributions.filterNotNull()),
-            series = series,
+            series = seriesEntry,
             collection = collection,
             publisher = publisher,
             publicationYear = publicationYear,
@@ -63,7 +63,7 @@ data class NewBookRequest(
             if (isbn13 != null && isbn == null) add(ValidationErrorResponse("isbn13", "not-an-isbn"))
             if (book == null) add(ValidationErrorResponse("title", "blank"))
             if (null in contributions) add(ValidationErrorResponse("authors", "blank"))
-            if (this@NewBookRequest.series != null && series == null) add(ValidationErrorResponse("series", "blank"))
+            if (series != null && seriesEntry == null) add(ValidationErrorResponse("series", "blank"))
         }
         return if (book != null && errors.isEmpty()) Accepted(book) else Refused(errors)
     }
