@@ -53,7 +53,7 @@ private val ROMANCE_DAWN = NewBook(
     coverUrl = null,
 )
 
-private fun romanceDawn() = """
+private const val ROMANCE_DAWN_JSON = """
     {
       "isbn13": "9782723488525",
       "kind": "MANGA",
@@ -92,7 +92,7 @@ class BookshelfControllerTest @Autowired constructor(
         given(addBookToBookshelf(TOPHE.id, SALON, ROMANCE_DAWN)).willReturn(NotAnOwner)
 
         // When
-        val body = add(SALON, romanceDawn(), NOT_FOUND)
+        val body = add(SALON, ROMANCE_DAWN_JSON, NOT_FOUND)
 
         // Then
         body?.get("type") shouldBe "/problems/not-found"
