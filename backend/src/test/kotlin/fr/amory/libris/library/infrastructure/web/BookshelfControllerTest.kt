@@ -55,11 +55,11 @@ private val ROMANCE_DAWN = NewBook(
     coverUrl = null,
 )
 
-private fun romanceDawn(isbn13: String = "9782723488525") = """
+private fun romanceDawn(isbn13: String = "9782723488525", title: String = "Romance dawn") = """
     {
       "isbn13": "$isbn13",
       "kind": "MANGA",
-      "title": "Romance dawn",
+      "title": "$title",
       "subtitle": null,
       "authors": [{ "name": "Eiichirō Oda", "role": "WRITER" }],
       "series": { "name": "One Piece", "volumeNumber": 1 },
@@ -112,6 +112,23 @@ class BookshelfControllerTest @Autowired constructor(
         body?.get("type") shouldBe "/problems/validation"
         verifyNoInteractions(addBookToBookshelf)
     }
+
+    @Test
+    fun `a blank title is refused`() {
+        // Given
+        given(welcomeReader("tophe", "tophe@amory.fr", "Tophe")).willReturn(TOPHE)
+
+        // When
+        val body = add(TOPHE.defaultBookshelfId, romanceDawn(title = " "), BAD_REQUEST)
+
+        // Then
+        body?.get("type") shouldBe "/problems/validation"
+        fieldsOf(body) shouldBe listOf("title")
+        verifyNoInteractions(addBookToBookshelf)
+    }
+
+    private fun fieldsOf(problem: Map<String, Any>?): List<Any?> =
+        (problem?.get("errors") as List<*>).map { (it as Map<*, *>)["field"] }
 
     private fun add(bookshelf: BookshelfId, book: String, status: HttpStatus): Map<String, Any>? =
         client.post()

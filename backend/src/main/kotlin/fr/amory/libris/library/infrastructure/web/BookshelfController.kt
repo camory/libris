@@ -69,7 +69,12 @@ class BookshelfController(private val addBookToBookshelf: AddBookToBookshelf) {
         @PathVariable("id") id: UUID,
         @RequestBody request: NewBookRequest,
     ): ResponseEntity<Any> {
-        val isbn = request.isbn13?.let { isbn13Of(it) ?: return notAnIsbn13().asResponse() }
+        val isbn = request.isbn13?.let { isbn13Of(it) }
+        val errors = buildList {
+            if (request.isbn13 != null && isbn == null) add(ValidationErrorResponse("isbn13", "not-an-isbn"))
+            if (request.title.isBlank()) add(ValidationErrorResponse("title", "blank"))
+        }
+        if (errors.isNotEmpty()) return invalid(errors).asResponse()
         return when (val result = addBookToBookshelf(reader.id, BookshelfId(id), bookOf(request, isbn))) {
             is Added -> ResponseEntity.status(CREATED).body(
                 CopyResponse(
@@ -81,9 +86,8 @@ class BookshelfController(private val addBookToBookshelf: AddBookToBookshelf) {
         }
     }
 
-    private fun notAnIsbn13(): ProblemDetail = problem(BAD_REQUEST, VALIDATION_PROBLEM).apply {
-        setProperty("errors", listOf(ValidationErrorResponse(field = "isbn13", code = "not-an-isbn")))
-    }
+    private fun invalid(errors: List<ValidationErrorResponse>): ProblemDetail =
+        problem(BAD_REQUEST, VALIDATION_PROBLEM).apply { setProperty("errors", errors) }
 
     private fun bookOf(request: NewBookRequest, isbn: Isbn?): NewBook = NewBook(
         isbn = isbn,
