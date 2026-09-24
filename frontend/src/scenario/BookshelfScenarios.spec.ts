@@ -19,7 +19,7 @@ describe("Bookshelf", () => {
     vi.restoreAllMocks();
   });
 
-  it.skip("S4 The ouvrage is already in a bookshelf", async () => {
+  it("S4 The ouvrage is already in a bookshelf", async () => {
     // Given
     const screen = open("/isbn");
 
