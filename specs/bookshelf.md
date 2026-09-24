@@ -172,7 +172,7 @@ second account of the family, scan it and read the card without a place.
 - T034 — the house's book stored, no scenario of its own — backend
 - T035 — S2, S3 — backend
 - T036 — S4 — backend
-- T037 — S2, S3 and S4 through the API, the backend on `v0.6.0` — backend
+- T037 — S1 to S4 through the API, the backend on `v0.6.0` — backend
 - T038 — S4, the frontend on `v0.6.0` — frontend
 - T039 — S2 — frontend
 - T040 — S5 — frontend
