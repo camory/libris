@@ -3,7 +3,9 @@ package fr.amory.libris.scenario
 import com.github.tomakehurst.wiremock.WireMockServer
 import com.github.tomakehurst.wiremock.core.WireMockConfiguration.options
 import fr.amory.libris.fixture.FreshSchema
+import org.junit.jupiter.api.extension.BeforeEachCallback
 import org.junit.jupiter.api.extension.ExtendWith
+import org.junit.jupiter.api.extension.ExtensionContext
 import org.springframework.boot.resttestclient.autoconfigure.AutoConfigureRestTestClient
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.context.TestConfiguration
@@ -13,6 +15,7 @@ import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Import
 import org.springframework.http.client.SimpleClientHttpRequestFactory
 import org.springframework.test.context.DynamicPropertyRegistrar
+import org.springframework.test.context.junit.jupiter.SpringExtension.getApplicationContext
 import org.springframework.test.web.servlet.client.RestTestClient
 
 @Target(AnnotationTarget.CLASS)
@@ -23,8 +26,14 @@ import org.springframework.test.web.servlet.client.RestTestClient
 )
 @AutoConfigureRestTestClient
 @Import(StubbedSources::class)
-@ExtendWith(FreshSchema::class)
+@ExtendWith(FreshSchema::class, FreshSources::class)
 annotation class ScenarioTest
+
+class FreshSources : BeforeEachCallback {
+    override fun beforeEach(context: ExtensionContext) {
+        getApplicationContext(context).getBeansOfType(WireMockServer::class.java).values.forEach { it.resetRequests() }
+    }
+}
 
 @TestConfiguration(proxyBeanMethods = false)
 class StubbedSources {

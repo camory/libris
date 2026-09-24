@@ -6,7 +6,6 @@ import com.github.tomakehurst.wiremock.client.WireMock.anyUrl
 import com.jayway.jsonpath.JsonPath
 import fr.amory.libris.bibliography.fixture.BnfStubs
 import io.kotest.matchers.shouldNotBe
-import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Qualifier
@@ -22,11 +21,6 @@ class BookshelfScenarios @Autowired constructor(
 ) {
     private val bnf = BnfStubs(bnfServer)
     private val sources = listOf(bnfServer, openLibraryServer)
-
-    @BeforeEach
-    fun forgetEarlierRequests() {
-        sources.forEach { it.resetRequests() }
-    }
 
     @Test
     fun `S1 The first visit creates the bookshelf`() {
