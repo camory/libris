@@ -71,13 +71,15 @@ class BookshelfController(private val addBookToBookshelf: AddBookToBookshelf) {
     ): ResponseEntity<Any> {
         val isbn = request.isbn13?.let { isbn13Of(it) }
         val contributions = request.authors.map { Contribution.of(it.name, it.role) }
+        val series = request.series?.let { SeriesEntry.of(it.name, it.volumeNumber) }
         val errors = buildList {
             if (request.isbn13 != null && isbn == null) add(ValidationErrorResponse("isbn13", "not-an-isbn"))
             if (request.title.isBlank()) add(ValidationErrorResponse("title", "blank"))
             if (null in contributions) add(ValidationErrorResponse("authors", "blank"))
+            if (request.series != null && series == null) add(ValidationErrorResponse("series", "blank"))
         }
         if (errors.isNotEmpty()) return invalid(errors).asResponse()
-        val book = bookOf(request, isbn, Contributions.of(contributions.filterNotNull()))
+        val book = bookOf(request, isbn, Contributions.of(contributions.filterNotNull()), series)
         return when (val result = addBookToBookshelf(reader.id, BookshelfId(id), book)) {
             is Added -> ResponseEntity.status(CREATED).body(
                 CopyResponse(
@@ -92,13 +94,18 @@ class BookshelfController(private val addBookToBookshelf: AddBookToBookshelf) {
     private fun invalid(errors: List<ValidationErrorResponse>): ProblemDetail =
         problem(BAD_REQUEST, VALIDATION_PROBLEM).apply { setProperty("errors", errors) }
 
-    private fun bookOf(request: NewBookRequest, isbn: Isbn?, contributions: Contributions): NewBook = NewBook(
+    private fun bookOf(
+        request: NewBookRequest,
+        isbn: Isbn?,
+        contributions: Contributions,
+        series: SeriesEntry?,
+    ): NewBook = NewBook(
         isbn = isbn,
         kind = request.kind,
         title = request.title,
         subtitle = request.subtitle,
         contributions = contributions,
-        series = request.series?.let { SeriesEntry(it.name, it.volumeNumber) },
+        series = series,
         collection = request.collection,
         publisher = request.publisher,
         publicationYear = request.publicationYear,
