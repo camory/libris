@@ -1,10 +1,11 @@
 <script setup lang="ts">
 import { computed, ref } from "vue";
 import { useI18n } from "vue-i18n";
+import type { Copy } from "../../domain/Copy";
 import type { AuthorRole, SourceEdition } from "../../domain/SourceEdition";
 import IconBook from "./icons/IconBook.vue";
 
-const props = defineProps<{ edition: SourceEdition }>();
+const props = defineProps<{ edition: SourceEdition; copies: Copy[] }>();
 
 const { t, te } = useI18n();
 
@@ -112,6 +113,12 @@ const rows = computed(() => {
           <p v-else class="text-body">{{ line.name }}</p>
         </template>
       </div>
+    </div>
+
+    <div v-if="copies.length > 0">
+      <p v-for="copy in copies" :key="copy.id" class="text-body">
+        {{ t("isbn.card.copies", { bookshelf: copy.bookshelf.name }) }}
+      </p>
     </div>
 
     <div>

@@ -26,6 +26,7 @@ const fr = {
       },
       author: "{name} · {roles}",
       cover: "Couverture de {title}",
+      copies: "Dans {bookshelf}",
       collection: "Collection",
       publisher: "Éditeur",
       year: "Année",

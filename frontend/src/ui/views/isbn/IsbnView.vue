@@ -155,7 +155,12 @@ async function search() {
 
     <SourceEditionCardSkeleton v-if="searching" class="mt-5" />
 
-    <SourceEditionCard v-else-if="edition" :edition="edition" class="mt-5" />
+    <SourceEditionCard
+      v-else-if="edition"
+      :edition="edition"
+      :copies="[]"
+      class="mt-5"
+    />
 
     <p v-if="message" class="mt-5 flex items-start gap-2 text-body text-danger">
       <IconAlert />

@@ -2,6 +2,7 @@ import { within } from "@testing-library/dom";
 import { mount } from "@vue/test-utils";
 import { describe, expect, it } from "vitest";
 import { nextTick } from "vue";
+import type { Copy } from "../../domain/Copy";
 import type { SourceAuthor, SourceEdition } from "../../domain/SourceEdition";
 import { onePiece1 } from "../../fixture/SourceEditions";
 import { createLibrisI18n } from "../i18n";
@@ -44,6 +45,14 @@ const lAmiFritz: SourceEdition = {
     { name: "Chatrian", role: "WRITER" },
   ],
   series: { name: "Contes et romans", volumeNumber: 1 },
+};
+
+const onLea: Copy = {
+  id: "6f1d2c3b-4a59-4e6f-8b70-1c2d3e4f5a61",
+  bookshelf: {
+    id: "0b1e2d3c-4f5a-4b6c-8d7e-9f0a1b2c3d4e",
+    name: "Bibliothèque de Léa",
+  },
 };
 
 describe("SourceEditionCard", () => {
@@ -375,17 +384,31 @@ describe("SourceEditionCard", () => {
     expect(card.queryByText("language.en")).toBeNull();
   });
 
-  function show(edition: SourceEdition) {
-    return card(edition).text().replace(/\s+/g, " ");
+  it("says in which bookshelf the copy is, between the authors and the rows", () => {
+    // When
+    const card = show(onePiece1, [onLea]);
+
+    // Then
+    const positions = [
+      "Eiichirō Oda",
+      "Dans Bibliothèque de Léa",
+      "Collection",
+    ].map((part) => card.indexOf(part));
+    expect(positions).not.toContain(-1);
+    expect(positions).toEqual([...positions].sort((a, b) => a - b));
+  });
+
+  function show(edition: SourceEdition, copies: Copy[] = []) {
+    return card(edition, copies).text().replace(/\s+/g, " ");
   }
 
-  function screen(edition: SourceEdition) {
-    return within(card(edition).element as HTMLElement);
+  function screen(edition: SourceEdition, copies: Copy[] = []) {
+    return within(card(edition, copies).element as HTMLElement);
   }
 
-  function card(edition: SourceEdition) {
+  function card(edition: SourceEdition, copies: Copy[] = []) {
     return mount(SourceEditionCard, {
-      props: { edition },
+      props: { edition, copies },
       global: { plugins: [createLibrisI18n()] },
     });
   }
