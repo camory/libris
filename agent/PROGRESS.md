@@ -340,8 +340,8 @@ Format:
   `403`; no package or port named beyond what the contract fixes.
 
 
-## 2026-09-24 — T037 The API of the bookshelf, on v0.6.0 — blocked
-- Did: the pin moves to `v0.6.0`; `/api/v1/me` names the default bookshelf,
+## 2026-09-24 — T037 The API of the bookshelf, on v0.6.1 — done
+- Did: the pin moves to `v0.6.1`; `/api/v1/me` names the default bookshelf,
   the ISBN endpoint moved to `library.infrastructure.web` and answers the
   reader's copies, and `POST /api/v1/bookshelves/{id}/books` adds a
   `NewBook`, `201` the copy, `404` for no such bookshelf and for a viewer.
@@ -349,15 +349,17 @@ Format:
   a blank title, author name or series name, one error per field;
   `ProblemAdvice` answers a non-uuid id and an unreadable body as
   `/problems/validation` without `detail`; the six bookshelf scenarios run.
-- Did: every test is green but one contract case, all on local commits;
-  nothing pushed, no pull request — the sandbox refuses both on a red gate.
-- Blocked: the verifier's `auto: path 'id' type mismatch` sends
-  `<<not a string/uuid>>` as `%2F…`. Tomcat refuses an encoded slash with an
-  HTML 400 before Spring; relaxed, Spring Security's `StrictHttpFirewall`
-  refuses it and the anonymous `/error` dispatch answers `403`. Turning it
-  green means relaxing both layers so the advice answers, or answering their
-  own refusals as a problem (a `RequestRejectedHandler`, Tomcat's slash
-  handling): a security and error-surface decision no document makes.
+- The run stopped at its turn cap with one contract case red, nothing pushed:
+  the verifier's `auto: path 'id' type mismatch` sends `<<not a string/uuid>>`
+  as `%2F…`. Tomcat refuses an encoded slash with an HTML 400 before Spring;
+  relaxed, Spring Security's `StrictHttpFirewall` refuses it and the
+  anonymous `/error` dispatch answers `403`. No hand-written `400` scenario
+  removes a generated case in Contracteer 4.0.0.
+- Decided (Tophe, 2026-09-24): neither layer is relaxed. The contract's
+  `v0.6.1` types the bookshelf `id` as a string with a uuid pattern instead
+  of `format: uuid`, and says in a comment that this lasts until Contracteer
+  4.1.0; the generated case skips a plain string. No byte of a request or an
+  answer changes. Finished by hand: the pin bump, the gate, this entry.
 - Decided: the `Remote-Name` header is decoded as UTF-8 and the scenario
   client sends UTF-8 bytes, or S1 read `L?a`; the scenario WireMock journals
   are cleared before each case by `FreshSources`, or S4's `noSourceWasAsked`
@@ -368,5 +370,5 @@ Format:
   helpers; the scenario header rides on a `restTestClient` bean, not a
   `RestTestClientBuilderCustomizer`, since that bean replaces the
   autoconfigured client; two `style` commits fix detekt slips.
-- Left over: the `%2F` decision, then the gate, the tick and the pull
-  request; three items in `agent/PROPOSED.md`.
+- Left over: `format: uuid` comes back with Contracteer 4.1.0; four items in
+  `agent/PROPOSED.md`.

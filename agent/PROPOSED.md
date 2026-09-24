@@ -314,3 +314,8 @@
 - Backend: only `Remote-Name` is decoded from UTF-8; a non-ASCII
   `Remote-User`, `Remote-Email` or `Remote-Groups` would be read mangled
   (found on T037, 2026-09-24).
+- Contract: the bookshelf `id` of `POST /api/v1/bookshelves/{id}/books` is a
+  string with a uuid pattern since `v0.6.1`, because Contracteer 4.0.0's
+  generated case for `format: uuid` carries an encoded slash; put
+  `format: uuid` back when the backend verifies with Contracteer 4.1.0
+  (decided with Tophe on T037, 2026-09-24).
