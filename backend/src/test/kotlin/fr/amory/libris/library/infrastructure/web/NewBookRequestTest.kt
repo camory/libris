@@ -28,17 +28,25 @@ class NewBookRequestTest {
         request.validate() shouldBe Refused(listOf(ValidationErrorResponse("authors", "blank")))
     }
 
+    @Test
+    fun `a series without a name is refused`() {
+        val request = romanceDawn(series = " ")
+
+        request.validate() shouldBe Refused(listOf(ValidationErrorResponse("series", "blank")))
+    }
+
     private fun romanceDawn(
         isbn13: String = "9782723488525",
         title: String = "Romance dawn",
         author: String = "Eiichirō Oda",
+        series: String = "One Piece",
     ) = NewBookRequest(
         isbn13 = isbn13,
         kind = MANGA,
         title = title,
         subtitle = null,
         authors = listOf(NewAuthorRequest(author, WRITER)),
-        series = NewSeriesRequest("One Piece", 1),
+        series = NewSeriesRequest(series, 1),
         collection = null,
         publisher = "Glénat",
         publicationYear = 2013,
