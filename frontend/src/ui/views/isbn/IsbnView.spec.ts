@@ -16,7 +16,11 @@ import IsbnView from "./IsbnView.vue";
 
 type Screen = BoundFunctions<typeof queries>;
 
-const found: IsbnAnswer = { outcome: "found", edition: onePiece1 };
+const found: IsbnAnswer = {
+  outcome: "found",
+  edition: onePiece1,
+  copies: [],
+};
 
 const unknownIsbn: IsbnAnswer = {
   outcome: "problem",
