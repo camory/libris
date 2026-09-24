@@ -160,6 +160,19 @@ class BookshelfControllerTest @Autowired constructor(
         verifyNoInteractions(addBookToBookshelf)
     }
 
+    @Test
+    fun `every refused field has its error`() {
+        // Given
+        given(welcomeReader("tophe", "tophe@amory.fr", "Tophe")).willReturn(TOPHE)
+
+        // When
+        val body = add(TOPHE.defaultBookshelfId, romanceDawn(isbn13 = "9782723488526", title = " "), BAD_REQUEST)
+
+        // Then
+        fieldsOf(body) shouldBe listOf("isbn13", "title")
+        verifyNoInteractions(addBookToBookshelf)
+    }
+
     private fun fieldsOf(problem: Map<String, Any>?): List<Any?> =
         (problem?.get("errors") as List<*>).map { (it as Map<*, *>)["field"] }
 
