@@ -395,3 +395,23 @@ Format:
   case for it, so the request's unit test stays the proof.
 - Left over: `format: uuid` comes back with Contracteer 4.1.0; items in
   `agent/PROPOSED.md`.
+
+## 2026-09-25 — T038 The copies on the card, on v0.6.2 — done
+- Did: the frontend pins `v0.6.2`; the lookup's found answer carries the
+  copies beside the edition (`Copy`, `Bookshelf` in `domain/`); the card
+  shows one row per bookshelf holding a copy, the count after a dot past one.
+- Decided (Tophe, in review): the row is one `body` sentence in `text`,
+  nothing `muted`. The entry is one sentence of two forms and only its slots
+  take a class: a `muted` count would grey the number and leave
+  *exemplaires* black, and muting the tail whole would split the sentence
+  over two keys, which the brief rejected.
+- Decided: the rows' wrapper is rendered only when a bookshelf holds a copy,
+  or an empty part would still take the card's 14 px of gap.
+- Deviations from the brief: the two guards of steps 5 and 6 were written in
+  one go and committed apart; their mutations (rows sorted by name, a row
+  outside the loop) were run and reverted. Step 9's second mutation, the view
+  keeping the previous answer's copies, survives the gate: no case asks two
+  lookups with different copies.
+- Left over: the button, the add and S2 are T039, S5 is T040; the case of a
+  second lookup replacing the copies is in `agent/PROPOSED.md`; the U06
+  sentence for the rows went into `docs/DESIGN.md` in review.

@@ -45,6 +45,21 @@ describe("FetchIsbnApi", () => {
     });
   });
 
+  it("answers the copies on the reader's bookshelves beside the edition", async () => {
+    // Given
+    const api = new FetchIsbnApi(inject("mockBaseUrl"));
+
+    // When
+    const answer = await api.lookUp("9782723489898");
+
+    // Then
+    assert(answer.outcome === "found", `the answer is a ${answer.outcome}`);
+    expect(answer.copies).toSatisfy(
+      areCopies,
+      "copies with an id and a bookshelf",
+    );
+  });
+
   it("answers a problem when no source knows the ISBN", async () => {
     // Given
     const api = new FetchIsbnApi(inject("mockBaseUrl"));
@@ -104,6 +119,7 @@ describe("FetchIsbnApi", () => {
       pageCount: 203,
       summary: null,
       coverUrl: "https://covers.openlibrary.org/b/isbn/9782723488525-L.jpg",
+      copies: [],
       sources: ["BNF", "OPEN_LIBRARY"],
     };
     vi.stubGlobal("fetch", () =>
@@ -134,6 +150,21 @@ function areAuthors(value: unknown) {
       (author) =>
         typeof author.name === "string" &&
         ["WRITER", "ARTIST", "COLOURIST", "TRANSLATOR"].includes(author.role),
+    )
+  );
+}
+
+function areCopies(value: unknown) {
+  return (
+    Array.isArray(value) &&
+    value.length > 0 &&
+    value.every(
+      (copy) =>
+        Object.keys(copy).sort().join() === "bookshelf,id" &&
+        typeof copy.id === "string" &&
+        Object.keys(copy.bookshelf).sort().join() === "id,name" &&
+        typeof copy.bookshelf.id === "string" &&
+        typeof copy.bookshelf.name === "string",
     )
   );
 }

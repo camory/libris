@@ -15,6 +15,7 @@ interface IsbnResponse {
   pageCount: number | null;
   summary: string | null;
   coverUrl: string | null;
+  copies: { id: string; bookshelf: { id: string; name: string } }[];
 }
 
 interface ProblemResponse {
@@ -30,7 +31,28 @@ export class FetchIsbnApi implements IsbnApi {
     });
     if (response.status === 200) {
       const body = (await response.json()) as IsbnResponse;
-      return { outcome: "found", edition: body };
+      return {
+        outcome: "found",
+        edition: {
+          isbn13: body.isbn13,
+          kind: body.kind,
+          title: body.title,
+          subtitle: body.subtitle,
+          authors: body.authors,
+          series: body.series,
+          collection: body.collection,
+          publisher: body.publisher,
+          publicationYear: body.publicationYear,
+          language: body.language,
+          pageCount: body.pageCount,
+          summary: body.summary,
+          coverUrl: body.coverUrl,
+        },
+        copies: body.copies.map((copy) => ({
+          id: copy.id,
+          bookshelf: { id: copy.bookshelf.id, name: copy.bookshelf.name },
+        })),
+      };
     }
     const problem = (await response.json()) as ProblemResponse;
     return { outcome: "problem", type: problem.type };

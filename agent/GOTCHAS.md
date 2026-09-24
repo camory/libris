@@ -402,6 +402,13 @@ true; the diary keeps the date it was found.
   `role.BOOK.WRITER` or `isbn.card.series.BOOK`. Nothing throws and no type
   catches it — `t` takes a template string — so the only proof of a key that
   exists is a case asserting the French word it holds.
+- A catalogue entry of two forms, `"Dans {bookshelf} | Dans {bookshelf} ·
+  {count} exemplaires"`, is picked by `<i18n-t :plural="n">`: vue-i18n's
+  default rule answers the first form for 1 and the second for any other
+  count, 0 included. The placeholders are filled by the named slots
+  (`#bookshelf`, `#count`); a slot is the only part of the sentence a class
+  can style, so a class on the count would cover the number alone, not the
+  words around it.
 - `grep -rn <text> frontend` walks `frontend/node_modules`, so a search for a
   version or a package name answers pages of changelogs. `git grep -n <text>
   -- frontend` searches the tracked tree alone, which is what a criterion

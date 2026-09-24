@@ -122,7 +122,7 @@ frontend pin moves in T038. No other task touches the contract (D04).
       Carries S1 to S4 to the API; un-skips the six backend tests of the
       bookshelf scenarios.
 
-- [ ] T038 Frontend: the copies on the card, on `v0.6.2`.
+- [x] T038 Frontend: the copies on the card, on `v0.6.2`.
       Precondition (human): the frontend tests of the bookshelf scenarios,
       one skipped test per frontend scenario, each bearing the scenario's
       exact title, against `contracteer mock` (D07).

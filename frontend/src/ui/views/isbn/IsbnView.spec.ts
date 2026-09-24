@@ -16,7 +16,11 @@ import IsbnView from "./IsbnView.vue";
 
 type Screen = BoundFunctions<typeof queries>;
 
-const found: IsbnAnswer = { outcome: "found", edition: onePiece1 };
+const found: IsbnAnswer = {
+  outcome: "found",
+  edition: onePiece1,
+  copies: [],
+};
 
 const unknownIsbn: IsbnAnswer = {
   outcome: "problem",
@@ -66,6 +70,30 @@ describe("IsbnView", () => {
     expect(api.asked).toEqual(["9782723488525"]);
     expect(screen.getByText("Romance dawn")).toBeDefined();
     expect(screen.getByText("Glénat")).toBeDefined();
+  });
+
+  it("says in which bookshelf the reader already has a copy", async () => {
+    // Given
+    const shelved: IsbnAnswer = {
+      outcome: "found",
+      edition: onePiece1,
+      copies: [
+        {
+          id: "6f1d2c3b-4a59-4e6f-8b70-1c2d3e4f5a61",
+          bookshelf: {
+            id: "0b1e2d3c-4f5a-4b6c-8d7e-9f0a1b2c3d4e",
+            name: "Bibliothèque de Léa",
+          },
+        },
+      ],
+    };
+    const screen = open(new FakeIsbnApi(shelved));
+
+    // When
+    await ask(screen, "9782723488525");
+
+    // Then
+    expect(screen.getByText("Dans Bibliothèque de Léa")).toBeDefined();
   });
 
   it("asks for the ISBN-13 an old ten converts to", async () => {

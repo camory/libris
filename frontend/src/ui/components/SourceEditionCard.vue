@@ -1,10 +1,11 @@
 <script setup lang="ts">
 import { computed, ref } from "vue";
 import { useI18n } from "vue-i18n";
+import type { Copy } from "../../domain/Copy";
 import type { AuthorRole, SourceEdition } from "../../domain/SourceEdition";
 import IconBook from "./icons/IconBook.vue";
 
-const props = defineProps<{ edition: SourceEdition }>();
+const props = defineProps<{ edition: SourceEdition; copies: Copy[] }>();
 
 const { t, te } = useI18n();
 
@@ -44,6 +45,19 @@ const authorLines = computed(() => {
       .map((role) => t(`role.${props.edition.kind}.${role}`))
       .join(", "),
   }));
+});
+
+const bookshelves = computed(() => {
+  const held = new Map<string, { name: string; count: number }>();
+  for (const copy of props.copies) {
+    const bookshelf = held.get(copy.bookshelf.id) ?? {
+      name: copy.bookshelf.name,
+      count: 0,
+    };
+    bookshelf.count += 1;
+    held.set(copy.bookshelf.id, bookshelf);
+  }
+  return [...held].map(([id, { name, count }]) => ({ id, name, count }));
 });
 
 const languageWord = computed(() => {
@@ -112,6 +126,20 @@ const rows = computed(() => {
           <p v-else class="text-body">{{ line.name }}</p>
         </template>
       </div>
+    </div>
+
+    <div v-if="bookshelves.length > 0">
+      <i18n-t
+        v-for="bookshelf in bookshelves"
+        :key="bookshelf.id"
+        keypath="isbn.card.copies"
+        :plural="bookshelf.count"
+        tag="p"
+        class="text-body"
+      >
+        <template #bookshelf>{{ bookshelf.name }}</template>
+        <template #count>{{ bookshelf.count }}</template>
+      </i18n-t>
     </div>
 
     <div>

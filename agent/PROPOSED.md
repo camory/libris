@@ -321,3 +321,8 @@
   generated case for `format: uuid` carries an encoded slash; put
   `format: uuid` back when the backend verifies with Contracteer 4.1.0
   (decided with Tophe on T037, 2026-09-24).
+- Frontend: no case proves that a second lookup replaces the copies of the
+  first on the card: `IsbnView.spec.ts` has one answer per `FakeIsbnApi`, and
+  each scenario boots a fresh app; the mutation keeping the previous copies
+  survives the gate. A `FakeIsbnApi` of successive answers would carry the
+  case, with T039's added copy (found on T038, 2026-09-25).
