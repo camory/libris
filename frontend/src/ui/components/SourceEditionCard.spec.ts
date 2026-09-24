@@ -433,6 +433,15 @@ describe("SourceEditionCard", () => {
     expect(card).not.toContain("exemplaires");
   });
 
+  it("says no bookshelf when the reader's bookshelves hold no copy", () => {
+    // When
+    const card = show(onePiece1, []);
+
+    // Then
+    expect(card).toContain("Eiichirō OdaCollection");
+    expect(card).not.toContain("Dans");
+  });
+
   function show(edition: SourceEdition, copies: Copy[] = []) {
     return card(edition, copies).text().replace(/\s+/g, " ");
   }
