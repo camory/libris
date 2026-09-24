@@ -19,9 +19,11 @@ import fr.amory.libris.library.fixture.readerNamed
 import io.kotest.matchers.shouldBe
 import org.junit.jupiter.api.Test
 import org.mockito.BDDMockito.given
+import org.mockito.Mockito.verifyNoInteractions
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.core.ParameterizedTypeReference
 import org.springframework.http.HttpStatus
+import org.springframework.http.HttpStatus.BAD_REQUEST
 import org.springframework.http.HttpStatus.NOT_FOUND
 import org.springframework.http.MediaType.APPLICATION_JSON
 import org.springframework.test.context.bean.override.mockito.MockitoBean
@@ -53,9 +55,9 @@ private val ROMANCE_DAWN = NewBook(
     coverUrl = null,
 )
 
-private const val ROMANCE_DAWN_JSON = """
+private fun romanceDawn(isbn13: String = "9782723488525") = """
     {
-      "isbn13": "9782723488525",
+      "isbn13": "$isbn13",
       "kind": "MANGA",
       "title": "Romance dawn",
       "subtitle": null,
@@ -92,10 +94,23 @@ class BookshelfControllerTest @Autowired constructor(
         given(addBookToBookshelf(TOPHE.id, SALON, ROMANCE_DAWN)).willReturn(NotAnOwner)
 
         // When
-        val body = add(SALON, ROMANCE_DAWN_JSON, NOT_FOUND)
+        val body = add(SALON, romanceDawn(), NOT_FOUND)
 
         // Then
         body?.get("type") shouldBe "/problems/not-found"
+    }
+
+    @Test
+    fun `the thirteen digits with separators are not an isbn13 the add admits`() {
+        // Given
+        given(welcomeReader("tophe", "tophe@amory.fr", "Tophe")).willReturn(TOPHE)
+
+        // When
+        val body = add(TOPHE.defaultBookshelfId, romanceDawn(isbn13 = "978-2-7234-8852-5"), BAD_REQUEST)
+
+        // Then
+        body?.get("type") shouldBe "/problems/validation"
+        verifyNoInteractions(addBookToBookshelf)
     }
 
     private fun add(bookshelf: BookshelfId, book: String, status: HttpStatus): Map<String, Any>? =
