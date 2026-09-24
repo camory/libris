@@ -19,4 +19,39 @@ data class NewBook(
     val pageCount: Int?,
     val summary: String?,
     val coverUrl: String?,
-)
+) {
+    companion object {
+        @Suppress("LongParameterList")
+        fun of(
+            isbn: Isbn?,
+            kind: Kind,
+            title: String,
+            subtitle: String?,
+            contributions: Contributions,
+            series: SeriesEntry?,
+            collection: String?,
+            publisher: String?,
+            publicationYear: Int?,
+            language: String?,
+            pageCount: Int?,
+            summary: String?,
+            coverUrl: String?,
+        ): NewBook? = title.takeUnless { it.isBlank() }?.let {
+            NewBook(
+                isbn = isbn,
+                kind = kind,
+                title = it,
+                subtitle = subtitle,
+                contributions = contributions,
+                series = series,
+                collection = collection,
+                publisher = publisher,
+                publicationYear = publicationYear,
+                language = language,
+                pageCount = pageCount,
+                summary = summary,
+                coverUrl = coverUrl,
+            )
+        }
+    }
+}
