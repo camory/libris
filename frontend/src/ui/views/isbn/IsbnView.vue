@@ -11,6 +11,7 @@ import {
 import { useI18n } from "vue-i18n";
 import { barcodeScannerKey } from "../../../application/BarcodeScanner";
 import { isbnApiKey } from "../../../application/IsbnApi";
+import type { Copy } from "../../../domain/Copy";
 import { Isbn } from "../../../domain/Isbn";
 import type { SourceEdition } from "../../../domain/SourceEdition";
 import BusySpinner from "../../components/BusySpinner.vue";
@@ -31,6 +32,7 @@ const typed = ref("");
 const message = ref<string>();
 const refused = computed(() => refusals.includes(message.value ?? ""));
 const edition = ref<SourceEdition>();
+const copies = ref<Copy[]>([]);
 const searching = ref(false);
 const scanning = ref(false);
 const canScan = ref(false);
@@ -77,6 +79,7 @@ async function search() {
   searching.value = false;
   if (answer.outcome === "found") {
     edition.value = answer.edition;
+    copies.value = answer.copies;
   } else {
     message.value = messages.get(answer.type) ?? "isbn.error";
   }
@@ -158,7 +161,7 @@ async function search() {
     <SourceEditionCard
       v-else-if="edition"
       :edition="edition"
-      :copies="[]"
+      :copies="copies"
       class="mt-5"
     />
 
