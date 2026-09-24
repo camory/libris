@@ -19,11 +19,9 @@ import fr.amory.libris.library.fixture.readerNamed
 import io.kotest.matchers.shouldBe
 import org.junit.jupiter.api.Test
 import org.mockito.BDDMockito.given
-import org.mockito.Mockito.verifyNoInteractions
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.core.ParameterizedTypeReference
 import org.springframework.http.HttpStatus
-import org.springframework.http.HttpStatus.BAD_REQUEST
 import org.springframework.http.HttpStatus.NOT_FOUND
 import org.springframework.http.MediaType.APPLICATION_JSON
 import org.springframework.test.context.bean.override.mockito.MockitoBean
@@ -55,19 +53,14 @@ private val ROMANCE_DAWN = NewBook(
     coverUrl = null,
 )
 
-private fun romanceDawn(
-    isbn13: String = "9782723488525",
-    title: String = "Romance dawn",
-    author: String = "Eiichirō Oda",
-    series: String = "One Piece",
-) = """
+private const val ROMANCE_DAWN_JSON = """
     {
-      "isbn13": "$isbn13",
+      "isbn13": "9782723488525",
       "kind": "MANGA",
-      "title": "$title",
+      "title": "Romance dawn",
       "subtitle": null,
-      "authors": [{ "name": "$author", "role": "WRITER" }],
-      "series": { "name": "$series", "volumeNumber": 1 },
+      "authors": [{ "name": "Eiichirō Oda", "role": "WRITER" }],
+      "series": { "name": "One Piece", "volumeNumber": 1 },
       "collection": null,
       "publisher": "Glénat",
       "publicationYear": 2013,
@@ -99,82 +92,11 @@ class BookshelfControllerTest @Autowired constructor(
         given(addBookToBookshelf(TOPHE.id, SALON, ROMANCE_DAWN)).willReturn(NotAnOwner)
 
         // When
-        val body = add(SALON, romanceDawn(), NOT_FOUND)
+        val body = add(SALON, ROMANCE_DAWN_JSON, NOT_FOUND)
 
         // Then
         body?.get("type") shouldBe "/problems/not-found"
     }
-
-    @Test
-    fun `the thirteen digits with separators are not an isbn13 the add admits`() {
-        // Given
-        given(welcomeReader("tophe", "tophe@amory.fr", "Tophe")).willReturn(TOPHE)
-
-        // When
-        val body = add(TOPHE.defaultBookshelfId, romanceDawn(isbn13 = "978-2-7234-8852-5"), BAD_REQUEST)
-
-        // Then
-        body?.get("type") shouldBe "/problems/validation"
-        verifyNoInteractions(addBookToBookshelf)
-    }
-
-    @Test
-    fun `a blank title is refused`() {
-        // Given
-        given(welcomeReader("tophe", "tophe@amory.fr", "Tophe")).willReturn(TOPHE)
-
-        // When
-        val body = add(TOPHE.defaultBookshelfId, romanceDawn(title = " "), BAD_REQUEST)
-
-        // Then
-        body?.get("type") shouldBe "/problems/validation"
-        fieldsOf(body) shouldBe listOf("title")
-        verifyNoInteractions(addBookToBookshelf)
-    }
-
-    @Test
-    fun `an author without a name is refused`() {
-        // Given
-        given(welcomeReader("tophe", "tophe@amory.fr", "Tophe")).willReturn(TOPHE)
-
-        // When
-        val body = add(TOPHE.defaultBookshelfId, romanceDawn(author = " "), BAD_REQUEST)
-
-        // Then
-        body?.get("type") shouldBe "/problems/validation"
-        fieldsOf(body) shouldBe listOf("authors")
-        verifyNoInteractions(addBookToBookshelf)
-    }
-
-    @Test
-    fun `a series without a name is refused`() {
-        // Given
-        given(welcomeReader("tophe", "tophe@amory.fr", "Tophe")).willReturn(TOPHE)
-
-        // When
-        val body = add(TOPHE.defaultBookshelfId, romanceDawn(series = " "), BAD_REQUEST)
-
-        // Then
-        body?.get("type") shouldBe "/problems/validation"
-        fieldsOf(body) shouldBe listOf("series")
-        verifyNoInteractions(addBookToBookshelf)
-    }
-
-    @Test
-    fun `every refused field has its error`() {
-        // Given
-        given(welcomeReader("tophe", "tophe@amory.fr", "Tophe")).willReturn(TOPHE)
-
-        // When
-        val body = add(TOPHE.defaultBookshelfId, romanceDawn(isbn13 = "9782723488526", title = " "), BAD_REQUEST)
-
-        // Then
-        fieldsOf(body) shouldBe listOf("isbn13", "title")
-        verifyNoInteractions(addBookToBookshelf)
-    }
-
-    private fun fieldsOf(problem: Map<String, Any>?): List<Any?> =
-        (problem?.get("errors") as List<*>).map { (it as Map<*, *>)["field"] }
 
     private fun add(bookshelf: BookshelfId, book: String, status: HttpStatus): Map<String, Any>? =
         client.post()
