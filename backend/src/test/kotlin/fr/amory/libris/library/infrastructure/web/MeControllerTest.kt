@@ -1,9 +1,9 @@
 package fr.amory.libris.library.infrastructure.web
 
-import fr.amory.libris.bibliography.application.lookup.LookupEditionByIsbn
 import fr.amory.libris.fixture.WebSliceTest
 import fr.amory.libris.library.application.FindDefaultBookshelf
 import fr.amory.libris.library.application.WelcomeReader
+import fr.amory.libris.library.application.lookup.LookupIsbnForReader
 import fr.amory.libris.library.domain.bookshelf.BookshelfId
 import fr.amory.libris.library.domain.reader.ReaderId
 import fr.amory.libris.library.fixture.bookshelfOwnedBy
@@ -31,7 +31,7 @@ private val JULIETTE = readerNamed(
 )
 
 @WebSliceTest
-@MockitoBean(types = [WelcomeReader::class, LookupEditionByIsbn::class, FindDefaultBookshelf::class])
+@MockitoBean(types = [WelcomeReader::class, LookupIsbnForReader::class, FindDefaultBookshelf::class])
 class MeControllerTest @Autowired constructor(
     private val client: RestTestClient,
     private val welcomeReader: WelcomeReader,

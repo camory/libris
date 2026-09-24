@@ -1,20 +1,23 @@
-package fr.amory.libris.bibliography.infrastructure.web
+package fr.amory.libris.library.infrastructure.web
 
 import fr.amory.libris.bibliography.application.lookup.EditionLookupResult.Found
 import fr.amory.libris.bibliography.application.lookup.EditionLookupResult.Held
 import fr.amory.libris.bibliography.application.lookup.EditionLookupResult.SourcesUnavailable
 import fr.amory.libris.bibliography.application.lookup.EditionLookupResult.UnknownIsbn
-import fr.amory.libris.bibliography.application.lookup.LookupEditionByIsbn
 import fr.amory.libris.bibliography.domain.ContributionRole
 import fr.amory.libris.bibliography.domain.Isbn
 import fr.amory.libris.bibliography.domain.Kind
 import fr.amory.libris.bibliography.domain.lookup.EditionPreview
+import fr.amory.libris.library.application.lookup.CopyOnBookshelf
+import fr.amory.libris.library.application.lookup.LookupIsbnForReader
+import fr.amory.libris.library.domain.reader.Reader
 import org.springframework.http.HttpStatus
 import org.springframework.http.HttpStatus.BAD_REQUEST
 import org.springframework.http.HttpStatus.NOT_FOUND
 import org.springframework.http.HttpStatus.SERVICE_UNAVAILABLE
 import org.springframework.http.ProblemDetail
 import org.springframework.http.ResponseEntity
+import org.springframework.security.core.annotation.AuthenticationPrincipal
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.RestController
@@ -54,6 +57,7 @@ data class IsbnResponse(
     val pageCount: Int?,
     val summary: String?,
     val coverUrl: String?,
+    val copies: List<CopyResponse>,
 )
 
 private fun problem(status: HttpStatus, type: String): ProblemDetail =
@@ -64,13 +68,14 @@ private fun problem(status: HttpStatus, type: String): ProblemDetail =
 private fun ProblemDetail.asResponse(): ResponseEntity<Any> = ResponseEntity.status(status).body(this)
 
 @RestController
-class IsbnController(private val lookupEditionByIsbn: LookupEditionByIsbn) {
+class IsbnController(private val lookupIsbnForReader: LookupIsbnForReader) {
     @GetMapping("/api/v1/isbn/{isbn}")
-    fun isbn(@PathVariable("isbn") text: String): ResponseEntity<Any> {
+    fun isbn(@AuthenticationPrincipal reader: Reader, @PathVariable("isbn") text: String): ResponseEntity<Any> {
         val isbn = isbnOfPath(text) ?: return notAnIsbn().asResponse()
-        return when (val result = lookupEditionByIsbn(isbn)) {
-            is Held -> ResponseEntity.ok(responseOf(result.preview))
-            is Found -> ResponseEntity.ok(responseOf(result.preview))
+        val lookup = lookupIsbnForReader(reader.id, isbn)
+        return when (val result = lookup.answer) {
+            is Held -> ResponseEntity.ok(responseOf(result.preview, lookup.copies))
+            is Found -> ResponseEntity.ok(responseOf(result.preview, lookup.copies))
             UnknownIsbn -> problem(NOT_FOUND, NOT_FOUND_PROBLEM).asResponse()
             SourcesUnavailable -> problem(SERVICE_UNAVAILABLE, SOURCES_UNAVAILABLE_PROBLEM).asResponse()
         }
@@ -82,7 +87,7 @@ class IsbnController(private val lookupEditionByIsbn: LookupEditionByIsbn) {
         setProperty("errors", listOf(ValidationErrorResponse(field = "isbn", code = "not-an-isbn")))
     }
 
-    private fun responseOf(preview: EditionPreview): IsbnResponse = IsbnResponse(
+    private fun responseOf(preview: EditionPreview, copies: List<CopyOnBookshelf>): IsbnResponse = IsbnResponse(
         isbn13 = preview.isbn.digits,
         kind = preview.kind,
         title = preview.title,
@@ -96,5 +101,8 @@ class IsbnController(private val lookupEditionByIsbn: LookupEditionByIsbn) {
         pageCount = preview.pageCount,
         summary = preview.summary,
         coverUrl = preview.coverUrl,
+        copies = copies.map {
+            CopyResponse(it.copyId.value.toString(), BookshelfResponse(it.bookshelfId.value.toString(), it.bookshelfName))
+        },
     )
 }
