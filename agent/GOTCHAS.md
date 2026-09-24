@@ -66,6 +66,13 @@ true; the diary keeps the date it was found.
   body type mismatch`, and expects `400` with the declared problem body for
   each: the backend must answer a `Problem` to a malformed uuid and to a body
   of the wrong types, not Spring's plain 400.
+- The verifier's `auto: path 'id' type mismatch` sends the id
+  `<<not a string/uuid>>`, encoded with `%2F`. Tomcat rejects an encoded
+  slash by default with its own `text/html` 400, before Spring; with
+  `encodedSolidusHandling` relaxed, Spring Security's `StrictHttpFirewall`
+  rejects it next, and the `/error` dispatch, anonymous, answers `403`. The
+  controller advice sees neither; `ProblemAdviceTest` with a plain non-uuid
+  id is green while the contract case is red.
 - Contracteer honours `readOnly`: the mock answers `400` to a request whose
   body carries a read-only field, even empty. The contract avoids `readOnly`
   and gives a request its own schema instead.
@@ -130,8 +137,9 @@ true; the diary keeps the date it was found.
   `@SpringBootTest` with explicit `classes` does not detect nested
   `@TestConfiguration` classes: `@Import` them.
 - The web slice (`@WebSliceTest`, in the `fixture` package) component-scans
-  the `infrastructure.web` package of both contexts, so every use case a
-  controller of either takes must be in the class-level
+  `library.infrastructure.web`, the only web package since T037 moved the
+  ISBN endpoint there, so every use case a controller of it takes must be in
+  the class-level
   `@MockitoBean(types = [...])` of every web-slice test, not only the one
   exercised. Its `WebSliceConfiguration` cannot live in the root test
   package: a `@SpringBootTest` without `classes` looks for one
@@ -215,10 +223,28 @@ true; the diary keeps the date it was found.
 - `BnfStubs` matches the search by `withQueryParam("query", containing(isbn))`,
   so a stub keeps matching when the query grows clauses; assert the query in
   full from `server.allServeEvents` instead.
-- A problem detail is built in the controller (`ProblemDetail.forStatus`
-  with `type`) and answered as a `ResponseEntity` body; Spring writes
-  `application/problem+json` and derives `title` from the status. No advice,
-  no exception, no `spring.mvc.problemdetails.enabled`.
+- A problem detail is built in the controller with `problem(status, type)`
+  of `Problems.kt` and answered with `.asResponse()`; Spring writes
+  `application/problem+json` and derives `title` from the status.
+  `ProblemAdvice` answers what fails before a controller runs: a path
+  variable of the wrong type and an unreadable body, as
+  `/problems/validation` without `detail`. The other handlers it inherits
+  from `ResponseEntityExceptionHandler` still answer Spring's own problem,
+  `detail` included. No exception, no `spring.mvc.problemdetails.enabled`.
+- A request that is not a `GET` and carries no `X-Requested-With` is denied,
+  so every test posting through the security chain sends it: the web-slice
+  tests by hand, `ApiContractTest`'s `FixedReaderHeaders` in its map, the
+  scenarios through the `restTestClient` bean of `StubbedSources` as a
+  default header. That bean replaces the autoconfigured client, so a
+  `RestTestClientBuilderCustomizer` would not reach it.
+- The JDK `HttpClient` writes header values as US-ASCII (`Léa` leaves as
+  `L?a`) and Tomcat reads them as ISO-8859-1. The scenario client is built on
+  `SimpleClientHttpRequestFactory`, which sends the UTF-8 bytes, and the
+  security filter decodes `Remote-Name` from ISO-8859-1 bytes to UTF-8; the
+  other `Remote-*` headers are read as they come.
+- The scenario WireMock servers live as long as the context, across classes;
+  `FreshSources` on `ScenarioTest` clears their request journal before each
+  case, so `verify(0, …)` counts only the case's own requests. The stubs stay.
 - `/actuator/health` answers `{"groups":["liveness","readiness"],
   "status":"UP"}`, not the bare status.
 - `FastEntryScenarios > S1 Typed ISBN, found` compares the whole `200` body
