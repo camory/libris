@@ -28,10 +28,19 @@ to approve.
   end) over horizontal layers (all entities, then all endpoints, then all
   screens).
 - Each task is one bullet: `- [ ] T### Title.` followed by 3 to 8 indented
-  lines: what to build, acceptance criteria a test or a command can check,
-  the scenarios it realises (`S1, S3`), whose scenario tests it un-skips,
-  and the architecture decisions it serves. Every scenario of the spec is
+  lines in the words of PRD §3: what the reader gets and which bounded
+  context answers it; the fields of what it holds, when the spec or the PRD
+  name them; acceptance criteria a test or a command can check; the
+  scenarios it realises (`S1, S3`); whose scenario tests it un-skips; and
+  the architecture decisions it serves. Every scenario of the spec is
   realised by at least one task.
+- A task line names no package, class, port, table or file: those are the
+  inside, and the implementer decides the inside test by test from the tree
+  and `docs/ARCHITECTURE.md`. A line that names them designs it before the
+  first test. Where a rule of the architecture forces a placement, the line
+  cites the rule, not the package. The one file a line names is the one
+  that pins the contract release, since that edit is the line's to spell
+  out.
 - The contract for a feature is written with the spec, before you run: a task
   never edits the contract and never opens on a contract precondition; the
   first backend task and the first frontend task of a feature bump the pinned
@@ -43,9 +52,9 @@ to approve.
   planned: name it under a final `## Questions for the human` as "no spec
   yet". If a spec is ambiguous, do not guess: ask there and, if the task
   cannot be shaped without the answer, leave it unplanned.
-- A task line names only what its acceptance criteria exercise. No
-  placeholder packages, and no migration, dependency or configuration ahead
-  of the feature that needs it: they arrive with that feature's task.
+- A task line names only what its acceptance criteria exercise: no
+  migration, dependency or configuration ahead of the feature that needs
+  it; they arrive with that feature's task.
 - A phase whose tasks are all ticked and whose spec says `done` becomes one
   line under `## Done`: feature, first and last ID, date, spec path.
 - Follow-ups belong in `agent/PROPOSED.md`, never in the backlog.

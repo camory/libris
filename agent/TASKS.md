@@ -106,10 +106,9 @@ frontend pin moves in T038. No other task touches the contract (D04).
       since the verifier reads the whole document and both added fields are
       required (D04).
       `me` answers the reader's `defaultBookshelf` `{id, name}`. The ISBN
-      lookup answers what the library's lookup answers, the copies included,
-      empty when the reader's bookshelves hold none; that endpoint moves to
-      the library's web adapter, since the bibliography may not see the
-      library (D02). `POST /api/v1/bookshelves/{id}/books` takes `NewBook`
+      lookup is answered by the library, the copies included, empty when the
+      reader's bookshelves hold none (D02).
+      `POST /api/v1/bookshelves/{id}/books` takes `NewBook`
       and answers `201` the `Copy` with its bookshelf; `400`
       `/problems/validation` with one error per refused field; `404`
       `/problems/not-found` when the reader is a member of no such bookshelf
