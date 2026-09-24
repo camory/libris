@@ -370,5 +370,23 @@ Format:
   helpers; the scenario header rides on a `restTestClient` bean, not a
   `RestTestClientBuilderCustomizer`, since that bean replaces the
   autoconfigured client; two `style` commits fix detekt slips.
-- Left over: `format: uuid` comes back with Contracteer 4.1.0; four items in
+- Review with Tophe (2026-09-24, on the open PR):
+  - **A controller calls use cases and never a repository**, now a sentence
+    of D02: `FindDefaultBookshelf` stays, a rule-free read of one aggregate
+    being a use case of its own, so the first rule it gains lands there.
+  - **The request validates itself.** `NewBookRequest.validate()` walks each
+    field through its door (`isbn13Of`, `Contribution.of`, `SeriesEntry.of`,
+    and a new `NewBook.of` that answers none on a blank title, with the
+    `require` beside it) and answers `Accepted(book)` or `Refused(errors)`,
+    one error per door that answered none. `NewBookRequestTest` is plain
+    JUnit, one case per refused field and a guard for two at once, mutation
+    run and reverted. The controller reads the answer; its five refusal
+    tests are gone, the D07 rule being that a hand-written web-slice test
+    exists only for what the contract cannot express, and the verifier
+    generates no case for a `pattern` or a `minLength` anyway.
+  - **`ProblemAdvice` extends nothing**: one `@ExceptionHandler` of the two
+    exceptions, so the API's error surface is the one the contract states.
+- Left over: `format: uuid` comes back with Contracteer 4.1.0; the contract
+  should refuse a blank title, author name and series name with a `pattern`
+  beside its `minLength: 1`, to be released as `v0.6.2` with Tophe; items in
   `agent/PROPOSED.md`.

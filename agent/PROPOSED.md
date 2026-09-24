@@ -307,6 +307,12 @@
   contract's bounds on `language`, `publicationYear`, `pageCount` and
   `series.volumeNumber` reach the use case unchecked, and a value the
   `edition` table refuses would answer `500` (found on T037, 2026-09-24).
+- Backend: the four refusal tests of `IsbnControllerTest` (ten digits,
+  separators, a trailing space, a wrong check digit) assert what the
+  contract already expresses, the path parameter's `pattern` and the
+  `400_NOT_AN_ISBN` example; D07 keeps a hand-written web-slice test for
+  what the contract cannot express only (found on the T037 review,
+  2026-09-24).
 - Backend: only `Remote-Name` is decoded from UTF-8; a non-ASCII
   `Remote-User`, `Remote-Email` or `Remote-Groups` would be read mangled
   (found on T037, 2026-09-24).
