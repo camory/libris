@@ -414,4 +414,4 @@ Format:
   lookups with different copies.
 - Left over: the button, the add and S2 are T039, S5 is T040; the case of a
   second lookup replacing the copies is in `agent/PROPOSED.md`; the U06
-  sentence for the rows is proposed in the pull request.
+  sentence for the rows went into `docs/DESIGN.md` in review.
