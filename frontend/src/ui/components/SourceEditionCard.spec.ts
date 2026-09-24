@@ -415,6 +415,24 @@ describe("SourceEditionCard", () => {
     expect(card.match(/Dans/g)).toHaveLength(1);
   });
 
+  it("gives each bookshelf its row, in the order of the answer, with no count", () => {
+    // Given
+    const onSalon: Copy = {
+      id: "7a2e3d4c-5b6a-4f70-9c81-2d3e4f5a6b72",
+      bookshelf: { id: "1c2f3e4d-5a6b-4c7d-9e8f-0a1b2c3d4e5f", name: "Salon" },
+    };
+
+    // When
+    const card = show(onePiece1, [onSalon, onLea]);
+
+    // Then
+    const salon = card.indexOf("Dans Salon");
+    const lea = card.indexOf("Dans Bibliothèque de Léa");
+    expect(salon).not.toBe(-1);
+    expect(lea).toBeGreaterThan(salon);
+    expect(card).not.toContain("exemplaires");
+  });
+
   function show(edition: SourceEdition, copies: Copy[] = []) {
     return card(edition, copies).text().replace(/\s+/g, " ");
   }
