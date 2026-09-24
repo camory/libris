@@ -55,13 +55,17 @@ private val ROMANCE_DAWN = NewBook(
     coverUrl = null,
 )
 
-private fun romanceDawn(isbn13: String = "9782723488525", title: String = "Romance dawn") = """
+private fun romanceDawn(
+    isbn13: String = "9782723488525",
+    title: String = "Romance dawn",
+    author: String = "Eiichirō Oda",
+) = """
     {
       "isbn13": "$isbn13",
       "kind": "MANGA",
       "title": "$title",
       "subtitle": null,
-      "authors": [{ "name": "Eiichirō Oda", "role": "WRITER" }],
+      "authors": [{ "name": "$author", "role": "WRITER" }],
       "series": { "name": "One Piece", "volumeNumber": 1 },
       "collection": null,
       "publisher": "Glénat",
@@ -124,6 +128,20 @@ class BookshelfControllerTest @Autowired constructor(
         // Then
         body?.get("type") shouldBe "/problems/validation"
         fieldsOf(body) shouldBe listOf("title")
+        verifyNoInteractions(addBookToBookshelf)
+    }
+
+    @Test
+    fun `an author without a name is refused`() {
+        // Given
+        given(welcomeReader("tophe", "tophe@amory.fr", "Tophe")).willReturn(TOPHE)
+
+        // When
+        val body = add(TOPHE.defaultBookshelfId, romanceDawn(author = " "), BAD_REQUEST)
+
+        // Then
+        body?.get("type") shouldBe "/problems/validation"
+        fieldsOf(body) shouldBe listOf("authors")
         verifyNoInteractions(addBookToBookshelf)
     }
 

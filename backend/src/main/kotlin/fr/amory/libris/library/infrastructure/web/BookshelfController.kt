@@ -70,12 +70,15 @@ class BookshelfController(private val addBookToBookshelf: AddBookToBookshelf) {
         @RequestBody request: NewBookRequest,
     ): ResponseEntity<Any> {
         val isbn = request.isbn13?.let { isbn13Of(it) }
+        val contributions = request.authors.map { Contribution.of(it.name, it.role) }
         val errors = buildList {
             if (request.isbn13 != null && isbn == null) add(ValidationErrorResponse("isbn13", "not-an-isbn"))
             if (request.title.isBlank()) add(ValidationErrorResponse("title", "blank"))
+            if (null in contributions) add(ValidationErrorResponse("authors", "blank"))
         }
         if (errors.isNotEmpty()) return invalid(errors).asResponse()
-        return when (val result = addBookToBookshelf(reader.id, BookshelfId(id), bookOf(request, isbn))) {
+        val book = bookOf(request, isbn, Contributions.of(contributions.filterNotNull()))
+        return when (val result = addBookToBookshelf(reader.id, BookshelfId(id), book)) {
             is Added -> ResponseEntity.status(CREATED).body(
                 CopyResponse(
                     id = result.copy.id.value.toString(),
@@ -89,12 +92,12 @@ class BookshelfController(private val addBookToBookshelf: AddBookToBookshelf) {
     private fun invalid(errors: List<ValidationErrorResponse>): ProblemDetail =
         problem(BAD_REQUEST, VALIDATION_PROBLEM).apply { setProperty("errors", errors) }
 
-    private fun bookOf(request: NewBookRequest, isbn: Isbn?): NewBook = NewBook(
+    private fun bookOf(request: NewBookRequest, isbn: Isbn?, contributions: Contributions): NewBook = NewBook(
         isbn = isbn,
         kind = request.kind,
         title = request.title,
         subtitle = request.subtitle,
-        contributions = Contributions.of(request.authors.map { Contribution(it.name, it.role) }),
+        contributions = contributions,
         series = request.series?.let { SeriesEntry(it.name, it.volumeNumber) },
         collection = request.collection,
         publisher = request.publisher,
