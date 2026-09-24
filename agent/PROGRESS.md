@@ -380,10 +380,13 @@ Format:
     `require` beside it) and answers `Accepted(book)` or `Refused(errors)`,
     one error per door that answered none. `NewBookRequestTest` is plain
     JUnit, one case per refused field and a guard for two at once, mutation
-    run and reverted. The controller reads the answer; its five refusal
-    tests are gone, the D07 rule being that a hand-written web-slice test
-    exists only for what the contract cannot express, and the verifier
-    generates no case for a `pattern` or a `minLength` anyway.
+    run and reverted. The controller reads the answer; `BookshelfControllerTest`
+    is gone whole, the D07 rule being that a hand-written web-slice test
+    exists only for what the contract cannot express: the five refusals now
+    have their unit test, and the not-owner `404` is the contract's one
+    `404`, whose case `ApiContractTest` now stubs with `NotAnOwner`, as the
+    example's name says. The verifier generates no case for a `pattern` or a
+    `minLength` anyway.
   - **`ProblemAdvice` extends nothing**: one `@ExceptionHandler` of the two
     exceptions, so the API's error surface is the one the contract states.
 - Left over: `format: uuid` comes back with Contracteer 4.1.0; the contract
