@@ -389,7 +389,9 @@ Format:
     `minLength` anyway.
   - **`ProblemAdvice` extends nothing**: one `@ExceptionHandler` of the two
     exceptions, so the API's error surface is the one the contract states.
-- Left over: `format: uuid` comes back with Contracteer 4.1.0; the contract
-  should refuse a blank title, author name and series name with a `pattern`
-  beside its `minLength: 1`, to be released as `v0.6.2` with Tophe; items in
+- Contract `v0.6.2`, released with Tophe on the review: `NewBook.title`,
+  `Author.name` and `Series.name` refuse a blank value with a `pattern`
+  beside their `minLength: 1`; the pin follows. The verifier generates no
+  case for it, so the request's unit test stays the proof.
+- Left over: `format: uuid` comes back with Contracteer 4.1.0; items in
   `agent/PROPOSED.md`.
