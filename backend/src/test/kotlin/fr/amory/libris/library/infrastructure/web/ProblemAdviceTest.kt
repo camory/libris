@@ -55,6 +55,20 @@ class ProblemAdviceTest @Autowired constructor(
         verifyNoInteractions(addBookToBookshelf)
     }
 
+    @Test
+    fun `a body of the wrong types is a validation problem`() {
+        // Given
+        given(welcomeReader("tophe", "tophe@amory.fr", "Tophe")).willReturn(TOPHE)
+
+        // When
+        val body = add(TOPHE.defaultBookshelfId.value.toString(), """"Romance dawn"""")
+
+        // Then
+        body?.get("type") shouldBe "/problems/validation"
+        body!! shouldNotContainKey "detail"
+        verifyNoInteractions(addBookToBookshelf)
+    }
+
     private fun add(bookshelf: String, book: String): Map<String, Any>? =
         client.post()
             .uri("/api/v1/bookshelves/{id}/books", bookshelf)
