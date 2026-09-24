@@ -101,7 +101,7 @@ frontend pin moves in T038. No other task touches the contract (D04).
       Realises S4 on the backend; un-skips nothing, its scenario test waiting
       for the API of T037.
 
-- [ ] T037 Backend: the API of the bookshelf, on `v0.6.0`.
+- [x] T037 Backend: the API of the bookshelf, on `v0.6.0`.
       `ApiContractTest` pins `v0.6.0`: the backend's one bump, and one task,
       since the verifier reads the whole document and both added fields are
       required (D04). The reader's answer names their `defaultBookshelf`,
