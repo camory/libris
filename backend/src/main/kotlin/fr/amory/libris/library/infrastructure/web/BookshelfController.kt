@@ -1,0 +1,94 @@
+package fr.amory.libris.library.infrastructure.web
+
+import fr.amory.libris.bibliography.domain.Contribution
+import fr.amory.libris.bibliography.domain.ContributionRole
+import fr.amory.libris.bibliography.domain.Contributions
+import fr.amory.libris.bibliography.domain.Isbn
+import fr.amory.libris.bibliography.domain.Kind
+import fr.amory.libris.bibliography.domain.SeriesEntry
+import fr.amory.libris.library.application.AddBookResult.Added
+import fr.amory.libris.library.application.AddBookResult.NoSuchBookshelf
+import fr.amory.libris.library.application.AddBookResult.NotAnOwner
+import fr.amory.libris.library.application.AddBookToBookshelf
+import fr.amory.libris.library.application.NewBook
+import fr.amory.libris.library.domain.bookshelf.BookshelfId
+import fr.amory.libris.library.domain.reader.Reader
+import org.springframework.http.HttpStatus.CREATED
+import org.springframework.http.HttpStatus.NOT_FOUND
+import org.springframework.http.ResponseEntity
+import org.springframework.security.core.annotation.AuthenticationPrincipal
+import org.springframework.web.bind.annotation.PathVariable
+import org.springframework.web.bind.annotation.PostMapping
+import org.springframework.web.bind.annotation.RequestBody
+import org.springframework.web.bind.annotation.RestController
+import java.util.UUID
+
+data class BookshelfResponse(
+    val id: String,
+    val name: String,
+)
+
+data class CopyResponse(
+    val id: String,
+    val bookshelf: BookshelfResponse,
+)
+
+data class NewAuthorRequest(
+    val name: String,
+    val role: ContributionRole,
+)
+
+data class NewSeriesRequest(
+    val name: String,
+    val volumeNumber: Int?,
+)
+
+data class NewBookRequest(
+    val isbn13: String?,
+    val kind: Kind,
+    val title: String,
+    val subtitle: String?,
+    val authors: List<NewAuthorRequest>,
+    val series: NewSeriesRequest?,
+    val collection: String?,
+    val publisher: String?,
+    val publicationYear: Int?,
+    val language: String?,
+    val pageCount: Int?,
+    val summary: String?,
+    val coverUrl: String?,
+)
+
+@RestController
+class BookshelfController(private val addBookToBookshelf: AddBookToBookshelf) {
+    @PostMapping("/api/v1/bookshelves/{id}/books")
+    fun add(
+        @AuthenticationPrincipal reader: Reader,
+        @PathVariable("id") id: UUID,
+        @RequestBody request: NewBookRequest,
+    ): ResponseEntity<Any> = when (val result = addBookToBookshelf(reader.id, BookshelfId(id), bookOf(request))) {
+        is Added -> ResponseEntity.status(CREATED).body(
+            CopyResponse(
+                id = result.copy.id.value.toString(),
+                bookshelf = BookshelfResponse(result.bookshelf.id.value.toString(), result.bookshelf.name),
+            ),
+        )
+        NoSuchBookshelf, NotAnOwner -> problem(NOT_FOUND, NOT_FOUND_PROBLEM).asResponse()
+    }
+
+    private fun bookOf(request: NewBookRequest): NewBook = NewBook(
+        isbn = request.isbn13?.let { Isbn.of(it) },
+        kind = request.kind,
+        title = request.title,
+        subtitle = request.subtitle,
+        contributions = Contributions.of(request.authors.map { Contribution(it.name, it.role) }),
+        series = request.series?.let { SeriesEntry(it.name, it.volumeNumber) },
+        collection = request.collection,
+        publisher = request.publisher,
+        publicationYear = request.publicationYear,
+        language = request.language,
+        pageCount = request.pageCount,
+        summary = request.summary,
+        coverUrl = request.coverUrl,
+    )
+}

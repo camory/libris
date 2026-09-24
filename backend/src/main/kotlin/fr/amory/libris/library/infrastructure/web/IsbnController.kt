@@ -11,7 +11,6 @@ import fr.amory.libris.bibliography.domain.lookup.EditionPreview
 import fr.amory.libris.library.application.lookup.CopyOnBookshelf
 import fr.amory.libris.library.application.lookup.LookupIsbnForReader
 import fr.amory.libris.library.domain.reader.Reader
-import org.springframework.http.HttpStatus
 import org.springframework.http.HttpStatus.BAD_REQUEST
 import org.springframework.http.HttpStatus.NOT_FOUND
 import org.springframework.http.HttpStatus.SERVICE_UNAVAILABLE
@@ -21,17 +20,9 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.RestController
-import java.net.URI
 
-private const val VALIDATION_PROBLEM = "/problems/validation"
-private const val NOT_FOUND_PROBLEM = "/problems/not-found"
 private const val SOURCES_UNAVAILABLE_PROBLEM = "/problems/sources-unavailable"
 private val ISBN_PATH = Regex("97[89][0-9]{10}")
-
-data class ValidationErrorResponse(
-    val field: String,
-    val code: String,
-)
 
 data class IsbnAuthorResponse(
     val name: String,
@@ -59,13 +50,6 @@ data class IsbnResponse(
     val coverUrl: String?,
     val copies: List<CopyResponse>,
 )
-
-private fun problem(status: HttpStatus, type: String): ProblemDetail =
-    ProblemDetail.forStatus(status).apply {
-        this.type = URI.create(type)
-    }
-
-private fun ProblemDetail.asResponse(): ResponseEntity<Any> = ResponseEntity.status(status).body(this)
 
 @RestController
 class IsbnController(private val lookupIsbnForReader: LookupIsbnForReader) {

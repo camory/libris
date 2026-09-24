@@ -1,6 +1,7 @@
 package fr.amory.libris.library.infrastructure.web
 
 import fr.amory.libris.fixture.WebSliceTest
+import fr.amory.libris.library.application.AddBookToBookshelf
 import fr.amory.libris.library.application.FindDefaultBookshelf
 import fr.amory.libris.library.application.WelcomeReader
 import fr.amory.libris.library.application.lookup.LookupIsbnForReader
@@ -13,7 +14,14 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean
 import org.springframework.test.web.servlet.client.RestTestClient
 
 @WebSliceTest
-@MockitoBean(types = [WelcomeReader::class, LookupIsbnForReader::class, FindDefaultBookshelf::class])
+@MockitoBean(
+    types = [
+        WelcomeReader::class,
+        LookupIsbnForReader::class,
+        FindDefaultBookshelf::class,
+        AddBookToBookshelf::class,
+    ],
+)
 class SecurityConfigTest @Autowired constructor(
     private val client: RestTestClient,
     private val welcomeReader: WelcomeReader,

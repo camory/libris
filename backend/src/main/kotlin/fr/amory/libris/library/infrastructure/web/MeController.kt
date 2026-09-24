@@ -23,16 +23,6 @@ data class CurrentReaderResponse(
     val defaultBookshelf: BookshelfResponse,
 )
 
-data class BookshelfResponse(
-    val id: String,
-    val name: String,
-)
-
-data class CopyResponse(
-    val id: String,
-    val bookshelf: BookshelfResponse,
-)
-
 @RestController
 class MeController(private val findDefaultBookshelf: FindDefaultBookshelf) {
     @GetMapping("/api/v1/me")
