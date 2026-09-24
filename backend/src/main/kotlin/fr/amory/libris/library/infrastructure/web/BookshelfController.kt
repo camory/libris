@@ -1,10 +1,8 @@
 package fr.amory.libris.library.infrastructure.web
 
 import fr.amory.libris.bibliography.domain.Contribution
-import fr.amory.libris.bibliography.domain.ContributionRole
 import fr.amory.libris.bibliography.domain.Contributions
 import fr.amory.libris.bibliography.domain.Isbn
-import fr.amory.libris.bibliography.domain.Kind
 import fr.amory.libris.bibliography.domain.SeriesEntry
 import fr.amory.libris.library.application.AddBookResult.Added
 import fr.amory.libris.library.application.AddBookResult.NoSuchBookshelf
@@ -33,32 +31,6 @@ data class BookshelfResponse(
 data class CopyResponse(
     val id: String,
     val bookshelf: BookshelfResponse,
-)
-
-data class NewAuthorRequest(
-    val name: String,
-    val role: ContributionRole,
-)
-
-data class NewSeriesRequest(
-    val name: String,
-    val volumeNumber: Int?,
-)
-
-data class NewBookRequest(
-    val isbn13: String?,
-    val kind: Kind,
-    val title: String,
-    val subtitle: String?,
-    val authors: List<NewAuthorRequest>,
-    val series: NewSeriesRequest?,
-    val collection: String?,
-    val publisher: String?,
-    val publicationYear: Int?,
-    val language: String?,
-    val pageCount: Int?,
-    val summary: String?,
-    val coverUrl: String?,
 )
 
 @RestController
