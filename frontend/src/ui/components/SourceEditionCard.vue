@@ -47,6 +47,19 @@ const authorLines = computed(() => {
   }));
 });
 
+const bookshelves = computed(() => {
+  const held = new Map<string, { name: string; count: number }>();
+  for (const copy of props.copies) {
+    const bookshelf = held.get(copy.bookshelf.id) ?? {
+      name: copy.bookshelf.name,
+      count: 0,
+    };
+    bookshelf.count += 1;
+    held.set(copy.bookshelf.id, bookshelf);
+  }
+  return [...held].map(([id, { name, count }]) => ({ id, name, count }));
+});
+
 const languageWord = computed(() => {
   const language = props.edition.language;
   if (language === null) {
@@ -115,10 +128,20 @@ const rows = computed(() => {
       </div>
     </div>
 
-    <div v-if="copies.length > 0">
-      <p v-for="copy in copies" :key="copy.id" class="text-body">
-        {{ t("isbn.card.copies", { bookshelf: copy.bookshelf.name }) }}
-      </p>
+    <div v-if="bookshelves.length > 0">
+      <i18n-t
+        v-for="bookshelf in bookshelves"
+        :key="bookshelf.id"
+        keypath="isbn.card.copies"
+        :plural="bookshelf.count"
+        tag="p"
+        class="text-body"
+      >
+        <template #bookshelf>{{ bookshelf.name }}</template>
+        <template #count>
+          <span class="text-muted">{{ bookshelf.count }}</span>
+        </template>
+      </i18n-t>
     </div>
 
     <div>

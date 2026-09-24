@@ -398,6 +398,23 @@ describe("SourceEditionCard", () => {
     expect(positions).toEqual([...positions].sort((a, b) => a - b));
   });
 
+  it("counts the copies of a bookshelf that holds more than one, on its row", () => {
+    // Given
+    const secondOnLea: Copy = {
+      ...onLea,
+      id: "7a2e3d4c-5b6a-4f70-9c81-2d3e4f5a6b72",
+    };
+
+    // When
+    const card = show(onePiece1, [onLea, secondOnLea]);
+
+    // Then
+    expect(
+      card.match(/Dans Bibliothèque de Léa · 2 exemplaires/g),
+    ).toHaveLength(1);
+    expect(card.match(/Dans/g)).toHaveLength(1);
+  });
+
   function show(edition: SourceEdition, copies: Copy[] = []) {
     return card(edition, copies).text().replace(/\s+/g, " ");
   }
