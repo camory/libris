@@ -325,4 +325,4 @@
   first on the card: `IsbnView.spec.ts` has one answer per `FakeIsbnApi`, and
   each scenario boots a fresh app; the mutation keeping the previous copies
   survives the gate. A `FakeIsbnApi` of successive answers would carry the
-  case, with T039's added copy (found on T038, 2026-09-24).
+  case, with T039's added copy (found on T038, 2026-09-25).

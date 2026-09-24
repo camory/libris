@@ -396,7 +396,7 @@ Format:
 - Left over: `format: uuid` comes back with Contracteer 4.1.0; items in
   `agent/PROPOSED.md`.
 
-## 2026-09-24 — T038 The copies on the card, on v0.6.2 — done
+## 2026-09-25 — T038 The copies on the card, on v0.6.2 — done
 - Did: the frontend pins `v0.6.2`; the lookup's found answer carries the
   copies beside the edition (`Copy`, `Bookshelf` in `domain/`); the card
   shows one row per bookshelf holding a copy, the count after a dot past one.
@@ -406,7 +406,7 @@ Format:
   *exemplaires* black, and muting the tail whole would split the sentence
   over two keys, which the brief rejected.
 - Decided: the rows' wrapper is rendered only when a bookshelf holds a copy,
-  or an empty part would still take the card's 14 of gap.
+  or an empty part would still take the card's 14 px of gap.
 - Deviations from the brief: the two guards of steps 5 and 6 were written in
   one go and committed apart; their mutations (rows sorted by name, a row
   outside the loop) were run and reverted. Step 9's second mutation, the view
