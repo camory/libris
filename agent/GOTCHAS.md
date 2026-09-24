@@ -407,7 +407,8 @@ true; the diary keeps the date it was found.
   default rule answers the first form for 1 and the second for any other
   count, 0 included. The placeholders are filled by the named slots
   (`#bookshelf`, `#count`); a slot is the only part of the sentence a class
-  can style, so a `muted` count covers the number, not the words around it.
+  can style, so a class on the count would cover the number alone, not the
+  words around it.
 - `grep -rn <text> frontend` walks `frontend/node_modules`, so a search for a
   version or a package name answers pages of changelogs. `git grep -n <text>
   -- frontend` searches the tracked tree alone, which is what a criterion

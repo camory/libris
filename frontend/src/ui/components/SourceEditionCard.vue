@@ -138,9 +138,7 @@ const rows = computed(() => {
         class="text-body"
       >
         <template #bookshelf>{{ bookshelf.name }}</template>
-        <template #count>
-          <span class="text-muted">{{ bookshelf.count }}</span>
-        </template>
+        <template #count>{{ bookshelf.count }}</template>
       </i18n-t>
     </div>
 

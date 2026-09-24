@@ -400,10 +400,11 @@ Format:
 - Did: the frontend pins `v0.6.2`; the lookup's found answer carries the
   copies beside the edition (`Copy`, `Bookshelf` in `domain/`); the card
   shows one row per bookshelf holding a copy, the count after a dot past one.
-- Decided: the count's `muted` wraps the number alone. The entry is one
-  sentence of two forms and only its slots take a class; muting
-  *· 2 exemplaires* whole would split the sentence over two keys, which the
-  brief rejected.
+- Decided (Tophe, in review): the row is one `body` sentence in `text`,
+  nothing `muted`. The entry is one sentence of two forms and only its slots
+  take a class: a `muted` count would grey the number and leave
+  *exemplaires* black, and muting the tail whole would split the sentence
+  over two keys, which the brief rejected.
 - Decided: the rows' wrapper is rendered only when a bookshelf holds a copy,
   or an empty part would still take the card's 14 of gap.
 - Deviations from the brief: the two guards of steps 5 and 6 were written in
