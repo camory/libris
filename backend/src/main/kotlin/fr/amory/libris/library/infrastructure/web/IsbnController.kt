@@ -101,8 +101,11 @@ class IsbnController(private val lookupIsbnForReader: LookupIsbnForReader) {
         pageCount = preview.pageCount,
         summary = preview.summary,
         coverUrl = preview.coverUrl,
-        copies = copies.map {
-            CopyResponse(it.copyId.value.toString(), BookshelfResponse(it.bookshelfId.value.toString(), it.bookshelfName))
-        },
+        copies = copies.map { responseOf(it) },
+    )
+
+    private fun responseOf(copy: CopyOnBookshelf): CopyResponse = CopyResponse(
+        id = copy.copyId.value.toString(),
+        bookshelf = BookshelfResponse(copy.bookshelfId.value.toString(), copy.bookshelfName),
     )
 }
