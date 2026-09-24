@@ -41,8 +41,9 @@ data class NewBookRequest(
     val coverUrl: String?,
 ) {
     fun validate(): NewBookValidation {
+        val isbn = isbn13?.let { isbn13Of(it) }
         val book = NewBook.of(
-            isbn = isbn13?.let { isbn13Of(it) },
+            isbn = isbn,
             kind = kind,
             title = title,
             subtitle = subtitle,
@@ -56,6 +57,10 @@ data class NewBookRequest(
             summary = summary,
             coverUrl = coverUrl,
         )
-        return if (book == null) Refused(listOf(ValidationErrorResponse("title", "blank"))) else Accepted(book)
+        val errors = buildList {
+            if (isbn13 != null && isbn == null) add(ValidationErrorResponse("isbn13", "not-an-isbn"))
+            if (book == null) add(ValidationErrorResponse("title", "blank"))
+        }
+        return if (book != null && errors.isEmpty()) Accepted(book) else Refused(errors)
     }
 }
