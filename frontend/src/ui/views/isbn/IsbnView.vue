@@ -158,12 +158,15 @@ async function search() {
 
     <SourceEditionCardSkeleton v-if="searching" class="mt-5" />
 
-    <SourceEditionCard
-      v-else-if="edition"
-      :edition="edition"
-      :copies="copies"
-      class="mt-5"
-    />
+    <div v-else-if="edition" class="mt-5 flex flex-col gap-2">
+      <SourceEditionCard :edition="edition" :copies="copies" />
+      <button
+        type="button"
+        class="flex h-[50px] items-center justify-center gap-2 rounded-xl bg-accent text-button text-white active:bg-accent-pressed disabled:opacity-70"
+      >
+        {{ t("isbn.add") }}
+      </button>
+    </div>
 
     <p v-if="message" class="mt-5 flex items-start gap-2 text-body text-danger">
       <IconAlert />

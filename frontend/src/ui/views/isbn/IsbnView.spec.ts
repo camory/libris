@@ -7,9 +7,14 @@ import {
 import { flushPromises, mount } from "@vue/test-utils";
 import { describe, expect, it } from "vitest";
 import { barcodeScannerKey } from "../../../application/BarcodeScanner";
+import { bookshelfApiKey } from "../../../application/BookshelfApi";
 import { isbnApiKey, type IsbnAnswer } from "../../../application/IsbnApi";
+import { meApiKey } from "../../../application/MeApi";
 import { FakeBarcodeScanner } from "../../../fixture/FakeBarcodeScanner";
+import { FakeBookshelfApi } from "../../../fixture/FakeBookshelfApi";
 import { FakeIsbnApi } from "../../../fixture/FakeIsbnApi";
+import { FakeMeApi } from "../../../fixture/FakeMeApi";
+import { lea } from "../../../fixture/Readers";
 import { onePiece1 } from "../../../fixture/SourceEditions";
 import { createLibrisI18n } from "../../i18n";
 import IsbnView from "./IsbnView.vue";
@@ -310,6 +315,23 @@ describe("IsbnView", () => {
     ).toBeDefined();
   });
 
+  it("offers to add the ouvrage under the card", async () => {
+    // Given
+    const screen = open(new FakeIsbnApi(found));
+
+    // When
+    await ask(screen, "9782723488525");
+
+    // Then
+    const button = screen.getByRole("button", {
+      name: "Ajouter à ma bibliothèque",
+    });
+    expect(
+      screen.getByText("9782723488525").compareDocumentPosition(button) &
+        Node.DOCUMENT_POSITION_FOLLOWING,
+    ).toBeTruthy();
+  });
+
   it("stops the camera when the screen goes away", async () => {
     // Given
     const scanner = new FakeBarcodeScanner(true, neverRead);
@@ -323,18 +345,30 @@ describe("IsbnView", () => {
     expect(scanner.stops).toBe(1);
   });
 
-  function open(api: FakeIsbnApi, scanner?: FakeBarcodeScanner) {
-    return within(mountView(api, scanner).element as HTMLElement);
+  function open(
+    api: FakeIsbnApi,
+    scanner?: FakeBarcodeScanner,
+    bookshelfApi?: FakeBookshelfApi,
+  ) {
+    return within(
+      mountView(api, scanner, bookshelfApi).element as HTMLElement,
+    );
   }
 
   function mountView(
     api: FakeIsbnApi,
     scanner: FakeBarcodeScanner = new FakeBarcodeScanner(false),
+    bookshelfApi = new FakeBookshelfApi(new Error("no add in this case")),
   ) {
     return mount(IsbnView, {
       global: {
         plugins: [createLibrisI18n()],
-        provide: { [isbnApiKey]: api, [barcodeScannerKey]: scanner },
+        provide: {
+          [isbnApiKey]: api,
+          [barcodeScannerKey]: scanner,
+          [meApiKey]: new FakeMeApi(lea),
+          [bookshelfApiKey]: bookshelfApi,
+        },
       },
     });
   }

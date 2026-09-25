@@ -15,6 +15,7 @@ const fr = {
     scan: "Scanner le code-barres",
     closeCamera: "Fermer la caméra",
     searching: "Recherche en cours…",
+    add: "Ajouter à ma bibliothèque",
     invalid: "ISBN invalide",
     unknown: "ISBN inconnu",
     error: "Erreur lors de la recherche, veuillez réessayer plus tard.",
