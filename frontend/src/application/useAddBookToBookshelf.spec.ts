@@ -6,6 +6,7 @@ import { FakeMeApi } from "../fixture/FakeMeApi";
 import { lea } from "../fixture/Readers";
 import { onePiece1 } from "../fixture/SourceEditions";
 import type { AddAnswer } from "./BookshelfApi";
+import type { MeApi } from "./MeApi";
 import { useAddBookToBookshelf } from "./useAddBookToBookshelf";
 
 const copy: Copy = {
@@ -99,5 +100,21 @@ describe("useAddBookToBookshelf", () => {
 
     // Then
     expect(state.value).toEqual({ status: "notAdded" });
+  });
+
+  it("is not added when Libris does not answer the reader", async () => {
+    // Given
+    const noReader: MeApi = {
+      currentReader: () => Promise.reject(new TypeError("Failed to fetch")),
+    };
+    const bookshelfApi = new FakeBookshelfApi(added);
+    const { state, add } = useAddBookToBookshelf(noReader, bookshelfApi);
+
+    // When
+    await add(onePiece1);
+
+    // Then
+    expect(state.value).toEqual({ status: "notAdded" });
+    expect(bookshelfApi.asked).toEqual([]);
   });
 });
