@@ -140,6 +140,23 @@ frontend pin moves in T038. No other task touches the contract (D04).
       Realises S4 on the frontend; un-skips
       `S4 The ouvrage is already in a bookshelf`.
 
+- [ ] T041 Frontend: the bookshelf rows of the card, more visible, and the absence.
+      Precondition (human): the S4 scenario of no bookshelf of the reader's
+      expects the absence row, skipped until this task (D07).
+      Each bookshelf row of the card, between the authors and the field rows,
+      is in `body` semibold with the book icon at 22 before its words, so the
+      reader in a bookstore sees at a glance where their copies are; when no
+      bookshelf of the reader holds a copy, the card shows one row of the
+      same shape, *Dans aucune de vos bibliothèques*, on an edition the house
+      holds as on one the sources answer; every word from the `fr` catalogue
+      (U06, U07, U08).
+      Component tests over no copy and one copy read the weight, the icon
+      and the words; the absence word is asserted in three places
+      (`agent/GOTCHAS.md`); the fast-entry scenarios stay green with the
+      row they gain.
+      Placed before T039 so the button lands on the final rows. Un-skips
+      `S4 The ouvrage is already in a bookshelf, none of the reader's`.
+
 - [ ] T039 Frontend: the ouvrage added from the card.
       The reader the app knows carries their default bookshelf, read from
       the reader's answer, so the app knows where the add goes from its first

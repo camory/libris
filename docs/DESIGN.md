@@ -169,9 +169,11 @@ otherwise one line per author, the name in `text` and its roles after a
 middle dot in `muted` (*René Goscinny · scénario*, *Albert Uderzo ·
 dessin*); the authors keep the order of the answer, the house's, by role
 then by name, and the card sorts nothing. Between the top part and the
-field rows, one row per bookshelf holding a copy, `body`, `text`: *Dans*
-and the name, then the count after a middle dot when it holds more than one
-(*Dans Bibliothèque de Léa · 2 exemplaires*), in the order of the answer.
+field rows, one row per bookshelf holding a copy, `body` semibold, `text`,
+the book icon at 22 before the words: *Dans* and the name, then the count
+after a middle dot when it holds more than one (*Dans Bibliothèque de Léa ·
+2 exemplaires*), in the order of the answer; when no bookshelf of the reader
+holds a copy, one row of the same shape, *Dans aucune de vos bibliothèques*.
 Middle part: one row per field, `body`, the label at the left in
 `muted` and the value at the right in `text`, right-aligned, 7 of vertical
 padding, a `border` hairline above each row: *Collection*, *Éditeur*,
@@ -191,8 +193,8 @@ picks an entry and never branches.
 
 ### U07 — Icons: hand-drawn, inline, no library
 An icon is an inline SVG on a 24 grid, stroke 1.8, round caps and joins,
-`currentColor`, no fill; 22 for the alert of a message, 32 on the tab
-bar, 48 for an empty state (U05). Each is its own component under `ui/components/icons`, named
+`currentColor`, no fill; 22 for the alert of a message and the bookshelf
+rows of a card (U06), 32 on the tab bar, 48 for an empty state (U05). Each is its own component under `ui/components/icons`, named
 by what it shows (`IconHome`, `IconBarcode`, `IconClose`, `IconAlert`,
 `IconBook`), drawn once and reused. No icon font, no icon
 package (D05: no UI library).
