@@ -396,7 +396,9 @@ true; the diary keeps the date it was found.
   `new Event("error")` on the element itself and awaits `nextTick()`. Vue Test
   Utils' `findComponent(SomeIcon)` is how a rendered icon is asserted: an
   `aria-hidden` SVG carries no text and no role, so no `getBy*` query reaches
-  it.
+  it. Every `SourceEditionCard` draws `IconBook` on its bookshelf rows or
+  its absence row, so the cover's stand-in is proven by counting,
+  `findAllComponents(IconBook)`, never by `exists()`.
 - `vue-i18n`'s `t` answers an unknown key with the key itself, so a catalogue
   entry a component builds and never wrote renders on the screen as
   `role.BOOK.WRITER` or `isbn.card.series.BOOK`. Nothing throws and no type
@@ -409,6 +411,11 @@ true; the diary keeps the date it was found.
   (`#bookshelf`, `#count`); a slot is the only part of the sentence a class
   can style, so a class on the count would cover the number alone, not the
   words around it.
+- A type step worn at another weight is the step's class plus a weight
+  class, `text-body font-semibold`: Tailwind 4 emits `.text-body` with
+  `font-weight: var(--tw-font-weight, 400)` and `font-semibold` sets that
+  variable, so the weight wins whatever the order of the two classes, with
+  no new token in `style.css`.
 - `grep -rn <text> frontend` walks `frontend/node_modules`, so a search for a
   version or a package name answers pages of changelogs. `git grep -n <text>
   -- frontend` searches the tracked tree alone, which is what a criterion

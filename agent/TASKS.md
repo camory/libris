@@ -140,7 +140,7 @@ frontend pin moves in T038. No other task touches the contract (D04).
       Realises S4 on the frontend; un-skips
       `S4 The ouvrage is already in a bookshelf`.
 
-- [ ] T041 Frontend: the bookshelf rows of the card, more visible, and the absence.
+- [x] T041 Frontend: the bookshelf rows of the card, more visible, and the absence.
       Precondition (human): the S4 scenario of no bookshelf of the reader's
       expects the absence row, skipped until this task (D07).
       Each bookshelf row of the card, between the authors and the field rows,
