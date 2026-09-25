@@ -21,6 +21,7 @@ export class FetchBookshelfApi implements BookshelfApi {
         headers: {
           "Content-Type": "application/json",
           Accept: "application/json, application/problem+json",
+          "X-Requested-With": "XMLHttpRequest",
         },
         body: JSON.stringify({
           isbn13: edition.isbn13,
