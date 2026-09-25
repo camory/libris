@@ -10,7 +10,9 @@ import {
 } from "vue";
 import { useI18n } from "vue-i18n";
 import { barcodeScannerKey } from "../../../application/BarcodeScanner";
+import { bookshelfApiKey } from "../../../application/BookshelfApi";
 import { isbnApiKey } from "../../../application/IsbnApi";
+import { meApiKey } from "../../../application/MeApi";
 import type { Copy } from "../../../domain/Copy";
 import { Isbn } from "../../../domain/Isbn";
 import type { SourceEdition } from "../../../domain/SourceEdition";
@@ -27,6 +29,8 @@ const refusals = ["isbn.invalid", "isbn.unknown"];
 const { t } = useI18n();
 const isbnApi = inject(isbnApiKey)!;
 const barcodeScanner = inject(barcodeScannerKey)!;
+const meApi = inject(meApiKey)!;
+const bookshelfApi = inject(bookshelfApiKey)!;
 
 const typed = ref("");
 const message = ref<string>();
@@ -34,6 +38,8 @@ const refused = computed(() => refusals.includes(message.value ?? ""));
 const edition = ref<SourceEdition>();
 const copies = ref<Copy[]>([]);
 const searching = ref(false);
+const adding = ref(false);
+const added = ref(false);
 const scanning = ref(false);
 const canScan = ref(false);
 const camera = useTemplateRef<HTMLVideoElement>("camera");
@@ -66,8 +72,23 @@ async function toggleCamera() {
   await openCamera();
 }
 
+async function add() {
+  adding.value = true;
+  const reader = await meApi.currentReader();
+  const answer = await bookshelfApi.add(
+    reader.defaultBookshelf.id,
+    edition.value!,
+  );
+  adding.value = false;
+  if (answer.outcome === "added") {
+    copies.value = [...copies.value, answer.copy];
+    added.value = true;
+  }
+}
+
 async function search() {
   edition.value = undefined;
+  added.value = false;
   message.value = undefined;
   const isbn13 = Isbn.of(typed.value)?.digits ?? null;
   if (isbn13 === null) {
@@ -158,12 +179,19 @@ async function search() {
 
     <SourceEditionCardSkeleton v-if="searching" class="mt-5" />
 
-    <SourceEditionCard
-      v-else-if="edition"
-      :edition="edition"
-      :copies="copies"
-      class="mt-5"
-    />
+    <div v-else-if="edition" class="mt-5 flex flex-col gap-2">
+      <SourceEditionCard :edition="edition" :copies="copies" />
+      <button
+        v-if="!added"
+        type="button"
+        :disabled="adding"
+        class="flex h-[50px] items-center justify-center gap-2 rounded-xl bg-accent text-button text-white active:bg-accent-pressed disabled:opacity-70"
+        @click="add"
+      >
+        <BusySpinner v-if="adding" class="size-4" />
+        {{ adding ? t("isbn.adding") : t("isbn.add") }}
+      </button>
+    </div>
 
     <p v-if="message" class="mt-5 flex items-start gap-2 text-body text-danger">
       <IconAlert />

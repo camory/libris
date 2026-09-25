@@ -7,10 +7,19 @@ import {
 import { flushPromises, mount } from "@vue/test-utils";
 import { describe, expect, it } from "vitest";
 import { barcodeScannerKey } from "../../../application/BarcodeScanner";
+import {
+  bookshelfApiKey,
+  type AddAnswer,
+} from "../../../application/BookshelfApi";
 import { isbnApiKey, type IsbnAnswer } from "../../../application/IsbnApi";
+import { meApiKey } from "../../../application/MeApi";
 import { FakeBarcodeScanner } from "../../../fixture/FakeBarcodeScanner";
+import { FakeBookshelfApi } from "../../../fixture/FakeBookshelfApi";
 import { FakeIsbnApi } from "../../../fixture/FakeIsbnApi";
+import { FakeMeApi } from "../../../fixture/FakeMeApi";
+import { lea } from "../../../fixture/Readers";
 import { onePiece1 } from "../../../fixture/SourceEditions";
+import BusySpinner from "../../components/BusySpinner.vue";
 import { createLibrisI18n } from "../../i18n";
 import IsbnView from "./IsbnView.vue";
 
@@ -22,6 +31,17 @@ const found: IsbnAnswer = {
   copies: [],
 };
 
+const onLeasBookshelf: IsbnAnswer = {
+  outcome: "found",
+  edition: onePiece1,
+  copies: [
+    {
+      id: "6f1d2c3b-4a59-4e6f-8b70-1c2d3e4f5a61",
+      bookshelf: lea.defaultBookshelf,
+    },
+  ],
+};
+
 const unknownIsbn: IsbnAnswer = {
   outcome: "problem",
   type: "/problems/not-found",
@@ -30,6 +50,14 @@ const unknownIsbn: IsbnAnswer = {
 const sourcesDown: IsbnAnswer = {
   outcome: "problem",
   type: "/problems/sources-unavailable",
+};
+
+const added: AddAnswer = {
+  outcome: "added",
+  copy: {
+    id: "5e0c1b2a-3948-4d5e-8a6f-0b1c2d3e4f50",
+    bookshelf: lea.defaultBookshelf,
+  },
 };
 
 const neverRead = new Promise<string | null>(() => {});
@@ -310,6 +338,149 @@ describe("IsbnView", () => {
     ).toBeDefined();
   });
 
+  it("offers to add the ouvrage under the card", async () => {
+    // Given
+    const screen = open(new FakeIsbnApi(found));
+
+    // When
+    await ask(screen, "9782723488525");
+
+    // Then
+    const button = screen.getByRole("button", {
+      name: "Ajouter à ma bibliothèque",
+    });
+    expect(
+      screen.getByText("9782723488525").compareDocumentPosition(button) &
+        Node.DOCUMENT_POSITION_FOLLOWING,
+    ).toBeTruthy();
+  });
+
+  it("offers to add another copy of an ouvrage the reader has", async () => {
+    // Given
+    const screen = open(new FakeIsbnApi(onLeasBookshelf));
+
+    // When
+    await ask(screen, "9782723488525");
+
+    // Then
+    expect(
+      screen.getByRole("button", { name: "Ajouter à ma bibliothèque" }),
+    ).toBeDefined();
+  });
+
+  it("offers no add without a card", async () => {
+    // Given
+    const screen = open(new FakeIsbnApi(unknownIsbn));
+
+    // When
+    await ask(screen, "9782000000006");
+
+    // Then
+    expect(
+      screen.queryByRole("button", { name: "Ajouter à ma bibliothèque" }),
+    ).toBeNull();
+  });
+
+  it("is busy while the add runs", async () => {
+    // Given
+    const view = mountView(
+      new FakeIsbnApi(found),
+      undefined,
+      new FakeBookshelfApi(new Promise<AddAnswer>(() => {})),
+    );
+    const screen = within(view.element as HTMLElement);
+    await ask(screen, "9782723488525");
+
+    // When
+    await press(screen, "Ajouter à ma bibliothèque");
+
+    // Then
+    const button = screen.getByRole<HTMLButtonElement>("button", {
+      name: "Ajout en cours…",
+    });
+    expect(button.disabled).toBe(true);
+    expect(button.contains(view.findComponent(BusySpinner).element)).toBe(true);
+    expect(
+      screen.queryByRole("button", { name: "Ajouter à ma bibliothèque" }),
+    ).toBeNull();
+  });
+
+  it("adds the ouvrage of the card to the reader's default bookshelf", async () => {
+    // Given
+    const bookshelfApi = new FakeBookshelfApi(added);
+    const screen = open(new FakeIsbnApi(found), undefined, bookshelfApi);
+    await ask(screen, "9782723488525");
+
+    // When
+    await press(screen, "Ajouter à ma bibliothèque");
+
+    // Then
+    expect(bookshelfApi.asked).toEqual([
+      { bookshelfId: lea.defaultBookshelf.id, edition: onePiece1 },
+    ]);
+  });
+
+  it("shows the copy it added and offers no more to add", async () => {
+    // Given
+    const screen = open(
+      new FakeIsbnApi(found),
+      undefined,
+      new FakeBookshelfApi(added),
+    );
+    await ask(screen, "9782723488525");
+
+    // When
+    await press(screen, "Ajouter à ma bibliothèque");
+
+    // Then
+    expect(screen.getByText("Dans Bibliothèque de Léa")).toBeDefined();
+    expect(screen.queryByText("Dans aucune de vos bibliothèques")).toBeNull();
+    expect(
+      screen.queryByRole("button", { name: "Ajouter à ma bibliothèque" }),
+    ).toBeNull();
+    expect(
+      screen.queryByRole("button", { name: "Ajout en cours…" }),
+    ).toBeNull();
+  });
+
+  it("counts the copy it added beside the one the reader had", async () => {
+    // Given
+    const screen = open(
+      new FakeIsbnApi(onLeasBookshelf),
+      undefined,
+      new FakeBookshelfApi(added),
+    );
+    await ask(screen, "9782723488525");
+
+    // When
+    await press(screen, "Ajouter à ma bibliothèque");
+
+    // Then
+    expect(
+      screen.getByText("Dans Bibliothèque de Léa · 2 exemplaires"),
+    ).toBeDefined();
+  });
+
+  it("offers the add again on the next card", async () => {
+    // Given
+    const screen = open(
+      new FakeIsbnApi(found),
+      undefined,
+      new FakeBookshelfApi(added),
+    );
+    await ask(screen, "9782723488525");
+    await press(screen, "Ajouter à ma bibliothèque");
+
+    // When
+    await ask(screen, "9782723488525");
+
+    // Then
+    expect(screen.getByText("Dans aucune de vos bibliothèques")).toBeDefined();
+    expect(
+      screen.getByRole("button", { name: "Ajouter à ma bibliothèque" }),
+    ).toBeDefined();
+  });
+
   it("stops the camera when the screen goes away", async () => {
     // Given
     const scanner = new FakeBarcodeScanner(true, neverRead);
@@ -323,18 +494,28 @@ describe("IsbnView", () => {
     expect(scanner.stops).toBe(1);
   });
 
-  function open(api: FakeIsbnApi, scanner?: FakeBarcodeScanner) {
-    return within(mountView(api, scanner).element as HTMLElement);
+  function open(
+    api: FakeIsbnApi,
+    scanner?: FakeBarcodeScanner,
+    bookshelfApi?: FakeBookshelfApi,
+  ) {
+    return within(mountView(api, scanner, bookshelfApi).element as HTMLElement);
   }
 
   function mountView(
     api: FakeIsbnApi,
     scanner: FakeBarcodeScanner = new FakeBarcodeScanner(false),
+    bookshelfApi = new FakeBookshelfApi(new Error("no add in this case")),
   ) {
     return mount(IsbnView, {
       global: {
         plugins: [createLibrisI18n()],
-        provide: { [isbnApiKey]: api, [barcodeScannerKey]: scanner },
+        provide: {
+          [isbnApiKey]: api,
+          [barcodeScannerKey]: scanner,
+          [meApiKey]: new FakeMeApi(lea),
+          [bookshelfApiKey]: bookshelfApi,
+        },
       },
     });
   }

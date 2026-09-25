@@ -1,9 +1,13 @@
-import { assert, describe, expect, inject, it } from "vitest";
+import { afterEach, assert, describe, expect, inject, it, vi } from "vitest";
 import { lea } from "../../fixture/Readers";
 import { onePiece1 } from "../../fixture/SourceEditions";
 import { FetchBookshelfApi } from "./FetchBookshelfApi";
 
 describe("FetchBookshelfApi", () => {
+  afterEach(() => {
+    vi.unstubAllGlobals();
+  });
+
   it("answers the copy now on the bookshelf", async () => {
     // Given
     const api = new FetchBookshelfApi(inject("mockBaseUrl"));
@@ -48,5 +52,31 @@ describe("FetchBookshelfApi", () => {
 
     // Then
     expect(answer).toEqual({ outcome: "problem", type: "/problems/not-found" });
+  });
+
+  it("says the add comes from the application", async () => {
+    // Given
+    const api = new FetchBookshelfApi("http://libris.invalid");
+    const sent: RequestInit[] = [];
+    vi.stubGlobal("fetch", (_url: string, init: RequestInit) => {
+      sent.push(init);
+      return Promise.resolve(
+        new Response(
+          JSON.stringify({
+            id: "5e0c1b2a-3948-4d5e-8a6f-0b1c2d3e4f50",
+            bookshelf: lea.defaultBookshelf,
+          }),
+          { status: 201 },
+        ),
+      );
+    });
+
+    // When
+    await api.add(lea.defaultBookshelf.id, onePiece1);
+
+    // Then
+    expect(sent[0]?.headers).toMatchObject({
+      "X-Requested-With": "XMLHttpRequest",
+    });
   });
 });

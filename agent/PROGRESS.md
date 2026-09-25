@@ -456,3 +456,26 @@ Format:
 - Left over: T039 and T040 un-skip S2 and S5; a shared app-over-fakes
   builder cannot live in `src/fixture` (layer rule), each file keeps its
   `open()`.
+
+## 2026-09-25 — T039 The ouvrage added from the card — done
+- Did: under the card, found or already there, *Ajouter à ma bibliothèque*;
+  the tap asks the reader, posts the card's edition to their default
+  bookshelf, and the copy joins the card's rows while the button leaves; a
+  new lookup offers it again. The add sends `X-Requested-With`. S2 un-skipped.
+- Decided: the card and its button share one `v-else-if` wrapper, `mt-5
+  flex flex-col gap-2`, so the wrapper keeps the 20 above and the button
+  sits 8 under the card. The spinner and the label sit in the button as they
+  do in *Chercher*, whose classes the button repeats.
+- Decided: the view branches on `answer.outcome === "added"` and does
+  nothing on a problem: the narrowing is needed to read the copy, and what a
+  problem shows is T040's. `adding` is set back before the branch.
+- Deviations from the brief: the two injections joined `IsbnView.vue` in
+  step 6, the first step that calls them, not in step 2. The case of step 5
+  mounts through `mountView` and wraps it itself, since `findComponent` needs
+  the wrapper that `open` hides. No guard in step 8: step 7's green replaced
+  the list, so step 8 was red.
+- Left over: a rejected add leaves the button busy and the rejection
+  unhandled (T040, S5); an add answering after a newer lookup joins that
+  card's rows; the primary button's classes are written twice
+  (`agent/PROPOSED.md`). Step 9 also proves that a lookup replaces the
+  copies of the previous one, T038's follow-up in `agent/PROPOSED.md`.

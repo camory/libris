@@ -329,3 +329,16 @@
 - Frontend: `npx prettier --check src/ui` warns on
   `src/ui/views/home/HomeView.spec.ts`, already on `main`; the gate runs no
   Prettier, so nothing catches it (found on T041, 2026-09-25).
+- Frontend: *Chercher* stays usable while an add runs, and an add that
+  answers after a newer lookup appends its copy to that card's rows and
+  leaves its button busy until then; the spec does not say what the screen
+  should do (found on T039, 2026-09-25).
+- Frontend: the primary button's box, `flex h-[50px] … disabled:opacity-70`
+  with its `BusySpinner`, is written twice in `IsbnView.vue`, for *Chercher*
+  and for *Ajouter à ma bibliothèque*; a third primary button would call for
+  a shared component (found on T039, 2026-09-25).
+- Frontend: the T038 item above about a second lookup replacing the copies
+  is now covered by `IsbnView.spec.ts` *offers the add again on the next
+  card*: the mutation keeping the previous copies reds it (found on T039,
+  2026-09-25).
+
