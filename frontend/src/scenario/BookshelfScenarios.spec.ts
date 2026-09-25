@@ -89,7 +89,7 @@ describe("Bookshelf", () => {
     ).toBeNull();
   });
 
-  it.skip("S5 Libris unavailable during the add", async () => {
+  it("S5 Libris unavailable during the add", async () => {
     // Given
     const screen = open("/isbn", {
       isbn: aSourceKnows(onePiece1),
