@@ -39,6 +39,7 @@ const edition = ref<SourceEdition>();
 const copies = ref<Copy[]>([]);
 const searching = ref(false);
 const adding = ref(false);
+const added = ref(false);
 const scanning = ref(false);
 const canScan = ref(false);
 const camera = useTemplateRef<HTMLVideoElement>("camera");
@@ -74,7 +75,15 @@ async function toggleCamera() {
 async function add() {
   adding.value = true;
   const reader = await meApi.currentReader();
-  await bookshelfApi.add(reader.defaultBookshelf.id, edition.value!);
+  const answer = await bookshelfApi.add(
+    reader.defaultBookshelf.id,
+    edition.value!,
+  );
+  adding.value = false;
+  if (answer.outcome === "added") {
+    copies.value = [answer.copy];
+    added.value = true;
+  }
 }
 
 async function search() {
@@ -172,6 +181,7 @@ async function search() {
     <div v-else-if="edition" class="mt-5 flex flex-col gap-2">
       <SourceEditionCard :edition="edition" :copies="copies" />
       <button
+        v-if="!added"
         type="button"
         :disabled="adding"
         class="flex h-[50px] items-center justify-center gap-2 rounded-xl bg-accent text-button text-white active:bg-accent-pressed disabled:opacity-70"
