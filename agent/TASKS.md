@@ -172,7 +172,7 @@ frontend pin moves in T038. No other task touches the contract (D04).
       Component and view tests over the found, adding and added states.
       Realises S2 on the frontend; un-skips `S2 The ouvrage is added`.
 
-- [ ] T040 Frontend: the add Libris does not answer.
+- [x] T040 Frontend: the add Libris does not answer.
       When Libris does not answer the add, *Erreur lors de l'ajout, veuillez
       réessayer plus tard.* as a message in `danger` under the button, which
       is back, and the card as it was, no copy added; a new lookup replaces

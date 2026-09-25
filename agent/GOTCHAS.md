@@ -495,6 +495,17 @@ true; the diary keeps the date it was found.
   rejects stays green whether or not the code catches. Prove the catch by
   mutation — the run reports `Unhandled Errors` and exits non-zero when the
   rejection really escapes.
+- A template unwraps a top-level ref only: a composable held in a
+  `shallowRef`, so that the view can build a fresh one (`IsbnView.vue`'s
+  `addBookToBookshelf`, rebuilt on each lookup), exposes its `state` to the
+  template as a ref still, and the view reads it through a `computed`
+  (`addState`). Its function is called on the unwrapped object,
+  `@click="addBookToBookshelf.add(edition)"`, and `vue-tsc` narrows
+  `edition` there from the enclosing `v-else-if`.
+- `@typescript-eslint/no-unused-vars` has no `argsIgnorePattern`: an
+  `_`-prefixed parameter is still an error, so a cycle whose signature is
+  fixed before its body uses the argument leaves `eslint .`, and the gate,
+  red until the cycle that reads it.
 - `BarcodeDetector` is not in TypeScript's DOM library. The two interfaces
   the camera adapter needs are written in
   `src/infra/camera/CameraBarcodeScanner.ts` and are not `declare global`:
