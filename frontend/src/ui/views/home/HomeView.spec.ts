@@ -3,25 +3,21 @@ import { flushPromises, mount } from "@vue/test-utils";
 import { describe, expect, it } from "vitest";
 import { meApiKey } from "../../../application/MeApi";
 import { revisionKey } from "../../../application/Revision";
-import type { Reader } from "../../../domain/Reader";
 import { FakeMeApi } from "../../../fixture/FakeMeApi";
+import type { Reader } from "../../../domain/Reader";
+import { chloe } from "../../../fixture/Readers";
 import { createLibrisI18n } from "../../i18n";
 import { createLibrisRouter } from "../../router";
 import HomeView from "./HomeView.vue";
-
-const chloe: Reader = {
-  id: "0199c0de-1000-7000-8000-000000000001",
-  username: "chloe",
-  displayName: "Chloé",
-  email: "chloe@amory.fr",
-  role: "READER",
-};
 
 const mountHomeView = (reader: Reader) =>
   mount(HomeView, {
     global: {
       plugins: [createLibrisI18n(), createLibrisRouter()],
-      provide: { [meApiKey]: new FakeMeApi(reader), [revisionKey]: "sha-abc1234" },
+      provide: {
+        [meApiKey]: new FakeMeApi(reader),
+        [revisionKey]: "sha-abc1234",
+      },
     },
   });
 

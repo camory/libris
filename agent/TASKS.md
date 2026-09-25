@@ -158,11 +158,10 @@ frontend pin moves in T038. No other task touches the contract (D04).
       `S4 The ouvrage is already in a bookshelf, none of the reader's`.
 
 - [ ] T039 Frontend: the ouvrage added from the card.
-      The reader the app knows carries their default bookshelf, read from
-      the reader's answer, so the app knows where the add goes from its first
-      request. The app adds a book to a bookshelf by posting the `NewBook`
-      the card holds, its copies apart, and reads back the copy or a failure,
-      each answer the contract declares proven against `contracteer mock`
+      The reader the app knows already carries their default bookshelf, and
+      the `BookshelfApi` port with its `FetchBookshelfApi` client already
+      posts the `NewBook` the card holds and reads back the copy or a
+      failure; the task builds what stands between the card and that port
       (D05, D07).
       Under the card, found or already there, the full-width primary button
       *Ajouter à ma bibliothèque*; while the add runs it reads *Ajout en

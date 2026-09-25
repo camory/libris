@@ -19,6 +19,8 @@ describe("FetchMeApi", () => {
     expect(reader.displayName).toEqual(expect.any(String));
     expect(reader.email).toEqual(expect.any(String));
     expect(["READER", "ADMIN"]).toContain(reader.role);
+    expect(reader.defaultBookshelf.id).toEqual(expect.any(String));
+    expect(reader.defaultBookshelf.name).toEqual(expect.any(String));
   });
 
   it("reports an expired session and answers nothing", async () => {

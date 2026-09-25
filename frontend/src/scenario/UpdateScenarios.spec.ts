@@ -1,10 +1,17 @@
 import { fireEvent, within } from "@testing-library/dom";
-import { afterEach, describe, expect, inject, it, vi } from "vitest";
-import { bootstrap } from "../bootstrap";
+import { afterEach, describe, expect, it, vi } from "vitest";
+import type { App } from "vue";
+import { createLibrisApp } from "../createLibrisApp";
+import { FakeBarcodeScanner } from "../fixture/FakeBarcodeScanner";
+import { FakeBookshelfApi } from "../fixture/FakeBookshelfApi";
+import { FakeIsbnApi } from "../fixture/FakeIsbnApi";
+import { FakeMeApi } from "../fixture/FakeMeApi";
+import { lea } from "../fixture/Readers";
+import { ServiceWorkerAppUpdate } from "../infra/pwa/ServiceWorkerAppUpdate";
 
 describe("Update", () => {
   const host = document.createElement("div");
-  let app: ReturnType<typeof bootstrap>;
+  let app: App;
 
   afterEach(() => {
     app.unmount();
@@ -17,7 +24,7 @@ describe("Update", () => {
     // Given
     const browser = browserRunsTheApp();
     const screen = open("/");
-    await screen.findByText(/^Bonjour /);
+    await screen.findByText("Bonjour Léa");
 
     // When
     await browser.aNewerVersionIsFound();
@@ -25,7 +32,7 @@ describe("Update", () => {
     // Then
     await screen.findByText("Nouvelle version disponible");
     expect(screen.getByRole("button", { name: "Mettre à jour" })).toBeDefined();
-    expect(screen.getByText(/^Bonjour /)).toBeDefined();
+    expect(screen.getByText("Bonjour Léa")).toBeDefined();
   });
 
   it("S2 The reader updates", async () => {
@@ -55,7 +62,7 @@ describe("Update", () => {
 
     // When
     const screen = open("/");
-    await screen.findByText(/^Bonjour /);
+    await screen.findByText("Bonjour Léa");
 
     // Then
     expect(screen.queryByText("Nouvelle version disponible")).toBeNull();
@@ -120,7 +127,21 @@ describe("Update", () => {
 
   function open(path: string) {
     window.history.replaceState(null, "", path);
-    app = bootstrap(inject("mockBaseUrl"), "sha-abc1234");
+    app = createLibrisApp(
+      {
+        meApi: new FakeMeApi(lea),
+        isbnApi: new FakeIsbnApi({
+          outcome: "problem",
+          type: "/problems/not-found",
+        }),
+        bookshelfApi: new FakeBookshelfApi(
+          new Error("no add in this scenario"),
+        ),
+        barcodeScanner: new FakeBarcodeScanner(false),
+        appUpdate: new ServiceWorkerAppUpdate(() => {}),
+      },
+      "sha-abc1234",
+    );
     app.mount(host);
     return within(host);
   }

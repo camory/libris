@@ -318,8 +318,10 @@ session, no BCrypt.
   application tests, it is where values are proven. Tophe writes them with
   the spec, committed skipped, and since the gate type-checks a skipped
   test, the spec piece also brings the port a scenario fakes, its fake in
-  `src/fixture` and the domain types it names. A task un-skips the scenario
-  tests its line cites and changes nothing else in them; the inside behind
+  `src/fixture`, the domain types it names and, because `bootstrap` builds
+  every port the application takes, its `infra/api` client with its tests
+  over the mock. A task un-skips the scenario tests its line cites and
+  changes nothing else in them; the inside behind
   the ports, use cases, adapters, screens and their tests, is the run's. A
   scenario test that has to change is a spec conversation, not a task, with
   one exception: a scenario of another spec that compares a whole answer

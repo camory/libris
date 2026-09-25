@@ -317,7 +317,28 @@ true; the diary keeps the date it was found.
 - The mock picks its response from the request's path parameter: a value the
   document gives as a named example of that parameter gets that example's
   response, so `9782723488525` answers 200 and `9782000000006` answers 404.
-  A value that matches no example gets a generated 200.
+  A value that matches no example gets a generated 200. A `POST` is matched
+  on the path parameter and the body together, so one bookshelf id answers
+  201 to the body `NewOnePiece1` and 400 to `NewOnePiece1WrongDigit`, and
+  the 404 id answers 404 to `NewOnePiece1`.
+- A scenario file builds the application through `createLibrisApp` over the
+  fakes of `src/fixture`; only `infra/api` specs and the smoke case *the
+  application runs over the mock* use `inject("mockBaseUrl")`. A new port
+  joins `LibrisPorts`, and `vue-tsc` then reds `bootstrap`, which builds the
+  real client, `createLibrisApp.spec.ts` and the `open()` of every scenario
+  file: five places, all in the same commit.
+- A fixture may import `domain` and `application` only, so a shared
+  app-over-fakes builder cannot live in `src/fixture`: each scenario file
+  keeps its own `open()`, naming the ports its spec varies.
+- A fake built with `Promise.reject(...)` in a Given is an unhandled
+  rejection by the time the When awaits it: the test passes, and Vitest
+  reports an *Unhandled Rejection* that fails the run (measured 2026-09-25).
+  `FakeBookshelfApi` takes the `Error` itself and rejects when `add()` is
+  called; do the same for any fake that has to fail.
+- Over the fakes nothing calls `fetch`, so `vi.spyOn(globalThis, "fetch")`
+  is always uncalled and proves nothing. *S3 Not an ISBN* proves the
+  sources are not asked through the screen: its fake knows One Piece 1 and
+  answers any ISBN, and the card must not show "Romance dawn".
 - `expect.toSatisfy(predicate, message)` is an asymmetric matcher in
   Vitest 5: it is how one `toEqual` over a whole object asserts a nullable
   field (`value === null || typeof value === "string"`) against the values
@@ -340,10 +361,10 @@ true; the diary keeps the date it was found.
   can be redefined or spied, so a reload or a redirect is proven by handing
   the adapter a function from `bootstrap` and passing a fake in its spec;
   `navigator.serviceWorker` is absent and is stubbed with
-  `Object.defineProperty`, like `navigator.mediaDevices`. A real
-  `location.reload()` — what `bootstrap` hands the adapter in the Update
-  scenarios — logs `Not implemented: navigation to another Document` on the
-  console and nothing else: the run stays green.
+  `Object.defineProperty`, like `navigator.mediaDevices`. The Update
+  scenarios build the real adapter over a no-op reload; a real
+  `location.reload()`, what `bootstrap` hands it, logs `Not implemented:
+  navigation to another Document` on the console and nothing else.
 - vue-router's first navigation is asynchronous: `app.use(router)` starts it
   and nothing of the route is rendered on the tick `mount()` returns, nor
   after a microtask flush. `FastEntryScenarios`' `open()` queries the host

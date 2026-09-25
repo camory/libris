@@ -1,3 +1,5 @@
+import type { Bookshelf } from "./Bookshelf";
+
 export type Role = "READER" | "ADMIN";
 
 export interface Reader {
@@ -6,4 +8,5 @@ export interface Reader {
   displayName: string;
   email: string;
   role: Role;
+  defaultBookshelf: Bookshelf;
 }

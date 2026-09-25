@@ -434,3 +434,25 @@ Format:
 - Left over: S2 and S5 still expect no row before the add and contradict the
   card; they and `specs/bookshelf.md` *Screen* wait for Tophe before T039
   (`agent/PROPOSED.md`). The button, the add, S2 are T039; S5 is T040.
+
+## 2026-09-25 — The frontend scenarios over the fakes — done (with Tophe)
+- Did: the four scenario files build the application through
+  `createLibrisApp` over the fakes of `src/fixture`, Léa as the reader
+  (`fixture/Readers.ts`, her default bookshelf the contract's
+  *Bibliothèque de Léa*); `Reader` carries `defaultBookshelf`, read by
+  `FetchMeApi`; the `BookshelfApi` port, `FakeBookshelfApi` and
+  `FetchBookshelfApi` (three answers over the mock) exist, wired in
+  `LibrisPorts` and `bootstrap`; `onePiece2` joins the editions fixture. The
+  mock now serves the `infra/api` specs and the one smoke case.
+- Decided (Tophe): the port fails as the ISBN port does, a problem is an
+  answer and no answer is a rejection; the client is written now, with the
+  spec piece, because `bootstrap` builds every port and the gate type-checks
+  it; D07 says so and T039's line no longer asks the run for it.
+- Decided: the fake takes an `Error` and rejects at call time, since a
+  rejected promise built in a Given is an unhandled rejection (measured).
+  S3 *Not an ISBN* proves the sources are not asked through the screen, a
+  `fetch` spy being always uncalled over fakes. Fast-entry S2 and the Update
+  scenarios keep their browser stubs, as their proof lines say.
+- Left over: T039 and T040 un-skip S2 and S5; a shared app-over-fakes
+  builder cannot live in `src/fixture` (layer rule), each file keeps its
+  `open()`.

@@ -7,6 +7,7 @@ interface CurrentReaderResponse {
   displayName: string;
   email: string;
   role: "READER" | "ADMIN";
+  defaultBookshelf: { id: string; name: string };
 }
 
 export class FetchMeApi implements MeApi {
@@ -30,6 +31,10 @@ export class FetchMeApi implements MeApi {
       displayName: body.displayName,
       email: body.email,
       role: body.role,
+      defaultBookshelf: {
+        id: body.defaultBookshelf.id,
+        name: body.defaultBookshelf.name,
+      },
     };
   }
 }
