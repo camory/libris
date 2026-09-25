@@ -2,6 +2,7 @@ import { createPinia } from "pinia";
 import { createApp, type App } from "vue";
 import type { RouteLocationNormalizedLoaded } from "vue-router";
 import { appUpdateKey, type AppUpdate } from "./application/AppUpdate";
+import { bookshelfApiKey, type BookshelfApi } from "./application/BookshelfApi";
 import {
   barcodeScannerKey,
   type BarcodeScanner,
@@ -16,6 +17,7 @@ import { createLibrisRouter } from "./ui/router";
 export interface LibrisPorts {
   meApi: MeApi;
   isbnApi: IsbnApi;
+  bookshelfApi: BookshelfApi;
   barcodeScanner: BarcodeScanner;
   appUpdate: AppUpdate;
 }
@@ -29,6 +31,7 @@ export function createLibrisApp(ports: LibrisPorts, revision: string): App {
   ) as RouteLocationNormalizedLoaded;
   app.provide(meApiKey, ports.meApi);
   app.provide(isbnApiKey, ports.isbnApi);
+  app.provide(bookshelfApiKey, ports.bookshelfApi);
   app.provide(barcodeScannerKey, ports.barcodeScanner);
   app.provide(appUpdateKey, ports.appUpdate);
   app.provide(revisionKey, revision);
