@@ -272,6 +272,22 @@ describe("IsbnView", () => {
     expect(button.contains(magnifiers[0]!.element)).toBe(true);
   });
 
+  it("shows a spinner in place of the magnifier while the lookup runs", async () => {
+    // Given
+    const view = mountView(new FakeIsbnApi(new Promise<IsbnAnswer>(() => {})));
+    const screen = within(view.element as HTMLElement);
+
+    // When
+    await ask(screen, "9782723488525");
+
+    // Then
+    const button = screen.getByRole("button", {
+      name: "Recherche en cours…",
+    });
+    expect(button.contains(view.findComponent(BusySpinner).element)).toBe(true);
+    expect(view.findAllComponents(IconMagnifier)).toHaveLength(0);
+  });
+
   it("offers the field alone where the browser detects no barcode", async () => {
     // Given
     const scanner = new FakeBarcodeScanner(false);

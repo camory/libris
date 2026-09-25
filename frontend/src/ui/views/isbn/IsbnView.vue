@@ -143,8 +143,8 @@ async function search() {
           class="flex size-[50px] shrink-0 items-center justify-center rounded-xl bg-accent text-white active:bg-accent-pressed disabled:opacity-70"
           @click="search"
         >
-          <BusySpinner v-if="searching" class="size-4" />
-          <IconMagnifier />
+          <BusySpinner v-if="searching" class="size-5.5" />
+          <IconMagnifier v-else />
         </button>
       </div>
     </div>
