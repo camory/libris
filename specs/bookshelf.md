@@ -97,14 +97,14 @@ no screen; its name shows only in that row.
 
 In the card, between the authors and the field rows: one row per bookshelf
 of the reader holding a copy, *Dans Bibliothèque de Léa*, followed by
-*· 2 exemplaires* when it holds more than one. No row when the reader's
-bookshelves hold none.
+*· 2 exemplaires* when it holds more than one. One row of the same shape,
+*Dans aucune de vos bibliothèques*, when they hold none.
 
 Under the card, the button *Ajouter à ma bibliothèque*, full width, primary.
 
 States, on top of those of the lookup:
 
-- **Found** (fast-entry S1): the card without a copies row, the button.
+- **Found** (fast-entry S1): the card with the absence row, the button.
 - **Already there** (S4): the card with its copies rows, the button, since a
   second copy is legitimate.
 - **Adding** (S2): the button reads *Ajout en cours…* with a spinner and
@@ -175,5 +175,6 @@ second account of the family, scan it and read the card without a place.
 - T036 — S4 — backend
 - T037 — S1 to S4 through the API, the backend on `v0.6.0` — backend
 - T038 — S4, the frontend on `v0.6.0` — frontend
+- T041 — the rows of the card, and the absence — frontend
 - T039 — S2 — frontend
 - T040 — S5 — frontend

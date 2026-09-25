@@ -215,7 +215,9 @@ describe("SourceEditionCard", () => {
 
     // Then
     expect(card).not.toContain("Eiichirō Oda");
-    expect(card).toContain("à l'aube d'une grande aventureCollection");
+    expect(card).toContain(
+      "à l'aube d'une grande aventureDans aucune de vos bibliothèques",
+    );
   });
 
   it("says couleurs and traduction under every kind", () => {
@@ -321,7 +323,7 @@ describe("SourceEditionCard", () => {
     expect(
       screen({ ...onePiece1, coverUrl: null }).queryAllByRole("img"),
     ).toEqual([]);
-    expect(card(onePiece1).findComponent(IconBook).exists()).toBe(false);
+    expect(card(onePiece1).findAllComponents(IconBook)).toHaveLength(1);
   });
 
   it("shows a book icon when the sources gave no cover", () => {
@@ -332,13 +334,14 @@ describe("SourceEditionCard", () => {
     expect(
       within(wrapper.element as HTMLElement).queryAllByRole("img"),
     ).toEqual([]);
-    expect(wrapper.findComponent(IconBook).exists()).toBe(true);
+    expect(wrapper.findAllComponents(IconBook)).toHaveLength(2);
   });
 
   it("shows a book icon when the cover does not load", async () => {
     // Given
     const wrapper = card(onePiece1);
     const shown = within(wrapper.element as HTMLElement);
+    expect(wrapper.findAllComponents(IconBook)).toHaveLength(1);
 
     // When
     shown.getByRole("img").dispatchEvent(new Event("error"));
@@ -346,7 +349,7 @@ describe("SourceEditionCard", () => {
 
     // Then
     expect(shown.queryAllByRole("img")).toEqual([]);
-    expect(wrapper.findComponent(IconBook).exists()).toBe(true);
+    expect(wrapper.findAllComponents(IconBook)).toHaveLength(2);
   });
 
   it("never says which source answered", () => {
@@ -433,14 +436,66 @@ describe("SourceEditionCard", () => {
     expect(card).not.toContain("exemplaires");
   });
 
+  it("shows the book icon before the bookshelf's words", () => {
+    // When
+    const wrapper = card(onePiece1, [onLea]);
+
+    // Then
+    const icons = wrapper.findAllComponents(IconBook);
+    expect(icons).toHaveLength(1);
+    const words = within(wrapper.element as HTMLElement).getByText(
+      "Dans Bibliothèque de Léa",
+    );
+    expect(precedes(icons[0].element, words)).toBe(true);
+  });
+
+  it("shows the book icon before the absence's words", () => {
+    // When
+    const wrapper = card(onePiece1, []);
+
+    // Then
+    const icons = wrapper.findAllComponents(IconBook);
+    expect(icons).toHaveLength(1);
+    const words = within(wrapper.element as HTMLElement).getByText(
+      "Dans aucune de vos bibliothèques",
+    );
+    expect(precedes(icons[0].element, words)).toBe(true);
+  });
+
+  it("gives each bookshelf's row its own book icon", () => {
+    // Given
+    const onSalon: Copy = {
+      id: "7a2e3d4c-5b6a-4f70-9c81-2d3e4f5a6b72",
+      bookshelf: { id: "1c2f3e4d-5a6b-4c7d-9e8f-0a1b2c3d4e5f", name: "Salon" },
+    };
+
+    // When
+    const wrapper = card(onePiece1, [onSalon, onLea]);
+
+    // Then
+    expect(wrapper.findAllComponents(IconBook)).toHaveLength(2);
+  });
+
   it("says no bookshelf when the reader's bookshelves hold no copy", () => {
     // When
     const card = show(onePiece1, []);
 
     // Then
-    expect(card).toContain("Eiichirō OdaCollection");
-    expect(card).not.toContain("Dans");
+    const positions = [
+      "Eiichirō Oda",
+      "Dans aucune de vos bibliothèques",
+      "Collection",
+    ].map((part) => card.indexOf(part));
+    expect(positions).not.toContain(-1);
+    expect(positions).toEqual([...positions].sort((a, b) => a - b));
+    expect(card.match(/Dans/g)).toHaveLength(1);
   });
+
+  function precedes(first: Node, second: Node) {
+    return Boolean(
+      first.compareDocumentPosition(second) & Node.DOCUMENT_POSITION_FOLLOWING,
+    );
+  }
 
   function show(edition: SourceEdition, copies: Copy[] = []) {
     return card(edition, copies).text().replace(/\s+/g, " ");

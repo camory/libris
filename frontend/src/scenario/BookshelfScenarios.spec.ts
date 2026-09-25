@@ -32,7 +32,7 @@ describe("Bookshelf", () => {
     expect(card()).not.toContain("exemplaires");
   });
 
-  it.skip("S4 The ouvrage is already in a bookshelf, none of the reader's", async () => {
+  it("S4 The ouvrage is already in a bookshelf, none of the reader's", async () => {
     // Given
     const screen = open("/isbn");
 
@@ -49,7 +49,7 @@ describe("Bookshelf", () => {
     const screen = open("/isbn");
     await ask(screen, "9782723488525");
     await screen.findByText("Romance dawn");
-    expect(rows(screen)).toEqual([]);
+    expect(rows(screen)).toEqual(["Dans aucune de vos bibliothèques"]);
 
     // When
     await fireEvent.click(addButton(screen));
@@ -76,7 +76,7 @@ describe("Bookshelf", () => {
     await screen.findByText(
       "Erreur lors de l'ajout, veuillez réessayer plus tard.",
     );
-    expect(rows(screen)).toEqual([]);
+    expect(rows(screen)).toEqual(["Dans aucune de vos bibliothèques"]);
     expect(addButton(screen)).toBeDefined();
   });
 

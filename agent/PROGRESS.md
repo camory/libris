@@ -415,3 +415,22 @@ Format:
 - Left over: the button, the add and S2 are T039, S5 is T040; the case of a
   second lookup replacing the copies is in `agent/PROPOSED.md`; the U06
   sentence for the rows went into `docs/DESIGN.md` in review.
+
+## 2026-09-25 — T041 The bookshelf rows of the card, and the absence — done
+- Did: each bookshelf row of the card is the book icon at 22 then its words,
+  in `body` semibold; with no copy the card shows one row of the same shape,
+  *Dans aucune de vos bibliothèques* (`isbn.card.noCopy`). S4 *none of the
+  reader's* is un-skipped.
+- Decided: the part holding the rows is now always rendered, since it always
+  holds a row; it alone carries `text-body font-semibold`, and each row is a
+  `flex items-center gap-2` line whose words stay one element (the
+  `<i18n-t>` `p`, or a `p` for the absence), so `rows()` reads their own text.
+- Decided: the absence row is written beside the loop, not as a row of a
+  computed list, since it has no bookshelf and no count to fill.
+- Deviations from the brief: none in approach. The first commit carries the
+  trailer `Claude Opus 5.5` instead of `CLAUDE.md`'s `Claude`; history is not
+  rewritten, the later commits carry the right one. A `refactor` commit
+  extracts the document-order check of the two icon cases.
+- Left over: S2 and S5 still expect no row before the add and contradict the
+  card; they and `specs/bookshelf.md` *Screen* wait for Tophe before T039
+  (`agent/PROPOSED.md`). The button, the add, S2 are T039; S5 is T040.

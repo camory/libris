@@ -326,3 +326,6 @@
   each scenario boots a fresh app; the mutation keeping the previous copies
   survives the gate. A `FakeIsbnApi` of successive answers would carry the
   case, with T039's added copy (found on T038, 2026-09-25).
+- Frontend: `npx prettier --check src/ui` warns on
+  `src/ui/views/home/HomeView.spec.ts`, already on `main`; the gate runs no
+  Prettier, so nothing catches it (found on T041, 2026-09-25).

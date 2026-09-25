@@ -96,6 +96,17 @@ describe("IsbnView", () => {
     expect(screen.getByText("Dans Bibliothèque de Léa")).toBeDefined();
   });
 
+  it("says when no bookshelf of the reader holds a copy", async () => {
+    // Given
+    const screen = open(new FakeIsbnApi(found));
+
+    // When
+    await ask(screen, "9782723488525");
+
+    // Then
+    expect(screen.getByText("Dans aucune de vos bibliothèques")).toBeDefined();
+  });
+
   it("asks for the ISBN-13 an old ten converts to", async () => {
     // Given
     const api = new FakeIsbnApi(found);
