@@ -177,8 +177,13 @@ frontend pin moves in T038. No other task touches the contract (D04).
       réessayer plus tard.* as a message in `danger` under the button, which
       is back, and the card as it was, no copy added; a new lookup replaces
       the message with the rest (U04, U05, U08).
-      View test of the not-added state over a failing fake; the scenario with
-      the API failing.
+      The add leaves the view for the first composable,
+      `useAddBookToBookshelf(meApi, bookshelfApi)` in `application/`, that
+      exposes its state and `add(edition)`; the view renders that state
+      (D05, D10). The lookup stays in the view.
+      Composable tests over the fakes with no component mounted, the failure
+      among them; view test of the not-added state; the scenario with the
+      API failing.
       Realises S5; un-skips `S5 Libris unavailable during the add`.
 
 *Done (Tophe, on the Pixel, from the installed app): scan One Piece 1 and add
