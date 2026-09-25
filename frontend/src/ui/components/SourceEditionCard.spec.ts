@@ -467,6 +467,20 @@ describe("SourceEditionCard", () => {
     ).toBeTruthy();
   });
 
+  it("gives each bookshelf's row its own book icon", () => {
+    // Given
+    const onSalon: Copy = {
+      id: "7a2e3d4c-5b6a-4f70-9c81-2d3e4f5a6b72",
+      bookshelf: { id: "1c2f3e4d-5a6b-4c7d-9e8f-0a1b2c3d4e5f", name: "Salon" },
+    };
+
+    // When
+    const wrapper = card(onePiece1, [onSalon, onLea]);
+
+    // Then
+    expect(wrapper.findAllComponents(IconBook)).toHaveLength(2);
+  });
+
   it("says no bookshelf when the reader's bookshelves hold no copy", () => {
     // When
     const card = show(onePiece1, []);
