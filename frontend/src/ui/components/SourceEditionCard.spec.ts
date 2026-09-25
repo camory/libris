@@ -334,13 +334,14 @@ describe("SourceEditionCard", () => {
     expect(
       within(wrapper.element as HTMLElement).queryAllByRole("img"),
     ).toEqual([]);
-    expect(wrapper.findComponent(IconBook).exists()).toBe(true);
+    expect(wrapper.findAllComponents(IconBook)).toHaveLength(2);
   });
 
   it("shows a book icon when the cover does not load", async () => {
     // Given
     const wrapper = card(onePiece1);
     const shown = within(wrapper.element as HTMLElement);
+    expect(wrapper.findAllComponents(IconBook)).toHaveLength(1);
 
     // When
     shown.getByRole("img").dispatchEvent(new Event("error"));
@@ -348,7 +349,7 @@ describe("SourceEditionCard", () => {
 
     // Then
     expect(shown.queryAllByRole("img")).toEqual([]);
-    expect(wrapper.findComponent(IconBook).exists()).toBe(true);
+    expect(wrapper.findAllComponents(IconBook)).toHaveLength(2);
   });
 
   it("never says which source answered", () => {
