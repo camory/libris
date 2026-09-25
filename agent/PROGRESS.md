@@ -503,3 +503,18 @@ Format:
 - Left over: the lookup as `useLookupEditionByIsbn`; a late add after a
   newer lookup, rewritten in `agent/PROPOSED.md`; the shared primary
   button, still in `agent/PROPOSED.md`.
+
+## 2026-09-25 — T042 The button *Chercher* beside the field — done
+- Did: *Chercher* is the 50 square at the right of the field, on its line,
+  8 apart, drawing the new `IconMagnifier` alone and named by its
+  `aria-label`; while the lookup runs a 22 spinner takes the glyph's place.
+- Decided: the magnifier is a circle of radius 6 at (10.5, 10.5) and a
+  handle from (15, 15) to (20, 20) on the 24 grid, drawn like its siblings.
+- Decided: the button drops `gap-2` and `text-button` with its word, since
+  it holds one child and no text.
+- Deviations from the brief: in step 2 `IconMagnifier.vue` was written
+  before the view used it, so that the red was the case's assertion
+  (no magnifier rendered) rather than the spec file failing to load; the
+  brief allowed either red.
+- Left over: the layout is Tophe's check on the Pixel, jsdom laying nothing
+  out; the shared primary button, rewritten in `agent/PROPOSED.md`.

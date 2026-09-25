@@ -420,6 +420,10 @@ true; the diary keeps the date it was found.
   it. Every `SourceEditionCard` draws `IconBook` on its bookshelf rows or
   its absence row, so the cover's stand-in is proven by counting,
   `findAllComponents(IconBook)`, never by `exists()`.
+- A spec importing a component that does not exist yet fails the whole file
+  at load (`Failed to resolve import`, `Tests no tests`), not the one case:
+  write the component first, drawing nothing the case asserts, and the red is
+  the case's own assertion (`expected [] to have a length of 1`).
 - `vue-i18n`'s `t` answers an unknown key with the key itself, so a catalogue
   entry a component builds and never wrote renders on the screen as
   `role.BOOK.WRITER` or `isbn.card.series.BOOK`. Nothing throws and no type
