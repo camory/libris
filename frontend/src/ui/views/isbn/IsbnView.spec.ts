@@ -332,6 +332,42 @@ describe("IsbnView", () => {
     ).toBeTruthy();
   });
 
+  it("offers to add another copy of an ouvrage the reader has", async () => {
+    // Given
+    const shelved: IsbnAnswer = {
+      outcome: "found",
+      edition: onePiece1,
+      copies: [
+        {
+          id: "6f1d2c3b-4a59-4e6f-8b70-1c2d3e4f5a61",
+          bookshelf: lea.defaultBookshelf,
+        },
+      ],
+    };
+    const screen = open(new FakeIsbnApi(shelved));
+
+    // When
+    await ask(screen, "9782723488525");
+
+    // Then
+    expect(
+      screen.getByRole("button", { name: "Ajouter à ma bibliothèque" }),
+    ).toBeDefined();
+  });
+
+  it("offers no add without a card", async () => {
+    // Given
+    const screen = open(new FakeIsbnApi(unknownIsbn));
+
+    // When
+    await ask(screen, "9782000000006");
+
+    // Then
+    expect(
+      screen.queryByRole("button", { name: "Ajouter à ma bibliothèque" }),
+    ).toBeNull();
+  });
+
   it("stops the camera when the screen goes away", async () => {
     // Given
     const scanner = new FakeBarcodeScanner(true, neverRead);
