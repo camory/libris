@@ -140,9 +140,10 @@ const rows = computed(() => {
           <template #count>{{ bookshelf.count }}</template>
         </i18n-t>
       </div>
-      <p v-if="bookshelves.length === 0">
-        {{ t("isbn.card.noCopy") }}
-      </p>
+      <div v-if="bookshelves.length === 0" class="flex items-center gap-2">
+        <IconBook class="size-5.5" />
+        <p>{{ t("isbn.card.noCopy") }}</p>
+      </div>
     </div>
 
     <div>

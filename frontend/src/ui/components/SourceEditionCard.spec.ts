@@ -323,7 +323,7 @@ describe("SourceEditionCard", () => {
     expect(
       screen({ ...onePiece1, coverUrl: null }).queryAllByRole("img"),
     ).toEqual([]);
-    expect(card(onePiece1).findComponent(IconBook).exists()).toBe(false);
+    expect(card(onePiece1).findAllComponents(IconBook)).toHaveLength(1);
   });
 
   it("shows a book icon when the sources gave no cover", () => {
@@ -444,6 +444,22 @@ describe("SourceEditionCard", () => {
     expect(icons).toHaveLength(1);
     const words = within(wrapper.element as HTMLElement).getByText(
       "Dans Bibliothèque de Léa",
+    );
+    expect(
+      icons[0].element.compareDocumentPosition(words) &
+        Node.DOCUMENT_POSITION_FOLLOWING,
+    ).toBeTruthy();
+  });
+
+  it("shows the book icon before the absence's words", () => {
+    // When
+    const wrapper = card(onePiece1, []);
+
+    // Then
+    const icons = wrapper.findAllComponents(IconBook);
+    expect(icons).toHaveLength(1);
+    const words = within(wrapper.element as HTMLElement).getByText(
+      "Dans aucune de vos bibliothèques",
     );
     expect(
       icons[0].element.compareDocumentPosition(words) &
