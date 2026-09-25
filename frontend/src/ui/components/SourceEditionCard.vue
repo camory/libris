@@ -128,7 +128,7 @@ const rows = computed(() => {
       </div>
     </div>
 
-    <div v-if="bookshelves.length > 0">
+    <div>
       <i18n-t
         v-for="bookshelf in bookshelves"
         :key="bookshelf.id"
@@ -140,6 +140,9 @@ const rows = computed(() => {
         <template #bookshelf>{{ bookshelf.name }}</template>
         <template #count>{{ bookshelf.count }}</template>
       </i18n-t>
+      <p v-if="bookshelves.length === 0" class="text-body">
+        {{ t("isbn.card.noCopy") }}
+      </p>
     </div>
 
     <div>

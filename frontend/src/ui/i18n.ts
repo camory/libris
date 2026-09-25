@@ -27,6 +27,7 @@ const fr = {
       author: "{name} · {roles}",
       cover: "Couverture de {title}",
       copies: "Dans {bookshelf} | Dans {bookshelf} · {count} exemplaires",
+      noCopy: "Dans aucune de vos bibliothèques",
       collection: "Collection",
       publisher: "Éditeur",
       year: "Année",

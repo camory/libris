@@ -215,7 +215,9 @@ describe("SourceEditionCard", () => {
 
     // Then
     expect(card).not.toContain("Eiichirō Oda");
-    expect(card).toContain("à l'aube d'une grande aventureCollection");
+    expect(card).toContain(
+      "à l'aube d'une grande aventureDans aucune de vos bibliothèques",
+    );
   });
 
   it("says couleurs and traduction under every kind", () => {
@@ -438,8 +440,14 @@ describe("SourceEditionCard", () => {
     const card = show(onePiece1, []);
 
     // Then
-    expect(card).toContain("Eiichirō OdaCollection");
-    expect(card).not.toContain("Dans");
+    const positions = [
+      "Eiichirō Oda",
+      "Dans aucune de vos bibliothèques",
+      "Collection",
+    ].map((part) => card.indexOf(part));
+    expect(positions).not.toContain(-1);
+    expect(positions).toEqual([...positions].sort((a, b) => a - b));
+    expect(card.match(/Dans/g)).toHaveLength(1);
   });
 
   function show(edition: SourceEdition, copies: Copy[] = []) {
