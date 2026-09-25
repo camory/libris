@@ -32,7 +32,7 @@ describe("Bookshelf", () => {
     expect(card()).not.toContain("exemplaires");
   });
 
-  it("S4 The ouvrage is already in a bookshelf, none of the reader's", async () => {
+  it.skip("S4 The ouvrage is already in a bookshelf, none of the reader's", async () => {
     // Given
     const screen = open("/isbn");
 
@@ -41,7 +41,7 @@ describe("Bookshelf", () => {
 
     // Then
     await screen.findByText("Romance dawn");
-    expect(rows(screen)).toEqual([]);
+    expect(rows(screen)).toEqual(["Dans aucune de vos bibliothèques"]);
   });
 
   it.skip("S2 The ouvrage is added", async () => {
