@@ -196,7 +196,7 @@ second account of the family, scan it and read the card without a place.*
 The *Screen* section as rewritten with U04 on 2026-09-25: the primary button
 of the field on the field's line. No contract change.
 
-- [ ] T042 Frontend: the button *Chercher* beside the field.
+- [x] T042 Frontend: the button *Chercher* beside the field.
       The primary button of the field leaves its place under the field for
       the field's line, at its right, 8 apart: a 50 square, `accent`, radius
       12, `accent` pressed shade on press, showing a magnifier glyph alone in

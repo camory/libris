@@ -20,6 +20,7 @@ import { FakeMeApi } from "../../../fixture/FakeMeApi";
 import { lea } from "../../../fixture/Readers";
 import { onePiece1 } from "../../../fixture/SourceEditions";
 import BusySpinner from "../../components/BusySpinner.vue";
+import IconMagnifier from "../../components/icons/IconMagnifier.vue";
 import { createLibrisI18n } from "../../i18n";
 import IsbnView from "./IsbnView.vue";
 
@@ -246,6 +247,45 @@ describe("IsbnView", () => {
       screen.getByRole<HTMLButtonElement>("button", { name: "Chercher" })
         .disabled,
     ).toBe(false);
+  });
+
+  it("shows no word on the button Chercher", () => {
+    // When
+    const screen = open(new FakeIsbnApi(unknownIsbn));
+
+    // Then
+    expect(
+      screen.getByRole("button", { name: "Chercher" }).textContent?.trim(),
+    ).toBe("");
+  });
+
+  it("draws a magnifier on the button Chercher", () => {
+    // When
+    const view = mountView(new FakeIsbnApi(unknownIsbn));
+
+    // Then
+    const button = within(view.element as HTMLElement).getByRole("button", {
+      name: "Chercher",
+    });
+    const magnifiers = view.findAllComponents(IconMagnifier);
+    expect(magnifiers).toHaveLength(1);
+    expect(button.contains(magnifiers[0]!.element)).toBe(true);
+  });
+
+  it("shows a spinner in place of the magnifier while the lookup runs", async () => {
+    // Given
+    const view = mountView(new FakeIsbnApi(new Promise<IsbnAnswer>(() => {})));
+    const screen = within(view.element as HTMLElement);
+
+    // When
+    await ask(screen, "9782723488525");
+
+    // Then
+    const button = screen.getByRole("button", {
+      name: "Recherche en cours…",
+    });
+    expect(button.contains(view.findComponent(BusySpinner).element)).toBe(true);
+    expect(view.findAllComponents(IconMagnifier)).toHaveLength(0);
   });
 
   it("offers the field alone where the browser detects no barcode", async () => {

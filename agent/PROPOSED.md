@@ -335,10 +335,13 @@
   card shows its button ready and neither the copy nor a failure of the
   earlier add, though Libris may hold that copy. The spec does not say what
   the screen should do (found on T039, rewritten on T040, 2026-09-25).
-- Frontend: the primary button's box, `flex h-[50px] … disabled:opacity-70`
-  with its `BusySpinner`, is written twice in `IsbnView.vue`, for *Chercher*
-  and for *Ajouter à ma bibliothèque*; a third primary button would call for
-  a shared component (found on T039, 2026-09-25).
+- Frontend: the two primary buttons of `IsbnView.vue` share `rounded-xl
+  bg-accent text-white active:bg-accent-pressed disabled:opacity-70` and a
+  `BusySpinner` while busy, but not their box nor their content: *Chercher*
+  is the `size-[50px]` square with a glyph alone and a 22 spinner in its
+  place, *Ajouter à ma bibliothèque* the full-width `h-[50px]` bar with a
+  word and a 16 spinner beside it; a third primary button would call for a
+  shared component (found on T039, rewritten on T042, 2026-09-25).
 - Frontend: the T038 item above about a second lookup replacing the copies
   is now covered by `IsbnView.spec.ts` *offers the add again on the next
   card*: the mutation keeping the previous copies reds it (found on T039,

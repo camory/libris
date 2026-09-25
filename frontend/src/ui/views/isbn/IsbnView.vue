@@ -24,6 +24,7 @@ import SourceEditionCardSkeleton from "../../components/SourceEditionCardSkeleto
 import IconAlert from "../../components/icons/IconAlert.vue";
 import IconBarcode from "../../components/icons/IconBarcode.vue";
 import IconClose from "../../components/icons/IconClose.vue";
+import IconMagnifier from "../../components/icons/IconMagnifier.vue";
 
 const messages = new Map([["/problems/not-found", "isbn.unknown"]]);
 const refusals = ["isbn.invalid", "isbn.unknown"];
@@ -113,36 +114,39 @@ async function search() {
       <label class="text-label text-muted" for="isbn">
         {{ t("isbn.label") }}
       </label>
-      <div class="relative">
-        <input
-          id="isbn"
-          v-model="typed"
-          type="text"
-          inputmode="numeric"
-          :placeholder="t('isbn.placeholder')"
-          class="h-[50px] w-full rounded-xl border-[1.5px] bg-surface pr-13 pl-3.5 text-field tabular-nums placeholder:text-muted"
-          :class="refused ? 'border-danger' : 'border-border'"
-        />
+      <div class="flex gap-2">
+        <div class="relative min-w-0 flex-1">
+          <input
+            id="isbn"
+            v-model="typed"
+            type="text"
+            inputmode="numeric"
+            :placeholder="t('isbn.placeholder')"
+            class="h-[50px] w-full rounded-xl border-[1.5px] bg-surface pr-13 pl-3.5 text-field tabular-nums placeholder:text-muted"
+            :class="refused ? 'border-danger' : 'border-border'"
+          />
+          <button
+            v-if="canScan"
+            type="button"
+            :aria-label="scanning ? t('isbn.closeCamera') : t('isbn.scan')"
+            class="absolute top-1/2 right-[3px] flex size-11 -translate-y-1/2 items-center justify-center rounded-[10px] text-accent"
+            @click="toggleCamera"
+          >
+            <IconClose v-if="scanning" />
+            <IconBarcode v-else />
+          </button>
+        </div>
         <button
-          v-if="canScan"
           type="button"
-          :aria-label="scanning ? t('isbn.closeCamera') : t('isbn.scan')"
-          class="absolute top-1/2 right-[3px] flex size-11 -translate-y-1/2 items-center justify-center rounded-[10px] text-accent"
-          @click="toggleCamera"
+          :disabled="searching"
+          :aria-label="searching ? t('isbn.searching') : t('isbn.search')"
+          class="flex size-[50px] shrink-0 items-center justify-center rounded-xl bg-accent text-white active:bg-accent-pressed disabled:opacity-70"
+          @click="search"
         >
-          <IconClose v-if="scanning" />
-          <IconBarcode v-else />
+          <BusySpinner v-if="searching" class="size-5.5" />
+          <IconMagnifier v-else />
         </button>
       </div>
-      <button
-        type="button"
-        :disabled="searching"
-        class="flex h-[50px] items-center justify-center gap-2 rounded-xl bg-accent text-button text-white active:bg-accent-pressed disabled:opacity-70"
-        @click="search"
-      >
-        <BusySpinner v-if="searching" class="size-4" />
-        {{ searching ? t("isbn.searching") : t("isbn.search") }}
-      </button>
     </div>
 
     <div
