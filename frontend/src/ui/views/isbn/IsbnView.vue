@@ -6,6 +6,7 @@ import {
   onBeforeUnmount,
   onMounted,
   ref,
+  shallowRef,
   useTemplateRef,
 } from "vue";
 import { useI18n } from "vue-i18n";
@@ -13,6 +14,7 @@ import { barcodeScannerKey } from "../../../application/BarcodeScanner";
 import { bookshelfApiKey } from "../../../application/BookshelfApi";
 import { isbnApiKey } from "../../../application/IsbnApi";
 import { meApiKey } from "../../../application/MeApi";
+import { useAddBookToBookshelf } from "../../../application/useAddBookToBookshelf";
 import type { Copy } from "../../../domain/Copy";
 import { Isbn } from "../../../domain/Isbn";
 import type { SourceEdition } from "../../../domain/SourceEdition";
@@ -38,8 +40,15 @@ const refused = computed(() => refusals.includes(message.value ?? ""));
 const edition = ref<SourceEdition>();
 const copies = ref<Copy[]>([]);
 const searching = ref(false);
-const adding = ref(false);
-const added = ref(false);
+const addBookToBookshelf = shallowRef(
+  useAddBookToBookshelf(meApi, bookshelfApi),
+);
+const addState = computed(() => addBookToBookshelf.value.state.value);
+const shownCopies = computed(() =>
+  addState.value.status === "added"
+    ? [...copies.value, addState.value.copy]
+    : copies.value,
+);
 const scanning = ref(false);
 const canScan = ref(false);
 const camera = useTemplateRef<HTMLVideoElement>("camera");
@@ -72,23 +81,9 @@ async function toggleCamera() {
   await openCamera();
 }
 
-async function add() {
-  adding.value = true;
-  const reader = await meApi.currentReader();
-  const answer = await bookshelfApi.add(
-    reader.defaultBookshelf.id,
-    edition.value!,
-  );
-  adding.value = false;
-  if (answer.outcome === "added") {
-    copies.value = [...copies.value, answer.copy];
-    added.value = true;
-  }
-}
-
 async function search() {
   edition.value = undefined;
-  added.value = false;
+  addBookToBookshelf.value = useAddBookToBookshelf(meApi, bookshelfApi);
   message.value = undefined;
   const isbn13 = Isbn.of(typed.value)?.digits ?? null;
   if (isbn13 === null) {
@@ -180,17 +175,24 @@ async function search() {
     <SourceEditionCardSkeleton v-if="searching" class="mt-5" />
 
     <div v-else-if="edition" class="mt-5 flex flex-col gap-2">
-      <SourceEditionCard :edition="edition" :copies="copies" />
+      <SourceEditionCard :edition="edition" :copies="shownCopies" />
       <button
-        v-if="!added"
+        v-if="addState.status !== 'added'"
         type="button"
-        :disabled="adding"
+        :disabled="addState.status === 'adding'"
         class="flex h-[50px] items-center justify-center gap-2 rounded-xl bg-accent text-button text-white active:bg-accent-pressed disabled:opacity-70"
-        @click="add"
+        @click="addBookToBookshelf.add(edition)"
       >
-        <BusySpinner v-if="adding" class="size-4" />
-        {{ adding ? t("isbn.adding") : t("isbn.add") }}
+        <BusySpinner v-if="addState.status === 'adding'" class="size-4" />
+        {{ addState.status === "adding" ? t("isbn.adding") : t("isbn.add") }}
       </button>
+      <p
+        v-if="addState.status === 'notAdded'"
+        class="flex items-start gap-2 text-body text-danger"
+      >
+        <IconAlert />
+        <span>{{ t("isbn.addError") }}</span>
+      </p>
     </div>
 
     <p v-if="message" class="mt-5 flex items-start gap-2 text-body text-danger">
