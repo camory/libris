@@ -31,6 +31,17 @@ const found: IsbnAnswer = {
   copies: [],
 };
 
+const onLeasBookshelf: IsbnAnswer = {
+  outcome: "found",
+  edition: onePiece1,
+  copies: [
+    {
+      id: "6f1d2c3b-4a59-4e6f-8b70-1c2d3e4f5a61",
+      bookshelf: lea.defaultBookshelf,
+    },
+  ],
+};
+
 const unknownIsbn: IsbnAnswer = {
   outcome: "problem",
   type: "/problems/not-found",
@@ -346,17 +357,7 @@ describe("IsbnView", () => {
 
   it("offers to add another copy of an ouvrage the reader has", async () => {
     // Given
-    const shelved: IsbnAnswer = {
-      outcome: "found",
-      edition: onePiece1,
-      copies: [
-        {
-          id: "6f1d2c3b-4a59-4e6f-8b70-1c2d3e4f5a61",
-          bookshelf: lea.defaultBookshelf,
-        },
-      ],
-    };
-    const screen = open(new FakeIsbnApi(shelved));
+    const screen = open(new FakeIsbnApi(onLeasBookshelf));
 
     // When
     await ask(screen, "9782723488525");
@@ -444,18 +445,8 @@ describe("IsbnView", () => {
 
   it("counts the copy it added beside the one the reader had", async () => {
     // Given
-    const shelved: IsbnAnswer = {
-      outcome: "found",
-      edition: onePiece1,
-      copies: [
-        {
-          id: "6f1d2c3b-4a59-4e6f-8b70-1c2d3e4f5a61",
-          bookshelf: lea.defaultBookshelf,
-        },
-      ],
-    };
     const screen = open(
-      new FakeIsbnApi(shelved),
+      new FakeIsbnApi(onLeasBookshelf),
       undefined,
       new FakeBookshelfApi(added),
     );
