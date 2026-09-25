@@ -66,7 +66,7 @@ describe("Bookshelf", () => {
     expect(rows(screen)).toEqual(["Dans aucune de vos bibliothèques"]);
   });
 
-  it.skip("S2 The ouvrage is added", async () => {
+  it("S2 The ouvrage is added", async () => {
     // Given
     const screen = open("/isbn", {
       isbn: aSourceKnows(onePiece1),
