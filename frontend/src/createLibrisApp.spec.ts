@@ -2,25 +2,22 @@ import { within } from "@testing-library/dom";
 import { flushPromises } from "@vue/test-utils";
 import { describe, expect, it } from "vitest";
 import { createLibrisApp } from "./createLibrisApp";
-import type { Reader } from "./domain/Reader";
 import { FakeAppUpdate } from "./fixture/FakeAppUpdate";
+import { FakeBookshelfApi } from "./fixture/FakeBookshelfApi";
 import { FakeBarcodeScanner } from "./fixture/FakeBarcodeScanner";
 import { FakeIsbnApi } from "./fixture/FakeIsbnApi";
 import { FakeMeApi } from "./fixture/FakeMeApi";
-
-const chloe: Reader = {
-  id: "0199c0de-1000-7000-8000-000000000001",
-  username: "chloe",
-  displayName: "Chloé",
-  email: "chloe@amory.fr",
-  role: "READER",
-};
+import { chloe } from "./fixture/Readers";
 
 const librisApp = () =>
   createLibrisApp(
     {
       meApi: new FakeMeApi(chloe),
       isbnApi: new FakeIsbnApi({
+        outcome: "problem",
+        type: "/problems/not-found",
+      }),
+      bookshelfApi: new FakeBookshelfApi({
         outcome: "problem",
         type: "/problems/not-found",
       }),
