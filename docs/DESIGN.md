@@ -101,15 +101,18 @@ takes a `danger` outline and keeps its text; the message goes under it (U05).
 An icon that acts on the field, the scanner, sits inside the box at the
 right, as an icon button.
 
-**Primary button.** One per thing it serves, the field or the card, 8 below
-it, and never two side by side. It is the next step of the screen's flow:
-*Chercher* under the field, *Ajouter à ma bibliothèque* under the card. Full
-width, 50 tall, radius 12, `accent` with white text in the `button` step,
-`accent` pressed shade on press. Its label is a verb in the infinitive:
-*Chercher*. While its action runs it is busy: the label becomes the action in
-progress with an ellipsis, *Recherche en cours…*, a white spinner turns at
-its left, the button dims and accepts nothing; the field stays editable. It
-comes back to itself when the answer arrives, whatever the answer is.
+**Primary button.** One per thing it serves, the field or the card, and
+never two side by side. It is the next step of the screen's flow: *Chercher*
+for the field, *Ajouter à ma bibliothèque* for the card. 50 tall, radius 12,
+`accent` with white on it, `accent` pressed shade on press. For a card it
+sits 8 below, full width, and its label is a verb in the infinitive in the
+`button` step. For a field it sits on the field's line, at its right, 8
+apart, a 50 square, and shows a glyph alone (U07), white: its `aria-label` is
+the verb, *Chercher*. While its action runs it is busy: the button dims and
+accepts nothing, a white spinner turns, at the left of the label or in the
+place of the glyph, and the label or the `aria-label` becomes the action in
+progress with an ellipsis, *Recherche en cours…*; the field stays editable.
+It comes back to itself when the answer arrives, whatever the answer is.
 
 **Icon button.** An icon alone, 44 by 44, radius 10, no border, no
 background, `accent`; always an `aria-label` that names the action in
@@ -149,11 +152,11 @@ lands. It appears with the busy button (U04) and leaves with it.
 48, `muted` at 60 %, over one sentence in the `lead` step, `muted`, 28 of
 padding around. The sentence says what will fill the space, not that it is
 empty. The lookup screen has none: before the first search, the space under
-the button is simply empty.
+the field is simply empty.
 
 No toast: an answer stays where it landed until the next one replaces it,
 and it never floats over the page. The camera sheet is a block of the
-content, under the button, not a layer over the page.
+content, under the field, not a layer over the page.
 
 ### U06 — Cards
 **Card.** A card shows one thing the app knows, an ouvrage: `surface`, a

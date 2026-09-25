@@ -119,30 +119,33 @@ problem, the message.
 Mockups: <https://claude.ai/code/artifact/900be65c-b8a0-4766-a8b3-23ceb4e19422>,
 one artboard per state below, exported as `specs/fast-entry/<n>-<state>.jpg`
 in the same order; *Ready* and *Camera open* are screenshots of the screen on
-the Pixel instead (`.png`, taken on the review of T030), and the tab bar in
-the six others predates the bar of U03. Route `/isbn`, reached from the home
+the Pixel instead (`.png`, taken on the review of T030), the tab bar in
+the six others predates the bar of U03, and the button *Chercher* beside the
+field postdates them all. Route `/isbn`, reached from the home
 page's link and from the tab bar.
 
 Top to bottom on a phone: the title *Ajouter un ouvrage* and the line
 *Scannez le code-barres ou saisissez l'ISBN.*; the field labelled *ISBN*,
 numeric keyboard, placeholder `978-2-7234-8852-5`, the typed text kept as
 typed; inside the field at the right, a barcode icon when the browser has a
-`BarcodeDetector`, nothing otherwise; under the field the button *Chercher*,
-full width; then the state of the lookup; at the bottom the tab bar, the
+`BarcodeDetector`, nothing otherwise; at the right of the field, on its
+line, the square button *Chercher*, a magnifier glyph alone; then the state
+of the lookup; at the bottom the tab bar, the
 house of *Accueil* and, in the middle, the barcode circle *Ajouter* that
 leads here.
 
 States:
 
-- **Ready**: nothing under the button.
+- **Ready**: nothing under the field.
 - **Camera open** (S2): the icon turns into a cross; the camera view, with
-  corner brackets, fills the space between the button and the tab bar,
+  corner brackets, fills the space between the field and the tab bar,
   centred. The camera opens by itself on arrival when the browser has a
   detector and the reader allowed it; *Ready* is the screen without a
   detector, after a refused camera or after the cross. The first EAN-13 read
   closes it and runs the lookup; the cross closes it.
-- **Searching**: the button reads *Recherche en cours…* with a spinner and
-  accepts nothing; a grey placeholder of the card takes its place below.
+- **Searching**: a spinner takes the place of the button's glyph, its label
+  reads *Recherche en cours…* and it accepts nothing; a grey placeholder of
+  the card takes its place below.
 - **Found** (S1): the card. Cover at the left, or its stand-in when the BnF
   has none or the image does not load; at its right the series and
   tome (*One piece · tome 1*), the title, the subtitle, the authors each with
@@ -243,3 +246,5 @@ Checked by Tophe on 2026-09-16, with the build of T027.
 - T027 — S1 as the spec reads it, the BnF's newer records — backend
 - T030 — the tab bar of the *Screen* section, no scenario of its own
   — frontend
+- T042 — the button beside the field of the *Screen* section, no scenario
+  of its own — frontend
