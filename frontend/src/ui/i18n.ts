@@ -20,6 +20,7 @@ const fr = {
     invalid: "ISBN invalide",
     unknown: "ISBN inconnu",
     error: "Erreur lors de la recherche, veuillez réessayer plus tard.",
+    addError: "Erreur lors de l'ajout, veuillez réessayer plus tard.",
     card: {
       series: {
         BOOK: "{name} · tome {volume}",

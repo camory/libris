@@ -479,3 +479,27 @@ Format:
   card's rows; the primary button's classes are written twice
   (`agent/PROPOSED.md`). Step 9 also proves that a lookup replaces the
   copies of the previous one, T038's follow-up in `agent/PROPOSED.md`.
+
+## 2026-09-25 — T040 The add Libris does not answer — done
+- Did: the add lives in `application/useAddBookToBookshelf.ts`, the first
+  composable, exposing `state` (`AddState`) and `add(edition)`; `IsbnView`
+  renders that state and shows *Erreur lors de l'ajout, veuillez réessayer
+  plus tard.* under the button, which is back. S5 un-skipped.
+- Decided: the view holds its add in a `shallowRef`, rebuilt at the start
+  of each `search()` where T039 reset `added`, so any new lookup, found or
+  not, starts from a ready add; `addState` is a `computed` over it, since a
+  template unwraps the top-level ref only.
+- Decided: the card's rows are a `computed`, `shownCopies`: the lookup's
+  copies, then the copy of an `added` state. The lookup's `copies` ref is
+  no longer written by the add.
+- Decided: one `try` around both the reader and the add in the composable,
+  one `notAdded` for the problem answer and for every rejection.
+- Deviations from the brief: the criterion's grep `currentReader|
+  bookshelfApi\.add` over `frontend/src/ui` answers one line,
+  `HomeView.vue`'s greeting, on `main` before this task and no add; the
+  isbn view answers nothing. Cycles 1 and 2 were committed with
+  `eslint .` red on the parameters their bodies did not use yet
+  (`agent/GOTCHAS.md`); cycle 3 made it green.
+- Left over: the lookup as `useLookupEditionByIsbn`; a late add after a
+  newer lookup, rewritten in `agent/PROPOSED.md`; the shared primary
+  button, still in `agent/PROPOSED.md`.
