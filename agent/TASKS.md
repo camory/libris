@@ -191,6 +191,27 @@ it, the card shows Dans Bibliothèque de Christophe; scan it again, the row is
 there before any tap; add it again, the row reads · 2 exemplaires; on a
 second account of the family, scan it and read the card without a place.*
 
+## Fast entry, the button beside the field — specs/fast-entry.md
+
+The *Screen* section as rewritten with U04 on 2026-09-25: the primary button
+of the field on the field's line. No contract change.
+
+- [ ] T042 Frontend: the button *Chercher* beside the field.
+      The primary button of the field leaves its place under the field for
+      the field's line, at its right, 8 apart: a 50 square, `accent`, radius
+      12, `accent` pressed shade on press, showing a magnifier glyph alone in
+      white, hand-drawn like the other icons, with *Chercher* as its
+      `aria-label`. While the lookup runs, a spinner takes the place of the
+      glyph, the label reads *Recherche en cours…* and the button accepts
+      nothing; the field stays editable. Nothing under the field before the
+      first search; the messages, the card and the camera view keep their
+      places (U04, U05, U07, U08).
+      View tests: the button named *Chercher* shows no text; while the
+      lookup runs it is named *Recherche en cours…* and disabled. Every test
+      that presses *Chercher* by name stays green and unchanged; the
+      scenarios untouched.
+      No scenario of its own.
+
 ## Done
 
 - Phase 0 — Foundations, T001 to T012, done 2026-09-10 with `v0.1.3` on the
