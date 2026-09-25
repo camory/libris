@@ -470,6 +470,26 @@ describe("IsbnView", () => {
     ).toBeDefined();
   });
 
+  it("offers the add again on the next card", async () => {
+    // Given
+    const screen = open(
+      new FakeIsbnApi(found),
+      undefined,
+      new FakeBookshelfApi(added),
+    );
+    await ask(screen, "9782723488525");
+    await press(screen, "Ajouter à ma bibliothèque");
+
+    // When
+    await ask(screen, "9782723488525");
+
+    // Then
+    expect(screen.getByText("Dans aucune de vos bibliothèques")).toBeDefined();
+    expect(
+      screen.getByRole("button", { name: "Ajouter à ma bibliothèque" }),
+    ).toBeDefined();
+  });
+
   it("stops the camera when the screen goes away", async () => {
     // Given
     const scanner = new FakeBarcodeScanner(true, neverRead);

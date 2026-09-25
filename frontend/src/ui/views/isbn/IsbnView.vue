@@ -88,6 +88,7 @@ async function add() {
 
 async function search() {
   edition.value = undefined;
+  added.value = false;
   message.value = undefined;
   const isbn13 = Isbn.of(typed.value)?.digits ?? null;
   if (isbn13 === null) {
