@@ -446,10 +446,7 @@ describe("SourceEditionCard", () => {
     const words = within(wrapper.element as HTMLElement).getByText(
       "Dans Bibliothèque de Léa",
     );
-    expect(
-      icons[0].element.compareDocumentPosition(words) &
-        Node.DOCUMENT_POSITION_FOLLOWING,
-    ).toBeTruthy();
+    expect(precedes(icons[0].element, words)).toBe(true);
   });
 
   it("shows the book icon before the absence's words", () => {
@@ -462,10 +459,7 @@ describe("SourceEditionCard", () => {
     const words = within(wrapper.element as HTMLElement).getByText(
       "Dans aucune de vos bibliothèques",
     );
-    expect(
-      icons[0].element.compareDocumentPosition(words) &
-        Node.DOCUMENT_POSITION_FOLLOWING,
-    ).toBeTruthy();
+    expect(precedes(icons[0].element, words)).toBe(true);
   });
 
   it("gives each bookshelf's row its own book icon", () => {
@@ -496,6 +490,12 @@ describe("SourceEditionCard", () => {
     expect(positions).toEqual([...positions].sort((a, b) => a - b));
     expect(card.match(/Dans/g)).toHaveLength(1);
   });
+
+  function precedes(first: Node, second: Node) {
+    return Boolean(
+      first.compareDocumentPosition(second) & Node.DOCUMENT_POSITION_FOLLOWING,
+    );
+  }
 
   function show(edition: SourceEdition, copies: Copy[] = []) {
     return card(edition, copies).text().replace(/\s+/g, " ");
