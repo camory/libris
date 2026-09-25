@@ -34,6 +34,7 @@ const refused = computed(() => refusals.includes(message.value ?? ""));
 const edition = ref<SourceEdition>();
 const copies = ref<Copy[]>([]);
 const searching = ref(false);
+const adding = ref(false);
 const scanning = ref(false);
 const canScan = ref(false);
 const camera = useTemplateRef<HTMLVideoElement>("camera");
@@ -64,6 +65,10 @@ async function toggleCamera() {
     return;
   }
   await openCamera();
+}
+
+function add() {
+  adding.value = true;
 }
 
 async function search() {
@@ -162,9 +167,12 @@ async function search() {
       <SourceEditionCard :edition="edition" :copies="copies" />
       <button
         type="button"
+        :disabled="adding"
         class="flex h-[50px] items-center justify-center gap-2 rounded-xl bg-accent text-button text-white active:bg-accent-pressed disabled:opacity-70"
+        @click="add"
       >
-        {{ t("isbn.add") }}
+        <BusySpinner v-if="adding" class="size-4" />
+        {{ adding ? t("isbn.adding") : t("isbn.add") }}
       </button>
     </div>
 

@@ -7,7 +7,10 @@ import {
 import { flushPromises, mount } from "@vue/test-utils";
 import { describe, expect, it } from "vitest";
 import { barcodeScannerKey } from "../../../application/BarcodeScanner";
-import { bookshelfApiKey } from "../../../application/BookshelfApi";
+import {
+  bookshelfApiKey,
+  type AddAnswer,
+} from "../../../application/BookshelfApi";
 import { isbnApiKey, type IsbnAnswer } from "../../../application/IsbnApi";
 import { meApiKey } from "../../../application/MeApi";
 import { FakeBarcodeScanner } from "../../../fixture/FakeBarcodeScanner";
@@ -16,6 +19,7 @@ import { FakeIsbnApi } from "../../../fixture/FakeIsbnApi";
 import { FakeMeApi } from "../../../fixture/FakeMeApi";
 import { lea } from "../../../fixture/Readers";
 import { onePiece1 } from "../../../fixture/SourceEditions";
+import BusySpinner from "../../components/BusySpinner.vue";
 import { createLibrisI18n } from "../../i18n";
 import IsbnView from "./IsbnView.vue";
 
@@ -363,6 +367,32 @@ describe("IsbnView", () => {
     await ask(screen, "9782000000006");
 
     // Then
+    expect(
+      screen.queryByRole("button", { name: "Ajouter à ma bibliothèque" }),
+    ).toBeNull();
+  });
+
+  it("is busy while the add runs", async () => {
+    // Given
+    const view = mountView(
+      new FakeIsbnApi(found),
+      undefined,
+      new FakeBookshelfApi(new Promise<AddAnswer>(() => {})),
+    );
+    const screen = within(view.element as HTMLElement);
+    await ask(screen, "9782723488525");
+
+    // When
+    await press(screen, "Ajouter à ma bibliothèque");
+
+    // Then
+    const button = screen.getByRole<HTMLButtonElement>("button", {
+      name: "Ajout en cours…",
+    });
+    expect(button.disabled).toBe(true);
+    expect(button.contains(view.findComponent(BusySpinner).element)).toBe(
+      true,
+    );
     expect(
       screen.queryByRole("button", { name: "Ajouter à ma bibliothèque" }),
     ).toBeNull();

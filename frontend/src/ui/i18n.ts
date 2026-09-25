@@ -16,6 +16,7 @@ const fr = {
     closeCamera: "Fermer la caméra",
     searching: "Recherche en cours…",
     add: "Ajouter à ma bibliothèque",
+    adding: "Ajout en cours…",
     invalid: "ISBN invalide",
     unknown: "ISBN inconnu",
     error: "Erreur lors de la recherche, veuillez réessayer plus tard.",
