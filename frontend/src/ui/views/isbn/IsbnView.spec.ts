@@ -41,6 +41,14 @@ const sourcesDown: IsbnAnswer = {
   type: "/problems/sources-unavailable",
 };
 
+const added: AddAnswer = {
+  outcome: "added",
+  copy: {
+    id: "5e0c1b2a-3948-4d5e-8a6f-0b1c2d3e4f50",
+    bookshelf: lea.defaultBookshelf,
+  },
+};
+
 const neverRead = new Promise<string | null>(() => {});
 
 describe("IsbnView", () => {
@@ -396,6 +404,21 @@ describe("IsbnView", () => {
     expect(
       screen.queryByRole("button", { name: "Ajouter à ma bibliothèque" }),
     ).toBeNull();
+  });
+
+  it("adds the ouvrage of the card to the reader's default bookshelf", async () => {
+    // Given
+    const bookshelfApi = new FakeBookshelfApi(added);
+    const screen = open(new FakeIsbnApi(found), undefined, bookshelfApi);
+    await ask(screen, "9782723488525");
+
+    // When
+    await press(screen, "Ajouter à ma bibliothèque");
+
+    // Then
+    expect(bookshelfApi.asked).toEqual([
+      { bookshelfId: lea.defaultBookshelf.id, edition: onePiece1 },
+    ]);
   });
 
   it("stops the camera when the screen goes away", async () => {

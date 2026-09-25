@@ -10,7 +10,9 @@ import {
 } from "vue";
 import { useI18n } from "vue-i18n";
 import { barcodeScannerKey } from "../../../application/BarcodeScanner";
+import { bookshelfApiKey } from "../../../application/BookshelfApi";
 import { isbnApiKey } from "../../../application/IsbnApi";
+import { meApiKey } from "../../../application/MeApi";
 import type { Copy } from "../../../domain/Copy";
 import { Isbn } from "../../../domain/Isbn";
 import type { SourceEdition } from "../../../domain/SourceEdition";
@@ -27,6 +29,8 @@ const refusals = ["isbn.invalid", "isbn.unknown"];
 const { t } = useI18n();
 const isbnApi = inject(isbnApiKey)!;
 const barcodeScanner = inject(barcodeScannerKey)!;
+const meApi = inject(meApiKey)!;
+const bookshelfApi = inject(bookshelfApiKey)!;
 
 const typed = ref("");
 const message = ref<string>();
@@ -67,8 +71,10 @@ async function toggleCamera() {
   await openCamera();
 }
 
-function add() {
+async function add() {
   adding.value = true;
+  const reader = await meApi.currentReader();
+  await bookshelfApi.add(reader.defaultBookshelf.id, edition.value!);
 }
 
 async function search() {
