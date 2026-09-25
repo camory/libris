@@ -446,6 +446,12 @@ true; the diary keeps the date it was found.
   computes and shows the card*) and `FastEntryScenarios.spec.ts`
   (`showsTheOnePieceCard`). Taking a word off the card reds all three; grep the
   word over `src/` before calling the change done.
+- The backend denies every non-GET without `X-Requested-With`, and the
+  contract does not state the header, so `contracteer mock` answers the same
+  without it: a frontend client that sends a `POST`, `PUT` or `DELETE` sets
+  `"X-Requested-With": "XMLHttpRequest"` itself, proven by a case over a
+  stubbed `fetch` that reads the request's `init`, as
+  `FetchBookshelfApi.spec.ts` *says the add comes from the application*.
 - A case that stubs `fetch` and still builds its client on
   `inject("mockBaseUrl")` passes whether or not the stub installed, the mock
   answering the same example: give such a client a base URL that resolves
