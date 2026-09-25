@@ -508,6 +508,32 @@ describe("IsbnView", () => {
     expect(screen.getByText("Dans aucune de vos bibliothèques")).toBeDefined();
   });
 
+  it("forgets the failed add on the next card", async () => {
+    // Given
+    const screen = open(
+      new FakeIsbnApi(found),
+      undefined,
+      new FakeBookshelfApi(new TypeError("Failed to fetch")),
+    );
+    await ask(screen, "9782723488525");
+    await press(screen, "Ajouter à ma bibliothèque");
+
+    // When
+    await ask(screen, "9782723488525");
+
+    // Then
+    expect(
+      screen.queryByText(
+        "Erreur lors de l'ajout, veuillez réessayer plus tard.",
+      ),
+    ).toBeNull();
+    expect(
+      screen.getByRole<HTMLButtonElement>("button", {
+        name: "Ajouter à ma bibliothèque",
+      }).disabled,
+    ).toBe(false);
+  });
+
   it("stops the camera when the screen goes away", async () => {
     // Given
     const scanner = new FakeBarcodeScanner(true, neverRead);
