@@ -70,8 +70,8 @@ Then Libris answers the edition as the house holds it, without asking
 ```
 
 An edition the house holds whose copies are all on bookshelves the reader
-does not belong to answers the same, with no copy: the card shows the edition
-without a place. Proof: contract example `ONE_PIECE_2_OWNED` verified by
+does not belong to answers the same, with no copy: the card says *Dans aucune
+de vos bibliothèques*. Proof: contract example `ONE_PIECE_2_OWNED` verified by
 Contracteer on both sides; backend scenario test over HTTP with sources
 that must not be asked; frontend scenario test against `contracteer mock`.
 
@@ -91,8 +91,9 @@ Proof: frontend scenario test with the API failing.
 ## Screen
 
 No screen of its own: the lookup screen of `specs/fast-entry.md`, route
-`/isbn`, whose card gains a row and a button. The bookshelf of S1 has no
-screen; its name shows only in that row.
+`/isbn`, whose card gains a row, *Dans aucune de vos bibliothèques* when no
+bookshelf of the reader holds a copy, and a button. The bookshelf of S1 has
+no screen; its name shows only in that row.
 
 In the card, between the authors and the field rows: one row per bookshelf
 of the reader holding a copy, *Dans Bibliothèque de Léa*, followed by
