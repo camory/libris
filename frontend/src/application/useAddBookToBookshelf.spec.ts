@@ -86,4 +86,18 @@ describe("useAddBookToBookshelf", () => {
     // Then
     expect(state.value).toEqual({ status: "notAdded" });
   });
+
+  it("is not added when Libris does not answer the add", async () => {
+    // Given
+    const { state, add } = useAddBookToBookshelf(
+      new FakeMeApi(lea),
+      new FakeBookshelfApi(new TypeError("Failed to fetch")),
+    );
+
+    // When
+    await add(onePiece1);
+
+    // Then
+    expect(state.value).toEqual({ status: "notAdded" });
+  });
 });
