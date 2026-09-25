@@ -27,9 +27,9 @@ Then Libris answers the kind MANGA
 	And the card uses the words of a manga
 ```
 
-Proof: contract example `ONE_PIECE_1` verified by Contracteer on both
-sides, its answer carrying `kind`; backend scenario test over a recorded
-BnF record; frontend scenario test against `contracteer mock`.
+Proof: contract example `ONE_PIECE_1` verified by Contracteer on both sides,
+its answer carrying `kind`; backend scenario test over a recorded BnF
+record; frontend scenario test over the fakes.
 
 **S2 A BD** · frontend, backend
 

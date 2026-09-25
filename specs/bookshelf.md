@@ -36,8 +36,8 @@ Then an edition exists with what the card shows, kind included
 ```
 
 Proof: contract example `ADD_ONE_PIECE_1` verified by Contracteer on both
-sides; backend scenario test over HTTP; frontend scenario test against
-`contracteer mock`.
+sides; backend scenario test over HTTP; frontend scenario test over the
+fakes.
 
 **S3 A known ISBN reaches the existing edition** · backend
 
@@ -70,10 +70,10 @@ Then Libris answers the edition as the house holds it, without asking
 ```
 
 An edition the house holds whose copies are all on bookshelves the reader
-does not belong to answers the same, with no copy: the card says *Dans aucune
-de vos bibliothèques*. Proof: contract example `ONE_PIECE_2_OWNED` verified by
-Contracteer on both sides; backend scenario test over HTTP with sources
-that must not be asked; frontend scenario test against `contracteer mock`.
+does not belong to answers the same, with no copy: the card says *Dans
+aucune de vos bibliothèques*. Proof: contract example `ONE_PIECE_2_OWNED`
+verified by Contracteer on both sides; backend scenario test over HTTP with
+sources that must not be asked; frontend scenario test over the fakes.
 
 **S5 Libris unavailable during the add** · frontend
 

@@ -23,7 +23,7 @@ Then Libris answers what the BnF knows: title, subtitle, authors with their
 
 Proof: contract example `ONE_PIECE_1` verified by Contracteer on both sides;
 backend scenario test over a stubbed source; frontend scenario test of the
-screen against `contracteer mock`.
+screen over the fakes.
 
 **S2 Scanned barcode** · frontend
 
@@ -66,8 +66,8 @@ Then Libris answers that the ISBN is unknown
 ```
 
 Proof: backend scenario test over the stubbed sources answering nothing, the
-not-found problem; frontend scenario test against `contracteer mock` with
-`404_UNKNOWN_ISBN`, the message.
+not-found problem; frontend scenario test over the fakes, the lookup
+answering the not-found problem, the message.
 
 **S5 Merged answer** · backend
 
@@ -110,8 +110,9 @@ Then Libris answers that the sources are unavailable, to try again later
 ```
 
 Proof: backend scenario test with the stubbed sources failing, then the BnF
-answering past the timeout, the sources-unavailable problem; frontend scenario test
-against `contracteer mock` with `503_SOURCES_DOWN`, the message.
+answering past the timeout, the sources-unavailable problem; frontend
+scenario test over the fakes, the lookup answering the sources-unavailable
+problem, the message.
 
 ## Screen
 
