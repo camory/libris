@@ -41,4 +41,18 @@ describe("useAddBookToBookshelf", () => {
     // Then
     expect(state.value).toEqual({ status: "adding" });
   });
+
+  it("adds the edition to the reader's default bookshelf", async () => {
+    // Given
+    const bookshelfApi = new FakeBookshelfApi(added);
+    const { add } = useAddBookToBookshelf(new FakeMeApi(lea), bookshelfApi);
+
+    // When
+    await add(onePiece1);
+
+    // Then
+    expect(bookshelfApi.asked).toEqual([
+      { bookshelfId: lea.defaultBookshelf.id, edition: onePiece1 },
+    ]);
+  });
 });

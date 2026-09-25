@@ -11,16 +11,18 @@ export type AddState =
   | { status: "notAdded" };
 
 export function useAddBookToBookshelf(
-  _meApi: MeApi,
-  _bookshelfApi: BookshelfApi,
+  meApi: MeApi,
+  bookshelfApi: BookshelfApi,
 ): {
   state: Ref<AddState>;
   add: (edition: SourceEdition) => Promise<void>;
 } {
   const state = ref<AddState>({ status: "ready" });
 
-  async function add(_edition: SourceEdition) {
+  async function add(edition: SourceEdition) {
     state.value = { status: "adding" };
+    const reader = await meApi.currentReader();
+    await bookshelfApi.add(reader.defaultBookshelf.id, edition);
   }
 
   return { state, add };
