@@ -172,7 +172,8 @@ one `VITE_*` variable; no other exists until a task needs one.
 and Pinia of its own over the given port implementations;
 `bootstrap(origin, revision)` builds the real ports over that origin and
 calls it; `main.ts` reads the origin and the revision and mounts what
-`bootstrap` answers. A scenario test calls `bootstrap` with the mock's origin.
+`bootstrap` answers. A scenario test calls `createLibrisApp` over the fakes of
+`src/fixture`; one smoke case calls `bootstrap` with the mock's origin.
 
 Layers under `frontend/src`:
 - `domain/` — pure TypeScript: types and pure functions (series gaps, sort
@@ -307,15 +308,22 @@ session, no BCrypt.
   `fr.amory.libris.scenario` on the backend and `src/scenario` on the
   frontend, one method per scenario or case, bearing its exact title. The
   backend boots the whole application over WireMock stubs of the sources;
-  the frontend boots it through `bootstrap` over `contracteer mock`. A
+  the frontend creates it through `createLibrisApp` over the fakes of its
+  ports, its Given naming the reader, what each port answers and what it
+  fails on, in the words of the spec. A fake answers what it was built with,
+  and a scenario asserts what the reader sees, never what a fake recorded.
+  The mock proves the communication with the API in `infra/api` and in one
+  smoke case of the fast-entry scenarios, which boots through `bootstrap`. A
   scenario asserts the exact values its spec names: with the domain and
   application tests, it is where values are proven. Tophe writes them with
-  the spec, committed skipped. A task un-skips the scenario tests its line
-  cites and changes nothing else in them; the inside, ports, use cases,
-  adapters and their tests, is the run's. A scenario test that has to
-  change is a spec conversation, not a task, with one exception: a scenario
-  of another spec that compares a whole answer gains the field a task adds
-  to it, declared in the pull request.
+  the spec, committed skipped, and since the gate type-checks a skipped
+  test, the spec piece also brings the port a scenario fakes, its fake in
+  `src/fixture` and the domain types it names. A task un-skips the scenario
+  tests its line cites and changes nothing else in them; the inside behind
+  the ports, use cases, adapters, screens and their tests, is the run's. A
+  scenario test that has to change is a spec conversation, not a task, with
+  one exception: a scenario of another spec that compares a whole answer
+  gains the field a task adds to it, declared in the pull request.
 - One test source set and one `test` task. No suffix sorts tests by what
   they need: a test that needs the database gets it from D08 like any other.
   Test classes are named after the Libris code they exercise. Tests live
