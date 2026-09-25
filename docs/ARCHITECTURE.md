@@ -414,9 +414,14 @@ deliberately lacks), no other service. A test that needs more blocks the task.
   is called by its name: it exposes `operator fun invoke` and nothing else
   public, and the variable holding it is the class name in lower camel case,
   so a call reads as the sentence, `lookupEditionByIsbn(isbn)`,
-  `addBookToBookshelf(readerId, bookshelfId, book)`. A port keeps a verb of
-  its own (`ExternalEditionLookup.lookUp`, `CopyRepository.findByEditionId`):
-  its name says what it is, not what it does.
+  `addBookToBookshelf(readerId, bookshelfId, book)`. On the frontend the use
+  case is a composable of `application/`, `use` and the same sentence
+  (`useAddBookToBookshelf`), that takes its ports as arguments and exposes
+  the state the view renders and one function, the verb of the sentence
+  (`add(edition)`); the view injects the ports, calls the composable and
+  renders. A port keeps a verb of its own (`ExternalEditionLookup.lookUp`,
+  `CopyRepository.findByEditionId`): its name says what it is, not what it
+  does.
 - A member's visibility is what the type exposes: a private member is not
   made public for a new caller. A caller that needs what the private member
   does either goes through the public door (`Isbn.of`) or the type gains a
