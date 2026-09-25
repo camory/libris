@@ -128,19 +128,19 @@ const rows = computed(() => {
       </div>
     </div>
 
-    <div>
-      <i18n-t
+    <div class="text-body font-semibold">
+      <div
         v-for="bookshelf in bookshelves"
         :key="bookshelf.id"
-        keypath="isbn.card.copies"
-        :plural="bookshelf.count"
-        tag="p"
-        class="text-body"
+        class="flex items-center gap-2"
       >
-        <template #bookshelf>{{ bookshelf.name }}</template>
-        <template #count>{{ bookshelf.count }}</template>
-      </i18n-t>
-      <p v-if="bookshelves.length === 0" class="text-body">
+        <IconBook class="size-5.5" />
+        <i18n-t keypath="isbn.card.copies" :plural="bookshelf.count" tag="p">
+          <template #bookshelf>{{ bookshelf.name }}</template>
+          <template #count>{{ bookshelf.count }}</template>
+        </i18n-t>
+      </div>
+      <p v-if="bookshelves.length === 0">
         {{ t("isbn.card.noCopy") }}
       </p>
     </div>

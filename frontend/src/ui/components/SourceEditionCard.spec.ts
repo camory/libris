@@ -435,6 +435,22 @@ describe("SourceEditionCard", () => {
     expect(card).not.toContain("exemplaires");
   });
 
+  it("shows the book icon before the bookshelf's words", () => {
+    // When
+    const wrapper = card(onePiece1, [onLea]);
+
+    // Then
+    const icons = wrapper.findAllComponents(IconBook);
+    expect(icons).toHaveLength(1);
+    const words = within(wrapper.element as HTMLElement).getByText(
+      "Dans Bibliothèque de Léa",
+    );
+    expect(
+      icons[0].element.compareDocumentPosition(words) &
+        Node.DOCUMENT_POSITION_FOLLOWING,
+    ).toBeTruthy();
+  });
+
   it("says no bookshelf when the reader's bookshelves hold no copy", () => {
     // When
     const card = show(onePiece1, []);
