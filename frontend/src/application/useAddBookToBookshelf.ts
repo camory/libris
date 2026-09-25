@@ -23,9 +23,10 @@ export function useAddBookToBookshelf(
     state.value = { status: "adding" };
     const reader = await meApi.currentReader();
     const answer = await bookshelfApi.add(reader.defaultBookshelf.id, edition);
-    if (answer.outcome === "added") {
-      state.value = { status: "added", copy: answer.copy };
-    }
+    state.value =
+      answer.outcome === "added"
+        ? { status: "added", copy: answer.copy }
+        : { status: "notAdded" };
   }
 
   return { state, add };

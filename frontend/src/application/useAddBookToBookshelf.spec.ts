@@ -69,4 +69,21 @@ describe("useAddBookToBookshelf", () => {
     // Then
     expect(state.value).toEqual({ status: "added", copy });
   });
+
+  it("is not added when Libris refuses the add", async () => {
+    // Given
+    const { state, add } = useAddBookToBookshelf(
+      new FakeMeApi(lea),
+      new FakeBookshelfApi({
+        outcome: "problem",
+        type: "/problems/validation",
+      }),
+    );
+
+    // When
+    await add(onePiece1);
+
+    // Then
+    expect(state.value).toEqual({ status: "notAdded" });
+  });
 });
