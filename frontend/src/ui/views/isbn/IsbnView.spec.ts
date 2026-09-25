@@ -442,6 +442,34 @@ describe("IsbnView", () => {
     expect(screen.queryByRole("button", { name: "Ajout en cours…" })).toBeNull();
   });
 
+  it("counts the copy it added beside the one the reader had", async () => {
+    // Given
+    const shelved: IsbnAnswer = {
+      outcome: "found",
+      edition: onePiece1,
+      copies: [
+        {
+          id: "6f1d2c3b-4a59-4e6f-8b70-1c2d3e4f5a61",
+          bookshelf: lea.defaultBookshelf,
+        },
+      ],
+    };
+    const screen = open(
+      new FakeIsbnApi(shelved),
+      undefined,
+      new FakeBookshelfApi(added),
+    );
+    await ask(screen, "9782723488525");
+
+    // When
+    await press(screen, "Ajouter à ma bibliothèque");
+
+    // Then
+    expect(
+      screen.getByText("Dans Bibliothèque de Léa · 2 exemplaires"),
+    ).toBeDefined();
+  });
+
   it("stops the camera when the screen goes away", async () => {
     // Given
     const scanner = new FakeBarcodeScanner(true, neverRead);

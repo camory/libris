@@ -81,7 +81,7 @@ async function add() {
   );
   adding.value = false;
   if (answer.outcome === "added") {
-    copies.value = [answer.copy];
+    copies.value = [...copies.value, answer.copy];
     added.value = true;
   }
 }
