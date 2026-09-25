@@ -1,7 +1,9 @@
+import { flushPromises } from "@vue/test-utils";
 import { describe, expect, it } from "vitest";
 import { FakeBookshelfApi } from "../fixture/FakeBookshelfApi";
 import { FakeMeApi } from "../fixture/FakeMeApi";
 import { lea } from "../fixture/Readers";
+import { onePiece1 } from "../fixture/SourceEditions";
 import type { AddAnswer } from "./BookshelfApi";
 import { useAddBookToBookshelf } from "./useAddBookToBookshelf";
 
@@ -23,5 +25,20 @@ describe("useAddBookToBookshelf", () => {
 
     // Then
     expect(state.value).toEqual({ status: "ready" });
+  });
+
+  it("is adding while the add runs", async () => {
+    // Given
+    const { state, add } = useAddBookToBookshelf(
+      new FakeMeApi(lea),
+      new FakeBookshelfApi(new Promise<AddAnswer>(() => {})),
+    );
+
+    // When
+    void add(onePiece1);
+    await flushPromises();
+
+    // Then
+    expect(state.value).toEqual({ status: "adding" });
   });
 });
