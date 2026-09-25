@@ -248,6 +248,16 @@ describe("IsbnView", () => {
     ).toBe(false);
   });
 
+  it("shows no word on the button Chercher", () => {
+    // When
+    const screen = open(new FakeIsbnApi(unknownIsbn));
+
+    // Then
+    expect(
+      screen.getByRole("button", { name: "Chercher" }).textContent?.trim(),
+    ).toBe("");
+  });
+
   it("offers the field alone where the browser detects no barcode", async () => {
     // Given
     const scanner = new FakeBarcodeScanner(false);

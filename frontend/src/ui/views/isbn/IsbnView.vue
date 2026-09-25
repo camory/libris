@@ -137,11 +137,11 @@ async function search() {
       <button
         type="button"
         :disabled="searching"
+        :aria-label="searching ? t('isbn.searching') : t('isbn.search')"
         class="flex h-[50px] items-center justify-center gap-2 rounded-xl bg-accent text-button text-white active:bg-accent-pressed disabled:opacity-70"
         @click="search"
       >
         <BusySpinner v-if="searching" class="size-4" />
-        {{ searching ? t("isbn.searching") : t("isbn.search") }}
       </button>
     </div>
 
