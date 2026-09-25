@@ -399,9 +399,7 @@ describe("IsbnView", () => {
       name: "Ajout en cours…",
     });
     expect(button.disabled).toBe(true);
-    expect(button.contains(view.findComponent(BusySpinner).element)).toBe(
-      true,
-    );
+    expect(button.contains(view.findComponent(BusySpinner).element)).toBe(true);
     expect(
       screen.queryByRole("button", { name: "Ajouter à ma bibliothèque" }),
     ).toBeNull();
@@ -440,7 +438,9 @@ describe("IsbnView", () => {
     expect(
       screen.queryByRole("button", { name: "Ajouter à ma bibliothèque" }),
     ).toBeNull();
-    expect(screen.queryByRole("button", { name: "Ajout en cours…" })).toBeNull();
+    expect(
+      screen.queryByRole("button", { name: "Ajout en cours…" }),
+    ).toBeNull();
   });
 
   it("counts the copy it added beside the one the reader had", async () => {
@@ -499,9 +499,7 @@ describe("IsbnView", () => {
     scanner?: FakeBarcodeScanner,
     bookshelfApi?: FakeBookshelfApi,
   ) {
-    return within(
-      mountView(api, scanner, bookshelfApi).element as HTMLElement,
-    );
+    return within(mountView(api, scanner, bookshelfApi).element as HTMLElement);
   }
 
   function mountView(
