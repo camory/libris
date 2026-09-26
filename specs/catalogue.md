@@ -75,3 +75,44 @@ Then the screen says to try again later
 Two cases: the first page, which lists nothing; the next page, after which
 the rows already listed stay and the sentence sits under them. Proof:
 frontend scenario test with the API failing, one per case.
+
+## Screen
+
+Mockups: <https://claude.ai/artifact/TVJWSSoqYZR6ncunYQ7zV3>, one
+artboard per state below, exported as `specs/catalogue/<n>-<state>.jpg` in
+the same order. Route `/catalogue`, reached from the tab bar, whose third
+column it claims: three book spines, *Catalogue*.
+
+Top to bottom on a phone: the title *Parcourir le catalogue* and the line
+*Les ouvrages de toutes vos bibliothèques.*; the list; at the bottom the tab
+bar, the house of *Accueil*, the barcode circle *Ajouter* and the spines of
+*Catalogue*, in accent here.
+
+The list is one block on `surface` with a `border` hairline between its
+rows, 14 of padding inside a row. A row shows one edition: the cover at the
+left, 48 by 74, or its stand-in; at its right, stacked 6 apart, the overline
+série · tome when it has a series (*Astérix · tome 1*), the title in the row
+title step, the authors as names alone on one line separated by commas,
+whatever their roles, in the order of the answer, then in `muted` the
+bookshelves of the reader holding a copy, separated by commas, each
+followed by *· 2 exemplaires* when it holds more than one (*Bibliothèque de
+Christophe · 2 exemplaires, Salon*). The rows are in the order of the
+answer; the screen sorts nothing. A row leads nowhere yet: the edition page
+comes with its own spec. The screen asks the first page anew on each
+arrival, so an ouvrage added a moment ago is there.
+
+States:
+
+- **Loading**: five skeleton rows stand where the rows will land, until the
+  first page arrives.
+- **Listed** (S1, S2): the rows of the pages received; the list scrolls
+  under the tab bar, which stays.
+- **Loading more** (S2): when the last row comes into view, two skeleton rows
+  stand under it while the next page comes, and its rows take their place.
+  Under the last row of the last page, nothing.
+- **Empty** (S3): in place of the list, the outlined book icon over *Les
+  ouvrages de vos bibliothèques apparaîtront ici.*
+- **Unavailable** (S4): in place of the list, *Erreur lors du chargement,
+  veuillez réessayer plus tard.* with the alert icon; when the next page is
+  the one that does not come, the rows already listed stay and the sentence
+  sits under them, where the skeleton rows stood.
