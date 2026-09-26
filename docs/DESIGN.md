@@ -47,6 +47,7 @@ One scale, in pixels, each step with its one job:
 | page title   | 22 / semibold     | the `h1` of a screen, tight letter-spacing      |
 | card title   | 20 / bold         | the title of an ouvrage, line-height 1.2        |
 | field        | 18 / regular      | what the reader types                           |
+| row title    | 16 / semibold     | the title of an ouvrage in a list, line-height 1.2 |
 | button       | 16 / semibold     | the primary action                              |
 | lead         | 15 / regular      | a subtitle, an empty-state sentence             |
 | body         | 14 / regular      | hints, messages, label/value rows, line 1.4     |
@@ -77,7 +78,8 @@ viewport unit:
    the name of its screen: *Accueil* (a house) in the first column. The
    middle column holds the way to add an ouvrage, *Ajouter*: a 44 circle on
    `accent` centred in the bar, the barcode in white at 32, always on
-   `accent`. The third column is empty until a screen claims it. Below the
+   `accent`. The third column holds *Catalogue*, the three spines, the reader's
+   catalogue. Below the
    bar the padding the phone's home indicator needs, the bottom safe area
    and nothing more: without one the bar ends at the screen.
 
@@ -200,7 +202,8 @@ An icon is an inline SVG on a 24 grid, stroke 1.8, round caps and joins,
 `currentColor`, no fill; 22 for the alert of a message and the bookshelf
 rows of a card (U06), 32 on the tab bar, 48 for an empty state (U05). Each is its own component under `ui/components/icons`, named
 by what it shows (`IconHome`, `IconBarcode`, `IconClose`, `IconAlert`,
-`IconBook`), drawn once and reused. No icon font, no icon
+`IconBook`, `IconBooks`, three spines on a line, for the catalogue tab), drawn
+once and reused. No icon font, no icon
 package (D05: no UI library).
 
 An icon next to a word is decoration: `aria-hidden`, the word carries the
