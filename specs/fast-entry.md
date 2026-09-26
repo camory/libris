@@ -4,7 +4,7 @@
 barcode of an ouvrage, or types its ISBN, and reads what the public sources
 know about it. Nothing is stored: adding the edition and a copy is another
 feature, and this one shows first how good the sources are.
-**Status:** draft
+**Status:** done 2026-09-25
 
 ## Scenarios
 
@@ -222,6 +222,9 @@ hand and read its card; type a wrong ISBN and read the message; type
 Library alone.
 
 Checked by Tophe on 2026-09-16, with the build of T027.
+
+The screen of the *Screen* section, the tab bar and the button beside the
+field, checked by Tophe on 2026-09-25, on the Pixel, with the deploy of T042.
 
 ## Tasks
 
