@@ -321,8 +321,12 @@
   generated case for `format: uuid` carried an encoded slash; put
   `format: uuid` back now that the backend verifies with Contracteer 4.1.1,
   whose case sends `<<not-a-uuid>>` and expects `400`, `404` or `422` with
-  a `Problem`: check first what the backend answers to a non-uuid bookshelf
-  id (decided with Tophe on T037, 2026-09-24; actionable since 2026-09-27).
+  a `Problem`. Measured 2026-09-27 with the 4.1.1 verifier over a local
+  copy of `v0.6.2` with `format: uuid`: the case fails, the backend answers
+  the conversion failure with Spring's `text/html` 400 and no `Problem`.
+  T043 must answer a `Problem` to a non-uuid `after`, and the same handler
+  should cover the path id: check it after T043, then release the contract
+  change (decided with Tophe on T037, 2026-09-24).
 - Frontend: no case proves that a second lookup replaces the copies of the
   first on the card: `IsbnView.spec.ts` has one answer per `FakeIsbnApi`, and
   each scenario boots a fresh app; the mutation keeping the previous copies
