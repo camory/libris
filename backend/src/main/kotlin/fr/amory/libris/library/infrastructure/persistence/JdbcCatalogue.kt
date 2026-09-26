@@ -49,10 +49,12 @@ class JdbcCatalogue(private val jdbcClient: JdbcClient) : Catalogue {
             .param("readerId", readerId.value)
             .query { rs, _ -> rowOf(rs) }
             .list()
-            .map { row ->
-                row.edition.copy(
-                    contributions = Contributions.of(listOfNotNull(row.contribution)),
-                    copies = listOf(row.copy),
+            .groupBy { it.edition.editionId }
+            .values
+            .map { rows ->
+                rows.first().edition.copy(
+                    contributions = Contributions.of(rows.mapNotNull { it.contribution }),
+                    copies = rows.map { it.copy }.distinct(),
                 )
             }
 

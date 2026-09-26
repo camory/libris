@@ -1,6 +1,7 @@
 package fr.amory.libris.library.infrastructure.persistence
 
 import fr.amory.libris.bibliography.domain.Contribution
+import fr.amory.libris.bibliography.domain.ContributionRole.ARTIST
 import fr.amory.libris.bibliography.domain.ContributionRole.WRITER
 import fr.amory.libris.bibliography.domain.Contributions
 import fr.amory.libris.bibliography.domain.Kind.MANGA
@@ -11,6 +12,10 @@ import fr.amory.libris.bibliography.fixture.isbnOf
 import fr.amory.libris.bibliography.infrastructure.persistence.JdbcEditionRepository
 import fr.amory.libris.fixture.JdbcSliceTest
 import fr.amory.libris.library.domain.bookshelf.Bookshelf
+import fr.amory.libris.library.domain.bookshelf.BookshelfId
+import fr.amory.libris.library.domain.bookshelf.Membership
+import fr.amory.libris.library.domain.bookshelf.MembershipRole.OWNER
+import fr.amory.libris.library.domain.bookshelf.MembershipRole.VIEWER
 import fr.amory.libris.library.domain.catalogue.CatalogueCopy
 import fr.amory.libris.library.domain.catalogue.CatalogueEdition
 import fr.amory.libris.library.domain.copy.Copy
@@ -18,6 +23,7 @@ import fr.amory.libris.library.domain.copy.CopyId
 import fr.amory.libris.library.fixture.bookshelfOwnedBy
 import fr.amory.libris.library.fixture.readerNamed
 import io.kotest.matchers.collections.shouldContainExactlyInAnyOrder
+import io.kotest.matchers.shouldBe
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.context.annotation.Import
@@ -96,6 +102,38 @@ class JdbcCatalogueTest @Autowired constructor(
                 coverUrl = "https://covers.openlibrary.org/b/isbn/9782723488525-L.jpg",
                 copies = listOf(CatalogueCopy(leasCopy.id, leasBookshelf.id, "Bibliothèque de Léa")),
             ),
+        )
+    }
+
+    @Test
+    fun `an edition on two of the reader's bookshelves comes once`() {
+        // Given
+        val lea = readerNamed("lea", "Léa").also { readers.insert(it) }
+        val tom = readerNamed("tom", "Tom").also { readers.insert(it) }
+        val leasBookshelf = bookshelfOwnedBy(lea).also { bookshelves.insert(it) }
+        val salon = Bookshelf(BookshelfId.new(), "Salon", listOf(Membership(tom.id, OWNER), Membership(lea.id, VIEWER)))
+            .also { bookshelves.insert(it) }
+        val asterix = ROMANCE_DAWN.copy(
+            contributions = Contributions.of(
+                listOf(Contribution("René Goscinny", WRITER), Contribution("Albert Uderzo", ARTIST)),
+            ),
+        )
+        editions.insert(asterix)
+        val onLeasBookshelf = copyOf(asterix, leasBookshelf)
+        val inTheSalon = copyOf(asterix, salon)
+
+        // When
+        val held = catalogue.editionsHeldBy(lea.id)
+
+        // Then
+        held.map { it.editionId } shouldBe listOf(asterix.id)
+        held.single().contributions.toList() shouldContainExactlyInAnyOrder listOf(
+            Contribution("René Goscinny", WRITER),
+            Contribution("Albert Uderzo", ARTIST),
+        )
+        held.single().copies shouldContainExactlyInAnyOrder listOf(
+            CatalogueCopy(onLeasBookshelf.id, leasBookshelf.id, "Bibliothèque de Léa"),
+            CatalogueCopy(inTheSalon.id, salon.id, "Salon"),
         )
     }
 
