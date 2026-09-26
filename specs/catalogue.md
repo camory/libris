@@ -19,7 +19,8 @@ When the reader opens their catalogue
 Then Libris answers every edition with a copy on one of their bookshelves,
      once each, with its copies on those bookshelves and none of the other
 	And in the order a shelf reads, by series name, or title when there is
-	    none, ignoring case and accents, then by tome, then by title
+	    none, ignoring case and accents, then by tome, an edition of the
+	    series without a tome after its numbered tomes, then by title
 	And the screen lists them in that order
 ```
 
@@ -42,7 +43,9 @@ Then Libris answers the first page, in the order of S1, and names the next
 ```
 
 A page holds fifty editions, fixed by Libris; an edition added between two
-pages lands in the order of S1 without shifting them. Proof: backend
+pages lands in the order of S1 without shifting them. An `after` naming an
+edition the reader's catalogue no longer holds continues after its place;
+one naming no edition answers an empty page naming no next. Proof: backend
 scenario test over HTTP with one edition more than a page, the first page
 naming a next and the second none; frontend scenario test over the fakes
 with two pages. The chain from `next` to `after` is the tests' to show:

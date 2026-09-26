@@ -206,7 +206,8 @@ deployed. No other task touches the contract (D04).
       bookshelves, each with its bookshelf's id and name, and nothing of a
       copy on a bookshelf they do not belong to (PRD §3, §4.1).
       The order of a shelf: by series name, or title when there is none,
-      ignoring case and accents, then by tome as a number, then by title.
+      ignoring case and accents, then by tome as a number, an edition of
+      the series without a tome after its numbered tomes, then by title.
       A read across the two contexts that the repositories cannot serve in a
       few queries once it comes in pages, so it is answered from one query
       of the library's own, proven against PostgreSQL (D02, D12).
@@ -225,10 +226,14 @@ deployed. No other task touches the contract (D04).
       last page names no next. The order is total, so two editions equal
       in the order of S1 neither repeat nor skip; an edition added between
       two pages lands in its place without shifting them (D11).
+      An `after` naming an edition of the house that the reader's
+      catalogue no longer holds continues after its place in the order;
+      an `after` naming no edition answers an empty page naming no next.
       Tests against PostgreSQL: fifty-one editions read as fifty then one;
       editions of the same series, tome and title split across a page
-      boundary; an edition added between the two pages; an unknown id
-      answered as the human decides (see *Questions for the human*).
+      boundary; an edition added between the two pages; an `after` of an
+      edition the reader's catalogue no longer holds; an `after` of no
+      edition.
       Realises S2 inside; un-skips nothing, its scenario test waiting for
       the API of T045.
 
@@ -247,7 +252,11 @@ deployed. No other task touches the contract (D04).
       S3.
 
 - [ ] T046 Frontend: the catalogue tab and its page, on `v0.7.0`.
-      Precondition (human): T045 deployed (D04).
+      Precondition (human): T045 deployed (D04); the frontend piece of the
+      spec — the tests of the catalogue scenarios, one skipped test per
+      frontend scenario each bearing its exact title, the catalogue's port
+      and its fake, the catalogue as the app reads it, and its client
+      tested against `contracteer mock` (D07).
       `vitest.global-setup.ts` pins `v0.7.0`, the only contract edit of the
       task (D04).
       The tab bar gains its third column, the three book spines at 32 over
@@ -259,11 +268,6 @@ deployed. No other task touches the contract (D04).
       No scenario of its own; un-skips nothing.
 
 - [ ] T047 Frontend: the catalogue listed.
-      Precondition (human): the frontend piece of the spec — the tests of
-      the catalogue scenarios, one skipped test per frontend scenario each
-      bearing its exact title, the catalogue's port and its fake, the
-      catalogue as the app reads it, and its client tested against
-      `contracteer mock` (D07).
       On each arrival on the page the first page is asked anew, five
       skeleton rows standing until it comes; then one block on `surface`,
       hairlines between rows, 14 of padding, a row per edition in the order
@@ -336,19 +340,6 @@ read the empty sentence.*
   `specs/catalogue.md`, asks for the installed app on staging, as the update
   spec's did, while D09 knows one environment, the Kimsufi box. No task
   depends on the answer; the hand check is Tophe's step either way.
-- **An `after` Libris does not know.** `v0.7.0` answers `200` or `400`,
-  and the verifier sends a random uuid as `after`, so an id of no book in
-  the reader's catalogue must be answered `200`: an empty page naming no
-  next, or the first page? Nothing yet removes a book, but the edition page
-  will. T044 needs the answer.
-- **An edition of a series without a tome.** The order of S1 is series,
-  then tome, then title; the tome may be empty. Does such an edition sit
-  before the tomes of its series or after them? T043 needs the answer.
-- **The frontend piece of the spec and the pin.** D07 has Tophe bring the
-  catalogue's client with its tests against the mock, which need `v0.7.0`
-  pinned; D04 has the first frontend task bump the pin. The backlog bumps it
-  in T046 and asks for the piece before T047; say if the piece should come
-  with the pin instead.
 - **No spec yet**, so nothing is planned for them: PRD §4.1 beyond the add
   and the listing — viewing and editing an edition, removing a copy, the
   filters and sorts of the list, the edition page — §4.2 search, §4.3
