@@ -58,8 +58,9 @@ Then Libris answers an empty page that names no next
 	And the screen says what will fill it
 ```
 
-Proof: contract example verified by Contracteer on both sides; backend
-scenario test over HTTP; frontend scenario test over the fakes.
+Proof: backend scenario test over HTTP; frontend scenario test over the
+fakes. No contract example: its request is the first page's, and one
+request has one answer under verification.
 
 **S4 Libris unavailable** · frontend
 
@@ -116,3 +117,44 @@ States:
   veuillez réessayer plus tard.* with the alert icon; when the next page is
   the one that does not come, the rows already listed stay and the sentence
   sits under them, where the skeleton rows stood.
+
+## Contract
+
+Release `v0.7.0` of `camory/libris-api`, after the bookshelf spec's
+`v0.6.2`. Nothing changes in an existing answer: one operation and one
+schema are added.
+
+- `Book`, the stored edition addressed by id: the fields of `IsbnLookup`,
+  `isbn13` nullable as in `NewBook`, plus `id`, a uuid string, required;
+  `copies` as in `IsbnLookup`, the copies on the bookshelves the reader
+  belongs to. `IsbnLookup` stays as it is: an ISBN the house lacks has no
+  id.
+- `GET /api/v1/books`, the reader's catalogue: the books with a copy on a
+  bookshelf they belong to, in the order of S1, fifty at a time. Query
+  parameter `after`, optional, the `id` of the last book of the page
+  received, the page then starting after it → `200`, an array of `Book`,
+  and, when more books follow, the header `Link`, a string,
+  `</api/v1/books?after=<id>>; rel="next"`, which the app follows as it
+  is; no `Link` on the last page. `400` `Problem` `/problems/validation`
+  when `after` is not an id. Examples `CATALOGUE_FIRST_PAGE`, no `after`,
+  three books, *Astérix* 1 and 2 and *Le Petit Prince*, with a `Link`;
+  `CATALOGUE_LAST_PAGE`, `after` the id of *Le Petit Prince*, one book,
+  *One Piece* 3, and no `Link`.
+- The body examples live under `components/examples`, `CatalogueFirstPage`
+  and `CatalogueLastPage`; the operation keeps the scenario keys and points
+  at them. The `Link` example sits on the header.
+
+The empty catalogue and a page of fifty are the tests' to show, not the
+document's: a request has one answer under verification. The verifier adds
+its case on `after` of the wrong type, answered `400` with a `Problem`.
+
+## Done
+
+On the Pixel, from the installed app on staging: open *Catalogue*; the
+ouvrages added in the bookshelf spec's check are there, *One Piece* 1 first
+with *Bibliothèque de Christophe · 2 exemplaires*, and the rows read as a
+shelf; on the second account of the family, open *Catalogue* and read the
+empty sentence. The pages are the tests' to show: the house has fewer than
+fifty ouvrages.
+
+## Tasks
