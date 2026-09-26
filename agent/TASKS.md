@@ -248,7 +248,8 @@ once T045 is deployed. No other task touches the contract (D04).
       edition.
       Realises S2; un-skips the backend test of S2.
 
-- [ ] T046 Frontend: the catalogue tab and its page, on `v0.7.0`.
+- [ ] T046 Frontend: the catalogue tab, its page and the empty catalogue,
+      on `v0.7.0`.
       Precondition (human): T045 deployed (D04); the frontend piece of the
       spec — the tests of the catalogue scenarios, one skipped test per
       frontend scenario each bearing its exact title, the catalogue's port
@@ -259,35 +260,41 @@ once T045 is deployed. No other task touches the contract (D04).
       The tab bar gains its third column, the three book spines at 32 over
       *Catalogue*, in `accent` on its own page, leading to `/catalogue`; the
       page shows the title *Parcourir le catalogue* and the line *Les
-      ouvrages de toutes vos bibliothèques.*, and nothing more yet; every
-      word from the `fr` catalogue (U03, U07, U08).
-      Tab bar tests with three tabs, the third active on its page.
-      No scenario of its own; un-skips nothing.
+      ouvrages de toutes vos bibliothèques.*, then asks the first page anew
+      on each arrival, five skeleton rows standing until it comes; when it
+      is empty, the outlined book icon over *Les ouvrages de vos
+      bibliothèques apparaîtront ici.*; a page with rows is T047's; every
+      word from the `fr` catalogue (U03, U05, U07, U08). The catalogue is a
+      use case of its own, a composable over the port, the page rendering
+      its state (D05, D10).
+      Tab bar tests with three tabs, the third active on its page;
+      composable tests over the fake answering an empty page; view tests
+      of the loading and empty states.
+      The frontend's walking skeleton, the thinnest scenario; realises S3
+      on the frontend; un-skips the frontend test of S3.
 
 - [ ] T047 Frontend: the catalogue listed.
-      On each arrival on the page the first page is asked anew, five
-      skeleton rows standing until it comes; then one block on `surface`,
-      hairlines between rows, 14 of padding, a row per edition in the order
+      When the first page has rows, in place of the empty state one block
+      on `surface`, hairlines between rows, 14 of padding, a row per
+      edition in the order
       of the answer: the cover 48 by 74 or its stand-in, the overline série
       · tome when it has a series, the title, the authors' names on one line
       separated by commas, then in `muted` the reader's bookshelves holding
       a copy, each with *· 2 exemplaires* when it holds more than one. A row
-      leads nowhere. The listing is a use case of its own, a composable
-      over the port, the page rendering its state (D05, D10, U05, U06, U08).
-      Composable tests over the fake; view tests of the loading and listed
-      states and of a row with and without series, one and two bookshelves.
+      leads nowhere (U05, U06, U08).
+      Composable tests over the fake answering rows; view tests of the
+      listed state and of a row with and without series, one and two
+      bookshelves.
       Realises S1 on the frontend; un-skips the frontend test of S1.
 
-- [ ] T048 Frontend: the catalogue empty, and Libris unavailable.
-      When the first page is empty, in place of the list the outlined book
-      icon over *Les ouvrages de vos bibliothèques apparaîtront ici.*; when
-      the first page does not come, in place of the list *Erreur lors du
-      chargement, veuillez réessayer plus tard.* with the alert icon, and
-      nothing listed; every word from the `fr` catalogue (U05, U07, U08).
-      Composable tests over the fake, empty and failing; view tests of the
-      two states.
-      Realises S3 and the first-page case of S4 on the frontend; un-skips
-      the frontend tests of S3 and of S4 on the first page.
+- [ ] T048 Frontend: Libris unavailable on the first page.
+      When the first page does not come, in place of the list *Erreur lors
+      du chargement, veuillez réessayer plus tard.* with the alert icon,
+      and nothing listed; every word from the `fr` catalogue (U05, U07,
+      U08).
+      Composable tests over the fake failing; view tests of the state.
+      Realises the first-page case of S4 on the frontend; un-skips the
+      frontend test of S4 on the first page.
 
 - [ ] T049 Frontend: the next page.
       When the last row comes into view and the page received names a

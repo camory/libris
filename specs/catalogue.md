@@ -169,7 +169,7 @@ fifty ouvrages.
 - T043 — S3, and S1 but its order, the backend on `v0.7.0` — backend
 - T044 — S1, the order — backend
 - T045 — S2, the pages — backend
-- T046 — the tab and the page, the frontend on `v0.7.0` — frontend
+- T046 — S3, the tab and the page, the frontend on `v0.7.0` — frontend
 - T047 — S1 — frontend
-- T048 — S3, S4 on the first page — frontend
+- T048 — S4 on the first page — frontend
 - T049 — S2, S4 on the next page — frontend
