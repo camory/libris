@@ -191,26 +191,122 @@ it, the card shows Dans Bibliothèque de Christophe; scan it again, the row is
 there before any tap; add it again, the row reads · 2 exemplaires; on a
 second account of the family, scan it and read the card without a place.*
 
-## Fast entry, the button beside the field — specs/fast-entry.md
+## Catalogue — specs/catalogue.md
 
-The *Screen* section as rewritten with U04 on 2026-09-25: the primary button
-of the field on the field's line. No contract change.
+Contract: release `v0.7.0` of `camory/libris-api`, after `v0.6.2`: one
+operation, the reader's catalogue, and three schemas added. The backend pin
+moves once, in T045, because the verifier reads the whole document; T043
+and T044 build the read that task then serves. The operation is added, so
+the backend goes first and the frontend pin moves in T046, once T045 is
+deployed. No other task touches the contract (D04).
 
-- [x] T042 Frontend: the button *Chercher* beside the field.
-      The primary button of the field leaves its place under the field for
-      the field's line, at its right, 8 apart: a 50 square, `accent`, radius
-      12, `accent` pressed shade on press, showing a magnifier glyph alone in
-      white, hand-drawn like the other icons, with *Chercher* as its
-      `aria-label`. While the lookup runs, a spinner takes the place of the
-      glyph, the label reads *Recherche en cours…* and the button accepts
-      nothing; the field stays editable. Nothing under the field before the
-      first search; the messages, the card and the camera view keep their
-      places (U04, U05, U07, U08).
-      View tests: the button named *Chercher* shows no text; while the
-      lookup runs it is named *Recherche en cours…* and disabled. Every test
-      that presses *Chercher* by name stays green and unchanged; the
-      scenarios untouched.
-      No scenario of its own.
+- [ ] T043 Backend: the reader's catalogue, in the order of a shelf.
+      The library answers a reader's catalogue: every edition with a copy on
+      a bookshelf they belong to, once each, with its copies on those
+      bookshelves, each with its bookshelf's id and name, and nothing of a
+      copy on a bookshelf they do not belong to (PRD §3, §4.1).
+      The order of a shelf: by series name, or title when there is none,
+      ignoring case and accents, then by tome as a number, then by title.
+      A read across the two contexts that the repositories cannot serve in a
+      few queries once it comes in pages, so it is answered from one query
+      of the library's own, proven against PostgreSQL (D02, D12).
+      Tests: a test of the order over editions that differ only in case,
+      accents, tome or title; the read over copies on the reader's
+      bookshelves and on another's, an edition with copies on two of them
+      listed once; an empty catalogue for a reader whose bookshelves hold
+      nothing.
+      Realises S1 and S3 inside; un-skips nothing, their scenario tests
+      waiting for the API of T045.
+
+- [ ] T044 Backend: the catalogue in pages of fifty.
+      The read of T043 answers fifty editions at a time and names the next
+      page by the id of the last edition answered; from that id the
+      following page starts just after it, with no gap or repeat, and the
+      last page names no next. The order is total, so two editions equal
+      in the order of S1 neither repeat nor skip; an edition added between
+      two pages lands in its place without shifting them (D11).
+      Tests against PostgreSQL: fifty-one editions read as fifty then one;
+      editions of the same series, tome and title split across a page
+      boundary; an edition added between the two pages; an unknown id
+      answered as the human decides (see *Questions for the human*).
+      Realises S2 inside; un-skips nothing, its scenario test waiting for
+      the API of T045.
+
+- [ ] T045 Backend: the catalogue API, on `v0.7.0`.
+      Precondition (human): the backend tests of the catalogue scenarios,
+      one skipped test per backend scenario, each bearing the scenario's
+      exact title, over HTTP like the other scenario classes (D07).
+      `ApiContractTest` pins `v0.7.0`: the backend's one bump (D04).
+      The reader's catalogue answers a `BookPage`: its `books`, each a
+      `Book` with its `id` and its `copies`, and its `next`, null on the
+      last page; `after` continues from a page's `next`; `400`
+      `/problems/validation` with a `Problem` when `after` is not an id
+      (D11). Contracteer verifies its generated case and the wrong-type
+      case; the answers of the lookup and the add keep their bodies.
+      Carries S1 to S3 to the API; un-skips the backend tests of S1, S2 and
+      S3.
+
+- [ ] T046 Frontend: the catalogue tab and its page, on `v0.7.0`.
+      Precondition (human): T045 deployed (D04).
+      `vitest.global-setup.ts` pins `v0.7.0`, the only contract edit of the
+      task (D04).
+      The tab bar gains its third column, the three book spines at 32 over
+      *Catalogue*, in `accent` on its own page, leading to `/catalogue`; the
+      page shows the title *Parcourir le catalogue* and the line *Les
+      ouvrages de toutes vos bibliothèques.*, and nothing more yet; every
+      word from the `fr` catalogue (U03, U07, U08).
+      Tab bar tests with three tabs, the third active on its page.
+      No scenario of its own; un-skips nothing.
+
+- [ ] T047 Frontend: the catalogue listed.
+      Precondition (human): the frontend piece of the spec — the tests of
+      the catalogue scenarios, one skipped test per frontend scenario each
+      bearing its exact title, the catalogue's port and its fake, the
+      catalogue as the app reads it, and its client tested against
+      `contracteer mock` (D07).
+      On each arrival on the page the first page is asked anew, five
+      skeleton rows standing until it comes; then one block on `surface`,
+      hairlines between rows, 14 of padding, a row per edition in the order
+      of the answer: the cover 48 by 74 or its stand-in, the overline série
+      · tome when it has a series, the title, the authors' names on one line
+      separated by commas, then in `muted` the reader's bookshelves holding
+      a copy, each with *· 2 exemplaires* when it holds more than one. A row
+      leads nowhere. The listing is a use case of its own, a composable
+      over the port, the page rendering its state (D05, D10, U05, U06, U08).
+      Composable tests over the fake; view tests of the loading and listed
+      states and of a row with and without series, one and two bookshelves.
+      Realises S1 on the frontend; un-skips the frontend test of S1.
+
+- [ ] T048 Frontend: the catalogue empty, and Libris unavailable.
+      When the first page is empty, in place of the list the outlined book
+      icon over *Les ouvrages de vos bibliothèques apparaîtront ici.*; when
+      the first page does not come, in place of the list *Erreur lors du
+      chargement, veuillez réessayer plus tard.* with the alert icon, and
+      nothing listed; every word from the `fr` catalogue (U05, U07, U08).
+      Composable tests over the fake, empty and failing; view tests of the
+      two states.
+      Realises S3 and the first-page case of S4 on the frontend; un-skips
+      the frontend tests of S3 and of S4 on the first page.
+
+- [ ] T049 Frontend: the next page.
+      When the last row comes into view and the page received names a
+      next, two skeleton rows stand under it while the next page is asked
+      with that `after`, and its rows take their place; under the last row
+      of the last page, nothing. When the next page does not come, the rows
+      listed stay and the sentence of S4 with its icon sits where the
+      skeleton rows stood (U05).
+      Composable tests over a fake of two pages: the second follows the
+      first with no gap or repeat, and no third is asked; the next page
+      failing; view tests of the loading-more state and of the sentence
+      under the rows.
+      Realises S2 and the next-page case of S4 on the frontend; un-skips
+      the frontend tests of S2 and of S4 on the next page.
+
+*Done (Tophe, on the Pixel, from the installed app on staging): open
+Catalogue; the ouvrages added in the bookshelf spec's check are there, One
+Piece 1 first with Bibliothèque de Christophe · 2 exemplaires, and the rows
+read as a shelf; on the second account of the family, open Catalogue and
+read the empty sentence.*
 
 ## Done
 
@@ -230,19 +326,36 @@ of the field on the field's line. No contract change.
 - Kind, T031 to T032, done 2026-09-19, `specs/kind.md`: the kind read from
   the BnF record and answered on every lookup, the card in the words of its
   kind, checked on the Pixel from the installed app.
+- Fast entry, the button beside the field, T042, done 2026-09-25,
+  `specs/fast-entry.md`: the button *Chercher* on the field's line, the
+  screen checked on the Pixel with its deploy.
 
 ## Questions for the human
 
-- **Staging.** The *Done* of `specs/bookshelf.md` asks for the installed
-  app on staging, as the update spec's did, while D09 knows one environment, the
-  Kimsufi box. No task depends on the answer; the hand check is Tophe's step
-  either way.
-- **No spec yet**, so nothing is planned for them: PRD §4.1 catalogue beyond
-  the add of `specs/bookshelf.md`, §4.2 search, §4.3 bookshelves and copies
-  beyond the default bookshelf — other bookshelves, members, the `VIEWER`
-  role, moving and lending a copy — §4.4 reading, §4.5 series tracking, §4.6
-  wishlist, §4.9 import and export, §4.10 administration, and the offline
-  browsing of §4.8.
+- **Staging.** The *Done* of `specs/bookshelf.md`, and now that of
+  `specs/catalogue.md`, asks for the installed app on staging, as the update
+  spec's did, while D09 knows one environment, the Kimsufi box. No task
+  depends on the answer; the hand check is Tophe's step either way.
+- **An `after` Libris does not know.** `v0.7.0` answers `200` or `400`,
+  and the verifier sends a random uuid as `after`, so an id of no book in
+  the reader's catalogue must be answered `200`: an empty page naming no
+  next, or the first page? Nothing yet removes a book, but the edition page
+  will. T044 needs the answer.
+- **An edition of a series without a tome.** The order of S1 is series,
+  then tome, then title; the tome may be empty. Does such an edition sit
+  before the tomes of its series or after them? T043 needs the answer.
+- **The frontend piece of the spec and the pin.** D07 has Tophe bring the
+  catalogue's client with its tests against the mock, which need `v0.7.0`
+  pinned; D04 has the first frontend task bump the pin. The backlog bumps it
+  in T046 and asks for the piece before T047; say if the piece should come
+  with the pin instead.
+- **No spec yet**, so nothing is planned for them: PRD §4.1 beyond the add
+  and the listing — viewing and editing an edition, removing a copy, the
+  filters and sorts of the list, the edition page — §4.2 search, §4.3
+  bookshelves and copies beyond the default bookshelf — other bookshelves,
+  members, the `VIEWER` role, moving and lending a copy — §4.4 reading, §4.5
+  series tracking, §4.6 wishlist, §4.9 import and export, §4.10
+  administration, and the offline browsing of §4.8.
 - **A refused add on the card.** The spec's screen says what the card shows
   when Libris does not answer the add (S5), not when it answers `400` or
   `404`, which the card's own ouvrage and the reader's default bookshelf

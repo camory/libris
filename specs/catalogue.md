@@ -162,3 +162,11 @@ empty sentence. The pages are the tests' to show: the house has fewer than
 fifty ouvrages.
 
 ## Tasks
+
+- T043 — S1, S3, the read and its order — backend
+- T044 — S2, the pages — backend
+- T045 — S1 to S3 through the API, the backend on `v0.7.0` — backend
+- T046 — the tab and the page, the frontend on `v0.7.0` — frontend
+- T047 — S1 — frontend
+- T048 — S3, S4 on the first page — frontend
+- T049 — S2, S4 on the next page — frontend
