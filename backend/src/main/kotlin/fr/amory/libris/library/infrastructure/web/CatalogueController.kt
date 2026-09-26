@@ -7,7 +7,9 @@ import fr.amory.libris.library.domain.catalogue.CatalogueEdition
 import fr.amory.libris.library.domain.reader.Reader
 import org.springframework.security.core.annotation.AuthenticationPrincipal
 import org.springframework.web.bind.annotation.GetMapping
+import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
+import java.util.UUID
 
 data class BookResponse(
     val id: String,
@@ -35,7 +37,10 @@ data class BookPageResponse(
 @RestController
 class CatalogueController(private val listCatalogue: ListCatalogue) {
     @GetMapping("/api/v1/books")
-    fun books(@AuthenticationPrincipal reader: Reader): BookPageResponse =
+    fun books(
+        @AuthenticationPrincipal reader: Reader,
+        @RequestParam("after") ignored: UUID?,
+    ): BookPageResponse =
         BookPageResponse(books = listCatalogue(reader.id).map { bookOf(it) }, next = null)
 
     private fun bookOf(edition: CatalogueEdition): BookResponse = BookResponse(
