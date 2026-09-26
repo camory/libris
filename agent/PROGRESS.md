@@ -518,3 +518,27 @@ Format:
   brief allowed either red.
 - Left over: the layout is Tophe's check on the Pixel, jsdom laying nothing
   out; the shared primary button, rewritten in `agent/PROPOSED.md`.
+
+## 2026-09-26 — T043 The catalogue API on v0.7.0, the thinnest answer — done
+- Did: the contract pin moves to `v0.7.0`; `GET /api/v1/books` answers the
+  reader's catalogue in one page, `next` null, through `ListCatalogue` and
+  the query port `Catalogue`, whose `JdbcCatalogue` builds
+  `CatalogueEdition`s with their `CatalogueCopy`s from one query over
+  membership, bookshelf, copy, edition, series, contribution and author.
+- Did: `S3 The catalogue is empty` un-skipped and green; S1 and S2 stay
+  skipped for T044 and T045.
+- Decided: the rows of the one query are grouped by edition in Kotlin,
+  authors from the distinct contributions and copies `distinct()`, since
+  an edition with two authors on two bookshelves comes as four rows.
+- Decided: the controller takes `after` as `UUID?` and does not read it,
+  so a text that is not an id is refused as `/problems/validation` by the
+  existing advice; the parameter is named `ignored` for detekt.
+- Decided: the mapping helpers of the controller are `bookOf` and
+  `copyOf`; two private `responseOf` overloads failed
+  `UnusedPrivateMember` (`agent/GOTCHAS.md`).
+- Guard: the empty-catalogue case was green on arrival; deleting the
+  `WHERE membership.reader_id` line turned it red ("Unexpected elements
+  from index 0"), then it was reverted.
+- Deviations from the brief: none.
+- Left over: the order of a shelf (T044) and pages of fifty with `next`
+  (T045); the query has no `ORDER BY` until then.

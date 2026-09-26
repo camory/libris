@@ -201,7 +201,7 @@ complete that answer, each starting red on its own scenario. The operation
 is added, so the backend goes first and the frontend pin moves in T046,
 once T045 is deployed. No other task touches the contract (D04).
 
-- [ ] T043 Backend: the catalogue API on `v0.7.0`, the thinnest answer.
+- [x] T043 Backend: the catalogue API on `v0.7.0`, the thinnest answer.
       Precondition (human): the backend tests of the catalogue scenarios,
       one skipped test per backend scenario, each bearing the scenario's
       exact title, over HTTP like the other scenario classes (D07).
