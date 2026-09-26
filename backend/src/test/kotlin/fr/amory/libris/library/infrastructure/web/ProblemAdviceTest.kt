@@ -4,6 +4,7 @@ import fr.amory.libris.fixture.WebSliceTest
 import fr.amory.libris.library.application.AddBookToBookshelf
 import fr.amory.libris.library.application.FindDefaultBookshelf
 import fr.amory.libris.library.application.WelcomeReader
+import fr.amory.libris.library.application.catalogue.ListCatalogue
 import fr.amory.libris.library.application.lookup.LookupIsbnForReader
 import fr.amory.libris.library.domain.bookshelf.BookshelfId
 import fr.amory.libris.library.domain.reader.ReaderId
@@ -34,6 +35,7 @@ private val TOPHE = readerNamed(
         LookupIsbnForReader::class,
         FindDefaultBookshelf::class,
         AddBookToBookshelf::class,
+        ListCatalogue::class,
     ],
 )
 class ProblemAdviceTest @Autowired constructor(

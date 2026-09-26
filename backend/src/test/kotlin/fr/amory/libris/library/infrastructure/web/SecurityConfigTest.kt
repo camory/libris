@@ -4,6 +4,7 @@ import fr.amory.libris.fixture.WebSliceTest
 import fr.amory.libris.library.application.AddBookToBookshelf
 import fr.amory.libris.library.application.FindDefaultBookshelf
 import fr.amory.libris.library.application.WelcomeReader
+import fr.amory.libris.library.application.catalogue.ListCatalogue
 import fr.amory.libris.library.application.lookup.LookupIsbnForReader
 import fr.amory.libris.library.fixture.readerNamed
 import org.junit.jupiter.api.Test
@@ -20,6 +21,7 @@ import org.springframework.test.web.servlet.client.RestTestClient
         LookupIsbnForReader::class,
         FindDefaultBookshelf::class,
         AddBookToBookshelf::class,
+        ListCatalogue::class,
     ],
 )
 class SecurityConfigTest @Autowired constructor(

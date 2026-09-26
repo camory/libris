@@ -13,6 +13,7 @@ import fr.amory.libris.fixture.WebSliceTest
 import fr.amory.libris.library.application.AddBookToBookshelf
 import fr.amory.libris.library.application.FindDefaultBookshelf
 import fr.amory.libris.library.application.WelcomeReader
+import fr.amory.libris.library.application.catalogue.ListCatalogue
 import fr.amory.libris.library.application.lookup.IsbnLookup
 import fr.amory.libris.library.application.lookup.LookupIsbnForReader
 import fr.amory.libris.library.domain.bookshelf.BookshelfId
@@ -61,6 +62,7 @@ private val ROMANCE_DAWN = EditionPreview(
         LookupIsbnForReader::class,
         FindDefaultBookshelf::class,
         AddBookToBookshelf::class,
+        ListCatalogue::class,
     ],
 )
 class IsbnControllerTest @Autowired constructor(
