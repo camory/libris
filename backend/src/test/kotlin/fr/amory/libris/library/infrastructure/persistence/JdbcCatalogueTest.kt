@@ -137,6 +137,23 @@ class JdbcCatalogueTest @Autowired constructor(
         )
     }
 
+    @Test
+    fun `the catalogue of a reader whose bookshelves hold nothing is empty`() {
+        // Given
+        val lea = readerNamed("lea", "Léa").also { readers.insert(it) }
+        val tom = readerNamed("tom", "Tom").also { readers.insert(it) }
+        bookshelfOwnedBy(lea).also { bookshelves.insert(it) }
+        val tomsBookshelf = bookshelfOwnedBy(tom).also { bookshelves.insert(it) }
+        editions.insert(ROMANCE_DAWN)
+        copyOf(ROMANCE_DAWN, tomsBookshelf)
+
+        // When
+        val held = catalogue.editionsHeldBy(lea.id)
+
+        // Then
+        held shouldBe emptyList()
+    }
+
     private fun copyOf(edition: Edition, bookshelf: Bookshelf): Copy =
         Copy(CopyId.new(), edition.id, bookshelf.id).also { copies.insert(it) }
 }
