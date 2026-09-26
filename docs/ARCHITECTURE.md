@@ -489,8 +489,13 @@ Schema
 - No optimistic locking in v1.
 
 API shapes
-- Pagination: `page` (from 0) and `size` (default 50, maximum 200); the
-  response carries `content`, `page`, `size`, `totalElements`. Sorting:
+- Pagination by keyset: the query parameter `after`, optional, the `id` of
+  the last item received, and in the answer `next`, the `after` of the
+  following page, `null` on the last; the page size is fixed by Libris per
+  operation, fifty for the catalogue, and the order is total, the `id` as
+  the last key. An `after` naming an item the reader no longer sees
+  continues after its place; one naming no item answers an empty page
+  naming no next; one that is not an id is a validation problem. Sorting:
   `sort=<field>&order=asc|desc`, accepted fields listed per operation in the
   contract.
 - Filters are query parameters named after the field, repeated for multiple

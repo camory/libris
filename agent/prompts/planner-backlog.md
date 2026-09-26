@@ -27,6 +27,14 @@ to approve.
 - Once foundations exist, prefer vertical slices (one thin scenario end to
   end) over horizontal layers (all entities, then all endpoints, then all
   screens).
+- Every task starts red on a scenario test and ends green through it: its
+  line names the scenario test it un-skips, and the implementer's first
+  move is that un-skip. A task that un-skips nothing is a foundation, and
+  a foundation is allowed only when no scenario of the spec can go red
+  before it; say why in the line. The first task of a side is the walking
+  skeleton: the pin bump and the thinnest answer that keeps the contract
+  verifier green, un-skipping the thinnest scenario; the tasks after it
+  each add one scenario to that answer.
 - Each task is one bullet: `- [ ] T### Title.` followed by 3 to 8 indented
   lines in the words of PRD §3: what the reader gets and which bounded
   context answers it; the fields of what it holds, when the spec or the PRD
