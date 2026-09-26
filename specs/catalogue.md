@@ -23,9 +23,9 @@ Then Libris answers every edition with a copy on one of their bookshelves,
 	And the screen lists them in that order
 ```
 
-Proof: contract example verified by Contracteer on both sides; backend
-scenario test over HTTP; unit test of the order; frontend scenario test over
-the fakes.
+Proof: the shape of the answer verified by Contracteer on both sides;
+backend scenario test over HTTP; unit test of the order; frontend scenario
+test over the fakes.
 
 **S2 The catalogue comes in pages** · frontend, backend
 
@@ -42,10 +42,11 @@ Then Libris answers the first page, in the order of S1, and names the next
 ```
 
 A page holds fifty editions, fixed by Libris; an edition added between two
-pages lands in the order of S1 without shifting them. Proof: contract
-examples verified by Contracteer on both sides, a page that names a next and
-a last page; backend scenario test over HTTP with one edition more than a
-page; frontend scenario test over the fakes with two pages.
+pages lands in the order of S1 without shifting them. Proof: backend
+scenario test over HTTP with one edition more than a page, the first page
+naming a next and the second none; frontend scenario test over the fakes
+with two pages. The chain from `next` to `after` is the tests' to show:
+Contracteer checks an answer's shape, never its values.
 
 **S3 The catalogue is empty** · frontend, backend
 
@@ -59,8 +60,7 @@ Then Libris answers an empty page that names no next
 ```
 
 Proof: backend scenario test over HTTP; frontend scenario test over the
-fakes. No contract example: its request is the first page's, and one
-request has one answer under verification.
+fakes.
 
 **S4 Libris unavailable** · frontend
 
@@ -121,31 +121,36 @@ States:
 ## Contract
 
 Release `v0.7.0` of `camory/libris-api`, after the bookshelf spec's
-`v0.6.2`. Nothing changes in an existing answer: one operation and two
-schemas are added.
+`v0.6.2`. Nothing changes in an existing answer: one operation and three
+schemas are added, and the two edition schemas are rewritten over one of
+them.
 
-- `Book`, the stored edition addressed by id: the fields of `IsbnLookup`,
-  `isbn13` nullable as in `NewBook`, plus `id`, a uuid, required; `copies`
-  as in `IsbnLookup`, the copies on the bookshelves the reader belongs to.
-  `IsbnLookup` stays as it is: an ISBN the house lacks has no id.
+- `Edition`, the PRD's word: the thirteen fields of a published version of
+  a work, `isbn13` nullable, a blank `title` refused. `NewBook`,
+  `IsbnLookup` and `Book` compose over it with `allOf`, and the three no
+  longer say `additionalProperties: false`: the keyword cannot sit on a
+  branch of an `allOf` under OpenAPI 3.0. `NewBook` is `Edition` alone.
+  `IsbnLookup` adds `copies` and tightens `isbn13` to never null: a lookup
+  always carries the ISBN asked. It gains the blank-title pattern it
+  lacked since `v0.6.2`; no real answer had one.
+- `Book`, the stored edition addressed by id: `Edition` plus `id`, a uuid,
+  required, and `copies`, the copies on the bookshelves the reader belongs
+  to.
 - `BookPage`: `books`, an array of `Book`, and `next`, a uuid or null.
 - `GET /api/v1/books`, the reader's catalogue: the books with a copy on a
   bookshelf they belong to, in the order of S1, fifty at a time. Query
-  parameter `after`, optional, the `id` of the last book received, the
-  page then starting after it → `200` `BookPage`, its `next` the `after`
-  of the following page, null on the last. `400` `Problem`
-  `/problems/validation` when `after` is not an id. Examples
-  `CATALOGUE_FIRST_PAGE`, no `after`, three books, *Astérix* 1 and 2 and
-  *Le Petit Prince*, `next` the id of the last; `CATALOGUE_LAST_PAGE`,
-  `after` that id, one book, *One Piece* 3, `next` null.
-- The body examples live under `components/examples`, `CatalogueFirstPage`
-  and `CatalogueLastPage`; the operation keeps the scenario keys and points
-  at them. The request without `after` is the example `null` on the
-  parameter, declared nullable for it.
+  parameter `after`, optional, a uuid, the `id` of the last book received,
+  the page then starting after it → `200` `BookPage`, its `next` the
+  `after` of the following page, null on the last. `400` `Problem`
+  `/problems/validation` when `after` is not an id.
 
-The empty catalogue and a page of fifty are the tests' to show, not the
-document's: a request has one answer under verification. The verifier adds
-its case on `after` of the wrong type, answered `400` with a `Problem`.
+The operation carries no example. Contracteer verifies an answer's shape,
+never its values, so an example only fixes an input the server must
+accept, and any uuid is an acceptable `after`. The verifier sends its own
+generated case, `after` a random uuid, and its case on `after` of the
+wrong type, answered `400` with a `Problem`. The request without `after`,
+the empty catalogue, a page of fifty and the chain from `next` to `after`
+are the tests' to show.
 
 ## Done
 

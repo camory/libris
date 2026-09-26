@@ -346,4 +346,18 @@
   is now covered by `IsbnView.spec.ts` *offers the add again on the next
   card*: the mutation keeping the previous copies reds it (found on T039,
   2026-09-25).
-
+- Frontend: the adapter specs over the mock assert values the contract does
+  not promise, the three problem slugs in `FetchIsbnApi.spec.ts` and
+  `FetchBookshelfApi.spec.ts` and the copies of `ONE_PIECE_2_OWNED`. They
+  should assert shape only. The ISBN screen maps `/problems/not-found` to
+  a message, so the slug is a value the client switches on: either the
+  contract declares the slugs as an enum on `Problem`, per response or
+  as one list, or the client switches on the status and the slug stays
+  informational. A decision for Tophe (found 2026-09-26 while reviewing
+  the examples of the v0.7.0 contract).
+- Contract: once Contracteer's mock answers a request-only scenario with a
+  body generated from the schema (bug reported 2026-09-26), drop every
+  response example from the document, prefix the two primary keys
+  `200_ONE_PIECE_1` and `201_ADD_ONE_PIECE_1`, and remove
+  `ONE_PIECE_2_OWNED`, which fixes an output. Wire-neutral, any release
+  (found 2026-09-26 while reviewing the examples of the v0.7.0 contract).

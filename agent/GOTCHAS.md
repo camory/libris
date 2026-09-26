@@ -77,6 +77,24 @@ true; the diary keeps the date it was found.
   the example `null` on that parameter, whose schema is then `nullable:
   true`; a `null` example on a response header is sent as the four letters,
   so "no header" has no example and a page's end travels in the body.
+- The verifier checks an answer against the schema only, never against the
+  example's value, so an example fixes an input the server must accept and
+  nothing else. The ISBN operations need one for their 200 and 201: the
+  pattern cannot say the check digit, and a generated ISBN fails it nine
+  times in ten. A key with a status prefix on the request alone,
+  `404_UNKNOWN_ISBN`, builds the scenario for the verifier, which then
+  checks the content type and the shape of the 404; the response examples
+  of the document exist for the mock only (see the mock item under
+  *Frontend build and tests*).
+- `additionalProperties: false` cannot sit on a branch of an `allOf`: the
+  standard applies each branch on its own, so the base refuses the fields
+  the other branch adds, and no instance passes. Contracteer 4.0.0 merges
+  the branches first and accepts such a document, a divergence reported to
+  its author; the contract keeps the keyword off `Edition` and off the
+  three schemas composed over it, and the verifier checks an answer for
+  extra fields only where a schema says the keyword. A property declared
+  again in a second branch tightens the base's, `isbn13` never null on
+  `IsbnLookup`.
 - Contracteer honours `readOnly`: the mock answers `400` to a request whose
   body carries a read-only field, even empty. The contract avoids `readOnly`
   and gives a request its own schema instead.
@@ -326,7 +344,11 @@ true; the diary keeps the date it was found.
   A value that matches no example gets a generated 200. A `POST` is matched
   on the path parameter and the body together, so one bookshelf id answers
   201 to the body `NewOnePiece1` and 400 to `NewOnePiece1WrongDigit`, and
-  the 404 id answers 404 to `NewOnePiece1`.
+  the 404 id answers 404 to `NewOnePiece1`. A scenario whose key sits on
+  the request alone gets its status from the mock with no body and no
+  `Content-Type` (Contracteer 4.0.0, `ResponseGenerator.withScenarioBody`
+  returns before generating; reported), which is why the document keeps a
+  response example under every key the adapter specs parse.
 - A scenario file builds the application through `createLibrisApp` over the
   fakes of `src/fixture`; only `infra/api` specs and the smoke case *the
   application runs over the mock* use `inject("mockBaseUrl")`. A new port
