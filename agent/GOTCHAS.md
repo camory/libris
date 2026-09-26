@@ -57,20 +57,21 @@ true; the diary keeps the date it was found.
   `docker`, so a run inside it calls the gate directly.
 
 ## Contract and release — every run
-- Contracteer 4.0.0's CLI cannot load an OpenAPI 3.1 document: the contract
-  stays 3.0.3 and `nullable` is the 3.0 keyword. On an operation without
-  parameters a response example creates no scenario; the verifier emits one
-  generated case.
+- The contract is OpenAPI 3.0.3 and `nullable` is the 3.0 keyword (the
+  4.0.0 CLI could not load a 3.1 document; 4.1.0 can, and the contract has
+  not moved). On an operation without parameters a response example creates
+  no scenario; the verifier emits one generated case.
 - On an operation with a `400` response and a typed body, the verifier adds
   a case of its own, `auto: body type mismatch`, and expects `400` with the
   declared problem body: the backend answers a `Problem` to a body of the
   wrong types, not Spring's plain 400. A `format: uuid` path parameter gets
-  such a case too, `auto: path 'id' type mismatch`, whose value
-  `<<not a string/uuid>>` carries an encoded slash: Tomcat rejects `%2F` by
-  default with its own `text/html` 400 before Spring, and Spring Security's
-  `StrictHttpFirewall` after it. No hand-written `400` scenario removes a
-  generated case. Until Contracteer 4.1.0 the contract types such an id as a
-  string with a uuid pattern, which the verifier does not mutate.
+  such a case too, `auto: path 'id' type mismatch`, whose value is
+  `<<not-a-uuid>>` since Contracteer 4.1.0 (4.0.0 sent
+  `<<not a string/uuid>>`, whose encoded slash Tomcat rejected with its own
+  `text/html` 400 before Spring), answered `400`, `404` or `422` with the
+  declared problem body. No hand-written `400` scenario removes a generated
+  case. The contract still types the bookshelf id as a string with a uuid
+  pattern, which the verifier does not mutate (`agent/PROPOSED.md`).
 - A scenario needs its key on a request element when the operation has
   one: a key on the response alone creates no scenario there, and the mock
   answers random data. The request without an optional query parameter is
@@ -88,13 +89,13 @@ true; the diary keeps the date it was found.
   *Frontend build and tests*).
 - `additionalProperties: false` cannot sit on a branch of an `allOf`: the
   standard applies each branch on its own, so the base refuses the fields
-  the other branch adds, and no instance passes. Contracteer 4.0.0 merges
-  the branches first and accepts such a document, a divergence reported to
-  its author; the contract keeps the keyword off `Edition` and off the
-  three schemas composed over it, and the verifier checks an answer for
-  extra fields only where a schema says the keyword. A property declared
-  again in a second branch tightens the base's, `isbn13` never null on
-  `IsbnLookup`.
+  the other branch adds, and no instance passes. Contracteer merges the
+  branches first and accepts such a document, a divergence its coverage
+  page records since 4.1.1; the contract keeps the keyword off `Edition`
+  and off the three schemas composed over it, and the verifier checks an
+  answer for extra fields only where a schema says the keyword. A property
+  declared again in a second branch tightens the base's, `isbn13` never
+  null on `IsbnLookup`.
 - Contracteer honours `readOnly`: the mock answers `400` to a request whose
   body carries a read-only field, even empty. The contract avoids `readOnly`
   and gives a request its own schema instead.
@@ -345,10 +346,11 @@ true; the diary keeps the date it was found.
   on the path parameter and the body together, so one bookshelf id answers
   201 to the body `NewOnePiece1` and 400 to `NewOnePiece1WrongDigit`, and
   the 404 id answers 404 to `NewOnePiece1`. A scenario whose key sits on
-  the request alone gets its status from the mock with no body and no
-  `Content-Type` (Contracteer 4.0.0, `ResponseGenerator.withScenarioBody`
-  returns before generating; reported), which is why the document keeps a
-  response example under every key the adapter specs parse.
+  the request alone got its status from the mock with no body and no
+  `Content-Type` until Contracteer 4.1.1, which generates the body from the
+  schema; the document still keeps a response example under every key the
+  adapter specs parse, because those specs assert the examples' values
+  (`agent/PROPOSED.md`).
 - A scenario file builds the application through `createLibrisApp` over the
   fakes of `src/fixture`; only `infra/api` specs and the smoke case *the
   application runs over the mock* use `inject("mockBaseUrl")`. A new port

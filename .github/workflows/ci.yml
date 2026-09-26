@@ -75,7 +75,7 @@ jobs:
         with: { node-version: '24', cache: npm, cache-dependency-path: frontend/package-lock.json }
       - if: steps.present.outputs.yes == 'true'
         name: Install Contracteer CLI (mock server for the frontend tests, D04)
-        env: { CONTRACTEER_VERSION: '4.0.0', CONTRACTEER_SHA256: '781be856f0f1764c8cf6fa0936bc767ba5733d90f289780f066f33d7e0c7f52e' }
+        env: { CONTRACTEER_VERSION: '4.1.1', CONTRACTEER_SHA256: 'e4509cca338b0537768f2353a4972056c3f4dcf6cdc7129ac13465e9f7e0e083' }
         run: |
           cd "$RUNNER_TEMP"
           curl -fsSL -o contracteer.zip "https://github.com/contracteer-dev/contracteer/releases/download/${CONTRACTEER_VERSION}/contracteer-${CONTRACTEER_VERSION}-linux-x86_64.zip"
