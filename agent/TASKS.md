@@ -195,61 +195,58 @@ second account of the family, scan it and read the card without a place.*
 
 Contract: release `v0.7.0` of `camory/libris-api`, after `v0.6.2`: one
 operation, the reader's catalogue, and three schemas added. The backend pin
-moves once, in T045, because the verifier reads the whole document; T043
-and T044 build the read that task then serves. The operation is added, so
-the backend goes first and the frontend pin moves in T046, once T045 is
-deployed. No other task touches the contract (D04).
+moves once, in T043, the thinnest answer that serves the operation, so the
+verifier, which reads the whole document, stays green; T044 and T045
+complete that answer, each starting red on its own scenario. The operation
+is added, so the backend goes first and the frontend pin moves in T046,
+once T045 is deployed. No other task touches the contract (D04).
 
-- [ ] T043 Backend: the reader's catalogue, in the order of a shelf.
-      The library answers a reader's catalogue: every edition with a copy on
-      a bookshelf they belong to, once each, with its copies on those
-      bookshelves, each with its bookshelf's id and name, and nothing of a
-      copy on a bookshelf they do not belong to (PRD §3, §4.1).
-      The order of a shelf: by series name, or title when there is none,
-      ignoring case and accents, then by tome as a number, an edition of
-      the series without a tome after its numbered tomes, then by title.
-      A read across the two contexts that the repositories cannot serve in a
-      few queries once it comes in pages, so it is answered from one query
-      of the library's own, proven against PostgreSQL (D02, D12).
-      Tests: a test of the order over editions that differ only in case,
-      accents, tome or title; the read over copies on the reader's
-      bookshelves and on another's, an edition with copies on two of them
-      listed once; an empty catalogue for a reader whose bookshelves hold
-      nothing.
-      Realises S1 and S3 inside; un-skips nothing, their scenario tests
-      waiting for the API of T045.
+- [ ] T043 Backend: the catalogue API on `v0.7.0`, the thinnest answer.
+      Precondition (human): the backend tests of the catalogue scenarios,
+      one skipped test per backend scenario, each bearing the scenario's
+      exact title, over HTTP like the other scenario classes (D07).
+      `ApiContractTest` pins `v0.7.0`: the backend's one bump (D04).
+      The library answers a reader's catalogue as a `BookPage`: every
+      edition with a copy on a bookshelf they belong to, once each, a
+      `Book` with its `id` and its `copies` on those bookshelves, each with
+      its bookshelf's id and name, and nothing of a copy on a bookshelf
+      they do not belong to; `next` null, since nothing pages yet; `after`
+      accepted as a uuid and answered `400` `/problems/validation` with a
+      `Problem` otherwise (PRD §3, §4.1, D11). A read across the two
+      contexts, answered from one query of the library's own, proven
+      against PostgreSQL, in no order yet (D02, D12). Contracteer verifies
+      its generated case and the wrong-type case; the answers of the lookup
+      and the add keep their bodies.
+      Tests: the read over copies on the reader's bookshelves and on
+      another's, an edition with copies on two of them listed once; an
+      empty catalogue for a reader whose bookshelves hold nothing.
+      Realises S3, and S1 but its order; un-skips the backend test of S3.
 
-- [ ] T044 Backend: the catalogue in pages of fifty.
-      The read of T043 answers fifty editions at a time and names the next
-      page by the id of the last edition answered; from that id the
-      following page starts just after it, with no gap or repeat, and the
-      last page names no next. The order is total, so two editions equal
-      in the order of S1 neither repeat nor skip; an edition added between
-      two pages lands in its place without shifting them (D11).
-      An `after` naming an edition of the house that the reader's
-      catalogue no longer holds continues after its place in the order;
-      an `after` naming no edition answers an empty page naming no next.
+- [ ] T044 Backend: the catalogue in the order of a shelf.
+      The answer of T043 in the order a shelf reads: by series name, or
+      title when there is none, ignoring case and accents, then by tome as
+      a number, an edition of the series without a tome after its numbered
+      tomes, then by title, ordered in the one query (D12).
+      Tests against PostgreSQL: the order over editions that differ only
+      in case, accents, tome, a missing tome, or title.
+      Realises S1; un-skips the backend test of S1.
+
+- [ ] T045 Backend: the catalogue in pages of fifty.
+      The answer of T043 comes fifty editions at a time and names the next
+      page by the id of the last edition answered; from that id as `after`
+      the following page starts just after it, with no gap or repeat, and
+      the last page names no next. The order of T044 is made total, the id
+      its last key, so two editions equal in it neither repeat nor skip;
+      an edition added between two pages lands in its place without
+      shifting them. An `after` naming an edition of the house that the
+      reader's catalogue no longer holds continues after its place; an
+      `after` naming no edition answers an empty page naming no next (D11).
       Tests against PostgreSQL: fifty-one editions read as fifty then one;
       editions of the same series, tome and title split across a page
       boundary; an edition added between the two pages; an `after` of an
       edition the reader's catalogue no longer holds; an `after` of no
       edition.
-      Realises S2 inside; un-skips nothing, its scenario test waiting for
-      the API of T045.
-
-- [ ] T045 Backend: the catalogue API, on `v0.7.0`.
-      Precondition (human): the backend tests of the catalogue scenarios,
-      one skipped test per backend scenario, each bearing the scenario's
-      exact title, over HTTP like the other scenario classes (D07).
-      `ApiContractTest` pins `v0.7.0`: the backend's one bump (D04).
-      The reader's catalogue answers a `BookPage`: its `books`, each a
-      `Book` with its `id` and its `copies`, and its `next`, null on the
-      last page; `after` continues from a page's `next`; `400`
-      `/problems/validation` with a `Problem` when `after` is not an id
-      (D11). Contracteer verifies its generated case and the wrong-type
-      case; the answers of the lookup and the add keep their bodies.
-      Carries S1 to S3 to the API; un-skips the backend tests of S1, S2 and
-      S3.
+      Realises S2; un-skips the backend test of S2.
 
 - [ ] T046 Frontend: the catalogue tab and its page, on `v0.7.0`.
       Precondition (human): T045 deployed (D04); the frontend piece of the
