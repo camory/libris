@@ -318,9 +318,11 @@
   (found on T037, 2026-09-24).
 - Contract: the bookshelf `id` of `POST /api/v1/bookshelves/{id}/books` is a
   string with a uuid pattern since `v0.6.1`, because Contracteer 4.0.0's
-  generated case for `format: uuid` carries an encoded slash; put
-  `format: uuid` back when the backend verifies with Contracteer 4.1.0
-  (decided with Tophe on T037, 2026-09-24).
+  generated case for `format: uuid` carried an encoded slash; put
+  `format: uuid` back now that the backend verifies with Contracteer 4.1.1,
+  whose case sends `<<not-a-uuid>>` and expects `400`, `404` or `422` with
+  a `Problem`: check first what the backend answers to a non-uuid bookshelf
+  id (decided with Tophe on T037, 2026-09-24; actionable since 2026-09-27).
 - Frontend: no case proves that a second lookup replaces the copies of the
   first on the card: `IsbnView.spec.ts` has one answer per `FakeIsbnApi`, and
   each scenario boots a fresh app; the mutation keeping the previous copies
@@ -355,8 +357,9 @@
   as one list, or the client switches on the status and the slug stays
   informational. A decision for Tophe (found 2026-09-26 while reviewing
   the examples of the v0.7.0 contract).
-- Contract: once Contracteer's mock answers a request-only scenario with a
-  body generated from the schema (bug reported 2026-09-26), drop every
+- Contract: Contracteer 4.1.1 answers a request-only scenario with a body
+  generated from the schema (bug reported 2026-09-26, fixed the same day);
+  once the adapter specs assert shape only (the item above), drop every
   response example from the document, prefix the two primary keys
   `200_ONE_PIECE_1` and `201_ADD_ONE_PIECE_1`, and remove
   `ONE_PIECE_2_OWNED`, which fixes an output. Wire-neutral, any release
