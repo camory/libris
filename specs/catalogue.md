@@ -121,28 +121,27 @@ States:
 ## Contract
 
 Release `v0.7.0` of `camory/libris-api`, after the bookshelf spec's
-`v0.6.2`. Nothing changes in an existing answer: one operation and one
-schema are added.
+`v0.6.2`. Nothing changes in an existing answer: one operation and two
+schemas are added.
 
 - `Book`, the stored edition addressed by id: the fields of `IsbnLookup`,
-  `isbn13` nullable as in `NewBook`, plus `id`, a uuid string, required;
-  `copies` as in `IsbnLookup`, the copies on the bookshelves the reader
-  belongs to. `IsbnLookup` stays as it is: an ISBN the house lacks has no
-  id.
+  `isbn13` nullable as in `NewBook`, plus `id`, a uuid, required; `copies`
+  as in `IsbnLookup`, the copies on the bookshelves the reader belongs to.
+  `IsbnLookup` stays as it is: an ISBN the house lacks has no id.
+- `BookPage`: `books`, an array of `Book`, and `next`, a uuid or null.
 - `GET /api/v1/books`, the reader's catalogue: the books with a copy on a
   bookshelf they belong to, in the order of S1, fifty at a time. Query
-  parameter `after`, optional, the `id` of the last book of the page
-  received, the page then starting after it → `200`, an array of `Book`,
-  and, when more books follow, the header `Link`, a string,
-  `</api/v1/books?after=<id>>; rel="next"`, which the app follows as it
-  is; no `Link` on the last page. `400` `Problem` `/problems/validation`
-  when `after` is not an id. Examples `CATALOGUE_FIRST_PAGE`, no `after`,
-  three books, *Astérix* 1 and 2 and *Le Petit Prince*, with a `Link`;
-  `CATALOGUE_LAST_PAGE`, `after` the id of *Le Petit Prince*, one book,
-  *One Piece* 3, and no `Link`.
+  parameter `after`, optional, the `id` of the last book received, the
+  page then starting after it → `200` `BookPage`, its `next` the `after`
+  of the following page, null on the last. `400` `Problem`
+  `/problems/validation` when `after` is not an id. Examples
+  `CATALOGUE_FIRST_PAGE`, no `after`, three books, *Astérix* 1 and 2 and
+  *Le Petit Prince*, `next` the id of the last; `CATALOGUE_LAST_PAGE`,
+  `after` that id, one book, *One Piece* 3, `next` null.
 - The body examples live under `components/examples`, `CatalogueFirstPage`
   and `CatalogueLastPage`; the operation keeps the scenario keys and points
-  at them. The `Link` example sits on the header.
+  at them. The request without `after` is the example `null` on the
+  parameter, declared nullable for it.
 
 The empty catalogue and a page of fifty are the tests' to show, not the
 document's: a request has one answer under verification. The verifier adds

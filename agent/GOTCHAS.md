@@ -71,6 +71,12 @@ true; the diary keeps the date it was found.
   `StrictHttpFirewall` after it. No hand-written `400` scenario removes a
   generated case. Until Contracteer 4.1.0 the contract types such an id as a
   string with a uuid pattern, which the verifier does not mutate.
+- A scenario needs its key on a request element when the operation has
+  one: a key on the response alone creates no scenario there, and the mock
+  answers random data. The request without an optional query parameter is
+  the example `null` on that parameter, whose schema is then `nullable:
+  true`; a `null` example on a response header is sent as the four letters,
+  so "no header" has no example and a page's end travels in the body.
 - Contracteer honours `readOnly`: the mock answers `400` to a request whose
   body carries a read-only field, even empty. The contract avoids `readOnly`
   and gives a request its own schema instead.
