@@ -33,16 +33,19 @@ docs/PRD.md ──► specs/<feature>.md (written with the human, contract inclu
                                               ▼
                                          REVIEWER ──► review comment + verdict on the PR
                                               ▼
-                              human: merge, request changes, or close
-                                              │ merged
-                                              └──► next task
+                                human: merge, send back, or close
+                                      │ merged        │ a review + `rework` label
+                                      ▼               ▼
+                                  next task    IMPLEMENTER (rework) ──► new commits on the same PR
+                                                      │
+                                                      └──► REVIEWER again
 ```
 
 | Role | What it is | When it runs | Decided 2026-09-06 |
 |------|------------|--------------|--------------------|
 | Orchestrator | `agent/loop.sh`, no AI | every iteration | deterministic script, readable end to end |
 | Planner | fresh run, its own prompt | once up front and on demand for the backlog; before every task for a brief | "both" |
-| Implementer | fresh run, its own prompt | once per task | one task, one PR |
+| Implementer | fresh run, its own prompt | once per task, and once per rework asked on its PR | one task, one PR |
 | Reviewer | fresh run, its own prompt | once per PR | advisory: findings + verdict as a PR comment, human decides |
 | Guard | hook + sandbox + GitHub rules, no AI | always | last line of defence |
 
@@ -63,16 +66,17 @@ Nothing important lives outside these files. Decided 2026-09-06 (step 2).
 | `docs/ARCHITECTURE.md` | binding technical decisions | reads | reads | judges against | writes |
 | `docs/DESIGN.md` | binding screen rules | reads | reads | judges against | writes, with Claude, in a session |
 | `agent/TASKS.md` | ordered backlog with checkboxes | proposes via a `plan/<date>` PR | ticks one line | reads | approves by merging |
-| `agent/briefs/T###.md` | concrete plan for one task | writes, on the task branch | reads, follows | judges against | reads in the PR |
-| `agent/PROGRESS.md` | append-only diary | reads the tail | appends one entry per task | reads the entry | reads |
+| `agent/briefs/T###.md` | concrete plan for one task | writes, on the task branch | reads, follows | judges against, amended by the human's reviews | reads in the PR, amends by a review |
+| `agent/PROGRESS.md` | append-only diary | reads the tail | appends one entry per task and per rework | reads the entry | reads |
 | `agent/GOTCHAS.md` | what a run must know before it starts, kept true | reads whole | reads whole, adds and corrects | reads whole, checks the diff | reads, edits |
 | `agent/PROPOSED.md` | follow-ups and ideas, never picked up by a run | | appends | | promotes into a spec or a task |
-| the pull request | diff, description, review, verdict | | opens | comments | decides |
+| the pull request | diff, description, review, verdict | | opens, reworks | comments | merges, sends back with a review, or closes |
 
 Two rules sit behind the table. The reviewer judges against written criteria
 (brief, architecture), not taste, so its verdicts are checkable. The planner
 never touches code and the implementer never rewrites the plan, so when
-something goes wrong you can tell which role failed.
+something goes wrong you can tell which role failed. A human review on the
+PR amends the brief without editing it, the newest review winning.
 
 ### Why small tasks
 The agent's success rate falls sharply with task size. A task should fit in
@@ -101,6 +105,19 @@ none of, so it sets conventions no document states yet, and the review
 writes them into `docs/ARCHITECTURE.md` before the next task copies the
 pattern. Every other task gets the headless review alone. Parallel tasks and auto-merge on green CI are
 later upgrades, not defaults.
+
+### Why a PR is sent back, not closed
+A headless approval is not a merge. When the human reads the PR and wants a
+different shape, closing it throws away what was right and a rerun from the
+same brief rebuilds the same shape. So the PR is sent back: the human writes
+what must change as a review on the PR and sets the `rework` label.
+`loop.sh rework <pr>` runs the implementer on the branch with every review
+and comment newer than the PR's last commit, the reviewer's verdict excepted.
+The run adds commits to the same branch and PR (never a rebase, never a
+rewrite), records the decision in the diary, clears `rework` and `review:*`
+when it pushes, and the reviewer runs again. The brief is not edited: the
+reviews amend it and the reviewer judges against both. A rework that needs
+a decision the review does not make reports `blocked` like any run.
 
 ## Guardrails, from the outside in
 
@@ -137,10 +154,9 @@ human-readable versions.
 
 ## Upgrade path (later, one at a time)
 
-1. A `review` mode: the loop reads PR review comments and pushes fixes.
-2. Auto-merge when CI is green for tasks labelled `low-risk`.
-3. Independent tasks in parallel via git worktrees.
-4. A scheduled trigger (systemd timer) so runs happen overnight.
+1. Auto-merge when CI is green for tasks labelled `low-risk`.
+2. Independent tasks in parallel via git worktrees.
+3. A scheduled trigger (systemd timer) so runs happen overnight.
 
 ## Decision log
 
@@ -172,3 +188,4 @@ Decisions taken while designing the loop, newest last.
 - 2026-09-12 · design rules · `docs/DESIGN.md` holds the app-wide screen rules (palette, type, page, controls, feedback, cards, icons, words) as numbered rules U01…U08, binding like the architecture and written with Tophe from the lookup mockups; a spec's *Screen* section assumes it and repeats nothing from it. Frontend runs read it, the reviewer judges screens and briefs against it; a change to a rule is proposed in the PR body, never edited silently.
 - 2026-09-12 · what a run reads · The documents grew (architecture, PRD, design rules, specs) and nothing showed whether a run read them: the CLI result kept no tool trace. Two changes. The run's stream is kept as the `.jsonl` next to the result (`--output-format stream-json --verbose`), and `agent/reads.sh` lists what a run read, so the question is measured, not guessed. And the brief gets a *Rules in play* section: the planner lists, one line each, the decisions and rules the task touches and what they require here, because a run applies what sits next to the work, the brief, not what it read forty turns earlier; the reviewer uses the list as its checklist and reports a rule the list omits as a note on the brief.
 - 2026-09-14 · `agent/GOTCHAS.md` · The diary had reached a thousand lines, 65 to 80 per task, while the planner reads its last 120 lines and the implementer its last 60: a lesson older than two tasks was out of reach unless a role thought to grep. Durable facts and dated narrative were one file. Now they are two: `agent/GOTCHAS.md` holds what a run must know before it starts, one item per fact, rewritten or removed when it stops being true, read whole by every role and checked by the reviewer like a diary claim; `agent/PROGRESS.md` stays the append-only diary of what each task did, decided and left, read by its tail, and can be archived by phase without losing anything a run needs. Distilled from the 23 entries in a session with Tophe.
+- 2026-09-27 · rework · A PR the human reads and wants reshaped is sent back, not closed: the human writes the change as a review on the PR and sets the `rework` label; `loop.sh rework <pr>` runs the implementer on the branch with every review and comment newer than the PR's last commit (the reviewer's verdict excepted), which adds commits to the same PR, records the decision in the diary, clears `rework` and `review:*` on push, and the reviewer reruns. The brief is not edited: the human's reviews amend it, newest winning, and the reviewer judges against both. Rationale: T043's PR #143 was approved headless and rejected by Tophe on the shape of the read side (a domain query port where a use case composing aggregates was wanted); closing it would have thrown away the contract cases, the pin and the un-skip that were right, and a rerun from the same brief would have rebuilt the same shape. A label rather than a derived signal, so a passing remark never starts a run; the author cannot tell the human from the agent, both post as the same account, and GitHub refuses "request changes" on a PR opened by that account.
