@@ -112,12 +112,22 @@ different shape, closing it throws away what was right and a rerun from the
 same brief rebuilds the same shape. So the PR is sent back: the human writes
 what must change as a review on the PR and sets the `rework` label.
 `loop.sh rework <pr>` runs the implementer on the branch with every review
-and comment newer than the PR's last commit, the reviewer's verdict excepted.
+and comment newer than the PR's last commit, the reviewer's verdict included.
 The run adds commits to the same branch and PR (never a rebase, never a
 rewrite), records the decision in the diary, clears `rework` and `review:*`
 when it pushes, and the reviewer runs again. The brief is not edited: the
-reviews amend it and the reviewer judges against both. A rework that needs
-a decision the review does not make reports `blocked` like any run.
+human's reviews amend it and the reviewer judges against both; the
+reviewer's verdict amends nothing, its blocking findings are the brief
+unmet. A rework that needs a decision the review does not make reports
+`blocked` like any run.
+
+The reviewer's block is a rework too. When the reviewer requests changes,
+`loop.sh next` runs the same rework round itself, the verdict as its input,
+and the reviewer runs again; `REWORK_ROUNDS` (one by default) caps the
+rounds, since a second block in a row says the brief or the review got
+something wrong and a human should read it. A PR left with
+`review:changes` can be sent back again by hand with `loop.sh rework <pr>`,
+no label to set.
 
 ## Guardrails, from the outside in
 
@@ -189,3 +199,4 @@ Decisions taken while designing the loop, newest last.
 - 2026-09-12 · what a run reads · The documents grew (architecture, PRD, design rules, specs) and nothing showed whether a run read them: the CLI result kept no tool trace. Two changes. The run's stream is kept as the `.jsonl` next to the result (`--output-format stream-json --verbose`), and `agent/reads.sh` lists what a run read, so the question is measured, not guessed. And the brief gets a *Rules in play* section: the planner lists, one line each, the decisions and rules the task touches and what they require here, because a run applies what sits next to the work, the brief, not what it read forty turns earlier; the reviewer uses the list as its checklist and reports a rule the list omits as a note on the brief.
 - 2026-09-14 · `agent/GOTCHAS.md` · The diary had reached a thousand lines, 65 to 80 per task, while the planner reads its last 120 lines and the implementer its last 60: a lesson older than two tasks was out of reach unless a role thought to grep. Durable facts and dated narrative were one file. Now they are two: `agent/GOTCHAS.md` holds what a run must know before it starts, one item per fact, rewritten or removed when it stops being true, read whole by every role and checked by the reviewer like a diary claim; `agent/PROGRESS.md` stays the append-only diary of what each task did, decided and left, read by its tail, and can be archived by phase without losing anything a run needs. Distilled from the 23 entries in a session with Tophe.
 - 2026-09-27 · rework · A PR the human reads and wants reshaped is sent back, not closed: the human writes the change as a review on the PR and sets the `rework` label; `loop.sh rework <pr>` runs the implementer on the branch with every review and comment newer than the PR's last commit (the reviewer's verdict excepted), which adds commits to the same PR, records the decision in the diary, clears `rework` and `review:*` on push, and the reviewer reruns. The brief is not edited: the human's reviews amend it, newest winning, and the reviewer judges against both. Rationale: T043's PR #143 was approved headless and rejected by Tophe on the shape of the read side (a domain query port where a use case composing aggregates was wanted); closing it would have thrown away the contract cases, the pin and the un-skip that were right, and a rerun from the same brief would have rebuilt the same shape. A label rather than a derived signal, so a passing remark never starts a run; the author cannot tell the human from the agent, both post as the same account, and GitHub refuses "request changes" on a PR opened by that account.
+- 2026-09-27 · rework on a block · The reviewer's `REQUEST CHANGES` sends the PR back by itself: `loop.sh next` runs a rework round (implementer-rework with everything written since the last commit, the verdict included, then the reviewer again), capped by `REWORK_ROUNDS`, one by default; `loop.sh rework <pr>` accepts `review:changes` as well as the `rework` label. Before this, only the human could send a PR back and the verdict was filtered out of the rework input.

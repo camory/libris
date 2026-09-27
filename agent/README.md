@@ -84,7 +84,7 @@ agent/loop.sh plan          # planner in backlog mode → a plan PR you review a
 agent/loop.sh next          # one task: brief → implement → review, then exits for your review
 agent/loop.sh run 3         # up to three tasks, waiting for each PR to be merged in between
 agent/loop.sh review 14     # re-run the reviewer on PR #14, e.g. after you pushed fixes
-agent/loop.sh rework 14     # PR #14 sent back: label it rework, write your review; the implementer applies it, the reviewer reruns
+agent/loop.sh rework 14     # PR #14 sent back (your review + the rework label, or the reviewer's review:changes): the implementer applies what was written, the reviewer reruns
 ```
 
 The orchestrator keeps no state file. It derives the phase of the current
