@@ -35,6 +35,17 @@ class EditionTest {
         editions.sortedWith(BY_SERIES_AND_VOLUME).map { it.title } shouldBe listOf("maus", "Un ninja")
     }
 
+    @Test
+    fun `the order ignores accents`() {
+        val editions = listOf(
+            edition(title = "Légendes en exil", series = SeriesEntry("Fables", 1)),
+            edition(title = "Émile et les détectives"),
+        )
+
+        editions.sortedWith(BY_SERIES_AND_VOLUME).map { it.title } shouldBe
+            listOf("Émile et les détectives", "Légendes en exil")
+    }
+
     private fun edition(title: String = "Romance dawn", series: SeriesEntry? = null): Edition = Edition(
         id = EditionId.new(),
         isbn = null,

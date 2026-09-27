@@ -4,6 +4,10 @@ import fr.amory.libris.bibliography.domain.Contributions
 import fr.amory.libris.bibliography.domain.Isbn
 import fr.amory.libris.bibliography.domain.Kind
 import fr.amory.libris.bibliography.domain.SeriesEntry
+import java.text.Collator
+import java.util.Locale
+
+private val TEXT: Collator = Collator.getInstance(Locale.FRENCH).apply { strength = Collator.PRIMARY }
 
 data class Edition(
     val id: EditionId,
@@ -26,6 +30,6 @@ data class Edition(
     }
 
     companion object {
-        val BY_SERIES_AND_VOLUME: Comparator<Edition> = compareBy { (it.series?.name ?: it.title).lowercase() }
+        val BY_SERIES_AND_VOLUME: Comparator<Edition> = compareBy(TEXT) { it.series?.name ?: it.title }
     }
 }
