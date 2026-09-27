@@ -2,7 +2,7 @@
 
 | Path | What |
 |------|------|
-| `loop.sh` | The orchestrator: `plan`, `next`, `run N`, `review <pr>`, `status` |
+| `loop.sh` | The orchestrator: `plan`, `next`, `run N`, `review <pr>`, `rework <pr>`, `status` |
 | `test-loop.sh` | Behavioural tests of `loop.sh`'s state derivation against a fake `gh`, run by the CI `guardrails` job |
 | `prompts/` | One prompt per role: `planner-backlog.md`, `planner-brief.md`, `implementer.md`, `reviewer.md` (`{{TASK_ID}}`, `{{BRANCH}}` substituted) |
 | `schemas/` | The JSON report each role must end with; enforced by `--json-schema`. No `$schema` key: the CLI's validator rejects the 2020-12 meta-schema URL |
@@ -84,6 +84,7 @@ agent/loop.sh plan          # planner in backlog mode → a plan PR you review a
 agent/loop.sh next          # one task: brief → implement → review, then exits for your review
 agent/loop.sh run 3         # up to three tasks, waiting for each PR to be merged in between
 agent/loop.sh review 14     # re-run the reviewer on PR #14, e.g. after you pushed fixes
+agent/loop.sh rework 14     # PR #14 sent back: label it rework, write your review; the implementer applies it, the reviewer reruns
 ```
 
 The orchestrator keeps no state file. It derives the phase of the current

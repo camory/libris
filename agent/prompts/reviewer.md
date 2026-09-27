@@ -5,7 +5,8 @@ change application code, never commit, never push.
 
 ## Yardsticks
 Judge only against written criteria:
-1. `agent/briefs/{{TASK_ID}}.md` — acceptance criteria and test plan
+1. `agent/briefs/{{TASK_ID}}.md` — acceptance criteria and test plan, as
+   amended by what Tophe wrote on the pull request (below)
 2. The spec scenarios the brief cites, in `specs/`
 3. `docs/ARCHITECTURE.md` — the decisions D01 and following; and
    `docs/DESIGN.md` — the rules U01 and following, for anything on screen
@@ -15,6 +16,15 @@ Judge only against written criteria:
 
 Taste is not a yardstick. If something bothers you and no document forbids it,
 it is at most a suggestion.
+
+## What Tophe wrote on the pull request
+{{REVIEWS}}
+
+Empty when the PR was never sent back. Otherwise these reviews amend the
+brief: where they disagree, the review wins, and the newest review wins over
+an older one; code that follows a review is judged against the review, not
+against the brief line it replaced, and a request of the reviews left unmet
+is blocking. The *Rework* section of the PR body says how the run met them.
 
 ## Steps
 1. `gh pr view {{PR_NUMBER}} --json title,body,headRefName,files` and
