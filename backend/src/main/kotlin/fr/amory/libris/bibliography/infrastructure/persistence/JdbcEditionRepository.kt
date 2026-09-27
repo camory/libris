@@ -105,14 +105,18 @@ class JdbcEditionRepository(private val jdbcClient: JdbcClient) : EditionReposit
             ?.let { rows -> rows.first().edition.copy(contributions = contributionsOf(rows)) }
 
     override fun findByIds(ids: List<EditionId>): List<Edition> =
-        jdbcClient
-            .sql(FIND_EDITIONS_BY_IDS)
-            .param("ids", ids.map { it.value })
-            .query { rs, _ -> rowOf(rs) }
-            .list()
-            .groupBy { it.edition.id }
-            .values
-            .map { rows -> rows.first().edition.copy(contributions = contributionsOf(rows)) }
+        if (ids.isEmpty()) {
+            emptyList()
+        } else {
+            jdbcClient
+                .sql(FIND_EDITIONS_BY_IDS)
+                .param("ids", ids.map { it.value })
+                .query { rs, _ -> rowOf(rs) }
+                .list()
+                .groupBy { it.edition.id }
+                .values
+                .map { rows -> rows.first().edition.copy(contributions = contributionsOf(rows)) }
+        }
 
     private fun rowOf(rs: ResultSet): EditionRow =
         EditionRow(

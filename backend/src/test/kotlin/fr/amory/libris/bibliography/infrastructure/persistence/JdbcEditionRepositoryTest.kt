@@ -132,6 +132,18 @@ class JdbcEditionRepositoryTest @Autowired constructor(
         found shouldContainExactlyInAnyOrder listOf(tomeOne, tomeTwo)
     }
 
+    @Test
+    fun `no id finds no edition`() {
+        // Given
+        editions.insert(onePieceTomeOne())
+
+        // When
+        val found = editions.findByIds(emptyList())
+
+        // Then
+        found shouldBe emptyList()
+    }
+
     private fun rowsOf(table: String): Int =
         jdbcClient.sql("SELECT COUNT(*) FROM $table").query(Int::class.java).single()
 
