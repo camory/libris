@@ -1,0 +1,72 @@
+{
+  "title": "Implementer rework report",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "task_id",
+    "status",
+    "summary",
+    "tests"
+  ],
+  "properties": {
+    "task_id": {
+      "type": "string",
+      "pattern": "^T[0-9]{3}$"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "pr_updated",
+        "blocked"
+      ],
+      "description": "pr_updated only if the push succeeded and the rework and review labels are cleared"
+    },
+    "summary": {
+      "type": "string",
+      "description": "Two or three sentences: what the rework changed and how it was verified"
+    },
+    "requests_met": {
+      "type": "integer",
+      "description": "Requests of the reviews met"
+    },
+    "requests_total": {
+      "type": "integer"
+    },
+    "not_applied": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "A request left unmet, with the reason given in the PR body"
+    },
+    "tests": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "backend",
+        "frontend"
+      ],
+      "description": "The two gates of D07 as you ran them last on the final tree; the sandbox records each run and refuses a push without a green one for every side you changed",
+      "properties": {
+        "backend": {
+          "type": "string",
+          "description": "'green: <summary line of ./gradlew check>' or 'not applicable: backend untouched'"
+        },
+        "frontend": {
+          "type": "string",
+          "description": "'green: <summary line of npm test>' or 'not applicable: frontend untouched'"
+        }
+      }
+    },
+    "blocker": {
+      "type": "string",
+      "description": "Required when blocked: the question, or the exact error that survived three fixes"
+    },
+    "follow_ups": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    }
+  }
+}

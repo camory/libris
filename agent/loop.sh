@@ -97,15 +97,20 @@ wait_for_pr() {  # blocks until PR $1 is MERGED (returns 0) or CLOSED (returns 1
 }
 
 # ---------------------------------------------------------------- running a role
+fill() {  # fill <text> [KEY=VALUE ...] — replaces every {{KEY}} with its VALUE, verbatim
+  local text="$1"; shift
+  local kv; for kv in "$@"; do local ph="{{${kv%%=*}}}"; text="${text//"$ph"/"${kv#*=}"}"; done
+  printf '%s' "$text"
+}
+
 # run_role <role> <tag> [KEY=VALUE ...]
-#   role: planner-backlog | planner-brief | implementer | reviewer  (prompt + schema of that name)
+#   role: planner-backlog | planner-brief | implementer | implementer-rework | reviewer  (prompt + schema of that name)
 #   tag:  goes into the log file name (task id, "plan", ...)
 #   KEY=VALUE: replaces {{KEY}} in the prompt
 # Sets STATUS and LAST_LOG. Per-role overrides: PLANNER_BRIEF_MODEL, REVIEWER_EFFORT, IMPLEMENTER_MAX_TURNS, IMPLEMENTER_AUTOCOMPACT, ...
 run_role() {
   local role="$1" tag="$2"; shift 2
-  local prompt; prompt=$(cat "agent/prompts/$role.md")
-  local kv; for kv in "$@"; do local ph="{{${kv%%=*}}}"; prompt="${prompt//"$ph"/${kv#*=}}"; done
+  local prompt; prompt=$(fill "$(cat "agent/prompts/$role.md")" "$@")
 
   local var; var=$(tr 'a-z-' 'A-Z_' <<<"$role")
   local mv="${var}_MODEL" ev="${var}_EFFORT" tv="${var}_MAX_TURNS" bv="${var}_MAX_BUDGET_USD" cv="${var}_AUTOCOMPACT"
@@ -275,7 +280,7 @@ cmd_rework() {
   [[ -n "$input" ]] || die "PR #$pr has no review or comment newer than its last commit — write what must change, then rerun" 2
   local before; before=$(pr_head "$pr")
   sync_main; sandbox_up; trap sandbox_down EXIT
-  run_role implementer "$task" TASK_ID="$task" BRANCH="$head" PR_NUMBER="$pr" REWORK="$input"
+  run_role implementer-rework "$task" TASK_ID="$task" BRANCH="$head" PR_NUMBER="$pr" REWORK="$input"
   case "$STATUS" in
     pr_updated) [[ "$(pr_head "$pr")" != "$before" ]] || die "pr_updated reported but PR #$pr has no new commit" 3
                 log "  PR #$pr updated: $(pr_url "$pr")" ;;

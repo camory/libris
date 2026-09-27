@@ -44,6 +44,9 @@ check "pr_has_label: a set label is found" "yes" "$(pr_has_label 12 rework && ec
 export GH_PRS='[{"number":12,"labels":[{"name":"review:approve"}]}]'
 check "pr_has_label: a missing label is not" "no" "$(pr_has_label 12 rework && echo yes || echo no)"
 
+check "fill: a placeholder takes its value verbatim, ampersand and slash included" "a x && y /z b" "$(fill "a {{K}} b" "K=x && y /z")"
+check "fill: a placeholder with no value is left as it is" "a {{K}} b" "$(fill "a {{K}} b" "J=1")"
+
 # pr_rework_input: what the human wrote on the PR since its last commit, the reviewer's verdict excepted
 export GH_PRS='[{"number":12,
   "commits":[{"committedDate":"2026-09-26T23:33:49Z"},{"committedDate":"2026-09-26T22:00:00Z"}],
