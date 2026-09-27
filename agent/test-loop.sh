@@ -43,11 +43,15 @@ export GH_PRS='[{"number":12,"labels":[{"name":"review:approve"},{"name":"rework
 check "pr_has_label: a set label is found" "yes" "$(pr_has_label 12 rework && echo yes || echo no)"
 export GH_PRS='[{"number":12,"labels":[{"name":"review:approve"}]}]'
 check "pr_has_label: a missing label is not" "no" "$(pr_has_label 12 rework && echo yes || echo no)"
+export GH_PRS='[{"number":12,"labels":[{"name":"review:changes"}]}]'
+check "rework_wanted: review:changes alone sends the PR back" "yes" "$(rework_wanted 12 && echo yes || echo no)"
+export GH_PRS='[{"number":12,"labels":[{"name":"review:approve"}]}]'
+check "rework_wanted: an approved PR without the rework label is not sent back" "no" "$(rework_wanted 12 && echo yes || echo no)"
 
 check "fill: a placeholder takes its value verbatim, ampersand and slash included" "a x && y /z b" "$(fill "a {{K}} b" "K=x && y /z")"
 check "fill: a placeholder with no value is left as it is" "a {{K}} b" "$(fill "a {{K}} b" "J=1")"
 
-# pr_rework_input: what the human wrote on the PR since its last commit, the reviewer's verdict excepted
+# pr_reviews: what the human wrote on the PR; pr_rework_input: everything written since its last commit, the reviewer's verdict included
 export GH_PRS='[{"number":12,
   "commits":[{"committedDate":"2026-09-26T23:33:49Z"},{"committedDate":"2026-09-26T22:00:00Z"}],
   "reviews":[{"submittedAt":"2026-09-26T21:00:00Z","body":"before the last commit"},
@@ -58,11 +62,11 @@ export GH_PRS='[{"number":12,
 check "pr_reviews: every review and comment, oldest first, verdicts and empty bodies left out" \
   $'--- 2026-09-26T21:00:00Z\nbefore the last commit\n\n--- 2026-09-27T08:02:32Z\n## Changes requested\nno query port\n\n--- 2026-09-27T09:00:00Z\nand a second thought' \
   "$(pr_reviews 12)"
-check "pr_rework_input: reviews and comments newer than the last commit, oldest first, verdict and empty bodies left out" \
-  $'--- 2026-09-27T08:02:32Z\n## Changes requested\nno query port\n\n--- 2026-09-27T09:00:00Z\nand a second thought' \
+check "pr_rework_input: reviews, comments and the verdict newer than the last commit, oldest first, empty bodies left out" \
+  $'--- 2026-09-26T23:39:32Z\n## Reviewer verdict: APPROVE\nBlocking: 0\n\n--- 2026-09-27T08:02:32Z\n## Changes requested\nno query port\n\n--- 2026-09-27T09:00:00Z\nand a second thought' \
   "$(pr_rework_input 12)"
 export GH_PRS='[{"number":12,"commits":[{"committedDate":"2026-09-26T23:33:49Z"}],"reviews":[],
-  "comments":[{"createdAt":"2026-09-26T23:39:32Z","body":"## Reviewer verdict: APPROVE"}]}]'
+  "comments":[{"createdAt":"2026-09-26T23:30:00Z","body":"## Reviewer verdict: APPROVE"}]}]'
 check "pr_rework_input: nothing newer than the last commit yields nothing" "" "$(pr_rework_input 12)"
 
 # cmd_status: the next task and its branch come from the functions below, not from the repository
