@@ -55,6 +55,9 @@ export GH_PRS='[{"number":12,
              {"submittedAt":"2026-09-27T08:30:00Z","body":""}],
   "comments":[{"createdAt":"2026-09-26T23:39:32Z","body":"## Reviewer verdict: APPROVE\nBlocking: 0"},
               {"createdAt":"2026-09-27T09:00:00Z","body":"and a second thought"}]}]'
+check "pr_reviews: every review and comment, oldest first, verdicts and empty bodies left out" \
+  $'--- 2026-09-26T21:00:00Z\nbefore the last commit\n\n--- 2026-09-27T08:02:32Z\n## Changes requested\nno query port\n\n--- 2026-09-27T09:00:00Z\nand a second thought' \
+  "$(pr_reviews 12)"
 check "pr_rework_input: reviews and comments newer than the last commit, oldest first, verdict and empty bodies left out" \
   $'--- 2026-09-27T08:02:32Z\n## Changes requested\nno query port\n\n--- 2026-09-27T09:00:00Z\nand a second thought' \
   "$(pr_rework_input 12)"

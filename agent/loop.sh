@@ -73,13 +73,16 @@ pr_review_label() {  # review:* label on PR $1, or nothing
 
 pr_has_label() { gh pr view "$1" --json labels --jq '.labels[].name' 2>/dev/null | grep -qx "$2"; }
 
-pr_rework_input() {  # reviews and comments on PR $1 newer than its last commit, oldest first, the reviewer's verdict excepted
-  gh pr view "$1" --json commits,reviews,comments --jq '
-    (.commits | map(.committedDate) | max) as $head
-    | [(.reviews[] | {at: .submittedAt, body}), (.comments[] | {at: .createdAt, body})]
-    | map(select(.at > $head and .body != "" and (.body | startswith("## Reviewer verdict") | not)))
-    | sort_by(.at) | .[] | "--- \(.at)\n\(.body)\n"' 2>/dev/null || true
+pr_reviews() {  # reviews and comments on PR $1 newer than $2 (a date, or nothing for all of them), oldest first, the reviewer's verdicts excepted
+  gh pr view "$1" --json reviews,comments --jq "
+    [(.reviews[] | {at: .submittedAt, body}), (.comments[] | {at: .createdAt, body})]
+    | map(select(.at > \"${2:-}\" and .body != \"\" and (.body | startswith(\"## Reviewer verdict\") | not)))
+    | sort_by(.at) | .[] | \"--- \\(.at)\\n\\(.body)\\n\"" 2>/dev/null || true
 }
+
+pr_last_commit() { gh pr view "$1" --json commits --jq '.commits | map(.committedDate) | max' 2>/dev/null || true; }
+
+pr_rework_input() { pr_reviews "$1" "$(pr_last_commit "$1")"; }  # what the human wrote since the PR's last commit
 
 pr_state() { gh pr view "$1" --json state --jq .state 2>/dev/null || echo UNKNOWN; }
 pr_head()  { gh pr view "$1" --json headRefOid --jq .headRefOid 2>/dev/null || true; }
@@ -211,7 +214,7 @@ do_task() {
   # Phase 3 — review (advisory: never stops the loop)
   label=$(pr_review_label "$pr")
   if [[ -z "$label" ]]; then
-    run_role reviewer "$task" TASK_ID="$task" PR_NUMBER="$pr"
+    run_role reviewer "$task" TASK_ID="$task" PR_NUMBER="$pr" REVIEWS="$(pr_reviews "$pr")"
     case "$STATUS" in
       posted) log "  verdict: $(field verdict) (blocking $(field blocking), suggestions $(field suggestions))" ;;
       *) log "  reviewer did not post (status=$STATUS); the PR still awaits your review" ;;
@@ -266,7 +269,7 @@ cmd_review() {
   local head task; head=$(gh pr view "$pr" --json headRefName --jq .headRefName) || die "cannot read PR #$pr" 1
   task=$(grep -oE 'T[0-9]{3}' <<<"$head" | head -n1); [[ -n "$task" ]] || die "PR #$pr head '$head' is not a task branch" 1
   sync_main; sandbox_up; trap sandbox_down EXIT
-  run_role reviewer "$task" TASK_ID="$task" PR_NUMBER="$pr"
+  run_role reviewer "$task" TASK_ID="$task" PR_NUMBER="$pr" REVIEWS="$(pr_reviews "$pr")"
   [[ "$STATUS" == posted ]] && log "verdict: $(field verdict) (blocking $(field blocking), suggestions $(field suggestions))"
 }
 
@@ -287,7 +290,7 @@ cmd_rework() {
     blocked) die "implementer blocked: $(field blocker)" 4 ;;
     *) die "implementer produced no valid report — inspect $LAST_LOG and ${LAST_LOG%.json}.stderr" 6 ;;
   esac
-  run_role reviewer "$task" TASK_ID="$task" PR_NUMBER="$pr"
+  run_role reviewer "$task" TASK_ID="$task" PR_NUMBER="$pr" REVIEWS="$(pr_reviews "$pr")"
   case "$STATUS" in
     posted) log "  verdict: $(field verdict) (blocking $(field blocking), suggestions $(field suggestions))" ;;
     *) log "  reviewer did not post (status=$STATUS); the PR still awaits your review" ;;
