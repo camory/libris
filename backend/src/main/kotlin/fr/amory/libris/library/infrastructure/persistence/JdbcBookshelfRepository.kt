@@ -8,6 +8,7 @@ import fr.amory.libris.library.domain.bookshelf.MembershipRole
 import fr.amory.libris.library.domain.reader.ReaderId
 import org.springframework.jdbc.core.simple.JdbcClient
 import org.springframework.stereotype.Repository
+import java.sql.ResultSet
 import java.util.UUID
 
 private const val INSERT_BOOKSHELF = "INSERT INTO bookshelf (id, name) VALUES (:id, :name)"
@@ -22,6 +23,15 @@ private const val FIND_BOOKSHELF_BY_ID =
     JOIN membership ON membership.bookshelf_id = bookshelf.id
     WHERE bookshelf.id = :id
     ORDER BY membership.reader_id
+    """
+
+private const val FIND_BOOKSHELVES_BY_MEMBER =
+    """
+    SELECT bookshelf.id, bookshelf.name, membership.reader_id, membership.role
+    FROM bookshelf
+    JOIN membership ON membership.bookshelf_id = bookshelf.id
+    WHERE bookshelf.id IN (SELECT member.bookshelf_id FROM membership member WHERE member.reader_id = :readerId)
+    ORDER BY bookshelf.id, membership.reader_id
     """
 
 private class BookshelfRow(
@@ -52,17 +62,30 @@ class JdbcBookshelfRepository(private val jdbcClient: JdbcClient) : BookshelfRep
         jdbcClient
             .sql(FIND_BOOKSHELF_BY_ID)
             .param("id", id.value)
-            .query { rs, _ ->
-                BookshelfRow(
-                    id = BookshelfId(rs.getObject("id", UUID::class.java)),
-                    name = rs.getString("name"),
-                    membership = Membership(
-                        ReaderId(rs.getObject("reader_id", UUID::class.java)),
-                        MembershipRole.valueOf(rs.getString("role")),
-                    ),
-                )
-            }
+            .query { rs, _ -> rowOf(rs) }
             .list()
             .takeIf { it.isNotEmpty() }
-            ?.let { rows -> Bookshelf(rows.first().id, rows.first().name, rows.map { it.membership }) }
+            ?.let { bookshelfOf(it) }
+
+    override fun findByMember(readerId: ReaderId): List<Bookshelf> =
+        jdbcClient
+            .sql(FIND_BOOKSHELVES_BY_MEMBER)
+            .param("readerId", readerId.value)
+            .query { rs, _ -> rowOf(rs) }
+            .list()
+            .groupBy { it.id }
+            .values
+            .map { bookshelfOf(it) }
+
+    private fun rowOf(rs: ResultSet): BookshelfRow = BookshelfRow(
+        id = BookshelfId(rs.getObject("id", UUID::class.java)),
+        name = rs.getString("name"),
+        membership = Membership(
+            ReaderId(rs.getObject("reader_id", UUID::class.java)),
+            MembershipRole.valueOf(rs.getString("role")),
+        ),
+    )
+
+    private fun bookshelfOf(rows: List<BookshelfRow>): Bookshelf =
+        Bookshelf(rows.first().id, rows.first().name, rows.map { it.membership })
 }
