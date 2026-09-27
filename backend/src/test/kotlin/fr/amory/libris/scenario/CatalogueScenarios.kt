@@ -1,7 +1,6 @@
 package fr.amory.libris.scenario
 
 import com.jayway.jsonpath.JsonPath
-import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.MediaType.APPLICATION_JSON
@@ -50,7 +49,6 @@ class CatalogueScenarios @Autowired constructor(
     }
 
     @Test
-    @Disabled("T045")
     fun `S2 The catalogue comes in pages`() {
         // Given
         val marc = reader("marc", "Marc")

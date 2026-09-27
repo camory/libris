@@ -35,5 +35,6 @@ data class Edition(
             compareBy<Edition, String>(IGNORING_CASE_AND_ACCENTS) { it.series?.name ?: it.title }
                 .thenBy(nullsLast()) { it.series?.volumeNumber }
                 .thenBy(IGNORING_CASE_AND_ACCENTS) { it.title }
+                .thenBy { it.id.value }
     }
 }

@@ -231,7 +231,7 @@ once T045 is deployed. No other task touches the contract (D04).
       in case, accents, tome, a missing tome, or title.
       Realises S1; un-skips the backend test of S1.
 
-- [ ] T045 Backend: the catalogue in pages of fifty.
+- [x] T045 Backend: the catalogue in pages of fifty.
       The answer of T043 comes fifty editions at a time and names the next
       page by the id of the last edition answered; from that id as `after`
       the following page starts just after it, with no gap or repeat, and

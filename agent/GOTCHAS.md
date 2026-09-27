@@ -174,6 +174,13 @@ true; the diary keeps the date it was found.
   `@TestComponent` notwithstanding. Mockito stubs a method taking a value
   class from Kotlin call syntax, `invoke` included
   (`given(lookupEditionByIsbn(isbnOf("…")))`).
+- A Mockito matcher on a value-class argument must match the underlying
+  value: the mangled JVM method receives the bare `UUID`, so
+  `eq(contracteer.id)` never matches (the stub answers `null`, seen as a
+  403 from the error dispatch), and Kotlin's null check on the matcher's
+  `null` throws `eq(...) must not be null`. The form that works:
+  `browseCatalogue(ReaderId(eq(id.value) ?: id.value), any())`; `any()` is
+  fine for a nullable value-class parameter.
 - A scenario class boots the whole application and commits what its
   requests write; `FreshSchema` on `JdbcSliceTest` and `ScenarioTest` is
   what keeps the JDBC slice from meeting a reader it did not insert.

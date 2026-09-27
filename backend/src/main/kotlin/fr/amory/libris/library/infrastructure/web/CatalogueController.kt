@@ -1,6 +1,7 @@
 package fr.amory.libris.library.infrastructure.web
 
 import fr.amory.libris.bibliography.domain.Kind
+import fr.amory.libris.bibliography.domain.edition.EditionId
 import fr.amory.libris.library.application.catalogue.BrowseCatalogue
 import fr.amory.libris.library.application.catalogue.HeldEdition
 import fr.amory.libris.library.application.lookup.CopyOnBookshelf
@@ -39,9 +40,11 @@ class CatalogueController(private val browseCatalogue: BrowseCatalogue) {
     @GetMapping("/api/v1/books")
     fun books(
         @AuthenticationPrincipal reader: Reader,
-        @RequestParam("after") ignored: UUID?,
-    ): BookPageResponse =
-        BookPageResponse(books = browseCatalogue(reader.id).map { bookOf(it) }, next = null)
+        @RequestParam("after") after: UUID?,
+    ): BookPageResponse {
+        val page = browseCatalogue(reader.id, after?.let { EditionId(it) })
+        return BookPageResponse(books = page.held.map { bookOf(it) }, next = page.next?.value?.toString())
+    }
 
     private fun bookOf(held: HeldEdition): BookResponse = BookResponse(
         id = held.edition.id.value.toString(),

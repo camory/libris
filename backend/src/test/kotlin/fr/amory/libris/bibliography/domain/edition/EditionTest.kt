@@ -7,6 +7,7 @@ import fr.amory.libris.bibliography.domain.edition.Edition.Companion.BY_SERIES_A
 import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.matchers.shouldBe
 import org.junit.jupiter.api.Test
+import java.util.UUID
 
 class EditionTest {
     @Test
@@ -104,8 +105,31 @@ class EditionTest {
         titles shouldBe listOf("À l'aube d'une grande aventure", "Romance dawn")
     }
 
-    private fun edition(title: String = "Romance dawn", series: SeriesEntry? = null): Edition = Edition(
-        id = EditionId.new(),
+    @Test
+    fun `editions equal on series, tome and title are ordered by id`() {
+        // Given
+        val first = edition(
+            series = SeriesEntry("One piece", 1),
+            id = EditionId(UUID.fromString("00000000-0000-7000-8000-000000000001")),
+        )
+        val second = edition(
+            series = SeriesEntry("One piece", 1),
+            id = EditionId(UUID.fromString("00000000-0000-7000-8000-000000000002")),
+        )
+
+        // When
+        val ordered = listOf(second, first).sortedWith(BY_SERIES_AND_VOLUME)
+
+        // Then
+        ordered shouldBe listOf(first, second)
+    }
+
+    private fun edition(
+        title: String = "Romance dawn",
+        series: SeriesEntry? = null,
+        id: EditionId = EditionId.new(),
+    ): Edition = Edition(
+        id = id,
         isbn = null,
         kind = MANGA,
         title = title,
