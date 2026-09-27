@@ -6,13 +6,14 @@
 #   an open PR on that branch       → the implementation phase is done
 #   a review:* label on that PR     → the review phase is done
 #   a rework label on that PR       → the human sent it back with a review
+#   a review:changes label on it    → the reviewer sent it back with a verdict
 # Every invocation re-derives where it is and resumes at the right phase.
 #
 #   agent/loop.sh plan          planner, backlog mode → plan PR for you to approve
-#   agent/loop.sh next          one task: brief → implement → review, then exit
+#   agent/loop.sh next          one task: brief → implement → review, rework when the reviewer blocks, then exit
 #   agent/loop.sh run [N]       up to N tasks, waiting for each PR to be merged between them
 #   agent/loop.sh review <pr>   re-run the reviewer on an existing pull request
-#   agent/loop.sh rework <pr>   implement the reviews on a pull request labelled rework, then review it again
+#   agent/loop.sh rework <pr>   implement what was written on a pull request labelled rework or review:changes, then review it again
 #   agent/loop.sh status        show the derived state, run nothing
 #
 # Read docs/LOOP.md for the why, agent/README.md for setup and exit codes.
@@ -33,7 +34,7 @@ load_env() {
   [[ -f "$ENV_FILE" ]] || die "missing $ENV_FILE (copy agent/.env.example and fill it in)" 1
   set -a; # shellcheck disable=SC1090
   source "$ENV_FILE"; set +a
-  : "${MODEL:=fable}" "${EFFORT:=high}" "${MAX_TURNS:=120}" "${MAX_BUDGET_USD:=15}" "${AUTOCOMPACT:=150000}" "${PR_POLL_SECONDS:=300}"
+  : "${MODEL:=fable}" "${EFFORT:=high}" "${MAX_TURNS:=120}" "${MAX_BUDGET_USD:=15}" "${AUTOCOMPACT:=150000}" "${PR_POLL_SECONDS:=300}" "${REWORK_ROUNDS:=1}"
   [[ -n "${CLAUDE_CODE_OAUTH_TOKEN:-}${ANTHROPIC_API_KEY:-}" ]] || die "no Claude credential in $ENV_FILE" 1
   [[ -n "${GH_TOKEN:-}" ]] || die "no GH_TOKEN in $ENV_FILE" 1
   mkdir -p agent/logs
@@ -73,16 +74,20 @@ pr_review_label() {  # review:* label on PR $1, or nothing
 
 pr_has_label() { gh pr view "$1" --json labels --jq '.labels[].name' 2>/dev/null | grep -qx "$2"; }
 
-pr_reviews() {  # reviews and comments on PR $1 newer than $2 (a date, or nothing for all of them), oldest first, the reviewer's verdicts excepted
+pr_items() {  # reviews and comments on PR $1 newer than $2 (a date, or nothing for all of them), oldest first, empty bodies left out; the reviewer's verdicts too unless $3 is verdicts
   gh pr view "$1" --json reviews,comments --jq "
     [(.reviews[] | {at: .submittedAt, body}), (.comments[] | {at: .createdAt, body})]
-    | map(select(.at > \"${2:-}\" and .body != \"\" and (.body | startswith(\"## Reviewer verdict\") | not)))
+    | map(select(.at > \"${2:-}\" and .body != \"\" and (\"${3:-}\" == \"verdicts\" or (.body | startswith(\"## Reviewer verdict\") | not))))
     | sort_by(.at) | .[] | \"--- \\(.at)\\n\\(.body)\\n\"" 2>/dev/null || true
 }
 
+pr_reviews() { pr_items "$1" "${2:-}"; }  # what the human wrote on PR $1, since $2 when given
+
 pr_last_commit() { gh pr view "$1" --json commits --jq '.commits | map(.committedDate) | max' 2>/dev/null || true; }
 
-pr_rework_input() { pr_reviews "$1" "$(pr_last_commit "$1")"; }  # what the human wrote since the PR's last commit
+pr_rework_input() { pr_items "$1" "$(pr_last_commit "$1")" verdicts; }  # everything written since the PR's last commit, the reviewer's verdict included
+
+rework_wanted() { pr_has_label "$1" rework || pr_has_label "$1" review:changes; }  # PR $1 was sent back, by the human or by the reviewer
 
 pr_state() { gh pr view "$1" --json state --jq .state 2>/dev/null || echo UNKNOWN; }
 pr_head()  { gh pr view "$1" --json headRefOid --jq .headRefOid 2>/dev/null || true; }
@@ -223,6 +228,13 @@ do_task() {
     log "  review phase already done ($label)"
   fi
 
+  # Phase 3b — rework: the reviewer's block goes back to the implementer, then the reviewer runs again
+  local round=0
+  while [[ "$(pr_review_label "$pr")" == review:changes ]] && (( round < REWORK_ROUNDS )); do
+    round=$(( round + 1 )); log "  rework round $round/$REWORK_ROUNDS"
+    rework_round "$task" "$pr" "$branch"
+  done
+
   # Phase 4 — the human
   log "$task awaits your review: $(pr_url "$pr")"
   if (( wait )); then
@@ -273,17 +285,12 @@ cmd_review() {
   [[ "$STATUS" == posted ]] && log "verdict: $(field verdict) (blocking $(field blocking), suggestions $(field suggestions))"
 }
 
-cmd_rework() {
-  local pr="${1:?usage: agent/loop.sh rework <pr-number>}"
-  load_env
-  local head task; head=$(gh pr view "$pr" --json headRefName --jq .headRefName) || die "cannot read PR #$pr" 1
-  task=$(grep -oE 'T[0-9]{3}' <<<"$head" | head -n1); [[ -n "$task" ]] || die "PR #$pr head '$head' is not a task branch" 1
-  pr_has_label "$pr" rework || die "PR #$pr carries no rework label — write your review on the PR, set the label, then rerun" 2
-  local input; input=$(pr_rework_input "$pr")
+rework_round() {  # rework_round <task> <pr> <branch> — the implementer applies what was written on the PR since its last commit, then the reviewer runs again
+  local task="$1" pr="$2" branch="$3" input before
+  input=$(pr_rework_input "$pr")
   [[ -n "$input" ]] || die "PR #$pr has no review or comment newer than its last commit — write what must change, then rerun" 2
-  local before; before=$(pr_head "$pr")
-  sync_main; sandbox_up; trap sandbox_down EXIT
-  run_role implementer-rework "$task" TASK_ID="$task" BRANCH="$head" PR_NUMBER="$pr" REWORK="$input"
+  before=$(pr_head "$pr")
+  run_role implementer-rework "$task" TASK_ID="$task" BRANCH="$branch" PR_NUMBER="$pr" REWORK="$input"
   case "$STATUS" in
     pr_updated) [[ "$(pr_head "$pr")" != "$before" ]] || die "pr_updated reported but PR #$pr has no new commit" 3
                 log "  PR #$pr updated: $(pr_url "$pr")" ;;
@@ -295,6 +302,16 @@ cmd_rework() {
     posted) log "  verdict: $(field verdict) (blocking $(field blocking), suggestions $(field suggestions))" ;;
     *) log "  reviewer did not post (status=$STATUS); the PR still awaits your review" ;;
   esac
+}
+
+cmd_rework() {
+  local pr="${1:?usage: agent/loop.sh rework <pr-number>}"
+  load_env
+  local head task; head=$(gh pr view "$pr" --json headRefName --jq .headRefName) || die "cannot read PR #$pr" 1
+  task=$(grep -oE 'T[0-9]{3}' <<<"$head" | head -n1); [[ -n "$task" ]] || die "PR #$pr head '$head' is not a task branch" 1
+  rework_wanted "$pr" || die "PR #$pr carries neither the rework label nor review:changes — write your review on the PR, set the label, then rerun" 2
+  sync_main; sandbox_up; trap sandbox_down EXIT
+  rework_round "$task" "$pr" "$head"
   log "$task awaits your review: $(pr_url "$pr")"
 }
 
