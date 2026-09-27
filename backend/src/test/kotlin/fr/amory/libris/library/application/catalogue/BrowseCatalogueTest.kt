@@ -173,6 +173,19 @@ class BrowseCatalogueTest {
         page.next shouldBe null
     }
 
+    @Test
+    fun `an after naming no edition answers an empty page`() {
+        // Given
+        val leasBookshelf = bookshelfOf("Bibliothèque de Léa", Membership(lea, OWNER))
+        copyOf(roman(1), leasBookshelf)
+
+        // When
+        val page = browseCatalogue(lea, EditionId.new())
+
+        // Then
+        page shouldBe CataloguePage(emptyList(), null)
+    }
+
     private fun roman(number: Int): Edition = ROMANCE_DAWN.copy(
         id = EditionId.new(),
         isbn = null,

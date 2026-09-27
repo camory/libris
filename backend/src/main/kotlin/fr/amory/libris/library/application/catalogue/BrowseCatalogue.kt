@@ -18,6 +18,9 @@ class BrowseCatalogue(
     private val editions: EditionRepository,
 ) {
     operator fun invoke(readerId: ReaderId, after: EditionId?): CataloguePage {
+        val place = after?.let {
+            editions.findByIds(listOf(it)).singleOrNull() ?: return CataloguePage(emptyList(), null)
+        }
         val readersBookshelves = bookshelves.findByMember(readerId).associateBy { it.id }
         val held = copies.findByBookshelfIds(readersBookshelves.keys.toList())
         val editionsById = editions.findByIds(held.map { it.editionId }.distinct()).associateBy { it.id }
@@ -29,7 +32,6 @@ class BrowseCatalogue(
                 },
             )
         }.sortedWith(compareBy(BY_SERIES_AND_VOLUME) { it.edition })
-        val place = after?.let { editions.findByIds(listOf(it)).single() }
         val following = ordered.filter { place == null || BY_SERIES_AND_VOLUME.compare(it.edition, place) > 0 }
         val page = following.take(PAGE_SIZE)
         return CataloguePage(page, if (following.size > PAGE_SIZE) page.last().edition.id else null)
