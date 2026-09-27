@@ -57,6 +57,17 @@ class EditionTest {
             listOf("Aux prises avec Baggy et ses hommes", "Le vrai visage d'Arlong")
     }
 
+    @Test
+    fun `an edition of the series without a tome comes after its numbered tomes`() {
+        val editions = listOf(
+            edition(title = "Astérix et ses amis", series = SeriesEntry("Astérix", null)),
+            edition(title = "Astérix le Gaulois", series = SeriesEntry("Astérix", 1)),
+        )
+
+        editions.sortedWith(BY_SERIES_AND_VOLUME).map { it.title } shouldBe
+            listOf("Astérix le Gaulois", "Astérix et ses amis")
+    }
+
     private fun edition(title: String = "Romance dawn", series: SeriesEntry? = null): Edition = Edition(
         id = EditionId.new(),
         isbn = null,
