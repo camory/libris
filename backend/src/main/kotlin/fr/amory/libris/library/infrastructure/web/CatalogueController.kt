@@ -41,7 +41,7 @@ class CatalogueController(private val browseCatalogue: BrowseCatalogue) {
         @AuthenticationPrincipal reader: Reader,
         @RequestParam("after") ignored: UUID?,
     ): BookPageResponse =
-        BookPageResponse(books = browseCatalogue(reader.id).map { bookOf(it) }, next = null)
+        BookPageResponse(books = browseCatalogue(reader.id, null).held.map { bookOf(it) }, next = null)
 
     private fun bookOf(held: HeldEdition): BookResponse = BookResponse(
         id = held.edition.id.value.toString(),

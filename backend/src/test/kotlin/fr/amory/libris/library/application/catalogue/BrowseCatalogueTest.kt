@@ -69,7 +69,7 @@ class BrowseCatalogueTest {
         copyOf(BAGGY, tomsBookshelf)
 
         // When
-        val held = browseCatalogue(lea)
+        val held = browseCatalogue(lea, null).held
 
         // Then
         held shouldBe listOf(
@@ -86,7 +86,7 @@ class BrowseCatalogueTest {
         val inTheSalon = copyOf(ROMANCE_DAWN, salon)
 
         // When
-        val held = browseCatalogue(lea)
+        val held = browseCatalogue(lea, null).held
 
         // Then
         held.map { it.edition } shouldBe listOf(ROMANCE_DAWN)
@@ -104,11 +104,33 @@ class BrowseCatalogueTest {
         copyOf(ROMANCE_DAWN, leasBookshelf)
 
         // When
-        val held = browseCatalogue(lea)
+        val held = browseCatalogue(lea, null).held
 
         // Then
         held.map { it.edition } shouldBe listOf(ROMANCE_DAWN, BAGGY)
     }
+
+    @Test
+    fun `the first page holds fifty editions and names the last as next`() {
+        // Given
+        val leasBookshelf = bookshelfOf("Bibliothèque de Léa", Membership(lea, OWNER))
+        val romans = (1..51).map { roman(it) }
+        romans.reversed().forEach { copyOf(it, leasBookshelf) }
+
+        // When
+        val page = browseCatalogue(lea, null)
+
+        // Then
+        page.held.map { it.edition.title } shouldBe (1..50).map { "Roman %02d".format(it) }
+        page.next shouldBe romans[49].id
+    }
+
+    private fun roman(number: Int): Edition = ROMANCE_DAWN.copy(
+        id = EditionId.new(),
+        isbn = null,
+        title = "Roman %02d".format(number),
+        series = null,
+    ).also { editions.insert(it) }
 
     private fun bookshelfOf(name: String, vararg memberships: Membership): Bookshelf =
         Bookshelf(BookshelfId.new(), name, memberships.toList()).also { bookshelves.insert(it) }

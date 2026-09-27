@@ -25,6 +25,7 @@ import fr.amory.libris.library.application.FindDefaultBookshelf
 import fr.amory.libris.library.application.NewBook
 import fr.amory.libris.library.application.WelcomeReader
 import fr.amory.libris.library.application.catalogue.BrowseCatalogue
+import fr.amory.libris.library.application.catalogue.CataloguePage
 import fr.amory.libris.library.application.catalogue.HeldEdition
 import fr.amory.libris.library.application.lookup.CopyOnBookshelf
 import fr.amory.libris.library.application.lookup.IsbnLookup
@@ -173,7 +174,7 @@ class ApiContractTest @Autowired constructor(
             .willReturn(Added(Copy(CopyId.new(), EditionId.new(), bookshelf.id), bookshelf))
         given(addBookToBookshelf(contracteer.id, bookshelfId("9e8d7c6b-5a4f-4e3d-8c2b-1a0f9e8d7c6b"), NEW_ONE_PIECE_1))
             .willReturn(NotAnOwner)
-        given(browseCatalogue(contracteer.id)).willReturn(listOf(ONE_PIECE_1_HELD))
+        given(browseCatalogue(contracteer.id, null)).willReturn(CataloguePage(listOf(ONE_PIECE_1_HELD), null))
     }
 
     @TestConfiguration
