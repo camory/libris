@@ -568,3 +568,20 @@ Format:
 - Deviations from the brief: the design above, by the review.
 - Left over: T044's order and T045's page are rules `ListCatalogue` applies
   over `HeldEdition`, adding no domain concept (for the planner).
+
+## 2026-09-27 — T044 The catalogue in the order of a shelf — done
+- Did: `Edition.BY_SERIES_AND_VOLUME` orders editions by series name or
+  title, then tome as a number with no tome last, then title; its text
+  comparison ignores case and accents. `BrowseCatalogue` sorts with it.
+- Did: `S1 The catalogue lists the house's editions` un-skipped and green.
+- Decided: accents go through `java.text.Collator` for French at primary
+  strength, private to `Edition.kt`, used for both the first key and the
+  title; one comparison of text for the whole order.
+- Decided: step 2's green was a plain `lowercase()`, so step 3 was a real
+  red (`é` after `f`), not a guard; the collator replaced it there.
+- Decided: `BrowseCatalogue` sorts its `HeldEdition`s with
+  `compareBy(BY_SERIES_AND_VOLUME) { it.edition }`; `HeldEdition` has no rule.
+- Deviations from the brief: none; the backlog line's "one query" and
+  "tests against PostgreSQL" were superseded by the brief itself.
+- Left over: two editions equal on every key keep the order of the copies;
+  T045 makes the order total with the id and pages it.
