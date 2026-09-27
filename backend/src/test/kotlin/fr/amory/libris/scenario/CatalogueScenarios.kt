@@ -74,7 +74,6 @@ class CatalogueScenarios @Autowired constructor(
     }
 
     @Test
-    @Disabled("T043")
     fun `S3 The catalogue is empty`() {
         // Given
         val nina = reader("nina", "Nina")

@@ -9,6 +9,7 @@ import fr.amory.libris.library.domain.bookshelf.MembershipRole.VIEWER
 import fr.amory.libris.library.fixture.bookshelfOwnedBy
 import fr.amory.libris.library.fixture.readerNamed
 import io.kotest.assertions.throwables.shouldThrow
+import io.kotest.matchers.collections.shouldContainExactlyInAnyOrder
 import io.kotest.matchers.shouldBe
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
@@ -50,6 +51,26 @@ class JdbcBookshelfRepositoryTest @Autowired constructor(
         val nobody = readerNamed("nobody", "Nobody")
 
         shouldThrow<DataIntegrityViolationException> { bookshelves.insert(bookshelfOwnedBy(nobody)) }
+    }
+
+    @Test
+    fun `the bookshelves a reader is a member of are found whole, none of another's`() {
+        // Given
+        val lea = readerNamed("lea", "Léa").also { readers.insert(it) }
+        val tom = readerNamed("tom", "Tom").also { readers.insert(it) }
+        val leasBookshelf = bookshelfOwnedBy(lea).also { bookshelves.insert(it) }
+        bookshelfOwnedBy(tom).also { bookshelves.insert(it) }
+        val salon = Bookshelf(BookshelfId.new(), "Salon", listOf(Membership(tom.id, OWNER), Membership(lea.id, VIEWER)))
+            .also { bookshelves.insert(it) }
+
+        // When
+        val found = bookshelves.findByMember(lea.id)
+
+        // Then
+        found.map { Triple(it.id, it.name, it.memberships.toSet()) } shouldContainExactlyInAnyOrder listOf(
+            Triple(leasBookshelf.id, "Bibliothèque de Léa", setOf(Membership(lea.id, OWNER))),
+            Triple(salon.id, "Salon", setOf(Membership(tom.id, OWNER), Membership(lea.id, VIEWER))),
+        )
     }
 
     @Test

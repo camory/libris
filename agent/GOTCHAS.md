@@ -144,9 +144,13 @@ true; the diary keeps the date it was found.
   argument no test uses yet and `UnusedParameter` a function parameter no
   case reads yet (write the case that motivates it first: a use case reaches
   the signature its brief names one cycle at a time),
-  `SwallowedException` and `TooGenericExceptionCaught` stay quiet when the
-  parameter is named `ignored`. An elvis over a platform type Kotlin reads
+  `SwallowedException`, `TooGenericExceptionCaught` and `UnusedParameter`
+  stay quiet when the parameter is named `ignored` (a query parameter the
+  contract declares and the answer does not read yet). An elvis over a platform type Kotlin reads
   as non-null is unreachable code.
+- `UnusedPrivateMember` fails two private overloads of one name that are
+  called only from lambdas (`map { responseOf(it) }`), though both are used;
+  give them distinct names (`bookOf`, `copyOf`).
 - `check` also runs `jar`, which writes a `-plain.jar` beside the boot jar
   in `build/libs`; the image's build stage runs `bootJar` only.
 
@@ -303,6 +307,10 @@ true; the diary keeps the date it was found.
   takes it through an `@Autowired` constructor, with `JdbcClient` beside it
   only when a case queries through it: detekt's `UnusedPrivateProperty` fails
   a constructor argument no case reads.
+- `JdbcClient` expands an empty collection parameter to `IN ()`, which
+  PostgreSQL refuses (`BadSqlGrammarException`): a finder over a list of ids
+  answers `emptyList()` without a statement when given none, and a slice case
+  (`no bookshelf finds no copy`, `no id finds no edition`) proves it.
 
 - `LookupAnswering`, in `bibliography.fixture`, records the ISBNs it was asked
   and answers them as `asked`, so a case proves a source was never called with

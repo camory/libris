@@ -12,6 +12,7 @@ import fr.amory.libris.bibliography.domain.edition.EditionId
 import fr.amory.libris.bibliography.domain.edition.EditionRepository
 import org.springframework.jdbc.core.simple.JdbcClient
 import org.springframework.stereotype.Repository
+import java.sql.ResultSet
 import java.util.UUID
 
 private const val INSERT_EDITION =
@@ -39,7 +40,7 @@ private const val INSERT_AUTHOR =
 private const val INSERT_CONTRIBUTION =
     "INSERT INTO contribution (edition_id, author_id, role) VALUES (:editionId, :authorId, :role)"
 
-private const val FIND_EDITION_BY_ISBN =
+private const val SELECT_EDITIONS =
     """
     SELECT edition.id, edition.isbn13, edition.kind, edition.title, edition.subtitle,
            edition.volume_number, edition.collection, edition.publisher, edition.publication_year,
@@ -49,8 +50,11 @@ private const val FIND_EDITION_BY_ISBN =
     LEFT JOIN series ON series.id = edition.series_id
     LEFT JOIN contribution ON contribution.edition_id = edition.id
     LEFT JOIN author ON author.id = contribution.author_id
-    WHERE edition.isbn13 = :isbn13
     """
+
+private const val FIND_EDITION_BY_ISBN = "$SELECT_EDITIONS WHERE edition.isbn13 = :isbn13"
+
+private const val FIND_EDITIONS_BY_IDS = "$SELECT_EDITIONS WHERE edition.id IN (:ids)"
 
 private class EditionRow(
     val edition: Edition,
@@ -95,35 +99,53 @@ class JdbcEditionRepository(private val jdbcClient: JdbcClient) : EditionReposit
         jdbcClient
             .sql(FIND_EDITION_BY_ISBN)
             .param("isbn13", isbn.digits)
-            .query { rs, _ ->
-                EditionRow(
-                    edition = Edition(
-                        id = EditionId(rs.getObject("id", UUID::class.java)),
-                        isbn = rs.getString("isbn13")?.let { Isbn.of(it) },
-                        kind = Kind.valueOf(rs.getString("kind")),
-                        title = rs.getString("title"),
-                        subtitle = rs.getString("subtitle"),
-                        contributions = Contributions.of(emptyList()),
-                        series = SeriesEntry.of(
-                            rs.getString("series_name"),
-                            rs.getObject("volume_number", Int::class.javaObjectType),
-                        ),
-                        collection = rs.getString("collection"),
-                        publisher = rs.getString("publisher"),
-                        publicationYear = rs.getObject("publication_year", Int::class.javaObjectType),
-                        language = rs.getString("language"),
-                        pageCount = rs.getObject("page_count", Int::class.javaObjectType),
-                        summary = rs.getString("summary"),
-                        coverUrl = rs.getString("cover_url"),
-                    ),
-                    contribution = rs.getString("author_name")?.let { name ->
-                        Contribution.of(name, ContributionRole.valueOf(rs.getString("role")))
-                    },
-                )
-            }
+            .query { rs, _ -> rowOf(rs) }
             .list()
             .takeIf { it.isNotEmpty() }
-            ?.let { rows -> rows.first().edition.copy(contributions = contributionsOf(rows)) }
+            ?.let(::editionOf)
+
+    override fun findByIds(ids: List<EditionId>): List<Edition> =
+        if (ids.isEmpty()) {
+            emptyList()
+        } else {
+            jdbcClient
+                .sql(FIND_EDITIONS_BY_IDS)
+                .param("ids", ids.map { it.value })
+                .query { rs, _ -> rowOf(rs) }
+                .list()
+                .groupBy { it.edition.id }
+                .values
+                .map(::editionOf)
+        }
+
+    private fun rowOf(rs: ResultSet): EditionRow =
+        EditionRow(
+            edition = Edition(
+                id = EditionId(rs.getObject("id", UUID::class.java)),
+                isbn = rs.getString("isbn13")?.let { Isbn.of(it) },
+                kind = Kind.valueOf(rs.getString("kind")),
+                title = rs.getString("title"),
+                subtitle = rs.getString("subtitle"),
+                contributions = Contributions.of(emptyList()),
+                series = SeriesEntry.of(
+                    rs.getString("series_name"),
+                    rs.getObject("volume_number", Int::class.javaObjectType),
+                ),
+                collection = rs.getString("collection"),
+                publisher = rs.getString("publisher"),
+                publicationYear = rs.getObject("publication_year", Int::class.javaObjectType),
+                language = rs.getString("language"),
+                pageCount = rs.getObject("page_count", Int::class.javaObjectType),
+                summary = rs.getString("summary"),
+                coverUrl = rs.getString("cover_url"),
+            ),
+            contribution = rs.getString("author_name")?.let { name ->
+                Contribution.of(name, ContributionRole.valueOf(rs.getString("role")))
+            },
+        )
+
+    private fun editionOf(rows: List<EditionRow>): Edition =
+        rows.first().edition.copy(contributions = contributionsOf(rows))
 
     private fun contributionsOf(rows: List<EditionRow>): Contributions =
         Contributions.of(rows.mapNotNull { it.contribution })
