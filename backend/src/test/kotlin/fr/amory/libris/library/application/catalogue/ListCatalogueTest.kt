@@ -14,11 +14,13 @@ import fr.amory.libris.library.domain.bookshelf.Bookshelf
 import fr.amory.libris.library.domain.bookshelf.BookshelfId
 import fr.amory.libris.library.domain.bookshelf.Membership
 import fr.amory.libris.library.domain.bookshelf.MembershipRole.OWNER
+import fr.amory.libris.library.domain.bookshelf.MembershipRole.VIEWER
 import fr.amory.libris.library.domain.copy.Copy
 import fr.amory.libris.library.domain.copy.CopyId
 import fr.amory.libris.library.domain.reader.ReaderId
 import fr.amory.libris.library.fixture.BookshelvesInMemory
 import fr.amory.libris.library.fixture.CopiesInMemory
+import io.kotest.matchers.collections.shouldContainExactlyInAnyOrder
 import io.kotest.matchers.shouldBe
 import org.junit.jupiter.api.Test
 
@@ -72,6 +74,25 @@ class ListCatalogueTest {
         // Then
         held shouldBe listOf(
             HeldEdition(ROMANCE_DAWN, listOf(CopyOnBookshelf(leasCopy.id, leasBookshelf.id, "Bibliothèque de Léa"))),
+        )
+    }
+
+    @Test
+    fun `an edition on two of the reader's bookshelves comes once`() {
+        // Given
+        val leasBookshelf = bookshelfOf("Bibliothèque de Léa", Membership(lea, OWNER))
+        val salon = bookshelfOf("Salon", Membership(tom, OWNER), Membership(lea, VIEWER))
+        val onLeasBookshelf = copyOf(ROMANCE_DAWN, leasBookshelf)
+        val inTheSalon = copyOf(ROMANCE_DAWN, salon)
+
+        // When
+        val held = listCatalogue(lea)
+
+        // Then
+        held.map { it.edition } shouldBe listOf(ROMANCE_DAWN)
+        held.single().copies shouldContainExactlyInAnyOrder listOf(
+            CopyOnBookshelf(onLeasBookshelf.id, leasBookshelf.id, "Bibliothèque de Léa"),
+            CopyOnBookshelf(inTheSalon.id, salon.id, "Salon"),
         )
     }
 

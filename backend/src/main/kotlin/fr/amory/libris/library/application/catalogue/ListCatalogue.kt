@@ -17,10 +17,12 @@ class ListCatalogue(
         val readersBookshelves = bookshelves.findByMember(readerId).associateBy { it.id }
         val held = copies.findByBookshelfIds(readersBookshelves.keys.toList())
         val editionsById = editions.findByIds(held.map { it.editionId }.distinct()).associateBy { it.id }
-        return held.map { copy ->
+        return held.groupBy { it.editionId }.map { (editionId, copiesOfEdition) ->
             HeldEdition(
-                editionsById.getValue(copy.editionId),
-                listOf(CopyOnBookshelf(copy.id, copy.bookshelfId, readersBookshelves.getValue(copy.bookshelfId).name)),
+                editionsById.getValue(editionId),
+                copiesOfEdition.map { copy ->
+                    CopyOnBookshelf(copy.id, copy.bookshelfId, readersBookshelves.getValue(copy.bookshelfId).name)
+                },
             )
         }
     }
