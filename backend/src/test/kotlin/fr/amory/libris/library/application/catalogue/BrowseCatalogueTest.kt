@@ -125,6 +125,21 @@ class BrowseCatalogueTest {
         page.next shouldBe romans[49].id
     }
 
+    @Test
+    fun `the page after an edition starts just after it`() {
+        // Given
+        val leasBookshelf = bookshelfOf("Bibliothèque de Léa", Membership(lea, OWNER))
+        val romans = (1..51).map { roman(it) }
+        romans.reversed().forEach { copyOf(it, leasBookshelf) }
+
+        // When
+        val page = browseCatalogue(lea, romans[49].id)
+
+        // Then
+        page.held.map { it.edition.title } shouldBe listOf("Roman 51")
+        page.next shouldBe null
+    }
+
     private fun roman(number: Int): Edition = ROMANCE_DAWN.copy(
         id = EditionId.new(),
         isbn = null,

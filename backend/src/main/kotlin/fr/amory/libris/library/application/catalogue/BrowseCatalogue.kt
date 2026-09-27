@@ -29,7 +29,8 @@ class BrowseCatalogue(
                 },
             )
         }.sortedWith(compareBy(BY_SERIES_AND_VOLUME) { it.edition })
-        val page = ordered.take(PAGE_SIZE)
-        return CataloguePage(page, if (ordered.size > PAGE_SIZE) page.last().edition.id else null)
+        val following = ordered.drop(ordered.indexOfFirst { it.edition.id == after } + 1)
+        val page = following.take(PAGE_SIZE)
+        return CataloguePage(page, if (following.size > PAGE_SIZE) page.last().edition.id else null)
     }
 }
