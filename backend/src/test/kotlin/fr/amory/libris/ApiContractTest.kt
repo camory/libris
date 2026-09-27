@@ -33,11 +33,14 @@ import fr.amory.libris.library.application.lookup.LookupIsbnForReader
 import fr.amory.libris.library.domain.bookshelf.BookshelfId
 import fr.amory.libris.library.domain.copy.Copy
 import fr.amory.libris.library.domain.copy.CopyId
+import fr.amory.libris.library.domain.reader.ReaderId
 import fr.amory.libris.library.fixture.bookshelfOwnedBy
 import fr.amory.libris.library.fixture.readerNamed
 import jakarta.servlet.Filter
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletRequestWrapper
+import org.mockito.ArgumentMatchers.any
+import org.mockito.ArgumentMatchers.eq
 import org.mockito.BDDMockito.given
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.TestConfiguration
@@ -174,7 +177,8 @@ class ApiContractTest @Autowired constructor(
             .willReturn(Added(Copy(CopyId.new(), EditionId.new(), bookshelf.id), bookshelf))
         given(addBookToBookshelf(contracteer.id, bookshelfId("9e8d7c6b-5a4f-4e3d-8c2b-1a0f9e8d7c6b"), NEW_ONE_PIECE_1))
             .willReturn(NotAnOwner)
-        given(browseCatalogue(contracteer.id, null)).willReturn(CataloguePage(listOf(ONE_PIECE_1_HELD), null))
+        given(browseCatalogue(ReaderId(eq(contracteer.id.value) ?: contracteer.id.value), any()))
+            .willReturn(CataloguePage(listOf(ONE_PIECE_1_HELD), null))
     }
 
     @TestConfiguration
