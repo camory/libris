@@ -24,4 +24,8 @@ data class Edition(
     init {
         require(title.isNotBlank()) { "an edition needs a title" }
     }
+
+    companion object {
+        val BY_SERIES_AND_VOLUME: Comparator<Edition> = compareBy { it.series?.name ?: it.title }
+    }
 }
