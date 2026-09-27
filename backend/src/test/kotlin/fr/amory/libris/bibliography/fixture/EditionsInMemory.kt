@@ -2,6 +2,7 @@ package fr.amory.libris.bibliography.fixture
 
 import fr.amory.libris.bibliography.domain.Isbn
 import fr.amory.libris.bibliography.domain.edition.Edition
+import fr.amory.libris.bibliography.domain.edition.EditionId
 import fr.amory.libris.bibliography.domain.edition.EditionRepository
 
 class EditionsInMemory : EditionRepository {
@@ -14,4 +15,6 @@ class EditionsInMemory : EditionRepository {
     }
 
     override fun findByIsbn(isbn: Isbn): Edition? = editions.find { it.isbn == isbn }
+
+    override fun findByIds(ids: List<EditionId>): List<Edition> = editions.filter { it.id in ids }
 }

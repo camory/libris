@@ -11,6 +11,7 @@ import fr.amory.libris.bibliography.domain.edition.EditionId
 import fr.amory.libris.bibliography.fixture.isbnOf
 import fr.amory.libris.fixture.JdbcSliceTest
 import io.kotest.assertions.throwables.shouldThrow
+import io.kotest.matchers.collections.shouldContainExactlyInAnyOrder
 import io.kotest.matchers.shouldBe
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
@@ -107,6 +108,28 @@ class JdbcEditionRepositoryTest @Autowired constructor(
     @Test
     fun `an ISBN-13 the house does not hold finds no edition`() {
         editions.findByIsbn(isbnOf(ONE_PIECE_TOME_TWO)) shouldBe null
+    }
+
+    @Test
+    fun `the editions of the given ids are read back whole, none other`() {
+        // Given
+        val tomeOne = onePieceTomeOne()
+        val tomeTwo = tomeOne.copy(
+            id = EditionId.new(),
+            isbn = isbnOf(ONE_PIECE_TOME_TWO),
+            title = "Aux prises avec Baggy et ses hommes",
+            series = SeriesEntry("One piece", 2),
+        )
+        val tomeThree = bare(tomeOne).copy(id = EditionId.new(), isbn = null, title = "Le serment")
+        editions.insert(tomeOne)
+        editions.insert(tomeTwo)
+        editions.insert(tomeThree)
+
+        // When
+        val found = editions.findByIds(listOf(tomeOne.id, tomeTwo.id))
+
+        // Then
+        found shouldContainExactlyInAnyOrder listOf(tomeOne, tomeTwo)
     }
 
     private fun rowsOf(table: String): Int =
