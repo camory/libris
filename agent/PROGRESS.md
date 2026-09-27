@@ -542,3 +542,29 @@ Format:
 - Deviations from the brief: none.
 - Left over: the order of a shelf (T044) and pages of fifty with `next`
   (T045); the query has no `ORDER BY` until then.
+
+## 2026-09-27 — T043 The catalogue API on v0.7.0, the thinnest answer — reworked
+- Did: `ListCatalogue` composes the catalogue from three repositories:
+  `BookshelfRepository.findByMember`, `CopyRepository.findByBookshelfIds`,
+  `EditionRepository.findByIds`, one statement each, and answers
+  `HeldEdition(edition, copies: List<CopyOnBookshelf>)` in
+  `library.application.catalogue`. The port `Catalogue`, its read model in
+  `library.domain.catalogue` and `JdbcCatalogue` are gone.
+- Decided (review of 2026-09-27, Tophe): the catalogue is a use case
+  composing aggregates, not a domain concept. It owns no rule: who sees a
+  bookshelf is the bookshelf's membership, the order of a shelf a rule over
+  the edition's values. A type with no invariant is a projection, so the
+  read model is a DTO beside its use case. The brief's rejected
+  alternative, `ListCatalogue` reading the three repositories, is the
+  design; a list of ids goes in one statement, never a query per row.
+- Decided: `HeldEdition` holds the `Edition` read through its repository and
+  reuses `CopyOnBookshelf` of the lookup, the same copy-with-its-bookshelf
+  shape; nothing is rebuilt from a join.
+- Decided: the three `JdbcCatalogueTest` claims move to `ListCatalogueTest`
+  over the fakes; the empty catalogue is not a use-case case (green on
+  arrival, no mutation that the first case does not already catch) but the
+  slice cases `no bookshelf finds no copy` and `no id finds no edition`,
+  with S3 end to end.
+- Deviations from the brief: the design above, by the review.
+- Left over: T044's order and T045's page are rules `ListCatalogue` applies
+  over `HeldEdition`, adding no domain concept (for the planner).

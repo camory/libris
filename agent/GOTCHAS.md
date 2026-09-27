@@ -307,6 +307,10 @@ true; the diary keeps the date it was found.
   takes it through an `@Autowired` constructor, with `JdbcClient` beside it
   only when a case queries through it: detekt's `UnusedPrivateProperty` fails
   a constructor argument no case reads.
+- `JdbcClient` expands an empty collection parameter to `IN ()`, which
+  PostgreSQL refuses (`BadSqlGrammarException`): a finder over a list of ids
+  answers `emptyList()` without a statement when given none, and a slice case
+  (`no bookshelf finds no copy`, `no id finds no edition`) proves it.
 
 - `LookupAnswering`, in `bibliography.fixture`, records the ISBNs it was asked
   and answers them as `asked`, so a case proves a source was never called with
