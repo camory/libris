@@ -50,11 +50,11 @@ class EditionTest {
     fun `the tomes of a series are ordered as numbers`() {
         val editions = listOf(
             edition(title = "Le vrai visage d'Arlong", series = SeriesEntry("One piece", 10)),
-            edition(title = "Aux prises avec Baggy et ses hommes", series = SeriesEntry("One piece", 2)),
+            edition(title = "Une vérité qui blesse", series = SeriesEntry("One piece", 3)),
         )
 
         editions.sortedWith(BY_SERIES_AND_VOLUME).map { it.title } shouldBe
-            listOf("Aux prises avec Baggy et ses hommes", "Le vrai visage d'Arlong")
+            listOf("Une vérité qui blesse", "Le vrai visage d'Arlong")
     }
 
     @Test
