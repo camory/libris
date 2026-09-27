@@ -368,3 +368,8 @@
   `200_ONE_PIECE_1` and `201_ADD_ONE_PIECE_1`, and remove
   `ONE_PIECE_2_OWNED`, which fixes an output. Wire-neutral, any release
   (found 2026-09-26 while reviewing the examples of the v0.7.0 contract).
+- Backend: each catalogue page reads the reader's whole catalogue (three
+  statements) and cuts the page in `BrowseCatalogue`; fine under fifty
+  ouvrages, not past a few thousand. A keyset `WHERE` in SQL would need the
+  `Collator` order of `Edition.BY_SERIES_AND_VOLUME` reproduced in
+  PostgreSQL (found 2026-09-27 while implementing T045).

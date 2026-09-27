@@ -602,3 +602,24 @@ Format:
   test plan should ask titles that run against the key under test, and
   D12's last bullet (the series name row "is what a filter or a sort by the
   name reads") must be settled before T045 pages over this in-memory order.
+
+## 2026-09-27 — T045 The catalogue in pages of fifty — done
+- Did: `BrowseCatalogue(readerId, after)` answers a `CataloguePage(held,
+  next)` of fifty editions; `Edition.BY_SERIES_AND_VOLUME` ends on the id;
+  `GET /api/v1/books` reads `after` and answers `next`. S2 un-skipped, green.
+- Decided: the place of an `after` is read first, through
+  `EditionRepository.findByIds(listOf(after))`; an `after` naming nothing
+  answers the empty page before any other statement runs.
+- Decided: the page after is every edition of the order greater than the
+  place (`compare > 0`), so a place the reader no longer holds and an
+  edition added before the place both follow from one rule.
+- Decided: step 2's green named `next` only when an edition follows, so
+  step 4 (exactly fifty) was a guard; its mutation (next whenever fifty are
+  answered) was red on `next`. Steps 3, 5 and 6 were real reds: step 3's
+  green looked for `after` among the reader's editions, which step 5 broke.
+- Decided: `ApiContractTest` stubs the use case for any `after` with a
+  matcher on the `UUID` inside `ReaderId`; the form is in `GOTCHAS.md`.
+- Deviations from the brief: none.
+- Left over: the cost of reading the whole catalogue per page, in
+  `agent/PROPOSED.md`; the PR body quotes the brief on D12's series-name
+  bullet for Tophe. T046 moves the frontend pin, T049 walks the pages.
