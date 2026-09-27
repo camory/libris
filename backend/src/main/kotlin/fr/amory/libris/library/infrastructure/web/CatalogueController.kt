@@ -1,9 +1,9 @@
 package fr.amory.libris.library.infrastructure.web
 
 import fr.amory.libris.bibliography.domain.Kind
+import fr.amory.libris.library.application.catalogue.HeldEdition
 import fr.amory.libris.library.application.catalogue.ListCatalogue
-import fr.amory.libris.library.domain.catalogue.CatalogueCopy
-import fr.amory.libris.library.domain.catalogue.CatalogueEdition
+import fr.amory.libris.library.application.lookup.CopyOnBookshelf
 import fr.amory.libris.library.domain.reader.Reader
 import org.springframework.security.core.annotation.AuthenticationPrincipal
 import org.springframework.web.bind.annotation.GetMapping
@@ -43,25 +43,25 @@ class CatalogueController(private val listCatalogue: ListCatalogue) {
     ): BookPageResponse =
         BookPageResponse(books = listCatalogue(reader.id).map { bookOf(it) }, next = null)
 
-    private fun bookOf(edition: CatalogueEdition): BookResponse = BookResponse(
-        id = edition.editionId.value.toString(),
-        isbn13 = edition.isbn?.digits,
-        kind = edition.kind,
-        title = edition.title,
-        subtitle = edition.subtitle,
-        authors = edition.contributions.map { IsbnAuthorResponse(it.name, it.role) },
-        series = edition.series?.let { IsbnSeriesResponse(it.name, it.volumeNumber) },
-        collection = edition.collection,
-        publisher = edition.publisher,
-        publicationYear = edition.publicationYear,
-        language = edition.language,
-        pageCount = edition.pageCount,
-        summary = edition.summary,
-        coverUrl = edition.coverUrl,
-        copies = edition.copies.map { copyOf(it) },
+    private fun bookOf(held: HeldEdition): BookResponse = BookResponse(
+        id = held.edition.id.value.toString(),
+        isbn13 = held.edition.isbn?.digits,
+        kind = held.edition.kind,
+        title = held.edition.title,
+        subtitle = held.edition.subtitle,
+        authors = held.edition.contributions.map { IsbnAuthorResponse(it.name, it.role) },
+        series = held.edition.series?.let { IsbnSeriesResponse(it.name, it.volumeNumber) },
+        collection = held.edition.collection,
+        publisher = held.edition.publisher,
+        publicationYear = held.edition.publicationYear,
+        language = held.edition.language,
+        pageCount = held.edition.pageCount,
+        summary = held.edition.summary,
+        coverUrl = held.edition.coverUrl,
+        copies = held.copies.map { copyOf(it) },
     )
 
-    private fun copyOf(copy: CatalogueCopy): CopyResponse = CopyResponse(
+    private fun copyOf(copy: CopyOnBookshelf): CopyResponse = CopyResponse(
         id = copy.copyId.value.toString(),
         bookshelf = BookshelfResponse(copy.bookshelfId.value.toString(), copy.bookshelfName),
     )

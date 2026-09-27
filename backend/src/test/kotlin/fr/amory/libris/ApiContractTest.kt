@@ -13,6 +13,7 @@ import fr.amory.libris.bibliography.domain.ContributionRole.WRITER
 import fr.amory.libris.bibliography.domain.Contributions
 import fr.amory.libris.bibliography.domain.Kind.MANGA
 import fr.amory.libris.bibliography.domain.SeriesEntry
+import fr.amory.libris.bibliography.domain.edition.Edition
 import fr.amory.libris.bibliography.domain.edition.EditionId
 import fr.amory.libris.bibliography.domain.lookup.EditionPreview
 import fr.amory.libris.bibliography.fixture.isbnOf
@@ -23,13 +24,12 @@ import fr.amory.libris.library.application.AddBookToBookshelf
 import fr.amory.libris.library.application.FindDefaultBookshelf
 import fr.amory.libris.library.application.NewBook
 import fr.amory.libris.library.application.WelcomeReader
+import fr.amory.libris.library.application.catalogue.HeldEdition
 import fr.amory.libris.library.application.catalogue.ListCatalogue
 import fr.amory.libris.library.application.lookup.CopyOnBookshelf
 import fr.amory.libris.library.application.lookup.IsbnLookup
 import fr.amory.libris.library.application.lookup.LookupIsbnForReader
 import fr.amory.libris.library.domain.bookshelf.BookshelfId
-import fr.amory.libris.library.domain.catalogue.CatalogueCopy
-import fr.amory.libris.library.domain.catalogue.CatalogueEdition
 import fr.amory.libris.library.domain.copy.Copy
 import fr.amory.libris.library.domain.copy.CopyId
 import fr.amory.libris.library.fixture.bookshelfOwnedBy
@@ -105,25 +105,27 @@ private val NEW_ONE_PIECE_1 = NewBook(
     coverUrl = ONE_PIECE_1.coverUrl,
 )
 
-private val ONE_PIECE_1_HELD = CatalogueEdition(
-    editionId = EditionId.new(),
-    isbn = ONE_PIECE_1.isbn,
-    kind = ONE_PIECE_1.kind,
-    title = ONE_PIECE_1.title,
-    subtitle = ONE_PIECE_1.subtitle,
-    contributions = Contributions.of(listOf(Contribution("Eiichirō Oda", WRITER))),
-    series = ONE_PIECE_1.series,
-    collection = ONE_PIECE_1.collection,
-    publisher = ONE_PIECE_1.publisher,
-    publicationYear = ONE_PIECE_1.publicationYear,
-    language = ONE_PIECE_1.language,
-    pageCount = ONE_PIECE_1.pageCount,
-    summary = ONE_PIECE_1.summary,
-    coverUrl = ONE_PIECE_1.coverUrl,
+private val ONE_PIECE_1_HELD = HeldEdition(
+    edition = Edition(
+        id = EditionId.new(),
+        isbn = ONE_PIECE_1.isbn,
+        kind = ONE_PIECE_1.kind,
+        title = ONE_PIECE_1.title,
+        subtitle = ONE_PIECE_1.subtitle,
+        contributions = Contributions.of(listOf(Contribution("Eiichirō Oda", WRITER))),
+        series = ONE_PIECE_1.series,
+        collection = ONE_PIECE_1.collection,
+        publisher = ONE_PIECE_1.publisher,
+        publicationYear = ONE_PIECE_1.publicationYear,
+        language = ONE_PIECE_1.language,
+        pageCount = ONE_PIECE_1.pageCount,
+        summary = ONE_PIECE_1.summary,
+        coverUrl = ONE_PIECE_1.coverUrl,
+    ),
     copies = listOf(
-        CatalogueCopy(
-            CopyId(UUID.fromString("8b3f4e5d-6c7b-4081-9d92-3e4f5a6b7c83")),
-            bookshelfId("0b1e2d3c-4f5a-4b6c-8d7e-9f0a1b2c3d4e"),
+        copyOn(
+            "8b3f4e5d-6c7b-4081-9d92-3e4f5a6b7c83",
+            "0b1e2d3c-4f5a-4b6c-8d7e-9f0a1b2c3d4e",
             "Bibliothèque de Contracteer",
         ),
     ),

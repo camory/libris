@@ -1,11 +1,27 @@
 package fr.amory.libris.library.application.catalogue
 
-import fr.amory.libris.library.domain.catalogue.Catalogue
-import fr.amory.libris.library.domain.catalogue.CatalogueEdition
+import fr.amory.libris.bibliography.domain.edition.EditionRepository
+import fr.amory.libris.library.application.lookup.CopyOnBookshelf
+import fr.amory.libris.library.domain.bookshelf.BookshelfRepository
+import fr.amory.libris.library.domain.copy.CopyRepository
 import fr.amory.libris.library.domain.reader.ReaderId
 import org.springframework.stereotype.Service
 
 @Service
-class ListCatalogue(private val catalogue: Catalogue) {
-    operator fun invoke(readerId: ReaderId): List<CatalogueEdition> = catalogue.editionsHeldBy(readerId)
+class ListCatalogue(
+    private val bookshelves: BookshelfRepository,
+    private val copies: CopyRepository,
+    private val editions: EditionRepository,
+) {
+    operator fun invoke(readerId: ReaderId): List<HeldEdition> {
+        val readersBookshelves = bookshelves.findByMember(readerId).associateBy { it.id }
+        val held = copies.findByBookshelfIds(readersBookshelves.keys.toList())
+        val editionsById = editions.findByIds(held.map { it.editionId }.distinct()).associateBy { it.id }
+        return held.map { copy ->
+            HeldEdition(
+                editionsById.getValue(copy.editionId),
+                listOf(CopyOnBookshelf(copy.id, copy.bookshelfId, readersBookshelves.getValue(copy.bookshelfId).name)),
+            )
+        }
+    }
 }
