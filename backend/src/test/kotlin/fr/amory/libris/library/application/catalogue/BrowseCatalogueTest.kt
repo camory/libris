@@ -23,6 +23,7 @@ import fr.amory.libris.library.fixture.CopiesInMemory
 import io.kotest.matchers.collections.shouldContainExactlyInAnyOrder
 import io.kotest.matchers.shouldBe
 import org.junit.jupiter.api.Test
+import java.util.UUID
 
 private val ROMANCE_DAWN = Edition(
     id = EditionId.new(),
@@ -186,8 +187,30 @@ class BrowseCatalogueTest {
         page shouldBe CataloguePage(emptyList(), null)
     }
 
-    private fun roman(number: Int): Edition = ROMANCE_DAWN.copy(
-        id = EditionId.new(),
+    @Test
+    fun `editions equal but for their id are split across a page without a repeat or a gap`() {
+        // Given
+        val leasBookshelf = bookshelfOf("Bibliothèque de Léa", Membership(lea, OWNER))
+        val romans = (1..49).map { roman(it) }
+        val lesserTwin = roman(50, EditionId(UUID.fromString("00000000-0000-7000-8000-000000000001")))
+        val greaterTwin = roman(50, EditionId(UUID.fromString("00000000-0000-7000-8000-000000000002")))
+        copyOf(greaterTwin, leasBookshelf)
+        copyOf(lesserTwin, leasBookshelf)
+        romans.forEach { copyOf(it, leasBookshelf) }
+
+        // When
+        val first = browseCatalogue(lea, null)
+        val second = browseCatalogue(lea, first.next)
+
+        // Then
+        first.held.map { it.edition } shouldBe romans + lesserTwin
+        first.next shouldBe lesserTwin.id
+        second.held.map { it.edition } shouldBe listOf(greaterTwin)
+        second.next shouldBe null
+    }
+
+    private fun roman(number: Int, id: EditionId = EditionId.new()): Edition = ROMANCE_DAWN.copy(
+        id = id,
         isbn = null,
         title = "Roman %02d".format(number),
         series = null,
