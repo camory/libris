@@ -68,6 +68,17 @@ class EditionTest {
             listOf("Astérix le Gaulois", "Astérix et ses amis")
     }
 
+    @Test
+    fun `editions of one series and tome are ordered by title`() {
+        val editions = listOf(
+            edition(title = "Romance dawn", series = SeriesEntry("One piece", 1)),
+            edition(title = "À l'aube d'une grande aventure", series = SeriesEntry("One piece", 1)),
+        )
+
+        editions.sortedWith(BY_SERIES_AND_VOLUME).map { it.title } shouldBe
+            listOf("À l'aube d'une grande aventure", "Romance dawn")
+    }
+
     private fun edition(title: String = "Romance dawn", series: SeriesEntry? = null): Edition = Edition(
         id = EditionId.new(),
         isbn = null,

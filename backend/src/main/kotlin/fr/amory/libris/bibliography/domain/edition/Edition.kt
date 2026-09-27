@@ -32,5 +32,6 @@ data class Edition(
     companion object {
         val BY_SERIES_AND_VOLUME: Comparator<Edition> = compareBy<Edition, String>(TEXT) { it.series?.name ?: it.title }
             .thenBy(nullsLast()) { it.series?.volumeNumber }
+            .thenBy(TEXT) { it.title }
     }
 }
