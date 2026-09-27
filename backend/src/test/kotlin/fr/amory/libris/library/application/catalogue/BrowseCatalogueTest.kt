@@ -96,6 +96,20 @@ class BrowseCatalogueTest {
         )
     }
 
+    @Test
+    fun `the catalogue comes in the order of its editions`() {
+        // Given
+        val leasBookshelf = bookshelfOf("Bibliothèque de Léa", Membership(lea, OWNER))
+        copyOf(BAGGY, leasBookshelf)
+        copyOf(ROMANCE_DAWN, leasBookshelf)
+
+        // When
+        val held = browseCatalogue(lea)
+
+        // Then
+        held.map { it.edition } shouldBe listOf(ROMANCE_DAWN, BAGGY)
+    }
+
     private fun bookshelfOf(name: String, vararg memberships: Membership): Bookshelf =
         Bookshelf(BookshelfId.new(), name, memberships.toList()).also { bookshelves.insert(it) }
 

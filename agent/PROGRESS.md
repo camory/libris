@@ -568,3 +568,37 @@ Format:
 - Deviations from the brief: the design above, by the review.
 - Left over: T044's order and T045's page are rules `ListCatalogue` applies
   over `HeldEdition`, adding no domain concept (for the planner).
+
+## 2026-09-27 — T044 The catalogue in the order of a shelf — done
+- Did: `Edition.BY_SERIES_AND_VOLUME` orders editions by series name or
+  title, then tome as a number with no tome last, then title; its text
+  comparison ignores case and accents. `BrowseCatalogue` sorts with it.
+- Did: `S1 The catalogue lists the house's editions` un-skipped and green.
+- Decided: accents go through `java.text.Collator` for French at primary
+  strength, private to `Edition.kt`, used for both the first key and the
+  title; one comparison of text for the whole order.
+- Decided: step 2's green was a plain `lowercase()`, so step 3 was a real
+  red (`é` after `f`), not a guard; the collator replaced it there.
+- Decided: `BrowseCatalogue` sorts its `HeldEdition`s with
+  `compareBy(BY_SERIES_AND_VOLUME) { it.edition }`; `HeldEdition` has no rule.
+- Deviations from the brief: none; the backlog line's "one query" and
+  "tests against PostgreSQL" were superseded by the brief itself.
+- Left over: two editions equal on every key keep the order of the copies;
+  T045 makes the order total with the id and pages it.
+
+## 2026-09-27 — T044 The catalogue in the order of a shelf — reworked
+- Did: `EditionTest > the tomes of a series are ordered as numbers` sets
+  tome 10 *Le vrai visage d'Arlong* against tome 3 *Une vérité qui blesse*,
+  so neither the title nor the tome read as text passes it; the private
+  collator of `Edition.kt` is renamed `IGNORING_CASE_AND_ACCENTS`.
+- Decided (reviewer, 2026-09-27): the brief's proof of "tome 2 before tome
+  10" must fail without the numeric tome; the old titles sorted in the
+  expected order, so the title tie-break of step 6 passed it alone. Both
+  mutants (tome presence only, tome as a string) are now red on it.
+- Decided: the collator's name says what it ignores, as the reviewer
+  suggested; the spaces it also ignores went to `agent/GOTCHAS.md`.
+- Deviations from the brief: none.
+- Left over: the reviewer's two notes on the brief, for the planner: the
+  test plan should ask titles that run against the key under test, and
+  D12's last bullet (the series name row "is what a filter or a sort by the
+  name reads") must be settled before T045 pages over this in-memory order.

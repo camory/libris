@@ -1,5 +1,6 @@
 package fr.amory.libris.library.application.catalogue
 
+import fr.amory.libris.bibliography.domain.edition.Edition.Companion.BY_SERIES_AND_VOLUME
 import fr.amory.libris.bibliography.domain.edition.EditionRepository
 import fr.amory.libris.library.application.lookup.CopyOnBookshelf
 import fr.amory.libris.library.domain.bookshelf.BookshelfRepository
@@ -24,6 +25,6 @@ class BrowseCatalogue(
                     CopyOnBookshelf(copy.id, copy.bookshelfId, readersBookshelves.getValue(copy.bookshelfId).name)
                 },
             )
-        }
+        }.sortedWith(compareBy(BY_SERIES_AND_VOLUME) { it.edition })
     }
 }

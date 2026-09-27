@@ -222,7 +222,7 @@ once T045 is deployed. No other task touches the contract (D04).
       empty catalogue for a reader whose bookshelves hold nothing.
       Realises S3, and S1 but its order; un-skips the backend test of S3.
 
-- [ ] T044 Backend: the catalogue in the order of a shelf.
+- [x] T044 Backend: the catalogue in the order of a shelf.
       The answer of T043 in the order a shelf reads: by series name, or
       title when there is none, ignoring case and accents, then by tome as
       a number, an edition of the series without a tome after its numbered
