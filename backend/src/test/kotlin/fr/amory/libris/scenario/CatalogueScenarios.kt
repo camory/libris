@@ -14,7 +14,6 @@ class CatalogueScenarios @Autowired constructor(
     private val http: RestTestClient,
 ) {
     @Test
-    @Disabled("T044")
     fun `S1 The catalogue lists the house's editions`() {
         // Given
         val lea = reader("lea", "Léa")
