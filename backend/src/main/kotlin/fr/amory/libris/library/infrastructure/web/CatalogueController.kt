@@ -1,8 +1,8 @@
 package fr.amory.libris.library.infrastructure.web
 
 import fr.amory.libris.bibliography.domain.Kind
+import fr.amory.libris.library.application.catalogue.BrowseCatalogue
 import fr.amory.libris.library.application.catalogue.HeldEdition
-import fr.amory.libris.library.application.catalogue.ListCatalogue
 import fr.amory.libris.library.application.lookup.CopyOnBookshelf
 import fr.amory.libris.library.domain.reader.Reader
 import org.springframework.security.core.annotation.AuthenticationPrincipal
@@ -35,13 +35,13 @@ data class BookPageResponse(
 )
 
 @RestController
-class CatalogueController(private val listCatalogue: ListCatalogue) {
+class CatalogueController(private val browseCatalogue: BrowseCatalogue) {
     @GetMapping("/api/v1/books")
     fun books(
         @AuthenticationPrincipal reader: Reader,
         @RequestParam("after") ignored: UUID?,
     ): BookPageResponse =
-        BookPageResponse(books = listCatalogue(reader.id).map { bookOf(it) }, next = null)
+        BookPageResponse(books = browseCatalogue(reader.id).map { bookOf(it) }, next = null)
 
     private fun bookOf(held: HeldEdition): BookResponse = BookResponse(
         id = held.edition.id.value.toString(),

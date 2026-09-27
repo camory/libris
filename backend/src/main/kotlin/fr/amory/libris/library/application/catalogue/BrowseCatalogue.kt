@@ -8,7 +8,7 @@ import fr.amory.libris.library.domain.reader.ReaderId
 import org.springframework.stereotype.Service
 
 @Service
-class ListCatalogue(
+class BrowseCatalogue(
     private val bookshelves: BookshelfRepository,
     private val copies: CopyRepository,
     private val editions: EditionRepository,

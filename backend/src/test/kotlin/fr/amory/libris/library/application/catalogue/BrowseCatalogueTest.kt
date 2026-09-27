@@ -48,7 +48,7 @@ private val BAGGY = ROMANCE_DAWN.copy(
     series = SeriesEntry("One piece", 2),
 )
 
-class ListCatalogueTest {
+class BrowseCatalogueTest {
     private val lea = ReaderId.new()
     private val tom = ReaderId.new()
     private val bookshelves = BookshelvesInMemory()
@@ -57,7 +57,7 @@ class ListCatalogueTest {
         it.insert(ROMANCE_DAWN)
         it.insert(BAGGY)
     }
-    private val listCatalogue = ListCatalogue(bookshelves, copies, editions)
+    private val browseCatalogue = BrowseCatalogue(bookshelves, copies, editions)
 
     @Test
     fun `the catalogue holds the copies on the reader's bookshelves, none of another's`() {
@@ -69,7 +69,7 @@ class ListCatalogueTest {
         copyOf(BAGGY, tomsBookshelf)
 
         // When
-        val held = listCatalogue(lea)
+        val held = browseCatalogue(lea)
 
         // Then
         held shouldBe listOf(
@@ -86,7 +86,7 @@ class ListCatalogueTest {
         val inTheSalon = copyOf(ROMANCE_DAWN, salon)
 
         // When
-        val held = listCatalogue(lea)
+        val held = browseCatalogue(lea)
 
         // Then
         held.map { it.edition } shouldBe listOf(ROMANCE_DAWN)
