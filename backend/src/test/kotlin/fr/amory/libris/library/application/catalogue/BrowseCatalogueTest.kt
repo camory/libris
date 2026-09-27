@@ -154,6 +154,25 @@ class BrowseCatalogueTest {
         page.next shouldBe null
     }
 
+    @Test
+    fun `an after the catalogue no longer holds continues after its place`() {
+        // Given
+        val leasBookshelf = bookshelfOf("Bibliothèque de Léa", Membership(lea, OWNER))
+        val tomsBookshelf = bookshelfOf("Bibliothèque de Tom", Membership(tom, OWNER))
+        copyOf(roman(1), leasBookshelf)
+        val roman02 = roman(2)
+        copyOf(roman02, tomsBookshelf)
+        copyOf(roman(3), leasBookshelf)
+        copyOf(roman(4), leasBookshelf)
+
+        // When
+        val page = browseCatalogue(lea, roman02.id)
+
+        // Then
+        page.held.map { it.edition.title } shouldBe listOf("Roman 03", "Roman 04")
+        page.next shouldBe null
+    }
+
     private fun roman(number: Int): Edition = ROMANCE_DAWN.copy(
         id = EditionId.new(),
         isbn = null,
