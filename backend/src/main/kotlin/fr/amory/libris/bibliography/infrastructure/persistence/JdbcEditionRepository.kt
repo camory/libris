@@ -102,7 +102,7 @@ class JdbcEditionRepository(private val jdbcClient: JdbcClient) : EditionReposit
             .query { rs, _ -> rowOf(rs) }
             .list()
             .takeIf { it.isNotEmpty() }
-            ?.let { rows -> rows.first().edition.copy(contributions = contributionsOf(rows)) }
+            ?.let(::editionOf)
 
     override fun findByIds(ids: List<EditionId>): List<Edition> =
         if (ids.isEmpty()) {
@@ -115,7 +115,7 @@ class JdbcEditionRepository(private val jdbcClient: JdbcClient) : EditionReposit
                 .list()
                 .groupBy { it.edition.id }
                 .values
-                .map { rows -> rows.first().edition.copy(contributions = contributionsOf(rows)) }
+                .map(::editionOf)
         }
 
     private fun rowOf(rs: ResultSet): EditionRow =
@@ -143,6 +143,9 @@ class JdbcEditionRepository(private val jdbcClient: JdbcClient) : EditionReposit
                 Contribution.of(name, ContributionRole.valueOf(rs.getString("role")))
             },
         )
+
+    private fun editionOf(rows: List<EditionRow>): Edition =
+        rows.first().edition.copy(contributions = contributionsOf(rows))
 
     private fun contributionsOf(rows: List<EditionRow>): Contributions =
         Contributions.of(rows.mapNotNull { it.contribution })
