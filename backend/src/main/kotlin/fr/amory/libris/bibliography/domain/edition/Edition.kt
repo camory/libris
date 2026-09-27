@@ -8,7 +8,7 @@ import java.text.Collator
 import java.util.Locale
 
 private val IGNORING_CASE_AND_ACCENTS: Collator =
-    Collator.getInstance(Locale.FRENCH).apply { strength = Collator.PRIMARY }
+    Collator.getInstance(Locale.ROOT).apply { strength = Collator.PRIMARY }
 
 data class Edition(
     val id: EditionId,
