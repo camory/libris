@@ -38,11 +38,15 @@ class JdbcCopyRepository(private val jdbcClient: JdbcClient) : CopyRepository {
             .list()
 
     override fun findByBookshelfIds(bookshelfIds: List<BookshelfId>): List<Copy> =
-        jdbcClient
-            .sql(FIND_COPIES_BY_BOOKSHELVES)
-            .param("bookshelfIds", bookshelfIds.map { it.value })
-            .query { rs, _ -> copyOf(rs) }
-            .list()
+        if (bookshelfIds.isEmpty()) {
+            emptyList()
+        } else {
+            jdbcClient
+                .sql(FIND_COPIES_BY_BOOKSHELVES)
+                .param("bookshelfIds", bookshelfIds.map { it.value })
+                .query { rs, _ -> copyOf(rs) }
+                .list()
+        }
 
     private fun copyOf(rs: ResultSet): Copy = Copy(
         id = CopyId(rs.getObject("id", UUID::class.java)),
