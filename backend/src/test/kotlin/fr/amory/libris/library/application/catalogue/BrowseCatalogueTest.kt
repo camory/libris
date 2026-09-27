@@ -209,6 +209,22 @@ class BrowseCatalogueTest {
         second.next shouldBe null
     }
 
+    @Test
+    fun `an edition added between two pages does not shift the next`() {
+        // Given
+        val leasBookshelf = bookshelfOf("Bibliothèque de Léa", Membership(lea, OWNER))
+        (1..51).map { roman(it) }.reversed().forEach { copyOf(it, leasBookshelf) }
+        val first = browseCatalogue(lea, null)
+        copyOf(roman(0), leasBookshelf)
+
+        // When
+        val second = browseCatalogue(lea, first.next)
+
+        // Then
+        second.held.map { it.edition.title } shouldBe listOf("Roman 51")
+        second.next shouldBe null
+    }
+
     private fun roman(number: Int, id: EditionId = EditionId.new()): Edition = ROMANCE_DAWN.copy(
         id = id,
         isbn = null,
