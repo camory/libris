@@ -25,6 +25,16 @@ class EditionTest {
             listOf("Pierre et le loup", "Les cigares du pharaon")
     }
 
+    @Test
+    fun `the order ignores case`() {
+        val editions = listOf(
+            edition(title = "Un ninja", series = SeriesEntry("Naruto", 1)),
+            edition(title = "maus"),
+        )
+
+        editions.sortedWith(BY_SERIES_AND_VOLUME).map { it.title } shouldBe listOf("maus", "Un ninja")
+    }
+
     private fun edition(title: String = "Romance dawn", series: SeriesEntry? = null): Edition = Edition(
         id = EditionId.new(),
         isbn = null,

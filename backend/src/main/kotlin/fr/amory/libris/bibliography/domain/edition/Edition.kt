@@ -26,6 +26,6 @@ data class Edition(
     }
 
     companion object {
-        val BY_SERIES_AND_VOLUME: Comparator<Edition> = compareBy { it.series?.name ?: it.title }
+        val BY_SERIES_AND_VOLUME: Comparator<Edition> = compareBy { (it.series?.name ?: it.title).lowercase() }
     }
 }
