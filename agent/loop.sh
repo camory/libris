@@ -5,12 +5,14 @@
 #   local branch task/T###-*        → the brief phase is done
 #   an open PR on that branch       → the implementation phase is done
 #   a review:* label on that PR     → the review phase is done
+#   a rework label on that PR       → the human sent it back with a review
 # Every invocation re-derives where it is and resumes at the right phase.
 #
 #   agent/loop.sh plan          planner, backlog mode → plan PR for you to approve
 #   agent/loop.sh next          one task: brief → implement → review, then exit
 #   agent/loop.sh run [N]       up to N tasks, waiting for each PR to be merged between them
 #   agent/loop.sh review <pr>   re-run the reviewer on an existing pull request
+#   agent/loop.sh rework <pr>   implement the reviews on a pull request labelled rework, then review it again
 #   agent/loop.sh status        show the derived state, run nothing
 #
 # Read docs/LOOP.md for the why, agent/README.md for setup and exit codes.
@@ -24,7 +26,7 @@ COMPOSE=(docker compose --env-file "$ENV_FILE" -f agent/compose.yaml)
 log() { printf '%s %s\n' "$(date '+%H:%M:%S')" "$*"; }
 die() { log "$*"; exit "${2:-1}"; }
 
-usage() { sed -n '2,16p' "$0" | sed 's/^# \{0,1\}//'; exit "${1:-0}"; }
+usage() { sed -n '2,18p' "$0" | sed 's/^# \{0,1\}//'; exit "${1:-0}"; }
 
 # ---------------------------------------------------------------- environment
 load_env() {
@@ -69,7 +71,18 @@ pr_review_label() {  # review:* label on PR $1, or nothing
   gh pr view "$1" --json labels --jq '.labels[].name' 2>/dev/null | grep -E '^review:' | head -n1 || true
 }
 
+pr_has_label() { gh pr view "$1" --json labels --jq '.labels[].name' 2>/dev/null | grep -qx "$2"; }
+
+pr_rework_input() {  # reviews and comments on PR $1 newer than its last commit, oldest first, the reviewer's verdict excepted
+  gh pr view "$1" --json commits,reviews,comments --jq '
+    (.commits | map(.committedDate) | max) as $head
+    | [(.reviews[] | {at: .submittedAt, body}), (.comments[] | {at: .createdAt, body})]
+    | map(select(.at > $head and .body != "" and (.body | startswith("## Reviewer verdict") | not)))
+    | sort_by(.at) | .[] | "--- \(.at)\n\(.body)\n"' 2>/dev/null || true
+}
+
 pr_state() { gh pr view "$1" --json state --jq .state 2>/dev/null || echo UNKNOWN; }
+pr_head()  { gh pr view "$1" --json headRefOid --jq .headRefOid 2>/dev/null || true; }
 pr_url()   { gh pr view "$1" --json url   --jq .url   2>/dev/null || echo "#$1"; }
 
 wait_for_pr() {  # blocks until PR $1 is MERGED (returns 0) or CLOSED (returns 1)
@@ -252,6 +265,31 @@ cmd_review() {
   [[ "$STATUS" == posted ]] && log "verdict: $(field verdict) (blocking $(field blocking), suggestions $(field suggestions))"
 }
 
+cmd_rework() {
+  local pr="${1:?usage: agent/loop.sh rework <pr-number>}"
+  load_env
+  local head task; head=$(gh pr view "$pr" --json headRefName --jq .headRefName) || die "cannot read PR #$pr" 1
+  task=$(grep -oE 'T[0-9]{3}' <<<"$head" | head -n1); [[ -n "$task" ]] || die "PR #$pr head '$head' is not a task branch" 1
+  pr_has_label "$pr" rework || die "PR #$pr carries no rework label — write your review on the PR, set the label, then rerun" 2
+  local input; input=$(pr_rework_input "$pr")
+  [[ -n "$input" ]] || die "PR #$pr has no review or comment newer than its last commit — write what must change, then rerun" 2
+  local before; before=$(pr_head "$pr")
+  sync_main; sandbox_up; trap sandbox_down EXIT
+  run_role implementer "$task" TASK_ID="$task" BRANCH="$head" PR_NUMBER="$pr" REWORK="$input"
+  case "$STATUS" in
+    pr_updated) [[ "$(pr_head "$pr")" != "$before" ]] || die "pr_updated reported but PR #$pr has no new commit" 3
+                log "  PR #$pr updated: $(pr_url "$pr")" ;;
+    blocked) die "implementer blocked: $(field blocker)" 4 ;;
+    *) die "implementer produced no valid report — inspect $LAST_LOG and ${LAST_LOG%.json}.stderr" 6 ;;
+  esac
+  run_role reviewer "$task" TASK_ID="$task" PR_NUMBER="$pr"
+  case "$STATUS" in
+    posted) log "  verdict: $(field verdict) (blocking $(field blocking), suggestions $(field suggestions))" ;;
+    *) log "  reviewer did not post (status=$STATUS); the PR still awaits your review" ;;
+  esac
+  log "$task awaits your review: $(pr_url "$pr")"
+}
+
 cmd_status() {
   [[ -f "$ENV_FILE" ]] && { set -a; source "$ENV_FILE"; set +a; }
   local task branch prinfo pr label plan
@@ -276,6 +314,7 @@ case "${1:-}" in
   next)    cmd_next ;;
   run)     cmd_run "${2:-1}" ;;
   review)  cmd_review "${2:-}" ;;
+  rework)  cmd_rework "${2:-}" ;;
   status)  cmd_status ;;
   -h|--help|help|"") usage 0 ;;
   *) echo "unknown command: $1"; usage 1 ;;
