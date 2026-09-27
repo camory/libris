@@ -318,6 +318,11 @@ true; the diary keeps the date it was found.
 - kotest's `shouldBeInstanceOf<T>()`, from `io.kotest.matchers.types`, answers
   the value narrowed to `T`: a case asserting one field of a result variant
   chains onto it and needs no cast.
+- A French `java.text.Collator` at `PRIMARY` strength, the text comparison of
+  `Edition.BY_SERIES_AND_VOLUME`, ignores spaces and hyphens as well as case
+  and accents: `One piece`, `Onepiece` and `One-piece` compare as `0`, while
+  an apostrophe still counts (`L'aube` before `Laube`). A key or a cursor
+  built on that order treats such names as equal.
 
 ## Frontend build and tests
 - Two TypeScript programs: `tsconfig.app.json` (`src/`, `vite/client` types)
