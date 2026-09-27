@@ -46,6 +46,17 @@ class EditionTest {
             listOf("Émile et les détectives", "Légendes en exil")
     }
 
+    @Test
+    fun `the tomes of a series are ordered as numbers`() {
+        val editions = listOf(
+            edition(title = "Le vrai visage d'Arlong", series = SeriesEntry("One piece", 10)),
+            edition(title = "Aux prises avec Baggy et ses hommes", series = SeriesEntry("One piece", 2)),
+        )
+
+        editions.sortedWith(BY_SERIES_AND_VOLUME).map { it.title } shouldBe
+            listOf("Aux prises avec Baggy et ses hommes", "Le vrai visage d'Arlong")
+    }
+
     private fun edition(title: String = "Romance dawn", series: SeriesEntry? = null): Edition = Edition(
         id = EditionId.new(),
         isbn = null,
