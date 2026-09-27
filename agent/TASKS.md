@@ -250,13 +250,13 @@ once T045 is deployed. No other task touches the contract (D04).
 
 - [ ] T046 Frontend: the catalogue tab, its page and the empty catalogue,
       on `v0.7.0`.
-      Precondition (human): T045 deployed (D04); the frontend piece of the
-      spec — the tests of the catalogue scenarios, one skipped test per
-      frontend scenario each bearing its exact title, the catalogue's port
-      and its fake, the catalogue as the app reads it, and its client
-      tested against `contracteer mock` (D07).
+      Precondition (human): T045 deployed (D04); the frontend tests of the
+      catalogue scenarios, one skipped test per frontend scenario, each
+      bearing the scenario's exact title, against `contracteer mock` (D07).
       `vitest.global-setup.ts` pins `v0.7.0`, the only contract edit of the
-      task (D04).
+      task (D04). The catalogue's port and its fake, the catalogue as the
+      app reads it, and its client tested against `contracteer mock` (D05,
+      D07).
       The tab bar gains its third column, the three book spines at 32 over
       *Catalogue*, in `accent` on its own page, leading to `/catalogue`; the
       page shows the title *Parcourir le catalogue* and the line *Les
