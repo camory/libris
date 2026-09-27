@@ -7,7 +7,8 @@ import fr.amory.libris.bibliography.domain.SeriesEntry
 import java.text.Collator
 import java.util.Locale
 
-private val TEXT: Collator = Collator.getInstance(Locale.FRENCH).apply { strength = Collator.PRIMARY }
+private val IGNORING_CASE_AND_ACCENTS: Collator =
+    Collator.getInstance(Locale.FRENCH).apply { strength = Collator.PRIMARY }
 
 data class Edition(
     val id: EditionId,
@@ -30,8 +31,9 @@ data class Edition(
     }
 
     companion object {
-        val BY_SERIES_AND_VOLUME: Comparator<Edition> = compareBy<Edition, String>(TEXT) { it.series?.name ?: it.title }
-            .thenBy(nullsLast()) { it.series?.volumeNumber }
-            .thenBy(TEXT) { it.title }
+        val BY_SERIES_AND_VOLUME: Comparator<Edition> =
+            compareBy<Edition, String>(IGNORING_CASE_AND_ACCENTS) { it.series?.name ?: it.title }
+                .thenBy(nullsLast()) { it.series?.volumeNumber }
+                .thenBy(IGNORING_CASE_AND_ACCENTS) { it.title }
     }
 }
