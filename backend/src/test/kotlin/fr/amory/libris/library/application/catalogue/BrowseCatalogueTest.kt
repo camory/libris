@@ -140,6 +140,20 @@ class BrowseCatalogueTest {
         page.next shouldBe null
     }
 
+    @Test
+    fun `a page that ends the catalogue names no next`() {
+        // Given
+        val leasBookshelf = bookshelfOf("Bibliothèque de Léa", Membership(lea, OWNER))
+        (1..50).map { roman(it) }.reversed().forEach { copyOf(it, leasBookshelf) }
+
+        // When
+        val page = browseCatalogue(lea, null)
+
+        // Then
+        page.held.map { it.edition.title } shouldBe (1..50).map { "Roman %02d".format(it) }
+        page.next shouldBe null
+    }
+
     private fun roman(number: Int): Edition = ROMANCE_DAWN.copy(
         id = EditionId.new(),
         isbn = null,
