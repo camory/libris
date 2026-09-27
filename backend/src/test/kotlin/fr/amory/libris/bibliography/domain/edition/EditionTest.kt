@@ -16,67 +16,92 @@ class EditionTest {
 
     @Test
     fun `editions are ordered by series name, or by title without a series`() {
+        // Given
         val editions = listOf(
             edition(title = "Les cigares du pharaon", series = SeriesEntry("Tintin", 1)),
             edition(title = "Pierre et le loup"),
         )
 
-        editions.sortedWith(BY_SERIES_AND_VOLUME).map { it.title } shouldBe
-            listOf("Pierre et le loup", "Les cigares du pharaon")
+        // When
+        val titles = editions.sortedWith(BY_SERIES_AND_VOLUME).map { it.title }
+
+        // Then
+        titles shouldBe listOf("Pierre et le loup", "Les cigares du pharaon")
     }
 
     @Test
     fun `the order ignores case`() {
+        // Given
         val editions = listOf(
             edition(title = "Un ninja", series = SeriesEntry("Naruto", 1)),
             edition(title = "maus"),
         )
 
-        editions.sortedWith(BY_SERIES_AND_VOLUME).map { it.title } shouldBe listOf("maus", "Un ninja")
+        // When
+        val titles = editions.sortedWith(BY_SERIES_AND_VOLUME).map { it.title }
+
+        // Then
+        titles shouldBe listOf("maus", "Un ninja")
     }
 
     @Test
     fun `the order ignores accents`() {
+        // Given
         val editions = listOf(
             edition(title = "Légendes en exil", series = SeriesEntry("Fables", 1)),
             edition(title = "Émile et les détectives"),
         )
 
-        editions.sortedWith(BY_SERIES_AND_VOLUME).map { it.title } shouldBe
-            listOf("Émile et les détectives", "Légendes en exil")
+        // When
+        val titles = editions.sortedWith(BY_SERIES_AND_VOLUME).map { it.title }
+
+        // Then
+        titles shouldBe listOf("Émile et les détectives", "Légendes en exil")
     }
 
     @Test
     fun `the tomes of a series are ordered as numbers`() {
+        // Given
         val editions = listOf(
             edition(title = "Le vrai visage d'Arlong", series = SeriesEntry("One piece", 10)),
             edition(title = "Une vérité qui blesse", series = SeriesEntry("One piece", 3)),
         )
 
-        editions.sortedWith(BY_SERIES_AND_VOLUME).map { it.title } shouldBe
-            listOf("Une vérité qui blesse", "Le vrai visage d'Arlong")
+        // When
+        val titles = editions.sortedWith(BY_SERIES_AND_VOLUME).map { it.title }
+
+        // Then
+        titles shouldBe listOf("Une vérité qui blesse", "Le vrai visage d'Arlong")
     }
 
     @Test
     fun `an edition of the series without a tome comes after its numbered tomes`() {
+        // Given
         val editions = listOf(
             edition(title = "Astérix et ses amis", series = SeriesEntry("Astérix", null)),
             edition(title = "Astérix le Gaulois", series = SeriesEntry("Astérix", 1)),
         )
 
-        editions.sortedWith(BY_SERIES_AND_VOLUME).map { it.title } shouldBe
-            listOf("Astérix le Gaulois", "Astérix et ses amis")
+        // When
+        val titles = editions.sortedWith(BY_SERIES_AND_VOLUME).map { it.title }
+
+        // Then
+        titles shouldBe listOf("Astérix le Gaulois", "Astérix et ses amis")
     }
 
     @Test
     fun `editions of one series and tome are ordered by title`() {
+        // Given
         val editions = listOf(
             edition(title = "Romance dawn", series = SeriesEntry("One piece", 1)),
             edition(title = "À l'aube d'une grande aventure", series = SeriesEntry("One piece", 1)),
         )
 
-        editions.sortedWith(BY_SERIES_AND_VOLUME).map { it.title } shouldBe
-            listOf("À l'aube d'une grande aventure", "Romance dawn")
+        // When
+        val titles = editions.sortedWith(BY_SERIES_AND_VOLUME).map { it.title }
+
+        // Then
+        titles shouldBe listOf("À l'aube d'une grande aventure", "Romance dawn")
     }
 
     private fun edition(title: String = "Romance dawn", series: SeriesEntry? = null): Edition = Edition(
