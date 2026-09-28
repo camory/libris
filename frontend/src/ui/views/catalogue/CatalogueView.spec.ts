@@ -25,13 +25,22 @@ describe("CatalogueView", () => {
     ).toBeDefined();
   });
 
-  it("shows five skeleton rows until the first page comes", async () => {
+  it("shows five skeleton rows while the first page is coming", () => {
     // When
     const { wrapper } = open(new FakeCatalogueApi([{ books: [], next: null }]));
 
     // Then
     expect(wrapper.findAllComponents(CatalogueRowSkeleton)).toHaveLength(5);
+  });
+
+  it("shows no skeleton row once the first page has come", async () => {
+    // Given
+    const { wrapper } = open(new FakeCatalogueApi([{ books: [], next: null }]));
+
+    // When
     await flushPromises();
+
+    // Then
     expect(wrapper.findAllComponents(CatalogueRowSkeleton)).toHaveLength(0);
   });
 
