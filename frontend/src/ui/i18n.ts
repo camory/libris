@@ -44,6 +44,7 @@ const fr = {
     hint: "Les ouvrages de toutes vos bibliothèques.",
     empty: "Les ouvrages de vos bibliothèques apparaîtront ici.",
     series: "{name} · tome {volume}",
+    copies: "{bookshelf} | {bookshelf} · {count} exemplaires",
   },
   language: {
     fr: "français",

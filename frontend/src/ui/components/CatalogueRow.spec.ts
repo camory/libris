@@ -86,6 +86,16 @@ describe("CatalogueRow", () => {
     expect(screen.getByText("Bibliothèque de Léa, Salon")).toBeDefined();
   });
 
+  it("counts the copies of a bookshelf holding more than one", () => {
+    // When
+    const { screen } = show(romanceDawn);
+
+    // Then
+    expect(
+      screen.getByText("Bibliothèque de Léa · 2 exemplaires, Salon"),
+    ).toBeDefined();
+  });
+
   function show(book: Book) {
     const wrapper = mount(CatalogueRow, {
       props: { book },

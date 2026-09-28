@@ -26,11 +26,20 @@ const authors = computed(() =>
 );
 
 const bookshelves = computed(() => {
-  const names = new Map<string, string>();
+  const held = new Map<string, { name: string; count: number }>();
   for (const copy of props.book.copies) {
-    names.set(copy.bookshelf.id, copy.bookshelf.name);
+    const bookshelf = held.get(copy.bookshelf.id) ?? {
+      name: copy.bookshelf.name,
+      count: 0,
+    };
+    bookshelf.count += 1;
+    held.set(copy.bookshelf.id, bookshelf);
   }
-  return [...names.values()].join(", ");
+  return [...held.values()]
+    .map(({ name, count }) =>
+      t("catalogue.copies", { bookshelf: name, count }, count),
+    )
+    .join(", ");
 });
 </script>
 
