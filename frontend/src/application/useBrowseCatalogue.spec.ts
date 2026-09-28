@@ -59,4 +59,16 @@ describe("useBrowseCatalogue", () => {
       books: [asterixLeGaulois, romanceDawn],
     });
   });
+  it("is unavailable when the first page does not come", async () => {
+    // Given
+    const { state, browse } = useBrowseCatalogue(
+      new FakeCatalogueApi([new TypeError("Failed to fetch")]),
+    );
+
+    // When
+    await browse();
+
+    // Then
+    expect(state.value).toEqual({ status: "unavailable" });
+  });
 });

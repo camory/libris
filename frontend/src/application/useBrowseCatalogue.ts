@@ -5,7 +5,8 @@ import type { CatalogueApi } from "./CatalogueApi";
 export type CatalogueState =
   | { status: "loading" }
   | { status: "empty" }
-  | { status: "listed"; books: Book[] };
+  | { status: "listed"; books: Book[] }
+  | { status: "unavailable" };
 
 export function useBrowseCatalogue(catalogueApi: CatalogueApi): {
   state: Ref<CatalogueState>;
@@ -14,11 +15,14 @@ export function useBrowseCatalogue(catalogueApi: CatalogueApi): {
   const state = ref<CatalogueState>({ status: "loading" });
 
   async function browse() {
-    const page = await catalogueApi.browse(null);
-    if (page.books.length === 0) {
-      state.value = { status: "empty" };
-    } else {
-      state.value = { status: "listed", books: page.books };
+    try {
+      const page = await catalogueApi.browse(null);
+      state.value =
+        page.books.length === 0
+          ? { status: "empty" }
+          : { status: "listed", books: page.books };
+    } catch {
+      state.value = { status: "unavailable" };
     }
   }
 

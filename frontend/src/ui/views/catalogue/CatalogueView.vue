@@ -34,7 +34,7 @@ void browse();
       <p class="text-lead text-muted">{{ t("catalogue.empty") }}</p>
     </div>
     <ul
-      v-else
+      v-else-if="state.status === 'listed'"
       class="divide-y divide-border overflow-hidden rounded-[14px] border border-border bg-surface"
     >
       <li v-for="book in state.books" :key="book.id">
