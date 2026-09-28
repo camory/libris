@@ -381,9 +381,6 @@
   but the active-tab case of the tab bar cannot go green without it; a
   brief should put a route with the first case that resolves it (found
   2026-09-28 while implementing T046).
-- Frontend: `CatalogueView` calls `void browse()`, so a port that fails
-  leaves an unhandled rejection until T048 gives the page its error state
-  (found 2026-09-28 while implementing T046).
 - Frontend: `CatalogueRow` and `SourceEditionCard` each group the copies of
   an edition by bookshelf with the same loop; one function beside `Book` or
   `Copy` could serve both (found 2026-09-28 while implementing T047).
