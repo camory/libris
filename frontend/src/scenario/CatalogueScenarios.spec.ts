@@ -1,11 +1,7 @@
 import { queries, within, type BoundFunctions } from "@testing-library/dom";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import type { App } from "vue";
-import {
-  catalogueApiKey,
-  type BookPage,
-  type CatalogueApi,
-} from "../application/CatalogueApi";
+import type { BookPage, CatalogueApi } from "../application/CatalogueApi";
 import { createLibrisApp } from "../createLibrisApp";
 import type { Book } from "../domain/Book";
 import type { Bookshelf } from "../domain/Bookshelf";
@@ -87,7 +83,7 @@ describe("Catalogue", () => {
     ]);
   });
 
-  it.skip("S3 The catalogue is empty", async () => {
+  it("S3 The catalogue is empty", async () => {
     // Given
     const catalogue = librisAnswers({ books: [], next: null });
 
@@ -243,10 +239,10 @@ describe("Catalogue", () => {
         ),
         barcodeScanner: new FakeBarcodeScanner(false),
         appUpdate: new FakeAppUpdate(),
+        catalogueApi: catalogue,
       },
       "sha-abc1234",
     );
-    app.provide(catalogueApiKey, catalogue);
     app.mount(host);
     return within(host);
   }

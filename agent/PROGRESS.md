@@ -623,3 +623,29 @@ Format:
 - Left over: the cost of reading the whole catalogue per page, in
   `agent/PROPOSED.md`; the PR body quotes the brief on D12's series-name
   bullet for Tophe. T046 moves the frontend pin, T049 walks the pages.
+
+## 2026-09-28 — T046 The catalogue tab, its page and the empty catalogue — done
+- Did: the frontend pins `v0.7.0`; `FetchCatalogueApi` reads
+  `GET /api/v1/books`; `useBrowseCatalogue` and `CatalogueView` show five
+  skeleton rows, then the empty catalogue; a third tab leads to `/catalogue`.
+  S3 un-skipped, green.
+- Decided: the list block of the skeletons takes the card's
+  `rounded-[14px] border`; the empty state spaces its icon and text with
+  `gap-3`; the skeleton's text lines are 12/16/14/14 px with gaps of 6,
+  74 px beside a 74 px cover.
+- Decided: `FetchCatalogueApi` checks the status from its first cycle, so
+  the refused-page case (400 on `after=not-an-id`) is a guard; its mutation
+  (no status check) was red.
+- Decided: guards proven by mutation and reverted: the refused page, the
+  first page asked on each arrival (module-scope state, red alone with
+  `expected [ null ] to deeply equal [ null, null ]`), spines for Catalogue
+  (`IconBook` in place of `IconBooks`, red).
+- Deviations from the brief: the route arrived in the active-tab cycle,
+  not at the wiring step, since `aria-current` needs a matching route; S3
+  went green there while its file still provided the port, and the wiring
+  step's red was `vue-tsc` on `LibrisPorts` and S3 once the file's provide
+  was dropped. The un-skip was committed first, red. The French-literal
+  grep matches `CatalogueView.spec.ts`, which the brief asks for; checked
+  with `':!*.spec.ts'`.
+- Left over: the unhandled rejection of a failing port until T048, and two
+  notes for the planner, in `agent/PROPOSED.md`.

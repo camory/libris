@@ -5,6 +5,7 @@ import { createLibrisI18n } from "../i18n";
 import { createLibrisRouter } from "../router";
 import AppTabBar from "./AppTabBar.vue";
 import IconBarcode from "./icons/IconBarcode.vue";
+import IconBooks from "./icons/IconBooks.vue";
 import IconHome from "./icons/IconHome.vue";
 
 describe("AppTabBar", () => {
@@ -18,10 +19,15 @@ describe("AppTabBar", () => {
 
     // Then
     const tabs = screen.getAllByRole("link");
-    expect(tabs).toHaveLength(2);
+    expect(tabs).toHaveLength(3);
     expect(tabs[0]).toBe(screen.getByRole("link", { name: "Accueil" }));
     expect(tabs[1]).toBe(screen.getByRole("link", { name: "Ajouter" }));
-    expect(tabs.map((tab) => tab.getAttribute("href"))).toEqual(["/", "/isbn"]);
+    expect(tabs[2]).toBe(screen.getByRole("link", { name: "Catalogue" }));
+    expect(tabs.map((tab) => tab.getAttribute("href"))).toEqual([
+      "/",
+      "/isbn",
+      "/catalogue",
+    ]);
   });
 
   it("marks Accueil as the screen shown at the root", async () => {
@@ -44,13 +50,24 @@ describe("AppTabBar", () => {
     );
   });
 
-  it("shows a house for Accueil and a barcode for Ajouter", async () => {
+  it("marks Catalogue as the screen shown on the catalogue", async () => {
+    // When
+    const { screen } = await open("/catalogue");
+
+    // Then
+    expect(screen.getByRole("link", { current: "page" })).toBe(
+      screen.getByRole("link", { name: "Catalogue" }),
+    );
+  });
+
+  it("shows a house for Accueil, a barcode for Ajouter and spines for Catalogue", async () => {
     // When
     const { wrapper } = await open("/");
 
     // Then
     expect(wrapper.findComponent(IconHome).exists()).toBe(true);
     expect(wrapper.findComponent(IconBarcode).exists()).toBe(true);
+    expect(wrapper.findComponent(IconBooks).exists()).toBe(true);
   });
 
   async function open(path: string) {

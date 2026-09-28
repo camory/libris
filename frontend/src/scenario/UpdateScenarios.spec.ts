@@ -4,6 +4,7 @@ import type { App } from "vue";
 import { createLibrisApp } from "../createLibrisApp";
 import { FakeBarcodeScanner } from "../fixture/FakeBarcodeScanner";
 import { FakeBookshelfApi } from "../fixture/FakeBookshelfApi";
+import { FakeCatalogueApi } from "../fixture/FakeCatalogueApi";
 import { FakeIsbnApi } from "../fixture/FakeIsbnApi";
 import { FakeMeApi } from "../fixture/FakeMeApi";
 import { lea } from "../fixture/Readers";
@@ -139,6 +140,7 @@ describe("Update", () => {
         ),
         barcodeScanner: new FakeBarcodeScanner(false),
         appUpdate: new ServiceWorkerAppUpdate(() => {}),
+        catalogueApi: new FakeCatalogueApi([]),
       },
       "sha-abc1234",
     );

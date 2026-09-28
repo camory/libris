@@ -1,18 +1,12 @@
 import { afterEach, assert, describe, expect, inject, it, vi } from "vitest";
+import {
+  aKind,
+  aNumberOrNull,
+  aSeriesOrNull,
+  aStringOrNull,
+  authorsWithNameAndRole,
+} from "../../fixture/EditionShapes";
 import { FetchIsbnApi } from "./FetchIsbnApi";
-
-const aStringOrNull = expect.toSatisfy(
-  (value: unknown) => value === null || typeof value === "string",
-  "a string or null",
-);
-const aNumberOrNull = expect.toSatisfy(
-  (value: unknown) => value === null || typeof value === "number",
-  "a number or null",
-);
-const aKind = expect.toSatisfy(
-  (value: unknown) => ["BOOK", "BD", "MANGA"].includes(value as string),
-  "one of the kinds the API answers",
-);
 
 describe("FetchIsbnApi", () => {
   afterEach(() => {
@@ -33,8 +27,8 @@ describe("FetchIsbnApi", () => {
       kind: aKind,
       title: expect.any(String),
       subtitle: aStringOrNull,
-      authors: expect.toSatisfy(areAuthors, "authors with a name and a role"),
-      series: expect.toSatisfy(isSeriesOrNull, "a series or null"),
+      authors: authorsWithNameAndRole,
+      series: aSeriesOrNull,
       collection: aStringOrNull,
       publisher: aStringOrNull,
       publicationYear: aNumberOrNull,
@@ -143,17 +137,6 @@ describe("FetchIsbnApi", () => {
   });
 });
 
-function areAuthors(value: unknown) {
-  return (
-    Array.isArray(value) &&
-    value.every(
-      (author) =>
-        typeof author.name === "string" &&
-        ["WRITER", "ARTIST", "COLOURIST", "TRANSLATOR"].includes(author.role),
-    )
-  );
-}
-
 function areCopies(value: unknown) {
   return (
     Array.isArray(value) &&
@@ -166,16 +149,5 @@ function areCopies(value: unknown) {
         typeof copy.bookshelf.id === "string" &&
         typeof copy.bookshelf.name === "string",
     )
-  );
-}
-
-function isSeriesOrNull(value: unknown) {
-  if (value === null) {
-    return true;
-  }
-  const series = value as { name: unknown; volumeNumber: unknown };
-  return (
-    typeof series.name === "string" &&
-    (series.volumeNumber === null || typeof series.volumeNumber === "number")
   );
 }

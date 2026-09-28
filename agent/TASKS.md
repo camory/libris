@@ -248,7 +248,7 @@ once T045 is deployed. No other task touches the contract (D04).
       edition.
       Realises S2; un-skips the backend test of S2.
 
-- [ ] T046 Frontend: the catalogue tab, its page and the empty catalogue,
+- [x] T046 Frontend: the catalogue tab, its page and the empty catalogue,
       on `v0.7.0`.
       Precondition (human): T045 deployed (D04); the frontend tests of the
       catalogue scenarios, one skipped test per frontend scenario, each
