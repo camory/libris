@@ -9,7 +9,9 @@ export function useBrowseCatalogue(catalogueApi: CatalogueApi): {
 } {
   const state = ref<CatalogueState>({ status: "loading" });
 
-  async function browse() {}
+  async function browse() {
+    await catalogueApi.browse(null);
+  }
 
   return { state, browse };
 }

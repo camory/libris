@@ -15,4 +15,16 @@ describe("useBrowseCatalogue", () => {
     // Then
     expect(state.value).toEqual({ status: "loading" });
   });
+
+  it("asks for the first page", async () => {
+    // Given
+    const catalogueApi = new FakeCatalogueApi([{ books: [], next: null }]);
+    const { browse } = useBrowseCatalogue(catalogueApi);
+
+    // When
+    await browse();
+
+    // Then
+    expect(catalogueApi.asked).toEqual([null]);
+  });
 });
