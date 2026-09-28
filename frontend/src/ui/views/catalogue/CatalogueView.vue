@@ -5,6 +5,7 @@ import { catalogueApiKey } from "../../../application/CatalogueApi";
 import { useBrowseCatalogue } from "../../../application/useBrowseCatalogue";
 import CatalogueRow from "../../components/CatalogueRow.vue";
 import CatalogueRowSkeleton from "../../components/CatalogueRowSkeleton.vue";
+import IconAlert from "../../components/icons/IconAlert.vue";
 import IconBook from "../../components/icons/IconBook.vue";
 
 const { t } = useI18n();
@@ -41,5 +42,9 @@ void browse();
         <CatalogueRow :book="book" />
       </li>
     </ul>
+    <p v-else class="flex items-start gap-2 text-body text-danger">
+      <IconAlert />
+      <span>{{ t("catalogue.error") }}</span>
+    </p>
   </main>
 </template>

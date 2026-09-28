@@ -12,6 +12,7 @@ import {
 } from "../../../fixture/Books";
 import { FakeCatalogueApi } from "../../../fixture/FakeCatalogueApi";
 import CatalogueRowSkeleton from "../../components/CatalogueRowSkeleton.vue";
+import IconAlert from "../../components/icons/IconAlert.vue";
 import IconBook from "../../components/icons/IconBook.vue";
 import { createLibrisI18n } from "../../i18n";
 import CatalogueView from "./CatalogueView.vue";
@@ -118,6 +119,24 @@ describe("CatalogueView", () => {
     // Then
     expect(screen.queryAllByRole("link")).toEqual([]);
     expect(screen.queryAllByRole("button")).toEqual([]);
+  });
+
+  it("says to try again later when the first page does not come", async () => {
+    // Given
+    const { wrapper, screen } = open(
+      new FakeCatalogueApi([new TypeError("Failed to fetch")]),
+    );
+
+    // When
+    await flushPromises();
+
+    // Then
+    expect(
+      screen.getByText(
+        "Erreur lors du chargement, veuillez réessayer plus tard.",
+      ),
+    ).toBeDefined();
+    expect(wrapper.findAllComponents(IconAlert)).toHaveLength(1);
   });
 
   it("asks for the first page on each arrival", async () => {
