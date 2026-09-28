@@ -2,6 +2,7 @@
 import { computed } from "vue";
 import { useI18n } from "vue-i18n";
 import type { Book } from "../../domain/Book";
+import IconBook from "./icons/IconBook.vue";
 
 const props = defineProps<{ book: Book }>();
 
@@ -49,10 +50,12 @@ const bookshelves = computed(() => {
       class="flex h-18.5 w-12 shrink-0 items-center justify-center rounded-md bg-border"
     >
       <img
-        :src="book.coverUrl ?? undefined"
+        v-if="book.coverUrl"
+        :src="book.coverUrl"
         :alt="t('catalogue.cover', { title: book.title })"
         class="h-full w-full rounded-md object-contain"
       />
+      <IconBook v-else class="size-5.5 text-muted opacity-60" />
     </div>
     <div class="flex min-w-0 flex-col gap-1.5">
       <p v-if="overline" class="text-overline uppercase text-accent">

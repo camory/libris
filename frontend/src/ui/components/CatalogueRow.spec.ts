@@ -10,6 +10,7 @@ import {
   salon,
 } from "../../fixture/Books";
 import { createLibrisI18n } from "../i18n";
+import IconBook from "./icons/IconBook.vue";
 import CatalogueRow from "./CatalogueRow.vue";
 
 describe("CatalogueRow", () => {
@@ -105,6 +106,15 @@ describe("CatalogueRow", () => {
       name: "Couverture de Romance dawn",
     });
     expect(cover.getAttribute("src")).toBe(romanceDawn.coverUrl);
+  });
+
+  it("shows a book icon when the edition has no cover", () => {
+    // When
+    const { wrapper, screen } = show(lePetitPrince);
+
+    // Then
+    expect(screen.queryByRole("img")).toBeNull();
+    expect(wrapper.findAllComponents(IconBook)).toHaveLength(1);
   });
 
   function show(book: Book) {
