@@ -82,8 +82,9 @@ without field 105 in the implementer's loop.
 ## Screen
 
 No screen of its own: the card of the lookup screen of `specs/fast-entry.md`,
-route `/isbn`, whose words follow the kind. The kind itself is not written
-on the card.
+route `/isbn`, and the row of the catalogue of `specs/catalogue.md`, route
+`/catalogue`, whose words follow the kind. The kind itself is written on
+neither.
 
 The series line: *One piece · tome 1* for a manga and a livre, *Astérix ·
 album 1* for a BD.

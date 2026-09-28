@@ -58,7 +58,7 @@ _Avoid_: collection, saga, cycle, serie.
 
 **Volume number**:
 An edition's position in its series.
-*On screen*: tome.
+*On screen*: tome; album for a BD, as the kind decides.
 _Avoid_: volume (alone), issue, number.
 
 **Collection**:

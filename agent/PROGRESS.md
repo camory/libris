@@ -670,6 +670,8 @@ Format:
   answer (a sort by title, red on *Romance dawn* in the first item), a row
   leads nowhere (the title in `<a href="#">`, red with two links).
 - Deviations from the brief: none.
-- Left over: three items in `agent/PROPOSED.md`: *tome* against the kind
-  for Tophe, the copy grouping shared with the card, the icon size for U07.
+- Fix-up with Tophe on 2026-09-29: the row follows the kind, *album* for a
+  BD, in the spec, S1, the row and the docs; the *tome* question is closed.
+- Left over: two items in `agent/PROPOSED.md`: the copy grouping shared
+  with the card, the icon size for U07.
   T048 takes the failed page and its unhandled rejection, T049 the next page.

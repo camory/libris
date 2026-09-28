@@ -384,11 +384,6 @@
 - Frontend: `CatalogueView` calls `void browse()`, so a port that fails
   leaves an unhandled rejection until T048 gives the page its error state
   (found 2026-09-28 while implementing T046).
-- Product: the catalogue row says *tome* for every kind (*Astérix · tome 1*),
-  as `specs/catalogue.md` and its S1 write it, while the lookup card says
-  *Astérix · album 1* for a BD after `specs/kind.md`. Should the catalogue
-  follow the kind the way the card does? (found 2026-09-28 while
-  implementing T047).
 - Frontend: `CatalogueRow` and `SourceEditionCard` each group the copies of
   an edition by bookshelf with the same loop; one function beside `Book` or
   `Copy` could serve both (found 2026-09-28 while implementing T047).
