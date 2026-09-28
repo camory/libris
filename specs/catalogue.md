@@ -26,7 +26,7 @@ Then Libris answers every edition with a copy on one of their bookshelves,
 
 Proof: the shape of the answer verified by Contracteer on both sides;
 backend scenario test over HTTP; unit test of the order; frontend scenario
-test over a stubbed Libris.
+test over the catalogue's fake.
 
 **S2 The catalogue comes in pages** · frontend, backend
 
@@ -47,8 +47,9 @@ pages lands in the order of S1 without shifting them. An `after` naming an
 edition the reader's catalogue no longer holds continues after its place;
 one naming no edition answers an empty page naming no next. Proof: backend
 scenario test over HTTP with one edition more than a page, the first page
-naming a next and the second none; frontend scenario test over a stubbed
-Libris with two pages. The chain from `next` to `after` is the tests' to show:
+naming a next and the second none; frontend scenario test over the
+catalogue's fake with two pages. The chain from `next` to `after` is the
+tests' to show:
 Contracteer checks an answer's shape, never its values.
 
 **S3 The catalogue is empty** · frontend, backend
@@ -62,8 +63,8 @@ Then Libris answers an empty page that names no next
 	And the screen says what will fill it
 ```
 
-Proof: backend scenario test over HTTP; frontend scenario test over a
-stubbed Libris.
+Proof: backend scenario test over HTTP; frontend scenario test over the
+catalogue's fake.
 
 **S4 Libris unavailable** · frontend
 

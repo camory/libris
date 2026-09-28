@@ -1,41 +1,24 @@
 import { queries, within, type BoundFunctions } from "@testing-library/dom";
-import { afterEach, describe, expect, inject, it, vi } from "vitest";
-import { bootstrap } from "../bootstrap";
+import { afterEach, describe, expect, it, vi } from "vitest";
+import type { App } from "vue";
+import {
+  catalogueApiKey,
+  type BookPage,
+  type CatalogueApi,
+} from "../application/CatalogueApi";
+import { createLibrisApp } from "../createLibrisApp";
+import type { Book } from "../domain/Book";
+import type { Bookshelf } from "../domain/Bookshelf";
+import type { Copy } from "../domain/Copy";
+import { FakeAppUpdate } from "../fixture/FakeAppUpdate";
+import { FakeBarcodeScanner } from "../fixture/FakeBarcodeScanner";
+import { FakeBookshelfApi } from "../fixture/FakeBookshelfApi";
+import { FakeCatalogueApi } from "../fixture/FakeCatalogueApi";
+import { FakeIsbnApi } from "../fixture/FakeIsbnApi";
+import { FakeMeApi } from "../fixture/FakeMeApi";
+import { lea } from "../fixture/Readers";
 
 type Screen = BoundFunctions<typeof queries>;
-
-interface Bookshelf {
-  id: string;
-  name: string;
-}
-
-interface Copy {
-  id: string;
-  bookshelf: Bookshelf;
-}
-
-interface Book {
-  id: string;
-  isbn13: string | null;
-  kind: "BOOK" | "BD" | "MANGA";
-  title: string;
-  subtitle: string | null;
-  authors: { name: string; role: "WRITER" | "ARTIST" | "COLOURIST" | "TRANSLATOR" }[];
-  series: { name: string; volumeNumber: number | null } | null;
-  collection: string | null;
-  publisher: string | null;
-  publicationYear: number | null;
-  language: string | null;
-  pageCount: number | null;
-  summary: string | null;
-  coverUrl: string | null;
-  copies: Copy[];
-}
-
-interface BookPage {
-  books: Book[];
-  next: string | null;
-}
 
 const maBibliotheque: Bookshelf = {
   id: "0b1e2d3c-4f5a-4b6c-8d7e-9f0a1b2c3d4e",
@@ -49,18 +32,17 @@ const salon: Bookshelf = {
 
 describe("Catalogue", () => {
   const host = document.createElement("div");
-  let app: ReturnType<typeof bootstrap>;
+  let app: App;
 
   afterEach(() => {
     app.unmount();
     window.history.replaceState(null, "", "/");
-    vi.restoreAllMocks();
     vi.unstubAllGlobals();
   });
 
   it.skip("S1 The catalogue lists the house's editions", async () => {
     // Given
-    librisAnswers({
+    const catalogue = librisAnswers({
       books: [
         asterix1,
         asterixEtSesAmis,
@@ -70,7 +52,7 @@ describe("Catalogue", () => {
     });
 
     // When
-    const screen = open("/catalogue");
+    const screen = open("/catalogue", catalogue);
 
     // Then
     await screen.findByText("Parcourir le catalogue");
@@ -84,11 +66,13 @@ describe("Catalogue", () => {
 
   it.skip("S2 The catalogue comes in pages", async () => {
     // Given
-    librisAnswers(
-      { books: [asterix1, asterixEtSesAmis], next: asterixEtSesAmis.id },
-      { books: [onePiece1], next: null },
+    const screen = open(
+      "/catalogue",
+      librisAnswers(
+        { books: [asterix1, asterixEtSesAmis], next: asterixEtSesAmis.id },
+        { books: [onePiece1], next: null },
+      ),
     );
-    const screen = open("/catalogue");
     await screen.findByText("Astérix et ses amis");
 
     // When
@@ -105,10 +89,10 @@ describe("Catalogue", () => {
 
   it.skip("S3 The catalogue is empty", async () => {
     // Given
-    librisAnswers({ books: [], next: null });
+    const catalogue = librisAnswers({ books: [], next: null });
 
     // When
-    const screen = open("/catalogue");
+    const screen = open("/catalogue", catalogue);
 
     // Then
     await screen.findByText(
@@ -119,10 +103,10 @@ describe("Catalogue", () => {
 
   it.skip("S4 Libris unavailable", async () => {
     // Given
-    librisDoesNotAnswer();
+    const catalogue = librisDoesNotAnswer();
 
     // When
-    const screen = open("/catalogue");
+    const screen = open("/catalogue", catalogue);
 
     // Then
     await screen.findByText(
@@ -133,11 +117,13 @@ describe("Catalogue", () => {
 
   it.skip("S4 Libris unavailable, on the next page", async () => {
     // Given
-    librisAnswers(
-      { books: [asterix1, asterixEtSesAmis], next: asterixEtSesAmis.id },
-      Error("Failed to fetch"),
+    const screen = open(
+      "/catalogue",
+      librisAnswers(
+        { books: [asterix1, asterixEtSesAmis], next: asterixEtSesAmis.id },
+        new TypeError("Failed to fetch"),
+      ),
     );
-    const screen = open("/catalogue");
     await screen.findByText("Astérix et ses amis");
 
     // When
@@ -204,40 +190,34 @@ describe("Catalogue", () => {
     return { id: crypto.randomUUID(), bookshelf };
   }
 
-  function librisAnswers(...pages: (BookPage | Error)[]) {
-    const fetch = globalThis.fetch;
-    vi.spyOn(globalThis, "fetch").mockImplementation((input, init) => {
-      if (!String(input).includes("/api/v1/books")) return fetch(input, init);
-      const page = pages.shift();
-      if (page === undefined) throw Error("No page left to answer");
-      return page instanceof Error
-        ? Promise.reject(page)
-        : Promise.resolve(
-            new Response(JSON.stringify(page), {
-              status: 200,
-              headers: { "Content-Type": "application/json" },
-            }),
-          );
-    });
+  function librisAnswers(...pages: (BookPage | Error)[]): CatalogueApi {
+    return new FakeCatalogueApi(pages);
   }
 
-  function librisDoesNotAnswer() {
-    librisAnswers(Error("Failed to fetch"));
+  function librisDoesNotAnswer(): CatalogueApi {
+    return librisAnswers(new TypeError("Failed to fetch"));
   }
 
-  const observed: { callback: IntersectionObserverCallback; target: Element }[] =
-    [];
+  const observed: {
+    callback: IntersectionObserverCallback;
+    target: Element;
+  }[] = [];
 
   function theLastRowComesIntoView() {
     const last = observed.at(-1);
     if (last === undefined) throw Error("No row is observed");
     last.callback(
-      [{ isIntersecting: true, target: last.target } as IntersectionObserverEntry],
+      [
+        {
+          isIntersecting: true,
+          target: last.target,
+        } as IntersectionObserverEntry,
+      ],
       {} as IntersectionObserver,
     );
   }
 
-  function open(path: string) {
+  function open(path: string, catalogue: CatalogueApi) {
     observed.length = 0;
     vi.stubGlobal(
       "IntersectionObserver",
@@ -251,7 +231,22 @@ describe("Catalogue", () => {
       },
     );
     window.history.replaceState(null, "", path);
-    app = bootstrap(inject("mockBaseUrl"), "sha-abc1234");
+    app = createLibrisApp(
+      {
+        meApi: new FakeMeApi(lea),
+        isbnApi: new FakeIsbnApi({
+          outcome: "problem",
+          type: "/problems/not-found",
+        }),
+        bookshelfApi: new FakeBookshelfApi(
+          new Error("no add in this scenario"),
+        ),
+        barcodeScanner: new FakeBarcodeScanner(false),
+        appUpdate: new FakeAppUpdate(),
+      },
+      "sha-abc1234",
+    );
+    app.provide(catalogueApiKey, catalogue);
     app.mount(host);
     return within(host);
   }
