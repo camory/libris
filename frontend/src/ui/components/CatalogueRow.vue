@@ -24,6 +24,14 @@ const overline = computed(() => {
 const authors = computed(() =>
   [...new Set(props.book.authors.map((author) => author.name))].join(", "),
 );
+
+const bookshelves = computed(() => {
+  const names = new Map<string, string>();
+  for (const copy of props.book.copies) {
+    names.set(copy.bookshelf.id, copy.bookshelf.name);
+  }
+  return [...names.values()].join(", ");
+});
 </script>
 
 <template>
@@ -34,6 +42,7 @@ const authors = computed(() =>
       </p>
       <p class="text-row-title">{{ book.title }}</p>
       <p class="text-body">{{ authors }}</p>
+      <p class="text-body text-muted">{{ bookshelves }}</p>
     </div>
   </div>
 </template>

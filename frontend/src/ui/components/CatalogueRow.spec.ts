@@ -7,6 +7,7 @@ import {
   asterixLeGaulois,
   lePetitPrince,
   romanceDawn,
+  salon,
 } from "../../fixture/Books";
 import { createLibrisI18n } from "../i18n";
 import CatalogueRow from "./CatalogueRow.vue";
@@ -66,6 +67,23 @@ describe("CatalogueRow", () => {
 
     // Then
     expect(screen.getByText("Eiichirō Oda")).toBeDefined();
+  });
+
+  it("lists the bookshelves holding a copy, separated by commas", () => {
+    // Given
+    const onTwoBookshelves: Book = {
+      ...asterixLeGaulois,
+      copies: [
+        ...asterixLeGaulois.copies,
+        { id: "f2a0bf1e-d34c-4bf8-94a9-afb0c1d2e3fa", bookshelf: salon },
+      ],
+    };
+
+    // When
+    const { screen } = show(onTwoBookshelves);
+
+    // Then
+    expect(screen.getByText("Bibliothèque de Léa, Salon")).toBeDefined();
   });
 
   function show(book: Book) {
