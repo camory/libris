@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed } from "vue";
+import { computed, ref } from "vue";
 import { useI18n } from "vue-i18n";
 import type { Book } from "../../domain/Book";
 import IconBook from "./icons/IconBook.vue";
@@ -7,6 +7,8 @@ import IconBook from "./icons/IconBook.vue";
 const props = defineProps<{ book: Book }>();
 
 const { t } = useI18n();
+
+const coverFailed = ref(false);
 
 const overline = computed(() => {
   const series = props.book.series;
@@ -50,10 +52,11 @@ const bookshelves = computed(() => {
       class="flex h-18.5 w-12 shrink-0 items-center justify-center rounded-md bg-border"
     >
       <img
-        v-if="book.coverUrl"
+        v-if="book.coverUrl && !coverFailed"
         :src="book.coverUrl"
         :alt="t('catalogue.cover', { title: book.title })"
         class="h-full w-full rounded-md object-contain"
+        @error="coverFailed = true"
       />
       <IconBook v-else class="size-5.5 text-muted opacity-60" />
     </div>
