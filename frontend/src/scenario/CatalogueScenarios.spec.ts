@@ -87,7 +87,7 @@ describe("Catalogue", () => {
     ]);
   });
 
-  it.skip("S3 The catalogue is empty", async () => {
+  it("S3 The catalogue is empty", async () => {
     // Given
     const catalogue = librisAnswers({ books: [], next: null });
 
