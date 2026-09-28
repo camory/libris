@@ -52,6 +52,14 @@ describe("CatalogueRow", () => {
     expect(normalised(wrapper.element)).toMatch(/^Le Petit Prince/);
   });
 
+  it("names the authors on one line, separated by commas", () => {
+    // When
+    const { screen } = show(asterixLeGaulois);
+
+    // Then
+    expect(screen.getByText("René Goscinny, Albert Uderzo")).toBeDefined();
+  });
+
   function show(book: Book) {
     const wrapper = mount(CatalogueRow, {
       props: { book },

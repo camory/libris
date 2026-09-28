@@ -20,6 +20,10 @@ const overline = computed(() => {
     volume: series.volumeNumber,
   });
 });
+
+const authors = computed(() =>
+  props.book.authors.map((author) => author.name).join(", "),
+);
 </script>
 
 <template>
@@ -27,6 +31,7 @@ const overline = computed(() => {
     <div class="flex min-w-0 flex-col gap-1.5">
       <p v-if="overline" class="text-overline uppercase text-accent">{{ overline }}</p>
       <p class="text-row-title">{{ book.title }}</p>
+      <p class="text-body">{{ authors }}</p>
     </div>
   </div>
 </template>
