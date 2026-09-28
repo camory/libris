@@ -60,6 +60,14 @@ describe("CatalogueRow", () => {
     expect(screen.getByText("René Goscinny, Albert Uderzo")).toBeDefined();
   });
 
+  it("names an author of two roles once", () => {
+    // When
+    const { screen } = show(romanceDawn);
+
+    // Then
+    expect(screen.getByText("Eiichirō Oda")).toBeDefined();
+  });
+
   function show(book: Book) {
     const wrapper = mount(CatalogueRow, {
       props: { book },

@@ -22,14 +22,16 @@ const overline = computed(() => {
 });
 
 const authors = computed(() =>
-  props.book.authors.map((author) => author.name).join(", "),
+  [...new Set(props.book.authors.map((author) => author.name))].join(", "),
 );
 </script>
 
 <template>
   <div class="flex gap-3.5 p-3.5">
     <div class="flex min-w-0 flex-col gap-1.5">
-      <p v-if="overline" class="text-overline uppercase text-accent">{{ overline }}</p>
+      <p v-if="overline" class="text-overline uppercase text-accent">
+        {{ overline }}
+      </p>
       <p class="text-row-title">{{ book.title }}</p>
       <p class="text-body">{{ authors }}</p>
     </div>
