@@ -87,6 +87,23 @@ describe("CatalogueView", () => {
     ).toBeNull();
   });
 
+  it("keeps the order of the answer", async () => {
+    // Given
+    const { screen } = open(
+      new FakeCatalogueApi([
+        { books: [romanceDawn, asterixLeGaulois], next: null },
+      ]),
+    );
+
+    // When
+    await flushPromises();
+
+    // Then
+    const [first, second] = screen.getAllByRole("listitem");
+    expect(within(first!).getByText("Romance dawn")).toBeDefined();
+    expect(within(second!).getByText("Astérix le Gaulois")).toBeDefined();
+  });
+
   it("asks for the first page on each arrival", async () => {
     // Given
     const catalogueApi = new FakeCatalogueApi([
