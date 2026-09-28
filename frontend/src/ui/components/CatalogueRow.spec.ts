@@ -31,12 +31,12 @@ describe("CatalogueRow", () => {
     expect(screen.getByText("One piece · tome 1")).toBeDefined();
   });
 
-  it("says tome for a BD too", () => {
+  it("says album for a BD", () => {
     // When
     const { screen } = show(asterixLeGaulois);
 
     // Then
-    expect(screen.getByText("Astérix · tome 1")).toBeDefined();
+    expect(screen.getByText("Astérix · album 1")).toBeDefined();
   });
 
   it("shows the series alone when the edition has no tome", () => {
