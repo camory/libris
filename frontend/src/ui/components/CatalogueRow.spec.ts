@@ -131,6 +131,16 @@ describe("CatalogueRow", () => {
     expect(wrapper.findAllComponents(IconBook)).toHaveLength(1);
   });
 
+  it("reads its parts separated by one space", () => {
+    // When
+    const { wrapper } = show(romanceDawn);
+
+    // Then
+    expect(normalised(wrapper.element)).toBe(
+      "One piece · tome 1 Romance dawn Eiichirō Oda Bibliothèque de Léa · 2 exemplaires, Salon",
+    );
+  });
+
   function show(book: Book) {
     const wrapper = mount(CatalogueRow, {
       props: { book },

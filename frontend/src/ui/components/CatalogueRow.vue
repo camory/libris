@@ -64,8 +64,11 @@ const bookshelves = computed(() => {
       <p v-if="overline" class="text-overline uppercase text-accent">
         {{ overline }}
       </p>
+      {{ " " }}
       <p class="text-row-title">{{ book.title }}</p>
+      {{ " " }}
       <p class="text-body">{{ authors }}</p>
+      {{ " " }}
       <p class="text-body text-muted">{{ bookshelves }}</p>
     </div>
   </div>
