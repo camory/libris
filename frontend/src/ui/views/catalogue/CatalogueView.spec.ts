@@ -51,6 +51,23 @@ describe("CatalogueView", () => {
     expect(wrapper.findAllComponents(IconBook)).toHaveLength(1);
   });
 
+  it("asks for the first page on each arrival", async () => {
+    // Given
+    const catalogueApi = new FakeCatalogueApi([
+      { books: [], next: null },
+      { books: [], next: null },
+    ]);
+    open(catalogueApi).wrapper.unmount();
+    await flushPromises();
+
+    // When
+    open(catalogueApi);
+    await flushPromises();
+
+    // Then
+    expect(catalogueApi.asked).toEqual([null, null]);
+  });
+
   function open(catalogueApi: CatalogueApi) {
     const wrapper = mount(CatalogueView, {
       global: {
