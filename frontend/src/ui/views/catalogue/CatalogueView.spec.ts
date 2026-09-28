@@ -139,6 +139,23 @@ describe("CatalogueView", () => {
     expect(wrapper.findAllComponents(IconAlert)).toHaveLength(1);
   });
 
+  it("lists nothing when the first page does not come", async () => {
+    // Given
+    const { wrapper, screen } = open(
+      new FakeCatalogueApi([new TypeError("Failed to fetch")]),
+    );
+
+    // When
+    await flushPromises();
+
+    // Then
+    expect(wrapper.findAllComponents(CatalogueRowSkeleton)).toHaveLength(0);
+    expect(screen.queryAllByRole("listitem")).toEqual([]);
+    expect(
+      screen.queryByText("Les ouvrages de vos bibliothèques apparaîtront ici."),
+    ).toBeNull();
+  });
+
   it("asks for the first page on each arrival", async () => {
     // Given
     const catalogueApi = new FakeCatalogueApi([
