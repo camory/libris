@@ -15,6 +15,14 @@ describe("CatalogueRow", () => {
     expect(screen.getByText("Romance dawn")).toBeDefined();
   });
 
+  it("shows the series and the tome over the title", () => {
+    // When
+    const { screen } = show(romanceDawn);
+
+    // Then
+    expect(screen.getByText("One piece · tome 1")).toBeDefined();
+  });
+
   function show(book: Book) {
     const wrapper = mount(CatalogueRow, {
       props: { book },
