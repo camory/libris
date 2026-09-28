@@ -27,8 +27,10 @@ interface BookPageResponse {
 export class FetchCatalogueApi implements CatalogueApi {
   constructor(private readonly baseUrl: string) {}
 
-  async browse(): Promise<BookPage> {
-    const response = await fetch(`${this.baseUrl}/api/v1/books`, {
+  async browse(after: string | null): Promise<BookPage> {
+    const query =
+      after === null ? "" : `?${new URLSearchParams({ after }).toString()}`;
+    const response = await fetch(`${this.baseUrl}/api/v1/books${query}`, {
       headers: { Accept: "application/json, application/problem+json" },
     });
     if (response.status !== 200) {
