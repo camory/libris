@@ -42,6 +42,7 @@ const fr = {
   catalogue: {
     title: "Parcourir le catalogue",
     hint: "Les ouvrages de toutes vos bibliothèques.",
+    empty: "Les ouvrages de vos bibliothèques apparaîtront ici.",
   },
   language: {
     fr: "français",

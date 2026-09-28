@@ -7,6 +7,7 @@ import {
 } from "../../../application/CatalogueApi";
 import { FakeCatalogueApi } from "../../../fixture/FakeCatalogueApi";
 import CatalogueRowSkeleton from "../../components/CatalogueRowSkeleton.vue";
+import IconBook from "../../components/icons/IconBook.vue";
 import { createLibrisI18n } from "../../i18n";
 import CatalogueView from "./CatalogueView.vue";
 
@@ -32,6 +33,22 @@ describe("CatalogueView", () => {
     expect(wrapper.findAllComponents(CatalogueRowSkeleton)).toHaveLength(5);
     await flushPromises();
     expect(wrapper.findAllComponents(CatalogueRowSkeleton)).toHaveLength(0);
+  });
+
+  it("says what will fill the catalogue when it is empty", async () => {
+    // Given
+    const { wrapper, screen } = open(
+      new FakeCatalogueApi([{ books: [], next: null }]),
+    );
+
+    // When
+    await flushPromises();
+
+    // Then
+    expect(
+      screen.getByText("Les ouvrages de vos bibliothèques apparaîtront ici."),
+    ).toBeDefined();
+    expect(wrapper.findAllComponents(IconBook)).toHaveLength(1);
   });
 
   function open(catalogueApi: CatalogueApi) {
