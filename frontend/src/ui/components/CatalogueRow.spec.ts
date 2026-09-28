@@ -5,6 +5,7 @@ import type { Book } from "../../domain/Book";
 import {
   asterixEtSesAmis,
   asterixLeGaulois,
+  lePetitPrince,
   romanceDawn,
 } from "../../fixture/Books";
 import { createLibrisI18n } from "../i18n";
@@ -43,11 +44,23 @@ describe("CatalogueRow", () => {
     expect(screen.getByText("Astérix")).toBeDefined();
   });
 
+  it("shows no overline when the edition has no series", () => {
+    // When
+    const { wrapper } = show(lePetitPrince);
+
+    // Then
+    expect(normalised(wrapper.element)).toMatch(/^Le Petit Prince/);
+  });
+
   function show(book: Book) {
     const wrapper = mount(CatalogueRow, {
       props: { book },
       global: { plugins: [createLibrisI18n()] },
     });
     return { wrapper, screen: within(wrapper.element as HTMLElement) };
+  }
+
+  function normalised(element: Element) {
+    return element.textContent?.replace(/\s+/g, " ").trim() ?? "";
   }
 });

@@ -9,12 +9,15 @@ const { t } = useI18n();
 
 const overline = computed(() => {
   const series = props.book.series;
-  if (series?.volumeNumber === null) {
+  if (series === null) {
+    return null;
+  }
+  if (series.volumeNumber === null) {
     return series.name;
   }
   return t("catalogue.series", {
-    name: series?.name,
-    volume: series?.volumeNumber,
+    name: series.name,
+    volume: series.volumeNumber,
   });
 });
 </script>
@@ -22,7 +25,7 @@ const overline = computed(() => {
 <template>
   <div class="flex gap-3.5 p-3.5">
     <div class="flex min-w-0 flex-col gap-1.5">
-      <p class="text-overline uppercase text-accent">{{ overline }}</p>
+      <p v-if="overline" class="text-overline uppercase text-accent">{{ overline }}</p>
       <p class="text-row-title">{{ book.title }}</p>
     </div>
   </div>

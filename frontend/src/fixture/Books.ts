@@ -58,6 +58,29 @@ export const asterixEtSesAmis: Book = {
   copies: [{ id: "cf7d8c9b-a01f-4ec5-a1d6-7c8d9eafb0c7", bookshelf: salon }],
 };
 
+export const lePetitPrince: Book = {
+  id: "d08e9dac-b12a-4fd6-b2e7-8d9eafb0c1d8",
+  isbn13: null,
+  kind: "BOOK",
+  title: "Le Petit Prince",
+  subtitle: null,
+  authors: [{ name: "Antoine de Saint-Exupéry", role: "WRITER" }],
+  series: null,
+  collection: null,
+  publisher: null,
+  publicationYear: null,
+  language: null,
+  pageCount: null,
+  summary: null,
+  coverUrl: null,
+  copies: [
+    {
+      id: "e19fae0d-c23b-4ae7-83f8-9eafb0c1d2e9",
+      bookshelf: bibliothequeDeLea,
+    },
+  ],
+};
+
 export const romanceDawn: Book = {
   id: "5e0c1b2a-3948-4d5e-8a6f-0b1c2d3e4f50",
   isbn13: null,
