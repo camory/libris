@@ -96,15 +96,16 @@ bar, the house of *Accueil*, the barcode circle *Ajouter* and the spines of
 The list is one block on `surface` with a `border` hairline between its
 rows, 14 of padding inside a row. A row shows one edition: the cover at the
 left, 48 by 74, or its stand-in; at its right, stacked 6 apart, the overline
-série · tome when it has a series (*Astérix · tome 1*), the title in the row
-title step, the authors as names alone on one line separated by commas,
-whatever their roles, in the order of the answer, then in `muted` the
-bookshelves of the reader holding a copy, separated by commas, each
-followed by *· 2 exemplaires* when it holds more than one (*Bibliothèque de
-Christophe · 2 exemplaires, Salon*). The rows are in the order of the
-answer; the screen sorts nothing. A row leads nowhere yet: the edition page
-comes with its own spec. The screen asks the first page anew on each
-arrival, so an ouvrage added a moment ago is there.
+série · tome when it has a series, or série · album for a BD, as
+`specs/kind.md` words it (*Astérix · album 1*, *One piece · tome 1*), the
+title in the row title step, the authors as names alone on one line
+separated by commas, whatever their roles, in the order of the answer, then
+in `muted` the bookshelves of the reader holding a copy, separated by
+commas, each followed by *· 2 exemplaires* when it holds more than one
+(*Bibliothèque de Christophe · 2 exemplaires, Salon*). The rows are in the
+order of the answer; the screen sorts nothing. A row leads nowhere yet: the
+edition page comes with its own spec. The screen asks the first page anew
+on each arrival, so an ouvrage added a moment ago is there.
 
 States:
 
