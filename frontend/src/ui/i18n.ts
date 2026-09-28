@@ -39,6 +39,10 @@ const fr = {
       isbn: "ISBN",
     },
   },
+  catalogue: {
+    title: "Parcourir le catalogue",
+    hint: "Les ouvrages de toutes vos bibliothèques.",
+  },
   language: {
     fr: "français",
   },
