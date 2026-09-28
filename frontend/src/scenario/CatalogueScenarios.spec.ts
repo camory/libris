@@ -36,7 +36,7 @@ describe("Catalogue", () => {
     vi.unstubAllGlobals();
   });
 
-  it.skip("S1 The catalogue lists the house's editions", async () => {
+  it("S1 The catalogue lists the house's editions", async () => {
     // Given
     const catalogue = librisAnswers({
       books: [
