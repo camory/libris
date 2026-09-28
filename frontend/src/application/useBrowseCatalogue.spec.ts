@@ -27,4 +27,17 @@ describe("useBrowseCatalogue", () => {
     // Then
     expect(catalogueApi.asked).toEqual([null]);
   });
+
+  it("is empty when the first page holds no book", async () => {
+    // Given
+    const { state, browse } = useBrowseCatalogue(
+      new FakeCatalogueApi([{ books: [], next: null }]),
+    );
+
+    // When
+    await browse();
+
+    // Then
+    expect(state.value).toEqual({ status: "empty" });
+  });
 });
