@@ -1,0 +1,25 @@
+import { within } from "@testing-library/dom";
+import { mount } from "@vue/test-utils";
+import { describe, expect, it } from "vitest";
+import type { Book } from "../../domain/Book";
+import { romanceDawn } from "../../fixture/Books";
+import { createLibrisI18n } from "../i18n";
+import CatalogueRow from "./CatalogueRow.vue";
+
+describe("CatalogueRow", () => {
+  it("shows the title", () => {
+    // When
+    const { screen } = show(romanceDawn);
+
+    // Then
+    expect(screen.getByText("Romance dawn")).toBeDefined();
+  });
+
+  function show(book: Book) {
+    const wrapper = mount(CatalogueRow, {
+      props: { book },
+      global: { plugins: [createLibrisI18n()] },
+    });
+    return { wrapper, screen: within(wrapper.element as HTMLElement) };
+  }
+});
