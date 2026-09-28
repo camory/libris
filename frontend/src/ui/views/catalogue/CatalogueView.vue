@@ -1,7 +1,14 @@
 <script setup lang="ts">
+import { inject } from "vue";
 import { useI18n } from "vue-i18n";
+import { catalogueApiKey } from "../../../application/CatalogueApi";
+import { useBrowseCatalogue } from "../../../application/useBrowseCatalogue";
+import CatalogueRowSkeleton from "../../components/CatalogueRowSkeleton.vue";
 
 const { t } = useI18n();
+const { state, browse } = useBrowseCatalogue(inject(catalogueApiKey)!);
+
+void browse();
 </script>
 
 <template>
@@ -10,5 +17,12 @@ const { t } = useI18n();
       <h1 class="text-page-title">{{ t("catalogue.title") }}</h1>
       <p class="text-body text-muted">{{ t("catalogue.hint") }}</p>
     </header>
+
+    <div
+      v-if="state.status === 'loading'"
+      class="divide-y divide-border overflow-hidden rounded-[14px] border border-border bg-surface"
+    >
+      <CatalogueRowSkeleton v-for="row in 5" :key="row" />
+    </div>
   </main>
 </template>
