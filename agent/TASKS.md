@@ -274,7 +274,7 @@ once T045 is deployed. No other task touches the contract (D04).
       The frontend's walking skeleton, the thinnest scenario; realises S3
       on the frontend; un-skips the frontend test of S3.
 
-- [ ] T047 Frontend: the catalogue listed.
+- [x] T047 Frontend: the catalogue listed.
       When the first page has rows, in place of the empty state one block
       on `surface`, hairlines between rows, 14 of padding, a row per
       edition in the order
