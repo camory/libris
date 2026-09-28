@@ -45,6 +45,15 @@ const bookshelves = computed(() => {
 
 <template>
   <div class="flex gap-3.5 p-3.5">
+    <div
+      class="flex h-18.5 w-12 shrink-0 items-center justify-center rounded-md bg-border"
+    >
+      <img
+        :src="book.coverUrl ?? undefined"
+        :alt="t('catalogue.cover', { title: book.title })"
+        class="h-full w-full rounded-md object-contain"
+      />
+    </div>
     <div class="flex min-w-0 flex-col gap-1.5">
       <p v-if="overline" class="text-overline uppercase text-accent">
         {{ overline }}

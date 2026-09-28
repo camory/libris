@@ -45,6 +45,7 @@ const fr = {
     empty: "Les ouvrages de vos bibliothèques apparaîtront ici.",
     series: "{name} · tome {volume}",
     copies: "{bookshelf} | {bookshelf} · {count} exemplaires",
+    cover: "Couverture de {title}",
   },
   language: {
     fr: "français",

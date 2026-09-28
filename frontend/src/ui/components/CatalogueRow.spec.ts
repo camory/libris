@@ -96,6 +96,17 @@ describe("CatalogueRow", () => {
     ).toBeDefined();
   });
 
+  it("shows the cover, named after the ouvrage", () => {
+    // When
+    const { screen } = show(romanceDawn);
+
+    // Then
+    const cover = screen.getByRole("img", {
+      name: "Couverture de Romance dawn",
+    });
+    expect(cover.getAttribute("src")).toBe(romanceDawn.coverUrl);
+  });
+
   function show(book: Book) {
     const wrapper = mount(CatalogueRow, {
       props: { book },
