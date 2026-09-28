@@ -74,6 +74,17 @@ describe("FetchCatalogueApi", () => {
       "http://libris.invalid/api/v1/books?after=5e0c1b2a-3948-4d5e-8a6f-0b1c2d3e4f50",
     ]);
   });
+
+  it("fails when the API refuses the page asked", async () => {
+    // Given
+    const api = new FetchCatalogueApi(inject("mockBaseUrl"));
+
+    // When
+    const page = api.browse("not-an-id");
+
+    // Then
+    await expect(page).rejects.toThrow();
+  });
 });
 
 function areAuthors(value: unknown) {
