@@ -49,6 +49,16 @@ describe("AppTabBar", () => {
     );
   });
 
+  it("marks Catalogue as the screen shown on the catalogue", async () => {
+    // When
+    const { screen } = await open("/catalogue");
+
+    // Then
+    expect(screen.getByRole("link", { current: "page" })).toBe(
+      screen.getByRole("link", { name: "Catalogue" }),
+    );
+  });
+
   it("shows a house for Accueil and a barcode for Ajouter", async () => {
     // When
     const { wrapper } = await open("/");

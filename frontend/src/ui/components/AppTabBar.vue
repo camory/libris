@@ -33,6 +33,7 @@ const { t } = useI18n();
         to="/catalogue"
         :aria-label="t('tabs.catalogue')"
         class="flex h-12 items-center justify-center"
+        exact-active-class="text-accent"
       >
         <IconBooks class="size-8" />
       </RouterLink>
