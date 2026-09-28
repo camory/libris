@@ -2,7 +2,11 @@ import { within } from "@testing-library/dom";
 import { mount } from "@vue/test-utils";
 import { describe, expect, it } from "vitest";
 import type { Book } from "../../domain/Book";
-import { asterixLeGaulois, romanceDawn } from "../../fixture/Books";
+import {
+  asterixEtSesAmis,
+  asterixLeGaulois,
+  romanceDawn,
+} from "../../fixture/Books";
 import { createLibrisI18n } from "../i18n";
 import CatalogueRow from "./CatalogueRow.vue";
 
@@ -29,6 +33,14 @@ describe("CatalogueRow", () => {
 
     // Then
     expect(screen.getByText("Astérix · tome 1")).toBeDefined();
+  });
+
+  it("shows the series alone when the edition has no tome", () => {
+    // When
+    const { screen } = show(asterixEtSesAmis);
+
+    // Then
+    expect(screen.getByText("Astérix")).toBeDefined();
   });
 
   function show(book: Book) {

@@ -7,12 +7,16 @@ const props = defineProps<{ book: Book }>();
 
 const { t } = useI18n();
 
-const overline = computed(() =>
-  t("catalogue.series", {
-    name: props.book.series?.name,
-    volume: props.book.series?.volumeNumber,
-  }),
-);
+const overline = computed(() => {
+  const series = props.book.series;
+  if (series?.volumeNumber === null) {
+    return series.name;
+  }
+  return t("catalogue.series", {
+    name: series?.name,
+    volume: series?.volumeNumber,
+  });
+});
 </script>
 
 <template>

@@ -37,6 +37,27 @@ export const asterixLeGaulois: Book = {
   ],
 };
 
+export const asterixEtSesAmis: Book = {
+  id: "7a2e3d4c-5b6a-4f70-9c81-2d3e4f5a6b72",
+  isbn13: null,
+  kind: "BD",
+  title: "Astérix et ses amis",
+  subtitle: null,
+  authors: [
+    { name: "René Goscinny", role: "WRITER" },
+    { name: "Albert Uderzo", role: "ARTIST" },
+  ],
+  series: { name: "Astérix", volumeNumber: null },
+  collection: null,
+  publisher: null,
+  publicationYear: null,
+  language: null,
+  pageCount: null,
+  summary: null,
+  coverUrl: null,
+  copies: [{ id: "cf7d8c9b-a01f-4ec5-a1d6-7c8d9eafb0c7", bookshelf: salon }],
+};
+
 export const romanceDawn: Book = {
   id: "5e0c1b2a-3948-4d5e-8a6f-0b1c2d3e4f50",
   isbn13: null,
