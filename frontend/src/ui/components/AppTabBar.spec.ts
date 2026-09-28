@@ -5,6 +5,7 @@ import { createLibrisI18n } from "../i18n";
 import { createLibrisRouter } from "../router";
 import AppTabBar from "./AppTabBar.vue";
 import IconBarcode from "./icons/IconBarcode.vue";
+import IconBooks from "./icons/IconBooks.vue";
 import IconHome from "./icons/IconHome.vue";
 
 describe("AppTabBar", () => {
@@ -59,13 +60,14 @@ describe("AppTabBar", () => {
     );
   });
 
-  it("shows a house for Accueil and a barcode for Ajouter", async () => {
+  it("shows a house for Accueil, a barcode for Ajouter and spines for Catalogue", async () => {
     // When
     const { wrapper } = await open("/");
 
     // Then
     expect(wrapper.findComponent(IconHome).exists()).toBe(true);
     expect(wrapper.findComponent(IconBarcode).exists()).toBe(true);
+    expect(wrapper.findComponent(IconBooks).exists()).toBe(true);
   });
 
   async function open(path: string) {
