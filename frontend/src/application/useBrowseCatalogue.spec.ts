@@ -71,4 +71,16 @@ describe("useBrowseCatalogue", () => {
     // Then
     expect(state.value).toEqual({ status: "unavailable" });
   });
+  it("is unavailable when the catalogue refuses the page", async () => {
+    // Given
+    const { state, browse } = useBrowseCatalogue(
+      new FakeCatalogueApi([Error("The catalogue answered 503")]),
+    );
+
+    // When
+    await browse();
+
+    // Then
+    expect(state.value).toEqual({ status: "unavailable" });
+  });
 });
