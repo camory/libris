@@ -574,3 +574,10 @@ true; the diary keeps the date it was found.
   measured in it lays its tab bar out below the window after the update's
   reload (seen on the Pixel 2026-09-19). The shell is `fixed` at the four
   edges of the window instead.
+- `RouterLink` sets `aria-current="page"` only when the router resolves its
+  `to` to a route: a link to a path no route declares is never current,
+  whatever the location, so an active-tab case needs the route first.
+- A mutation that keeps state at module scope of a composable leaks from one
+  case to the next of the same spec file and reddens unrelated cases; run
+  the guard's case alone (`npx vitest run <file> -t "<name>"`) to read its
+  own red.

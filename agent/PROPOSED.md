@@ -373,3 +373,14 @@
   ouvrages, not past a few thousand. A keyset `WHERE` in SQL would need the
   `Collator` order of `Edition.BY_SERIES_AND_VOLUME` reproduced in
   PostgreSQL (found 2026-09-27 while implementing T045).
+- Planner: a criterion of the form "no French literal under `ui/views` and
+  `ui/components`" matches the view specs, which assert the French texts;
+  the grep should exclude `*.spec.ts` (found 2026-09-28 while implementing
+  T046).
+- Planner: T046's brief placed the `/catalogue` route at the wiring step,
+  but the active-tab case of the tab bar cannot go green without it; a
+  brief should put a route with the first case that resolves it (found
+  2026-09-28 while implementing T046).
+- Frontend: `CatalogueView` calls `void browse()`, so a port that fails
+  leaves an unhandled rejection until T048 gives the page its error state
+  (found 2026-09-28 while implementing T046).
