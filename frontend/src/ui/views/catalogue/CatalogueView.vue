@@ -3,6 +3,7 @@ import { inject } from "vue";
 import { useI18n } from "vue-i18n";
 import { catalogueApiKey } from "../../../application/CatalogueApi";
 import { useBrowseCatalogue } from "../../../application/useBrowseCatalogue";
+import CatalogueRow from "../../components/CatalogueRow.vue";
 import CatalogueRowSkeleton from "../../components/CatalogueRowSkeleton.vue";
 import IconBook from "../../components/icons/IconBook.vue";
 
@@ -32,5 +33,13 @@ void browse();
       <IconBook class="text-muted opacity-60" />
       <p class="text-lead text-muted">{{ t("catalogue.empty") }}</p>
     </div>
+    <ul
+      v-else
+      class="divide-y divide-border overflow-hidden rounded-[14px] border border-border bg-surface"
+    >
+      <li v-for="book in state.books" :key="book.id">
+        <CatalogueRow :book="book" />
+      </li>
+    </ul>
   </main>
 </template>

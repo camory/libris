@@ -5,6 +5,11 @@ import {
   catalogueApiKey,
   type CatalogueApi,
 } from "../../../application/CatalogueApi";
+import {
+  asterixEtSesAmis,
+  asterixLeGaulois,
+  romanceDawn,
+} from "../../../fixture/Books";
 import { FakeCatalogueApi } from "../../../fixture/FakeCatalogueApi";
 import CatalogueRowSkeleton from "../../components/CatalogueRowSkeleton.vue";
 import IconBook from "../../components/icons/IconBook.vue";
@@ -58,6 +63,28 @@ describe("CatalogueView", () => {
       screen.getByText("Les ouvrages de vos bibliothèques apparaîtront ici."),
     ).toBeDefined();
     expect(wrapper.findAllComponents(IconBook)).toHaveLength(1);
+  });
+
+  it("lists one row per book of the first page", async () => {
+    // Given
+    const { wrapper, screen } = open(
+      new FakeCatalogueApi([
+        {
+          books: [asterixLeGaulois, asterixEtSesAmis, romanceDawn],
+          next: null,
+        },
+      ]),
+    );
+
+    // When
+    await flushPromises();
+
+    // Then
+    expect(screen.getAllByRole("listitem")).toHaveLength(3);
+    expect(wrapper.findAllComponents(CatalogueRowSkeleton)).toHaveLength(0);
+    expect(
+      screen.queryByText("Les ouvrages de vos bibliothèques apparaîtront ici."),
+    ).toBeNull();
   });
 
   it("asks for the first page on each arrival", async () => {
