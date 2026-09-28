@@ -12,6 +12,7 @@ import type { SourceEdition } from "../domain/SourceEdition";
 import { FakeAppUpdate } from "../fixture/FakeAppUpdate";
 import { FakeBarcodeScanner } from "../fixture/FakeBarcodeScanner";
 import { FakeBookshelfApi } from "../fixture/FakeBookshelfApi";
+import { FakeCatalogueApi } from "../fixture/FakeCatalogueApi";
 import { FakeIsbnApi } from "../fixture/FakeIsbnApi";
 import { FakeMeApi } from "../fixture/FakeMeApi";
 import { lea } from "../fixture/Readers";
@@ -59,6 +60,7 @@ describe("Kind", () => {
         ),
         barcodeScanner: new FakeBarcodeScanner(false),
         appUpdate: new FakeAppUpdate(),
+        catalogueApi: new FakeCatalogueApi([]),
       },
       "sha-abc1234",
     );
