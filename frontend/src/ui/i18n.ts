@@ -70,6 +70,7 @@ const fr = {
   tabs: {
     home: "Accueil",
     add: "Ajouter",
+    catalogue: "Catalogue",
   },
   update: {
     available: "Nouvelle version disponible",

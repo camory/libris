@@ -18,10 +18,15 @@ describe("AppTabBar", () => {
 
     // Then
     const tabs = screen.getAllByRole("link");
-    expect(tabs).toHaveLength(2);
+    expect(tabs).toHaveLength(3);
     expect(tabs[0]).toBe(screen.getByRole("link", { name: "Accueil" }));
     expect(tabs[1]).toBe(screen.getByRole("link", { name: "Ajouter" }));
-    expect(tabs.map((tab) => tab.getAttribute("href"))).toEqual(["/", "/isbn"]);
+    expect(tabs[2]).toBe(screen.getByRole("link", { name: "Catalogue" }));
+    expect(tabs.map((tab) => tab.getAttribute("href"))).toEqual([
+      "/",
+      "/isbn",
+      "/catalogue",
+    ]);
   });
 
   it("marks Accueil as the screen shown at the root", async () => {

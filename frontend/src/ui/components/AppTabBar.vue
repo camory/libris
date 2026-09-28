@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { useI18n } from "vue-i18n";
 import IconBarcode from "./icons/IconBarcode.vue";
+import IconBooks from "./icons/IconBooks.vue";
 import IconHome from "./icons/IconHome.vue";
 
 const { t } = useI18n();
@@ -28,6 +29,13 @@ const { t } = useI18n();
           <IconBarcode class="size-8" />
         </RouterLink>
       </div>
+      <RouterLink
+        to="/catalogue"
+        :aria-label="t('tabs.catalogue')"
+        class="flex h-12 items-center justify-center"
+      >
+        <IconBooks class="size-8" />
+      </RouterLink>
     </div>
   </nav>
 </template>
