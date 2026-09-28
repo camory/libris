@@ -104,6 +104,22 @@ describe("CatalogueView", () => {
     expect(within(second!).getByText("Astérix le Gaulois")).toBeDefined();
   });
 
+  it("offers nothing to follow on a row", async () => {
+    // Given
+    const { screen } = open(
+      new FakeCatalogueApi([
+        { books: [asterixLeGaulois, romanceDawn], next: null },
+      ]),
+    );
+
+    // When
+    await flushPromises();
+
+    // Then
+    expect(screen.queryAllByRole("link")).toEqual([]);
+    expect(screen.queryAllByRole("button")).toEqual([]);
+  });
+
   it("asks for the first page on each arrival", async () => {
     // Given
     const catalogueApi = new FakeCatalogueApi([
