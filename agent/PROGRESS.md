@@ -649,3 +649,29 @@ Format:
   with `':!*.spec.ts'`.
 - Left over: the unhandled rejection of a failing port until T048, and two
   notes for the planner, in `agent/PROPOSED.md`.
+
+## 2026-09-28 — T047 The catalogue listed — done
+- Did: `useBrowseCatalogue` leaves `listed` with the first page's books;
+  `CatalogueView` lists them, one `CatalogueRow` per book; the `row title`
+  step joins `style.css`, the shared `src/fixture/Books.ts` arrives.
+  S1 un-skipped, committed red first, green at the end.
+- Decided: the parts of a row are kept apart in its text by an interpolated
+  `{{ " " }}` between them, since Vue drops the newline whitespace between
+  elements and Prettier reflows spaced inline spans onto lines of their own
+  (tried and red); the space renders nothing in the flex column.
+- Decided: the bookshelves line is one string built with
+  `t("catalogue.copies", …, count)` and joined by commas, not `<i18n-t>`,
+  since no part of it is styled apart and the whole line is `muted`.
+- Decided: the list is a `ul` taking the skeleton block's classes, each
+  `li` holding a row; the row itself stays a `div`, so it can be mounted
+  alone in its spec.
+- Decided: guards proven by mutation and reverted: *tome* for a BD
+  (`isbn.card.series.${kind}`, red on *Astérix · tome 1*), the order of the
+  answer (a sort by title, red on *Romance dawn* in the first item), a row
+  leads nowhere (the title in `<a href="#">`, red with two links).
+- Deviations from the brief: none.
+- Fix-up with Tophe on 2026-09-29: the row follows the kind, *album* for a
+  BD, in the spec, S1, the row and the docs; the *tome* question is closed.
+- Left over: two items in `agent/PROPOSED.md`: the copy grouping shared
+  with the card, the icon size for U07.
+  T048 takes the failed page and its unhandled rejection, T049 the next page.

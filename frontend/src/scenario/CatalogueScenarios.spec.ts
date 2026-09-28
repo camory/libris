@@ -36,7 +36,7 @@ describe("Catalogue", () => {
     vi.unstubAllGlobals();
   });
 
-  it.skip("S1 The catalogue lists the house's editions", async () => {
+  it("S1 The catalogue lists the house's editions", async () => {
     // Given
     const catalogue = librisAnswers({
       books: [
@@ -54,7 +54,7 @@ describe("Catalogue", () => {
     await screen.findByText("Parcourir le catalogue");
     await screen.findByText("Romance dawn");
     expect(rows(screen)).toEqual([
-      "Astérix · tome 1 Astérix le Gaulois René Goscinny, Albert Uderzo Bibliothèque de Léa",
+      "Astérix · album 1 Astérix le Gaulois René Goscinny, Albert Uderzo Bibliothèque de Léa",
       "Astérix Astérix et ses amis René Goscinny, Albert Uderzo Salon",
       "One piece · tome 1 Romance dawn Eiichirō Oda Bibliothèque de Léa · 2 exemplaires",
     ]);

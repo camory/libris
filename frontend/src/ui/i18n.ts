@@ -43,6 +43,13 @@ const fr = {
     title: "Parcourir le catalogue",
     hint: "Les ouvrages de toutes vos bibliothèques.",
     empty: "Les ouvrages de vos bibliothèques apparaîtront ici.",
+    series: {
+      BOOK: "{name} · tome {volume}",
+      BD: "{name} · album {volume}",
+      MANGA: "{name} · tome {volume}",
+    },
+    copies: "{bookshelf} | {bookshelf} · {count} exemplaires",
+    cover: "Couverture de {title}",
   },
   language: {
     fr: "français",

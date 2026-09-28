@@ -384,3 +384,9 @@
 - Frontend: `CatalogueView` calls `void browse()`, so a port that fails
   leaves an unhandled rejection until T048 gives the page its error state
   (found 2026-09-28 while implementing T046).
+- Frontend: `CatalogueRow` and `SourceEditionCard` each group the copies of
+  an edition by bookshelf with the same loop; one function beside `Book` or
+  `Copy` could serve both (found 2026-09-28 while implementing T047).
+- Design: U07 gives no size for the stand-in icon of a list row's cover;
+  `CatalogueRow` draws `IconBook` at 22 in its 48 by 74 block. Add that job
+  to U07's list of sizes (found 2026-09-28 while implementing T047).

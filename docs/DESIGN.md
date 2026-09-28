@@ -42,17 +42,17 @@ page count, use tabular figures.
 
 One scale, in pixels, each step with its one job:
 
-| Step         | Size / weight     | Job                                             |
-|--------------|-------------------|-------------------------------------------------|
-| page title   | 22 / semibold     | the `h1` of a screen, tight letter-spacing      |
-| card title   | 20 / bold         | the title of an ouvrage, line-height 1.2        |
-| field        | 18 / regular      | what the reader types                           |
-| row title    | 16 / semibold     | the title of an ouvrage in a list, line-height 1.2 |
-| button       | 16 / semibold     | the primary action                              |
-| lead         | 15 / regular      | a subtitle, an empty-state sentence             |
-| body         | 14 / regular      | hints, messages, label/value rows, line 1.4     |
-| label        | 13 / semibold     | a field label, in `muted`                       |
-| overline     | 12 / semibold     | uppercase, tracked, in `accent`: série · tome   |
+| Step       | Size / weight | Job                                                           |
+|------------|---------------|---------------------------------------------------------------|
+| page title | 22 / semibold | the `h1` of a screen, tight letter-spacing                    |
+| card title | 20 / bold     | the title of an ouvrage, line-height 1.2                      |
+| field      | 18 / regular  | what the reader types                                         |
+| row title  | 16 / semibold | the title of an ouvrage in a list, line-height 1.2            |
+| button     | 16 / semibold | the primary action                                            |
+| lead       | 15 / regular  | a subtitle, an empty-state sentence                           |
+| body       | 14 / regular  | hints, messages, label/value rows, line 1.4                   |
+| label      | 13 / semibold | a field label, in `muted`                                     |
+| overline   | 12 / semibold | uppercase, tracked, in `accent`: série · tome, album for a BD |
 
 A screen uses the steps and nothing between them: no 17, no 21. A step that
 no job fits is added here, not improvised in a component. Weight carries the
@@ -167,15 +167,15 @@ by side: the cover at the left, 96 by 149, radius 6, `border` behind it
 while it loads, never stretched; when there is none, or the image does not
 load, the same block holds an outlined book icon, 48, `muted` at 60 %,
 centred, the stand-in of U05's empty state; at its right,
-stacked 6 apart, the overline (série · tome, U02), the card title, the
-subtitle in `lead` `muted`, and the authors in `body`, grouped by their
-whole set of roles: the names alone on one line, separated by commas, when
-every author shares one set (*Eiichirō Oda*, *Erckmann, Chatrian*),
-otherwise one line per author, the name in `text` and its roles after a
-middle dot in `muted` (*René Goscinny · scénario*, *Albert Uderzo ·
-dessin*); the authors keep the order of the answer, the house's, by role
-then by name, and the card sorts nothing. Between the top part and the
-field rows, one row per bookshelf holding a copy, `body` semibold, `text`,
+stacked 6 apart, the overline (série · tome, or série · album for a BD, U02),
+the card title, the subtitle in `lead` `muted`, and the authors in `body`,
+grouped by their whole set of roles: the names alone on one line, separated
+by commas, when every author shares one set (*Eiichirō Oda*, *Erckmann,
+Chatrian*), otherwise one line per author, the name in `text` and its roles
+after a middle dot in `muted` (*René Goscinny · scénario*, *Albert Uderzo ·
+dessin*); the authors keep the order of the answer, the house's, by role then
+by name, and the card sorts nothing. Between the top part and the field rows,
+one row per bookshelf holding a copy, `body` semibold, `text`,
 the book icon at 22 before the words: *Dans* and the name, then the count
 after a middle dot when it holds more than one (*Dans Bibliothèque de Léa ·
 2 exemplaires*), in the order of the answer; when no bookshelf of the reader

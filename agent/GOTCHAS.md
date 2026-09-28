@@ -437,6 +437,11 @@ true; the diary keeps the date it was found.
   nodes only. Whitespace beside an interpolation survives as one space, which
   is what gives `SourceEditionCard`'s heading the boundary
   `FastEntryScenarios`' `/One piece\D{0,12}1\b/` asks for.
+  Between block parts that must read apart, `CatalogueRow` writes an
+  interpolated `{{ " " }}` on its own line; it survives the compiler and, in
+  a flex container, renders nothing. A literal space between two `<span>`s
+  does not last: Prettier moves each span to its own line and Vue then
+  drops the space.
 - The colour roles and the type steps of `docs/DESIGN.md` are Tailwind theme
   tokens in `src/ui/style.css`: custom properties on `:root`, overridden in a
   `prefers-color-scheme: dark` block, exposed through `@theme inline` as
@@ -486,7 +491,9 @@ true; the diary keeps the date it was found.
   count, 0 included. The placeholders are filled by the named slots
   (`#bookshelf`, `#count`); a slot is the only part of the sentence a class
   can style, so a class on the count would cover the number alone, not the
-  words around it.
+  words around it. Where no part is styled, `t(key, { … }, count)`
+  picks the form as a plain string (`CatalogueRow`'s bookshelves), which
+  several can then join.
 - A type step worn at another weight is the step's class plus a weight
   class, `text-body font-semibold`: Tailwind 4 emits `.text-body` with
   `font-weight: var(--tw-font-weight, 400)` and `font-semibold` sets that
