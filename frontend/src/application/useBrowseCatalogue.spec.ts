@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+import { asterixLeGaulois, romanceDawn } from "../fixture/Books";
 import { FakeCatalogueApi } from "../fixture/FakeCatalogueApi";
 import { useBrowseCatalogue } from "./useBrowseCatalogue";
 
@@ -39,5 +40,23 @@ describe("useBrowseCatalogue", () => {
 
     // Then
     expect(state.value).toEqual({ status: "empty" });
+  });
+
+  it("lists the books of the first page", async () => {
+    // Given
+    const { state, browse } = useBrowseCatalogue(
+      new FakeCatalogueApi([
+        { books: [asterixLeGaulois, romanceDawn], next: null },
+      ]),
+    );
+
+    // When
+    await browse();
+
+    // Then
+    expect(state.value).toEqual({
+      status: "listed",
+      books: [asterixLeGaulois, romanceDawn],
+    });
   });
 });
