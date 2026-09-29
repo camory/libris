@@ -154,6 +154,19 @@ class JdbcCatalogueEditionsTest @Autowired constructor(
         page.editionIds shouldBe listOf(first, second)
     }
 
+    @Test
+    fun `a full page names its last edition as next`() {
+        // Given
+        val romans = romansHeldOn(leasBookshelf, 1..3)
+
+        // When
+        val page = catalogueEditions.findPage(lea.id, null, 2)
+
+        // Then
+        titlesOf(page) shouldBe listOf("Roman 01", "Roman 02")
+        page.next shouldBe romans.getValue(2).id
+    }
+
     private fun titlesOf(page: EditionIdPage): List<String> {
         val titles = editions.findByIds(page.editionIds).associate { it.id to it.title }
         return page.editionIds.map { titles.getValue(it) }
@@ -180,6 +193,11 @@ class JdbcCatalogueEditionsTest @Autowired constructor(
         summary = null,
         coverUrl = null,
     ).also(editions::insert)
+
+    private fun romansHeldOn(bookshelf: Bookshelf, numbers: IntRange): Map<Int, Edition> =
+        numbers.reversed().associateWith { heldOn(bookshelf, roman(it)) }
+
+    private fun roman(number: Int): Edition = edition("Roman %02d".format(number))
 
     private fun heldOn(bookshelf: Bookshelf, edition: Edition): Edition {
         copies.insert(Copy(CopyId.new(), edition.id, bookshelf.id))

@@ -25,14 +25,14 @@ private const val FIND_PAGE =
 
 @Repository
 class JdbcCatalogueEditions(private val jdbcClient: JdbcClient) : CatalogueEditions {
-    override fun findPage(readerId: ReaderId, after: EditionId?, size: Int): EditionIdPage =
-        EditionIdPage(
-            jdbcClient
-                .sql(FIND_PAGE)
-                .param("readerId", readerId.value)
-                .param("size", size)
-                .query { rs, _ -> EditionId(rs.getObject("edition_id", UUID::class.java)) }
-                .list(),
-            null,
-        )
+    override fun findPage(readerId: ReaderId, after: EditionId?, size: Int): EditionIdPage {
+        val following = jdbcClient
+            .sql(FIND_PAGE)
+            .param("readerId", readerId.value)
+            .param("size", size + 1)
+            .query { rs, _ -> EditionId(rs.getObject("edition_id", UUID::class.java)) }
+            .list()
+        val page = following.take(size)
+        return EditionIdPage(page, if (following.size > size) page.last() else null)
+    }
 }
