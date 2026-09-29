@@ -228,6 +228,18 @@ class JdbcCatalogueEditionsTest @Autowired constructor(
         page.next shouldBe null
     }
 
+    @Test
+    fun `an after naming no edition answers an empty page`() {
+        // Given
+        heldOn(leasBookshelf, roman(1))
+
+        // When
+        val page = catalogueEditions.findPage(lea.id, EditionId.new(), 2)
+
+        // Then
+        page shouldBe EditionIdPage(emptyList(), null)
+    }
+
     private fun titlesOf(page: EditionIdPage): List<String> {
         val titles = editions.findByIds(page.editionIds).associate { it.id to it.title }
         return page.editionIds.map { titles.getValue(it) }
