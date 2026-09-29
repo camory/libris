@@ -73,6 +73,19 @@ class JdbcCatalogueEditionsTest @Autowired constructor(
         titlesOf(page) shouldBe listOf("Pierre et le loup", "Les cigares du pharaon")
     }
 
+    @Test
+    fun `the order ignores case`() {
+        // Given
+        heldOn(leasBookshelf, edition("Un ninja", "Naruto", 1))
+        heldOn(leasBookshelf, edition("maus"))
+
+        // When
+        val page = catalogueEditions.findPage(lea.id, null, PAGE_SIZE)
+
+        // Then
+        titlesOf(page) shouldBe listOf("maus", "Un ninja")
+    }
+
     private fun titlesOf(page: EditionIdPage): List<String> {
         val titles = editions.findByIds(page.editionIds).associate { it.id to it.title }
         return page.editionIds.map { titles.getValue(it) }
