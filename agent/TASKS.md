@@ -136,6 +136,22 @@ once T045 is deployed. No other task touches the contract (D04).
       Realises S2 and the next-page case of S4 on the frontend; un-skips
       the frontend tests of S2 and of S4 on the next page.
 
+- [ ] T050 Backend: the catalogue ordered and paged by the database.
+      The answer of T045 unchanged in every field and every order, but
+      the order of T044 and the page of T045 are the database's: one
+      statement of the library's own names the fifty editions of a page
+      and its next from the place of `after`, and nothing of the
+      catalogue beyond the page is read; the editions and copies of the
+      page are then read through their repositories, as today (D02, D12).
+      The text order ignores case and accents through a collation of the
+      database, declared once by a migration; the last in-memory order
+      goes with it.
+      Tests against PostgreSQL: the order and page cases of T044 and T045
+      over the statement, including an `after` the reader no longer holds
+      and an `after` of no edition.
+      Realises S1 and S2 anew; the scenario tests of S1 and S2 stay green
+      throughout, no test is un-skipped.
+
 *Done (Tophe, on the Pixel, from the installed app on staging): open
 Catalogue; the ouvrages added in the bookshelf spec's check are there, One
 Piece 1 first with Bibliothèque de Christophe · 2 exemplaires, and the rows
