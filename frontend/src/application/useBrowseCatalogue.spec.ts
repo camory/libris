@@ -118,6 +118,24 @@ describe("useBrowseCatalogue", () => {
     expect(catalogueApi.asked).toEqual([null, asterixEtSesAmis.id]);
   });
 
+  it("asks no page after the last", async () => {
+    // Given
+    const catalogueApi = new FakeCatalogueApi([firstPage(), lastPage()]);
+    const { state, browse } = useBrowseCatalogue(catalogueApi);
+    await browse();
+    await browse();
+
+    // When
+    await browse();
+
+    // Then
+    expect(catalogueApi.asked).toEqual([null, asterixEtSesAmis.id]);
+    expect(state.value).toEqual({
+      status: "listed",
+      books: [asterixLeGaulois, asterixEtSesAmis, romanceDawn],
+    });
+  });
+
   function firstPage() {
     return {
       books: [asterixLeGaulois, asterixEtSesAmis],
