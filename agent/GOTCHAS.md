@@ -132,9 +132,9 @@ true; the diary keeps the date it was found.
   JDK on that classpath, so two JDK exception types caught in one `try`
   (`IOException` and `SAXException`) read as one class to
   `UnreachableCatchBlock`, and `!!` on a Java-typed receiver goes unreported.
-- detekt runs on the test sources too, but only inside `check`:
-  `./gradlew detekt` alone is the main sources. Run `./gradlew detekt`
-  before each commit anyway: `ImportOrdering` fails an import added by hand
+- `./gradlew detekt` reports on the test sources as well as the main ones
+  (T050 saw `MaxLineLength` and `ArgumentListWrapping` in a slice test from
+  it). Run `./gradlew detekt` before each commit: `ImportOrdering` fails an import added by hand
   out of lexicographic order, `VariableNaming` refuses a backticked property
   (`@ArchTest fun \`name\`(classes: JavaClasses)` instead of a `val`),
   `ReturnCount` allows two returns, `LongParameterList` refuses a function of
@@ -317,7 +317,7 @@ true; the diary keeps the date it was found.
 - `JdbcClient` expands an empty collection parameter to `IN ()`, which
   PostgreSQL refuses (`BadSqlGrammarException`): a finder over a list of ids
   answers `emptyList()` without a statement when given none, and a slice case
-  (`no bookshelf finds no copy`, `no id finds no edition`) proves it.
+  (`no edition finds no copy`, `no id finds no edition`) proves it.
 
 - `LookupAnswering`, in `bibliography.fixture`, records the ISBNs it was asked
   and answers them as `asked`, so a case proves a source was never called with
@@ -325,12 +325,19 @@ true; the diary keeps the date it was found.
 - kotest's `shouldBeInstanceOf<T>()`, from `io.kotest.matchers.types`, answers
   the value narrowed to `T`: a case asserting one field of a result variant
   chains onto it and needs no cast.
-- A `java.text.Collator` on `Locale.ROOT` at `PRIMARY` strength, the text
-  comparison of `Edition.BY_SERIES_AND_VOLUME`, ignores spaces and hyphens as
-  well as case and accents: `One piece`, `Onepiece` and `One-piece` compare
-  as `0`, while an apostrophe still counts (`L'aube` before `Laube`). A key or
-  a cursor built on that order treats such names as equal. The JDK's rules
-  are Latin only: Cyrillic and Greek case still counts, whatever the locale.
+- The catalogue order is the PostgreSQL collation `ignoring_case_and_accents`
+  (ICU `und-u-ks-level1`, nondeterministic, created by `V005`): it ignores
+  case and accents but not spaces and hyphens, so `One piece` sorts before
+  `Onepiece`. Names equal under it fall to the next key, never to byte order,
+  which is why the keyset of `JdbcCatalogueEditions` ends on the id. A
+  `COLLATE` on a column of the `ranked` CTE carries into its `ORDER BY` and
+  its comparisons; `DISTINCT` beside that `ORDER BY` does not work, a
+  semi-join (`EXISTS`) keeps an edition once instead.
+- A row comparison `(a, b) > (c, d)` with a nullable member answers `NULL`
+  when it meets one: the keyset of `JdbcCatalogueEditions` spells the
+  nullable tome out (`IS NULL`, `IS NOT DISTINCT FROM`) instead.
+- `placing` is a reserved word of PostgreSQL: as a table alias it is a
+  syntax error (`syntax error at or near "placing"`).
 
 ## Frontend build and tests
 - Two TypeScript programs: `tsconfig.app.json` (`src/`, `vite/client` types)
