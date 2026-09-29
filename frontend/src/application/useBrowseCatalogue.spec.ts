@@ -153,6 +153,20 @@ describe("useBrowseCatalogue", () => {
     });
   });
 
+  it("asks the next page once while it is on its way", async () => {
+    // Given
+    const catalogueApi = new FakeCatalogueApi([firstPage(), lastPage()]);
+    const { browse } = useBrowseCatalogue(catalogueApi);
+    await browse();
+    void browse();
+
+    // When
+    await browse();
+
+    // Then
+    expect(catalogueApi.asked).toEqual([null, asterixEtSesAmis.id]);
+  });
+
   function firstPage() {
     return {
       books: [asterixLeGaulois, asterixEtSesAmis],
