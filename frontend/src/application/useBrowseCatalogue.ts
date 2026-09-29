@@ -6,6 +6,7 @@ export type CatalogueState =
   | { status: "loading" }
   | { status: "empty" }
   | { status: "listed"; books: Book[] }
+  | { status: "loadingMore"; books: Book[] }
   | { status: "unavailable" };
 
 export function useBrowseCatalogue(catalogueApi: CatalogueApi): {
@@ -17,11 +18,13 @@ export function useBrowseCatalogue(catalogueApi: CatalogueApi): {
 
   async function browse() {
     if (state.value.status !== "loading" && next === null) return;
+    if (state.value.status === "listed")
+      state.value = { status: "loadingMore", books: state.value.books };
     try {
       const page = await catalogueApi.browse(next);
       next = page.next;
       const books = [
-        ...(state.value.status === "listed" ? state.value.books : []),
+        ...(state.value.status === "loadingMore" ? state.value.books : []),
         ...page.books,
       ];
       state.value =

@@ -136,6 +136,23 @@ describe("useBrowseCatalogue", () => {
     });
   });
 
+  it("is loading more while the next page is coming", async () => {
+    // Given
+    const { state, browse } = useBrowseCatalogue(
+      new FakeCatalogueApi([firstPage(), lastPage()]),
+    );
+    await browse();
+
+    // When
+    void browse();
+
+    // Then
+    expect(state.value).toEqual({
+      status: "loadingMore",
+      books: [asterixLeGaulois, asterixEtSesAmis],
+    });
+  });
+
   function firstPage() {
     return {
       books: [asterixLeGaulois, asterixEtSesAmis],
