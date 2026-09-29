@@ -382,3 +382,8 @@
 - Design: U07 gives no size for the stand-in icon of a list row's cover;
   `CatalogueRow` draws `IconBook` at 22 in its 48 by 74 block. Add that job
   to U07's list of sizes (found 2026-09-28 while implementing T047).
+- Backend: `BrowseCatalogue` reads the page's edition ids in one statement
+  and their copies in another; a copy removed between the two would leave
+  an edition of the page without copies and fail `getValue`. Nothing
+  removes copies yet; the task that does should let an edition of the page
+  come with no copy, or drop it (found 2026-09-29 while implementing T050).
