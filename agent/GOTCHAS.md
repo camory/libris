@@ -588,3 +588,12 @@ true; the diary keeps the date it was found.
   case to the next of the same spec file and reddens unrelated cases; run
   the guard's case alone (`npx vitest run <file> -t "<name>"`) to read its
   own red.
+- jsdom has no `IntersectionObserver`: every spec that mounts
+  `CatalogueView`, directly or through the router on `/catalogue`, stubs it
+  with `vi.stubGlobal` or fails on `ReferenceError: IntersectionObserver is
+  not defined`. The view builds it in `setup`, so the stub goes in before
+  the mount, and the view spec's stub records the targets per observer
+  (`unobserve` drops one, `disconnect` all). A `watch` with
+  `flush: "post"` runs in the same flush as the render, before
+  `findByText` resolves, which is what lets a scenario call back on the
+  last row right after finding it.

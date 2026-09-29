@@ -297,7 +297,7 @@ once T045 is deployed. No other task touches the contract (D04).
       Realises the first-page case of S4 on the frontend; un-skips the
       frontend test of S4 on the first page.
 
-- [ ] T049 Frontend: the next page.
+- [x] T049 Frontend: the next page.
       When the last row comes into view and the page received names a
       next, two skeleton rows stand under it while the next page is asked
       with that `after`, and its rows take their place; under the last row
