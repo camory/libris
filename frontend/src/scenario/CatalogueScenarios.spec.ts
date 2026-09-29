@@ -60,7 +60,7 @@ describe("Catalogue", () => {
     ]);
   });
 
-  it.skip("S2 The catalogue comes in pages", async () => {
+  it("S2 The catalogue comes in pages", async () => {
     // Given
     const screen = open(
       "/catalogue",
