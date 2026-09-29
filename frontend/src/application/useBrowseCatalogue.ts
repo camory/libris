@@ -20,20 +20,16 @@ export function useBrowseCatalogue(catalogueApi: CatalogueApi): {
     if (state.value.status === "listed" && next !== null)
       state.value = { status: "loadingMore", books: state.value.books };
     else if (state.value.status !== "loading") return;
+    const listed =
+      state.value.status === "loadingMore" ? state.value.books : [];
     try {
       const page = await catalogueApi.browse(next);
       next = page.next;
-      const books = [
-        ...(state.value.status === "loadingMore" ? state.value.books : []),
-        ...page.books,
-      ];
+      const books = [...listed, ...page.books];
       state.value =
         books.length === 0 ? { status: "empty" } : { status: "listed", books };
     } catch {
-      state.value = {
-        status: "unavailable",
-        books: state.value.status === "loadingMore" ? state.value.books : [],
-      };
+      state.value = { status: "unavailable", books: listed };
     }
   }
 
