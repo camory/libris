@@ -13,7 +13,10 @@ private const val FIND_PAGE =
     SELECT copy.edition_id
     FROM membership
     JOIN copy ON copy.bookshelf_id = membership.bookshelf_id
+    JOIN edition ON edition.id = copy.edition_id
+    LEFT JOIN series ON series.id = edition.series_id
     WHERE membership.reader_id = :readerId
+    ORDER BY COALESCE(series.name, edition.title)
     LIMIT :size
     """
 

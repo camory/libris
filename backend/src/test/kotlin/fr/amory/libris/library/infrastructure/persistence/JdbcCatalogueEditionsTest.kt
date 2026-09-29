@@ -60,6 +60,24 @@ class JdbcCatalogueEditionsTest @Autowired constructor(
         page shouldBe EditionIdPage(listOf(leas.id), null)
     }
 
+    @Test
+    fun `editions are ordered by series name, or by title without a series`() {
+        // Given
+        heldOn(leasBookshelf, edition("Les cigares du pharaon", "Tintin", 1))
+        heldOn(leasBookshelf, edition("Pierre et le loup"))
+
+        // When
+        val page = catalogueEditions.findPage(lea.id, null, PAGE_SIZE)
+
+        // Then
+        titlesOf(page) shouldBe listOf("Pierre et le loup", "Les cigares du pharaon")
+    }
+
+    private fun titlesOf(page: EditionIdPage): List<String> {
+        val titles = editions.findByIds(page.editionIds).associate { it.id to it.title }
+        return page.editionIds.map { titles.getValue(it) }
+    }
+
     private fun edition(
         title: String,
         seriesName: String? = null,
