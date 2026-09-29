@@ -21,6 +21,8 @@ import org.springframework.context.annotation.Import
 import java.util.UUID
 
 private const val PAGE_SIZE = 50
+private const val LESSER_TWIN = "00000000-0000-7000-8000-000000000001"
+private const val GREATER_TWIN = "00000000-0000-7000-8000-000000000002"
 
 @JdbcSliceTest
 @Import(
@@ -142,8 +144,8 @@ class JdbcCatalogueEditionsTest @Autowired constructor(
     @Test
     fun `editions equal on series, tome and title are ordered by id`() {
         // Given
-        val first = EditionId(UUID.fromString("00000000-0000-7000-8000-000000000001"))
-        val second = EditionId(UUID.fromString("00000000-0000-7000-8000-000000000002"))
+        val first = EditionId(UUID.fromString(LESSER_TWIN))
+        val second = EditionId(UUID.fromString(GREATER_TWIN))
         heldOn(leasBookshelf, edition("Romance dawn", "One piece", 1, second))
         heldOn(leasBookshelf, edition("Romance dawn", "One piece", 1, first))
 
@@ -240,6 +242,22 @@ class JdbcCatalogueEditionsTest @Autowired constructor(
         page shouldBe EditionIdPage(emptyList(), null)
     }
 
+    @Test
+    fun `editions equal but for their id are split across a page without a repeat or a gap`() {
+        // Given
+        val roman01 = heldOn(leasBookshelf, roman(1))
+        val greaterTwin = heldOn(leasBookshelf, roman(2, EditionId(UUID.fromString(GREATER_TWIN))))
+        val lesserTwin = heldOn(leasBookshelf, roman(2, EditionId(UUID.fromString(LESSER_TWIN))))
+
+        // When
+        val first = catalogueEditions.findPage(lea.id, null, 2)
+        val second = catalogueEditions.findPage(lea.id, first.next, 2)
+
+        // Then
+        first shouldBe EditionIdPage(listOf(roman01.id, lesserTwin.id), lesserTwin.id)
+        second shouldBe EditionIdPage(listOf(greaterTwin.id), null)
+    }
+
     private fun titlesOf(page: EditionIdPage): List<String> {
         val titles = editions.findByIds(page.editionIds).associate { it.id to it.title }
         return page.editionIds.map { titles.getValue(it) }
@@ -270,7 +288,8 @@ class JdbcCatalogueEditionsTest @Autowired constructor(
     private fun romansHeldOn(bookshelf: Bookshelf, numbers: IntRange): Map<Int, Edition> =
         numbers.reversed().associateWith { heldOn(bookshelf, roman(it)) }
 
-    private fun roman(number: Int): Edition = edition("Roman %02d".format(number))
+    private fun roman(number: Int, id: EditionId = EditionId.new()): Edition =
+        edition("Roman %02d".format(number), id = id)
 
     private fun heldOn(bookshelf: Bookshelf, edition: Edition): Edition {
         copies.insert(Copy(CopyId.new(), edition.id, bookshelf.id))
