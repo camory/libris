@@ -28,9 +28,11 @@ private const val FIND_PAGE =
           WHERE place.id = :after
             AND (ranked.name > place.name
                  OR ranked.name = place.name
-                    AND ranked.volume_number IS NOT DISTINCT FROM place.volume_number
-                    AND (ranked.title > place.title
-                         OR ranked.title = place.title AND ranked.id > place.id))
+                    AND (ranked.volume_number > place.volume_number
+                         OR ranked.volume_number IS NULL AND place.volume_number IS NOT NULL
+                         OR ranked.volume_number IS NOT DISTINCT FROM place.volume_number
+                            AND (ranked.title > place.title
+                                 OR ranked.title = place.title AND ranked.id > place.id)))
       ))
     ORDER BY ranked.name, ranked.volume_number, ranked.title, ranked.id
     LIMIT :size

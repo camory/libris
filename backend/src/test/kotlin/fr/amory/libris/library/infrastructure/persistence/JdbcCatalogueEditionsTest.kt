@@ -193,6 +193,25 @@ class JdbcCatalogueEditionsTest @Autowired constructor(
         page.next shouldBe null
     }
 
+    @Test
+    fun `the pages after the tomes of a series reach its edition without a tome, then go on`() {
+        // Given
+        heldOn(leasBookshelf, edition("Babar"))
+        val withoutTome = heldOn(leasBookshelf, edition("Astérix et ses amis", "Astérix"))
+        val tomeTwo = heldOn(leasBookshelf, edition("La serpe d'or", "Astérix", 2))
+        val tomeOne = heldOn(leasBookshelf, edition("Astérix le Gaulois", "Astérix", 1))
+
+        // When
+        val afterTomeOne = catalogueEditions.findPage(lea.id, tomeOne.id, 1)
+        val afterTomeTwo = catalogueEditions.findPage(lea.id, tomeTwo.id, 1)
+        val afterWithoutTome = catalogueEditions.findPage(lea.id, withoutTome.id, 1)
+
+        // Then
+        titlesOf(afterTomeOne) shouldBe listOf("La serpe d'or")
+        titlesOf(afterTomeTwo) shouldBe listOf("Astérix et ses amis")
+        titlesOf(afterWithoutTome) shouldBe listOf("Babar")
+    }
+
     private fun titlesOf(page: EditionIdPage): List<String> {
         val titles = editions.findByIds(page.editionIds).associate { it.id to it.title }
         return page.editionIds.map { titles.getValue(it) }
