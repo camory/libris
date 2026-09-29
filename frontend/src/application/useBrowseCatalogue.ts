@@ -17,10 +17,9 @@ export function useBrowseCatalogue(catalogueApi: CatalogueApi): {
   let next: string | null = null;
 
   async function browse() {
-    if (state.value.status === "loadingMore") return;
-    if (state.value.status !== "loading" && next === null) return;
-    if (state.value.status === "listed")
+    if (state.value.status === "listed" && next !== null)
       state.value = { status: "loadingMore", books: state.value.books };
+    else if (state.value.status !== "loading") return;
     try {
       const page = await catalogueApi.browse(next);
       next = page.next;

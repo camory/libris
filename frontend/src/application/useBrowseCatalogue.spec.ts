@@ -184,6 +184,28 @@ describe("useBrowseCatalogue", () => {
     });
   });
 
+  it("asks nothing more once a page did not come", async () => {
+    // Given
+    const catalogueApi = new FakeCatalogueApi([
+      firstPage(),
+      new TypeError("Failed to fetch"),
+      lastPage(),
+    ]);
+    const { state, browse } = useBrowseCatalogue(catalogueApi);
+    await browse();
+    await browse();
+
+    // When
+    await browse();
+
+    // Then
+    expect(catalogueApi.asked).toEqual([null, asterixEtSesAmis.id]);
+    expect(state.value).toEqual({
+      status: "unavailable",
+      books: [asterixLeGaulois, asterixEtSesAmis],
+    });
+  });
+
   function firstPage() {
     return {
       books: [asterixLeGaulois, asterixEtSesAmis],
