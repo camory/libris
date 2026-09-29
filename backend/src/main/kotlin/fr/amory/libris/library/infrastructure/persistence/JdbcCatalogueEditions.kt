@@ -19,10 +19,12 @@ private const val FIND_PAGE =
         LEFT JOIN series ON series.id = edition.series_id
     )
     SELECT ranked.id
-    FROM membership
-    JOIN copy ON copy.bookshelf_id = membership.bookshelf_id
-    JOIN ranked ON ranked.id = copy.edition_id
-    WHERE membership.reader_id = :readerId
+    FROM ranked
+    WHERE EXISTS (
+          SELECT FROM copy
+          JOIN membership ON membership.bookshelf_id = copy.bookshelf_id
+          WHERE copy.edition_id = ranked.id AND membership.reader_id = :readerId
+      )
       AND (CAST(:after AS uuid) IS NULL OR EXISTS (
           SELECT FROM ranked AS place
           WHERE place.id = :after

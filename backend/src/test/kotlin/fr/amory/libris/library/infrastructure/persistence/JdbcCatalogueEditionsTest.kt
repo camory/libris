@@ -8,6 +8,9 @@ import fr.amory.libris.bibliography.domain.edition.EditionId
 import fr.amory.libris.bibliography.infrastructure.persistence.JdbcEditionRepository
 import fr.amory.libris.fixture.JdbcSliceTest
 import fr.amory.libris.library.domain.bookshelf.Bookshelf
+import fr.amory.libris.library.domain.bookshelf.BookshelfId
+import fr.amory.libris.library.domain.bookshelf.Membership
+import fr.amory.libris.library.domain.bookshelf.MembershipRole.OWNER
 import fr.amory.libris.library.domain.copy.Copy
 import fr.amory.libris.library.domain.copy.CopyId
 import fr.amory.libris.library.domain.copy.EditionIdPage
@@ -271,6 +274,20 @@ class JdbcCatalogueEditionsTest @Autowired constructor(
         // Then
         titlesOf(second) shouldBe listOf("Roman 03")
         second.next shouldBe null
+    }
+
+    @Test
+    fun `an edition on two of the reader's bookshelves comes once`() {
+        // Given
+        val salon = Bookshelf(BookshelfId.new(), "Salon", listOf(Membership(lea.id, OWNER)))
+        bookshelves.insert(salon)
+        val edition = heldOn(leasBookshelf, heldOn(salon, roman(1)))
+
+        // When
+        val page = catalogueEditions.findPage(lea.id, null, PAGE_SIZE)
+
+        // Then
+        page shouldBe EditionIdPage(listOf(edition.id), null)
     }
 
     private fun titlesOf(page: EditionIdPage): List<String> {
