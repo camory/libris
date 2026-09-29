@@ -184,6 +184,7 @@ describe("CatalogueView", () => {
     // Then
     expect(wrapper.findAllComponents(CatalogueRowSkeleton)).toHaveLength(0);
     expect(screen.queryAllByRole("listitem")).toEqual([]);
+    expect(screen.queryByRole("list")).toBeNull();
     expect(
       screen.queryByText("Les ouvrages de vos bibliothèques apparaîtront ici."),
     ).toBeNull();
