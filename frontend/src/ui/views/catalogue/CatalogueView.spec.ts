@@ -1,8 +1,9 @@
 import { within } from "@testing-library/dom";
 import { flushPromises, mount } from "@vue/test-utils";
-import { describe, expect, it } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import {
   catalogueApiKey,
+  type BookPage,
   type CatalogueApi,
 } from "../../../application/CatalogueApi";
 import {
@@ -18,6 +19,38 @@ import { createLibrisI18n } from "../../i18n";
 import CatalogueView from "./CatalogueView.vue";
 
 describe("CatalogueView", () => {
+  let watched: {
+    callback: IntersectionObserverCallback;
+    targets: Element[];
+  }[] = [];
+
+  beforeEach(() => {
+    watched = [];
+    vi.stubGlobal(
+      "IntersectionObserver",
+      class {
+        private readonly targets: Element[] = [];
+        constructor(callback: IntersectionObserverCallback) {
+          watched.push({ callback, targets: this.targets });
+        }
+        observe(target: Element) {
+          this.targets.push(target);
+        }
+        unobserve(target: Element) {
+          const at = this.targets.indexOf(target);
+          if (at >= 0) this.targets.splice(at, 1);
+        }
+        disconnect() {
+          this.targets.length = 0;
+        }
+      },
+    );
+  });
+
+  afterEach(() => {
+    vi.unstubAllGlobals();
+  });
+
   it("shows the title and the hint", () => {
     // When
     const { screen } = open(new FakeCatalogueApi([{ books: [], next: null }]));
@@ -173,6 +206,32 @@ describe("CatalogueView", () => {
     expect(catalogueApi.asked).toEqual([null, null]);
   });
 
+  it("shows two skeleton rows under the rows while the next page is coming", async () => {
+    // Given
+    const { wrapper, screen } = open({
+      browse: (after) =>
+        after === null
+          ? Promise.resolve(firstPage())
+          : new Promise<BookPage>(() => {}),
+    });
+    await flushPromises();
+
+    // When
+    theLastRowComes(true);
+    await flushPromises();
+
+    // Then
+    expect(wrapper.findAllComponents(CatalogueRowSkeleton)).toHaveLength(2);
+    expect(screen.getAllByRole("listitem")).toHaveLength(2);
+  });
+
+  function firstPage(): BookPage {
+    return {
+      books: [asterixLeGaulois, asterixEtSesAmis],
+      next: asterixEtSesAmis.id,
+    };
+  }
+
   function open(catalogueApi: CatalogueApi) {
     const wrapper = mount(CatalogueView, {
       global: {
@@ -181,5 +240,16 @@ describe("CatalogueView", () => {
       },
     });
     return { wrapper, screen: within(wrapper.element as HTMLElement) };
+  }
+
+  function theLastRowComes(inView: boolean) {
+    const observer = watched.at(-1);
+    const target = observer?.targets.at(-1);
+    if (observer === undefined || target === undefined)
+      throw Error("No row is observed");
+    observer.callback(
+      [{ isIntersecting: inView, target } as IntersectionObserverEntry],
+      {} as IntersectionObserver,
+    );
   }
 });
