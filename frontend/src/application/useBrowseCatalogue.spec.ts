@@ -1,5 +1,9 @@
 import { describe, expect, it } from "vitest";
-import { asterixLeGaulois, romanceDawn } from "../fixture/Books";
+import {
+  asterixEtSesAmis,
+  asterixLeGaulois,
+  romanceDawn,
+} from "../fixture/Books";
 import { FakeCatalogueApi } from "../fixture/FakeCatalogueApi";
 import { useBrowseCatalogue } from "./useBrowseCatalogue";
 
@@ -83,4 +87,32 @@ describe("useBrowseCatalogue", () => {
     // Then
     expect(state.value).toEqual({ status: "unavailable" });
   });
+
+  it("lists the next page after the first", async () => {
+    // Given
+    const { state, browse } = useBrowseCatalogue(
+      new FakeCatalogueApi([firstPage(), lastPage()]),
+    );
+    await browse();
+
+    // When
+    await browse();
+
+    // Then
+    expect(state.value).toEqual({
+      status: "listed",
+      books: [asterixLeGaulois, asterixEtSesAmis, romanceDawn],
+    });
+  });
+
+  function firstPage() {
+    return {
+      books: [asterixLeGaulois, asterixEtSesAmis],
+      next: asterixEtSesAmis.id,
+    };
+  }
+
+  function lastPage() {
+    return { books: [romanceDawn], next: null };
+  }
 });

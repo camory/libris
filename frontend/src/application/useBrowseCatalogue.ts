@@ -17,10 +17,12 @@ export function useBrowseCatalogue(catalogueApi: CatalogueApi): {
   async function browse() {
     try {
       const page = await catalogueApi.browse(null);
+      const books = [
+        ...(state.value.status === "listed" ? state.value.books : []),
+        ...page.books,
+      ];
       state.value =
-        page.books.length === 0
-          ? { status: "empty" }
-          : { status: "listed", books: page.books };
+        books.length === 0 ? { status: "empty" } : { status: "listed", books };
     } catch {
       state.value = { status: "unavailable" };
     }
