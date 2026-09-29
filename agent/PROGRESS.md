@@ -693,3 +693,26 @@ Format:
 - Left over: the next page and its failure, S2 and the next-page S4: T049.
   The shared message block of `IsbnView` and `CatalogueView` is not
   proposed: two copies, as the brief says, do not yet make a component.
+
+## 2026-09-29 — T049 The next page — done
+- Did: `useBrowseCatalogue.browse` asks the page after the rows listed with
+  the `next` received, through `loadingMore`, and keeps the rows on
+  `unavailable`; `CatalogueView` watches its last row with an
+  `IntersectionObserver`. S2 and the next-page S4 un-skipped, green.
+- Decided: `browse` asks on the first call or when `listed` with a next,
+  and on nothing else: one rule covers the page on its way, the last page
+  and the failed page, rather than one early return each.
+- Decided: the view finds its last row as the `lastElementChild` of the
+  `ul`, in a `flush: "post"` watch of the state, and moves the observer
+  from the old row to the new one there; no function ref on the `li`,
+  which Vue calls again on every patch.
+- Decided: the message under the rows takes `mt-5` only when rows stand
+  above it; on a failed first page it keeps T048's place under the header.
+- Decided: guards proven by mutation and reverted: the last row alone
+  (no `unobserve`, red with three targets), watching nothing once left (no
+  `disconnect`, red with one target), no list on a failed first page (the
+  list drawn for any `unavailable`, red on an empty `ul`).
+- Deviations from the brief: step 9 was a guard, not a red: step 7's green
+  already moved the observer off the old row, since watching the last row
+  meant finding it on each render. Step 15 was red, as the brief allowed.
+- Left over: nothing; the catalogue spec is complete on the frontend.

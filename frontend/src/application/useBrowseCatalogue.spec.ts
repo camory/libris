@@ -1,5 +1,9 @@
 import { describe, expect, it } from "vitest";
-import { asterixLeGaulois, romanceDawn } from "../fixture/Books";
+import {
+  asterixEtSesAmis,
+  asterixLeGaulois,
+  romanceDawn,
+} from "../fixture/Books";
 import { FakeCatalogueApi } from "../fixture/FakeCatalogueApi";
 import { useBrowseCatalogue } from "./useBrowseCatalogue";
 
@@ -69,7 +73,7 @@ describe("useBrowseCatalogue", () => {
     await browse();
 
     // Then
-    expect(state.value).toEqual({ status: "unavailable" });
+    expect(state.value).toEqual({ status: "unavailable", books: [] });
   });
   it("is unavailable when the catalogue refuses the page", async () => {
     // Given
@@ -81,6 +85,135 @@ describe("useBrowseCatalogue", () => {
     await browse();
 
     // Then
-    expect(state.value).toEqual({ status: "unavailable" });
+    expect(state.value).toEqual({ status: "unavailable", books: [] });
   });
+
+  it("lists the next page after the first", async () => {
+    // Given
+    const { state, browse } = useBrowseCatalogue(
+      new FakeCatalogueApi([firstPage(), lastPage()]),
+    );
+    await browse();
+
+    // When
+    await browse();
+
+    // Then
+    expect(state.value).toEqual({
+      status: "listed",
+      books: [asterixLeGaulois, asterixEtSesAmis, romanceDawn],
+    });
+  });
+
+  it("asks the next page with the next of the page received", async () => {
+    // Given
+    const catalogueApi = new FakeCatalogueApi([firstPage(), lastPage()]);
+    const { browse } = useBrowseCatalogue(catalogueApi);
+    await browse();
+
+    // When
+    await browse();
+
+    // Then
+    expect(catalogueApi.asked).toEqual([null, asterixEtSesAmis.id]);
+  });
+
+  it("asks no page after the last", async () => {
+    // Given
+    const catalogueApi = new FakeCatalogueApi([firstPage(), lastPage()]);
+    const { state, browse } = useBrowseCatalogue(catalogueApi);
+    await browse();
+    await browse();
+
+    // When
+    await browse();
+
+    // Then
+    expect(catalogueApi.asked).toEqual([null, asterixEtSesAmis.id]);
+    expect(state.value).toEqual({
+      status: "listed",
+      books: [asterixLeGaulois, asterixEtSesAmis, romanceDawn],
+    });
+  });
+
+  it("is loading more while the next page is coming", async () => {
+    // Given
+    const { state, browse } = useBrowseCatalogue(
+      new FakeCatalogueApi([firstPage(), lastPage()]),
+    );
+    await browse();
+
+    // When
+    void browse();
+
+    // Then
+    expect(state.value).toEqual({
+      status: "loadingMore",
+      books: [asterixLeGaulois, asterixEtSesAmis],
+    });
+  });
+
+  it("asks the next page once while it is on its way", async () => {
+    // Given
+    const catalogueApi = new FakeCatalogueApi([firstPage(), lastPage()]);
+    const { browse } = useBrowseCatalogue(catalogueApi);
+    await browse();
+    void browse();
+
+    // When
+    await browse();
+
+    // Then
+    expect(catalogueApi.asked).toEqual([null, asterixEtSesAmis.id]);
+  });
+
+  it("is unavailable with the rows listed when the next page does not come", async () => {
+    // Given
+    const { state, browse } = useBrowseCatalogue(
+      new FakeCatalogueApi([firstPage(), new TypeError("Failed to fetch")]),
+    );
+    await browse();
+
+    // When
+    await browse();
+
+    // Then
+    expect(state.value).toEqual({
+      status: "unavailable",
+      books: [asterixLeGaulois, asterixEtSesAmis],
+    });
+  });
+
+  it("asks nothing more once a page did not come", async () => {
+    // Given
+    const catalogueApi = new FakeCatalogueApi([
+      firstPage(),
+      new TypeError("Failed to fetch"),
+      lastPage(),
+    ]);
+    const { state, browse } = useBrowseCatalogue(catalogueApi);
+    await browse();
+    await browse();
+
+    // When
+    await browse();
+
+    // Then
+    expect(catalogueApi.asked).toEqual([null, asterixEtSesAmis.id]);
+    expect(state.value).toEqual({
+      status: "unavailable",
+      books: [asterixLeGaulois, asterixEtSesAmis],
+    });
+  });
+
+  function firstPage() {
+    return {
+      books: [asterixLeGaulois, asterixEtSesAmis],
+      next: asterixEtSesAmis.id,
+    };
+  }
+
+  function lastPage() {
+    return { books: [romanceDawn], next: null };
+  }
 });

@@ -60,7 +60,7 @@ describe("Catalogue", () => {
     ]);
   });
 
-  it.skip("S2 The catalogue comes in pages", async () => {
+  it("S2 The catalogue comes in pages", async () => {
     // Given
     const screen = open(
       "/catalogue",
@@ -111,7 +111,7 @@ describe("Catalogue", () => {
     expect(rows(screen)).toEqual([]);
   });
 
-  it.skip("S4 Libris unavailable, on the next page", async () => {
+  it("S4 Libris unavailable, on the next page", async () => {
     // Given
     const screen = open(
       "/catalogue",

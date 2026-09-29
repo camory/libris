@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { inject } from "vue";
+import { inject, onUnmounted, useTemplateRef, watch } from "vue";
 import { useI18n } from "vue-i18n";
 import { catalogueApiKey } from "../../../application/CatalogueApi";
 import { useBrowseCatalogue } from "../../../application/useBrowseCatalogue";
@@ -10,6 +10,25 @@ import IconBook from "../../components/icons/IconBook.vue";
 
 const { t } = useI18n();
 const { state, browse } = useBrowseCatalogue(inject(catalogueApiKey)!);
+
+const rows = useTemplateRef("rows");
+const observer = new IntersectionObserver((entries) => {
+  if (entries.some((entry) => entry.isIntersecting)) void browse();
+});
+let lastRow: Element | null = null;
+
+watch(
+  state,
+  () => {
+    const row = rows.value?.lastElementChild ?? null;
+    if (row === null || row === lastRow) return;
+    if (lastRow !== null) observer.unobserve(lastRow);
+    observer.observe(row);
+    lastRow = row;
+  },
+  { flush: "post" },
+);
+onUnmounted(() => observer.disconnect());
 
 void browse();
 </script>
@@ -34,17 +53,28 @@ void browse();
       <IconBook class="text-muted opacity-60" />
       <p class="text-lead text-muted">{{ t("catalogue.empty") }}</p>
     </div>
-    <ul
-      v-else-if="state.status === 'listed'"
-      class="divide-y divide-border overflow-hidden rounded-[14px] border border-border bg-surface"
-    >
-      <li v-for="book in state.books" :key="book.id">
-        <CatalogueRow :book="book" />
-      </li>
-    </ul>
-    <p v-else class="flex items-start gap-2 text-body text-danger">
-      <IconAlert />
-      <span>{{ t("catalogue.error") }}</span>
-    </p>
+    <template v-else>
+      <div
+        v-if="state.books.length > 0"
+        class="divide-y divide-border overflow-hidden rounded-[14px] border border-border bg-surface"
+      >
+        <ul ref="rows" class="divide-y divide-border">
+          <li v-for="book in state.books" :key="book.id">
+            <CatalogueRow :book="book" />
+          </li>
+        </ul>
+        <template v-if="state.status === 'loadingMore'">
+          <CatalogueRowSkeleton v-for="row in 2" :key="row" />
+        </template>
+      </div>
+      <p
+        v-if="state.status === 'unavailable'"
+        class="flex items-start gap-2 text-body text-danger"
+        :class="{ 'mt-5': state.books.length > 0 }"
+      >
+        <IconAlert />
+        <span>{{ t("catalogue.error") }}</span>
+      </p>
+    </template>
   </main>
 </template>
