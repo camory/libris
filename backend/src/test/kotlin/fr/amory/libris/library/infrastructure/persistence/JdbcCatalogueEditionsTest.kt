@@ -167,6 +167,19 @@ class JdbcCatalogueEditionsTest @Autowired constructor(
         page.next shouldBe romans.getValue(2).id
     }
 
+    @Test
+    fun `the page after an edition starts just after it`() {
+        // Given
+        val romans = romansHeldOn(leasBookshelf, 1..3)
+
+        // When
+        val page = catalogueEditions.findPage(lea.id, romans.getValue(2).id, 2)
+
+        // Then
+        titlesOf(page) shouldBe listOf("Roman 03")
+        page.next shouldBe null
+    }
+
     private fun titlesOf(page: EditionIdPage): List<String> {
         val titles = editions.findByIds(page.editionIds).associate { it.id to it.title }
         return page.editionIds.map { titles.getValue(it) }

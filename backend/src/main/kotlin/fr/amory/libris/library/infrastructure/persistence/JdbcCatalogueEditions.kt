@@ -10,16 +10,29 @@ import java.util.UUID
 
 private const val FIND_PAGE =
     """
-    SELECT copy.edition_id
+    WITH ranked AS NOT MATERIALIZED (
+        SELECT edition.id,
+               COALESCE(series.name, edition.title) COLLATE ignoring_case_and_accents AS name,
+               edition.volume_number,
+               edition.title COLLATE ignoring_case_and_accents AS title
+        FROM edition
+        LEFT JOIN series ON series.id = edition.series_id
+    )
+    SELECT ranked.id
     FROM membership
     JOIN copy ON copy.bookshelf_id = membership.bookshelf_id
-    JOIN edition ON edition.id = copy.edition_id
-    LEFT JOIN series ON series.id = edition.series_id
+    JOIN ranked ON ranked.id = copy.edition_id
     WHERE membership.reader_id = :readerId
-    ORDER BY COALESCE(series.name, edition.title) COLLATE ignoring_case_and_accents,
-             edition.volume_number,
-             edition.title COLLATE ignoring_case_and_accents,
-             edition.id
+      AND (CAST(:after AS uuid) IS NULL OR EXISTS (
+          SELECT FROM ranked AS place
+          WHERE place.id = :after
+            AND (ranked.name > place.name
+                 OR ranked.name = place.name
+                    AND ranked.volume_number IS NOT DISTINCT FROM place.volume_number
+                    AND (ranked.title > place.title
+                         OR ranked.title = place.title AND ranked.id > place.id))
+      ))
+    ORDER BY ranked.name, ranked.volume_number, ranked.title, ranked.id
     LIMIT :size
     """
 
@@ -29,8 +42,9 @@ class JdbcCatalogueEditions(private val jdbcClient: JdbcClient) : CatalogueEditi
         val following = jdbcClient
             .sql(FIND_PAGE)
             .param("readerId", readerId.value)
+            .param("after", after?.value)
             .param("size", size + 1)
-            .query { rs, _ -> EditionId(rs.getObject("edition_id", UUID::class.java)) }
+            .query { rs, _ -> EditionId(rs.getObject("id", UUID::class.java)) }
             .list()
         val page = following.take(size)
         return EditionIdPage(page, if (following.size > size) page.last() else null)
