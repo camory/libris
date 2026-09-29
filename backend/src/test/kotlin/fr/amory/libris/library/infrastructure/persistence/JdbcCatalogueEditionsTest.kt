@@ -112,6 +112,19 @@ class JdbcCatalogueEditionsTest @Autowired constructor(
         titlesOf(page) shouldBe listOf("Une vérité qui blesse", "Le vrai visage d'Arlong")
     }
 
+    @Test
+    fun `an edition of the series without a tome comes after its numbered tomes`() {
+        // Given
+        heldOn(leasBookshelf, edition("Astérix et ses amis", "Astérix"))
+        heldOn(leasBookshelf, edition("Astérix le Gaulois", "Astérix", 1))
+
+        // When
+        val page = catalogueEditions.findPage(lea.id, null, PAGE_SIZE)
+
+        // Then
+        titlesOf(page) shouldBe listOf("Astérix le Gaulois", "Astérix et ses amis")
+    }
+
     private fun titlesOf(page: EditionIdPage): List<String> {
         val titles = editions.findByIds(page.editionIds).associate { it.id to it.title }
         return page.editionIds.map { titles.getValue(it) }
