@@ -114,6 +114,20 @@ class BrowseCatalogueTest {
         )
     }
 
+    @Test
+    fun `the catalogue asks the port for fifty editions of the reader after the one given`() {
+        // Given
+        val after = EditionId.new()
+        val catalogueEditions = CatalogueEditionsAnswering(EditionIdPage(emptyList(), null))
+        val browseCatalogue = BrowseCatalogue(catalogueEditions, bookshelves, copies, editions)
+
+        // When
+        browseCatalogue(lea, after)
+
+        // Then
+        catalogueEditions.asked shouldBe listOf(Triple(lea, after, 50))
+    }
+
     private fun browsing(answer: EditionIdPage): BrowseCatalogue =
         BrowseCatalogue(CatalogueEditionsAnswering(answer), bookshelves, copies, editions)
 
