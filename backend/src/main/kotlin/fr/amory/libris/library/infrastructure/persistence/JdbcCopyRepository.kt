@@ -41,11 +41,15 @@ class JdbcCopyRepository(private val jdbcClient: JdbcClient) : CopyRepository {
             .list()
 
     override fun findByEditionIds(editionIds: List<EditionId>): List<Copy> =
-        jdbcClient
-            .sql(FIND_COPIES_BY_EDITIONS)
-            .param("editionIds", editionIds.map { it.value })
-            .query { rs, _ -> copyOf(rs) }
-            .list()
+        if (editionIds.isEmpty()) {
+            emptyList()
+        } else {
+            jdbcClient
+                .sql(FIND_COPIES_BY_EDITIONS)
+                .param("editionIds", editionIds.map { it.value })
+                .query { rs, _ -> copyOf(rs) }
+                .list()
+        }
 
     override fun findByBookshelfIds(bookshelfIds: List<BookshelfId>): List<Copy> =
         if (bookshelfIds.isEmpty()) {

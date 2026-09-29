@@ -155,6 +155,11 @@ class JdbcCopyRepositoryTest @Autowired constructor(
     }
 
     @Test
+    fun `no edition finds no copy`() {
+        copies.findByEditionIds(emptyList()) shouldBe emptyList()
+    }
+
+    @Test
     fun `the copies on the given bookshelves are found, none of another`() {
         // Given
         val leasBookshelf = bookshelfOf("lea", "Léa")
