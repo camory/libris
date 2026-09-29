@@ -86,6 +86,19 @@ class JdbcCatalogueEditionsTest @Autowired constructor(
         titlesOf(page) shouldBe listOf("maus", "Un ninja")
     }
 
+    @Test
+    fun `the order ignores accents`() {
+        // Given
+        heldOn(leasBookshelf, edition("Légendes en exil", "Fables", 1))
+        heldOn(leasBookshelf, edition("Émile et les détectives"))
+
+        // When
+        val page = catalogueEditions.findPage(lea.id, null, PAGE_SIZE)
+
+        // Then
+        titlesOf(page) shouldBe listOf("Émile et les détectives", "Légendes en exil")
+    }
+
     private fun titlesOf(page: EditionIdPage): List<String> {
         val titles = editions.findByIds(page.editionIds).associate { it.id to it.title }
         return page.editionIds.map { titles.getValue(it) }
