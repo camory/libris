@@ -675,3 +675,21 @@ Format:
 - Left over: two items in `agent/PROPOSED.md`: the copy grouping shared
   with the card, the icon size for U07.
   T048 takes the failed page and its unhandled rejection, T049 the next page.
+
+## 2026-09-28 — T048 Libris unavailable on the first page — done
+- Did: `useBrowseCatalogue` catches whatever the port rejects with and
+  leaves `{ status: "unavailable" }`; `CatalogueView` draws the alert icon
+  and `catalogue.error` in place of the list. S4 on the first page un-skipped,
+  green; the rejection that escaped `void browse()` since T046 is caught.
+- Decided: the list of `CatalogueView` reads `v-else-if="state.status ===
+  'listed'"` and the message takes the `v-else`: the `unavailable` member
+  left the old `v-else` unnarrowed for `vue-tsc`, so the narrowing came with
+  the state's cycle.
+- Decided: the message carries no top margin, unlike `IsbnView`'s `mt-5`:
+  it takes the list's place right under the header, which already spaces
+  its content with `pb-3`.
+- Deviations from the brief: the view change above landed in step 2's
+  commit, since `vue-tsc` refused the tree without it.
+- Left over: the next page and its failure, S2 and the next-page S4: T049.
+  The shared message block of `IsbnView` and `CatalogueView` is not
+  proposed: two copies, as the brief says, do not yet make a component.

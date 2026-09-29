@@ -288,7 +288,7 @@ once T045 is deployed. No other task touches the contract (D04).
       bookshelves.
       Realises S1 on the frontend; un-skips the frontend test of S1.
 
-- [ ] T048 Frontend: Libris unavailable on the first page.
+- [x] T048 Frontend: Libris unavailable on the first page.
       When the first page does not come, in place of the list *Erreur lors
       du chargement, veuillez réessayer plus tard.* with the alert icon,
       and nothing listed; every word from the `fr` catalogue (U05, U07,

@@ -5,6 +5,7 @@ import { catalogueApiKey } from "../../../application/CatalogueApi";
 import { useBrowseCatalogue } from "../../../application/useBrowseCatalogue";
 import CatalogueRow from "../../components/CatalogueRow.vue";
 import CatalogueRowSkeleton from "../../components/CatalogueRowSkeleton.vue";
+import IconAlert from "../../components/icons/IconAlert.vue";
 import IconBook from "../../components/icons/IconBook.vue";
 
 const { t } = useI18n();
@@ -34,12 +35,16 @@ void browse();
       <p class="text-lead text-muted">{{ t("catalogue.empty") }}</p>
     </div>
     <ul
-      v-else
+      v-else-if="state.status === 'listed'"
       class="divide-y divide-border overflow-hidden rounded-[14px] border border-border bg-surface"
     >
       <li v-for="book in state.books" :key="book.id">
         <CatalogueRow :book="book" />
       </li>
     </ul>
+    <p v-else class="flex items-start gap-2 text-body text-danger">
+      <IconAlert />
+      <span>{{ t("catalogue.error") }}</span>
+    </p>
   </main>
 </template>

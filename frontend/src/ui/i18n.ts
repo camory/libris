@@ -43,6 +43,7 @@ const fr = {
     title: "Parcourir le catalogue",
     hint: "Les ouvrages de toutes vos bibliothèques.",
     empty: "Les ouvrages de vos bibliothèques apparaîtront ici.",
+    error: "Erreur lors du chargement, veuillez réessayer plus tard.",
     series: {
       BOOK: "{name} · tome {volume}",
       BD: "{name} · album {volume}",

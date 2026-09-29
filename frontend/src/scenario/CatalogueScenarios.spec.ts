@@ -97,7 +97,7 @@ describe("Catalogue", () => {
     expect(rows(screen)).toEqual([]);
   });
 
-  it.skip("S4 Libris unavailable", async () => {
+  it("S4 Libris unavailable", async () => {
     // Given
     const catalogue = librisDoesNotAnswer();
 
