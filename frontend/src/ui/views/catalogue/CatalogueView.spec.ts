@@ -240,6 +240,31 @@ describe("CatalogueView", () => {
     expect(catalogueApi.asked).toEqual([null]);
   });
 
+  it("watches the last row alone", async () => {
+    // Given
+    open(
+      new FakeCatalogueApi([
+        { books: [asterixLeGaulois], next: asterixLeGaulois.id },
+        { books: [asterixEtSesAmis], next: asterixEtSesAmis.id },
+        { books: [romanceDawn], next: null },
+      ]),
+    );
+    await flushPromises();
+    theLastRowComes(true);
+    await flushPromises();
+
+    // When
+    theLastRowComes(true);
+    await flushPromises();
+
+    // Then
+    const targets = watchedTargets();
+    expect(targets).toHaveLength(1);
+    expect(
+      within(targets[0] as HTMLElement).getByText("Romance dawn"),
+    ).toBeDefined();
+  });
+
   function firstPage(): BookPage {
     return {
       books: [asterixLeGaulois, asterixEtSesAmis],
@@ -270,5 +295,9 @@ describe("CatalogueView", () => {
       [{ isIntersecting: inView, target } as IntersectionObserverEntry],
       {} as IntersectionObserver,
     );
+  }
+
+  function watchedTargets() {
+    return watched.flatMap((observer) => observer.targets);
   }
 });
