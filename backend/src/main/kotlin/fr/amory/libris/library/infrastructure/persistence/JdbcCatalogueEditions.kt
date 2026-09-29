@@ -17,7 +17,8 @@ private const val FIND_PAGE =
     LEFT JOIN series ON series.id = edition.series_id
     WHERE membership.reader_id = :readerId
     ORDER BY COALESCE(series.name, edition.title) COLLATE ignoring_case_and_accents,
-             edition.volume_number
+             edition.volume_number,
+             edition.title COLLATE ignoring_case_and_accents
     LIMIT :size
     """
 
