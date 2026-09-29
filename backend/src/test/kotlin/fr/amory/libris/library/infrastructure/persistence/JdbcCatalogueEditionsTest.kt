@@ -258,6 +258,21 @@ class JdbcCatalogueEditionsTest @Autowired constructor(
         second shouldBe EditionIdPage(listOf(greaterTwin.id), null)
     }
 
+    @Test
+    fun `an edition added between two pages does not shift the next`() {
+        // Given
+        romansHeldOn(leasBookshelf, 1..3)
+        val first = catalogueEditions.findPage(lea.id, null, 2)
+        heldOn(leasBookshelf, roman(0))
+
+        // When
+        val second = catalogueEditions.findPage(lea.id, first.next, 2)
+
+        // Then
+        titlesOf(second) shouldBe listOf("Roman 03")
+        second.next shouldBe null
+    }
+
     private fun titlesOf(page: EditionIdPage): List<String> {
         val titles = editions.findByIds(page.editionIds).associate { it.id to it.title }
         return page.editionIds.map { titles.getValue(it) }
