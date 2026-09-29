@@ -222,8 +222,10 @@ describe("CatalogueView", () => {
     await flushPromises();
 
     // Then
-    expect(wrapper.findAllComponents(CatalogueRowSkeleton)).toHaveLength(2);
+    const skeletons = wrapper.findAllComponents(CatalogueRowSkeleton);
+    expect(skeletons).toHaveLength(2);
     expect(screen.getAllByRole("listitem")).toHaveLength(2);
+    expect(under(screen.getByRole("list"), skeletons[0]!.element)).toBe(true);
   });
 
   it("asks nothing while the last row is out of view", async () => {
@@ -290,14 +292,13 @@ describe("CatalogueView", () => {
     await flushPromises();
 
     // Then
-    expect(
-      screen.getByText(
-        "Erreur lors du chargement, veuillez réessayer plus tard.",
-      ),
-    ).toBeDefined();
+    const message = screen.getByText(
+      "Erreur lors du chargement, veuillez réessayer plus tard.",
+    );
     expect(wrapper.findAllComponents(IconAlert)).toHaveLength(1);
     expect(screen.getAllByRole("listitem")).toHaveLength(2);
     expect(wrapper.findAllComponents(CatalogueRowSkeleton)).toHaveLength(0);
+    expect(under(screen.getByRole("list"), message)).toBe(true);
   });
 
   function firstPage(): BookPage {
@@ -329,6 +330,14 @@ describe("CatalogueView", () => {
     observer.callback(
       [{ isIntersecting: inView, target } as IntersectionObserverEntry],
       {} as IntersectionObserver,
+    );
+  }
+
+  function under(above: Element, below: Element) {
+    return (
+      (above.compareDocumentPosition(below) &
+        Node.DOCUMENT_POSITION_FOLLOWING) !==
+      0
     );
   }
 
