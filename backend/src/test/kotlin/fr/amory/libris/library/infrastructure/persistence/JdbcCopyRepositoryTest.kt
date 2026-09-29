@@ -159,32 +159,6 @@ class JdbcCopyRepositoryTest @Autowired constructor(
         copies.findByEditionIds(emptyList()) shouldBe emptyList()
     }
 
-    @Test
-    fun `the copies on the given bookshelves are found, none of another`() {
-        // Given
-        val leasBookshelf = bookshelfOf("lea", "Léa")
-        val juliettesBookshelf = bookshelfOf("juliette", "Juliette")
-        val tomsBookshelf = bookshelfOf("tom", "Tom")
-        val edition = onePieceTomeOne()
-        editions.insert(edition)
-        val leasCopy = Copy(CopyId.new(), edition.id, leasBookshelf.id)
-        val juliettesCopy = Copy(CopyId.new(), edition.id, juliettesBookshelf.id)
-        copies.insert(leasCopy)
-        copies.insert(juliettesCopy)
-        copies.insert(Copy(CopyId.new(), edition.id, tomsBookshelf.id))
-
-        // When
-        val found = copies.findByBookshelfIds(listOf(leasBookshelf.id, juliettesBookshelf.id))
-
-        // Then
-        found.toSet() shouldBe setOf(leasCopy, juliettesCopy)
-    }
-
-    @Test
-    fun `no bookshelf finds no copy`() {
-        copies.findByBookshelfIds(emptyList()) shouldBe emptyList()
-    }
-
     private fun bookshelfOf(username: String, displayName: String): Bookshelf {
         val reader = readerNamed(username, displayName)
         readers.insert(reader)
