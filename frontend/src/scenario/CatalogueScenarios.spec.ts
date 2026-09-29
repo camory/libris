@@ -111,7 +111,7 @@ describe("Catalogue", () => {
     expect(rows(screen)).toEqual([]);
   });
 
-  it.skip("S4 Libris unavailable, on the next page", async () => {
+  it("S4 Libris unavailable, on the next page", async () => {
     // Given
     const screen = open(
       "/catalogue",
