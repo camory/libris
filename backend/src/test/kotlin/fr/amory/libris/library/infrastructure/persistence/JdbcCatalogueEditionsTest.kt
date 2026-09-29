@@ -99,6 +99,19 @@ class JdbcCatalogueEditionsTest @Autowired constructor(
         titlesOf(page) shouldBe listOf("Émile et les détectives", "Légendes en exil")
     }
 
+    @Test
+    fun `the tomes of a series are ordered as numbers`() {
+        // Given
+        heldOn(leasBookshelf, edition("Le vrai visage d'Arlong", "One piece", 10))
+        heldOn(leasBookshelf, edition("Une vérité qui blesse", "One piece", 3))
+
+        // When
+        val page = catalogueEditions.findPage(lea.id, null, PAGE_SIZE)
+
+        // Then
+        titlesOf(page) shouldBe listOf("Une vérité qui blesse", "Le vrai visage d'Arlong")
+    }
+
     private fun titlesOf(page: EditionIdPage): List<String> {
         val titles = editions.findByIds(page.editionIds).associate { it.id to it.title }
         return page.editionIds.map { titles.getValue(it) }
