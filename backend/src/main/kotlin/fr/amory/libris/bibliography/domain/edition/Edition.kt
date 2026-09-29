@@ -4,11 +4,6 @@ import fr.amory.libris.bibliography.domain.Contributions
 import fr.amory.libris.bibliography.domain.Isbn
 import fr.amory.libris.bibliography.domain.Kind
 import fr.amory.libris.bibliography.domain.SeriesEntry
-import java.text.Collator
-import java.util.Locale
-
-private val IGNORING_CASE_AND_ACCENTS: Collator =
-    Collator.getInstance(Locale.ROOT).apply { strength = Collator.PRIMARY }
 
 data class Edition(
     val id: EditionId,
@@ -28,13 +23,5 @@ data class Edition(
 ) {
     init {
         require(title.isNotBlank()) { "an edition needs a title" }
-    }
-
-    companion object {
-        val BY_SERIES_AND_VOLUME: Comparator<Edition> =
-            compareBy<Edition, String>(IGNORING_CASE_AND_ACCENTS) { it.series?.name ?: it.title }
-                .thenBy(nullsLast()) { it.series?.volumeNumber }
-                .thenBy(IGNORING_CASE_AND_ACCENTS) { it.title }
-                .thenBy { it.id.value }
     }
 }

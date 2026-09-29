@@ -233,3 +233,34 @@ Format:
   already moved the observer off the old row, since watching the last row
   meant finding it on each render. Step 15 was red, as the brief allowed.
 - Left over: nothing; the catalogue spec is complete on the frontend.
+
+## 2026-09-29 — T050 The catalogue ordered and paged by the database — done
+- Did: the port `CatalogueEditions` and `JdbcCatalogueEditions` answer a
+  page of the reader's edition ids, ordered and cut by one keyset statement;
+  `BrowseCatalogue` reads those editions and their copies alone
+  (`findByEditionIds`). `BY_SERIES_AND_VOLUME`, the `Collator` and
+  `findByBookshelfIds` are gone. S1 to S3 of the catalogue green unchanged.
+- Decided: the order ignores case and accents through a nondeterministic ICU
+  collation (`V005`), applied in a `NOT MATERIALIZED` CTE whose columns carry
+  it into the `ORDER BY` and the keyset.
+- Decided: the keyset reads the place of `after` from the edition table,
+  whoever holds it, so an `after` no longer held continues after its place
+  and one of no edition answers an empty page; the tome is spelled out with
+  `IS NULL` and `IS NOT DISTINCT FROM`, since a row comparison answers
+  `NULL` on a missing tome.
+- Decided: an edition on two of the reader's bookshelves is kept once by an
+  `EXISTS` over copy and membership, not by `DISTINCT`, which would need
+  every `ORDER BY` key in the select list.
+- Decided: guards proven by mutation and reverted: accents (`LOWER`), no
+  tome last (`NULLS FIRST`), the last page (`page.size == size`), an after
+  no longer held (the place joined to the reader's copies), an after of no
+  edition, twins (id out of the keyset), an edition added between pages
+  (`OFFSET`), and what the port is asked (`null` for after, 51).
+- Deviations from the brief: step 12 also asks the page after tome one, so
+  the `volume_number >` branch is motivated; step 21 was red on a missing
+  bookshelf key rather than on an extra copy; `CopiesInMemory` gained
+  `findByEditionIds` at step 18, the port needing it to compile.
+- Left over: under ICU level 1, spaces and hyphens now count (`One piece`
+  before `Onepiece`), where the JDK `Collator` ignored them; no scenario
+  names it. A copy removed between the page and the copies would fail
+  `getValue`; nothing removes copies yet.

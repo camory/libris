@@ -368,11 +368,6 @@
   `200_ONE_PIECE_1` and `201_ADD_ONE_PIECE_1`, and remove
   `ONE_PIECE_2_OWNED`, which fixes an output. Wire-neutral, any release
   (found 2026-09-26 while reviewing the examples of the v0.7.0 contract).
-- Backend: each catalogue page reads the reader's whole catalogue (three
-  statements) and cuts the page in `BrowseCatalogue`; fine under fifty
-  ouvrages, not past a few thousand. A keyset `WHERE` in SQL would need the
-  `Collator` order of `Edition.BY_SERIES_AND_VOLUME` reproduced in
-  PostgreSQL (found 2026-09-27 while implementing T045).
 - Planner: a criterion of the form "no French literal under `ui/views` and
   `ui/components`" matches the view specs, which assert the French texts;
   the grep should exclude `*.spec.ts` (found 2026-09-28 while implementing
@@ -387,3 +382,8 @@
 - Design: U07 gives no size for the stand-in icon of a list row's cover;
   `CatalogueRow` draws `IconBook` at 22 in its 48 by 74 block. Add that job
   to U07's list of sizes (found 2026-09-28 while implementing T047).
+- Backend: `BrowseCatalogue` reads the page's edition ids in one statement
+  and their copies in another; a copy removed between the two would leave
+  an edition of the page without copies and fail `getValue`. Nothing
+  removes copies yet; the task that does should let an edition of the page
+  come with no copy, or drop it (found 2026-09-29 while implementing T050).

@@ -133,29 +133,30 @@ class JdbcCopyRepositoryTest @Autowired constructor(
     }
 
     @Test
-    fun `the copies on the given bookshelves are found, none of another`() {
+    fun `the copies of the given editions are found, wherever they sit, none of another`() {
         // Given
         val leasBookshelf = bookshelfOf("lea", "Léa")
-        val juliettesBookshelf = bookshelfOf("juliette", "Juliette")
         val tomsBookshelf = bookshelfOf("tom", "Tom")
-        val edition = onePieceTomeOne()
-        editions.insert(edition)
-        val leasCopy = Copy(CopyId.new(), edition.id, leasBookshelf.id)
-        val juliettesCopy = Copy(CopyId.new(), edition.id, juliettesBookshelf.id)
+        val romanceDawn = onePieceTomeOne()
+        val baggy = onePieceTomeOne().copy(id = EditionId.new(), isbn = isbnOf("9782723489898"))
+        val other = onePieceTomeOne().copy(id = EditionId.new(), isbn = isbnOf("9782723490030"))
+        listOf(romanceDawn, baggy, other).forEach(editions::insert)
+        val leasCopy = Copy(CopyId.new(), romanceDawn.id, leasBookshelf.id)
+        val tomsCopy = Copy(CopyId.new(), baggy.id, tomsBookshelf.id)
         copies.insert(leasCopy)
-        copies.insert(juliettesCopy)
-        copies.insert(Copy(CopyId.new(), edition.id, tomsBookshelf.id))
+        copies.insert(tomsCopy)
+        copies.insert(Copy(CopyId.new(), other.id, leasBookshelf.id))
 
         // When
-        val found = copies.findByBookshelfIds(listOf(leasBookshelf.id, juliettesBookshelf.id))
+        val found = copies.findByEditionIds(listOf(romanceDawn.id, baggy.id))
 
         // Then
-        found.toSet() shouldBe setOf(leasCopy, juliettesCopy)
+        found.toSet() shouldBe setOf(leasCopy, tomsCopy)
     }
 
     @Test
-    fun `no bookshelf finds no copy`() {
-        copies.findByBookshelfIds(emptyList()) shouldBe emptyList()
+    fun `no edition finds no copy`() {
+        copies.findByEditionIds(emptyList()) shouldBe emptyList()
     }
 
     private fun bookshelfOf(username: String, displayName: String): Bookshelf {

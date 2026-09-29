@@ -136,7 +136,7 @@ once T045 is deployed. No other task touches the contract (D04).
       Realises S2 and the next-page case of S4 on the frontend; un-skips
       the frontend tests of S2 and of S4 on the next page.
 
-- [ ] T050 Backend: the catalogue ordered and paged by the database.
+- [x] T050 Backend: the catalogue ordered and paged by the database.
       The answer of T045 unchanged in every field and every order, but
       the order of T044 and the page of T045 are the database's: one
       statement of the library's own names the fifty editions of a page
