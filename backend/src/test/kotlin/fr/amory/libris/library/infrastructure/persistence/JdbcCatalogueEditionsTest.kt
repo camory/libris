@@ -212,6 +212,22 @@ class JdbcCatalogueEditionsTest @Autowired constructor(
         titlesOf(afterWithoutTome) shouldBe listOf("Babar")
     }
 
+    @Test
+    fun `an after the reader no longer holds continues after its place`() {
+        // Given
+        heldOn(leasBookshelf, roman(1))
+        val roman02 = heldOn(tomsBookshelf, roman(2))
+        heldOn(leasBookshelf, roman(3))
+        heldOn(leasBookshelf, roman(4))
+
+        // When
+        val page = catalogueEditions.findPage(lea.id, roman02.id, 2)
+
+        // Then
+        titlesOf(page) shouldBe listOf("Roman 03", "Roman 04")
+        page.next shouldBe null
+    }
+
     private fun titlesOf(page: EditionIdPage): List<String> {
         val titles = editions.findByIds(page.editionIds).associate { it.id to it.title }
         return page.editionIds.map { titles.getValue(it) }
