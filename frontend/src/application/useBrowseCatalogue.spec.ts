@@ -73,7 +73,7 @@ describe("useBrowseCatalogue", () => {
     await browse();
 
     // Then
-    expect(state.value).toEqual({ status: "unavailable" });
+    expect(state.value).toEqual({ status: "unavailable", books: [] });
   });
   it("is unavailable when the catalogue refuses the page", async () => {
     // Given
@@ -85,7 +85,7 @@ describe("useBrowseCatalogue", () => {
     await browse();
 
     // Then
-    expect(state.value).toEqual({ status: "unavailable" });
+    expect(state.value).toEqual({ status: "unavailable", books: [] });
   });
 
   it("lists the next page after the first", async () => {
@@ -165,6 +165,23 @@ describe("useBrowseCatalogue", () => {
 
     // Then
     expect(catalogueApi.asked).toEqual([null, asterixEtSesAmis.id]);
+  });
+
+  it("is unavailable with the rows listed when the next page does not come", async () => {
+    // Given
+    const { state, browse } = useBrowseCatalogue(
+      new FakeCatalogueApi([firstPage(), new TypeError("Failed to fetch")]),
+    );
+    await browse();
+
+    // When
+    await browse();
+
+    // Then
+    expect(state.value).toEqual({
+      status: "unavailable",
+      books: [asterixLeGaulois, asterixEtSesAmis],
+    });
   });
 
   function firstPage() {

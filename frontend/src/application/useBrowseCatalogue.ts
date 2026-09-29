@@ -7,7 +7,7 @@ export type CatalogueState =
   | { status: "empty" }
   | { status: "listed"; books: Book[] }
   | { status: "loadingMore"; books: Book[] }
-  | { status: "unavailable" };
+  | { status: "unavailable"; books: Book[] };
 
 export function useBrowseCatalogue(catalogueApi: CatalogueApi): {
   state: Ref<CatalogueState>;
@@ -31,7 +31,10 @@ export function useBrowseCatalogue(catalogueApi: CatalogueApi): {
       state.value =
         books.length === 0 ? { status: "empty" } : { status: "listed", books };
     } catch {
-      state.value = { status: "unavailable" };
+      state.value = {
+        status: "unavailable",
+        books: state.value.status === "loadingMore" ? state.value.books : [],
+      };
     }
   }
 
