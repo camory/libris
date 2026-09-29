@@ -90,6 +90,30 @@ class BrowseCatalogueTest {
         )
     }
 
+    @Test
+    fun `the catalogue holds the reader's copies, none of another's`() {
+        // Given
+        val leasBookshelf = bookshelfOf("Bibliothèque de Léa", Membership(lea, OWNER))
+        val tomsBookshelf = bookshelfOf("Bibliothèque de Tom", Membership(tom, OWNER))
+        val leasCopy = copyOf(CIGARES, leasBookshelf)
+        copyOf(CIGARES, tomsBookshelf)
+        val browseCatalogue = browsing(EditionIdPage(listOf(CIGARES.id), null))
+
+        // When
+        val page = browseCatalogue(lea, null)
+
+        // Then
+        page shouldBe CataloguePage(
+            listOf(
+                HeldEdition(
+                    CIGARES,
+                    listOf(CopyOnBookshelf(leasCopy.id, leasBookshelf.id, "Bibliothèque de Léa")),
+                ),
+            ),
+            null,
+        )
+    }
+
     private fun browsing(answer: EditionIdPage): BrowseCatalogue =
         BrowseCatalogue(CatalogueEditionsAnswering(answer), bookshelves, copies, editions)
 
