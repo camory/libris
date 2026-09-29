@@ -225,11 +225,30 @@ describe("CatalogueView", () => {
     expect(screen.getAllByRole("listitem")).toHaveLength(2);
   });
 
+  it("asks nothing while the last row is out of view", async () => {
+    // Given
+    const catalogueApi = new FakeCatalogueApi([firstPage(), lastPage()]);
+    const { wrapper } = open(catalogueApi);
+    await flushPromises();
+
+    // When
+    theLastRowComes(false);
+    await flushPromises();
+
+    // Then
+    expect(wrapper.findAllComponents(CatalogueRowSkeleton)).toHaveLength(0);
+    expect(catalogueApi.asked).toEqual([null]);
+  });
+
   function firstPage(): BookPage {
     return {
       books: [asterixLeGaulois, asterixEtSesAmis],
       next: asterixEtSesAmis.id,
     };
+  }
+
+  function lastPage(): BookPage {
+    return { books: [romanceDawn], next: null };
   }
 
   function open(catalogueApi: CatalogueApi) {

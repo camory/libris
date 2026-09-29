@@ -12,7 +12,9 @@ const { t } = useI18n();
 const { state, browse } = useBrowseCatalogue(inject(catalogueApiKey)!);
 
 const rows = useTemplateRef("rows");
-const observer = new IntersectionObserver(() => void browse());
+const observer = new IntersectionObserver((entries) => {
+  if (entries.some((entry) => entry.isIntersecting)) void browse();
+});
 let lastRow: Element | null = null;
 
 watch(
