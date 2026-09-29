@@ -16,6 +16,9 @@ private const val INSERT_COPY =
 private const val FIND_COPIES_BY_EDITION =
     "SELECT copy.id, copy.edition_id, copy.bookshelf_id FROM copy WHERE copy.edition_id = :editionId"
 
+private const val FIND_COPIES_BY_EDITIONS =
+    "SELECT copy.id, copy.edition_id, copy.bookshelf_id FROM copy WHERE copy.edition_id IN (:editionIds)"
+
 private const val FIND_COPIES_BY_BOOKSHELVES =
     "SELECT copy.id, copy.edition_id, copy.bookshelf_id FROM copy WHERE copy.bookshelf_id IN (:bookshelfIds)"
 
@@ -34,6 +37,13 @@ class JdbcCopyRepository(private val jdbcClient: JdbcClient) : CopyRepository {
         jdbcClient
             .sql(FIND_COPIES_BY_EDITION)
             .param("editionId", editionId.value)
+            .query { rs, _ -> copyOf(rs) }
+            .list()
+
+    override fun findByEditionIds(editionIds: List<EditionId>): List<Copy> =
+        jdbcClient
+            .sql(FIND_COPIES_BY_EDITIONS)
+            .param("editionIds", editionIds.map { it.value })
             .query { rs, _ -> copyOf(rs) }
             .list()
 

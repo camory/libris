@@ -8,5 +8,7 @@ interface CopyRepository {
 
     fun findByEditionId(editionId: EditionId): List<Copy>
 
+    fun findByEditionIds(editionIds: List<EditionId>): List<Copy>
+
     fun findByBookshelfIds(bookshelfIds: List<BookshelfId>): List<Copy>
 }
