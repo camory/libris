@@ -21,9 +21,9 @@ watch(
   state,
   () => {
     const row = rows.value?.lastElementChild ?? null;
-    if (row === lastRow) return;
+    if (row === null || row === lastRow) return;
     if (lastRow !== null) observer.unobserve(lastRow);
-    if (row !== null) observer.observe(row);
+    observer.observe(row);
     lastRow = row;
   },
   { flush: "post" },
