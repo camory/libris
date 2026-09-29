@@ -202,9 +202,9 @@ An icon is an inline SVG on a 24 grid, stroke 1.8, round caps and joins,
 `currentColor`, no fill; 22 for the alert of a message and the bookshelf
 rows of a card (U06), 32 on the tab bar, 48 for an empty state (U05). Each is its own component under `ui/components/icons`, named
 by what it shows (`IconHome`, `IconBarcode`, `IconClose`, `IconAlert`,
-`IconBook`, `IconBooks`, three spines on a line, for the catalogue tab), drawn
-once and reused. No icon font, no icon
-package (D05: no UI library).
+`IconBook`, `IconBooks`, three spines on a line, the third leaning, for the
+catalogue tab), drawn once and reused. No icon font, no icon package (D05:
+no UI library).
 
 An icon next to a word is decoration: `aria-hidden`, the word carries the
 meaning. An icon alone is a button (U04) or a tab (U03) and carries its
