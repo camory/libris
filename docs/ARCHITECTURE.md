@@ -421,7 +421,10 @@ deliberately lacks), no other service. A test that needs more blocks the task.
   (`add(edition)`); the view injects the ports, calls the composable and
   renders. A port keeps a verb of its own (`ExternalEditionLookup.lookUp`,
   `CopyRepository.findByEditionId`): its name says what it is, not what it
-  does.
+  does. A repository of D12 ends in `Repository` (`CopyRepository`); a
+  query port of D12 does not, and is named by what it answers
+  (`CatalogueEditions`): the suffix alone tells an aggregate's port from a
+  read's.
 - A member's visibility is what the type exposes: a private member is not
   made public for a new caller. A caller that needs what the private member
   does either goes through the public door (`Isbn.of`) or the type gains a
