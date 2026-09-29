@@ -4,7 +4,7 @@
 ouvrage tells the reader whether the family already owns it and where; at
 home, one tap adds it to their bookshelf. Now, because the lookup shows what
 the sources know and stores nothing: this is the first thing Libris keeps.
-**Status:** draft
+**Status:** done 2026-09-29
 
 ## Scenarios
 
@@ -166,6 +166,8 @@ On the Pixel, from the installed app on staging: scan *One Piece* 1 and add
 it, the card shows *Dans Bibliothèque de Christophe*; scan it again, the row
 is there before any tap; add it again, the row reads *· 2 exemplaires*; on a
 second account of the family, scan it and read the card without a place.
+
+Checked by Tophe on 2026-09-29, on the Pixel, with the deploy of T049.
 
 ## Tasks
 
