@@ -249,8 +249,8 @@ Format:
   `IS NULL` and `IS NOT DISTINCT FROM`, since a row comparison answers
   `NULL` on a missing tome.
 - Decided: an edition on two of the reader's bookshelves is kept once by an
-  `EXISTS` over copy and membership, not by `DISTINCT`, which the collated
-  `ORDER BY` refuses.
+  `EXISTS` over copy and membership, not by `DISTINCT`, which would need
+  every `ORDER BY` key in the select list.
 - Decided: guards proven by mutation and reverted: accents (`LOWER`), no
   tome last (`NULLS FIRST`), the last page (`page.size == size`), an after
   no longer held (the place joined to the reader's copies), an after of no

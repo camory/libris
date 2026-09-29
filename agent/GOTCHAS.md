@@ -331,8 +331,10 @@ true; the diary keeps the date it was found.
   `Onepiece`. Names equal under it fall to the next key, never to byte order,
   which is why the keyset of `JdbcCatalogueEditions` ends on the id. A
   `COLLATE` on a column of the `ranked` CTE carries into its `ORDER BY` and
-  its comparisons; `DISTINCT` beside that `ORDER BY` does not work, a
-  semi-join (`EXISTS`) keeps an edition once instead.
+  its comparisons. `SELECT DISTINCT` requires every `ORDER BY` expression
+  in its select list (`for SELECT DISTINCT, ORDER BY expressions must
+  appear in select list`), collation or not; a semi-join (`EXISTS`) keeps
+  an edition once without widening the answer.
 - A row comparison `(a, b) > (c, d)` with a nullable member answers `NULL`
   when it meets one: the keyset of `JdbcCatalogueEditions` spells the
   nullable tome out (`IS NULL`, `IS NOT DISTINCT FROM`) instead.
