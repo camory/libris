@@ -277,6 +277,28 @@ describe("CatalogueView", () => {
     expect(watchedTargets()).toEqual([]);
   });
 
+  it("says to try again later under the rows when the next page does not come", async () => {
+    // Given
+    const { wrapper, screen } = open(
+      new FakeCatalogueApi([firstPage(), new TypeError("Failed to fetch")]),
+    );
+    await flushPromises();
+
+    // When
+    theLastRowComes(true);
+    await flushPromises();
+
+    // Then
+    expect(
+      screen.getByText(
+        "Erreur lors du chargement, veuillez réessayer plus tard.",
+      ),
+    ).toBeDefined();
+    expect(wrapper.findAllComponents(IconAlert)).toHaveLength(1);
+    expect(screen.getAllByRole("listitem")).toHaveLength(2);
+    expect(wrapper.findAllComponents(CatalogueRowSkeleton)).toHaveLength(0);
+  });
+
   function firstPage(): BookPage {
     return {
       books: [asterixLeGaulois, asterixEtSesAmis],
