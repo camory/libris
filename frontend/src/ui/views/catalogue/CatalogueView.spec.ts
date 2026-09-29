@@ -265,6 +265,18 @@ describe("CatalogueView", () => {
     ).toBeDefined();
   });
 
+  it("watches nothing once the page is left", async () => {
+    // Given
+    const { wrapper } = open(new FakeCatalogueApi([firstPage()]));
+    await flushPromises();
+
+    // When
+    wrapper.unmount();
+
+    // Then
+    expect(watchedTargets()).toEqual([]);
+  });
+
   function firstPage(): BookPage {
     return {
       books: [asterixLeGaulois, asterixEtSesAmis],
