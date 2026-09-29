@@ -18,6 +18,7 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.context.annotation.Import
+import java.util.UUID
 
 private const val PAGE_SIZE = 50
 
@@ -136,6 +137,21 @@ class JdbcCatalogueEditionsTest @Autowired constructor(
 
         // Then
         titlesOf(page) shouldBe listOf("À l'aube d'une grande aventure", "Romance dawn")
+    }
+
+    @Test
+    fun `editions equal on series, tome and title are ordered by id`() {
+        // Given
+        val first = EditionId(UUID.fromString("00000000-0000-7000-8000-000000000001"))
+        val second = EditionId(UUID.fromString("00000000-0000-7000-8000-000000000002"))
+        heldOn(leasBookshelf, edition("Romance dawn", "One piece", 1, second))
+        heldOn(leasBookshelf, edition("Romance dawn", "One piece", 1, first))
+
+        // When
+        val page = catalogueEditions.findPage(lea.id, null, PAGE_SIZE)
+
+        // Then
+        page.editionIds shouldBe listOf(first, second)
     }
 
     private fun titlesOf(page: EditionIdPage): List<String> {
