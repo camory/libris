@@ -180,6 +180,19 @@ class JdbcCatalogueEditionsTest @Autowired constructor(
         page.next shouldBe null
     }
 
+    @Test
+    fun `a page that ends the catalogue names no next`() {
+        // Given
+        romansHeldOn(leasBookshelf, 1..2)
+
+        // When
+        val page = catalogueEditions.findPage(lea.id, null, 2)
+
+        // Then
+        titlesOf(page) shouldBe listOf("Roman 01", "Roman 02")
+        page.next shouldBe null
+    }
+
     private fun titlesOf(page: EditionIdPage): List<String> {
         val titles = editions.findByIds(page.editionIds).associate { it.id to it.title }
         return page.editionIds.map { titles.getValue(it) }
