@@ -260,7 +260,7 @@ describe("Catalogue", () => {
         : [
             book.series.volumeNumber === null
               ? book.series.name
-              : `${book.series.name} · tome ${book.series.volumeNumber}`,
+              : `${book.series.name} · ${book.kind === "BD" ? "album" : "tome"} ${book.series.volumeNumber}`,
           ];
     const authors = book.authors.map((author) => author.name).join(", ");
     const bookshelves = [...new Set(book.copies.map((copy) => copy.bookshelf))]
