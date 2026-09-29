@@ -12,8 +12,8 @@
     aria-hidden="true"
   >
     <path d="M3 20.5h18" />
-    <rect x="5" y="6" width="3.5" height="14.5" rx="1" />
-    <rect x="10.25" y="3.5" width="3.5" height="17" rx="1" />
-    <rect x="15.5" y="8" width="3.5" height="12.5" rx="1" />
+    <rect x="4.5" y="5" width="3.5" height="15.5" rx="1" />
+    <rect x="9.5" y="5" width="3.5" height="15.5" rx="1" />
+    <rect x="14.5" y="5.5" width="3.5" height="15" rx="1" transform="rotate(15 14.5 20.5)" />
   </svg>
 </template>
