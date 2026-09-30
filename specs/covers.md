@@ -61,8 +61,8 @@ Then the edition exists with the source of the cover shown
 ```
 
 A card showing the stand-in adds the edition with no source. Proof: the add
-operation verified by Contracteer on both sides, its `201` case generated;
-backend scenario test over HTTP with a source that never answers; frontend
+operation verified by Contracteer on both sides, its `201` case keyed
+`201_ADD_ONE_PIECE_1` and checked on its schema; backend scenario test over HTTP with a source that never answers; frontend
 scenario test over the fakes.
 
 **S4 The worker fetches the chosen cover** · backend
@@ -298,7 +298,7 @@ show their covers, save those no source has a picture for.
 
 ## Tasks
 
-- T051 — S5 not found, S10 not yet stored, the backend on `v0.8.0` — backend
+- T051 — S5 not found, S10 not yet stored, the backend on `v0.8.1` — backend
 - T052 — S1 — backend
 - T053 — S3, S4, inventaire.io chosen — backend
 - T054 — S5 stored, Open Library chosen — backend
@@ -307,7 +307,7 @@ show their covers, save those no source has a picture for.
 - T057 — S7, S12 — backend
 - T058 — S8 — backend
 - T059 — S9, and S12 at start — backend
-- T060 — S1, S11, the frontend on `v0.8.0` — frontend
+- T060 — S1, S11, the frontend on `v0.8.1` — frontend
 - T061 — S2 — frontend
 - T062 — S3 — frontend
 - T063 — S10 — frontend
