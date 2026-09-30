@@ -1,6 +1,9 @@
 package fr.amory.libris.library.infrastructure.web
 
 import fr.amory.libris.bibliography.application.cover.FindCover
+import fr.amory.libris.bibliography.domain.cover.Cover
+import fr.amory.libris.bibliography.domain.cover.CoverName
+import fr.amory.libris.bibliography.fixture.recordedBytes
 import fr.amory.libris.fixture.WebSliceTest
 import fr.amory.libris.library.application.AddBookToBookshelf
 import fr.amory.libris.library.application.FindDefaultBookshelf
@@ -10,17 +13,15 @@ import fr.amory.libris.library.application.lookup.LookupIsbnForReader
 import fr.amory.libris.library.domain.bookshelf.BookshelfId
 import fr.amory.libris.library.domain.reader.ReaderId
 import fr.amory.libris.library.fixture.readerNamed
-import io.kotest.matchers.maps.shouldNotContainKey
 import io.kotest.matchers.shouldBe
 import org.junit.jupiter.api.Test
 import org.mockito.BDDMockito.given
-import org.mockito.Mockito.verifyNoInteractions
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.core.ParameterizedTypeReference
-import org.springframework.http.MediaType.APPLICATION_JSON
 import org.springframework.test.context.bean.override.mockito.MockitoBean
 import org.springframework.test.web.servlet.client.RestTestClient
 import java.util.UUID
+
+private const val NAME = "3f7a9c0e5b2d4816a0c9e7f1b3d5a2c4e6f8091b2c3d4e5f60718293a4b5c6d7"
 
 private val TOPHE = readerNamed(
     username = "tophe",
@@ -40,52 +41,34 @@ private val TOPHE = readerNamed(
         FindCover::class,
     ],
 )
-class ProblemAdviceTest @Autowired constructor(
+class CoverControllerTest @Autowired constructor(
     private val client: RestTestClient,
     private val welcomeReader: WelcomeReader,
-    private val addBookToBookshelf: AddBookToBookshelf,
+    private val findCover: FindCover,
 ) {
     @Test
-    fun `a bookshelf id that is not a uuid is a validation problem`() {
+    fun `a stored JPEG is served as a JPEG to be kept a year`() {
         // Given
+        val bytes = recordedBytes("covers/tall.jpg")
         given(welcomeReader("tophe", "tophe@amory.fr", "Tophe")).willReturn(TOPHE)
+        given(findCover(CoverName(NAME))).willReturn(Cover.of(bytes))
 
         // When
-        val body = add("salon", """{}""")
-
-        // Then
-        body?.get("type") shouldBe "/problems/validation"
-        body!! shouldNotContainKey "detail"
-        verifyNoInteractions(addBookToBookshelf)
-    }
-
-    @Test
-    fun `a body of the wrong types is a validation problem`() {
-        // Given
-        given(welcomeReader("tophe", "tophe@amory.fr", "Tophe")).willReturn(TOPHE)
-
-        // When
-        val body = add(TOPHE.defaultBookshelfId.value.toString(), """"Romance dawn"""")
-
-        // Then
-        body?.get("type") shouldBe "/problems/validation"
-        body!! shouldNotContainKey "detail"
-        verifyNoInteractions(addBookToBookshelf)
-    }
-
-    private fun add(bookshelf: String, book: String): Map<String, Any>? =
-        client.post()
-            .uri("/api/v1/bookshelves/{id}/books", bookshelf)
+        val body = client.get()
+            .uri("/api/v1/covers/{name}", NAME)
             .headers {
                 it.add("Remote-User", "tophe")
                 it.add("Remote-Name", "Tophe")
                 it.add("Remote-Email", "tophe@amory.fr")
-                it.add("X-Requested-With", "XMLHttpRequest")
             }
-            .contentType(APPLICATION_JSON)
-            .body(book)
             .exchange()
-            .expectStatus().isBadRequest
-            .expectBody(object : ParameterizedTypeReference<Map<String, Any>>() {})
+            .expectStatus().isOk
+            .expectHeader().contentType("image/jpeg")
+            .expectHeader().valueEquals("Cache-Control", "public, max-age=31536000, immutable")
+            .expectBody(ByteArray::class.java)
             .returnResult().responseBody
+
+        // Then
+        body shouldBe bytes
+    }
 }

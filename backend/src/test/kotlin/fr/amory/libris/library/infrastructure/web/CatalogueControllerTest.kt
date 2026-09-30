@@ -1,5 +1,6 @@
 package fr.amory.libris.library.infrastructure.web
 
+import fr.amory.libris.bibliography.application.cover.FindCover
 import fr.amory.libris.bibliography.domain.Contribution
 import fr.amory.libris.bibliography.domain.ContributionRole.WRITER
 import fr.amory.libris.bibliography.domain.Contributions
@@ -71,6 +72,7 @@ private val ROMANCE_DAWN = HeldEdition(
         FindDefaultBookshelf::class,
         AddBookToBookshelf::class,
         BrowseCatalogue::class,
+        FindCover::class,
     ],
 )
 class CatalogueControllerTest @Autowired constructor(

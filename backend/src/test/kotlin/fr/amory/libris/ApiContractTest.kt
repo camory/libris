@@ -2,6 +2,7 @@ package fr.amory.libris
 
 import dev.contracteer.verifier.junit.ContracteerServerPort
 import dev.contracteer.verifier.junit.ContracteerTest
+import fr.amory.libris.bibliography.application.cover.FindCover
 import fr.amory.libris.bibliography.application.lookup.EditionLookupResult
 import fr.amory.libris.bibliography.application.lookup.EditionLookupResult.Found
 import fr.amory.libris.bibliography.application.lookup.EditionLookupResult.Held
@@ -13,10 +14,13 @@ import fr.amory.libris.bibliography.domain.ContributionRole.WRITER
 import fr.amory.libris.bibliography.domain.Contributions
 import fr.amory.libris.bibliography.domain.Kind.MANGA
 import fr.amory.libris.bibliography.domain.SeriesEntry
+import fr.amory.libris.bibliography.domain.cover.Cover
+import fr.amory.libris.bibliography.domain.cover.CoverName
 import fr.amory.libris.bibliography.domain.edition.Edition
 import fr.amory.libris.bibliography.domain.edition.EditionId
 import fr.amory.libris.bibliography.domain.lookup.EditionPreview
 import fr.amory.libris.bibliography.fixture.isbnOf
+import fr.amory.libris.bibliography.fixture.recordedBytes
 import fr.amory.libris.fixture.WebSliceTest
 import fr.amory.libris.library.application.AddBookResult.Added
 import fr.amory.libris.library.application.AddBookResult.NotAnOwner
@@ -51,6 +55,8 @@ import org.springframework.context.annotation.Import
 import org.springframework.core.Ordered
 import org.springframework.test.context.bean.override.mockito.MockitoBean
 import java.util.UUID
+
+private val NO_COVER = "0".repeat(64)
 
 private val ONE_PIECE_1 = EditionPreview(
     isbn = isbnOf("9782723488525"),
@@ -147,15 +153,17 @@ private fun noCopy(answer: EditionLookupResult) = IsbnLookup(answer, emptyList()
         FindDefaultBookshelf::class,
         AddBookToBookshelf::class,
         BrowseCatalogue::class,
+        FindCover::class,
     ],
 )
-class ApiContractTest @Autowired constructor(
+class ApiContractTest @Suppress("LongParameterList") @Autowired constructor(
     @field:ContracteerServerPort @param:LocalServerPort val serverPort: Int,
     private val welcomeReader: WelcomeReader,
     private val lookupIsbnForReader: LookupIsbnForReader,
     private val findDefaultBookshelf: FindDefaultBookshelf,
     private val addBookToBookshelf: AddBookToBookshelf,
     private val browseCatalogue: BrowseCatalogue,
+    private val findCover: FindCover,
 ) {
     @ContracteerTest(openApiDoc = "https://raw.githubusercontent.com/camory/libris-api/v0.8.1/openapi.yaml")
     fun `the API matches the contract`() {
@@ -178,6 +186,8 @@ class ApiContractTest @Autowired constructor(
             .willReturn(NotAnOwner)
         given(browseCatalogue(ReaderId(eq(contracteer.id.value) ?: contracteer.id.value), any()))
             .willReturn(CataloguePage(listOf(ONE_PIECE_1_HELD), null))
+        given(findCover(CoverName(any() ?: NO_COVER))).willReturn(Cover.of(recordedBytes("covers/tall.jpg")))
+        given(findCover(CoverName(eq(NO_COVER) ?: NO_COVER))).willReturn(null)
     }
 
     @TestConfiguration

@@ -1,5 +1,6 @@
 package fr.amory.libris.library.infrastructure.web
 
+import fr.amory.libris.bibliography.application.cover.FindCover
 import fr.amory.libris.bibliography.application.lookup.EditionLookupResult.Held
 import fr.amory.libris.bibliography.domain.Contribution
 import fr.amory.libris.bibliography.domain.ContributionRole.WRITER
@@ -65,6 +66,7 @@ private val ROMANCE_DAWN_ID = EditionId(UUID.fromString("01991c3a-5b7e-7c1d-8f2a
         FindDefaultBookshelf::class,
         AddBookToBookshelf::class,
         BrowseCatalogue::class,
+        FindCover::class,
     ],
 )
 class IsbnControllerTest @Autowired constructor(

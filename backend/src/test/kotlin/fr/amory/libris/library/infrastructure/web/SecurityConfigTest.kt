@@ -1,5 +1,6 @@
 package fr.amory.libris.library.infrastructure.web
 
+import fr.amory.libris.bibliography.application.cover.FindCover
 import fr.amory.libris.fixture.WebSliceTest
 import fr.amory.libris.library.application.AddBookToBookshelf
 import fr.amory.libris.library.application.FindDefaultBookshelf
@@ -22,6 +23,7 @@ import org.springframework.test.web.servlet.client.RestTestClient
         FindDefaultBookshelf::class,
         AddBookToBookshelf::class,
         BrowseCatalogue::class,
+        FindCover::class,
     ],
 )
 class SecurityConfigTest @Autowired constructor(
