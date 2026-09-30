@@ -1,0 +1,31 @@
+package fr.amory.libris.bibliography.infrastructure.persistence
+
+import fr.amory.libris.bibliography.domain.cover.CoverFormat
+import fr.amory.libris.bibliography.domain.cover.CoverName
+import fr.amory.libris.bibliography.fixture.recordedBytes
+import io.kotest.matchers.shouldBe
+import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.io.TempDir
+import java.nio.file.Path
+import kotlin.io.path.writeBytes
+
+private const val NAME = "3f7a9c0e5b2d4816a0c9e7f1b3d5a2c4e6f8091b2c3d4e5f60718293a4b5c6d7"
+
+class FileCoverStoreTest {
+    @TempDir
+    lateinit var dir: Path
+
+    @Test
+    fun `the file named by the name is the cover`() {
+        // Given
+        val bytes = recordedBytes("covers/tall.jpg")
+        dir.resolve(NAME).writeBytes(bytes)
+
+        // When
+        val cover = FileCoverStore(dir).read(CoverName(NAME))
+
+        // Then
+        cover?.format shouldBe CoverFormat.JPEG
+        cover?.bytes shouldBe bytes
+    }
+}
