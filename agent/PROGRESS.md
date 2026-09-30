@@ -288,7 +288,7 @@ Format:
   offset check already refusing both; its mutation was run instead. Step 14
   also answered `404` to a name `findCover` does not find, so `404_NO_COVER`
   went green there rather than at step 17. The backend started without
-  `LIBRIS_COVERS_DIR`, checked by `bootRun` with the sandbox `.env`: the
+  `LIBRIS_COVERS_DIR`, seen by `bootRun` without the variable: the
   binder keeps `${LIBRIS_COVERS_DIR}` as a literal path. The setting is
   `${LIBRIS_COVERS_DIR:}` and `LibrisApplicationTest` gained a case proving
   the start refused. `FastEntryScenarios` *S1* gained
