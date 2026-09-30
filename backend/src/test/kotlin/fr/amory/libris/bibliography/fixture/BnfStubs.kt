@@ -4,6 +4,7 @@ import com.github.tomakehurst.wiremock.WireMockServer
 import com.github.tomakehurst.wiremock.client.ResponseDefinitionBuilder
 import com.github.tomakehurst.wiremock.client.WireMock.containing
 import com.github.tomakehurst.wiremock.client.WireMock.get
+import com.github.tomakehurst.wiremock.client.WireMock.getRequestedFor
 import com.github.tomakehurst.wiremock.client.WireMock.ok
 import com.github.tomakehurst.wiremock.client.WireMock.serverError
 import com.github.tomakehurst.wiremock.client.WireMock.urlPathEqualTo
@@ -31,6 +32,18 @@ class BnfStubs(private val server: WireMockServer) {
         server.stubFor(get(urlPathEqualTo(SRU)).willReturn(serverError()))
     }
 
+    fun hasCover(picture: ByteArray) {
+        server.stubFor(
+            get(urlPathEqualTo(COVER)).willReturn(ok().withHeader("Content-Type", "image/jpeg").withBody(picture)),
+        )
+    }
+
+    fun hasNoCover() {
+        server.stubFor(get(urlPathEqualTo(COVER)).willReturn(serverError()))
+    }
+
+    fun coverRequests(): Int = server.findAll(getRequestedFor(urlPathEqualTo(COVER))).size
+
     fun answers(isbn: String, envelope: String) {
         server.stubFor(
             get(urlPathEqualTo(SRU))
@@ -44,6 +57,7 @@ class BnfStubs(private val server: WireMockServer) {
 
     private companion object {
         const val SRU = "/api/SRU"
+        const val COVER = "/couverture"
         const val LATE = 2_000
         const val UNREADABLE = "<srw:searchRetrieveResponse>"
     }
