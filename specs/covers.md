@@ -298,4 +298,17 @@ show their covers, save those no source has a picture for.
 
 ## Tasks
 
-Filled by the planner.
+- T051 — S5 not found, S10 not yet stored, the backend on `v0.8.0` — backend
+- T052 — S1 — backend
+- T053 — S3, S4, inventaire.io chosen — backend
+- T054 — S5 stored, Open Library chosen — backend
+- T055 — S10 stored — backend
+- T056 — S6 — backend
+- T057 — S7, S12 — backend
+- T058 — S8 — backend
+- T059 — S9, and S12 at start — backend
+- T060 — S1, S11, the frontend on `v0.8.0` — frontend
+- T061 — S2 — frontend
+- T062 — S3 — frontend
+- T063 — S10 — frontend
+- T064 — the backend on `v0.9.0` — backend

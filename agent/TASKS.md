@@ -158,6 +158,148 @@ Piece 1 first with Bibliothèque de Christophe · 2 exemplaires, and the rows
 read as a shelf; on the second account of the family, open Catalogue and
 read the empty sentence.*
 
+## Covers — specs/covers.md
+
+Contract: release `v0.8.0` of `camory/libris-api`, after `v0.7.0`: `Edition`
+loses `coverUrl`, `IsbnLookup` gains `id` and `covers`, `NewBook` gains
+`coverSource`, `Book` gains `coverUrl`, and the cover operation is new; the
+lookup keeps its deprecated `coverUrl`, so each side deploys alone. Fields and
+an operation are added, so the backend goes first and its pin moves in T051;
+the frontend pin moves in T060, once T059 is deployed. Release `v0.9.0`, the
+lookup losing `coverUrl`, removes a field, so the frontend goes first: the
+backend pins it in T064, once T063 is deployed. No other task touches the
+contract (D04).
+
+The backend is deployed once T059 is merged, not before: from T051 the
+catalogue rows show a cover only once the worker has stored it (Tophe,
+2026-09-30).
+
+- [ ] T051 Backend: covers on `v0.8.0`, the thinnest answer.
+      `ApiContractTest` pins `v0.8.0` (D04). The lookup answers `id`, the
+      house's edition or null, `covers` empty, `coverUrl` as today; the add
+      takes `coverSource`, no longer a cover address; `Book.coverUrl` is null.
+      The cover operation serves by name a picture of the covers directory,
+      one environment variable, with its year-long `Cache-Control`, else `404`
+      `/problems/not-found` (D09, D11); `deploy/compose.yaml` gives the
+      backend that variable and mounts there a second named volume, `covers`
+      (D09); the fast entry's whole-body case gains the fields (D07).
+      Realises S5's not-found and S10 not yet stored;
+      un-skips the backend tests *S5 …, an address naming no cover* and *S10
+      …, not yet stored*.
+
+- [ ] T052 Backend: the lookup offers the sources' covers.
+      For an ISBN the house lacks, the bibliography answers the candidates
+      `{source, url}` in the order inventaire.io, Open Library, BnF, a source
+      with no record or no picture absent; `coverUrl` is the first `url` or
+      null. inventaire.io is asked by ISBN for its picture alone, at 600 tall;
+      no card field comes from it and no picture is fetched (D02, D11). Tests
+      of the inventaire.io reading; the fast entry's whole-body case follows.
+      Realises S1 on the backend; un-skips the backend test of S1.
+
+- [ ] T053 Backend: the add carries the source, the worker fetches it.
+      An added edition keeps its `coverSource` when it names a source, none
+      otherwise, `Libris` included, ignored on a held ISBN, and awaits a
+      picture. The add answers the copy, then wakes the worker, one piece
+      behind an application port the tests call the same way (D02). Asked by
+      ISBN, a chosen inventaire.io's picture is stored under a name made from
+      its bytes; the catalogue answers `coverUrl`, the cover operation's
+      address (D11). Realises S3, S4; un-skips the backend tests of S3, S4.
+
+- [ ] T054 Backend: Open Library as the chosen source.
+      The worker of T053 fetches the picture of an edition whose chosen
+      source is Open Library from its covers by ISBN, and stores it as T053
+      does, as fetched; the cover operation serves it as JPEG with its
+      year-long `Cache-Control`. Only the chosen source is asked.
+      Realises S5 on a stored cover; un-skips the backend test *S5 Libris
+      serves a stored cover*.
+
+- [ ] T055 Backend: a held edition offers its own cover.
+      For an ISBN the house holds, the lookup answers the edition's `id` and,
+      once its picture is stored, one candidate named `Libris` at the cover
+      operation's address, `coverUrl` the same; no source is asked for the
+      edition or its picture. Not yet stored stays as T051 answers it: the
+      `id` and no candidate (D11). Realises S10; un-skips the backend test
+      *S10 A held edition offers its own cover*.
+
+- [ ] T056 Backend: the picture is normalised.
+      Before it is stored, a fetched picture taller than 600 pixels is scaled
+      to 600 tall, its proportions kept, and encoded as JPEG; one 600 tall or
+      less is kept as fetched, in its own format, its bytes unchanged.
+      Unit tests of the rule over generated pictures, one per case.
+      Realises S6; un-skips the backend tests of S6, both cases.
+
+- [ ] T057 Backend: the cascade for an edition with no chosen source.
+      The worker asks, for an edition with an ISBN and no chosen source,
+      inventaire.io, then Open Library, then the BnF, its picture read from
+      the record's ark, stopping at the first picture and storing it as T053
+      does; an edition no source has a picture for stays without. The
+      editions stored before this feature, each with an ISBN, await a picture
+      with no chosen source, a migration of the gate proving it (D03, D07).
+      Realises S7 and S12; un-skips the backend tests of S7, its three cases.
+
+- [ ] T058 Backend: a failed fetch waits a day.
+      A fetch that gets no answer, an error, or what is not a picture leaves
+      the edition without one and dates the attempt from the application's
+      clock; a run within a day passes it by, a run a day later tries again.
+      A fetch gives up after five seconds or five megabytes.
+      Tests of the limits over a stubbed source; the scenario tests advance
+      the clock. Realises S8; un-skips the backend tests of S8, its three
+      cases.
+
+- [ ] T059 Backend: the worker runs on its own.
+      Besides each add, the worker runs when Libris starts and once a day, its
+      schedule a configuration property, and takes the editions awaiting a
+      picture one at a time, in the order they were added; two wakings never
+      fetch at once (D02). Realises S9, and S12's run at start; un-skips the
+      backend test of S9; the schedule is checked by hand in the log.
+
+- [ ] T060 Frontend: covers on `v0.8.0`, the card shows the first candidate.
+      Precondition (human): T059 deployed (D04).
+      `vitest.global-setup.ts` pins `v0.8.0` (D04). The lookup's found answer
+      holds `id` and `covers` as required, its edition no `coverUrl`; `Book`
+      holds its own `coverUrl`, which the rows show; the add sends
+      `coverSource` null until T062. The card shows the first candidate, the
+      stand-in when none (D05); clients tested against `contracteer mock`
+      (D07). Realises S1, S11; un-skips the frontend tests of S1 and S11.
+
+- [ ] T061 Frontend: the card shows the first cover that loads.
+      Under the card's cover block, one dot per candidate that loaded, the
+      shown one filled, each a button *Couverture <source>* with its pressed
+      state, then the shown cover's source name in `muted`; a tap on a dot
+      shows that cover and its name; a candidate that does not load gets no
+      dot; none loading shows the stand-in, no name, no dot (U06, U08; the
+      mockups of the spec). The PR body proposes the U06 rule the spec names.
+      Realises S2; un-skips the frontend tests of S2, its four cases.
+
+- [ ] T062 Frontend: the add carries the cover's source.
+      The add sends as `coverSource` the source of the cover the card shows,
+      null when it shows the stand-in; once added, the cover and its name
+      stay as they were (D05). Realises S3 on the frontend; un-skips the
+      frontend tests of S3, both cases.
+
+- [ ] T063 Frontend: a held edition offers its own cover.
+      When the lookup answers an `id`, the choice is over: the card shows the
+      candidate's picture with no dot and no name under it, and the stand-in
+      when there is no candidate; no side reads the candidate's source name.
+      Realises S10 on the frontend; un-skips the frontend tests of S10, both
+      cases.
+
+- [ ] T064 Backend: the lookup on `v0.9.0`, its deprecated cover gone.
+      Precondition (human): T063 deployed; `v0.9.0` released (D04).
+      `ApiContractTest` pins `v0.9.0`, the only contract edit of the task
+      (D04): the lookup no longer answers `coverUrl`, the candidates of
+      `covers` saying it all; nothing else changes, and the fast entry's
+      whole-body case loses the field (D07). Un-skips nothing: a field
+      removed has no scenario, the spec's contract section asks for it, and
+      every scenario test stays green throughout.
+
+*Done (Tophe, on the Pixel, from the installed app on staging): scan an
+ouvrage the house lacks; the card shows a cover with its source under it; tap
+a dot, the cover changes; add it; open the catalogue, the row shows that
+cover, after a second visit if the first came too soon; scan it again, the
+card shows that cover with nothing under it. The editions from before the
+deploy show their covers, save those no source has a picture for.*
+
 ## Done
 
 - Phase 0 — Foundations, T001 to T012, done 2026-09-10 with `v0.1.3` on the
@@ -186,10 +328,11 @@ read the empty sentence.*
 
 ## Questions for the human
 
-- **Staging.** The *Done* of `specs/bookshelf.md`, and now that of
-  `specs/catalogue.md`, asks for the installed app on staging, as the update
-  spec's did, while D09 knows one environment, the Kimsufi box. No task
-  depends on the answer; the hand check is Tophe's step either way.
+- **Staging.** The *Done* of `specs/catalogue.md`, and now that of
+  `specs/covers.md` and its S9, which checks the worker's schedule in
+  staging's log, ask for staging, as the update and bookshelf specs did,
+  while D09 knows one environment, the Kimsufi box. No task depends on the
+  answer; the hand check is Tophe's step either way.
 - **No spec yet**, so nothing is planned for them: PRD §4.1 beyond the add
   and the listing — viewing and editing an edition, removing a copy, the
   filters and sorts of the list, the edition page — §4.2 search, §4.3
