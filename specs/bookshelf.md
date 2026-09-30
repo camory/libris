@@ -35,9 +35,9 @@ Then an edition exists with what the card shows, kind included
 	And the card shows that copy on that bookshelf
 ```
 
-Proof: contract example `ADD_ONE_PIECE_1` verified by Contracteer on both
-sides; backend scenario test over HTTP; frontend scenario test over the
-fakes.
+Proof: the add operation verified by Contracteer on both sides, its `201`
+case generated; backend scenario test over HTTP; frontend scenario test over
+the fakes.
 
 **S3 A known ISBN reaches the existing edition** · backend
 
@@ -140,10 +140,9 @@ bytes of an existing answer: two fields are added, one operation.
   bookshelf's `{id, name}`; `400` `Problem` `/problems/validation` with one
   error per refused field, `isbn13` checked as the lookup checks its `isbn`;
   `404` `Problem` `/problems/not-found` when the reader owns no such
-  bookshelf, a bookshelf being visible only to its members. Examples
-  `ADD_ONE_PIECE_1`, `400_NOT_AN_ISBN` (the body of `ADD_ONE_PIECE_1` with a
-  wrong check digit), `404_NOT_MY_BOOKSHELF` (the body of `ADD_ONE_PIECE_1`
-  on another bookshelf's id).
+  bookshelf, a bookshelf being visible only to its members. The `201` case
+  generated; keys `400_NOT_AN_ISBN` (the book with a wrong check digit) and
+  `404_NOT_MY_BOOKSHELF` (the book on another bookshelf's id).
 - Every request and response body example lives under
   `components/examples`, named after what it holds, `OnePiece1`,
   `NewOnePiece1`, `CopyOfOnePiece1`, `NotMyBookshelf`; the operations keep

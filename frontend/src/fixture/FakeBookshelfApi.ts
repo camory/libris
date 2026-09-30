@@ -1,12 +1,11 @@
 import type { AddAnswer, BookshelfApi } from "../application/BookshelfApi";
-import type { CoverSource } from "../domain/Cover";
 import type { SourceEdition } from "../domain/SourceEdition";
 
 export class FakeBookshelfApi implements BookshelfApi {
   readonly asked: {
     bookshelfId: string;
     edition: SourceEdition;
-    coverSource?: CoverSource | null;
+    coverSource?: string | null;
   }[] = [];
 
   constructor(
@@ -16,7 +15,7 @@ export class FakeBookshelfApi implements BookshelfApi {
   add(
     bookshelfId: string,
     edition: SourceEdition,
-    coverSource?: CoverSource | null,
+    coverSource?: string | null,
   ): Promise<AddAnswer> {
     this.asked.push(
       coverSource === undefined

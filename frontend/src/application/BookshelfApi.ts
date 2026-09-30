@@ -1,6 +1,5 @@
 import type { InjectionKey } from "vue";
 import type { Copy } from "../domain/Copy";
-import type { CoverSource } from "../domain/Cover";
 import type { SourceEdition } from "../domain/SourceEdition";
 
 export type AddAnswer =
@@ -10,7 +9,7 @@ export interface BookshelfApi {
   add(
     bookshelfId: string,
     edition: SourceEdition,
-    coverSource?: CoverSource | null,
+    coverSource?: string | null,
   ): Promise<AddAnswer>;
 }
 

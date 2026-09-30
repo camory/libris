@@ -387,3 +387,24 @@
   an edition of the page without copies and fail `getValue`. Nothing
   removes copies yet; the task that does should let an edition of the page
   come with no copy, or drop it (found 2026-09-29 while implementing T050).
+- Frontend: the lookup and add ports answer `{ outcome: "problem"; type }`,
+  so the wire string `/problems/not-found` crosses into the application
+  layer, `IsbnView` maps it to a message and every fake speaks it. The
+  adapter alone should turn the status code into an outcome in the spec's
+  words (`unknown`, `unavailable`, `refused`, `not-my-bookshelf`,
+  `failed`), the view map outcomes to messages, the fakes answer outcomes;
+  the contract guarantees the status per key and no problem type value.
+  `unavailable` then gets the message S6 of `specs/fast-entry.md` asks for,
+  which the view never shows today (found 2026-09-30 reviewing contract
+  v0.8.0 with Tophe).
+- Backend: `ApiContractTest` mirrors the contract's `ONE_PIECE_1` and
+  `ONE_PIECE_2_OWNED` field by field and stubs on exact arguments, though
+  the verifier checks a keyed 200 on its schema only, as measured on
+  2026-09-30. Stubs on `any()` answering any Found or Held edition serve
+  every case, and a changed example value stops costing a backend edit
+  (found 2026-09-30 reviewing contract v0.8.0 with Tophe).
+- Frontend: `FetchIsbnApi.spec.ts` and `FetchBookshelfApi.spec.ts` assert
+  the problem `type` the mock answers, a value no schema of the contract
+  defines and that v0.8.0 no longer carries as an example; with the ports
+  answering outcomes by status they assert the outcome instead (found
+  2026-09-30 reviewing contract v0.8.0 with Tophe).

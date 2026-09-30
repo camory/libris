@@ -14,8 +14,8 @@ import io.kotest.matchers.comparables.shouldBeGreaterThanOrEqualTo
 import io.kotest.matchers.comparables.shouldBeLessThan
 import io.kotest.matchers.nulls.shouldBeNull
 import io.kotest.matchers.shouldBe
+import io.kotest.matchers.shouldNotBe
 import io.kotest.matchers.string.shouldContain
-import io.kotest.matchers.string.shouldEndWith
 import io.kotest.matchers.string.shouldStartWith
 import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
@@ -60,7 +60,8 @@ class CoversScenarios @Autowired constructor(
 
         // Then
         val body = bodyOf(response.expectStatus().isOk())
-        JsonPath.read<List<String>>(body, "$.covers[*].source") shouldBe listOf("INVENTAIRE", "OPEN_LIBRARY", "BNF")
+        JsonPath.read<List<String>>(body, "$.covers[*].source") shouldBe listOf("inventaire.io", "Open Library", "BnF")
+        JsonPath.read<String?>(body, "$.id") shouldBe null
         JsonPath.read<String>(body, "$.covers[0].url") shouldContain ONE_PIECE_1_INVENTAIRE_HASH
         JsonPath.read<String>(body, "$.covers[1].url") shouldContain ONE_PIECE_1
         JsonPath.read<String>(body, "$.covers[2].url") shouldContain ONE_PIECE_1_ARK
@@ -77,7 +78,7 @@ class CoversScenarios @Autowired constructor(
 
         // When
         val response: RestTestClient.ResponseSpec
-        val elapsed = measureTime { response = add(juliette, bookshelf, onePiece1(coverSource = "INVENTAIRE")) }
+        val elapsed = measureTime { response = add(juliette, bookshelf, onePiece1(coverSource = "inventaire.io")) }
 
         // Then
         response.expectStatus().isCreated()
@@ -94,14 +95,14 @@ class CoversScenarios @Autowired constructor(
         openLibrary.hasCover(ONE_PIECE_1, TALL_JPEG)
         bnf.knows(ONE_PIECE_1)
         bnf.hasCover(TALL_JPEG)
-        add(marc, defaultBookshelfOf(marc), onePiece1(coverSource = "INVENTAIRE")).expectStatus().isCreated()
+        add(marc, defaultBookshelfOf(marc), onePiece1(coverSource = "inventaire.io")).expectStatus().isCreated()
 
         // When
         val cover = awaitCover(marc, ONE_PIECE_1)
 
         // Then
         cover shouldStartWith "/api/v1/covers/"
-        cover shouldEndWith ".webp"
+        servedAs(marc, cover, WEBP)
         inventaire.pictureRequests() shouldBe 1
         openLibrary.coverRequests(ONE_PIECE_1) shouldBe 0
         bnf.coverRequests() shouldBe 0
@@ -113,7 +114,7 @@ class CoversScenarios @Autowired constructor(
         // Given
         val nina = reader("nina", "Nina")
         openLibrary.hasCover(ONE_PIECE_1, TALL_JPEG)
-        add(nina, defaultBookshelfOf(nina), onePiece1(coverSource = "OPEN_LIBRARY")).expectStatus().isCreated()
+        add(nina, defaultBookshelfOf(nina), onePiece1(coverSource = "Open Library")).expectStatus().isCreated()
         val cover = awaitCover(nina, ONE_PIECE_1)
 
         // When
@@ -135,7 +136,7 @@ class CoversScenarios @Autowired constructor(
         val paul = reader("paul", "Paul")
 
         // When
-        val response = picture(paul, "/api/v1/covers/${"0".repeat(HASH_LENGTH)}.jpg")
+        val response = picture(paul, "/api/v1/covers/${"0".repeat(HASH_LENGTH)}")
 
         // Then
         response.expectStatus().isNotFound()
@@ -149,13 +150,13 @@ class CoversScenarios @Autowired constructor(
         // Given
         val rose = reader("rose", "Rose")
         openLibrary.hasCover(ONE_PIECE_1, TALL_JPEG)
-        add(rose, defaultBookshelfOf(rose), onePiece1(coverSource = "OPEN_LIBRARY")).expectStatus().isCreated()
+        add(rose, defaultBookshelfOf(rose), onePiece1(coverSource = "Open Library")).expectStatus().isCreated()
 
         // When
         val cover = awaitCover(rose, ONE_PIECE_1)
 
         // Then
-        cover shouldEndWith ".jpg"
+        servedAs(rose, cover, IMAGE_JPEG)
         val stored = ImageIO.read(ByteArrayInputStream(bytesOf(picture(rose, cover).expectStatus().isOk())))
         stored.height shouldBe NORMALISED_HEIGHT
         stored.width shouldBe NORMALISED_HEIGHT * TALL_JPEG_WIDTH / TALL_JPEG_HEIGHT
@@ -167,13 +168,12 @@ class CoversScenarios @Autowired constructor(
         // Given
         val sam = reader("sam", "Sam")
         inventaire.knows(ONE_PIECE_1, SMALL_WEBP)
-        add(sam, defaultBookshelfOf(sam), onePiece1(coverSource = "INVENTAIRE")).expectStatus().isCreated()
+        add(sam, defaultBookshelfOf(sam), onePiece1(coverSource = "inventaire.io")).expectStatus().isCreated()
 
         // When
         val cover = awaitCover(sam, ONE_PIECE_1)
 
         // Then
-        cover shouldEndWith ".webp"
         val response = picture(sam, cover).expectStatus().isOk()
         response.expectHeader().contentType(WEBP)
         bytesOf(response) shouldBe SMALL_WEBP
@@ -194,7 +194,7 @@ class CoversScenarios @Autowired constructor(
         val cover = awaitCover(tom, ONE_PIECE_1)
 
         // Then
-        cover shouldEndWith ".webp"
+        servedAs(tom, cover, WEBP)
         openLibrary.coverRequests(ONE_PIECE_1) shouldBe 0
         bnf.coverRequests() shouldBe 0
     }
@@ -214,7 +214,7 @@ class CoversScenarios @Autowired constructor(
         val cover = awaitCover(zoe, LES_NERONIA)
 
         // Then
-        cover shouldEndWith ".jpg"
+        servedAs(zoe, cover, IMAGE_JPEG)
         openLibrary.coverRequests(LES_NERONIA) shouldBe 1
         bnf.coverRequests() shouldBe 1
     }
@@ -265,12 +265,12 @@ class CoversScenarios @Autowired constructor(
         val bookshelf = defaultBookshelfOf(luc)
         openLibrary.hasCover(ONE_PIECE_2, TALL_JPEG)
         openLibrary.hasCover(ONE_PIECE_3, TALL_JPEG)
-        add(luc, bookshelf, onePiece1(coverSource = "OPEN_LIBRARY")).expectStatus().isCreated()
+        add(luc, bookshelf, onePiece1(coverSource = "Open Library")).expectStatus().isCreated()
         await { openLibrary.coverRequests(ONE_PIECE_1) == 1 }
         coverOf(luc, ONE_PIECE_1).shouldBeNull()
 
         // When a run within the day, woken by another add
-        add(luc, bookshelf, onePiece(ONE_PIECE_2, "Aux prises avec Baggy et ses hommes", 2, "OPEN_LIBRARY"))
+        add(luc, bookshelf, onePiece(ONE_PIECE_2, "Aux prises avec Baggy et ses hommes", 2, "Open Library"))
             .expectStatus().isCreated()
         awaitCover(luc, ONE_PIECE_2)
 
@@ -280,7 +280,7 @@ class CoversScenarios @Autowired constructor(
 
         // When a run a day later
         clock.advance(Duration.ofHours(A_DAY_AND_MORE))
-        add(luc, bookshelf, onePiece(ONE_PIECE_3, "Piège", 3, "OPEN_LIBRARY")).expectStatus().isCreated()
+        add(luc, bookshelf, onePiece(ONE_PIECE_3, "Piège", 3, "Open Library")).expectStatus().isCreated()
         awaitCover(luc, ONE_PIECE_3)
 
         // Then
@@ -297,8 +297,8 @@ class CoversScenarios @Autowired constructor(
         openLibrary.hasCover(ONE_PIECE_2, TALL_JPEG)
 
         // When
-        add(ana, bookshelf, onePiece1(coverSource = "OPEN_LIBRARY")).expectStatus().isCreated()
-        add(ana, bookshelf, onePiece(ONE_PIECE_2, "Aux prises avec Baggy et ses hommes", 2, "OPEN_LIBRARY"))
+        add(ana, bookshelf, onePiece1(coverSource = "Open Library")).expectStatus().isCreated()
+        add(ana, bookshelf, onePiece(ONE_PIECE_2, "Aux prises avec Baggy et ses hommes", 2, "Open Library"))
             .expectStatus().isCreated()
         awaitCover(ana, ONE_PIECE_1)
         awaitCover(ana, ONE_PIECE_2)
@@ -315,7 +315,7 @@ class CoversScenarios @Autowired constructor(
         // Given
         val iris = reader("iris", "Iris")
         openLibrary.hasCover(ONE_PIECE_1, TALL_JPEG)
-        add(iris, defaultBookshelfOf(iris), onePiece1(coverSource = "OPEN_LIBRARY")).expectStatus().isCreated()
+        add(iris, defaultBookshelfOf(iris), onePiece1(coverSource = "Open Library")).expectStatus().isCreated()
         val cover = awaitCover(iris, ONE_PIECE_1)
 
         // When
@@ -323,7 +323,8 @@ class CoversScenarios @Autowired constructor(
 
         // Then
         val body = bodyOf(response.expectStatus().isOk())
-        JsonPath.read<List<String>>(body, "$.covers[*].source") shouldBe listOf("LIBRIS")
+        JsonPath.read<List<String>>(body, "$.covers[*].source") shouldBe listOf("Libris")
+        JsonPath.read<String?>(body, "$.id") shouldNotBe null
         JsonPath.read<String>(body, "$.covers[0].url") shouldBe cover
         noSourceWasAsked()
     }
@@ -334,7 +335,7 @@ class CoversScenarios @Autowired constructor(
         // Given
         val hugo = reader("hugo", "Hugo")
         openLibrary.coverAnswersTooLate(ONE_PIECE_1)
-        add(hugo, defaultBookshelfOf(hugo), onePiece1(coverSource = "OPEN_LIBRARY")).expectStatus().isCreated()
+        add(hugo, defaultBookshelfOf(hugo), onePiece1(coverSource = "Open Library")).expectStatus().isCreated()
 
         // When
         val response = ask(hugo, ONE_PIECE_1)
@@ -370,6 +371,10 @@ class CoversScenarios @Autowired constructor(
         .headers { it.putAll(reader) }
         .accept(IMAGE_JPEG, WEBP, APPLICATION_PROBLEM_JSON)
         .exchange()
+
+    private fun servedAs(reader: Map<String, List<String>>, cover: String, type: MediaType) {
+        picture(reader, cover).expectStatus().isOk().expectHeader().contentType(type)
+    }
 
     private fun me(reader: Map<String, List<String>>): RestTestClient.ResponseSpec = http.get()
         .uri("/api/v1/me")

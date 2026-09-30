@@ -60,10 +60,10 @@ Then the edition exists with the source of the cover shown
 	And the card shows the copy, as the bookshelf spec says
 ```
 
-A card showing the stand-in adds the edition with no source. Proof: contract
-example `ADD_ONE_PIECE_1` verified by Contracteer on both sides; backend
-scenario test over HTTP with a source that never answers; frontend scenario
-test over the fakes.
+A card showing the stand-in adds the edition with no source. Proof: the add
+operation verified by Contracteer on both sides, its `201` case generated;
+backend scenario test over HTTP with a source that never answers; frontend
+scenario test over the fakes.
 
 **S4 The worker fetches the chosen cover** · backend
 
@@ -92,9 +92,10 @@ Then Libris answers the picture, JPEG or WebP as stored
 	    picture
 ```
 
-An address naming no cover is not found. Proof: contract example of the cover
-operation, a binary body, verified by Contracteer on both sides; backend
-scenario test over HTTP for the headers and the not-found.
+An address naming no cover is not found. Proof: the cover operation verified
+by Contracteer on the backend, any image for a well-formed name; backend
+scenario test over HTTP for the format by the stored file, the headers and
+the not-found.
 
 **S6 The picture is normalised** · backend
 
@@ -167,12 +168,14 @@ Given an edition the house holds, its cover stored
 
 When a reader asks for its ISBN
 
-Then Libris answers one candidate, its own, named Libris
-	And the card shows it with no dot and no name under it
+Then Libris answers the edition's id and one candidate, its own
+	And the card shows it with no dot and no name under it, the id
+	    telling it the choice is over
 ```
 
-An edition the house holds whose picture is not yet stored answers no
-candidate: the stand-in. Proof: contract example `ONE_PIECE_2_OWNED`
+An edition the house holds whose picture is not yet stored answers its id
+and no candidate: the stand-in. The candidate's source is a name like any
+other; no side reads it. Proof: contract example `ONE_PIECE_2_OWNED`
 verified by Contracteer on both sides; backend scenario test over HTTP;
 frontend scenario test over the fakes.
 
@@ -246,26 +249,29 @@ the new one, so each side deploys alone.
 
 - `Edition` loses `coverUrl`: the three schemas composed over it each mean
   something else by a cover.
-- `CoverSource`, an enumeration `INVENTAIRE | OPEN_LIBRARY | BNF | LIBRIS`.
-- `IsbnLookup` gains `covers`, required, an ordered array of `CoverCandidate`
-  `{source, url}`, `source` a `CoverSource`, `url` the picture's address,
-  empty when no source offers one; and keeps `coverUrl`, nullable,
-  deprecated, the first candidate's `url` or null. `ONE_PIECE_1` answers
-  three candidates in cascade order; `ONE_PIECE_2_OWNED` answers one,
-  `LIBRIS`, at the address of the cover operation.
-- `NewBook` gains `coverSource`, nullable, a `CoverSource`: the source of the
-  cover the card showed, null when it showed the stand-in. `ADD_ONE_PIECE_1`
-  sends `INVENTAIRE`. `LIBRIS` on an ISBN the house does not hold is
-  ignored, as the field is on a held ISBN with the others: the edition is
-  added with no source.
+- `IsbnLookup` gains `id`, required, nullable: the house's edition when it
+  holds the ISBN, null when it does not; and `covers`, required, an ordered
+  array of `CoverCandidate` `{source, url}`, `source` the name Libris knows
+  the source by, to give back on the add, no enumeration so that a source
+  comes or goes without a release, `url` the picture's address, empty when
+  no source offers one; and keeps `coverUrl`, nullable, deprecated, the
+  first candidate's `url` or null. `ONE_PIECE_1` answers no id and three
+  candidates in cascade order, `inventaire.io`, `Open Library`, `BnF`;
+  `ONE_PIECE_2_OWNED` answers an id and one candidate, `Libris`, at the
+  address of the cover operation.
+- `NewBook` gains `coverSource`, nullable, a string: the source of the cover
+  the card showed, by the name the lookup gave, null when it showed the
+  stand-in. The add's request examples send `inventaire.io`. On an ISBN the
+  house holds the field is ignored; on one it does not, a name that is not a
+  source's, the house's own included, is taken as null: the edition is added
+  with no source.
 - `Book` gains `coverUrl`, nullable: the relative address of the cover
   operation, null while no picture is stored.
-- `GET /api/v1/covers/{name}`, `name` the picture's hash in hexadecimal
-  followed by `.jpg` or `.webp`, a `pattern` on the parameter → `200`, the
-  body binary, `image/jpeg` or `image/webp` by the name, with
-  `Cache-Control: public, max-age=31536000, immutable`; `404` `Problem`
-  `/problems/not-found`. Example `ONE_PIECE_1_COVER`; the backend's verifier
-  fixture writes the example's file before the run.
+- `GET /api/v1/covers/{name}`, `name` the picture's hash in hexadecimal, a
+  `pattern` on the parameter → `200`, the body binary, `image/*`, JPEG or
+  WebP as stored, with `Cache-Control: public, max-age=31536000, immutable`;
+  `404` `Problem` `/problems/not-found`. The `200` case generated, the `404`
+  keyed `404_NO_COVER`.
 
 Release `v0.9.0`, after the frontend's deploy: `IsbnLookup` loses
 `coverUrl`. Nothing else changes.
