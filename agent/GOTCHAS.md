@@ -87,6 +87,18 @@ true; the diary keeps the date it was found.
   checks the content type and the shape of the 404; the response examples
   of the document exist for the mock only (see the mock item under
   *Frontend build and tests*).
+- Measured on Contracteer 4.1.1 (2026-09-30): the first `2xx` response of an
+  operation is always sent as a generated case, keyed or not, so a keyed
+  `200` on a request parameter only documents and disambiguates, and a
+  changed example value leaves the run green. A response with two content
+  types gets one generated case per type, each with a random parameter
+  value; the cover operation answers `image/*` alone, one case sent with
+  `Accept: image/*`, any image accepted, no example needed. A keyed error
+  case with no body example still checks the status, the content type and
+  the `Problem` schema. `externalValue` is not read: the example is seen as
+  null. The backend's `ApiContractTest` is a web slice over `MockitoBean`
+  use cases, so a stub answering `any()` serves the generated cases, where
+  a stub on exact arguments answers nothing to a random value.
 - `additionalProperties: false` cannot sit on a branch of an `allOf`: the
   standard applies each branch on its own, so the base refuses the fields
   the other branch adds, and no instance passes. Contracteer merges the
