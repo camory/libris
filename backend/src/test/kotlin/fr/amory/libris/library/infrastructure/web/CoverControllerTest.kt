@@ -54,14 +54,7 @@ class CoverControllerTest @Autowired constructor(
         given(findCover(CoverName(NAME))).willReturn(Cover.of(bytes))
 
         // When
-        val body = client.get()
-            .uri("/api/v1/covers/{name}", NAME)
-            .headers {
-                it.add("Remote-User", "tophe")
-                it.add("Remote-Name", "Tophe")
-                it.add("Remote-Email", "tophe@amory.fr")
-            }
-            .exchange()
+        val body = coverAt(NAME)
             .expectStatus().isOk
             .expectHeader().contentType("image/jpeg")
             .expectHeader().valueEquals("Cache-Control", "public, max-age=31536000, immutable")
@@ -71,4 +64,32 @@ class CoverControllerTest @Autowired constructor(
         // Then
         body shouldBe bytes
     }
+
+    @Test
+    fun `a stored WebP is served as a WebP`() {
+        // Given
+        val bytes = recordedBytes("covers/small.webp")
+        given(welcomeReader("tophe", "tophe@amory.fr", "Tophe")).willReturn(TOPHE)
+        given(findCover(CoverName(NAME))).willReturn(Cover.of(bytes))
+
+        // When
+        val body = coverAt(NAME)
+            .expectStatus().isOk
+            .expectHeader().contentType("image/webp")
+            .expectBody(ByteArray::class.java)
+            .returnResult().responseBody
+
+        // Then
+        body shouldBe bytes
+    }
+
+    private fun coverAt(name: String): RestTestClient.ResponseSpec =
+        client.get()
+            .uri("/api/v1/covers/{name}", name)
+            .headers {
+                it.add("Remote-User", "tophe")
+                it.add("Remote-Name", "Tophe")
+                it.add("Remote-Email", "tophe@amory.fr")
+            }
+            .exchange()
 }

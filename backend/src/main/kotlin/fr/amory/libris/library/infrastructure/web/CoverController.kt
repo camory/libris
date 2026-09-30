@@ -1,14 +1,20 @@
 package fr.amory.libris.library.infrastructure.web
 
 import fr.amory.libris.bibliography.application.cover.FindCover
+import fr.amory.libris.bibliography.domain.cover.CoverFormat
+import fr.amory.libris.bibliography.domain.cover.CoverFormat.JPEG
+import fr.amory.libris.bibliography.domain.cover.CoverFormat.WEBP
 import fr.amory.libris.bibliography.domain.cover.CoverName
 import org.springframework.http.HttpHeaders.CACHE_CONTROL
 import org.springframework.http.HttpStatus.NOT_FOUND
+import org.springframework.http.MediaType
 import org.springframework.http.MediaType.IMAGE_JPEG
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.RestController
+
+private val IMAGE_WEBP = MediaType("image", "webp")
 
 private const val KEPT_A_YEAR = "public, max-age=31536000, immutable"
 
@@ -18,8 +24,13 @@ class CoverController(private val findCover: FindCover) {
     fun cover(@PathVariable("name") name: String): ResponseEntity<Any> {
         val cover = findCover(CoverName(name)) ?: return problem(NOT_FOUND, NOT_FOUND_PROBLEM).asResponse()
         return ResponseEntity.ok()
-            .contentType(IMAGE_JPEG)
+            .contentType(mediaTypeOf(cover.format))
             .header(CACHE_CONTROL, KEPT_A_YEAR)
             .body(cover.bytes)
+    }
+
+    private fun mediaTypeOf(format: CoverFormat): MediaType = when (format) {
+        JPEG -> IMAGE_JPEG
+        WEBP -> IMAGE_WEBP
     }
 }
