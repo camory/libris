@@ -158,7 +158,7 @@ class ApiContractTest @Autowired constructor(
     private val addBookToBookshelf: AddBookToBookshelf,
     private val browseCatalogue: BrowseCatalogue,
 ) {
-    @ContracteerTest(openApiDoc = "https://raw.githubusercontent.com/camory/libris-api/v0.7.0/openapi.yaml")
+    @ContracteerTest(openApiDoc = "https://raw.githubusercontent.com/camory/libris-api/v0.8.1/openapi.yaml")
     fun `the API matches the contract`() {
         val contracteer = readerNamed(
             "contracteer",
