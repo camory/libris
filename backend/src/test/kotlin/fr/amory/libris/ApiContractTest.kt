@@ -106,7 +106,6 @@ private val NEW_ONE_PIECE_1 = NewBook(
     language = ONE_PIECE_1.language,
     pageCount = ONE_PIECE_1.pageCount,
     summary = ONE_PIECE_1.summary,
-    coverUrl = ONE_PIECE_1.coverUrl,
 )
 
 private val ONE_PIECE_1_HELD = HeldEdition(

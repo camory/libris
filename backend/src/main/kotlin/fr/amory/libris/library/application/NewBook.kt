@@ -18,7 +18,6 @@ data class NewBook(
     val language: String?,
     val pageCount: Int?,
     val summary: String?,
-    val coverUrl: String?,
 ) {
     init {
         require(title.isNotBlank()) { "a new book needs a title" }
@@ -39,7 +38,6 @@ data class NewBook(
             language: String?,
             pageCount: Int?,
             summary: String?,
-            coverUrl: String?,
         ): NewBook? = title.takeUnless { it.isBlank() }?.let {
             NewBook(
                 isbn = isbn,
@@ -54,7 +52,6 @@ data class NewBook(
                 language = language,
                 pageCount = pageCount,
                 summary = summary,
-                coverUrl = coverUrl,
             )
         }
     }

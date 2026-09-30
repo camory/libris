@@ -38,7 +38,6 @@ data class NewBookRequest(
     val language: String?,
     val pageCount: Int?,
     val summary: String?,
-    val coverUrl: String?,
 ) {
     fun validate(): NewBookValidation {
         val isbn = isbn13?.let { isbn13Of(it) }
@@ -57,7 +56,6 @@ data class NewBookRequest(
             language = language,
             pageCount = pageCount,
             summary = summary,
-            coverUrl = coverUrl,
         )
         val errors = buildList {
             if (isbn13 != null && isbn == null) add(ValidationErrorResponse("isbn13", "not-an-isbn"))

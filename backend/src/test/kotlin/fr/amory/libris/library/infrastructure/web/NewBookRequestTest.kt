@@ -62,6 +62,5 @@ class NewBookRequestTest {
         language = "fr",
         pageCount = 207,
         summary = null,
-        coverUrl = null,
     )
 }
