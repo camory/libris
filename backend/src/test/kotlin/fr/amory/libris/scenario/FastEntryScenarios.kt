@@ -43,6 +43,7 @@ class FastEntryScenarios @Autowired constructor(
             .expectBody().json(
                 """
                 {
+                  "id": null,
                   "isbn13": "9782723488525",
                   "kind": "MANGA",
                   "title": "Romance dawn",
@@ -56,6 +57,7 @@ class FastEntryScenarios @Autowired constructor(
                   "pageCount": 203,
                   "summary": null,
                   "coverUrl": "$ONE_PIECE_COVER",
+                  "covers": [],
                   "copies": []
                 }
                 """,

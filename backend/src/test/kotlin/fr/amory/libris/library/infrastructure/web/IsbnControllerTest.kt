@@ -55,6 +55,8 @@ private val ROMANCE_DAWN = EditionPreview(
     coverUrl = "https://couvertures.amory.fr/one-piece-01.jpg",
 )
 
+private val ROMANCE_DAWN_ID = EditionId(UUID.fromString("01991c3a-5b7e-7c1d-8f2a-3d4e5f6071a1"))
+
 @WebSliceTest
 @MockitoBean(
     types = [
@@ -75,13 +77,14 @@ class IsbnControllerTest @Autowired constructor(
         // Given
         given(welcomeReader("tophe", "tophe@amory.fr", "Tophe")).willReturn(TOPHE)
         given(lookupIsbnForReader(TOPHE.id, isbnOf("9782723488525")))
-            .willReturn(IsbnLookup(Held(EditionId.new(), ROMANCE_DAWN), emptyList()))
+            .willReturn(IsbnLookup(Held(ROMANCE_DAWN_ID, ROMANCE_DAWN), emptyList()))
 
         // When
         val body = lookUp("9782723488525", OK)
 
         // Then
         body shouldBe mapOf(
+            "id" to "01991c3a-5b7e-7c1d-8f2a-3d4e5f6071a1",
             "isbn13" to "9782723488525",
             "kind" to "MANGA",
             "title" to "Romance dawn",
@@ -95,6 +98,7 @@ class IsbnControllerTest @Autowired constructor(
             "pageCount" to 207,
             "summary" to "Luffy rêve de devenir le roi des pirates.",
             "coverUrl" to "https://couvertures.amory.fr/one-piece-01.jpg",
+            "covers" to emptyList<Any>(),
             "copies" to emptyList<Any>(),
         )
     }
