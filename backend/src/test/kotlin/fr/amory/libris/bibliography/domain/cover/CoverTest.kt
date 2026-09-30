@@ -17,4 +17,17 @@ class CoverTest {
         cover?.format shouldBe CoverFormat.JPEG
         cover?.bytes shouldBe bytes
     }
+
+    @Test
+    fun `bytes with RIFF at zero and WEBP at eight are a WebP cover`() {
+        // Given
+        val bytes = recordedBytes("covers/small.webp")
+
+        // When
+        val cover = Cover.of(bytes)
+
+        // Then
+        cover?.format shouldBe CoverFormat.WEBP
+        cover?.bytes shouldBe bytes
+    }
 }
