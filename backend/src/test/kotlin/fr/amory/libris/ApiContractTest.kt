@@ -156,7 +156,8 @@ private fun noCopy(answer: EditionLookupResult) = IsbnLookup(answer, emptyList()
         FindCover::class,
     ],
 )
-class ApiContractTest @Suppress("LongParameterList") @Autowired constructor(
+@Suppress("LongParameterList")
+class ApiContractTest @Autowired constructor(
     @field:ContracteerServerPort @param:LocalServerPort val serverPort: Int,
     private val welcomeReader: WelcomeReader,
     private val lookupIsbnForReader: LookupIsbnForReader,
