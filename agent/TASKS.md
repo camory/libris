@@ -170,14 +170,20 @@ lookup losing `coverUrl`, removes a field, so the frontend goes first: the
 backend pins it in T064, once T063 is deployed. No other task touches the
 contract (D04).
 
+The backend is deployed once T059 is merged, not before: from T051 the
+catalogue rows show a cover only once the worker has stored it (Tophe,
+2026-09-30).
+
 - [ ] T051 Backend: covers on `v0.8.0`, the thinnest answer.
       `ApiContractTest` pins `v0.8.0` (D04). The lookup answers `id`, the
       house's edition or null, `covers` empty, `coverUrl` as today; the add
       takes `coverSource`, no longer a cover address; `Book.coverUrl` is null.
       The cover operation serves by name a picture of the covers directory,
       one environment variable, with its year-long `Cache-Control`, else `404`
-      `/problems/not-found` (D09, D11); the fast entry's whole-body case gains
-      the fields (D07). Realises S5's not-found and S10 not yet stored;
+      `/problems/not-found` (D09, D11); `deploy/compose.yaml` gives the
+      backend that variable and mounts there a second named volume, `covers`
+      (D09); the fast entry's whole-body case gains the fields (D07).
+      Realises S5's not-found and S10 not yet stored;
       un-skips the backend tests *S5 …, an address naming no cover* and *S10
       …, not yet stored*.
 
@@ -327,12 +333,6 @@ deploy show their covers, save those no source has a picture for.*
   staging's log, ask for staging, as the update and bookshelf specs did,
   while D09 knows one environment, the Kimsufi box. No task depends on the
   answer; the hand check is Tophe's step either way.
-- **Covers between T051 and T057.** Once T051 is deployed, `Book.coverUrl`
-  is the cover operation's address or null, so the catalogue rows of the
-  editions stored before show the stand-in until T057 makes them await a
-  picture and the worker stores it. Meanwhile the lookup's deprecated
-  `coverUrl` keeps today's value until T052, so the deployed card keeps its
-  cover. Say if the deploys of T051 to T056 should wait for T057 instead.
 - **No spec yet**, so nothing is planned for them: PRD §4.1 beyond the add
   and the listing — viewing and editing an edition, removing a copy, the
   filters and sorts of the list, the edition page — §4.2 search, §4.3
