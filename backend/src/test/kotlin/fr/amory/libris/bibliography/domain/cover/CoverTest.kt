@@ -30,4 +30,11 @@ class CoverTest {
         cover?.format shouldBe CoverFormat.WEBP
         cover?.bytes shouldBe bytes
     }
+
+    @Test
+    fun `bytes of neither format are no cover`() {
+        // Given / When / Then
+        Cover.of("Luffy rêve de devenir le roi des pirates.".toByteArray()) shouldBe null
+        Cover.of("RIFF".toByteArray()) shouldBe null
+    }
 }
