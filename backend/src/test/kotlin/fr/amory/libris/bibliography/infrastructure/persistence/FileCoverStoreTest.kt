@@ -28,4 +28,10 @@ class FileCoverStoreTest {
         cover?.format shouldBe CoverFormat.JPEG
         cover?.bytes shouldBe bytes
     }
+
+    @Test
+    fun `a name no file carries is no cover`() {
+        // Given / When / Then
+        FileCoverStore(dir).read(CoverName(NAME)) shouldBe null
+    }
 }
