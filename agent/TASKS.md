@@ -160,7 +160,7 @@ read the empty sentence.*
 
 ## Covers — specs/covers.md
 
-Contract: release `v0.8.0` of `camory/libris-api`, after `v0.7.0`: `Edition`
+Contract: release `v0.8.1` of `camory/libris-api`, after `v0.7.0`: `Edition`
 loses `coverUrl`, `IsbnLookup` gains `id` and `covers`, `NewBook` gains
 `coverSource`, `Book` gains `coverUrl`, and the cover operation is new; the
 lookup keeps its deprecated `coverUrl`, so each side deploys alone. Fields and
@@ -168,14 +168,15 @@ an operation are added, so the backend goes first and its pin moves in T051;
 the frontend pin moves in T060, once T059 is deployed. Release `v0.9.0`, the
 lookup losing `coverUrl`, removes a field, so the frontend goes first: the
 backend pins it in T064, once T063 is deployed. No other task touches the
-contract (D04).
+contract (D04). `v0.8.1` only keys the add's `201` again, so that its case
+sends an ISBN whose check digit holds; nothing pins `v0.8.0`.
 
 The backend is deployed once T059 is merged, not before: from T051 the
 catalogue rows show a cover only once the worker has stored it (Tophe,
 2026-09-30).
 
-- [ ] T051 Backend: covers on `v0.8.0`, the thinnest answer.
-      `ApiContractTest` pins `v0.8.0` (D04). The lookup answers `id`, the
+- [ ] T051 Backend: covers on `v0.8.1`, the thinnest answer.
+      `ApiContractTest` pins `v0.8.1` (D04). The lookup answers `id`, the
       house's edition or null, `covers` empty, `coverUrl` as today; the add
       takes `coverSource`, no longer a cover address; `Book.coverUrl` is null.
       The cover operation serves by name a picture of the covers directory,
@@ -253,14 +254,18 @@ catalogue rows show a cover only once the worker has stored it (Tophe,
       fetch at once (D02). Realises S9, and S12's run at start; un-skips the
       backend test of S9; the schedule is checked by hand in the log.
 
-- [ ] T060 Frontend: covers on `v0.8.0`, the card shows the first candidate.
+- [ ] T060 Frontend: covers on `v0.8.1`, the card shows the first candidate.
       Precondition (human): T059 deployed (D04).
-      `vitest.global-setup.ts` pins `v0.8.0` (D04). The lookup's found answer
+      `vitest.global-setup.ts` pins `v0.8.1` (D04). The lookup's found answer
       holds `id` and `covers` as required, its edition no `coverUrl`; `Book`
       holds its own `coverUrl`, which the rows show; the add sends
       `coverSource` null until T062. The card shows the first candidate, the
       stand-in when none (D05); clients tested against `contracteer mock`
-      (D07). Realises S1, S11; un-skips the frontend tests of S1 and S11.
+      (D07). The contract gives a problem's `type` no value, so the clients
+      tell the lookup's and the add's problems apart by their HTTP status,
+      404, 503 and 400, and their specs assert the status's outcome, never the
+      body's `type` (Tophe, 2026-09-30). Realises S1, S11; un-skips the
+      frontend tests of S1 and S11.
 
 - [ ] T061 Frontend: the card shows the first cover that loads.
       Under the card's cover block, one dot per candidate that loaded, the

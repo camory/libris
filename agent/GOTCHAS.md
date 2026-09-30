@@ -87,18 +87,23 @@ true; the diary keeps the date it was found.
   checks the content type and the shape of the 404; the response examples
   of the document exist for the mock only (see the mock item under
   *Frontend build and tests*).
-- Measured on Contracteer 4.1.1 (2026-09-30): the first `2xx` response of an
-  operation is always sent as a generated case, keyed or not, so a keyed
-  `200` on a request parameter only documents and disambiguates, and a
-  changed example value leaves the run green. A response with two content
-  types gets one generated case per type, each with a random parameter
-  value; the cover operation answers `image/*` alone, one case sent with
-  `Accept: image/*`, any image accepted, no example needed. A keyed error
-  case with no body example still checks the status, the content type and
-  the `Problem` schema. `externalValue` is not read: the example is seen as
-  null. The backend's `ApiContractTest` is a web slice over `MockitoBean`
-  use cases, so a stub answering `any()` serves the generated cases, where
-  a stub on exact arguments answers nothing to a random value.
+- Measured on Contracteer 4.1.1 (2026-09-30): a `2xx` response with no key is
+  sent as a generated case, its body built from the schema; with a key it runs
+  as that scenario, checked on the schema, so a changed example value leaves
+  the run green. A key counts for a response when the response holds an
+  example under it or when the key starts with its status:
+  `201_ADD_ONE_PIECE_1` on the request alone runs keyed, its answer checked on
+  the `Copy` schema; `ADD_ONE_PIECE_1` on the request alone leaves the `201`
+  generated. A generated `isbn13` only matches the pattern and fails its check
+  digit about nine times in ten, hence the add's keyed `201`. A response with
+  two content types gets one generated case per type, each with a random
+  parameter value; the cover operation answers `image/*` alone, one case sent
+  with `Accept: image/*`, any image accepted, no example needed. A keyed error
+  case with no body example still checks the status, the content type and the
+  `Problem` schema. `externalValue` is not read: the example is seen as null.
+  The backend's `ApiContractTest` is a web slice over `MockitoBean` use cases,
+  so a stub answering `any()` serves the generated cases, where a stub on
+  exact arguments answers nothing to a random value.
 - `additionalProperties: false` cannot sit on a branch of an `allOf`: the
   standard applies each branch on its own, so the base refuses the fields
   the other branch adds, and no instance passes. Contracteer merges the
@@ -390,9 +395,10 @@ true; the diary keeps the date it was found.
   the 404 id answers 404 to `NewOnePiece1`. A scenario whose key sits on
   the request alone got its status from the mock with no body and no
   `Content-Type` until Contracteer 4.1.1, which generates the body from the
-  schema; the document still keeps a response example under every key the
-  adapter specs parse, because those specs assert the examples' values
-  (`agent/PROPOSED.md`).
+  schema. Since `v0.8.0` no error response holds an example: the mock
+  answers the right status and `application/problem+json` with a random
+  `type`, `title` and `status` in the body, so an adapter spec asserts the
+  outcome of the HTTP status, never the body's `type`.
 - A scenario file builds the application through `createLibrisApp` over the
   fakes of `src/fixture`; only `infra/api` specs and the smoke case *the
   application runs over the mock* use `inject("mockBaseUrl")`. A new port
