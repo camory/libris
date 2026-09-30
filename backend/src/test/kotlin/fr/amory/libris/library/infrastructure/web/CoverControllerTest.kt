@@ -16,7 +16,9 @@ import fr.amory.libris.library.fixture.readerNamed
 import io.kotest.matchers.shouldBe
 import org.junit.jupiter.api.Test
 import org.mockito.BDDMockito.given
+import org.mockito.Mockito.verifyNoInteractions
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.core.ParameterizedTypeReference
 import org.springframework.test.context.bean.override.mockito.MockitoBean
 import org.springframework.test.web.servlet.client.RestTestClient
 import java.util.UUID
@@ -81,6 +83,22 @@ class CoverControllerTest @Autowired constructor(
 
         // Then
         body shouldBe bytes
+    }
+
+    @Test
+    fun `a malformed name names no cover`() {
+        // Given
+        given(welcomeReader("tophe", "tophe@amory.fr", "Tophe")).willReturn(TOPHE)
+
+        // When
+        val body = coverAt("ABC")
+            .expectStatus().isNotFound
+            .expectBody(object : ParameterizedTypeReference<Map<String, Any>>() {})
+            .returnResult().responseBody
+
+        // Then
+        body?.get("type") shouldBe "/problems/not-found"
+        verifyNoInteractions(findCover)
     }
 
     private fun coverAt(name: String): RestTestClient.ResponseSpec =

@@ -22,7 +22,8 @@ private const val KEPT_A_YEAR = "public, max-age=31536000, immutable"
 class CoverController(private val findCover: FindCover) {
     @GetMapping("/api/v1/covers/{name}")
     fun cover(@PathVariable("name") name: String): ResponseEntity<Any> {
-        val cover = findCover(CoverName(name)) ?: return problem(NOT_FOUND, NOT_FOUND_PROBLEM).asResponse()
+        val cover = CoverName.of(name)?.let { findCover(it) }
+            ?: return problem(NOT_FOUND, NOT_FOUND_PROBLEM).asResponse()
         return ResponseEntity.ok()
             .contentType(mediaTypeOf(cover.format))
             .header(CACHE_CONTROL, KEPT_A_YEAR)
