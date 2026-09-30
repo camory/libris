@@ -23,6 +23,9 @@ services:
       LIBRIS_DB_URL: jdbc:postgresql://postgres:5432/libris
       LIBRIS_DB_USER: libris
       LIBRIS_DB_PASSWORD: ${LIBRIS_DB_PASSWORD:?}
+      LIBRIS_COVERS_DIR: /var/lib/libris/covers
+    volumes:
+      - covers:/var/lib/libris/covers
     depends_on:
       postgres:
         condition: service_healthy
@@ -40,6 +43,7 @@ services:
 
 volumes:
   data:
+  covers:
 
 networks:
   web:
