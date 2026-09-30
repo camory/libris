@@ -175,7 +175,7 @@ The backend is deployed once T059 is merged, not before: from T051 the
 catalogue rows show a cover only once the worker has stored it (Tophe,
 2026-09-30).
 
-- [ ] T051 Backend: covers on `v0.8.1`, the thinnest answer.
+- [x] T051 Backend: covers on `v0.8.1`, the thinnest answer.
       `ApiContractTest` pins `v0.8.1` (D04). The lookup answers `id`, the
       house's edition or null, `covers` empty, `coverUrl` as today; the add
       takes `coverSource`, no longer a cover address; `Book.coverUrl` is null.

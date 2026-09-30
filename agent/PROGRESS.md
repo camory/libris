@@ -264,3 +264,35 @@ Format:
   before `Onepiece`), where the JDK `Collator` ignored them; no scenario
   names it. A copy removed between the page and the copies would fail
   `getValue`; nothing removes copies yet.
+
+## 2026-09-30 — T051 Backend: covers on `v0.8.1`, the thinnest answer — done
+- Did: the backend pins `v0.8.1`; the lookup answers `id` and `covers: []`,
+  the add stores a new edition with no cover address, the catalogue answers
+  `coverUrl: null`. `GET /api/v1/covers/{name}` serves the file `{name}` of
+  `LIBRIS_COVERS_DIR` as JPEG or WebP by its bytes, kept a year, else `404`.
+- Decided: `CoverName`, `Cover`, `CoverFormat` and the port `CoverStore` in
+  `bibliography.domain.cover`; `FindCover` in `bibliography.application.cover`;
+  `FileCoverStore`, `CoversProperties` and `CoversConfig` in
+  `bibliography.infrastructure.persistence`, as the brief placed them.
+- Decided: `Cover` has a private constructor, `of(bytes)` its only door;
+  a malformed name goes through `CoverName.of` in `CoverController`, so it is
+  `404` and never reaches `findCover` or the file system.
+- Decided: guards proven by mutation and reverted: a name of any length
+  (`{64}` dropped, red on 63 digits), bytes shorter than `WEBP`'s offset (the
+  size check dropped, red on `RIFF` alone with an index out of bounds).
+- Decided: `ApiContractTest`'s constructor reached seven parameters with
+  `FindCover`; `@Suppress("LongParameterList")` on the class, as `NewBook.of`.
+- Deviations from the brief: step 1 was also red on `404_NOT_MY_BOOKSHELF`
+  (403), the stubbed `NewBook` no longer matching, as for the keyed `201`;
+  step 4 made it green. Step 10 was green on its first run, step 9's
+  offset check already refusing both; its mutation was run instead. Step 14
+  also answered `404` to a name `findCover` does not find, so `404_NO_COVER`
+  went green there rather than at step 17. The backend started without
+  `LIBRIS_COVERS_DIR`, checked by `bootRun` with the sandbox `.env`: the
+  binder keeps `${LIBRIS_COVERS_DIR}` as a literal path. The setting is
+  `${LIBRIS_COVERS_DIR:}` and `LibrisApplicationTest` gained a case proving
+  the start refused. `FastEntryScenarios` *S1* gained
+  `id` and `covers`, as the brief allowed.
+- Left over: the `Dockerfile` must create the covers directory for the
+  `libris` user before T053 writes (in `PROPOSED.md`); `Edition.coverUrl` and
+  `cover_url` stay, read by the held lookup and by T057.
