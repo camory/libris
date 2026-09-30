@@ -334,9 +334,9 @@ session, no BCrypt.
   (contract, architecture, boot) lives in the backend's root package; shared
   test doubles and helpers live in the `fixture` package on the backend and
   in `src/fixture` on the frontend. A test body is laid out as Given, When,
-  Then, marked by those three comments, unless it is a single statement. A
-  test of framework or library wiring may be written while learning and is
-  deleted before the pull request.
+  Then, marked by those three comments, an empty line between the blocks,
+  unless it is a single statement. A test of framework or library wiring
+  may be written while learning and is deleted before the pull request.
 - Coverage: the frontend gate writes a V8 report that nothing reads; the
   backend has none. No threshold and no gate until the loop runs without
   human review.
