@@ -11,4 +11,13 @@ class CoverNameTest {
         // Given / When / Then
         CoverName.of(NAME)?.value shouldBe NAME
     }
+
+    @Test
+    fun `what is not sixty-four lower-case hexadecimal digits names no cover`() {
+        // Given / When / Then
+        CoverName.of(NAME.drop(1)) shouldBe null
+        CoverName.of(NAME + "0") shouldBe null
+        CoverName.of("A" + NAME.drop(1)) shouldBe null
+        CoverName.of("../" + NAME.drop(3)) shouldBe null
+    }
 }
