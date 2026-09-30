@@ -1,0 +1,10 @@
+{
+  "entities": {},
+  "redirects": {},
+  "notFound": [
+    "isbn:9782505125990"
+  ],
+  "warnings": [
+    "Action parameters are deprecated: instead of /api/entities?action=by-uris, use /api/entities/by-uris"
+  ]
+}

@@ -3,6 +3,7 @@ package fr.amory.libris.scenario
 import com.github.tomakehurst.wiremock.WireMockServer
 import com.github.tomakehurst.wiremock.core.WireMockConfiguration.options
 import fr.amory.libris.fixture.FreshSchema
+import fr.amory.libris.fixture.MutableClock
 import org.junit.jupiter.api.extension.BeforeEachCallback
 import org.junit.jupiter.api.extension.ExtendWith
 import org.junit.jupiter.api.extension.ExtensionContext
@@ -17,6 +18,8 @@ import org.springframework.http.client.SimpleClientHttpRequestFactory
 import org.springframework.test.context.DynamicPropertyRegistrar
 import org.springframework.test.context.junit.jupiter.SpringExtension.getApplicationContext
 import org.springframework.test.web.servlet.client.RestTestClient
+import java.nio.file.Files
+import java.nio.file.Path
 
 @Target(AnnotationTarget.CLASS)
 @Retention(AnnotationRetention.RUNTIME)
@@ -43,10 +46,28 @@ class StubbedSources {
     @Bean(initMethod = "start", destroyMethod = "stop")
     fun openLibrary(): WireMockServer = WireMockServer(options().dynamicPort())
 
+    @Bean(initMethod = "start", destroyMethod = "stop")
+    fun inventaire(): WireMockServer = WireMockServer(options().dynamicPort())
+
     @Bean
-    fun sourceVariables(bnf: WireMockServer, openLibrary: WireMockServer) = DynamicPropertyRegistrar { registry ->
+    fun coversDir(): Path = Files.createTempDirectory("libris-covers")
+
+    @Bean
+    fun clock(): MutableClock = MutableClock()
+
+    @Bean
+    fun sourceVariables(
+        bnf: WireMockServer,
+        openLibrary: WireMockServer,
+        inventaire: WireMockServer,
+        coversDir: Path,
+    ) = DynamicPropertyRegistrar { registry ->
         registry.add("LIBRIS_BNF_URL") { bnf.baseUrl() + "/api/SRU" }
+        registry.add("LIBRIS_BNF_COVERS_URL") { bnf.baseUrl() + "/couverture" }
         registry.add("LIBRIS_OPEN_LIBRARY_URL") { openLibrary.baseUrl() }
+        registry.add("LIBRIS_OPEN_LIBRARY_COVERS_URL") { openLibrary.baseUrl() + "/b/isbn" }
+        registry.add("LIBRIS_INVENTAIRE_URL") { inventaire.baseUrl() }
+        registry.add("LIBRIS_COVERS_DIR") { coversDir.toString() }
         registry.add("LIBRIS_SOURCE_TIMEOUT") { "1s" }
     }
 

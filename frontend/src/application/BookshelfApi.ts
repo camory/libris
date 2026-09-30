@@ -1,12 +1,17 @@
 import type { InjectionKey } from "vue";
 import type { Copy } from "../domain/Copy";
+import type { CoverSource } from "../domain/Cover";
 import type { SourceEdition } from "../domain/SourceEdition";
 
 export type AddAnswer =
   { outcome: "added"; copy: Copy } | { outcome: "problem"; type: string };
 
 export interface BookshelfApi {
-  add(bookshelfId: string, edition: SourceEdition): Promise<AddAnswer>;
+  add(
+    bookshelfId: string,
+    edition: SourceEdition,
+    coverSource?: CoverSource | null,
+  ): Promise<AddAnswer>;
 }
 
 export const bookshelfApiKey: InjectionKey<BookshelfApi> =
