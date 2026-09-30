@@ -330,7 +330,6 @@ class CoversScenarios @Autowired constructor(
     }
 
     @Test
-    @Disabled("covers")
     fun `S10 A held edition offers its own cover, not yet stored`() {
         // Given
         val hugo = reader("hugo", "Hugo")
