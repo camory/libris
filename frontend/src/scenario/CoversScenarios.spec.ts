@@ -27,23 +27,23 @@ import { onePiece1 } from "../fixture/SourceEditions";
 type Screen = BoundFunctions<typeof queries>;
 
 const inventaire: CoverCandidate = {
-  source: "INVENTAIRE",
+  source: "inventaire.io",
   url: "https://inventaire.io/img/entities/480x600/34d6e7d99cec5b0922b9eccfeb03748ab2b4db99",
 };
 
 const openLibrary: CoverCandidate = {
-  source: "OPEN_LIBRARY",
+  source: "Open Library",
   url: "https://covers.openlibrary.org/b/isbn/9782723488525-L.jpg?default=false",
 };
 
 const bnf: CoverCandidate = {
-  source: "BNF",
+  source: "BnF",
   url: "https://catalogue.bnf.fr/couverture?&appName=NE&idArk=ark:/12148/cb43636708p&couverture=1",
 };
 
 const libris: CoverCandidate = {
-  source: "LIBRIS",
-  url: "/api/v1/covers/9f86d081884c7d659a2feaa0c55ad015a3bf4f1b2b0b822cd15d6c15b0f00a08.webp",
+  source: "Libris",
+  url: "/api/v1/covers/9f86d081884c7d659a2feaa0c55ad015a3bf4f1b2b0b822cd15d6c15b0f00a08",
 };
 
 describe("Covers", () => {
@@ -171,7 +171,7 @@ describe("Covers", () => {
 
     // Then
     await screen.findByText("Dans Bibliothèque de Léa");
-    expect(add.asked.map((call) => call.coverSource)).toEqual(["OPEN_LIBRARY"]);
+    expect(add.asked.map((call) => call.coverSource)).toEqual(["Open Library"]);
     expect(coverImage(screen).getAttribute("src")).toBe(openLibrary.url);
     expect(sourceName(screen)).toBe("Open Library");
   });
@@ -263,6 +263,7 @@ describe("Covers", () => {
   ): IsbnApi {
     return new FakeIsbnApi({
       outcome: "found",
+      id: null,
       edition: { ...edition, coverUrl: null },
       copies: [],
       covers,
@@ -276,6 +277,7 @@ describe("Covers", () => {
   ): IsbnApi {
     return new FakeIsbnApi({
       outcome: "found",
+      id: "3c4d5e6f-7a8b-4c9d-8e0f-1a2b3c4d5e6f",
       edition: { ...edition, coverUrl: null },
       copies,
       covers,
