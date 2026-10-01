@@ -401,3 +401,7 @@
   JVM, green alone and on rerun; three lookups now run at once under the 1 s
   source timeout of the scenarios, a cold start may exceed it (found
   2026-10-01 on T052).
+- Backend: `Source` holds a cover-only source, `INVENTAIRE`, beside the
+  edition sources it orders the merge by; whether the cover sources get a
+  type of their own is to discuss with Tophe before T053 (found 2026-10-01
+  reworking T052).

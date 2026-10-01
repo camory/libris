@@ -140,6 +140,10 @@ true; the diary keeps the date it was found.
   own `map(Function)` that shadows Kotlin's `Iterable.map`, so an array is
   read through `path(field).values()`; `required(field)` throws
   `JsonNodeException` on a missing property.
+- Jackson 3's `asString()` coerces: a JSON `null` answers `""` and an object
+  or array throws `JsonNodeException`, so a source's text is read as
+  `takeIf { it.isString }?.asString()` and an adapter catches
+  `JsonNodeException` beside `RestClientException`.
 - Kotlin 2.3.21 emits no warning for an unused local: prove
   warnings-as-errors with a useless cast.
 - detekt 1.23.8 runs in-process with `jdkHome` cleared; handing it a JDK 25
@@ -235,7 +239,7 @@ true; the diary keeps the date it was found.
   container is recreated). Editing a migration the database has applied breaks
   every context start with a Flyway checksum mismatch, and `FreshSchema` does
   not rescue it: Flyway's autoconfiguration validates and migrates while the
-  context loads, before any `@BeforeAll` cleans, so every database-backed class
+  context loads, before `FreshSchema` cleans, so every database-backed class
   fails whole with `initializationError` and `Failed to load
   ApplicationContext`, and running one slice class alone changes nothing.
   Restoring the file's bytes is the cheap fix as long as the edited version

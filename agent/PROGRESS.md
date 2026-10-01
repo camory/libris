@@ -366,3 +366,23 @@ Format:
   inventaire.io at `480x600`; a possible cold-start `503` of
   `BookshelfScenarios` *S2* under the 1 s scenario timeout. D02 amendment
   naming the inventaire.io client and the cover port proposed in the PR.
+
+## 2026-10-01 — T052 Backend: the lookup offers the sources' covers — reworked
+- Did: `InventaireCoverLookup` catches `JsonNodeException` and takes the
+  hash only from a non-blank text node, three new cases (an object, `null`
+  and `""` as the claim); `Source` carries its name as `label`, read by
+  `IsbnController`; the two candidate cases of `IsbnControllerTest` are gone.
+- Decided, by the reviewer's verdict: an unreadable answer from inventaire.io
+  offers no candidate, as a failure does, and a null or empty claim offers
+  none rather than an address ending in an empty hash.
+- Decided, by Tophe's review: the names handed out live on `Source`
+  (`label`), not in the controller; *S1* and `FastEntryScenarios` *S1* are
+  their proof, and renaming `INVENTAIRE`'s label to `Inventaire` reds *S1*
+  (`expected:<["inventaire.io", …]> but was:<["Inventaire", …]>`), checked
+  and reverted. The controller's two candidate cases repeated *S1* or fed it
+  a state the use case cannot produce; removed. `INVENTAIRE` stays in
+  `Source`; the D07 wording (schema cleaned before each case) is proposed in
+  the PR body beside the D02 amendment.
+- Deviations from the brief: none beyond the reviews.
+- Left over (in `PROPOSED.md`): whether the cover sources get a type of
+  their own beside `Source`, to discuss with Tophe before T053.
