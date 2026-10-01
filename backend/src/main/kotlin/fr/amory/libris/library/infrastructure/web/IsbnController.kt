@@ -9,10 +9,6 @@ import fr.amory.libris.bibliography.domain.Kind
 import fr.amory.libris.bibliography.domain.edition.EditionId
 import fr.amory.libris.bibliography.domain.lookup.CoverCandidates
 import fr.amory.libris.bibliography.domain.lookup.EditionPreview
-import fr.amory.libris.bibliography.domain.lookup.Source
-import fr.amory.libris.bibliography.domain.lookup.Source.BNF
-import fr.amory.libris.bibliography.domain.lookup.Source.INVENTAIRE
-import fr.amory.libris.bibliography.domain.lookup.Source.OPEN_LIBRARY
 import fr.amory.libris.library.application.lookup.CopyOnBookshelf
 import fr.amory.libris.library.application.lookup.LookupIsbnForReader
 import fr.amory.libris.library.domain.reader.Reader
@@ -114,14 +110,8 @@ class IsbnController(private val lookupIsbnForReader: LookupIsbnForReader) {
         copies: List<CopyOnBookshelf>,
     ): IsbnResponse = responseOf(null, preview, copies).copy(
         coverUrl = covers.firstOrNull()?.url,
-        covers = covers.map { CoverCandidateResponse(nameOf(it.source), it.url) },
+        covers = covers.map { CoverCandidateResponse(it.source.label, it.url) },
     )
-
-    private fun nameOf(source: Source): String = when (source) {
-        INVENTAIRE -> "inventaire.io"
-        OPEN_LIBRARY -> "Open Library"
-        BNF -> "BnF"
-    }
 
     private fun responseOf(copy: CopyOnBookshelf): CopyResponse = CopyResponse(
         id = copy.copyId.value.toString(),
