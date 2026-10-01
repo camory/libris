@@ -1,6 +1,7 @@
 package fr.amory.libris.bibliography.infrastructure.web
 
 import fr.amory.libris.bibliography.application.cover.FindCover
+import fr.amory.libris.bibliography.domain.cover.Cover
 import fr.amory.libris.bibliography.domain.cover.CoverName
 import fr.amory.libris.shared.infrastructure.web.NOT_FOUND_PROBLEM
 import fr.amory.libris.shared.infrastructure.web.VALIDATION_PROBLEM
@@ -24,12 +25,14 @@ class CoverController(private val findCover: FindCover) {
     @GetMapping("/api/v1/covers/{name}")
     fun cover(@PathVariable("name") name: String): ResponseEntity<Any> {
         val coverName = CoverName.of(name) ?: return notACoverName().asResponse()
-        val cover = findCover(coverName) ?: return problem(NOT_FOUND, NOT_FOUND_PROBLEM).asResponse()
-        return ResponseEntity.ok()
+        return findCover(coverName)?.let(::pictureOf) ?: problem(NOT_FOUND, NOT_FOUND_PROBLEM).asResponse()
+    }
+
+    private fun pictureOf(cover: Cover): ResponseEntity<Any> =
+        ResponseEntity.ok()
             .contentType(parseMediaType(cover.mediaType))
             .header(CACHE_CONTROL, KEPT_A_YEAR)
             .body(cover.bytes)
-    }
 
     private fun notACoverName(): ProblemDetail = problem(BAD_REQUEST, VALIDATION_PROBLEM).apply {
         setProperty("errors", listOf(ValidationErrorResponse(field = "name", code = "not-a-cover-name")))
