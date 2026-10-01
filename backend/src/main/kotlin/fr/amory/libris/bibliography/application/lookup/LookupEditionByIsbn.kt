@@ -7,6 +7,8 @@ import fr.amory.libris.bibliography.application.lookup.EditionLookupResult.Unkno
 import fr.amory.libris.bibliography.domain.Isbn
 import fr.amory.libris.bibliography.domain.edition.Edition
 import fr.amory.libris.bibliography.domain.edition.EditionRepository
+import fr.amory.libris.bibliography.domain.lookup.CoverCandidate
+import fr.amory.libris.bibliography.domain.lookup.CoverCandidates
 import fr.amory.libris.bibliography.domain.lookup.EditionPreview
 import fr.amory.libris.bibliography.domain.lookup.ExternalEditionLookup
 import fr.amory.libris.bibliography.domain.lookup.ExternalLookupResult
@@ -31,11 +33,18 @@ class LookupEditionByIsbn(
         val results = askEveryLookup(isbn)
         val previews = results.filterIsInstance<Known>().map { it.preview }
         return when {
-            previews.isNotEmpty() -> Found(previews.reduce(EditionPreview::merge))
+            previews.isNotEmpty() -> Found(previews.reduce(EditionPreview::merge), coversOf(results))
             results.all { it == Failed } -> SourcesUnavailable
             else -> UnknownIsbn
         }
     }
+
+    private fun coversOf(results: List<ExternalLookupResult>): CoverCandidates =
+        CoverCandidates.of(
+            lookups.zip(results).mapNotNull { (lookup, result) ->
+                (result as? Known)?.preview?.coverUrl?.let { CoverCandidate(lookup.source, it) }
+            },
+        )
 
     private fun askEveryLookup(isbn: Isbn): List<ExternalLookupResult> =
         newVirtualThreadPerTaskExecutor().use { executor ->

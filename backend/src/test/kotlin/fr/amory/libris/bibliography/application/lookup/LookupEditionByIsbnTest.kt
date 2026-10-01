@@ -8,6 +8,8 @@ import fr.amory.libris.bibliography.domain.Contributions
 import fr.amory.libris.bibliography.domain.Kind.MANGA
 import fr.amory.libris.bibliography.domain.edition.Edition
 import fr.amory.libris.bibliography.domain.edition.EditionId
+import fr.amory.libris.bibliography.domain.lookup.CoverCandidate
+import fr.amory.libris.bibliography.domain.lookup.CoverCandidates
 import fr.amory.libris.bibliography.domain.lookup.EditionPreview
 import fr.amory.libris.bibliography.domain.lookup.ExternalLookupResult.Failed
 import fr.amory.libris.bibliography.domain.lookup.ExternalLookupResult.Known
@@ -20,6 +22,7 @@ import fr.amory.libris.bibliography.fixture.LookupAnswering
 import fr.amory.libris.bibliography.fixture.LookupAnsweringAtRendezvous
 import fr.amory.libris.bibliography.fixture.isbnOf
 import io.kotest.matchers.shouldBe
+import io.kotest.matchers.types.shouldBeInstanceOf
 import org.junit.jupiter.api.Test
 import java.util.concurrent.CyclicBarrier
 
@@ -39,6 +42,8 @@ private val ROMANCE_DAWN = Edition(
     summary = null,
     coverUrl = null,
 )
+
+private val NO_COVER = CoverCandidates.of(emptyList())
 
 class LookupEditionByIsbnTest {
     @Test
@@ -73,7 +78,7 @@ class LookupEditionByIsbnTest {
         val result = lookupEditionByIsbn(isbnOf("9782723488525"))
 
         // Then
-        result shouldBe Found(A_PREVIEW.copy(title = "Romance dawn", pageCount = 207))
+        result shouldBe Found(A_PREVIEW.copy(title = "Romance dawn", pageCount = 207), NO_COVER)
     }
 
     @Test
@@ -91,7 +96,7 @@ class LookupEditionByIsbnTest {
         val result = lookupEditionByIsbn(isbnOf("9782723488525"))
 
         // Then
-        result shouldBe Found(A_PREVIEW.copy(title = "Romance dawn"))
+        result shouldBe Found(A_PREVIEW.copy(title = "Romance dawn"), NO_COVER)
     }
 
     @Test
@@ -155,6 +160,27 @@ class LookupEditionByIsbnTest {
         val result = lookupEditionByIsbn(isbnOf("9782723488525"))
 
         // Then
-        result shouldBe Found(A_PREVIEW.copy(title = "Romance dawn", pageCount = 207))
+        result shouldBe Found(A_PREVIEW.copy(title = "Romance dawn", pageCount = 207), NO_COVER)
+    }
+
+    @Test
+    fun `the edition sources offer their covers in the house's order, whatever the order they were given`() {
+        // Given
+        val lookupEditionByIsbn = LookupEditionByIsbn(
+            EditionsInMemory(),
+            listOf(
+                LookupAnswering(Known(A_PREVIEW.copy(coverUrl = "https://bnf/b")), BNF),
+                LookupAnswering(Known(A_PREVIEW.copy(coverUrl = "https://openlibrary/a")), OPEN_LIBRARY),
+            ),
+        )
+
+        // When
+        val result = lookupEditionByIsbn(isbnOf("9782723488525"))
+
+        // Then
+        result.shouldBeInstanceOf<Found>().covers.toList() shouldBe listOf(
+            CoverCandidate(OPEN_LIBRARY, "https://openlibrary/a"),
+            CoverCandidate(BNF, "https://bnf/b"),
+        )
     }
 }

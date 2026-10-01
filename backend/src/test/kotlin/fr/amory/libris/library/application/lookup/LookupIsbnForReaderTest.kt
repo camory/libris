@@ -9,6 +9,7 @@ import fr.amory.libris.bibliography.domain.Contributions
 import fr.amory.libris.bibliography.domain.Kind.MANGA
 import fr.amory.libris.bibliography.domain.edition.Edition
 import fr.amory.libris.bibliography.domain.edition.EditionId
+import fr.amory.libris.bibliography.domain.lookup.CoverCandidates
 import fr.amory.libris.bibliography.domain.lookup.ExternalEditionLookup
 import fr.amory.libris.bibliography.domain.lookup.ExternalLookupResult.Failed
 import fr.amory.libris.bibliography.domain.lookup.ExternalLookupResult.Known
@@ -64,7 +65,10 @@ class LookupIsbnForReaderTest {
         val result = lookupIsbnForReader(lea, isbnOf(ONE_PIECE))
 
         // Then
-        result shouldBe IsbnLookup(Found(A_PREVIEW.copy(title = "Romance dawn")), emptyList())
+        result shouldBe IsbnLookup(
+            Found(A_PREVIEW.copy(title = "Romance dawn"), CoverCandidates.of(emptyList())),
+            emptyList(),
+        )
     }
 
     @Test
@@ -135,5 +139,9 @@ class LookupIsbnForReaderTest {
     private fun lookupAsking(
         vararg sources: ExternalEditionLookup,
         house: EditionsInMemory = EditionsInMemory(),
-    ): LookupIsbnForReader = LookupIsbnForReader(LookupEditionByIsbn(house, sources.toList()), copies, bookshelves)
+    ): LookupIsbnForReader = LookupIsbnForReader(
+        LookupEditionByIsbn(house, sources.toList()),
+        copies,
+        bookshelves,
+    )
 }

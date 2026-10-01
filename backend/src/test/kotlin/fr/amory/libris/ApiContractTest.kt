@@ -18,7 +18,12 @@ import fr.amory.libris.bibliography.domain.cover.Cover
 import fr.amory.libris.bibliography.domain.cover.CoverName
 import fr.amory.libris.bibliography.domain.edition.Edition
 import fr.amory.libris.bibliography.domain.edition.EditionId
+import fr.amory.libris.bibliography.domain.lookup.CoverCandidate
+import fr.amory.libris.bibliography.domain.lookup.CoverCandidates
 import fr.amory.libris.bibliography.domain.lookup.EditionPreview
+import fr.amory.libris.bibliography.domain.lookup.Source.BNF
+import fr.amory.libris.bibliography.domain.lookup.Source.INVENTAIRE
+import fr.amory.libris.bibliography.domain.lookup.Source.OPEN_LIBRARY
 import fr.amory.libris.bibliography.fixture.isbnOf
 import fr.amory.libris.bibliography.fixture.recordedBytes
 import fr.amory.libris.fixture.WebSliceTest
@@ -99,6 +104,20 @@ private fun copyOn(copyId: String, bookshelfId: String, bookshelfName: String) =
     bookshelfName,
 )
 
+private val ONE_PIECE_1_COVERS = CoverCandidates.of(
+    listOf(
+        CoverCandidate(
+            INVENTAIRE,
+            "https://inventaire.io/img/entities/480x600/34d6e7d99cec5b0922b9eccfeb03748ab2b4db99",
+        ),
+        CoverCandidate(OPEN_LIBRARY, "https://covers.openlibrary.org/b/isbn/9782723488525-L.jpg?default=false"),
+        CoverCandidate(
+            BNF,
+            "https://catalogue.bnf.fr/couverture?&appName=NE&idArk=ark:/12148/cb43636708p&couverture=1",
+        ),
+    ),
+)
+
 private val NEW_ONE_PIECE_1 = NewBook(
     isbn = ONE_PIECE_1.isbn,
     kind = ONE_PIECE_1.kind,
@@ -176,7 +195,8 @@ class ApiContractTest @Autowired constructor(
         val bookshelf = bookshelfOwnedBy(contracteer)
         given(welcomeReader("contracteer", "contracteer@amory.fr", "Contracteer")).willReturn(contracteer)
         given(findDefaultBookshelf(contracteer)).willReturn(bookshelf)
-        given(lookupIsbnForReader(contracteer.id, isbnOf("9782723488525"))).willReturn(noCopy(Found(ONE_PIECE_1)))
+        given(lookupIsbnForReader(contracteer.id, isbnOf("9782723488525")))
+            .willReturn(noCopy(Found(ONE_PIECE_1, ONE_PIECE_1_COVERS)))
         given(lookupIsbnForReader(contracteer.id, isbnOf("9782000000006"))).willReturn(noCopy(UnknownIsbn))
         given(lookupIsbnForReader(contracteer.id, isbnOf("9791000000008"))).willReturn(noCopy(SourcesUnavailable))
         given(lookupIsbnForReader(contracteer.id, isbnOf("9782723489898")))
