@@ -339,3 +339,30 @@ Format:
 - Left over: the `Dockerfile` must create the covers directory for the
   `libris` user before T053 writes (in `PROPOSED.md`); `Edition.coverUrl` and
   `cover_url` stay, read by the held lookup and by T057.
+
+## 2026-10-01 — T052 Backend: the lookup offers the sources' covers — done
+- Did: for an ISBN the house lacks, `LookupEditionByIsbn` asks inventaire.io
+  (new `ExternalCoverLookup` port, `InventaireCoverLookup` at `100x600`) at
+  once with the edition sources and answers `Found(preview, covers)`, the
+  candidates in the order inventaire.io, Open Library, BnF; `/isbn` answers
+  them as `covers` `{source, url}`, `coverUrl` the first; *S1* un-skipped.
+- Decided: `Source` carries `coverOrder`; `CoverCandidates` sorts by it. A
+  picture alone, no edition source knowing the ISBN, is an unknown ISBN. The
+  house's edition asks no source, the cover lookup included.
+- Decided: guards proven by mutation and reverted: a source without a cover
+  (`coverUrl.orEmpty()`), the held edition asking no cover (cover lookup
+  before the house), a picture alone (`Found` on an empty preview), no
+  candidate means no cover (`?: preview.coverUrl`).
+- Deviations from the brief: step 8 could not add the unused port parameter
+  (detekt `UnusedPrivateProperty`), so the port and its wiring came at step
+  9. Steps 4 and 5 were green on arrival; their mutations were run.
+  `FastEntryScenarios` *S1* gained the BnF entry in `covers`, as allowed.
+  *S1* met the edition *S10* had added (JUnit ran *S10* first): `FreshSchema`
+  now cleans before each case, not each class, and `FreshSources` resets the
+  stubs and journal before each case. `LibrisApplicationTest`'s defaults
+  gained `inventaireUrl`.
+- Left over (in `PROPOSED.md`): the previews' merge still orders by the
+  declaration order of `Source`; the contract's `ONE_PIECE_1` offers
+  inventaire.io at `480x600`; a possible cold-start `503` of
+  `BookshelfScenarios` *S2* under the 1 s scenario timeout. D02 amendment
+  naming the inventaire.io client and the cover port proposed in the PR.

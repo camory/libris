@@ -228,8 +228,9 @@ true; the diary keeps the date it was found.
   variable (from `backend/.env`) beats the value a test sets for it. Measured
   2026-10-01; hence `libris.covers.directory`.
 - A scenario class boots the whole application and commits what its
-  requests write; `FreshSchema` on `JdbcSliceTest` and `ScenarioTest` is
-  what keeps the JDBC slice from meeting a reader it did not insert.
+  requests write; `FreshSchema` on `JdbcSliceTest` and `ScenarioTest` cleans
+  and migrates before each case, so no case meets a row another case wrote
+  (JUnit's method order is not alphabetical: *S10* ran before *S1*).
 - The sandbox PostgreSQL survives between runs (tmpfs: gone when the
   container is recreated). Editing a migration the database has applied breaks
   every context start with a Flyway checksum mismatch, and `FreshSchema` does
@@ -295,6 +296,14 @@ true; the diary keeps the date it was found.
 - Open Library writes the edition's own `key` as a path (`/books/OL50534552M`)
   and the search's `edition_key` as bare keys (`OL50534552M`): matching one
   against the other needs the last segment.
+- inventaire.io's `/img/entities/{W}x{H}/{hash}` scales a picture to *cover*
+  the box (the larger of the two ratios) and never enlarges, so `100x600`
+  answers at most 600 tall while `480x600` answers a 1000×1500 picture at
+  480×720 (measured 2026-10-01: 322×500 at `300x300` is 300×466, at
+  `100x400` 258×400; `0x300` and `1x300` are `400`). Its
+  `/api/entities?action=by-uris&uris=isbn:<13 digits>` answers an unknown
+  ISBN `200` with `entities: {}` and the ISBN under `notFound`, a known one
+  under its `inv:` id, the picture's hash at `claims["invp:P2"][0]`.
 - `@Order` on the `@Bean` methods of a `@Configuration` orders the
   `List<T>` Spring injects; the order of the methods in the file does not.
 - A test double that proves two calls overlap waits on a `CyclicBarrier` with
@@ -323,8 +332,9 @@ true; the diary keeps the date it was found.
   security filter decodes `Remote-Name` from ISO-8859-1 bytes to UTF-8; the
   other `Remote-*` headers are read as they come.
 - The scenario WireMock servers live as long as the context, across classes;
-  `FreshSources` on `ScenarioTest` clears their request journal before each
-  case, so `verify(0, …)` counts only the case's own requests. The stubs stay.
+  `FreshSources` on `ScenarioTest` resets their stubs and request journal
+  before each case, so a case stubs every source it needs and `verify(0, …)`
+  counts only the case's own requests.
 - `/actuator/health` answers `{"groups":["liveness","readiness"],
   "status":"UP"}`, not the bare status.
 - `FastEntryScenarios > S1 Typed ISBN, found` compares the whole `200` body
