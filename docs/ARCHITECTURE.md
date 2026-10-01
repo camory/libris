@@ -70,8 +70,9 @@ and the bookshelves they keep), each with the same three layers.
   controller calls use cases and never a repository: a
   read of one aggregate with no rule is still a use case of its own
   (`FindDefaultBookshelf`), so the first rule that read gains lands in the
-  use case, not at the edge. `library.infrastructure.web` also holds the
-  security filter chain: the identity a request carries is a reader.
+  use case, not at the edge. `library.infrastructure.web` also holds
+  `ReaderPrincipal`, which answers the security chain of `shared` with the
+  reader `WelcomeReader` welcomes: the identity a request carries is a reader.
 - `<context>.infrastructure.persistence` — the port implementations over
   `JdbcClient`: the SQL of every insert, update, lookup, search and listing,
   and the row-to-aggregate mapping, which is the aggregate's constructor.
@@ -80,7 +81,10 @@ and the bookshelves they keep), each with the same three layers.
 
 Beside the contexts, `shared` holds what both use and neither owns, in the
 same layers: `shared.infrastructure.web` has the problem details of the API
-and the advice that answers them. It depends on no context.
+and the advice that answers them, and the security filter chain with the
+filter that reads the `Remote-*` headers. The chain asks for its principal
+through `RequestPrincipal`, an interface it declares and a context
+implements. It depends on no context.
 
 Enforced by ArchUnit rules in the test suite (see D07):
 1. `domain` depends only on the Kotlin/Java standard libraries and the uuid
