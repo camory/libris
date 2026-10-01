@@ -211,8 +211,8 @@ true; the diary keeps the date it was found.
 - A cover is the file named by its `CoverName` alone, no extension, in
   `LIBRIS_COVERS_DIR` (`libris.covers.directory: ${LIBRIS_COVERS_DIR:}`);
   its media type is the text of the file `<name>.type` beside it, and a
-  picture without one is no cover. Nothing reads a format from the bytes;
-  `Cover` refuses a media type that is not `image/…`. `ScenarioTest` gives
+  picture without one, or with one that is not `image/…`, is no cover.
+  Nothing reads a format from the bytes. `ScenarioTest` gives
   the variable a temporary directory, `LibrisApplicationTest` its own
   property. A Mockito
   matcher on a `CoverName` argument takes a valid fallback, since the

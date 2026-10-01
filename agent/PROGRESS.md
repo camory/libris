@@ -275,11 +275,13 @@ Format:
   `FileCoverStore`, `CoversProperties` and `CoversConfig` in
   `bibliography.infrastructure.persistence`, as the brief placed them.
 - Decided, on review with Tophe: the backend knows no picture format, the
-  contract answering `image/*`. `Cover` is a media type and bytes, and its
-  constructor refuses a media type that is not an image. The media type is
-  saved beside the picture, in the file `<name>.type`; `FileCoverStore`
-  reads both, a picture without its media type is no cover, and
-  `CoverController` passes the type on. The brief's `CoverFormat`,
+  contract answering `image/*`. `Cover` is a media type and bytes: its
+  constructor refuses a media type that is not an image and `Cover.of`
+  answers null for one. The media type is saved beside the picture, in the
+  file `<name>.type`; `FileCoverStore` reads both through `Cover.of`, a
+  picture without an image's media type is no cover, and `CoverController`
+  passes the type on. `CoverControllerTest` keeps the malformed name alone,
+  the one case `ApiContractTest` does not send. The brief's `CoverFormat`,
   `Cover.of` and the reading of the first bytes are gone.
 - Left over, for the brief of the task that stores a picture: the media
   type is extracted before the store, the one of the picture as stored
