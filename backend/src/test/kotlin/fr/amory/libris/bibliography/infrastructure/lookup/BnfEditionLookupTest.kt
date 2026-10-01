@@ -12,6 +12,8 @@ import fr.amory.libris.bibliography.domain.Kind.BD
 import fr.amory.libris.bibliography.domain.Kind.BOOK
 import fr.amory.libris.bibliography.domain.Kind.MANGA
 import fr.amory.libris.bibliography.domain.SeriesEntry
+import fr.amory.libris.bibliography.domain.lookup.CoverCandidate
+import fr.amory.libris.bibliography.domain.lookup.CoverSource.BNF
 import fr.amory.libris.bibliography.domain.lookup.EditionPreview
 import fr.amory.libris.bibliography.domain.lookup.EditionSourceAnswer.Failed
 import fr.amory.libris.bibliography.domain.lookup.EditionSourceAnswer.Known
@@ -44,7 +46,7 @@ class BnfEditionLookupTest {
         val answer = source.lookUp(isbnOf(ONE_PIECE))
 
         // Then
-        answer shouldBe Known(ONE_PIECE_EDITION)
+        answer shouldBe Known(ONE_PIECE_EDITION, CoverCandidate(BNF, ONE_PIECE_COVER))
     }
 
     @Test
@@ -75,8 +77,8 @@ class BnfEditionLookupTest {
                 language = "fr",
                 pageCount = 52,
                 summary = null,
-                coverUrl = NERONIA_COVER,
             ),
+            CoverCandidate(BNF, NERONIA_COVER),
         )
     }
 
@@ -109,8 +111,8 @@ class BnfEditionLookupTest {
                 language = "fr",
                 pageCount = 50,
                 summary = null,
-                coverUrl = LEMURIA_COVER,
             ),
+            CoverCandidate(BNF, LEMURIA_COVER),
         )
     }
 
@@ -137,8 +139,8 @@ class BnfEditionLookupTest {
                 language = "fr",
                 pageCount = 348,
                 summary = null,
-                coverUrl = APOTHICAIRE_COVER,
             ),
+            CoverCandidate(BNF, APOTHICAIRE_COVER),
         )
     }
 
@@ -191,8 +193,8 @@ class BnfEditionLookupTest {
                 language = null,
                 pageCount = null,
                 summary = null,
-                coverUrl = null,
             ),
+            null,
         )
     }
 
@@ -205,7 +207,10 @@ class BnfEditionLookupTest {
         val answer = source.lookUp(isbnOf(ONE_PIECE))
 
         // Then
-        answer shouldBe Known(ONE_PIECE_EDITION.copy(publicationYear = null, pageCount = null))
+        answer shouldBe Known(
+            ONE_PIECE_EDITION.copy(publicationYear = null, pageCount = null),
+            CoverCandidate(BNF, ONE_PIECE_COVER),
+        )
     }
 
     @Test
@@ -302,9 +307,9 @@ class BnfEditionLookupTest {
 
     @Test
     fun `a control field without an ark names no cover`() {
-        coverUrlOf("http://catalogue.bnf.fr/ark:/12148/cb43636708p") shouldBe ONE_PIECE_COVER
-        coverUrlOf("FRBNF436367080000000") shouldBe null
-        coverUrlOf(null) shouldBe null
+        coverOf("http://catalogue.bnf.fr/ark:/12148/cb43636708p") shouldBe CoverCandidate(BNF, ONE_PIECE_COVER)
+        coverOf("FRBNF436367080000000") shouldBe null
+        coverOf(null) shouldBe null
     }
 
     @Test
@@ -428,7 +433,6 @@ class BnfEditionLookupTest {
             language = "fr",
             pageCount = 203,
             summary = null,
-            coverUrl = ONE_PIECE_COVER,
         )
         val TIMEOUT: Duration = ofMillis(200)
         val WARM_UP_TIMEOUT: Duration = ofSeconds(20)

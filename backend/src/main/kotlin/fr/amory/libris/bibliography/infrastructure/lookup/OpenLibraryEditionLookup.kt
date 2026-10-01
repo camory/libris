@@ -5,13 +5,15 @@ import fr.amory.libris.bibliography.domain.ContributionRole.WRITER
 import fr.amory.libris.bibliography.domain.Contributions
 import fr.amory.libris.bibliography.domain.Isbn
 import fr.amory.libris.bibliography.domain.Kind.BOOK
+import fr.amory.libris.bibliography.domain.lookup.CoverCandidate
+import fr.amory.libris.bibliography.domain.lookup.CoverSource
 import fr.amory.libris.bibliography.domain.lookup.EditionLookup
 import fr.amory.libris.bibliography.domain.lookup.EditionPreview
+import fr.amory.libris.bibliography.domain.lookup.EditionSource
 import fr.amory.libris.bibliography.domain.lookup.EditionSourceAnswer
 import fr.amory.libris.bibliography.domain.lookup.EditionSourceAnswer.Failed
 import fr.amory.libris.bibliography.domain.lookup.EditionSourceAnswer.Known
 import fr.amory.libris.bibliography.domain.lookup.EditionSourceAnswer.NothingKnown
-import fr.amory.libris.bibliography.domain.lookup.Source.OPEN_LIBRARY
 import org.springframework.web.client.HttpClientErrorException.NotFound
 import org.springframework.web.client.RestClientException
 import tools.jackson.databind.JsonNode
@@ -24,7 +26,7 @@ private const val SEARCH_FIELDS = "key,author_name,edition_key"
 private val YEAR = Regex("\\d{4}")
 
 class OpenLibraryEditionLookup(baseUrl: String, timeout: Duration) : EditionLookup {
-    override val source = OPEN_LIBRARY
+    override val source = EditionSource.OPEN_LIBRARY
     private val http = sourceRestClient(baseUrl, timeout)
 
     override fun lookUp(isbn: Isbn): EditionSourceAnswer =
@@ -39,7 +41,10 @@ class OpenLibraryEditionLookup(baseUrl: String, timeout: Duration) : EditionLook
         }
 
     private fun answerFor(isbn: Isbn): EditionSourceAnswer =
-        Known(previewOf(isbn, document("/isbn/${isbn.digits}.json")))
+        Known(
+            previewOf(isbn, document("/isbn/${isbn.digits}.json")),
+            CoverCandidate(CoverSource.OPEN_LIBRARY, "$COVERS/${isbn.digits}-L.jpg?default=false"),
+        )
 
     private fun previewOf(isbn: Isbn, edition: JsonNode): EditionPreview = EditionPreview(
         isbn = isbn,
@@ -54,7 +59,6 @@ class OpenLibraryEditionLookup(baseUrl: String, timeout: Duration) : EditionLook
         language = null,
         pageCount = edition["number_of_pages"]?.asInt(),
         summary = null,
-        coverUrl = "$COVERS/${isbn.digits}-L.jpg?default=false",
     )
 
     private fun contributionsOf(edition: JsonNode, search: JsonNode): Contributions {

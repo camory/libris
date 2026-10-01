@@ -1,8 +1,8 @@
 package fr.amory.libris.bibliography.domain.lookup
 
-import fr.amory.libris.bibliography.domain.lookup.Source.BNF
-import fr.amory.libris.bibliography.domain.lookup.Source.INVENTAIRE
-import fr.amory.libris.bibliography.domain.lookup.Source.OPEN_LIBRARY
+import fr.amory.libris.bibliography.domain.lookup.CoverSource.BNF
+import fr.amory.libris.bibliography.domain.lookup.CoverSource.INVENTAIRE
+import fr.amory.libris.bibliography.domain.lookup.CoverSource.OPEN_LIBRARY
 import io.kotest.matchers.shouldBe
 import org.junit.jupiter.api.Test
 

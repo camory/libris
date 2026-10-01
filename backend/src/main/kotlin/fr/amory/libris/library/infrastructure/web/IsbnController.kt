@@ -99,7 +99,7 @@ class IsbnController(private val lookupIsbnForReader: LookupIsbnForReader) {
         language = preview.language,
         pageCount = preview.pageCount,
         summary = preview.summary,
-        coverUrl = preview.coverUrl,
+        coverUrl = null,
         covers = emptyList(),
         copies = copies.map { responseOf(it) },
     )

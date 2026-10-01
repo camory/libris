@@ -49,7 +49,6 @@ private val ROMANCE_DAWN = EditionPreview(
     language = "fr",
     pageCount = 207,
     summary = "Luffy rêve de devenir le roi des pirates.",
-    coverUrl = "https://couvertures.amory.fr/one-piece-01.jpg",
 )
 
 private val ROMANCE_DAWN_ID = EditionId(UUID.fromString("01991c3a-5b7e-7c1d-8f2a-3d4e5f6071a1"))

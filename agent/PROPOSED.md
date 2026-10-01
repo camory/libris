@@ -391,9 +391,6 @@
   defines and that v0.8.0 no longer carries as an example; with the ports
   answering outcomes by status they assert the outcome instead (found
   2026-09-30 reviewing contract v0.8.0 with Tophe).
-- Backend: the previews' merge in `LookupEditionByIsbn` still orders by the
-  declaration order of `Source`, which D12 forbids; order it by an explicit
-  rank as `CoverCandidates` does with `coverOrder` (found 2026-10-01 on T052).
 - Contract: the example `ONE_PIECE_1` offers inventaire.io at `480x600`,
   which is not 600 tall; Tophe to align it on `100x600` (found 2026-10-01 on
   T052).
@@ -401,7 +398,3 @@
   JVM, green alone and on rerun; three lookups now run at once under the 1 s
   source timeout of the scenarios, a cold start may exceed it (found
   2026-10-01 on T052).
-- Backend: `Source` holds a cover-only source, `INVENTAIRE`, beside the
-  edition sources it orders the merge by; whether the cover sources get a
-  type of their own is to discuss with Tophe before T053 (found 2026-10-01
-  reworking T052).

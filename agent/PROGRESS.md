@@ -386,3 +386,17 @@ Format:
 - Deviations from the brief: none beyond the reviews.
 - Left over (in `PROPOSED.md`): whether the cover sources get a type of
   their own beside `Source`, to discuss with Tophe before T053.
+
+## 2026-10-02 — T052 Backend: the lookup offers the sources' covers — reshaped with Tophe
+- Did: the ports are `EditionLookup` and `CoverLookup`, a source's answer
+  `EditionSourceAnswer`; `Source` is split into `EditionSource` (`precedence`,
+  the merge's order) and `CoverSource` (`label`, `order`); `Known` carries
+  the source's own `CoverCandidate`, and `EditionPreview` loses `coverUrl`.
+- Decided, by Tophe: two result types stay, one source's answer and the
+  house's; the cover is not a field of the card, so each edition source
+  answers its candidate beside its preview and the BnF's `coverOf` builds it.
+- Changed on the way: a held edition's lookup answers `coverUrl` `null`
+  whatever its stored `cover_url`, until T055 offers the stored cover.
+- Left over: `Edition.coverUrl` and its column, null on every add since
+  T051, for T053; `docs/ARCHITECTURE.md` D10 still names
+  `ExternalEditionLookup.lookUp`, the wording is proposed in the PR body.

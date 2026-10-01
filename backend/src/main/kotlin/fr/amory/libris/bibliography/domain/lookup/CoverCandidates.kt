@@ -6,6 +6,6 @@ value class CoverCandidates private constructor(private val all: List<CoverCandi
 
     companion object {
         fun of(candidates: List<CoverCandidate>): CoverCandidates =
-            CoverCandidates(candidates.sortedBy { it.source.coverOrder })
+            CoverCandidates(candidates.sortedBy { it.source.order })
     }
 }

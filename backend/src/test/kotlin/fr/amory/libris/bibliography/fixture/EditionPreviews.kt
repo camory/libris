@@ -17,5 +17,4 @@ val A_PREVIEW = EditionPreview(
     language = null,
     pageCount = null,
     summary = null,
-    coverUrl = null,
 )

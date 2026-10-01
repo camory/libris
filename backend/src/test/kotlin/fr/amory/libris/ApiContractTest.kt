@@ -20,10 +20,10 @@ import fr.amory.libris.bibliography.domain.edition.Edition
 import fr.amory.libris.bibliography.domain.edition.EditionId
 import fr.amory.libris.bibliography.domain.lookup.CoverCandidate
 import fr.amory.libris.bibliography.domain.lookup.CoverCandidates
+import fr.amory.libris.bibliography.domain.lookup.CoverSource.BNF
+import fr.amory.libris.bibliography.domain.lookup.CoverSource.INVENTAIRE
+import fr.amory.libris.bibliography.domain.lookup.CoverSource.OPEN_LIBRARY
 import fr.amory.libris.bibliography.domain.lookup.EditionPreview
-import fr.amory.libris.bibliography.domain.lookup.Source.BNF
-import fr.amory.libris.bibliography.domain.lookup.Source.INVENTAIRE
-import fr.amory.libris.bibliography.domain.lookup.Source.OPEN_LIBRARY
 import fr.amory.libris.bibliography.fixture.isbnOf
 import fr.amory.libris.bibliography.fixture.recordedBytes
 import fr.amory.libris.fixture.WebSliceTest
@@ -81,7 +81,6 @@ private val ONE_PIECE_1 = EditionPreview(
     language = "fr",
     pageCount = 203,
     summary = null,
-    coverUrl = "https://covers.openlibrary.org/b/isbn/9782723488525-L.jpg",
 )
 
 private val ONE_PIECE_2 = ONE_PIECE_1.copy(
@@ -90,7 +89,6 @@ private val ONE_PIECE_2 = ONE_PIECE_1.copy(
     subtitle = null,
     series = SeriesEntry("One piece", 2),
     pageCount = 208,
-    coverUrl = "https://covers.openlibrary.org/b/isbn/9782723489898-L.jpg",
 )
 
 private val COPIES_OF_ONE_PIECE_2 = listOf(
@@ -148,7 +146,7 @@ private val ONE_PIECE_1_HELD = HeldEdition(
         language = ONE_PIECE_1.language,
         pageCount = ONE_PIECE_1.pageCount,
         summary = ONE_PIECE_1.summary,
-        coverUrl = ONE_PIECE_1.coverUrl,
+        coverUrl = null,
     ),
     copies = listOf(
         copyOn(

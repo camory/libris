@@ -25,7 +25,7 @@ class LookupEditionByIsbn(
     editionLookups: List<EditionLookup>,
     private val coverLookup: CoverLookup,
 ) {
-    private val editionLookups = editionLookups.sortedBy { it.source }
+    private val editionLookups = editionLookups.sortedBy { it.source.precedence }
 
     operator fun invoke(isbn: Isbn): EditionLookupResult = editions.findByIsbn(isbn)?.let(::held) ?: askTheSources(isbn)
 
@@ -49,9 +49,5 @@ class LookupEditionByIsbn(
     }
 
     private fun coversOf(results: List<EditionSourceAnswer>, picture: CoverCandidate?): CoverCandidates =
-        CoverCandidates.of(
-            listOfNotNull(picture) + editionLookups.zip(results).mapNotNull { (lookup, result) ->
-                (result as? Known)?.preview?.coverUrl?.let { CoverCandidate(lookup.source, it) }
-            },
-        )
+        CoverCandidates.of(listOfNotNull(picture) + results.filterIsInstance<Known>().mapNotNull { it.cover })
 }

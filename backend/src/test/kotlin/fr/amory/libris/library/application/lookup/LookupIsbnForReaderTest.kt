@@ -60,7 +60,7 @@ class LookupIsbnForReaderTest {
     @Test
     fun `an ISBN the house lacks is answered by the sources, with no copy`() {
         // Given
-        val lookupIsbnForReader = lookupAsking(LookupAnswering(Known(A_PREVIEW.copy(title = "Romance dawn"))))
+        val lookupIsbnForReader = lookupAsking(LookupAnswering(Known(A_PREVIEW.copy(title = "Romance dawn"), null)))
 
         // When
         val result = lookupIsbnForReader(lea, isbnOf(ONE_PIECE))

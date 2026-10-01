@@ -31,7 +31,6 @@ class EditionPreviewTest {
             language = "fr",
             pageCount = 203,
             summary = "Luffy prend la mer",
-            coverUrl = "https://example.org/une-couverture.jpg",
         )
         val second = A_PREVIEW.copy(
             title = "One Piece - Édition originale Tome 01",
@@ -44,7 +43,6 @@ class EditionPreviewTest {
             language = "ja",
             pageCount = 207,
             summary = "un autre résumé",
-            coverUrl = "https://example.org/une-autre-couverture.jpg",
         )
 
         // When
@@ -69,7 +67,6 @@ class EditionPreviewTest {
             language = "fr",
             pageCount = 203,
             summary = "Luffy prend la mer",
-            coverUrl = "https://example.org/une-couverture.jpg",
         )
 
         // When
@@ -127,20 +124,6 @@ class EditionPreviewTest {
     }
 
     @Test
-    fun `the cover comes from the first preview that has one`() {
-        // Given
-        val first = A_PREVIEW.copy(coverUrl = null)
-        val second = A_PREVIEW.copy(coverUrl = "https://example.org/une-couverture.jpg")
-        val third = A_PREVIEW.copy(coverUrl = "https://example.org/une-autre-couverture.jpg")
-
-        // When
-        val merged = first.merge(second).merge(third)
-
-        // Then
-        merged.coverUrl shouldBe "https://example.org/une-couverture.jpg"
-    }
-
-    @Test
     fun `an edition the house holds previews as itself`() {
         // Given
         val edition = Edition(
@@ -177,7 +160,6 @@ class EditionPreviewTest {
             language = "fr",
             pageCount = 207,
             summary = "Luffy rêve de devenir le roi des pirates.",
-            coverUrl = "https://couvertures.amory.fr/one-piece-01.jpg",
         )
     }
 

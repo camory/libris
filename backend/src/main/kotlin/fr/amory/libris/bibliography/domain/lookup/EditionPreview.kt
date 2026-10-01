@@ -19,7 +19,6 @@ data class EditionPreview(
     val language: String?,
     val pageCount: Int?,
     val summary: String?,
-    val coverUrl: String?,
 ) {
     fun merge(other: EditionPreview): EditionPreview = copy(
         subtitle = subtitle ?: other.subtitle,
@@ -31,7 +30,6 @@ data class EditionPreview(
         language = language ?: other.language,
         pageCount = pageCount ?: other.pageCount,
         summary = summary ?: other.summary,
-        coverUrl = coverUrl ?: other.coverUrl,
     )
 
     companion object {
@@ -49,7 +47,6 @@ data class EditionPreview(
                 language = edition.language,
                 pageCount = edition.pageCount,
                 summary = edition.summary,
-                coverUrl = edition.coverUrl,
             )
         }
     }

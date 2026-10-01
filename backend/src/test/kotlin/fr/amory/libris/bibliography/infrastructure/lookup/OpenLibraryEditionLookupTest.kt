@@ -6,6 +6,8 @@ import fr.amory.libris.bibliography.domain.Contribution
 import fr.amory.libris.bibliography.domain.ContributionRole.WRITER
 import fr.amory.libris.bibliography.domain.Contributions
 import fr.amory.libris.bibliography.domain.Kind.BOOK
+import fr.amory.libris.bibliography.domain.lookup.CoverCandidate
+import fr.amory.libris.bibliography.domain.lookup.CoverSource.OPEN_LIBRARY
 import fr.amory.libris.bibliography.domain.lookup.EditionPreview
 import fr.amory.libris.bibliography.domain.lookup.EditionSourceAnswer.Failed
 import fr.amory.libris.bibliography.domain.lookup.EditionSourceAnswer.Known
@@ -59,8 +61,8 @@ class OpenLibraryEditionLookupTest {
                 language = null,
                 pageCount = 64,
                 summary = null,
-                coverUrl = "https://covers.openlibrary.org/b/isbn/9782380751673-L.jpg?default=false",
             ),
+            CoverCandidate(OPEN_LIBRARY, "https://covers.openlibrary.org/b/isbn/9782380751673-L.jpg?default=false"),
         )
     }
 
@@ -89,7 +91,7 @@ class OpenLibraryEditionLookupTest {
         val answer = source.lookUp(isbnOf(MONTE_CRISTO))
 
         // Then
-        answer shouldBe Known(MONTE_CRISTO_EDITION)
+        answer shouldBe Known(MONTE_CRISTO_EDITION, MONTE_CRISTO_COVER)
     }
 
     @Test
@@ -102,7 +104,10 @@ class OpenLibraryEditionLookupTest {
         val answer = source.lookUp(isbnOf(MONTE_CRISTO))
 
         // Then
-        answer shouldBe Known(MONTE_CRISTO_EDITION.copy(contributions = Contributions.of(emptyList())))
+        answer shouldBe Known(
+            MONTE_CRISTO_EDITION.copy(contributions = Contributions.of(emptyList())),
+            MONTE_CRISTO_COVER,
+        )
     }
 
     @Test
@@ -116,7 +121,7 @@ class OpenLibraryEditionLookupTest {
 
         // Then
         val dumas = Contributions.of(listOf(Contribution("Alexandre Dumas", WRITER)))
-        answer shouldBe Known(MONTE_CRISTO_EDITION.copy(contributions = dumas))
+        answer shouldBe Known(MONTE_CRISTO_EDITION.copy(contributions = dumas), MONTE_CRISTO_COVER)
     }
 
     @Test
@@ -197,7 +202,10 @@ class OpenLibraryEditionLookupTest {
             language = null,
             pageCount = null,
             summary = null,
-            coverUrl = "https://covers.openlibrary.org/b/isbn/9782253098058-L.jpg?default=false",
+        )
+        val MONTE_CRISTO_COVER = CoverCandidate(
+            OPEN_LIBRARY,
+            "https://covers.openlibrary.org/b/isbn/9782253098058-L.jpg?default=false",
         )
         val ANOTHER_WORK = """
             {"docs": [{"key": "/works/OL36287W", "author_name": ["Alexandre Dumas"],
