@@ -55,6 +55,16 @@ class FileCoverStoreTest {
     }
 
     @Test
+    fun `a file whose saved media type is not an image is no cover`() {
+        // Given
+        dir.resolve(NAME).writeBytes(recordedBytes("covers/tall.jpg"))
+        dir.resolve("$NAME.type").writeText("text/html")
+
+        // When / Then
+        FileCoverStore(dir).read(CoverName(NAME)) shouldBe null
+    }
+
+    @Test
     fun `a name no file carries is no cover`() {
         // Given / When / Then
         FileCoverStore(dir).read(CoverName(NAME)) shouldBe null

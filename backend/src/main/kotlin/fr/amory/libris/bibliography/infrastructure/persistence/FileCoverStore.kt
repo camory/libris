@@ -13,7 +13,7 @@ class FileCoverStore(private val dir: Path) : CoverStore {
         val picture = dir.resolve(name.value)
         val mediaType = dir.resolve("${name.value}.type")
         return if (picture.isRegularFile() && mediaType.isRegularFile()) {
-            Cover(mediaType.readText(), picture.readBytes())
+            Cover.of(mediaType.readText(), picture.readBytes())
         } else {
             null
         }
