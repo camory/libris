@@ -8,6 +8,11 @@ import fr.amory.libris.library.domain.bookshelf.BookshelfId
 import fr.amory.libris.library.domain.reader.Reader
 import fr.amory.libris.library.infrastructure.web.NewBookValidation.Accepted
 import fr.amory.libris.library.infrastructure.web.NewBookValidation.Refused
+import fr.amory.libris.web.NOT_FOUND_PROBLEM
+import fr.amory.libris.web.VALIDATION_PROBLEM
+import fr.amory.libris.web.ValidationErrorResponse
+import fr.amory.libris.web.asResponse
+import fr.amory.libris.web.problem
 import org.springframework.http.HttpStatus.BAD_REQUEST
 import org.springframework.http.HttpStatus.CREATED
 import org.springframework.http.HttpStatus.NOT_FOUND

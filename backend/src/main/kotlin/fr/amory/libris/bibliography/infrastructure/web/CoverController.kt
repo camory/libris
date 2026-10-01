@@ -1,7 +1,10 @@
-package fr.amory.libris.library.infrastructure.web
+package fr.amory.libris.bibliography.infrastructure.web
 
 import fr.amory.libris.bibliography.application.cover.FindCover
 import fr.amory.libris.bibliography.domain.cover.CoverName
+import fr.amory.libris.web.NOT_FOUND_PROBLEM
+import fr.amory.libris.web.asResponse
+import fr.amory.libris.web.problem
 import org.springframework.http.HttpHeaders.CACHE_CONTROL
 import org.springframework.http.HttpStatus.NOT_FOUND
 import org.springframework.http.MediaType.parseMediaType

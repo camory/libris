@@ -11,6 +11,11 @@ import fr.amory.libris.bibliography.domain.lookup.EditionPreview
 import fr.amory.libris.library.application.lookup.CopyOnBookshelf
 import fr.amory.libris.library.application.lookup.LookupIsbnForReader
 import fr.amory.libris.library.domain.reader.Reader
+import fr.amory.libris.web.NOT_FOUND_PROBLEM
+import fr.amory.libris.web.VALIDATION_PROBLEM
+import fr.amory.libris.web.ValidationErrorResponse
+import fr.amory.libris.web.asResponse
+import fr.amory.libris.web.problem
 import org.springframework.http.HttpStatus.BAD_REQUEST
 import org.springframework.http.HttpStatus.NOT_FOUND
 import org.springframework.http.HttpStatus.SERVICE_UNAVAILABLE

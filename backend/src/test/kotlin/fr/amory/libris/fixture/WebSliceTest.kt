@@ -1,5 +1,6 @@
 package fr.amory.libris.fixture
 
+import fr.amory.libris.bibliography.infrastructure.web.CoverController
 import fr.amory.libris.library.infrastructure.web.MeController
 import org.springframework.boot.SpringBootConfiguration
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration
@@ -21,5 +22,5 @@ annotation class WebSliceTest
 @SpringBootConfiguration
 @TestComponent
 @EnableAutoConfiguration(exclude = [DataSourceAutoConfiguration::class])
-@ComponentScan(basePackageClasses = [MeController::class])
+@ComponentScan(basePackageClasses = [MeController::class, CoverController::class])
 class WebSliceConfiguration

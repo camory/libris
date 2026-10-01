@@ -8,6 +8,7 @@ import fr.amory.libris.bibliography.domain.SeriesEntry
 import fr.amory.libris.library.application.NewBook
 import fr.amory.libris.library.infrastructure.web.NewBookValidation.Accepted
 import fr.amory.libris.library.infrastructure.web.NewBookValidation.Refused
+import fr.amory.libris.web.ValidationErrorResponse
 
 sealed interface NewBookValidation {
     data class Accepted(val book: NewBook) : NewBookValidation
