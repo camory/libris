@@ -291,7 +291,8 @@ Format:
   `LIBRIS_COVERS_DIR`, seen by `bootRun` without the variable: the
   binder keeps `${LIBRIS_COVERS_DIR}` as a literal path. The setting is
   `${LIBRIS_COVERS_DIR:}` and `LibrisApplicationTest` gained a case proving
-  the start refused. `FastEntryScenarios` *S1* gained
+  the start refused; Tophe dropped it and the binding case on review, tests
+  of a setting's binding being unwanted. `FastEntryScenarios` *S1* gained
   `id` and `covers`, as the brief allowed.
 - Left over: the `Dockerfile` must create the covers directory for the
   `libris` user before T053 writes (in `PROPOSED.md`); `Edition.coverUrl` and

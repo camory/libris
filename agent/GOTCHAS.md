@@ -219,8 +219,7 @@ true; the diary keeps the date it was found.
   bound from `${VAR}` alone starts without the variable (T051 found
   `libris.covers.dir` bound to the path `${LIBRIS_COVERS_DIR}`). An empty
   default, `${VAR:}`, binds null, which a non-null property refuses at
-  start. `LibrisApplicationTest` proves it with an `ApplicationContextRunner`
-  over `application.yaml` and an environment with no system variables.
+  start (seen with `bootRun`; no test covers it).
 - A scenario class boots the whole application and commits what its
   requests write; `FreshSchema` on `JdbcSliceTest` and `ScenarioTest` is
   what keeps the JDBC slice from meeting a reader it did not insert.
