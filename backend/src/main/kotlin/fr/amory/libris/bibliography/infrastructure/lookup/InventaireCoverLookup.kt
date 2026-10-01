@@ -4,6 +4,7 @@ import fr.amory.libris.bibliography.domain.Isbn
 import fr.amory.libris.bibliography.domain.lookup.CoverCandidate
 import fr.amory.libris.bibliography.domain.lookup.ExternalCoverLookup
 import fr.amory.libris.bibliography.domain.lookup.Source.INVENTAIRE
+import org.springframework.web.client.RestClientException
 import tools.jackson.databind.JsonNode
 import tools.jackson.databind.node.MissingNode
 import java.time.Duration
@@ -12,7 +13,11 @@ class InventaireCoverLookup(private val baseUrl: String, timeout: Duration) : Ex
     private val http = sourceRestClient(baseUrl, timeout)
 
     override fun lookUp(isbn: Isbn): CoverCandidate? =
-        pictureOf(entities(isbn))?.let { CoverCandidate(INVENTAIRE, "$baseUrl/img/entities/100x600/$it") }
+        try {
+            pictureOf(entities(isbn))?.let { CoverCandidate(INVENTAIRE, "$baseUrl/img/entities/100x600/$it") }
+        } catch (ignored: RestClientException) {
+            null
+        }
 
     private fun pictureOf(answer: JsonNode): String? =
         answer.path("entities").values().firstOrNull()?.path("claims")?.path("invp:P2")?.values()?.firstOrNull()
