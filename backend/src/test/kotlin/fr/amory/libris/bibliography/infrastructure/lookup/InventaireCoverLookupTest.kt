@@ -1,0 +1,65 @@
+package fr.amory.libris.bibliography.infrastructure.lookup
+
+import com.github.tomakehurst.wiremock.WireMockServer
+import com.github.tomakehurst.wiremock.core.WireMockConfiguration.options
+import fr.amory.libris.bibliography.domain.lookup.CoverCandidate
+import fr.amory.libris.bibliography.domain.lookup.Source.INVENTAIRE
+import fr.amory.libris.bibliography.fixture.InventaireStubs
+import fr.amory.libris.bibliography.fixture.isbnOf
+import fr.amory.libris.bibliography.fixture.recordedBytes
+import io.kotest.matchers.shouldBe
+import org.junit.jupiter.api.AfterAll
+import org.junit.jupiter.api.AfterEach
+import org.junit.jupiter.api.BeforeAll
+import org.junit.jupiter.api.Test
+import java.time.Duration
+import java.time.Duration.ofMillis
+import java.time.Duration.ofSeconds
+
+class InventaireCoverLookupTest {
+    private val source = InventaireCoverLookup(server.baseUrl(), TIMEOUT)
+
+    @AfterEach
+    fun forgetTheStubs() {
+        server.resetAll()
+    }
+
+    @Test
+    fun `a known ISBN offers inventaire io's picture, at most 600 tall`() {
+        // Given
+        inventaire.knows(ONE_PIECE_1, SMALL_WEBP)
+
+        // When
+        val candidate = source.lookUp(isbnOf(ONE_PIECE_1))
+
+        // Then
+        candidate shouldBe CoverCandidate(
+            INVENTAIRE,
+            "${server.baseUrl()}/img/entities/100x600/34d6e7d99cec5b0922b9eccfeb03748ab2b4db99",
+        )
+    }
+
+    private companion object {
+        const val ONE_PIECE_1 = "9782723488525"
+        val SMALL_WEBP = recordedBytes("covers/small.webp")
+        val TIMEOUT: Duration = ofMillis(200)
+        val WARM_UP_TIMEOUT: Duration = ofSeconds(20)
+        val server = WireMockServer(options().dynamicPort())
+        val inventaire = InventaireStubs(server)
+
+        @BeforeAll
+        @JvmStatic
+        fun startWireMock() {
+            server.start()
+            inventaire.knows(ONE_PIECE_1, SMALL_WEBP)
+            InventaireCoverLookup(server.baseUrl(), WARM_UP_TIMEOUT).lookUp(isbnOf(ONE_PIECE_1))
+            server.resetAll()
+        }
+
+        @AfterAll
+        @JvmStatic
+        fun stopWireMock() {
+            server.stop()
+        }
+    }
+}
