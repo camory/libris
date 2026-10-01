@@ -33,21 +33,24 @@ class LookupEditionByIsbn(
 
     private fun askTheSources(isbn: Isbn): EditionLookupResult =
         newVirtualThreadPerTaskExecutor().use { executor ->
-            val picture = executor.submit(Callable { coverLookup.lookUp(isbn) })
-            val results = executor.invokeAll(editionLookups.map { lookup -> Callable { lookup.lookUp(isbn) } })
+            val coverCandidate = executor.submit(Callable { coverLookup.lookUp(isbn) })
+            val sourceAnswers = executor.invokeAll(editionLookups.map { lookup -> Callable { lookup.lookUp(isbn) } })
                 .map { it.get() }
-            answerOf(results, picture.get())
+            answerOf(sourceAnswers, coverCandidate.get())
         }
 
-    private fun answerOf(results: List<EditionSourceAnswer>, picture: CoverCandidate?): EditionLookupResult {
-        val previews = results.filterIsInstance<Known>().map { it.preview }
+    private fun answerOf(
+        sourceAnswers: List<EditionSourceAnswer>,
+        coverCandidate: CoverCandidate?,
+    ): EditionLookupResult {
+        val known = sourceAnswers.filterIsInstance<Known>()
         return when {
-            previews.isNotEmpty() -> Found(previews.reduce(EditionPreview::merge), coversOf(results, picture))
-            results.all { it == Failed } -> SourcesUnavailable
+            known.isNotEmpty() -> Found(
+                known.map { it.preview }.reduce(EditionPreview::merge),
+                CoverCandidates.of(listOfNotNull(coverCandidate) + known.mapNotNull { it.cover }),
+            )
+            sourceAnswers.all { it == Failed } -> SourcesUnavailable
             else -> UnknownIsbn
         }
     }
-
-    private fun coversOf(results: List<EditionSourceAnswer>, picture: CoverCandidate?): CoverCandidates =
-        CoverCandidates.of(listOfNotNull(picture) + results.filterIsInstance<Known>().mapNotNull { it.cover })
 }
