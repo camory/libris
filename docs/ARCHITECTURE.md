@@ -78,8 +78,9 @@ and the bookshelves they keep), each with the same three layers.
 - `bibliography.infrastructure.lookup` — the BnF and Open Library clients;
   Google Books later.
 
-Beside the contexts, `fr.amory.libris.web` holds what every web package
-answers with, the problem details of the API. It depends on no context.
+Beside the contexts, `shared` holds what both use and neither owns, in the
+same layers: `shared.infrastructure.web` has the problem details of the API
+and the advice that answers them. It depends on no context.
 
 Enforced by ArchUnit rules in the test suite (see D07):
 1. `domain` depends only on the Kotlin/Java standard libraries and the uuid
@@ -87,10 +88,11 @@ Enforced by ArchUnit rules in the test suite (see D07):
 2. `application` depends only on `domain` (plus `@Service` and Spring's
    `TransactionOperations`, never `@Transactional`).
 3. `infrastructure.*` packages depend on `domain` and `application`, never
-   on each other.
+   on each other, `shared` excepted.
 4. No cycles between contexts, and `bibliography` never depends on
    `library`.
 5. Ports declared in `domain` are implemented only in `infrastructure`.
+6. `shared` depends on no context.
 
 Considered and rejected: Ktor and http4k (the human reviewer's fluency is the
 merge gate), Spring Modulith (over-engineering at this size), Spring Data

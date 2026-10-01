@@ -3,7 +3,7 @@ package fr.amory.libris.library.infrastructure.web
 import fr.amory.libris.bibliography.domain.ContributionRole.WRITER
 import fr.amory.libris.bibliography.domain.Kind.MANGA
 import fr.amory.libris.library.infrastructure.web.NewBookValidation.Refused
-import fr.amory.libris.web.ValidationErrorResponse
+import fr.amory.libris.shared.infrastructure.web.ValidationErrorResponse
 import io.kotest.matchers.shouldBe
 import org.junit.jupiter.api.Test
 

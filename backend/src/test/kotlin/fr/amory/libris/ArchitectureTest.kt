@@ -1,6 +1,7 @@
 package fr.amory.libris
 
-import com.tngtech.archunit.core.domain.JavaClass
+import com.tngtech.archunit.base.DescribedPredicate.alwaysTrue
+import com.tngtech.archunit.core.domain.JavaClass.Predicates.resideInAPackage
 import com.tngtech.archunit.core.domain.JavaClass.Predicates.resideInAnyPackage
 import com.tngtech.archunit.core.domain.JavaClass.Predicates.type
 import com.tngtech.archunit.core.domain.JavaClasses
@@ -51,17 +52,18 @@ class ArchitectureTest {
     }
 
     @ArchTest
-    fun `the infrastructure packages do not depend on each other`(libris: JavaClasses) {
+    fun `the infrastructure packages depend on each other through what is shared only`(libris: JavaClasses) {
         slices()
             .matching("fr.amory.libris.(*).infrastructure.(*)..")
             .should().notDependOnEachOther()
+            .ignoreDependency(alwaysTrue(), resideInAPackage("..shared.."))
             .check(libris)
     }
 
     @ArchTest
     fun `a port of the domain is implemented in the infrastructure only`(libris: JavaClasses) {
         classes()
-            .that().implement(JavaClass.Predicates.resideInAPackage("..domain.."))
+            .that().implement(resideInAPackage("..domain.."))
             .should().resideInAPackage("..infrastructure..")
             .check(libris)
     }
@@ -79,6 +81,14 @@ class ArchitectureTest {
         noClasses()
             .that().resideInAPackage("..bibliography..")
             .should().dependOnClassesThat().resideInAPackage("..library..")
+            .check(libris)
+    }
+
+    @ArchTest
+    fun `what is shared knows nothing of the contexts`(libris: JavaClasses) {
+        noClasses()
+            .that().resideInAPackage("..shared..")
+            .should().dependOnClassesThat().resideInAnyPackage("..bibliography..", "..library..")
             .check(libris)
     }
 }

@@ -1,4 +1,4 @@
-package fr.amory.libris.web
+package fr.amory.libris.shared.infrastructure.web
 
 import org.springframework.http.HttpStatus
 import org.springframework.http.ProblemDetail

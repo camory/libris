@@ -285,9 +285,13 @@ Format:
   first bytes are gone.
 - Decided, on review with Tophe: `CoverController` is the bibliography's,
   in the new `bibliography.infrastructure.web`, since it calls `FindCover`;
-  the brief had it in the library's web package. `Problems.kt` moved to
-  `fr.amory.libris.web`, beside the contexts, so both web packages answer
-  the same problems; `WebSliceConfiguration` scans both.
+  the brief had it in the library's web package. `Problems.kt` and
+  `ProblemAdvice` moved to `shared.infrastructure.web`, beside the
+  contexts, so both web packages answer the same problems;
+  `WebSliceConfiguration` scans the three. `ArchitectureTest` gained *what
+  is shared knows nothing of the contexts*, and its infrastructure rule
+  lets a package depend on `shared`. `SecurityConfig` stays in the
+  library's web package: its filter calls `WelcomeReader`.
 - Left over, for the brief of the task that stores a picture: the media
   type is extracted before the store, the one of the picture as stored
   (after normalisation when it is taller than 600), and the use case builds
