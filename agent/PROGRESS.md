@@ -270,13 +270,18 @@ Format:
   the add stores a new edition with no cover address, the catalogue answers
   `coverUrl: null`. `GET /api/v1/covers/{name}` serves the file `{name}` of
   `LIBRIS_COVERS_DIR` as JPEG or WebP by its bytes, kept a year, else `404`.
-- Decided: `CoverName`, `Cover`, `CoverFormat` and the port `CoverStore` in
+- Decided: `CoverName`, `Cover` and the port `CoverStore` in
   `bibliography.domain.cover`; `FindCover` in `bibliography.application.cover`;
   `FileCoverStore`, `CoversProperties` and `CoversConfig` in
   `bibliography.infrastructure.persistence`, as the brief placed them.
-- Decided: `Cover` has a private constructor, `of(bytes)` its only door;
-  a malformed name goes through `CoverName.of` in `CoverController`, so it is
-  `404` and never reaches `findCover` or the file system.
+- Decided, on review with Tophe: the format left the domain, the contract
+  answering `image/*`. `Cover` is a media type and bytes; `FileCoverStore`
+  reads the media type from the file's first bytes and `CoverController`
+  passes it on. The brief's `CoverFormat`, `Cover.of` and `CoverTest` are
+  gone, their cases now `FileCoverStoreTest`'s.
+- Decided: a malformed name goes through `CoverName.of` in
+  `CoverController`, so it is `404` and never reaches `findCover` or the
+  file system.
 - Decided: guards proven by mutation and reverted: a name of any length
   (`{64}` dropped, red on 63 digits), bytes shorter than `WEBP`'s offset (the
   size check dropped, red on `RIFF` alone with an index out of bounds).

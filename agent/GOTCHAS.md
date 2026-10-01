@@ -209,9 +209,10 @@ true; the diary keeps the date it was found.
   `browseCatalogue(ReaderId(eq(id.value) ?: id.value), any())`; `any()` is
   fine for a nullable value-class parameter.
 - A cover is the file named by its `CoverName` alone, no extension, in
-  `LIBRIS_COVERS_DIR` (`libris.covers.directory: ${LIBRIS_COVERS_DIR:}`); its
-  format is read from its first bytes, and bytes of neither JPEG nor WebP
-  are no cover. `ScenarioTest` gives the variable a
+  `LIBRIS_COVERS_DIR` (`libris.covers.directory: ${LIBRIS_COVERS_DIR:}`);
+  `FileCoverStore` reads its media type from its first bytes, and bytes of
+  neither JPEG nor WebP are no cover. The domain's `Cover` is a media type
+  and bytes, and knows no format. `ScenarioTest` gives the variable a
   temporary directory, `LibrisApplicationTest` its own property. A Mockito
   matcher on a `CoverName` argument takes a valid fallback, since the
   constructor checks it: `findCover(CoverName(any() ?: NO_COVER))`.
