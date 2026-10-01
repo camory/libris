@@ -24,7 +24,7 @@ class InventaireCoverLookup(private val baseUrl: String, timeout: Duration) : Ex
 
     private fun pictureOf(answer: JsonNode): String? =
         answer.path("entities").values().firstOrNull()?.path("claims")?.path("invp:P2")?.values()?.firstOrNull()
-            ?.asString()
+            ?.takeIf { it.isString }?.asString()
 
     private fun entities(isbn: Isbn): JsonNode = http.get()
         .uri { uri ->
