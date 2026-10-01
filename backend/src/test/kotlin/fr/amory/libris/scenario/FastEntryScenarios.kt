@@ -92,7 +92,6 @@ class FastEntryScenarios @Autowired constructor(
             .jsonPath("$.authors[0].name").isEqualTo("Eiichirō Oda")
             .jsonPath("$.pageCount").isEqualTo(207)
             .jsonPath("$.publicationYear").isEqualTo(2013)
-            .jsonPath("$.coverUrl").isEqualTo(ONE_PIECE_COVER)
     }
 
     @Test

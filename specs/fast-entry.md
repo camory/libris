@@ -80,6 +80,9 @@ Then the answer carries the BnF's value for every field the BnF gives
 	And Open Library's for the fields the BnF leaves empty
 ```
 
+The cover is not one of these fields: it follows the covers spec
+(`specs/covers.md`, S1), not this rule.
+
 Proof: backend scenario test over stubbed sources, one recorded BnF record
 with fields blanked that Open Library fills, and one book the catalogue has
 not recorded, 9782380751673 (*Space Wars*, chapitre 1), answered by Open
