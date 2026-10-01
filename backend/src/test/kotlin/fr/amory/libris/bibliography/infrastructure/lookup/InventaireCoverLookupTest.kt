@@ -7,6 +7,7 @@ import fr.amory.libris.bibliography.domain.lookup.Source.INVENTAIRE
 import fr.amory.libris.bibliography.fixture.InventaireStubs
 import fr.amory.libris.bibliography.fixture.isbnOf
 import fr.amory.libris.bibliography.fixture.recordedBytes
+import io.kotest.matchers.nulls.shouldBeNull
 import io.kotest.matchers.shouldBe
 import org.junit.jupiter.api.AfterAll
 import org.junit.jupiter.api.AfterEach
@@ -55,8 +56,21 @@ class InventaireCoverLookupTest {
         inventaire.pictureRequests() shouldBe 0
     }
 
+    @Test
+    fun `an ISBN inventaire io does not know offers no picture`() {
+        // Given
+        inventaire.doesNotKnow(LES_NERONIA)
+
+        // When
+        val candidate = source.lookUp(isbnOf(LES_NERONIA))
+
+        // Then
+        candidate.shouldBeNull()
+    }
+
     private companion object {
         const val ONE_PIECE_1 = "9782723488525"
+        const val LES_NERONIA = "9782505125990"
         val SMALL_WEBP = recordedBytes("covers/small.webp")
         val TIMEOUT: Duration = ofMillis(200)
         val WARM_UP_TIMEOUT: Duration = ofSeconds(20)
