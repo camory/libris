@@ -217,6 +217,27 @@ class LookupEditionByIsbnTest {
         )
     }
 
+    @Test
+    fun `a source that knows the edition without a cover offers no candidate`() {
+        // Given
+        val lookupEditionByIsbn = LookupEditionByIsbn(
+            EditionsInMemory(),
+            listOf(
+                LookupAnswering(Known(A_PREVIEW.copy(coverUrl = null)), BNF),
+                LookupAnswering(Known(A_PREVIEW.copy(coverUrl = "https://openlibrary/a")), OPEN_LIBRARY),
+            ),
+            NO_COVER_LOOKUP,
+        )
+
+        // When
+        val result = lookupEditionByIsbn(isbnOf("9782723488525"))
+
+        // Then
+        result.shouldBeInstanceOf<Found>().covers.toList() shouldBe listOf(
+            CoverCandidate(OPEN_LIBRARY, "https://openlibrary/a"),
+        )
+    }
+
     private companion object {
         val NO_COVER_LOOKUP get() = CoverLookupAnswering(null)
     }
