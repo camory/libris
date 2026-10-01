@@ -1,6 +1,7 @@
 package fr.amory.libris.library.infrastructure.web
 
 import fr.amory.libris.bibliography.application.cover.FindCover
+import fr.amory.libris.bibliography.application.lookup.EditionLookupResult.Found
 import fr.amory.libris.bibliography.application.lookup.EditionLookupResult.Held
 import fr.amory.libris.bibliography.domain.Contribution
 import fr.amory.libris.bibliography.domain.ContributionRole.WRITER
@@ -8,7 +9,12 @@ import fr.amory.libris.bibliography.domain.Contributions
 import fr.amory.libris.bibliography.domain.Kind.MANGA
 import fr.amory.libris.bibliography.domain.SeriesEntry
 import fr.amory.libris.bibliography.domain.edition.EditionId
+import fr.amory.libris.bibliography.domain.lookup.CoverCandidate
+import fr.amory.libris.bibliography.domain.lookup.CoverCandidates
 import fr.amory.libris.bibliography.domain.lookup.EditionPreview
+import fr.amory.libris.bibliography.domain.lookup.Source.BNF
+import fr.amory.libris.bibliography.domain.lookup.Source.INVENTAIRE
+import fr.amory.libris.bibliography.domain.lookup.Source.OPEN_LIBRARY
 import fr.amory.libris.bibliography.fixture.isbnOf
 import fr.amory.libris.fixture.WebSliceTest
 import fr.amory.libris.library.application.AddBookToBookshelf
@@ -82,6 +88,39 @@ class IsbnControllerTest @Autowired constructor(
 
         // Then
         body?.get("id") shouldBe "01991c3a-5b7e-7c1d-8f2a-3d4e5f6071a1"
+    }
+
+    @Test
+    fun `an edition the sources know is answered with their candidates`() {
+        // Given
+        given(welcomeReader("tophe", "tophe@amory.fr", "Tophe")).willReturn(TOPHE)
+        given(lookupIsbnForReader(TOPHE.id, isbnOf("9782723488525"))).willReturn(
+            IsbnLookup(
+                Found(
+                    ROMANCE_DAWN.copy(coverUrl = "https://x"),
+                    CoverCandidates.of(
+                        listOf(
+                            CoverCandidate(INVENTAIRE, "https://a"),
+                            CoverCandidate(OPEN_LIBRARY, "https://b"),
+                            CoverCandidate(BNF, "https://c"),
+                        ),
+                    ),
+                ),
+                emptyList(),
+            ),
+        )
+
+        // When
+        val body = lookUp("9782723488525")
+
+        // Then
+        body?.get("id") shouldBe null
+        body?.get("covers") shouldBe listOf(
+            mapOf("source" to "inventaire.io", "url" to "https://a"),
+            mapOf("source" to "Open Library", "url" to "https://b"),
+            mapOf("source" to "BnF", "url" to "https://c"),
+        )
+        body?.get("coverUrl") shouldBe "https://a"
     }
 
     private fun lookUp(isbn: String): Map<String, Any>? =

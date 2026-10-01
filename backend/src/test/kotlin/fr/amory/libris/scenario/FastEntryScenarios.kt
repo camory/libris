@@ -57,7 +57,7 @@ class FastEntryScenarios @Autowired constructor(
                   "pageCount": 203,
                   "summary": null,
                   "coverUrl": "$ONE_PIECE_COVER",
-                  "covers": [],
+                  "covers": [{"source": "BnF", "url": "$ONE_PIECE_COVER"}],
                   "copies": []
                 }
                 """,

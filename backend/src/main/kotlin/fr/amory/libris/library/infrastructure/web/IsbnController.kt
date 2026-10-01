@@ -7,7 +7,12 @@ import fr.amory.libris.bibliography.application.lookup.EditionLookupResult.Unkno
 import fr.amory.libris.bibliography.domain.ContributionRole
 import fr.amory.libris.bibliography.domain.Kind
 import fr.amory.libris.bibliography.domain.edition.EditionId
+import fr.amory.libris.bibliography.domain.lookup.CoverCandidates
 import fr.amory.libris.bibliography.domain.lookup.EditionPreview
+import fr.amory.libris.bibliography.domain.lookup.Source
+import fr.amory.libris.bibliography.domain.lookup.Source.BNF
+import fr.amory.libris.bibliography.domain.lookup.Source.INVENTAIRE
+import fr.amory.libris.bibliography.domain.lookup.Source.OPEN_LIBRARY
 import fr.amory.libris.library.application.lookup.CopyOnBookshelf
 import fr.amory.libris.library.application.lookup.LookupIsbnForReader
 import fr.amory.libris.library.domain.reader.Reader
@@ -38,6 +43,11 @@ data class IsbnSeriesResponse(
     val volumeNumber: Int?,
 )
 
+data class CoverCandidateResponse(
+    val source: String,
+    val url: String,
+)
+
 data class IsbnResponse(
     val id: String?,
     val isbn13: String,
@@ -53,7 +63,7 @@ data class IsbnResponse(
     val pageCount: Int?,
     val summary: String?,
     val coverUrl: String?,
-    val covers: List<Any>,
+    val covers: List<CoverCandidateResponse>,
     val copies: List<CopyResponse>,
 )
 
@@ -65,7 +75,7 @@ class IsbnController(private val lookupIsbnForReader: LookupIsbnForReader) {
         val lookup = lookupIsbnForReader(reader.id, isbn)
         return when (val result = lookup.answer) {
             is Held -> ResponseEntity.ok(responseOf(result.id, result.preview, lookup.copies))
-            is Found -> ResponseEntity.ok(responseOf(null, result.preview, lookup.copies))
+            is Found -> ResponseEntity.ok(responseOf(result.preview, result.covers, lookup.copies))
             UnknownIsbn -> problem(NOT_FOUND, NOT_FOUND_PROBLEM).asResponse()
             SourcesUnavailable -> problem(SERVICE_UNAVAILABLE, SOURCES_UNAVAILABLE_PROBLEM).asResponse()
         }
@@ -97,6 +107,21 @@ class IsbnController(private val lookupIsbnForReader: LookupIsbnForReader) {
         covers = emptyList(),
         copies = copies.map { responseOf(it) },
     )
+
+    private fun responseOf(
+        preview: EditionPreview,
+        covers: CoverCandidates,
+        copies: List<CopyOnBookshelf>,
+    ): IsbnResponse = responseOf(null, preview, copies).copy(
+        coverUrl = covers.firstOrNull()?.url,
+        covers = covers.map { CoverCandidateResponse(nameOf(it.source), it.url) },
+    )
+
+    private fun nameOf(source: Source): String = when (source) {
+        INVENTAIRE -> "inventaire.io"
+        OPEN_LIBRARY -> "Open Library"
+        BNF -> "BnF"
+    }
 
     private fun responseOf(copy: CopyOnBookshelf): CopyResponse = CopyResponse(
         id = copy.copyId.value.toString(),
