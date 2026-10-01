@@ -43,6 +43,20 @@ class FileCoverStoreTest {
     }
 
     @Test
+    fun `a file of neither format is no cover`() {
+        // Given
+        val store = FileCoverStore(dir)
+        val text = "4b1d0f3a6c8e2a5d7f9b1c3e5a7092b4d6f8e0a1c3b5d7f9e1a2c4b6d8f0a3c5"
+        val riffAlone = "5c2e1a4b7d9f3b6e8a0c2d4f6b81a3c5e7f9d1b2a4c6e8f0b2d3a5c7e9f1b4d6"
+        dir.resolve(text).writeBytes("Luffy rêve de devenir le roi des pirates.".toByteArray())
+        dir.resolve(riffAlone).writeBytes("RIFF".toByteArray())
+
+        // When / Then
+        store.read(CoverName(text)) shouldBe null
+        store.read(CoverName(riffAlone)) shouldBe null
+    }
+
+    @Test
     fun `a name no file carries is no cover`() {
         // Given / When / Then
         FileCoverStore(dir).read(CoverName(NAME)) shouldBe null
