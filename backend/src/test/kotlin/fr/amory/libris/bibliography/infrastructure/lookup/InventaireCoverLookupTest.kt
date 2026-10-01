@@ -105,6 +105,18 @@ class InventaireCoverLookupTest {
     }
 
     @Test
+    fun `an entity whose picture is empty offers none`() {
+        // Given
+        inventaire.knowsWithPictureClaim(ONE_PIECE_1, "")
+
+        // When
+        val candidate = source.lookUp(isbnOf(ONE_PIECE_1))
+
+        // Then
+        candidate.shouldBeNull()
+    }
+
+    @Test
     fun `an inventaire io that fails offers no picture`() {
         // Given
         inventaire.fails()
