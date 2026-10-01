@@ -19,6 +19,7 @@ import fr.amory.libris.bibliography.domain.lookup.Source.INVENTAIRE
 import fr.amory.libris.bibliography.domain.lookup.Source.OPEN_LIBRARY
 import fr.amory.libris.bibliography.fixture.A_PREVIEW
 import fr.amory.libris.bibliography.fixture.CoverLookupAnswering
+import fr.amory.libris.bibliography.fixture.CoverLookupAnsweringAtRendezvous
 import fr.amory.libris.bibliography.fixture.EditionsInMemory
 import fr.amory.libris.bibliography.fixture.LookupAnswering
 import fr.amory.libris.bibliography.fixture.LookupAnsweringAtRendezvous
@@ -157,21 +158,24 @@ class LookupEditionByIsbnTest {
     @Test
     fun `every source is asked at once`() {
         // Given
-        val rendezvous = CyclicBarrier(2)
+        val rendezvous = CyclicBarrier(3)
         val lookupEditionByIsbn = LookupEditionByIsbn(
             EditionsInMemory(),
             listOf(
                 LookupAnsweringAtRendezvous(rendezvous, Known(A_PREVIEW.copy(title = "Romance dawn"))),
                 LookupAnsweringAtRendezvous(rendezvous, Known(A_PREVIEW.copy(pageCount = 207))),
             ),
-            NO_COVER_LOOKUP,
+            CoverLookupAnsweringAtRendezvous(rendezvous, CoverCandidate(INVENTAIRE, "https://inventaire/c")),
         )
 
         // When
         val result = lookupEditionByIsbn(isbnOf("9782723488525"))
 
         // Then
-        result shouldBe Found(A_PREVIEW.copy(title = "Romance dawn", pageCount = 207), NO_COVER)
+        result shouldBe Found(
+            A_PREVIEW.copy(title = "Romance dawn", pageCount = 207),
+            CoverCandidates.of(listOf(CoverCandidate(INVENTAIRE, "https://inventaire/c"))),
+        )
     }
 
     @Test

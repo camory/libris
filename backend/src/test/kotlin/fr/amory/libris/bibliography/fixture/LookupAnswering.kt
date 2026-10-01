@@ -10,6 +10,8 @@ import fr.amory.libris.bibliography.domain.lookup.Source.BNF
 import java.util.concurrent.CyclicBarrier
 import java.util.concurrent.TimeUnit.MILLISECONDS
 
+private const val WAIT_AT_MOST = 2_000L
+
 class LookupAnswering(
     private val answer: ExternalLookupResult,
     override val source: Source = BNF,
@@ -44,8 +46,14 @@ class LookupAnsweringAtRendezvous(
         rendezvous.await(WAIT_AT_MOST, MILLISECONDS)
         return answer
     }
+}
 
-    private companion object {
-        const val WAIT_AT_MOST = 2_000L
+class CoverLookupAnsweringAtRendezvous(
+    private val rendezvous: CyclicBarrier,
+    private val candidate: CoverCandidate?,
+) : ExternalCoverLookup {
+    override fun lookUp(isbn: Isbn): CoverCandidate? {
+        rendezvous.await(WAIT_AT_MOST, MILLISECONDS)
+        return candidate
     }
 }

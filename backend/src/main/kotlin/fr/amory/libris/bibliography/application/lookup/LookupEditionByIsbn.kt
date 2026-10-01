@@ -31,25 +31,27 @@ class LookupEditionByIsbn(
 
     private fun held(edition: Edition): Held? = EditionPreview.of(edition)?.let { Held(edition.id, it) }
 
-    private fun askTheSources(isbn: Isbn): EditionLookupResult {
-        val results = askEveryLookup(isbn)
+    private fun askTheSources(isbn: Isbn): EditionLookupResult =
+        newVirtualThreadPerTaskExecutor().use { executor ->
+            val picture = executor.submit(Callable { coverLookup.lookUp(isbn) })
+            val results = executor.invokeAll(lookups.map { lookup -> Callable { lookup.lookUp(isbn) } })
+                .map { it.get() }
+            answerOf(results, picture.get())
+        }
+
+    private fun answerOf(results: List<ExternalLookupResult>, picture: CoverCandidate?): EditionLookupResult {
         val previews = results.filterIsInstance<Known>().map { it.preview }
         return when {
-            previews.isNotEmpty() -> Found(previews.reduce(EditionPreview::merge), coversOf(results, isbn))
+            previews.isNotEmpty() -> Found(previews.reduce(EditionPreview::merge), coversOf(results, picture))
             results.all { it == Failed } -> SourcesUnavailable
             else -> UnknownIsbn
         }
     }
 
-    private fun coversOf(results: List<ExternalLookupResult>, isbn: Isbn): CoverCandidates =
+    private fun coversOf(results: List<ExternalLookupResult>, picture: CoverCandidate?): CoverCandidates =
         CoverCandidates.of(
-            listOfNotNull(coverLookup.lookUp(isbn)) + lookups.zip(results).mapNotNull { (lookup, result) ->
+            listOfNotNull(picture) + lookups.zip(results).mapNotNull { (lookup, result) ->
                 (result as? Known)?.preview?.coverUrl?.let { CoverCandidate(lookup.source, it) }
             },
         )
-
-    private fun askEveryLookup(isbn: Isbn): List<ExternalLookupResult> =
-        newVirtualThreadPerTaskExecutor().use { executor ->
-            executor.invokeAll(lookups.map { lookup -> Callable { lookup.lookUp(isbn) } }).map { it.get() }
-        }
 }
