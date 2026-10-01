@@ -29,6 +29,20 @@ class FileCoverStoreTest {
     }
 
     @Test
+    fun `a file with RIFF at zero and WEBP at eight is a WebP cover`() {
+        // Given
+        val bytes = recordedBytes("covers/small.webp")
+        dir.resolve(NAME).writeBytes(bytes)
+
+        // When
+        val cover = FileCoverStore(dir).read(CoverName(NAME))
+
+        // Then
+        cover?.mediaType shouldBe "image/webp"
+        cover?.bytes shouldBe bytes
+    }
+
+    @Test
     fun `a name no file carries is no cover`() {
         // Given / When / Then
         FileCoverStore(dir).read(CoverName(NAME)) shouldBe null

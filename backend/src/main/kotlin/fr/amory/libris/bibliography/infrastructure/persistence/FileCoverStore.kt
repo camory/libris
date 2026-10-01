@@ -15,6 +15,7 @@ class FileCoverStore(private val dir: Path) : CoverStore {
 
     private fun mediaTypeOf(bytes: ByteArray): String? = when {
         bytes.holdsAt(0, JPEG_START) -> "image/jpeg"
+        bytes.holdsAt(0, RIFF) && bytes.holdsAt(WEBP_OFFSET, WEBP) -> "image/webp"
         else -> null
     }
 
@@ -23,5 +24,8 @@ class FileCoverStore(private val dir: Path) : CoverStore {
 
     private companion object {
         val JPEG_START = byteArrayOf(0xFF.toByte(), 0xD8.toByte(), 0xFF.toByte())
+        val RIFF = "RIFF".toByteArray()
+        val WEBP = "WEBP".toByteArray()
+        const val WEBP_OFFSET = 8
     }
 }
