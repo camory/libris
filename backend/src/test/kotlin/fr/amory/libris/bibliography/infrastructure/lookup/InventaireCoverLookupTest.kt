@@ -39,6 +39,22 @@ class InventaireCoverLookupTest {
         )
     }
 
+    @Test
+    fun `looking up an ISBN asks for its entity alone, never for the picture`() {
+        // Given
+        inventaire.knows(ONE_PIECE_1, SMALL_WEBP)
+
+        // When
+        source.lookUp(isbnOf(ONE_PIECE_1))
+
+        // Then
+        val request = server.allServeEvents.map { it.request }.single()
+        request.url.substringBefore("?") shouldBe "/api/entities"
+        request.queryParameter("action").values() shouldBe listOf("by-uris")
+        request.queryParameter("uris").values() shouldBe listOf("isbn:$ONE_PIECE_1")
+        inventaire.pictureRequests() shouldBe 0
+    }
+
     private companion object {
         const val ONE_PIECE_1 = "9782723488525"
         val SMALL_WEBP = recordedBytes("covers/small.webp")
