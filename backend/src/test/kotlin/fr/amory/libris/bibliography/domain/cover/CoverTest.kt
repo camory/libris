@@ -24,4 +24,11 @@ class CoverTest {
         cover?.mediaType shouldBe "image/png"
         cover?.bytes shouldBe bytes
     }
+
+    @Test
+    fun `a picture and a media type that is not an image are no cover`() {
+        // Given / When / Then
+        Cover.of("text/html", byteArrayOf(1, 2, 3)) shouldBe null
+        Cover.of("jpeg", byteArrayOf(1, 2, 3)) shouldBe null
+    }
 }

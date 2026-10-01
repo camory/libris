@@ -2,10 +2,13 @@ package fr.amory.libris.bibliography.domain.cover
 
 class Cover(val mediaType: String, val bytes: ByteArray) {
     init {
-        require(mediaType.startsWith("image/")) { "a cover's media type is an image" }
+        require(isImage(mediaType)) { "a cover's media type is an image" }
     }
 
     companion object {
-        fun of(mediaType: String, bytes: ByteArray): Cover? = Cover(mediaType, bytes)
+        fun of(mediaType: String, bytes: ByteArray): Cover? =
+            mediaType.takeIf { isImage(it) }?.let { Cover(it, bytes) }
+
+        private fun isImage(mediaType: String): Boolean = mediaType.startsWith("image/")
     }
 }
