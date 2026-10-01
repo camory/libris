@@ -212,8 +212,9 @@ true; the diary keeps the date it was found.
   `LIBRIS_COVERS_DIR` (`libris.covers.directory: ${LIBRIS_COVERS_DIR:}`);
   its media type is the text of the file `<name>.type` beside it, and a
   picture without one is no cover. Nothing reads a format from the bytes;
-  `Cover` refuses a media type that is not `image/…`. `ScenarioTest` gives the variable a
-  temporary directory, `LibrisApplicationTest` its own property. A Mockito
+  `Cover` refuses a media type that is not `image/…`. `ScenarioTest` gives
+  the variable a temporary directory, `LibrisApplicationTest` its own
+  property. A Mockito
   matcher on a `CoverName` argument takes a valid fallback, since the
   constructor checks it: `findCover(CoverName(any() ?: NO_COVER))`.
 - The binder keeps an unresolved `${VAR}` as its literal text: a setting
