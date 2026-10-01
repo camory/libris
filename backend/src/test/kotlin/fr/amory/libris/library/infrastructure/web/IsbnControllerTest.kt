@@ -123,6 +123,22 @@ class IsbnControllerTest @Autowired constructor(
         body?.get("coverUrl") shouldBe "https://a"
     }
 
+    @Test
+    fun `an edition the sources know without a candidate is answered without a cover`() {
+        // Given
+        given(welcomeReader("tophe", "tophe@amory.fr", "Tophe")).willReturn(TOPHE)
+        given(lookupIsbnForReader(TOPHE.id, isbnOf("9782723488525"))).willReturn(
+            IsbnLookup(Found(ROMANCE_DAWN.copy(coverUrl = "https://x"), CoverCandidates.of(emptyList())), emptyList()),
+        )
+
+        // When
+        val body = lookUp("9782723488525")
+
+        // Then
+        body?.get("covers") shouldBe emptyList<Any>()
+        body?.get("coverUrl") shouldBe null
+    }
+
     private fun lookUp(isbn: String): Map<String, Any>? =
         client.get()
             .uri("/api/v1/isbn/{isbn}", isbn)
