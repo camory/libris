@@ -339,3 +339,64 @@ Format:
 - Left over: the `Dockerfile` must create the covers directory for the
   `libris` user before T053 writes (in `PROPOSED.md`); `Edition.coverUrl` and
   `cover_url` stay, read by the held lookup and by T057.
+
+## 2026-10-01 — T052 Backend: the lookup offers the sources' covers — done
+- Did: for an ISBN the house lacks, `LookupEditionByIsbn` asks inventaire.io
+  (new `ExternalCoverLookup` port, `InventaireCoverLookup` at `100x600`) at
+  once with the edition sources and answers `Found(preview, covers)`, the
+  candidates in the order inventaire.io, Open Library, BnF; `/isbn` answers
+  them as `covers` `{source, url}`, `coverUrl` the first; *S1* un-skipped.
+- Decided: `Source` carries `coverOrder`; `CoverCandidates` sorts by it. A
+  picture alone, no edition source knowing the ISBN, is an unknown ISBN. The
+  house's edition asks no source, the cover lookup included.
+- Decided: guards proven by mutation and reverted: a source without a cover
+  (`coverUrl.orEmpty()`), the held edition asking no cover (cover lookup
+  before the house), a picture alone (`Found` on an empty preview), no
+  candidate means no cover (`?: preview.coverUrl`).
+- Deviations from the brief: step 8 could not add the unused port parameter
+  (detekt `UnusedPrivateProperty`), so the port and its wiring came at step
+  9. Steps 4 and 5 were green on arrival; their mutations were run.
+  `FastEntryScenarios` *S1* gained the BnF entry in `covers`, as allowed.
+  *S1* met the edition *S10* had added (JUnit ran *S10* first): `FreshSchema`
+  now cleans before each case, not each class, and `FreshSources` resets the
+  stubs and journal before each case. `LibrisApplicationTest`'s defaults
+  gained `inventaireUrl`.
+- Left over (in `PROPOSED.md`): the previews' merge still orders by the
+  declaration order of `Source`; the contract's `ONE_PIECE_1` offers
+  inventaire.io at `480x600`; a possible cold-start `503` of
+  `BookshelfScenarios` *S2* under the 1 s scenario timeout. D02 amendment
+  naming the inventaire.io client and the cover port proposed in the PR.
+
+## 2026-10-01 — T052 Backend: the lookup offers the sources' covers — reworked
+- Did: `InventaireCoverLookup` catches `JsonNodeException` and takes the
+  hash only from a non-blank text node, three new cases (an object, `null`
+  and `""` as the claim); `Source` carries its name as `label`, read by
+  `IsbnController`; the two candidate cases of `IsbnControllerTest` are gone.
+- Decided, by the reviewer's verdict: an unreadable answer from inventaire.io
+  offers no candidate, as a failure does, and a null or empty claim offers
+  none rather than an address ending in an empty hash.
+- Decided, by Tophe's review: the names handed out live on `Source`
+  (`label`), not in the controller; *S1* and `FastEntryScenarios` *S1* are
+  their proof, and renaming `INVENTAIRE`'s label to `Inventaire` reds *S1*
+  (`expected:<["inventaire.io", …]> but was:<["Inventaire", …]>`), checked
+  and reverted. The controller's two candidate cases repeated *S1* or fed it
+  a state the use case cannot produce; removed. `INVENTAIRE` stays in
+  `Source`; the D07 wording (schema cleaned before each case) is proposed in
+  the PR body beside the D02 amendment.
+- Deviations from the brief: none beyond the reviews.
+- Left over (in `PROPOSED.md`): whether the cover sources get a type of
+  their own beside `Source`, to discuss with Tophe before T053.
+
+## 2026-10-02 — T052 Backend: the lookup offers the sources' covers — reshaped with Tophe
+- Did: the ports are `EditionLookup` and `CoverLookup`, a source's answer
+  `EditionSourceAnswer`; `Source` is split into `EditionSource` (`precedence`,
+  the merge's order) and `CoverSource` (`label`, `order`); `Known` carries
+  the source's own `CoverCandidate`, and `EditionPreview` loses `coverUrl`.
+- Decided, by Tophe: two result types stay, one source's answer and the
+  house's; the cover is not a field of the card, so each edition source
+  answers its candidate beside its preview and the BnF's `coverOf` builds it.
+- Changed on the way: a held edition's lookup answers `coverUrl` `null`
+  whatever its stored `cover_url`, until T055 offers the stored cover.
+- Left over: `Edition.coverUrl` and its column, null on every add since
+  T051, for T053; `docs/ARCHITECTURE.md` D10 still names
+  `ExternalEditionLookup.lookUp`, the wording is proposed in the PR body.

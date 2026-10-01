@@ -191,7 +191,7 @@ catalogue rows show a cover only once the worker has stored it (Tophe,
       un-skips the backend tests *S5 …, an address naming no cover* and *S10
       …, not yet stored*.
 
-- [ ] T052 Backend: the lookup offers the sources' covers.
+- [x] T052 Backend: the lookup offers the sources' covers.
       For an ISBN the house lacks, the bibliography answers the candidates
       `{source, url}` in the order inventaire.io, Open Library, BnF, a source
       with no record or no picture absent; `coverUrl` is the first `url` or

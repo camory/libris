@@ -34,7 +34,7 @@ annotation class ScenarioTest
 
 class FreshSources : BeforeEachCallback {
     override fun beforeEach(context: ExtensionContext) {
-        getApplicationContext(context).getBeansOfType(WireMockServer::class.java).values.forEach { it.resetRequests() }
+        getApplicationContext(context).getBeansOfType(WireMockServer::class.java).values.forEach { it.resetAll() }
     }
 }
 

@@ -47,7 +47,6 @@ class CoversScenarios @Autowired constructor(
     private val sources = listOf(bnfServer, openLibraryServer, inventaireServer)
 
     @Test
-    @Disabled("covers")
     fun `S1 The lookup offers the sources' covers`() {
         // Given
         val lea = reader("lea", "Léa")

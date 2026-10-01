@@ -9,11 +9,13 @@ import fr.amory.libris.bibliography.domain.Contributions
 import fr.amory.libris.bibliography.domain.Kind.MANGA
 import fr.amory.libris.bibliography.domain.edition.Edition
 import fr.amory.libris.bibliography.domain.edition.EditionId
-import fr.amory.libris.bibliography.domain.lookup.ExternalEditionLookup
-import fr.amory.libris.bibliography.domain.lookup.ExternalLookupResult.Failed
-import fr.amory.libris.bibliography.domain.lookup.ExternalLookupResult.Known
-import fr.amory.libris.bibliography.domain.lookup.ExternalLookupResult.NothingKnown
+import fr.amory.libris.bibliography.domain.lookup.CoverCandidates
+import fr.amory.libris.bibliography.domain.lookup.EditionLookup
+import fr.amory.libris.bibliography.domain.lookup.EditionSourceAnswer.Failed
+import fr.amory.libris.bibliography.domain.lookup.EditionSourceAnswer.Known
+import fr.amory.libris.bibliography.domain.lookup.EditionSourceAnswer.NothingKnown
 import fr.amory.libris.bibliography.fixture.A_PREVIEW
+import fr.amory.libris.bibliography.fixture.CoverLookupAnswering
 import fr.amory.libris.bibliography.fixture.EditionsInMemory
 import fr.amory.libris.bibliography.fixture.LookupAnswering
 import fr.amory.libris.bibliography.fixture.isbnOf
@@ -58,13 +60,16 @@ class LookupIsbnForReaderTest {
     @Test
     fun `an ISBN the house lacks is answered by the sources, with no copy`() {
         // Given
-        val lookupIsbnForReader = lookupAsking(LookupAnswering(Known(A_PREVIEW.copy(title = "Romance dawn"))))
+        val lookupIsbnForReader = lookupAsking(LookupAnswering(Known(A_PREVIEW.copy(title = "Romance dawn"), null)))
 
         // When
         val result = lookupIsbnForReader(lea, isbnOf(ONE_PIECE))
 
         // Then
-        result shouldBe IsbnLookup(Found(A_PREVIEW.copy(title = "Romance dawn")), emptyList())
+        result shouldBe IsbnLookup(
+            Found(A_PREVIEW.copy(title = "Romance dawn"), CoverCandidates.of(emptyList())),
+            emptyList(),
+        )
     }
 
     @Test
@@ -133,7 +138,11 @@ class LookupIsbnForReaderTest {
         Copy(CopyId.new(), edition.id, bookshelf.id).also { copies.insert(it) }
 
     private fun lookupAsking(
-        vararg sources: ExternalEditionLookup,
+        vararg sources: EditionLookup,
         house: EditionsInMemory = EditionsInMemory(),
-    ): LookupIsbnForReader = LookupIsbnForReader(LookupEditionByIsbn(house, sources.toList()), copies, bookshelves)
+    ): LookupIsbnForReader = LookupIsbnForReader(
+        LookupEditionByIsbn(house, sources.toList(), CoverLookupAnswering(null)),
+        copies,
+        bookshelves,
+    )
 }

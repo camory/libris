@@ -8,18 +8,24 @@ import fr.amory.libris.bibliography.domain.Contributions
 import fr.amory.libris.bibliography.domain.Kind.MANGA
 import fr.amory.libris.bibliography.domain.edition.Edition
 import fr.amory.libris.bibliography.domain.edition.EditionId
+import fr.amory.libris.bibliography.domain.lookup.CoverCandidate
+import fr.amory.libris.bibliography.domain.lookup.CoverCandidates
+import fr.amory.libris.bibliography.domain.lookup.CoverSource
+import fr.amory.libris.bibliography.domain.lookup.CoverSource.INVENTAIRE
 import fr.amory.libris.bibliography.domain.lookup.EditionPreview
-import fr.amory.libris.bibliography.domain.lookup.ExternalLookupResult.Failed
-import fr.amory.libris.bibliography.domain.lookup.ExternalLookupResult.Known
-import fr.amory.libris.bibliography.domain.lookup.ExternalLookupResult.NothingKnown
-import fr.amory.libris.bibliography.domain.lookup.Source.BNF
-import fr.amory.libris.bibliography.domain.lookup.Source.OPEN_LIBRARY
+import fr.amory.libris.bibliography.domain.lookup.EditionSource
+import fr.amory.libris.bibliography.domain.lookup.EditionSourceAnswer.Failed
+import fr.amory.libris.bibliography.domain.lookup.EditionSourceAnswer.Known
+import fr.amory.libris.bibliography.domain.lookup.EditionSourceAnswer.NothingKnown
 import fr.amory.libris.bibliography.fixture.A_PREVIEW
+import fr.amory.libris.bibliography.fixture.CoverLookupAnswering
+import fr.amory.libris.bibliography.fixture.CoverLookupAnsweringAtRendezvous
 import fr.amory.libris.bibliography.fixture.EditionsInMemory
 import fr.amory.libris.bibliography.fixture.LookupAnswering
 import fr.amory.libris.bibliography.fixture.LookupAnsweringAtRendezvous
 import fr.amory.libris.bibliography.fixture.isbnOf
 import io.kotest.matchers.shouldBe
+import io.kotest.matchers.types.shouldBeInstanceOf
 import org.junit.jupiter.api.Test
 import java.util.concurrent.CyclicBarrier
 
@@ -40,14 +46,18 @@ private val ROMANCE_DAWN = Edition(
     coverUrl = null,
 )
 
+private val NO_COVER = CoverCandidates.of(emptyList())
+
 class LookupEditionByIsbnTest {
     @Test
     fun `an ISBN the house holds is answered as the house holds it, without asking the sources`() {
         // Given
-        val source = LookupAnswering(Known(A_PREVIEW.copy(title = "Un titre venu d'une source")))
+        val source = LookupAnswering(Known(A_PREVIEW.copy(title = "Un titre venu d'une source"), null))
+        val coverLookup = CoverLookupAnswering(CoverCandidate(INVENTAIRE, "https://inventaire/c"))
         val lookupEditionByIsbn = LookupEditionByIsbn(
             EditionsInMemory().also { it.insert(ROMANCE_DAWN) },
             listOf(source),
+            coverLookup,
         )
 
         // When
@@ -56,6 +66,7 @@ class LookupEditionByIsbnTest {
         // Then
         result shouldBe Held(ROMANCE_DAWN.id, checkNotNull(EditionPreview.of(ROMANCE_DAWN)))
         source.asked shouldBe emptyList()
+        coverLookup.asked shouldBe emptyList()
     }
 
     @Test
@@ -64,16 +75,20 @@ class LookupEditionByIsbnTest {
         val lookupEditionByIsbn = LookupEditionByIsbn(
             EditionsInMemory(),
             listOf(
-                LookupAnswering(Known(A_PREVIEW.copy(title = "Tome 01", pageCount = 207)), OPEN_LIBRARY),
-                LookupAnswering(Known(A_PREVIEW.copy(title = "Romance dawn")), BNF),
+                LookupAnswering(
+                    Known(A_PREVIEW.copy(title = "Tome 01", pageCount = 207), null),
+                    EditionSource.OPEN_LIBRARY,
+                ),
+                LookupAnswering(Known(A_PREVIEW.copy(title = "Romance dawn"), null), EditionSource.BNF),
             ),
+            NO_COVER_LOOKUP,
         )
 
         // When
         val result = lookupEditionByIsbn(isbnOf("9782723488525"))
 
         // Then
-        result shouldBe Found(A_PREVIEW.copy(title = "Romance dawn", pageCount = 207))
+        result shouldBe Found(A_PREVIEW.copy(title = "Romance dawn", pageCount = 207), NO_COVER)
     }
 
     @Test
@@ -83,15 +98,16 @@ class LookupEditionByIsbnTest {
             EditionsInMemory(),
             listOf(
                 LookupAnswering(Failed),
-                LookupAnswering(Known(A_PREVIEW.copy(title = "Romance dawn"))),
+                LookupAnswering(Known(A_PREVIEW.copy(title = "Romance dawn"), null)),
             ),
+            NO_COVER_LOOKUP,
         )
 
         // When
         val result = lookupEditionByIsbn(isbnOf("9782723488525"))
 
         // Then
-        result shouldBe Found(A_PREVIEW.copy(title = "Romance dawn"))
+        result shouldBe Found(A_PREVIEW.copy(title = "Romance dawn"), NO_COVER)
     }
 
     @Test
@@ -100,6 +116,7 @@ class LookupEditionByIsbnTest {
         val lookupEditionByIsbn = LookupEditionByIsbn(
             EditionsInMemory(),
             listOf(LookupAnswering(NothingKnown), LookupAnswering(NothingKnown)),
+            NO_COVER_LOOKUP,
         )
 
         // When
@@ -115,6 +132,7 @@ class LookupEditionByIsbnTest {
         val lookupEditionByIsbn = LookupEditionByIsbn(
             EditionsInMemory(),
             listOf(LookupAnswering(Failed), LookupAnswering(Failed)),
+            NO_COVER_LOOKUP,
         )
 
         // When
@@ -130,6 +148,7 @@ class LookupEditionByIsbnTest {
         val lookupEditionByIsbn = LookupEditionByIsbn(
             EditionsInMemory(),
             listOf(LookupAnswering(Failed), LookupAnswering(NothingKnown)),
+            NO_COVER_LOOKUP,
         )
 
         // When
@@ -142,19 +161,118 @@ class LookupEditionByIsbnTest {
     @Test
     fun `every source is asked at once`() {
         // Given
-        val rendezvous = CyclicBarrier(2)
+        val rendezvous = CyclicBarrier(3)
         val lookupEditionByIsbn = LookupEditionByIsbn(
             EditionsInMemory(),
             listOf(
-                LookupAnsweringAtRendezvous(rendezvous, Known(A_PREVIEW.copy(title = "Romance dawn"))),
-                LookupAnsweringAtRendezvous(rendezvous, Known(A_PREVIEW.copy(pageCount = 207))),
+                LookupAnsweringAtRendezvous(rendezvous, Known(A_PREVIEW.copy(title = "Romance dawn"), null)),
+                LookupAnsweringAtRendezvous(rendezvous, Known(A_PREVIEW.copy(pageCount = 207), null)),
             ),
+            CoverLookupAnsweringAtRendezvous(rendezvous, CoverCandidate(INVENTAIRE, "https://inventaire/c")),
         )
 
         // When
         val result = lookupEditionByIsbn(isbnOf("9782723488525"))
 
         // Then
-        result shouldBe Found(A_PREVIEW.copy(title = "Romance dawn", pageCount = 207))
+        result shouldBe Found(
+            A_PREVIEW.copy(title = "Romance dawn", pageCount = 207),
+            CoverCandidates.of(listOf(CoverCandidate(INVENTAIRE, "https://inventaire/c"))),
+        )
+    }
+
+    @Test
+    fun `the edition sources offer their covers in the house's order, whatever the order they were given`() {
+        // Given
+        val lookupEditionByIsbn = LookupEditionByIsbn(
+            EditionsInMemory(),
+            listOf(
+                LookupAnswering(Known(A_PREVIEW, CoverCandidate(CoverSource.BNF, "https://bnf/b")), EditionSource.BNF),
+                LookupAnswering(
+                    Known(A_PREVIEW, CoverCandidate(CoverSource.OPEN_LIBRARY, "https://openlibrary/a")),
+                    EditionSource.OPEN_LIBRARY,
+                ),
+            ),
+            NO_COVER_LOOKUP,
+        )
+
+        // When
+        val result = lookupEditionByIsbn(isbnOf("9782723488525"))
+
+        // Then
+        result.shouldBeInstanceOf<Found>().covers.toList() shouldBe listOf(
+            CoverCandidate(CoverSource.OPEN_LIBRARY, "https://openlibrary/a"),
+            CoverCandidate(CoverSource.BNF, "https://bnf/b"),
+        )
+    }
+
+    @Test
+    fun `inventaire io's picture comes before the edition sources' covers`() {
+        // Given
+        val lookupEditionByIsbn = LookupEditionByIsbn(
+            EditionsInMemory(),
+            listOf(
+                LookupAnswering(Known(A_PREVIEW, CoverCandidate(CoverSource.BNF, "https://bnf/b")), EditionSource.BNF),
+                LookupAnswering(
+                    Known(A_PREVIEW, CoverCandidate(CoverSource.OPEN_LIBRARY, "https://openlibrary/a")),
+                    EditionSource.OPEN_LIBRARY,
+                ),
+            ),
+            CoverLookupAnswering(CoverCandidate(INVENTAIRE, "https://inventaire/c")),
+        )
+
+        // When
+        val result = lookupEditionByIsbn(isbnOf("9782723488525"))
+
+        // Then
+        result.shouldBeInstanceOf<Found>().covers.toList() shouldBe listOf(
+            CoverCandidate(INVENTAIRE, "https://inventaire/c"),
+            CoverCandidate(CoverSource.OPEN_LIBRARY, "https://openlibrary/a"),
+            CoverCandidate(CoverSource.BNF, "https://bnf/b"),
+        )
+    }
+
+    @Test
+    fun `a source that knows the edition without a cover offers no candidate`() {
+        // Given
+        val lookupEditionByIsbn = LookupEditionByIsbn(
+            EditionsInMemory(),
+            listOf(
+                LookupAnswering(Known(A_PREVIEW, null), EditionSource.BNF),
+                LookupAnswering(
+                    Known(A_PREVIEW, CoverCandidate(CoverSource.OPEN_LIBRARY, "https://openlibrary/a")),
+                    EditionSource.OPEN_LIBRARY,
+                ),
+            ),
+            NO_COVER_LOOKUP,
+        )
+
+        // When
+        val result = lookupEditionByIsbn(isbnOf("9782723488525"))
+
+        // Then
+        result.shouldBeInstanceOf<Found>().covers.toList() shouldBe listOf(
+            CoverCandidate(CoverSource.OPEN_LIBRARY, "https://openlibrary/a"),
+        )
+    }
+
+    @Test
+    fun `a picture alone, without an edition source that knows the ISBN, is an unknown ISBN`() {
+        // Given
+        val lookupEditionByIsbn = LookupEditionByIsbn(
+            EditionsInMemory(),
+            listOf(LookupAnswering(NothingKnown), LookupAnswering(NothingKnown)),
+            CoverLookupAnswering(CoverCandidate(INVENTAIRE, "https://inventaire/c")),
+        )
+
+        // When
+        val result = lookupEditionByIsbn(isbnOf("9782723488525"))
+
+        // Then
+        result shouldBe UnknownIsbn
+    }
+
+    private companion object {
+        val NO_COVER_LOOKUP get() = CoverLookupAnswering(null)
     }
 }

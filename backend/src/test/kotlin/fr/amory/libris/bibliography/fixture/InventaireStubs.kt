@@ -26,6 +26,24 @@ class InventaireStubs(private val server: WireMockServer) {
         server.stubFor(get(urlPathMatching(picturePath(hashOf(entity)))).willReturn(ok().withFixedDelay(NEVER)))
     }
 
+    fun knowsWithoutPicture(isbn: String) {
+        val entity = JsonPath.parse(recorded("inventaire/$isbn.json")).delete("$..claims['invp:P2']")
+        entityAnswers(isbn, entity.jsonString())
+    }
+
+    fun knowsWithPictureClaim(isbn: String, claim: Any?) {
+        val entity = JsonPath.parse(recorded("inventaire/$isbn.json")).set("$..claims['invp:P2'][0]", claim)
+        entityAnswers(isbn, entity.jsonString())
+    }
+
+    fun answersTooLate(isbn: String) {
+        server.stubFor(
+            get(urlPathEqualTo(ENTITIES))
+                .withQueryParam("uris", equalTo("isbn:$isbn"))
+                .willReturn(json(recorded("inventaire/$isbn.json")).withFixedDelay(LATE)),
+        )
+    }
+
     fun doesNotKnow(isbn: String) = entityAnswers(isbn, recorded("inventaire/$isbn.json"))
 
     fun fails() {
@@ -57,5 +75,6 @@ class InventaireStubs(private val server: WireMockServer) {
     private companion object {
         const val ENTITIES = "/api/entities"
         const val NEVER = 30_000
+        const val LATE = 2_000
     }
 }

@@ -12,13 +12,15 @@ import fr.amory.libris.bibliography.domain.Kind.BD
 import fr.amory.libris.bibliography.domain.Kind.BOOK
 import fr.amory.libris.bibliography.domain.Kind.MANGA
 import fr.amory.libris.bibliography.domain.SeriesEntry
+import fr.amory.libris.bibliography.domain.lookup.CoverCandidate
+import fr.amory.libris.bibliography.domain.lookup.CoverSource
+import fr.amory.libris.bibliography.domain.lookup.EditionLookup
 import fr.amory.libris.bibliography.domain.lookup.EditionPreview
-import fr.amory.libris.bibliography.domain.lookup.ExternalEditionLookup
-import fr.amory.libris.bibliography.domain.lookup.ExternalLookupResult
-import fr.amory.libris.bibliography.domain.lookup.ExternalLookupResult.Failed
-import fr.amory.libris.bibliography.domain.lookup.ExternalLookupResult.Known
-import fr.amory.libris.bibliography.domain.lookup.ExternalLookupResult.NothingKnown
-import fr.amory.libris.bibliography.domain.lookup.Source.BNF
+import fr.amory.libris.bibliography.domain.lookup.EditionSource
+import fr.amory.libris.bibliography.domain.lookup.EditionSourceAnswer
+import fr.amory.libris.bibliography.domain.lookup.EditionSourceAnswer.Failed
+import fr.amory.libris.bibliography.domain.lookup.EditionSourceAnswer.Known
+import fr.amory.libris.bibliography.domain.lookup.EditionSourceAnswer.NothingKnown
 import org.springframework.web.client.RestClientException
 import org.w3c.dom.Element
 import org.xml.sax.InputSource
@@ -64,15 +66,15 @@ internal fun tomeOf(partNumber: String?): Int? =
 internal fun pageCountOf(extent: String?): Int? =
     PAGES.find(extent.orEmpty())?.groupValues?.get(1)?.toIntOrNull()
 
-internal fun coverUrlOf(controlField: String?): String? =
+internal fun coverOf(controlField: String?): CoverCandidate? =
     controlField?.indexOf(ARK)?.takeIf { it >= 0 }
-        ?.let { COVER_BEFORE + controlField.substring(it) + COVER_AFTER }
+        ?.let { CoverCandidate(CoverSource.BNF, COVER_BEFORE + controlField.substring(it) + COVER_AFTER) }
 
-class BnfEditionLookup(baseUrl: String, timeout: Duration) : ExternalEditionLookup {
-    override val source = BNF
+class BnfEditionLookup(baseUrl: String, timeout: Duration) : EditionLookup {
+    override val source = EditionSource.BNF
     private val http = sourceRestClient(baseUrl, timeout)
 
-    override fun lookUp(isbn: Isbn): ExternalLookupResult =
+    override fun lookUp(isbn: Isbn): EditionSourceAnswer =
         try {
             answerFor(isbn)
         } catch (ignored: RestClientException) {
@@ -81,11 +83,11 @@ class BnfEditionLookup(baseUrl: String, timeout: Duration) : ExternalEditionLook
             Failed
         }
 
-    private fun answerFor(isbn: Isbn): ExternalLookupResult =
+    private fun answerFor(isbn: Isbn): EditionSourceAnswer =
         recordIn(search(isbn))?.let { answerFrom(isbn, it) } ?: NothingKnown
 
-    private fun answerFrom(isbn: Isbn, record: UnimarcRecord): ExternalLookupResult =
-        record.value("200", "a")?.let { Known(previewOf(isbn, it, record)) } ?: Failed
+    private fun answerFrom(isbn: Isbn, record: UnimarcRecord): EditionSourceAnswer =
+        record.value("200", "a")?.let { Known(previewOf(isbn, it, record), coverOf(record.control("003"))) } ?: Failed
 
     private fun previewOf(isbn: Isbn, title: String, record: UnimarcRecord): EditionPreview {
         val publication = publicationOf(record)
@@ -102,7 +104,6 @@ class BnfEditionLookup(baseUrl: String, timeout: Duration) : ExternalEditionLook
             language = LANGUAGES[record.value("101", "a")],
             pageCount = pageCountOf(record.value("215", "a")),
             summary = null,
-            coverUrl = coverUrlOf(record.control("003")),
         )
     }
 
