@@ -187,7 +187,8 @@ class ApiContractTest @Autowired constructor(
             .willReturn(NotAnOwner)
         given(browseCatalogue(ReaderId(eq(contracteer.id.value) ?: contracteer.id.value), any()))
             .willReturn(CataloguePage(listOf(ONE_PIECE_1_HELD), null))
-        given(findCover(CoverName(any() ?: NO_COVER))).willReturn(Cover.of(recordedBytes("covers/tall.jpg")))
+        given(findCover(CoverName(any() ?: NO_COVER)))
+            .willReturn(Cover("image/jpeg", recordedBytes("covers/tall.jpg")))
         given(findCover(CoverName(eq(NO_COVER) ?: NO_COVER))).willReturn(null)
     }
 

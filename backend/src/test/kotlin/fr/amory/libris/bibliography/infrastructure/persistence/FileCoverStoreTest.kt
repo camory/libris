@@ -1,6 +1,5 @@
 package fr.amory.libris.bibliography.infrastructure.persistence
 
-import fr.amory.libris.bibliography.domain.cover.CoverFormat
 import fr.amory.libris.bibliography.domain.cover.CoverName
 import fr.amory.libris.bibliography.fixture.recordedBytes
 import io.kotest.matchers.shouldBe
@@ -16,7 +15,7 @@ class FileCoverStoreTest {
     lateinit var dir: Path
 
     @Test
-    fun `the file named by the name is the cover`() {
+    fun `the file named by the name is the cover, a JPEG by its first bytes`() {
         // Given
         val bytes = recordedBytes("covers/tall.jpg")
         dir.resolve(NAME).writeBytes(bytes)
@@ -25,7 +24,7 @@ class FileCoverStoreTest {
         val cover = FileCoverStore(dir).read(CoverName(NAME))
 
         // Then
-        cover?.format shouldBe CoverFormat.JPEG
+        cover?.mediaType shouldBe "image/jpeg"
         cover?.bytes shouldBe bytes
     }
 

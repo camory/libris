@@ -53,7 +53,7 @@ class CoverControllerTest @Autowired constructor(
         // Given
         val bytes = recordedBytes("covers/tall.jpg")
         given(welcomeReader("tophe", "tophe@amory.fr", "Tophe")).willReturn(TOPHE)
-        given(findCover(CoverName(NAME))).willReturn(Cover.of(bytes))
+        given(findCover(CoverName(NAME))).willReturn(Cover("image/jpeg", bytes))
 
         // When
         val body = coverAt(NAME)
@@ -72,7 +72,7 @@ class CoverControllerTest @Autowired constructor(
         // Given
         val bytes = recordedBytes("covers/small.webp")
         given(welcomeReader("tophe", "tophe@amory.fr", "Tophe")).willReturn(TOPHE)
-        given(findCover(CoverName(NAME))).willReturn(Cover.of(bytes))
+        given(findCover(CoverName(NAME))).willReturn(Cover("image/webp", bytes))
 
         // When
         val body = coverAt(NAME)
