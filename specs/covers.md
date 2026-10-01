@@ -87,15 +87,16 @@ Given a stored cover
 
 When the screen asks for its address
 
-Then Libris answers the picture, JPEG or WebP as stored
+Then Libris answers the picture, in the format it was stored in
 	And says it may be kept for a year, since a name never changes its
 	    picture
 ```
 
-An address naming no cover is not found. Proof: the cover operation verified
-by Contracteer on the backend, any image for a well-formed name; backend
-scenario test over HTTP for the format by the stored file, the headers and
-the not-found.
+A text that is not a cover name is refused; a well-formed name no stored
+cover bears is not found. Proof: the cover operation verified by Contracteer
+on the backend, any image for a well-formed name, the refusal of a text that
+is not one; backend scenario test over HTTP for the media type saved beside
+the picture, in `<name>.type`, the headers and the not-found.
 
 **S6 The picture is normalised** · backend
 
@@ -242,7 +243,7 @@ catalogue specs.
 
 ## Contract
 
-Release `v0.8.0` of `camory/libris-api`, after the catalogue's `v0.7.0`.
+Release `v0.8.2` of `camory/libris-api`, after the catalogue's `v0.7.0`.
 One field leaves the shared schema, each composition gains its own, one
 operation is new; the lookup keeps its old field until the frontend reads
 the new one, so each side deploys alone.
@@ -268,10 +269,13 @@ the new one, so each side deploys alone.
 - `Book` gains `coverUrl`, nullable: the relative address of the cover
   operation, null while no picture is stored.
 - `GET /api/v1/covers/{name}`, `name` the picture's hash in hexadecimal, a
-  `pattern` on the parameter → `200`, the body binary, `image/*`, JPEG or
-  WebP as stored, with `Cache-Control: public, max-age=31536000, immutable`;
-  `404` `Problem` `/problems/not-found`. The `200` case generated, the `404`
-  keyed `404_NO_COVER`.
+  `pattern` on the parameter → `200`, the body binary, `image/*`, the media
+  type the picture was stored with, with
+  `Cache-Control: public, max-age=31536000, immutable`; `400` `Problem`
+  `/problems/validation` for a text that is not a cover name; `404`
+  `Problem` `/problems/not-found` for a well-formed name no stored cover
+  bears. The `200` case generated, the `400` keyed `400_NOT_A_COVER_NAME` on
+  the path example `ABC`, the `404` keyed `404_NO_COVER`.
 
 Release `v0.9.0`, after the frontend's deploy: `IsbnLookup` loses
 `coverUrl`. Nothing else changes.
@@ -298,7 +302,7 @@ show their covers, save those no source has a picture for.
 
 ## Tasks
 
-- T051 — S5 not found, S10 not yet stored, the backend on `v0.8.1` — backend
+- T051 — S5 not found, S10 not yet stored, the backend on `v0.8.2` — backend
 - T052 — S1 — backend
 - T053 — S3, S4, inventaire.io chosen — backend
 - T054 — S5 stored, Open Library chosen — backend
@@ -307,7 +311,7 @@ show their covers, save those no source has a picture for.
 - T057 — S7, S12 — backend
 - T058 — S8 — backend
 - T059 — S9, and S12 at start — backend
-- T060 — S1, S11, the frontend on `v0.8.1` — frontend
+- T060 — S1, S11, the frontend on `v0.8.2` — frontend
 - T061 — S2 — frontend
 - T062 — S3 — frontend
 - T063 — S10 — frontend
