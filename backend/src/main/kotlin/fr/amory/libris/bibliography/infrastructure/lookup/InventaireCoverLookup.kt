@@ -6,6 +6,7 @@ import fr.amory.libris.bibliography.domain.lookup.ExternalCoverLookup
 import fr.amory.libris.bibliography.domain.lookup.Source.INVENTAIRE
 import org.springframework.web.client.RestClientException
 import tools.jackson.databind.JsonNode
+import tools.jackson.databind.exc.JsonNodeException
 import tools.jackson.databind.node.MissingNode
 import java.time.Duration
 
@@ -16,6 +17,8 @@ class InventaireCoverLookup(private val baseUrl: String, timeout: Duration) : Ex
         try {
             pictureOf(entities(isbn))?.let { CoverCandidate(INVENTAIRE, "$baseUrl/img/entities/100x600/$it") }
         } catch (ignored: RestClientException) {
+            null
+        } catch (ignored: JsonNodeException) {
             null
         }
 

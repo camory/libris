@@ -31,6 +31,11 @@ class InventaireStubs(private val server: WireMockServer) {
         entityAnswers(isbn, entity.jsonString())
     }
 
+    fun knowsWithPictureClaim(isbn: String, claim: Any?) {
+        val entity = JsonPath.parse(recorded("inventaire/$isbn.json")).set("$..claims['invp:P2'][0]", claim)
+        entityAnswers(isbn, entity.jsonString())
+    }
+
     fun answersTooLate(isbn: String) {
         server.stubFor(
             get(urlPathEqualTo(ENTITIES))
