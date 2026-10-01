@@ -240,6 +240,22 @@ class LookupEditionByIsbnTest {
         )
     }
 
+    @Test
+    fun `a picture alone, without an edition source that knows the ISBN, is an unknown ISBN`() {
+        // Given
+        val lookupEditionByIsbn = LookupEditionByIsbn(
+            EditionsInMemory(),
+            listOf(LookupAnswering(NothingKnown), LookupAnswering(NothingKnown)),
+            CoverLookupAnswering(CoverCandidate(INVENTAIRE, "https://inventaire/c")),
+        )
+
+        // When
+        val result = lookupEditionByIsbn(isbnOf("9782723488525"))
+
+        // Then
+        result shouldBe UnknownIsbn
+    }
+
     private companion object {
         val NO_COVER_LOOKUP get() = CoverLookupAnswering(null)
     }
