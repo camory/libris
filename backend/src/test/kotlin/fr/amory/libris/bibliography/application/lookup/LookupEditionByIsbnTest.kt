@@ -52,10 +52,11 @@ class LookupEditionByIsbnTest {
     fun `an ISBN the house holds is answered as the house holds it, without asking the sources`() {
         // Given
         val source = LookupAnswering(Known(A_PREVIEW.copy(title = "Un titre venu d'une source")))
+        val coverLookup = CoverLookupAnswering(CoverCandidate(INVENTAIRE, "https://inventaire/c"))
         val lookupEditionByIsbn = LookupEditionByIsbn(
             EditionsInMemory().also { it.insert(ROMANCE_DAWN) },
             listOf(source),
-            NO_COVER_LOOKUP,
+            coverLookup,
         )
 
         // When
@@ -64,6 +65,7 @@ class LookupEditionByIsbnTest {
         // Then
         result shouldBe Held(ROMANCE_DAWN.id, checkNotNull(EditionPreview.of(ROMANCE_DAWN)))
         source.asked shouldBe emptyList()
+        coverLookup.asked shouldBe emptyList()
     }
 
     @Test
