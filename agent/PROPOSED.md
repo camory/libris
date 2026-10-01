@@ -397,7 +397,3 @@
   defines and that v0.8.0 no longer carries as an example; with the ports
   answering outcomes by status they assert the outcome instead (found
   2026-09-30 reviewing contract v0.8.0 with Tophe).
-- Deploy: the backend `Dockerfile` must create `/var/lib/libris/covers`
-  owned by the `libris` user before T053 writes the first cover; a named
-  volume mounted where the image has no directory is root-owned (found
-  2026-09-30 in T051, which mounts the volume and only reads).

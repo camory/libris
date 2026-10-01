@@ -177,6 +177,9 @@ true; the diary keeps the date it was found.
   `AnnotationOnSeparateLine`.
 - `check` also runs `jar`, which writes a `-plain.jar` beside the boot jar
   in `build/libs`; the image's build stage runs `bootJar` only.
+- A named volume mounted where the image has no directory is root-owned, so
+  the non-root backend cannot write it until the image creates that
+  directory for its user.
 
 ## Backend tests
 - The first HTTP request and the first XML parse of a JVM cost more than a
@@ -206,8 +209,9 @@ true; the diary keeps the date it was found.
   `browseCatalogue(ReaderId(eq(id.value) ?: id.value), any())`; `any()` is
   fine for a nullable value-class parameter.
 - A cover is the file named by its `CoverName` alone, no extension, in
-  `LIBRIS_COVERS_DIR` (`libris.covers.dir: ${LIBRIS_COVERS_DIR:}`); its format is read from its first bytes, and bytes of
-  neither JPEG nor WebP are no cover. `ScenarioTest` gives the variable a
+  `LIBRIS_COVERS_DIR` (`libris.covers.dir: ${LIBRIS_COVERS_DIR:}`); its
+  format is read from its first bytes, and bytes of neither JPEG nor WebP
+  are no cover. `ScenarioTest` gives the variable a
   temporary directory, `LibrisApplicationTest` its own property. A Mockito
   matcher on a `CoverName` argument takes a valid fallback, since the
   constructor checks it: `findCover(CoverName(any() ?: NO_COVER))`.
@@ -217,9 +221,6 @@ true; the diary keeps the date it was found.
   default, `${VAR:}`, binds null, which a non-null property refuses at
   start. `LibrisApplicationTest` proves it with an `ApplicationContextRunner`
   over `application.yaml` and an environment with no system variables.
-- A named volume mounted where the image has no directory is root-owned, so
-  the non-root backend cannot write it until the image creates that
-  directory for its user.
 - A scenario class boots the whole application and commits what its
   requests write; `FreshSchema` on `JdbcSliceTest` and `ScenarioTest` is
   what keeps the JDBC slice from meeting a reader it did not insert.
