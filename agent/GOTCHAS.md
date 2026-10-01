@@ -156,8 +156,9 @@ true; the diary keeps the date it was found.
 - Kotlin is indented by 2 spaces, the Gradle scripts too; detekt's formatting
   rules refuse anything else and `./gradlew detekt --auto-correct` reindents
   a file. The arrows of a `when` are aligned in a column by hand, one column
-  per `when`: `NoMultipleSpaces` is off for it, so detekt neither aligns
-  them nor reports a misaligned one.
+  per `when`, and a branch whose body would span several lines calls a
+  method instead: `NoMultipleSpaces` is off for the alignment, so detekt
+  neither aligns the arrows nor reports a misaligned one.
 - `./gradlew detekt` reports on the test sources as well as the main ones
   (T050 saw `MaxLineLength` and `ArgumentListWrapping` in a slice test from
   it). Run `./gradlew detekt` before each commit: `ImportOrdering` fails an import added by hand

@@ -45,12 +45,14 @@ class LookupEditionByIsbn(
   ): EditionLookupResult {
     val known = sourceAnswers.filterIsInstance<Known>()
     return when {
-      known.isNotEmpty()                 -> Found(
-        known.map { it.preview }.reduce(EditionPreview::merge),
-        CoverCandidates.of(listOfNotNull(coverCandidate) + known.mapNotNull { it.cover }),
-      )
+      known.isNotEmpty()                 -> found(known, coverCandidate)
       sourceAnswers.all { it == Failed } -> SourcesUnavailable
       else                               -> UnknownIsbn
     }
   }
+
+  private fun found(known: List<Known>, coverCandidate: CoverCandidate?): Found = Found(
+    known.map { it.preview }.reduce(EditionPreview::merge),
+    CoverCandidates.of(listOfNotNull(coverCandidate) + known.mapNotNull { it.cover }),
+  )
 }

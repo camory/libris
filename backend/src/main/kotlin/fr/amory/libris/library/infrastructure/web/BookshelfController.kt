@@ -1,5 +1,6 @@
 package fr.amory.libris.library.infrastructure.web
 
+import fr.amory.libris.library.application.AddBookResult
 import fr.amory.libris.library.application.AddBookResult.Added
 import fr.amory.libris.library.application.AddBookResult.NoSuchBookshelf
 import fr.amory.libris.library.application.AddBookResult.NotAnOwner
@@ -44,16 +45,20 @@ class BookshelfController(private val addBookToBookshelf: AddBookToBookshelf) {
     @RequestBody request: NewBookRequest,
   ): ResponseEntity<Any> = when (val validation = request.validate()) {
     is Refused  -> invalid(validation.errors).asResponse()
-    is Accepted -> when (val result = addBookToBookshelf(reader.id, BookshelfId(id), validation.book)) {
-      is Added                    -> ResponseEntity.status(CREATED).body(
-        CopyResponse(
-          id = result.copy.id.value.toString(),
-          bookshelf = BookshelfResponse(result.bookshelf.id.value.toString(), result.bookshelf.name),
-        ),
-      )
-      NoSuchBookshelf, NotAnOwner -> problem(NOT_FOUND, NOT_FOUND_PROBLEM).asResponse()
-    }
+    is Accepted -> responseOf(addBookToBookshelf(reader.id, BookshelfId(id), validation.book))
   }
+
+  private fun responseOf(result: AddBookResult): ResponseEntity<Any> = when (result) {
+    is Added                    -> created(result)
+    NoSuchBookshelf, NotAnOwner -> problem(NOT_FOUND, NOT_FOUND_PROBLEM).asResponse()
+  }
+
+  private fun created(added: Added): ResponseEntity<Any> = ResponseEntity.status(CREATED).body(
+    CopyResponse(
+      id = added.copy.id.value.toString(),
+      bookshelf = BookshelfResponse(added.bookshelf.id.value.toString(), added.bookshelf.name),
+    ),
+  )
 
   private fun invalid(errors: List<ValidationErrorResponse>): ProblemDetail =
     problem(BAD_REQUEST, VALIDATION_PROBLEM).apply { setProperty("errors", errors) }
