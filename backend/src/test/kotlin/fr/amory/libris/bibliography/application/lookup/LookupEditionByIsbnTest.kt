@@ -11,9 +11,9 @@ import fr.amory.libris.bibliography.domain.edition.EditionId
 import fr.amory.libris.bibliography.domain.lookup.CoverCandidate
 import fr.amory.libris.bibliography.domain.lookup.CoverCandidates
 import fr.amory.libris.bibliography.domain.lookup.EditionPreview
-import fr.amory.libris.bibliography.domain.lookup.ExternalLookupResult.Failed
-import fr.amory.libris.bibliography.domain.lookup.ExternalLookupResult.Known
-import fr.amory.libris.bibliography.domain.lookup.ExternalLookupResult.NothingKnown
+import fr.amory.libris.bibliography.domain.lookup.EditionSourceAnswer.Failed
+import fr.amory.libris.bibliography.domain.lookup.EditionSourceAnswer.Known
+import fr.amory.libris.bibliography.domain.lookup.EditionSourceAnswer.NothingKnown
 import fr.amory.libris.bibliography.domain.lookup.Source.BNF
 import fr.amory.libris.bibliography.domain.lookup.Source.INVENTAIRE
 import fr.amory.libris.bibliography.domain.lookup.Source.OPEN_LIBRARY

@@ -2,6 +2,8 @@ package fr.amory.libris.bibliography.domain.lookup
 
 import fr.amory.libris.bibliography.domain.Isbn
 
-interface ExternalCoverLookup {
-    fun lookUp(isbn: Isbn): CoverCandidate?
+interface EditionLookup {
+    val source: Source
+
+    fun lookUp(isbn: Isbn): EditionSourceAnswer
 }

@@ -9,12 +9,12 @@ import fr.amory.libris.bibliography.domain.edition.Edition
 import fr.amory.libris.bibliography.domain.edition.EditionRepository
 import fr.amory.libris.bibliography.domain.lookup.CoverCandidate
 import fr.amory.libris.bibliography.domain.lookup.CoverCandidates
+import fr.amory.libris.bibliography.domain.lookup.CoverLookup
+import fr.amory.libris.bibliography.domain.lookup.EditionLookup
 import fr.amory.libris.bibliography.domain.lookup.EditionPreview
-import fr.amory.libris.bibliography.domain.lookup.ExternalCoverLookup
-import fr.amory.libris.bibliography.domain.lookup.ExternalEditionLookup
-import fr.amory.libris.bibliography.domain.lookup.ExternalLookupResult
-import fr.amory.libris.bibliography.domain.lookup.ExternalLookupResult.Failed
-import fr.amory.libris.bibliography.domain.lookup.ExternalLookupResult.Known
+import fr.amory.libris.bibliography.domain.lookup.EditionSourceAnswer
+import fr.amory.libris.bibliography.domain.lookup.EditionSourceAnswer.Failed
+import fr.amory.libris.bibliography.domain.lookup.EditionSourceAnswer.Known
 import org.springframework.stereotype.Service
 import java.util.concurrent.Callable
 import java.util.concurrent.Executors.newVirtualThreadPerTaskExecutor
@@ -22,10 +22,10 @@ import java.util.concurrent.Executors.newVirtualThreadPerTaskExecutor
 @Service
 class LookupEditionByIsbn(
     private val editions: EditionRepository,
-    lookups: List<ExternalEditionLookup>,
-    private val coverLookup: ExternalCoverLookup,
+    editionLookups: List<EditionLookup>,
+    private val coverLookup: CoverLookup,
 ) {
-    private val lookups = lookups.sortedBy { it.source }
+    private val editionLookups = editionLookups.sortedBy { it.source }
 
     operator fun invoke(isbn: Isbn): EditionLookupResult = editions.findByIsbn(isbn)?.let(::held) ?: askTheSources(isbn)
 
@@ -34,12 +34,12 @@ class LookupEditionByIsbn(
     private fun askTheSources(isbn: Isbn): EditionLookupResult =
         newVirtualThreadPerTaskExecutor().use { executor ->
             val picture = executor.submit(Callable { coverLookup.lookUp(isbn) })
-            val results = executor.invokeAll(lookups.map { lookup -> Callable { lookup.lookUp(isbn) } })
+            val results = executor.invokeAll(editionLookups.map { lookup -> Callable { lookup.lookUp(isbn) } })
                 .map { it.get() }
             answerOf(results, picture.get())
         }
 
-    private fun answerOf(results: List<ExternalLookupResult>, picture: CoverCandidate?): EditionLookupResult {
+    private fun answerOf(results: List<EditionSourceAnswer>, picture: CoverCandidate?): EditionLookupResult {
         val previews = results.filterIsInstance<Known>().map { it.preview }
         return when {
             previews.isNotEmpty() -> Found(previews.reduce(EditionPreview::merge), coversOf(results, picture))
@@ -48,9 +48,9 @@ class LookupEditionByIsbn(
         }
     }
 
-    private fun coversOf(results: List<ExternalLookupResult>, picture: CoverCandidate?): CoverCandidates =
+    private fun coversOf(results: List<EditionSourceAnswer>, picture: CoverCandidate?): CoverCandidates =
         CoverCandidates.of(
-            listOfNotNull(picture) + lookups.zip(results).mapNotNull { (lookup, result) ->
+            listOfNotNull(picture) + editionLookups.zip(results).mapNotNull { (lookup, result) ->
                 (result as? Known)?.preview?.coverUrl?.let { CoverCandidate(lookup.source, it) }
             },
         )

@@ -12,12 +12,12 @@ import fr.amory.libris.bibliography.domain.Kind.BD
 import fr.amory.libris.bibliography.domain.Kind.BOOK
 import fr.amory.libris.bibliography.domain.Kind.MANGA
 import fr.amory.libris.bibliography.domain.SeriesEntry
+import fr.amory.libris.bibliography.domain.lookup.EditionLookup
 import fr.amory.libris.bibliography.domain.lookup.EditionPreview
-import fr.amory.libris.bibliography.domain.lookup.ExternalEditionLookup
-import fr.amory.libris.bibliography.domain.lookup.ExternalLookupResult
-import fr.amory.libris.bibliography.domain.lookup.ExternalLookupResult.Failed
-import fr.amory.libris.bibliography.domain.lookup.ExternalLookupResult.Known
-import fr.amory.libris.bibliography.domain.lookup.ExternalLookupResult.NothingKnown
+import fr.amory.libris.bibliography.domain.lookup.EditionSourceAnswer
+import fr.amory.libris.bibliography.domain.lookup.EditionSourceAnswer.Failed
+import fr.amory.libris.bibliography.domain.lookup.EditionSourceAnswer.Known
+import fr.amory.libris.bibliography.domain.lookup.EditionSourceAnswer.NothingKnown
 import fr.amory.libris.bibliography.domain.lookup.Source.BNF
 import org.springframework.web.client.RestClientException
 import org.w3c.dom.Element
@@ -68,11 +68,11 @@ internal fun coverUrlOf(controlField: String?): String? =
     controlField?.indexOf(ARK)?.takeIf { it >= 0 }
         ?.let { COVER_BEFORE + controlField.substring(it) + COVER_AFTER }
 
-class BnfEditionLookup(baseUrl: String, timeout: Duration) : ExternalEditionLookup {
+class BnfEditionLookup(baseUrl: String, timeout: Duration) : EditionLookup {
     override val source = BNF
     private val http = sourceRestClient(baseUrl, timeout)
 
-    override fun lookUp(isbn: Isbn): ExternalLookupResult =
+    override fun lookUp(isbn: Isbn): EditionSourceAnswer =
         try {
             answerFor(isbn)
         } catch (ignored: RestClientException) {
@@ -81,10 +81,10 @@ class BnfEditionLookup(baseUrl: String, timeout: Duration) : ExternalEditionLook
             Failed
         }
 
-    private fun answerFor(isbn: Isbn): ExternalLookupResult =
+    private fun answerFor(isbn: Isbn): EditionSourceAnswer =
         recordIn(search(isbn))?.let { answerFrom(isbn, it) } ?: NothingKnown
 
-    private fun answerFrom(isbn: Isbn, record: UnimarcRecord): ExternalLookupResult =
+    private fun answerFrom(isbn: Isbn, record: UnimarcRecord): EditionSourceAnswer =
         record.value("200", "a")?.let { Known(previewOf(isbn, it, record)) } ?: Failed
 
     private fun previewOf(isbn: Isbn, title: String, record: UnimarcRecord): EditionPreview {

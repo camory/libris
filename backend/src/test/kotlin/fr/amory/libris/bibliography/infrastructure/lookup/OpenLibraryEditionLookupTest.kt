@@ -7,9 +7,9 @@ import fr.amory.libris.bibliography.domain.ContributionRole.WRITER
 import fr.amory.libris.bibliography.domain.Contributions
 import fr.amory.libris.bibliography.domain.Kind.BOOK
 import fr.amory.libris.bibliography.domain.lookup.EditionPreview
-import fr.amory.libris.bibliography.domain.lookup.ExternalLookupResult.Failed
-import fr.amory.libris.bibliography.domain.lookup.ExternalLookupResult.Known
-import fr.amory.libris.bibliography.domain.lookup.ExternalLookupResult.NothingKnown
+import fr.amory.libris.bibliography.domain.lookup.EditionSourceAnswer.Failed
+import fr.amory.libris.bibliography.domain.lookup.EditionSourceAnswer.Known
+import fr.amory.libris.bibliography.domain.lookup.EditionSourceAnswer.NothingKnown
 import fr.amory.libris.bibliography.fixture.OpenLibraryStubs
 import fr.amory.libris.bibliography.fixture.isbnOf
 import io.kotest.matchers.collections.shouldContainExactlyInAnyOrder

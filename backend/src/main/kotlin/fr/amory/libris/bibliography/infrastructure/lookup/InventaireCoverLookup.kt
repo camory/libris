@@ -2,7 +2,7 @@ package fr.amory.libris.bibliography.infrastructure.lookup
 
 import fr.amory.libris.bibliography.domain.Isbn
 import fr.amory.libris.bibliography.domain.lookup.CoverCandidate
-import fr.amory.libris.bibliography.domain.lookup.ExternalCoverLookup
+import fr.amory.libris.bibliography.domain.lookup.CoverLookup
 import fr.amory.libris.bibliography.domain.lookup.Source.INVENTAIRE
 import org.springframework.web.client.RestClientException
 import tools.jackson.databind.JsonNode
@@ -10,7 +10,7 @@ import tools.jackson.databind.exc.JsonNodeException
 import tools.jackson.databind.node.MissingNode
 import java.time.Duration
 
-class InventaireCoverLookup(private val baseUrl: String, timeout: Duration) : ExternalCoverLookup {
+class InventaireCoverLookup(private val baseUrl: String, timeout: Duration) : CoverLookup {
     private val http = sourceRestClient(baseUrl, timeout)
 
     override fun lookUp(isbn: Isbn): CoverCandidate? =

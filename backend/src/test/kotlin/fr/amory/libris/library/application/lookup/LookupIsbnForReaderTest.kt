@@ -10,10 +10,10 @@ import fr.amory.libris.bibliography.domain.Kind.MANGA
 import fr.amory.libris.bibliography.domain.edition.Edition
 import fr.amory.libris.bibliography.domain.edition.EditionId
 import fr.amory.libris.bibliography.domain.lookup.CoverCandidates
-import fr.amory.libris.bibliography.domain.lookup.ExternalEditionLookup
-import fr.amory.libris.bibliography.domain.lookup.ExternalLookupResult.Failed
-import fr.amory.libris.bibliography.domain.lookup.ExternalLookupResult.Known
-import fr.amory.libris.bibliography.domain.lookup.ExternalLookupResult.NothingKnown
+import fr.amory.libris.bibliography.domain.lookup.EditionLookup
+import fr.amory.libris.bibliography.domain.lookup.EditionSourceAnswer.Failed
+import fr.amory.libris.bibliography.domain.lookup.EditionSourceAnswer.Known
+import fr.amory.libris.bibliography.domain.lookup.EditionSourceAnswer.NothingKnown
 import fr.amory.libris.bibliography.fixture.A_PREVIEW
 import fr.amory.libris.bibliography.fixture.CoverLookupAnswering
 import fr.amory.libris.bibliography.fixture.EditionsInMemory
@@ -138,7 +138,7 @@ class LookupIsbnForReaderTest {
         Copy(CopyId.new(), edition.id, bookshelf.id).also { copies.insert(it) }
 
     private fun lookupAsking(
-        vararg sources: ExternalEditionLookup,
+        vararg sources: EditionLookup,
         house: EditionsInMemory = EditionsInMemory(),
     ): LookupIsbnForReader = LookupIsbnForReader(
         LookupEditionByIsbn(house, sources.toList(), CoverLookupAnswering(null)),
