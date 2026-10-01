@@ -7,5 +7,5 @@ import org.springframework.stereotype.Service
 
 @Service
 class FindCover(private val covers: CoverStore) {
-    operator fun invoke(name: CoverName): Cover? = covers.read(name)
+  operator fun invoke(name: CoverName): Cover? = covers.read(name)
 }

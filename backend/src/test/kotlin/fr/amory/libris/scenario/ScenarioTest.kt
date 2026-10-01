@@ -24,8 +24,8 @@ import java.nio.file.Path
 @Target(AnnotationTarget.CLASS)
 @Retention(AnnotationRetention.RUNTIME)
 @SpringBootTest(
-    webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
-    properties = ["spring.flyway.clean-disabled=false"],
+  webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
+  properties = ["spring.flyway.clean-disabled=false"],
 )
 @AutoConfigureRestTestClient
 @Import(StubbedSources::class)
@@ -33,48 +33,48 @@ import java.nio.file.Path
 annotation class ScenarioTest
 
 class FreshSources : BeforeEachCallback {
-    override fun beforeEach(context: ExtensionContext) {
-        getApplicationContext(context).getBeansOfType(WireMockServer::class.java).values.forEach { it.resetAll() }
-    }
+  override fun beforeEach(context: ExtensionContext) {
+    getApplicationContext(context).getBeansOfType(WireMockServer::class.java).values.forEach { it.resetAll() }
+  }
 }
 
 @TestConfiguration(proxyBeanMethods = false)
 class StubbedSources {
-    @Bean(initMethod = "start", destroyMethod = "stop")
-    fun bnf(): WireMockServer = WireMockServer(options().dynamicPort())
+  @Bean(initMethod = "start", destroyMethod = "stop")
+  fun bnf(): WireMockServer = WireMockServer(options().dynamicPort())
 
-    @Bean(initMethod = "start", destroyMethod = "stop")
-    fun openLibrary(): WireMockServer = WireMockServer(options().dynamicPort())
+  @Bean(initMethod = "start", destroyMethod = "stop")
+  fun openLibrary(): WireMockServer = WireMockServer(options().dynamicPort())
 
-    @Bean(initMethod = "start", destroyMethod = "stop")
-    fun inventaire(): WireMockServer = WireMockServer(options().dynamicPort())
+  @Bean(initMethod = "start", destroyMethod = "stop")
+  fun inventaire(): WireMockServer = WireMockServer(options().dynamicPort())
 
-    @Bean
-    fun coversDir(): Path = Files.createTempDirectory("libris-covers")
+  @Bean
+  fun coversDir(): Path = Files.createTempDirectory("libris-covers")
 
-    @Bean
-    fun clock(): MutableClock = MutableClock()
+  @Bean
+  fun clock(): MutableClock = MutableClock()
 
-    @Bean
-    fun sourceVariables(
-        bnf: WireMockServer,
-        openLibrary: WireMockServer,
-        inventaire: WireMockServer,
-        coversDir: Path,
-    ) = DynamicPropertyRegistrar { registry ->
-        registry.add("LIBRIS_BNF_URL") { bnf.baseUrl() + "/api/SRU" }
-        registry.add("LIBRIS_BNF_COVERS_URL") { bnf.baseUrl() + "/couverture" }
-        registry.add("LIBRIS_OPEN_LIBRARY_URL") { openLibrary.baseUrl() }
-        registry.add("LIBRIS_OPEN_LIBRARY_COVERS_URL") { openLibrary.baseUrl() + "/b/isbn" }
-        registry.add("LIBRIS_INVENTAIRE_URL") { inventaire.baseUrl() }
-        registry.add("LIBRIS_COVERS_DIR") { coversDir.toString() }
-        registry.add("LIBRIS_SOURCE_TIMEOUT") { "1s" }
-    }
+  @Bean
+  fun sourceVariables(
+    bnf: WireMockServer,
+    openLibrary: WireMockServer,
+    inventaire: WireMockServer,
+    coversDir: Path,
+  ) = DynamicPropertyRegistrar { registry ->
+    registry.add("LIBRIS_BNF_URL") { bnf.baseUrl() + "/api/SRU" }
+    registry.add("LIBRIS_BNF_COVERS_URL") { bnf.baseUrl() + "/couverture" }
+    registry.add("LIBRIS_OPEN_LIBRARY_URL") { openLibrary.baseUrl() }
+    registry.add("LIBRIS_OPEN_LIBRARY_COVERS_URL") { openLibrary.baseUrl() + "/b/isbn" }
+    registry.add("LIBRIS_INVENTAIRE_URL") { inventaire.baseUrl() }
+    registry.add("LIBRIS_COVERS_DIR") { coversDir.toString() }
+    registry.add("LIBRIS_SOURCE_TIMEOUT") { "1s" }
+  }
 
-    @Bean
-    fun restTestClient(context: ApplicationContext): RestTestClient =
-        RestTestClient.bindToServer(SimpleClientHttpRequestFactory())
-            .uriBuilderFactory(LocalTestWebServer.obtain(context).uriBuilderFactory())
-            .defaultHeader("X-Requested-With", "XMLHttpRequest")
-            .build()
+  @Bean
+  fun restTestClient(context: ApplicationContext): RestTestClient =
+    RestTestClient.bindToServer(SimpleClientHttpRequestFactory())
+      .uriBuilderFactory(LocalTestWebServer.obtain(context).uriBuilderFactory())
+      .defaultHeader("X-Requested-With", "XMLHttpRequest")
+      .build()
 }

@@ -26,35 +26,35 @@ import org.springframework.web.bind.annotation.RestController
 import java.util.UUID
 
 data class BookshelfResponse(
-    val id: String,
-    val name: String,
+  val id: String,
+  val name: String,
 )
 
 data class CopyResponse(
-    val id: String,
-    val bookshelf: BookshelfResponse,
+  val id: String,
+  val bookshelf: BookshelfResponse,
 )
 
 @RestController
 class BookshelfController(private val addBookToBookshelf: AddBookToBookshelf) {
-    @PostMapping("/api/v1/bookshelves/{id}/books")
-    fun add(
-        @AuthenticationPrincipal reader: Reader,
-        @PathVariable("id") id: UUID,
-        @RequestBody request: NewBookRequest,
-    ): ResponseEntity<Any> = when (val validation = request.validate()) {
-        is Refused -> invalid(validation.errors).asResponse()
-        is Accepted -> when (val result = addBookToBookshelf(reader.id, BookshelfId(id), validation.book)) {
-            is Added -> ResponseEntity.status(CREATED).body(
-                CopyResponse(
-                    id = result.copy.id.value.toString(),
-                    bookshelf = BookshelfResponse(result.bookshelf.id.value.toString(), result.bookshelf.name),
-                ),
-            )
-            NoSuchBookshelf, NotAnOwner -> problem(NOT_FOUND, NOT_FOUND_PROBLEM).asResponse()
-        }
+  @PostMapping("/api/v1/bookshelves/{id}/books")
+  fun add(
+    @AuthenticationPrincipal reader: Reader,
+    @PathVariable("id") id: UUID,
+    @RequestBody request: NewBookRequest,
+  ): ResponseEntity<Any> = when (val validation = request.validate()) {
+    is Refused  -> invalid(validation.errors).asResponse()
+    is Accepted -> when (val result = addBookToBookshelf(reader.id, BookshelfId(id), validation.book)) {
+      is Added                    -> ResponseEntity.status(CREATED).body(
+        CopyResponse(
+          id = result.copy.id.value.toString(),
+          bookshelf = BookshelfResponse(result.bookshelf.id.value.toString(), result.bookshelf.name),
+        ),
+      )
+      NoSuchBookshelf, NotAnOwner -> problem(NOT_FOUND, NOT_FOUND_PROBLEM).asResponse()
     }
+  }
 
-    private fun invalid(errors: List<ValidationErrorResponse>): ProblemDetail =
-        problem(BAD_REQUEST, VALIDATION_PROBLEM).apply { setProperty("errors", errors) }
+  private fun invalid(errors: List<ValidationErrorResponse>): ProblemDetail =
+    problem(BAD_REQUEST, VALIDATION_PROBLEM).apply { setProperty("errors", errors) }
 }

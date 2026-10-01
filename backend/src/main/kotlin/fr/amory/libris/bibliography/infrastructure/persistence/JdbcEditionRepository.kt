@@ -16,7 +16,7 @@ import java.sql.ResultSet
 import java.util.UUID
 
 private const val INSERT_EDITION =
-    """
+  """
     INSERT INTO edition (id, isbn13, kind, title, subtitle, series_id, volume_number, collection,
                          publisher, publication_year, language, page_count, summary, cover_url)
     VALUES (:id, :isbn13, :kind, :title, :subtitle, :seriesId, :volumeNumber, :collection,
@@ -24,24 +24,24 @@ private const val INSERT_EDITION =
     """
 
 private const val INSERT_SERIES =
-    """
+  """
     INSERT INTO series (id, name) VALUES (:id, :name)
     ON CONFLICT (LOWER(name)) DO UPDATE SET name = series.name
     RETURNING id
     """
 
 private const val INSERT_AUTHOR =
-    """
+  """
     INSERT INTO author (id, name) VALUES (:id, :name)
     ON CONFLICT (LOWER(name)) DO UPDATE SET name = author.name
     RETURNING id
     """
 
 private const val INSERT_CONTRIBUTION =
-    "INSERT INTO contribution (edition_id, author_id, role) VALUES (:editionId, :authorId, :role)"
+  "INSERT INTO contribution (edition_id, author_id, role) VALUES (:editionId, :authorId, :role)"
 
 private const val SELECT_EDITIONS =
-    """
+  """
     SELECT edition.id, edition.isbn13, edition.kind, edition.title, edition.subtitle,
            edition.volume_number, edition.collection, edition.publisher, edition.publication_year,
            edition.language, edition.page_count, edition.summary, edition.cover_url,
@@ -57,112 +57,112 @@ private const val FIND_EDITION_BY_ISBN = "$SELECT_EDITIONS WHERE edition.isbn13 
 private const val FIND_EDITIONS_BY_IDS = "$SELECT_EDITIONS WHERE edition.id IN (:ids)"
 
 private class EditionRow(
-    val edition: Edition,
-    val contribution: Contribution?,
+  val edition: Edition,
+  val contribution: Contribution?,
 )
 
 @Repository
 class JdbcEditionRepository(private val jdbcClient: JdbcClient) : EditionRepository {
-    private val uuids = Generators.timeBasedEpochGenerator()
+  private val uuids = Generators.timeBasedEpochGenerator()
 
-    override fun insert(edition: Edition) {
-        val seriesId = edition.series?.let { seriesIdOf(it.name) }
-        jdbcClient
-            .sql(INSERT_EDITION)
-            .param("id", edition.id.value)
-            .param("isbn13", edition.isbn?.digits)
-            .param("kind", edition.kind.name)
-            .param("title", edition.title)
-            .param("subtitle", edition.subtitle)
-            .param("seriesId", seriesId)
-            .param("volumeNumber", edition.series?.volumeNumber)
-            .param("collection", edition.collection)
-            .param("publisher", edition.publisher)
-            .param("publicationYear", edition.publicationYear)
-            .param("language", edition.language)
-            .param("pageCount", edition.pageCount)
-            .param("summary", edition.summary)
-            .param("coverUrl", edition.coverUrl)
-            .update()
-        edition.contributions.forEach { contribution ->
-            val authorId = authorIdOf(contribution.name)
-            jdbcClient
-                .sql(INSERT_CONTRIBUTION)
-                .param("editionId", edition.id.value)
-                .param("authorId", authorId)
-                .param("role", contribution.role.name)
-                .update()
-        }
+  override fun insert(edition: Edition) {
+    val seriesId = edition.series?.let { seriesIdOf(it.name) }
+    jdbcClient
+      .sql(INSERT_EDITION)
+      .param("id", edition.id.value)
+      .param("isbn13", edition.isbn?.digits)
+      .param("kind", edition.kind.name)
+      .param("title", edition.title)
+      .param("subtitle", edition.subtitle)
+      .param("seriesId", seriesId)
+      .param("volumeNumber", edition.series?.volumeNumber)
+      .param("collection", edition.collection)
+      .param("publisher", edition.publisher)
+      .param("publicationYear", edition.publicationYear)
+      .param("language", edition.language)
+      .param("pageCount", edition.pageCount)
+      .param("summary", edition.summary)
+      .param("coverUrl", edition.coverUrl)
+      .update()
+    edition.contributions.forEach { contribution ->
+      val authorId = authorIdOf(contribution.name)
+      jdbcClient
+        .sql(INSERT_CONTRIBUTION)
+        .param("editionId", edition.id.value)
+        .param("authorId", authorId)
+        .param("role", contribution.role.name)
+        .update()
+    }
+  }
+
+  override fun findByIsbn(isbn: Isbn): Edition? =
+    jdbcClient
+      .sql(FIND_EDITION_BY_ISBN)
+      .param("isbn13", isbn.digits)
+      .query { rs, _ -> rowOf(rs) }
+      .list()
+      .takeIf { it.isNotEmpty() }
+      ?.let(::editionOf)
+
+  override fun findByIds(ids: List<EditionId>): List<Edition> =
+    if (ids.isEmpty()) {
+      emptyList()
+    } else {
+      jdbcClient
+        .sql(FIND_EDITIONS_BY_IDS)
+        .param("ids", ids.map { it.value })
+        .query { rs, _ -> rowOf(rs) }
+        .list()
+        .groupBy { it.edition.id }
+        .values
+        .map(::editionOf)
     }
 
-    override fun findByIsbn(isbn: Isbn): Edition? =
-        jdbcClient
-            .sql(FIND_EDITION_BY_ISBN)
-            .param("isbn13", isbn.digits)
-            .query { rs, _ -> rowOf(rs) }
-            .list()
-            .takeIf { it.isNotEmpty() }
-            ?.let(::editionOf)
+  private fun rowOf(rs: ResultSet): EditionRow =
+    EditionRow(
+      edition = Edition(
+        id = EditionId(rs.getObject("id", UUID::class.java)),
+        isbn = rs.getString("isbn13")?.let { Isbn.of(it) },
+        kind = Kind.valueOf(rs.getString("kind")),
+        title = rs.getString("title"),
+        subtitle = rs.getString("subtitle"),
+        contributions = Contributions.of(emptyList()),
+        series = SeriesEntry.of(
+          rs.getString("series_name"),
+          rs.getObject("volume_number", Int::class.javaObjectType),
+        ),
+        collection = rs.getString("collection"),
+        publisher = rs.getString("publisher"),
+        publicationYear = rs.getObject("publication_year", Int::class.javaObjectType),
+        language = rs.getString("language"),
+        pageCount = rs.getObject("page_count", Int::class.javaObjectType),
+        summary = rs.getString("summary"),
+        coverUrl = rs.getString("cover_url"),
+      ),
+      contribution = rs.getString("author_name")?.let { name ->
+        Contribution.of(name, ContributionRole.valueOf(rs.getString("role")))
+      },
+    )
 
-    override fun findByIds(ids: List<EditionId>): List<Edition> =
-        if (ids.isEmpty()) {
-            emptyList()
-        } else {
-            jdbcClient
-                .sql(FIND_EDITIONS_BY_IDS)
-                .param("ids", ids.map { it.value })
-                .query { rs, _ -> rowOf(rs) }
-                .list()
-                .groupBy { it.edition.id }
-                .values
-                .map(::editionOf)
-        }
+  private fun editionOf(rows: List<EditionRow>): Edition =
+    rows.first().edition.copy(contributions = contributionsOf(rows))
 
-    private fun rowOf(rs: ResultSet): EditionRow =
-        EditionRow(
-            edition = Edition(
-                id = EditionId(rs.getObject("id", UUID::class.java)),
-                isbn = rs.getString("isbn13")?.let { Isbn.of(it) },
-                kind = Kind.valueOf(rs.getString("kind")),
-                title = rs.getString("title"),
-                subtitle = rs.getString("subtitle"),
-                contributions = Contributions.of(emptyList()),
-                series = SeriesEntry.of(
-                    rs.getString("series_name"),
-                    rs.getObject("volume_number", Int::class.javaObjectType),
-                ),
-                collection = rs.getString("collection"),
-                publisher = rs.getString("publisher"),
-                publicationYear = rs.getObject("publication_year", Int::class.javaObjectType),
-                language = rs.getString("language"),
-                pageCount = rs.getObject("page_count", Int::class.javaObjectType),
-                summary = rs.getString("summary"),
-                coverUrl = rs.getString("cover_url"),
-            ),
-            contribution = rs.getString("author_name")?.let { name ->
-                Contribution.of(name, ContributionRole.valueOf(rs.getString("role")))
-            },
-        )
+  private fun contributionsOf(rows: List<EditionRow>): Contributions =
+    Contributions.of(rows.mapNotNull { it.contribution })
 
-    private fun editionOf(rows: List<EditionRow>): Edition =
-        rows.first().edition.copy(contributions = contributionsOf(rows))
+  private fun seriesIdOf(name: String): UUID =
+    jdbcClient
+      .sql(INSERT_SERIES)
+      .param("id", uuids.generate())
+      .param("name", name)
+      .query(UUID::class.java)
+      .single()
 
-    private fun contributionsOf(rows: List<EditionRow>): Contributions =
-        Contributions.of(rows.mapNotNull { it.contribution })
-
-    private fun seriesIdOf(name: String): UUID =
-        jdbcClient
-            .sql(INSERT_SERIES)
-            .param("id", uuids.generate())
-            .param("name", name)
-            .query(UUID::class.java)
-            .single()
-
-    private fun authorIdOf(name: String): UUID =
-        jdbcClient
-            .sql(INSERT_AUTHOR)
-            .param("id", uuids.generate())
-            .param("name", name)
-            .query(UUID::class.java)
-            .single()
+  private fun authorIdOf(name: String): UUID =
+    jdbcClient
+      .sql(INSERT_AUTHOR)
+      .param("id", uuids.generate())
+      .param("name", name)
+      .query(UUID::class.java)
+      .single()
 }

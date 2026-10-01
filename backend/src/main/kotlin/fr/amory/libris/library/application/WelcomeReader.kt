@@ -12,27 +12,27 @@ import org.springframework.transaction.support.TransactionOperations
 
 @Service
 class WelcomeReader(
-    private val readers: ReaderRepository,
-    private val bookshelves: BookshelfRepository,
-    private val transactions: TransactionOperations,
+  private val readers: ReaderRepository,
+  private val bookshelves: BookshelfRepository,
+  private val transactions: TransactionOperations,
 ) {
-    operator fun invoke(username: String, email: String, displayName: String): Reader {
-        readers.findByUsername(username)?.let { return it }
-        return try {
-            welcome(username, email, displayName)
-        } catch (duplicate: DuplicateUsernameException) {
-            readers.findByUsername(username) ?: throw duplicate
-        }
+  operator fun invoke(username: String, email: String, displayName: String): Reader {
+    readers.findByUsername(username)?.let { return it }
+    return try {
+      welcome(username, email, displayName)
+    } catch (duplicate: DuplicateUsernameException) {
+      readers.findByUsername(username) ?: throw duplicate
     }
+  }
 
-    private fun welcome(username: String, email: String, displayName: String): Reader {
-        val readerId = ReaderId.new()
-        val bookshelf = Bookshelf.ownedBy(readerId, displayName, BookshelfId.new())
-        val reader = Reader(readerId, username, email, displayName, bookshelf.id)
-        transactions.executeWithoutResult {
-            readers.insert(reader)
-            bookshelves.insert(bookshelf)
-        }
-        return reader
+  private fun welcome(username: String, email: String, displayName: String): Reader {
+    val readerId = ReaderId.new()
+    val bookshelf = Bookshelf.ownedBy(readerId, displayName, BookshelfId.new())
+    val reader = Reader(readerId, username, email, displayName, bookshelf.id)
+    transactions.executeWithoutResult {
+      readers.insert(reader)
+      bookshelves.insert(bookshelf)
     }
+    return reader
+  }
 }

@@ -6,15 +6,15 @@ import fr.amory.libris.library.domain.bookshelf.BookshelfRepository
 import fr.amory.libris.library.domain.reader.ReaderId
 
 class BookshelvesInMemory : BookshelfRepository {
-    private val bookshelves = mutableListOf<Bookshelf>()
+  private val bookshelves = mutableListOf<Bookshelf>()
 
-    val stored: List<Bookshelf> get() = bookshelves.toList()
+  val stored: List<Bookshelf> get() = bookshelves.toList()
 
-    override fun insert(bookshelf: Bookshelf) {
-        bookshelves += bookshelf
-    }
+  override fun insert(bookshelf: Bookshelf) {
+    bookshelves += bookshelf
+  }
 
-    override fun findById(id: BookshelfId): Bookshelf? = bookshelves.find { it.id == id }
+  override fun findById(id: BookshelfId): Bookshelf? = bookshelves.find { it.id == id }
 
-    override fun findByMember(readerId: ReaderId): List<Bookshelf> = bookshelves.filter { it.hasMember(readerId) }
+  override fun findByMember(readerId: ReaderId): List<Bookshelf> = bookshelves.filter { it.hasMember(readerId) }
 }

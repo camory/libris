@@ -22,19 +22,19 @@ private const val KEPT_A_YEAR = "public, max-age=31536000, immutable"
 
 @RestController
 class CoverController(private val findCover: FindCover) {
-    @GetMapping("/api/v1/covers/{name}")
-    fun cover(@PathVariable("name") name: String): ResponseEntity<Any> {
-        val coverName = CoverName.of(name) ?: return notACoverName().asResponse()
-        return findCover(coverName)?.let(::pictureOf) ?: problem(NOT_FOUND, NOT_FOUND_PROBLEM).asResponse()
-    }
+  @GetMapping("/api/v1/covers/{name}")
+  fun cover(@PathVariable("name") name: String): ResponseEntity<Any> {
+    val coverName = CoverName.of(name) ?: return notACoverName().asResponse()
+    return findCover(coverName)?.let(::pictureOf) ?: problem(NOT_FOUND, NOT_FOUND_PROBLEM).asResponse()
+  }
 
-    private fun pictureOf(cover: Cover): ResponseEntity<Any> =
-        ResponseEntity.ok()
-            .contentType(parseMediaType(cover.mediaType))
-            .header(CACHE_CONTROL, KEPT_A_YEAR)
-            .body(cover.bytes)
+  private fun pictureOf(cover: Cover): ResponseEntity<Any> =
+    ResponseEntity.ok()
+      .contentType(parseMediaType(cover.mediaType))
+      .header(CACHE_CONTROL, KEPT_A_YEAR)
+      .body(cover.bytes)
 
-    private fun notACoverName(): ProblemDetail = problem(BAD_REQUEST, VALIDATION_PROBLEM).apply {
-        setProperty("errors", listOf(ValidationErrorResponse(field = "name", code = "not-a-cover-name")))
-    }
+  private fun notACoverName(): ProblemDetail = problem(BAD_REQUEST, VALIDATION_PROBLEM).apply {
+    setProperty("errors", listOf(ValidationErrorResponse(field = "name", code = "not-a-cover-name")))
+  }
 }

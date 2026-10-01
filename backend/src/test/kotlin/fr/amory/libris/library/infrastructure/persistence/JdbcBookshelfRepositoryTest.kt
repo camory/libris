@@ -19,62 +19,62 @@ import org.springframework.dao.DataIntegrityViolationException
 @JdbcSliceTest
 @Import(JdbcBookshelfRepository::class, JdbcReaderRepository::class)
 class JdbcBookshelfRepositoryTest @Autowired constructor(
-    private val bookshelves: JdbcBookshelfRepository,
-    private val readers: JdbcReaderRepository,
+  private val bookshelves: JdbcBookshelfRepository,
+  private val readers: JdbcReaderRepository,
 ) {
-    @Test
-    fun `an inserted bookshelf is read back whole, its members included`() {
-        // Given
-        val lea = readerNamed("lea", "Léa")
-        val juliette = readerNamed("juliette", "Juliette")
-        val bookshelf = Bookshelf(
-            id = lea.defaultBookshelfId,
-            name = "Bibliothèque de Léa",
-            memberships = listOf(Membership(lea.id, OWNER), Membership(juliette.id, VIEWER)),
-        )
+  @Test
+  fun `an inserted bookshelf is read back whole, its members included`() {
+    // Given
+    val lea = readerNamed("lea", "Léa")
+    val juliette = readerNamed("juliette", "Juliette")
+    val bookshelf = Bookshelf(
+      id = lea.defaultBookshelfId,
+      name = "Bibliothèque de Léa",
+      memberships = listOf(Membership(lea.id, OWNER), Membership(juliette.id, VIEWER)),
+    )
 
-        readers.insert(lea)
-        readers.insert(juliette)
-        bookshelves.insert(bookshelfOwnedBy(juliette))
+    readers.insert(lea)
+    readers.insert(juliette)
+    bookshelves.insert(bookshelfOwnedBy(juliette))
 
-        // When
-        bookshelves.insert(bookshelf)
+    // When
+    bookshelves.insert(bookshelf)
 
-        // Then
-        val read = requireNotNull(bookshelves.findById(bookshelf.id))
-        read.memberships.toSet() shouldBe bookshelf.memberships.toSet()
-        read.copy(memberships = bookshelf.memberships) shouldBe bookshelf
-    }
+    // Then
+    val read = requireNotNull(bookshelves.findById(bookshelf.id))
+    read.memberships.toSet() shouldBe bookshelf.memberships.toSet()
+    read.copy(memberships = bookshelf.memberships) shouldBe bookshelf
+  }
 
-    @Test
-    fun `a membership of a reader Libris does not know is refused`() {
-        val nobody = readerNamed("nobody", "Nobody")
+  @Test
+  fun `a membership of a reader Libris does not know is refused`() {
+    val nobody = readerNamed("nobody", "Nobody")
 
-        shouldThrow<DataIntegrityViolationException> { bookshelves.insert(bookshelfOwnedBy(nobody)) }
-    }
+    shouldThrow<DataIntegrityViolationException> { bookshelves.insert(bookshelfOwnedBy(nobody)) }
+  }
 
-    @Test
-    fun `the bookshelves a reader is a member of are found whole, none of another's`() {
-        // Given
-        val lea = readerNamed("lea", "Léa").also { readers.insert(it) }
-        val tom = readerNamed("tom", "Tom").also { readers.insert(it) }
-        val leasBookshelf = bookshelfOwnedBy(lea).also { bookshelves.insert(it) }
-        bookshelfOwnedBy(tom).also { bookshelves.insert(it) }
-        val salon = Bookshelf(BookshelfId.new(), "Salon", listOf(Membership(tom.id, OWNER), Membership(lea.id, VIEWER)))
-            .also { bookshelves.insert(it) }
+  @Test
+  fun `the bookshelves a reader is a member of are found whole, none of another's`() {
+    // Given
+    val lea = readerNamed("lea", "Léa").also { readers.insert(it) }
+    val tom = readerNamed("tom", "Tom").also { readers.insert(it) }
+    val leasBookshelf = bookshelfOwnedBy(lea).also { bookshelves.insert(it) }
+    bookshelfOwnedBy(tom).also { bookshelves.insert(it) }
+    val salon = Bookshelf(BookshelfId.new(), "Salon", listOf(Membership(tom.id, OWNER), Membership(lea.id, VIEWER)))
+      .also { bookshelves.insert(it) }
 
-        // When
-        val found = bookshelves.findByMember(lea.id)
+    // When
+    val found = bookshelves.findByMember(lea.id)
 
-        // Then
-        found.map { Triple(it.id, it.name, it.memberships.toSet()) } shouldContainExactlyInAnyOrder listOf(
-            Triple(leasBookshelf.id, "Bibliothèque de Léa", setOf(Membership(lea.id, OWNER))),
-            Triple(salon.id, "Salon", setOf(Membership(tom.id, OWNER), Membership(lea.id, VIEWER))),
-        )
-    }
+    // Then
+    found.map { Triple(it.id, it.name, it.memberships.toSet()) } shouldContainExactlyInAnyOrder listOf(
+      Triple(leasBookshelf.id, "Bibliothèque de Léa", setOf(Membership(lea.id, OWNER))),
+      Triple(salon.id, "Salon", setOf(Membership(tom.id, OWNER), Membership(lea.id, VIEWER))),
+    )
+  }
 
-    @Test
-    fun `an unknown id finds no bookshelf`() {
-        bookshelves.findById(BookshelfId.new()) shouldBe null
-    }
+  @Test
+  fun `an unknown id finds no bookshelf`() {
+    bookshelves.findById(BookshelfId.new()) shouldBe null
+  }
 }

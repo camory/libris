@@ -153,6 +153,11 @@ true; the diary keeps the date it was found.
   JDK on that classpath, so two JDK exception types caught in one `try`
   (`IOException` and `SAXException`) read as one class to
   `UnreachableCatchBlock`, and `!!` on a Java-typed receiver goes unreported.
+- Kotlin is indented by 2 spaces, the Gradle scripts too; detekt's formatting
+  rules refuse anything else and `./gradlew detekt --auto-correct` reindents
+  a file. The arrows of a `when` are aligned in a column by hand, one column
+  per `when`: `NoMultipleSpaces` is off for it, so detekt neither aligns
+  them nor reports a misaligned one.
 - `./gradlew detekt` reports on the test sources as well as the main ones
   (T050 saw `MaxLineLength` and `ArgumentListWrapping` in a slice test from
   it). Run `./gradlew detekt` before each commit: `ImportOrdering` fails an import added by hand

@@ -8,17 +8,17 @@ import org.mockito.BDDMockito.given
 import org.mockito.Mockito.mock
 
 class ReaderPrincipalTest {
-    @Test
-    fun `the principal of a request is the reader its identity welcomes`() {
-        // Given
-        val juliette = readerNamed("juliette", "Juliette")
-        val welcomeReader = mock(WelcomeReader::class.java)
-        given(welcomeReader("juliette", "juliette@amory.fr", "Juliette")).willReturn(juliette)
+  @Test
+  fun `the principal of a request is the reader its identity welcomes`() {
+    // Given
+    val juliette = readerNamed("juliette", "Juliette")
+    val welcomeReader = mock(WelcomeReader::class.java)
+    given(welcomeReader("juliette", "juliette@amory.fr", "Juliette")).willReturn(juliette)
 
-        // When
-        val principal = ReaderPrincipal(welcomeReader).of("juliette", "juliette@amory.fr", "Juliette")
+    // When
+    val principal = ReaderPrincipal(welcomeReader).of("juliette", "juliette@amory.fr", "Juliette")
 
-        // Then
-        principal shouldBe juliette
-    }
+    // Then
+    principal shouldBe juliette
+  }
 }

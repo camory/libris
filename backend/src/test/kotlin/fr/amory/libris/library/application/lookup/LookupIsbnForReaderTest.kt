@@ -36,113 +36,113 @@ import org.junit.jupiter.api.Test
 private const val ONE_PIECE = "9782723488525"
 
 private val ROMANCE_DAWN = Edition(
-    id = EditionId.new(),
-    isbn = isbnOf(ONE_PIECE),
-    kind = MANGA,
-    title = "Romance dawn",
-    subtitle = null,
-    contributions = Contributions.of(emptyList()),
-    series = null,
-    collection = null,
-    publisher = null,
-    publicationYear = null,
-    language = null,
-    pageCount = null,
-    summary = null,
-    coverUrl = null,
+  id = EditionId.new(),
+  isbn = isbnOf(ONE_PIECE),
+  kind = MANGA,
+  title = "Romance dawn",
+  subtitle = null,
+  contributions = Contributions.of(emptyList()),
+  series = null,
+  collection = null,
+  publisher = null,
+  publicationYear = null,
+  language = null,
+  pageCount = null,
+  summary = null,
+  coverUrl = null,
 )
 
 class LookupIsbnForReaderTest {
-    private val lea = ReaderId.new()
-    private val copies = CopiesInMemory()
-    private val bookshelves = BookshelvesInMemory()
+  private val lea = ReaderId.new()
+  private val copies = CopiesInMemory()
+  private val bookshelves = BookshelvesInMemory()
 
-    @Test
-    fun `an ISBN the house lacks is answered by the sources, with no copy`() {
-        // Given
-        val lookupIsbnForReader = lookupAsking(LookupAnswering(Known(A_PREVIEW.copy(title = "Romance dawn"), null)))
+  @Test
+  fun `an ISBN the house lacks is answered by the sources, with no copy`() {
+    // Given
+    val lookupIsbnForReader = lookupAsking(LookupAnswering(Known(A_PREVIEW.copy(title = "Romance dawn"), null)))
 
-        // When
-        val result = lookupIsbnForReader(lea, isbnOf(ONE_PIECE))
+    // When
+    val result = lookupIsbnForReader(lea, isbnOf(ONE_PIECE))
 
-        // Then
-        result shouldBe IsbnLookup(
-            Found(A_PREVIEW.copy(title = "Romance dawn"), CoverCandidates.of(emptyList())),
-            emptyList(),
-        )
-    }
-
-    @Test
-    fun `an ISBN no source knows is answered unknown, with no copy`() {
-        // Given
-        val lookupIsbnForReader = lookupAsking(LookupAnswering(NothingKnown))
-
-        // When
-        val result = lookupIsbnForReader(lea, isbnOf(ONE_PIECE))
-
-        // Then
-        result shouldBe IsbnLookup(UnknownIsbn, emptyList())
-    }
-
-    @Test
-    fun `an ISBN whose sources are all down is answered sources unavailable, with no copy`() {
-        // Given
-        val lookupIsbnForReader = lookupAsking(LookupAnswering(Failed))
-
-        // When
-        val result = lookupIsbnForReader(lea, isbnOf(ONE_PIECE))
-
-        // Then
-        result shouldBe IsbnLookup(SourcesUnavailable, emptyList())
-    }
-
-    @Test
-    fun `the copies on the reader's bookshelves come with the edition, by the name of their bookshelf`() {
-        // Given
-        val leasBookshelf = bookshelfOf("Bibliothèque de Léa", Membership(lea, OWNER))
-        val salon = bookshelfOf("Salon", Membership(ReaderId.new(), OWNER), Membership(lea, VIEWER))
-        val inTheSalon = copyOf(ROMANCE_DAWN, salon)
-        val onLeasBookshelf = copyOf(ROMANCE_DAWN, leasBookshelf)
-        val lookupIsbnForReader = lookupAsking(house = EditionsInMemory().also { it.insert(ROMANCE_DAWN) })
-
-        // When
-        val result = lookupIsbnForReader(lea, isbnOf(ONE_PIECE))
-
-        // Then
-        result.copies shouldBe listOf(
-            CopyOnBookshelf(onLeasBookshelf.id, leasBookshelf.id, "Bibliothèque de Léa"),
-            CopyOnBookshelf(inTheSalon.id, salon.id, "Salon"),
-        )
-    }
-
-    @Test
-    fun `an edition whose copies sit on bookshelves the reader is not a member of is answered with no copy`() {
-        // Given
-        val juliette = ReaderId.new()
-        val juliettesBookshelf = bookshelfOf("Bibliothèque de Juliette", Membership(juliette, OWNER))
-        copyOf(ROMANCE_DAWN, juliettesBookshelf)
-        val lookupIsbnForReader = lookupAsking(house = EditionsInMemory().also { it.insert(ROMANCE_DAWN) })
-
-        // When
-        val result = lookupIsbnForReader(lea, isbnOf(ONE_PIECE))
-
-        // Then
-        result.answer.shouldBeInstanceOf<Held>().id shouldBe ROMANCE_DAWN.id
-        result.copies shouldBe emptyList()
-    }
-
-    private fun bookshelfOf(name: String, vararg memberships: Membership): Bookshelf =
-        Bookshelf(BookshelfId.new(), name, memberships.toList()).also { bookshelves.insert(it) }
-
-    private fun copyOf(edition: Edition, bookshelf: Bookshelf): Copy =
-        Copy(CopyId.new(), edition.id, bookshelf.id).also { copies.insert(it) }
-
-    private fun lookupAsking(
-        vararg sources: EditionLookup,
-        house: EditionsInMemory = EditionsInMemory(),
-    ): LookupIsbnForReader = LookupIsbnForReader(
-        LookupEditionByIsbn(house, sources.toList(), CoverLookupAnswering(null)),
-        copies,
-        bookshelves,
+    // Then
+    result shouldBe IsbnLookup(
+      Found(A_PREVIEW.copy(title = "Romance dawn"), CoverCandidates.of(emptyList())),
+      emptyList(),
     )
+  }
+
+  @Test
+  fun `an ISBN no source knows is answered unknown, with no copy`() {
+    // Given
+    val lookupIsbnForReader = lookupAsking(LookupAnswering(NothingKnown))
+
+    // When
+    val result = lookupIsbnForReader(lea, isbnOf(ONE_PIECE))
+
+    // Then
+    result shouldBe IsbnLookup(UnknownIsbn, emptyList())
+  }
+
+  @Test
+  fun `an ISBN whose sources are all down is answered sources unavailable, with no copy`() {
+    // Given
+    val lookupIsbnForReader = lookupAsking(LookupAnswering(Failed))
+
+    // When
+    val result = lookupIsbnForReader(lea, isbnOf(ONE_PIECE))
+
+    // Then
+    result shouldBe IsbnLookup(SourcesUnavailable, emptyList())
+  }
+
+  @Test
+  fun `the copies on the reader's bookshelves come with the edition, by the name of their bookshelf`() {
+    // Given
+    val leasBookshelf = bookshelfOf("Bibliothèque de Léa", Membership(lea, OWNER))
+    val salon = bookshelfOf("Salon", Membership(ReaderId.new(), OWNER), Membership(lea, VIEWER))
+    val inTheSalon = copyOf(ROMANCE_DAWN, salon)
+    val onLeasBookshelf = copyOf(ROMANCE_DAWN, leasBookshelf)
+    val lookupIsbnForReader = lookupAsking(house = EditionsInMemory().also { it.insert(ROMANCE_DAWN) })
+
+    // When
+    val result = lookupIsbnForReader(lea, isbnOf(ONE_PIECE))
+
+    // Then
+    result.copies shouldBe listOf(
+      CopyOnBookshelf(onLeasBookshelf.id, leasBookshelf.id, "Bibliothèque de Léa"),
+      CopyOnBookshelf(inTheSalon.id, salon.id, "Salon"),
+    )
+  }
+
+  @Test
+  fun `an edition whose copies sit on bookshelves the reader is not a member of is answered with no copy`() {
+    // Given
+    val juliette = ReaderId.new()
+    val juliettesBookshelf = bookshelfOf("Bibliothèque de Juliette", Membership(juliette, OWNER))
+    copyOf(ROMANCE_DAWN, juliettesBookshelf)
+    val lookupIsbnForReader = lookupAsking(house = EditionsInMemory().also { it.insert(ROMANCE_DAWN) })
+
+    // When
+    val result = lookupIsbnForReader(lea, isbnOf(ONE_PIECE))
+
+    // Then
+    result.answer.shouldBeInstanceOf<Held>().id shouldBe ROMANCE_DAWN.id
+    result.copies shouldBe emptyList()
+  }
+
+  private fun bookshelfOf(name: String, vararg memberships: Membership): Bookshelf =
+    Bookshelf(BookshelfId.new(), name, memberships.toList()).also { bookshelves.insert(it) }
+
+  private fun copyOf(edition: Edition, bookshelf: Bookshelf): Copy =
+    Copy(CopyId.new(), edition.id, bookshelf.id).also { copies.insert(it) }
+
+  private fun lookupAsking(
+    vararg sources: EditionLookup,
+    house: EditionsInMemory = EditionsInMemory(),
+  ): LookupIsbnForReader = LookupIsbnForReader(
+    LookupEditionByIsbn(house, sources.toList(), CoverLookupAnswering(null)),
+    copies,
+    bookshelves,
+  )
 }

@@ -17,176 +17,176 @@ import io.kotest.matchers.shouldBe
 import org.junit.jupiter.api.Test
 
 class EditionPreviewTest {
-    @Test
-    fun `two previews that both give every field merge to the first one`() {
-        // Given
-        val first = A_PREVIEW.copy(
-            title = "Romance dawn",
-            subtitle = "à l'aube d'une grande aventure",
-            contributions = Contributions.of(listOf(Contribution("Eiichirō Oda", WRITER))),
-            series = SeriesEntry("One piece", 1),
-            collection = "Shonen manga",
-            publisher = "Glénat",
-            publicationYear = 2013,
-            language = "fr",
-            pageCount = 203,
-            summary = "Luffy prend la mer",
-        )
-        val second = A_PREVIEW.copy(
-            title = "One Piece - Édition originale Tome 01",
-            subtitle = "un autre sous-titre",
-            contributions = Contributions.of(listOf(Contribution("Sylvain Chollet", TRANSLATOR))),
-            series = SeriesEntry("One Piece", 2),
-            collection = "Shōnen",
-            publisher = "Glénat Manga",
-            publicationYear = 2003,
-            language = "ja",
-            pageCount = 207,
-            summary = "un autre résumé",
-        )
+  @Test
+  fun `two previews that both give every field merge to the first one`() {
+    // Given
+    val first = A_PREVIEW.copy(
+      title = "Romance dawn",
+      subtitle = "à l'aube d'une grande aventure",
+      contributions = Contributions.of(listOf(Contribution("Eiichirō Oda", WRITER))),
+      series = SeriesEntry("One piece", 1),
+      collection = "Shonen manga",
+      publisher = "Glénat",
+      publicationYear = 2013,
+      language = "fr",
+      pageCount = 203,
+      summary = "Luffy prend la mer",
+    )
+    val second = A_PREVIEW.copy(
+      title = "One Piece - Édition originale Tome 01",
+      subtitle = "un autre sous-titre",
+      contributions = Contributions.of(listOf(Contribution("Sylvain Chollet", TRANSLATOR))),
+      series = SeriesEntry("One Piece", 2),
+      collection = "Shōnen",
+      publisher = "Glénat Manga",
+      publicationYear = 2003,
+      language = "ja",
+      pageCount = 207,
+      summary = "un autre résumé",
+    )
 
-        // When
-        val merged = first.merge(second)
+    // When
+    val merged = first.merge(second)
 
-        // Then
-        merged shouldBe first
-    }
+    // Then
+    merged shouldBe first
+  }
 
-    @Test
-    fun `a field the first preview leaves empty is the other's`() {
-        // Given
-        val first = A_PREVIEW.copy(title = "Romance dawn")
-        val second = A_PREVIEW.copy(
-            title = "One Piece - Édition originale Tome 01",
-            subtitle = "à l'aube d'une grande aventure",
-            contributions = Contributions.of(listOf(Contribution("Eiichirō Oda", WRITER))),
-            series = SeriesEntry("One piece", 1),
-            collection = "Shonen manga",
-            publisher = "Glénat",
-            publicationYear = 2013,
-            language = "fr",
-            pageCount = 203,
-            summary = "Luffy prend la mer",
-        )
+  @Test
+  fun `a field the first preview leaves empty is the other's`() {
+    // Given
+    val first = A_PREVIEW.copy(title = "Romance dawn")
+    val second = A_PREVIEW.copy(
+      title = "One Piece - Édition originale Tome 01",
+      subtitle = "à l'aube d'une grande aventure",
+      contributions = Contributions.of(listOf(Contribution("Eiichirō Oda", WRITER))),
+      series = SeriesEntry("One piece", 1),
+      collection = "Shonen manga",
+      publisher = "Glénat",
+      publicationYear = 2013,
+      language = "fr",
+      pageCount = 203,
+      summary = "Luffy prend la mer",
+    )
 
-        // When
-        val merged = first.merge(second)
+    // When
+    val merged = first.merge(second)
 
-        // Then
-        merged shouldBe second.copy(title = "Romance dawn")
-    }
+    // Then
+    merged shouldBe second.copy(title = "Romance dawn")
+  }
 
-    @Test
-    fun `the contributions come whole from the first preview that has any`() {
-        // Given
-        val first = A_PREVIEW.copy(contributions = Contributions.of(emptyList()))
-        val second = A_PREVIEW.copy(contributions = Contributions.of(listOf(Contribution("Eiichirō Oda", WRITER))))
-        val third = A_PREVIEW.copy(
-            contributions = Contributions.of(
-                listOf(
-                    Contribution("Eiichirō Oda", ARTIST),
-                    Contribution("Sylvain Chollet", TRANSLATOR),
-                ),
-            ),
-        )
+  @Test
+  fun `the contributions come whole from the first preview that has any`() {
+    // Given
+    val first = A_PREVIEW.copy(contributions = Contributions.of(emptyList()))
+    val second = A_PREVIEW.copy(contributions = Contributions.of(listOf(Contribution("Eiichirō Oda", WRITER))))
+    val third = A_PREVIEW.copy(
+      contributions = Contributions.of(
+        listOf(
+          Contribution("Eiichirō Oda", ARTIST),
+          Contribution("Sylvain Chollet", TRANSLATOR),
+        ),
+      ),
+    )
 
-        // When
-        val merged = first.merge(second).merge(third)
+    // When
+    val merged = first.merge(second).merge(third)
 
-        // Then
-        merged.contributions.toList() shouldBe listOf(Contribution("Eiichirō Oda", WRITER))
-    }
+    // Then
+    merged.contributions.toList() shouldBe listOf(Contribution("Eiichirō Oda", WRITER))
+  }
 
-    @Test
-    fun `a series is taken whole, the other's volume number ignored`() {
-        // Given
-        val first = A_PREVIEW.copy(series = SeriesEntry("One piece", null))
-        val second = A_PREVIEW.copy(series = SeriesEntry("One Piece", 1))
+  @Test
+  fun `a series is taken whole, the other's volume number ignored`() {
+    // Given
+    val first = A_PREVIEW.copy(series = SeriesEntry("One piece", null))
+    val second = A_PREVIEW.copy(series = SeriesEntry("One Piece", 1))
 
-        // When
-        val merged = first.merge(second)
+    // When
+    val merged = first.merge(second)
 
-        // Then
-        merged.series shouldBe SeriesEntry("One piece", null)
-    }
+    // Then
+    merged.series shouldBe SeriesEntry("One piece", null)
+  }
 
-    @Test
-    fun `the kind is the first preview's`() {
-        // Given
-        val first = A_PREVIEW.copy(kind = MANGA)
-        val second = A_PREVIEW.copy(kind = BD)
+  @Test
+  fun `the kind is the first preview's`() {
+    // Given
+    val first = A_PREVIEW.copy(kind = MANGA)
+    val second = A_PREVIEW.copy(kind = BD)
 
-        // When
-        val merged = first.merge(second)
+    // When
+    val merged = first.merge(second)
 
-        // Then
-        merged.kind shouldBe MANGA
-    }
+    // Then
+    merged.kind shouldBe MANGA
+  }
 
-    @Test
-    fun `an edition the house holds previews as itself`() {
-        // Given
-        val edition = Edition(
-            id = EditionId.new(),
-            isbn = isbnOf("9782723488525"),
-            kind = MANGA,
-            title = "Romance dawn",
-            subtitle = "Tome 01",
-            contributions = Contributions.of(listOf(Contribution("Eiichirō Oda", WRITER))),
-            series = SeriesEntry("One Piece", 1),
-            collection = "Shōnen",
-            publisher = "Glénat",
-            publicationYear = 2013,
-            language = "fr",
-            pageCount = 207,
-            summary = "Luffy rêve de devenir le roi des pirates.",
-            coverUrl = "https://couvertures.amory.fr/one-piece-01.jpg",
-        )
+  @Test
+  fun `an edition the house holds previews as itself`() {
+    // Given
+    val edition = Edition(
+      id = EditionId.new(),
+      isbn = isbnOf("9782723488525"),
+      kind = MANGA,
+      title = "Romance dawn",
+      subtitle = "Tome 01",
+      contributions = Contributions.of(listOf(Contribution("Eiichirō Oda", WRITER))),
+      series = SeriesEntry("One Piece", 1),
+      collection = "Shōnen",
+      publisher = "Glénat",
+      publicationYear = 2013,
+      language = "fr",
+      pageCount = 207,
+      summary = "Luffy rêve de devenir le roi des pirates.",
+      coverUrl = "https://couvertures.amory.fr/one-piece-01.jpg",
+    )
 
-        // When
-        val preview = EditionPreview.of(edition)
+    // When
+    val preview = EditionPreview.of(edition)
 
-        // Then
-        preview shouldBe EditionPreview(
-            isbn = isbnOf("9782723488525"),
-            kind = MANGA,
-            title = "Romance dawn",
-            subtitle = "Tome 01",
-            contributions = Contributions.of(listOf(Contribution("Eiichirō Oda", WRITER))),
-            series = SeriesEntry("One Piece", 1),
-            collection = "Shōnen",
-            publisher = "Glénat",
-            publicationYear = 2013,
-            language = "fr",
-            pageCount = 207,
-            summary = "Luffy rêve de devenir le roi des pirates.",
-        )
-    }
+    // Then
+    preview shouldBe EditionPreview(
+      isbn = isbnOf("9782723488525"),
+      kind = MANGA,
+      title = "Romance dawn",
+      subtitle = "Tome 01",
+      contributions = Contributions.of(listOf(Contribution("Eiichirō Oda", WRITER))),
+      series = SeriesEntry("One Piece", 1),
+      collection = "Shōnen",
+      publisher = "Glénat",
+      publicationYear = 2013,
+      language = "fr",
+      pageCount = 207,
+      summary = "Luffy rêve de devenir le roi des pirates.",
+    )
+  }
 
-    @Test
-    fun `an edition without an ISBN has no preview`() {
-        // Given
-        val edition = Edition(
-            id = EditionId.new(),
-            isbn = null,
-            kind = MANGA,
-            title = "Romance dawn",
-            subtitle = null,
-            contributions = Contributions.of(emptyList()),
-            series = null,
-            collection = null,
-            publisher = null,
-            publicationYear = null,
-            language = null,
-            pageCount = null,
-            summary = null,
-            coverUrl = null,
-        )
+  @Test
+  fun `an edition without an ISBN has no preview`() {
+    // Given
+    val edition = Edition(
+      id = EditionId.new(),
+      isbn = null,
+      kind = MANGA,
+      title = "Romance dawn",
+      subtitle = null,
+      contributions = Contributions.of(emptyList()),
+      series = null,
+      collection = null,
+      publisher = null,
+      publicationYear = null,
+      language = null,
+      pageCount = null,
+      summary = null,
+      coverUrl = null,
+    )
 
-        // When
-        val preview = EditionPreview.of(edition)
+    // When
+    val preview = EditionPreview.of(edition)
 
-        // Then
-        preview.shouldBeNull()
-    }
+    // Then
+    preview.shouldBeNull()
+  }
 }

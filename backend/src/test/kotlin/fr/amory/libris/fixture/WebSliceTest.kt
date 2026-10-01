@@ -14,8 +14,8 @@ import org.springframework.context.annotation.ComponentScan
 @Target(AnnotationTarget.CLASS)
 @Retention(AnnotationRetention.RUNTIME)
 @SpringBootTest(
-    classes = [WebSliceConfiguration::class],
-    webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
+  classes = [WebSliceConfiguration::class],
+  webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
 )
 @AutoConfigureRestTestClient
 annotation class WebSliceTest

@@ -4,88 +4,88 @@ import org.gradle.api.tasks.testing.logging.TestLogEvent
 import org.springframework.boot.gradle.plugin.SpringBootPlugin
 
 plugins {
-    alias(libs.plugins.kotlin.jvm)
-    alias(libs.plugins.kotlin.spring)
-    alias(libs.plugins.spring.boot)
-    alias(libs.plugins.detekt)
-    alias(libs.plugins.kover)
+  alias(libs.plugins.kotlin.jvm)
+  alias(libs.plugins.kotlin.spring)
+  alias(libs.plugins.spring.boot)
+  alias(libs.plugins.detekt)
+  alias(libs.plugins.kover)
 }
 
 version = providers.gradleProperty("version").getOrElse("dev")
 
 repositories {
-    mavenCentral()
+  mavenCentral()
 }
 
 kotlin {
-    jvmToolchain(25)
-    compilerOptions {
-        allWarningsAsErrors = true
-    }
+  jvmToolchain(25)
+  compilerOptions {
+    allWarningsAsErrors = true
+  }
 }
 
 springBoot {
-    buildInfo()
+  buildInfo()
 }
 
 dependencies {
-    implementation(platform(SpringBootPlugin.BOM_COORDINATES))
-    implementation("org.springframework.boot:spring-boot-starter-webmvc")
-    implementation("org.springframework.boot:spring-boot-starter-actuator")
-    implementation("org.springframework.boot:spring-boot-starter-security")
-    implementation("org.springframework.boot:spring-boot-starter-jdbc")
-    implementation("org.springframework.boot:spring-boot-flyway")
-    implementation("org.jetbrains.kotlin:kotlin-reflect")
-    implementation(libs.java.uuid.generator)
-    runtimeOnly("org.flywaydb:flyway-database-postgresql")
-    runtimeOnly("org.postgresql:postgresql")
+  implementation(platform(SpringBootPlugin.BOM_COORDINATES))
+  implementation("org.springframework.boot:spring-boot-starter-webmvc")
+  implementation("org.springframework.boot:spring-boot-starter-actuator")
+  implementation("org.springframework.boot:spring-boot-starter-security")
+  implementation("org.springframework.boot:spring-boot-starter-jdbc")
+  implementation("org.springframework.boot:spring-boot-flyway")
+  implementation("org.jetbrains.kotlin:kotlin-reflect")
+  implementation(libs.java.uuid.generator)
+  runtimeOnly("org.flywaydb:flyway-database-postgresql")
+  runtimeOnly("org.postgresql:postgresql")
 
-    detektPlugins(libs.detekt.formatting)
+  detektPlugins(libs.detekt.formatting)
 
-    testImplementation("org.junit.jupiter:junit-jupiter")
-    testImplementation("org.springframework.boot:spring-boot-starter-test")
-    testImplementation("org.springframework.boot:spring-boot-resttestclient")
-    testImplementation("org.springframework.boot:spring-boot-jdbc-test")
-    testImplementation(libs.kotest.assertions.core)
-    testImplementation(libs.contracteer.verifier.junit)
-    testImplementation(libs.archunit.junit5)
-    testImplementation(libs.wiremock.standalone)
-    testRuntimeOnly("org.junit.platform:junit-platform-launcher")
+  testImplementation("org.junit.jupiter:junit-jupiter")
+  testImplementation("org.springframework.boot:spring-boot-starter-test")
+  testImplementation("org.springframework.boot:spring-boot-resttestclient")
+  testImplementation("org.springframework.boot:spring-boot-jdbc-test")
+  testImplementation(libs.kotest.assertions.core)
+  testImplementation(libs.contracteer.verifier.junit)
+  testImplementation(libs.archunit.junit5)
+  testImplementation(libs.wiremock.standalone)
+  testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 }
 
 detekt {
-    buildUponDefaultConfig = true
+  buildUponDefaultConfig = true
 }
 
 tasks.withType<Detekt>().configureEach {
-    jdkHome.convention(null as Directory?)
-    jvmTarget = "21"
+  jdkHome.convention(null as Directory?)
+  jvmTarget = "21"
 }
 
 tasks.detekt {
-    classpath.from(sourceSets.main.get().compileClasspath, sourceSets.main.get().output)
+  classpath.from(sourceSets.main.get().compileClasspath, sourceSets.main.get().output)
 }
 
 tasks.test {
-    useJUnitPlatform()
-    environmentFromDotenv()
-    testLogging {
-        events(TestLogEvent.PASSED, TestLogEvent.SKIPPED, TestLogEvent.FAILED)
-        exceptionFormat = TestExceptionFormat.FULL
-    }
+  useJUnitPlatform()
+  environmentFromDotenv()
+  testLogging {
+    events(TestLogEvent.PASSED, TestLogEvent.SKIPPED, TestLogEvent.FAILED)
+    exceptionFormat = TestExceptionFormat.FULL
+  }
 }
 
 tasks.bootRun {
-    environmentFromDotenv()
+  environmentFromDotenv()
 }
 
 tasks.check {
-    dependsOn(tasks.koverXmlReport)
+  dependsOn(tasks.koverXmlReport)
 }
 
 val dotenv: Map<String, String> = file(".env").takeIf { it.isFile }?.readLines().orEmpty()
-    .filter { it.isNotBlank() && !it.startsWith("#") }
-    .associate { it.substringBefore("=").trim() to it.substringAfter("=").trim() }
+  .filter { it.isNotBlank() && !it.startsWith("#") }
+  .associate { it.substringBefore("=").trim() to it.substringAfter("=").trim() }
 
 fun ProcessForkOptions.environmentFromDotenv() =
-    dotenv.forEach { (name, value) -> if (System.getenv(name) == null) environment(name, value) }
+  dotenv.forEach { (name, value) -> if (System.getenv(name) == null) environment(name, value) }

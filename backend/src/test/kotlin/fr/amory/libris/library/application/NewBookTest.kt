@@ -11,43 +11,43 @@ import io.kotest.matchers.shouldBe
 import org.junit.jupiter.api.Test
 
 class NewBookTest {
-    @Test
-    fun `a new book without a title is none`() {
-        val book = NewBook.of(
-            isbn = isbnOf("9782723488525"),
-            kind = MANGA,
-            title = " ",
-            subtitle = null,
-            contributions = Contributions.of(listOf(Contribution("Eiichirō Oda", WRITER))),
-            series = SeriesEntry("One Piece", 1),
-            collection = null,
-            publisher = "Glénat",
-            publicationYear = 2013,
-            language = "fr",
-            pageCount = 207,
-            summary = null,
-        )
+  @Test
+  fun `a new book without a title is none`() {
+    val book = NewBook.of(
+      isbn = isbnOf("9782723488525"),
+      kind = MANGA,
+      title = " ",
+      subtitle = null,
+      contributions = Contributions.of(listOf(Contribution("Eiichirō Oda", WRITER))),
+      series = SeriesEntry("One Piece", 1),
+      collection = null,
+      publisher = "Glénat",
+      publicationYear = 2013,
+      language = "fr",
+      pageCount = 207,
+      summary = null,
+    )
 
-        book shouldBe null
-    }
+    book shouldBe null
+  }
 
-    @Test
-    fun `a new book without a title is refused`() {
-        shouldThrow<IllegalArgumentException> {
-            NewBook(
-                isbn = isbnOf("9782723488525"),
-                kind = MANGA,
-                title = " ",
-                subtitle = null,
-                contributions = Contributions.of(listOf(Contribution("Eiichirō Oda", WRITER))),
-                series = SeriesEntry("One Piece", 1),
-                collection = null,
-                publisher = "Glénat",
-                publicationYear = 2013,
-                language = "fr",
-                pageCount = 207,
-                summary = null,
-            )
-        }
+  @Test
+  fun `a new book without a title is refused`() {
+    shouldThrow<IllegalArgumentException> {
+      NewBook(
+        isbn = isbnOf("9782723488525"),
+        kind = MANGA,
+        title = " ",
+        subtitle = null,
+        contributions = Contributions.of(listOf(Contribution("Eiichirō Oda", WRITER))),
+        series = SeriesEntry("One Piece", 1),
+        collection = null,
+        publisher = "Glénat",
+        publicationYear = 2013,
+        language = "fr",
+        pageCount = 207,
+        summary = null,
+      )
     }
+  }
 }

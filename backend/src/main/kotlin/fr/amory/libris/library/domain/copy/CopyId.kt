@@ -5,7 +5,7 @@ import java.util.UUID
 
 @JvmInline
 value class CopyId(val value: UUID) {
-    companion object {
-        fun new(): CopyId = CopyId(Generators.timeBasedEpochGenerator().generate())
-    }
+  companion object {
+    fun new(): CopyId = CopyId(Generators.timeBasedEpochGenerator().generate())
+  }
 }

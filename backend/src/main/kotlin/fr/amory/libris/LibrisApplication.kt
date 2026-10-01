@@ -8,5 +8,5 @@ class LibrisApplication
 
 @Suppress("SpreadOperator")
 fun main(args: Array<String>) {
-    runApplication<LibrisApplication>(*args)
+  runApplication<LibrisApplication>(*args)
 }

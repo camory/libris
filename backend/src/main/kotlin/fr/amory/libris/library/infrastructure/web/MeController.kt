@@ -11,35 +11,35 @@ import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.RestController
 
 enum class Role {
-    READER,
-    ADMIN,
+  READER,
+  ADMIN,
 }
 
 data class CurrentReaderResponse(
-    val id: String,
-    val username: String,
-    val displayName: String,
-    val email: String,
-    val role: Role,
-    val defaultBookshelf: BookshelfResponse,
+  val id: String,
+  val username: String,
+  val displayName: String,
+  val email: String,
+  val role: Role,
+  val defaultBookshelf: BookshelfResponse,
 )
 
 @RestController
 class MeController(private val findDefaultBookshelf: FindDefaultBookshelf) {
-    @GetMapping("/api/v1/me")
-    fun me(@AuthenticationPrincipal reader: Reader, authentication: Authentication): CurrentReaderResponse =
-        CurrentReaderResponse(
-            id = reader.id.value.toString(),
-            username = reader.username,
-            displayName = reader.displayName,
-            email = reader.email,
-            role = roleOf(authentication.authorities),
-            defaultBookshelf = responseOf(findDefaultBookshelf(reader)),
-        )
+  @GetMapping("/api/v1/me")
+  fun me(@AuthenticationPrincipal reader: Reader, authentication: Authentication): CurrentReaderResponse =
+    CurrentReaderResponse(
+      id = reader.id.value.toString(),
+      username = reader.username,
+      displayName = reader.displayName,
+      email = reader.email,
+      role = roleOf(authentication.authorities),
+      defaultBookshelf = responseOf(findDefaultBookshelf(reader)),
+    )
 
-    private fun responseOf(bookshelf: Bookshelf): BookshelfResponse =
-        BookshelfResponse(bookshelf.id.value.toString(), bookshelf.name)
+  private fun responseOf(bookshelf: Bookshelf): BookshelfResponse =
+    BookshelfResponse(bookshelf.id.value.toString(), bookshelf.name)
 
-    private fun roleOf(authorities: Collection<GrantedAuthority>): Role =
-        if (authorities.any { it.authority == ADMIN_AUTHORITY }) Role.ADMIN else Role.READER
+  private fun roleOf(authorities: Collection<GrantedAuthority>): Role =
+    if (authorities.any { it.authority == ADMIN_AUTHORITY }) Role.ADMIN else Role.READER
 }

@@ -23,69 +23,69 @@ import org.springframework.test.web.servlet.client.RestTestClient
 import java.util.UUID
 
 private val TOPHE = readerNamed(
-    username = "tophe",
-    displayName = "Tophe",
-    id = ReaderId(UUID.fromString("01991c3a-5b7e-7c1d-8f2a-3d4e5f607181")),
-    defaultBookshelfId = BookshelfId(UUID.fromString("01991c3a-5b7e-7c1d-8f2a-3d4e5f607191")),
+  username = "tophe",
+  displayName = "Tophe",
+  id = ReaderId(UUID.fromString("01991c3a-5b7e-7c1d-8f2a-3d4e5f607181")),
+  defaultBookshelfId = BookshelfId(UUID.fromString("01991c3a-5b7e-7c1d-8f2a-3d4e5f607191")),
 )
 
 @WebSliceTest
 @MockitoBean(
-    types = [
-        WelcomeReader::class,
-        LookupIsbnForReader::class,
-        FindDefaultBookshelf::class,
-        AddBookToBookshelf::class,
-        BrowseCatalogue::class,
-        FindCover::class,
-    ],
+  types = [
+    WelcomeReader::class,
+    LookupIsbnForReader::class,
+    FindDefaultBookshelf::class,
+    AddBookToBookshelf::class,
+    BrowseCatalogue::class,
+    FindCover::class,
+  ],
 )
 class ProblemAdviceTest @Autowired constructor(
-    private val client: RestTestClient,
-    private val welcomeReader: WelcomeReader,
-    private val addBookToBookshelf: AddBookToBookshelf,
+  private val client: RestTestClient,
+  private val welcomeReader: WelcomeReader,
+  private val addBookToBookshelf: AddBookToBookshelf,
 ) {
-    @Test
-    fun `a bookshelf id that is not a uuid is a validation problem`() {
-        // Given
-        given(welcomeReader("tophe", "tophe@amory.fr", "Tophe")).willReturn(TOPHE)
+  @Test
+  fun `a bookshelf id that is not a uuid is a validation problem`() {
+    // Given
+    given(welcomeReader("tophe", "tophe@amory.fr", "Tophe")).willReturn(TOPHE)
 
-        // When
-        val body = add("salon", """{}""")
+    // When
+    val body = add("salon", """{}""")
 
-        // Then
-        body?.get("type") shouldBe "/problems/validation"
-        body!! shouldNotContainKey "detail"
-        verifyNoInteractions(addBookToBookshelf)
-    }
+    // Then
+    body?.get("type") shouldBe "/problems/validation"
+    body!! shouldNotContainKey "detail"
+    verifyNoInteractions(addBookToBookshelf)
+  }
 
-    @Test
-    fun `a body of the wrong types is a validation problem`() {
-        // Given
-        given(welcomeReader("tophe", "tophe@amory.fr", "Tophe")).willReturn(TOPHE)
+  @Test
+  fun `a body of the wrong types is a validation problem`() {
+    // Given
+    given(welcomeReader("tophe", "tophe@amory.fr", "Tophe")).willReturn(TOPHE)
 
-        // When
-        val body = add(TOPHE.defaultBookshelfId.value.toString(), """"Romance dawn"""")
+    // When
+    val body = add(TOPHE.defaultBookshelfId.value.toString(), """"Romance dawn"""")
 
-        // Then
-        body?.get("type") shouldBe "/problems/validation"
-        body!! shouldNotContainKey "detail"
-        verifyNoInteractions(addBookToBookshelf)
-    }
+    // Then
+    body?.get("type") shouldBe "/problems/validation"
+    body!! shouldNotContainKey "detail"
+    verifyNoInteractions(addBookToBookshelf)
+  }
 
-    private fun add(bookshelf: String, book: String): Map<String, Any>? =
-        client.post()
-            .uri("/api/v1/bookshelves/{id}/books", bookshelf)
-            .headers {
-                it.add("Remote-User", "tophe")
-                it.add("Remote-Name", "Tophe")
-                it.add("Remote-Email", "tophe@amory.fr")
-                it.add("X-Requested-With", "XMLHttpRequest")
-            }
-            .contentType(APPLICATION_JSON)
-            .body(book)
-            .exchange()
-            .expectStatus().isBadRequest
-            .expectBody(object : ParameterizedTypeReference<Map<String, Any>>() {})
-            .returnResult().responseBody
+  private fun add(bookshelf: String, book: String): Map<String, Any>? =
+    client.post()
+      .uri("/api/v1/bookshelves/{id}/books", bookshelf)
+      .headers {
+        it.add("Remote-User", "tophe")
+        it.add("Remote-Name", "Tophe")
+        it.add("Remote-Email", "tophe@amory.fr")
+        it.add("X-Requested-With", "XMLHttpRequest")
+      }
+      .contentType(APPLICATION_JSON)
+      .body(book)
+      .exchange()
+      .expectStatus().isBadRequest
+      .expectBody(object : ParameterizedTypeReference<Map<String, Any>>() {})
+      .returnResult().responseBody
 }
