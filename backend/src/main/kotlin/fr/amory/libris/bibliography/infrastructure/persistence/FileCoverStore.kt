@@ -8,10 +8,10 @@ import kotlin.io.path.isRegularFile
 import kotlin.io.path.readBytes
 
 class FileCoverStore(private val dir: Path) : CoverStore {
-    override fun read(name: CoverName): Cover? {
-        val bytes = dir.resolve(name.value).takeIf { it.isRegularFile() }?.readBytes() ?: return null
-        return mediaTypeOf(bytes)?.let { Cover(it, bytes) }
-    }
+    override fun read(name: CoverName): Cover? =
+        dir.resolve(name.value).takeIf { it.isRegularFile() }?.readBytes()?.let { bytes ->
+            mediaTypeOf(bytes)?.let { Cover(it, bytes) }
+        }
 
     private fun mediaTypeOf(bytes: ByteArray): String? = when {
         bytes.holdsAt(0, JPEG_START) -> "image/jpeg"
