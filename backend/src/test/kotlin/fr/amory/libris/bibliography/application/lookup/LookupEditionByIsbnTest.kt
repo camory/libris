@@ -15,8 +15,10 @@ import fr.amory.libris.bibliography.domain.lookup.ExternalLookupResult.Failed
 import fr.amory.libris.bibliography.domain.lookup.ExternalLookupResult.Known
 import fr.amory.libris.bibliography.domain.lookup.ExternalLookupResult.NothingKnown
 import fr.amory.libris.bibliography.domain.lookup.Source.BNF
+import fr.amory.libris.bibliography.domain.lookup.Source.INVENTAIRE
 import fr.amory.libris.bibliography.domain.lookup.Source.OPEN_LIBRARY
 import fr.amory.libris.bibliography.fixture.A_PREVIEW
+import fr.amory.libris.bibliography.fixture.CoverLookupAnswering
 import fr.amory.libris.bibliography.fixture.EditionsInMemory
 import fr.amory.libris.bibliography.fixture.LookupAnswering
 import fr.amory.libris.bibliography.fixture.LookupAnsweringAtRendezvous
@@ -53,6 +55,7 @@ class LookupEditionByIsbnTest {
         val lookupEditionByIsbn = LookupEditionByIsbn(
             EditionsInMemory().also { it.insert(ROMANCE_DAWN) },
             listOf(source),
+            NO_COVER_LOOKUP,
         )
 
         // When
@@ -72,6 +75,7 @@ class LookupEditionByIsbnTest {
                 LookupAnswering(Known(A_PREVIEW.copy(title = "Tome 01", pageCount = 207)), OPEN_LIBRARY),
                 LookupAnswering(Known(A_PREVIEW.copy(title = "Romance dawn")), BNF),
             ),
+            NO_COVER_LOOKUP,
         )
 
         // When
@@ -90,6 +94,7 @@ class LookupEditionByIsbnTest {
                 LookupAnswering(Failed),
                 LookupAnswering(Known(A_PREVIEW.copy(title = "Romance dawn"))),
             ),
+            NO_COVER_LOOKUP,
         )
 
         // When
@@ -105,6 +110,7 @@ class LookupEditionByIsbnTest {
         val lookupEditionByIsbn = LookupEditionByIsbn(
             EditionsInMemory(),
             listOf(LookupAnswering(NothingKnown), LookupAnswering(NothingKnown)),
+            NO_COVER_LOOKUP,
         )
 
         // When
@@ -120,6 +126,7 @@ class LookupEditionByIsbnTest {
         val lookupEditionByIsbn = LookupEditionByIsbn(
             EditionsInMemory(),
             listOf(LookupAnswering(Failed), LookupAnswering(Failed)),
+            NO_COVER_LOOKUP,
         )
 
         // When
@@ -135,6 +142,7 @@ class LookupEditionByIsbnTest {
         val lookupEditionByIsbn = LookupEditionByIsbn(
             EditionsInMemory(),
             listOf(LookupAnswering(Failed), LookupAnswering(NothingKnown)),
+            NO_COVER_LOOKUP,
         )
 
         // When
@@ -154,6 +162,7 @@ class LookupEditionByIsbnTest {
                 LookupAnsweringAtRendezvous(rendezvous, Known(A_PREVIEW.copy(title = "Romance dawn"))),
                 LookupAnsweringAtRendezvous(rendezvous, Known(A_PREVIEW.copy(pageCount = 207))),
             ),
+            NO_COVER_LOOKUP,
         )
 
         // When
@@ -172,6 +181,7 @@ class LookupEditionByIsbnTest {
                 LookupAnswering(Known(A_PREVIEW.copy(coverUrl = "https://bnf/b")), BNF),
                 LookupAnswering(Known(A_PREVIEW.copy(coverUrl = "https://openlibrary/a")), OPEN_LIBRARY),
             ),
+            NO_COVER_LOOKUP,
         )
 
         // When
@@ -182,5 +192,32 @@ class LookupEditionByIsbnTest {
             CoverCandidate(OPEN_LIBRARY, "https://openlibrary/a"),
             CoverCandidate(BNF, "https://bnf/b"),
         )
+    }
+
+    @Test
+    fun `inventaire io's picture comes before the edition sources' covers`() {
+        // Given
+        val lookupEditionByIsbn = LookupEditionByIsbn(
+            EditionsInMemory(),
+            listOf(
+                LookupAnswering(Known(A_PREVIEW.copy(coverUrl = "https://bnf/b")), BNF),
+                LookupAnswering(Known(A_PREVIEW.copy(coverUrl = "https://openlibrary/a")), OPEN_LIBRARY),
+            ),
+            CoverLookupAnswering(CoverCandidate(INVENTAIRE, "https://inventaire/c")),
+        )
+
+        // When
+        val result = lookupEditionByIsbn(isbnOf("9782723488525"))
+
+        // Then
+        result.shouldBeInstanceOf<Found>().covers.toList() shouldBe listOf(
+            CoverCandidate(INVENTAIRE, "https://inventaire/c"),
+            CoverCandidate(OPEN_LIBRARY, "https://openlibrary/a"),
+            CoverCandidate(BNF, "https://bnf/b"),
+        )
+    }
+
+    private companion object {
+        val NO_COVER_LOOKUP get() = CoverLookupAnswering(null)
     }
 }

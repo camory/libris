@@ -1,6 +1,8 @@
 package fr.amory.libris.bibliography.fixture
 
 import fr.amory.libris.bibliography.domain.Isbn
+import fr.amory.libris.bibliography.domain.lookup.CoverCandidate
+import fr.amory.libris.bibliography.domain.lookup.ExternalCoverLookup
 import fr.amory.libris.bibliography.domain.lookup.ExternalEditionLookup
 import fr.amory.libris.bibliography.domain.lookup.ExternalLookupResult
 import fr.amory.libris.bibliography.domain.lookup.Source
@@ -19,6 +21,17 @@ class LookupAnswering(
     override fun lookUp(isbn: Isbn): ExternalLookupResult {
         isbns += isbn
         return answer
+    }
+}
+
+class CoverLookupAnswering(private val candidate: CoverCandidate?) : ExternalCoverLookup {
+    private val isbns = mutableListOf<Isbn>()
+
+    val asked: List<Isbn> get() = isbns.toList()
+
+    override fun lookUp(isbn: Isbn): CoverCandidate? {
+        isbns += isbn
+        return candidate
     }
 }
 

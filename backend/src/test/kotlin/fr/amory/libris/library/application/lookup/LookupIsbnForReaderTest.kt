@@ -15,6 +15,7 @@ import fr.amory.libris.bibliography.domain.lookup.ExternalLookupResult.Failed
 import fr.amory.libris.bibliography.domain.lookup.ExternalLookupResult.Known
 import fr.amory.libris.bibliography.domain.lookup.ExternalLookupResult.NothingKnown
 import fr.amory.libris.bibliography.fixture.A_PREVIEW
+import fr.amory.libris.bibliography.fixture.CoverLookupAnswering
 import fr.amory.libris.bibliography.fixture.EditionsInMemory
 import fr.amory.libris.bibliography.fixture.LookupAnswering
 import fr.amory.libris.bibliography.fixture.isbnOf
@@ -140,7 +141,7 @@ class LookupIsbnForReaderTest {
         vararg sources: ExternalEditionLookup,
         house: EditionsInMemory = EditionsInMemory(),
     ): LookupIsbnForReader = LookupIsbnForReader(
-        LookupEditionByIsbn(house, sources.toList()),
+        LookupEditionByIsbn(house, sources.toList(), CoverLookupAnswering(null)),
         copies,
         bookshelves,
     )

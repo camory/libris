@@ -7,5 +7,6 @@ import java.time.Duration
 data class SourcesProperties(
     val bnfUrl: String,
     val openLibraryUrl: String,
+    val inventaireUrl: String,
     val timeout: Duration,
 )

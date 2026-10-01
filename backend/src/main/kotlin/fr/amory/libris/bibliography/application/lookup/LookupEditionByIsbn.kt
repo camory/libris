@@ -10,6 +10,7 @@ import fr.amory.libris.bibliography.domain.edition.EditionRepository
 import fr.amory.libris.bibliography.domain.lookup.CoverCandidate
 import fr.amory.libris.bibliography.domain.lookup.CoverCandidates
 import fr.amory.libris.bibliography.domain.lookup.EditionPreview
+import fr.amory.libris.bibliography.domain.lookup.ExternalCoverLookup
 import fr.amory.libris.bibliography.domain.lookup.ExternalEditionLookup
 import fr.amory.libris.bibliography.domain.lookup.ExternalLookupResult
 import fr.amory.libris.bibliography.domain.lookup.ExternalLookupResult.Failed
@@ -22,6 +23,7 @@ import java.util.concurrent.Executors.newVirtualThreadPerTaskExecutor
 class LookupEditionByIsbn(
     private val editions: EditionRepository,
     lookups: List<ExternalEditionLookup>,
+    private val coverLookup: ExternalCoverLookup,
 ) {
     private val lookups = lookups.sortedBy { it.source }
 
@@ -33,15 +35,15 @@ class LookupEditionByIsbn(
         val results = askEveryLookup(isbn)
         val previews = results.filterIsInstance<Known>().map { it.preview }
         return when {
-            previews.isNotEmpty() -> Found(previews.reduce(EditionPreview::merge), coversOf(results))
+            previews.isNotEmpty() -> Found(previews.reduce(EditionPreview::merge), coversOf(results, isbn))
             results.all { it == Failed } -> SourcesUnavailable
             else -> UnknownIsbn
         }
     }
 
-    private fun coversOf(results: List<ExternalLookupResult>): CoverCandidates =
+    private fun coversOf(results: List<ExternalLookupResult>, isbn: Isbn): CoverCandidates =
         CoverCandidates.of(
-            lookups.zip(results).mapNotNull { (lookup, result) ->
+            listOfNotNull(coverLookup.lookUp(isbn)) + lookups.zip(results).mapNotNull { (lookup, result) ->
                 (result as? Known)?.preview?.coverUrl?.let { CoverCandidate(lookup.source, it) }
             },
         )
