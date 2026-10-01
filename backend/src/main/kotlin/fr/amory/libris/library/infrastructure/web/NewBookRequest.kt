@@ -8,6 +8,7 @@ import fr.amory.libris.bibliography.domain.SeriesEntry
 import fr.amory.libris.library.application.NewBook
 import fr.amory.libris.library.infrastructure.web.NewBookValidation.Accepted
 import fr.amory.libris.library.infrastructure.web.NewBookValidation.Refused
+import fr.amory.libris.shared.infrastructure.web.ValidationErrorResponse
 
 sealed interface NewBookValidation {
     data class Accepted(val book: NewBook) : NewBookValidation
@@ -38,7 +39,6 @@ data class NewBookRequest(
     val language: String?,
     val pageCount: Int?,
     val summary: String?,
-    val coverUrl: String?,
 ) {
     fun validate(): NewBookValidation {
         val isbn = isbn13?.let { isbn13Of(it) }
@@ -57,7 +57,6 @@ data class NewBookRequest(
             language = language,
             pageCount = pageCount,
             summary = summary,
-            coverUrl = coverUrl,
         )
         val errors = buildList {
             if (isbn13 != null && isbn == null) add(ValidationErrorResponse("isbn13", "not-an-isbn"))

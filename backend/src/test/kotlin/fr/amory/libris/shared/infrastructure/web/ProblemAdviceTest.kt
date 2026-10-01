@@ -1,5 +1,6 @@
-package fr.amory.libris.library.infrastructure.web
+package fr.amory.libris.shared.infrastructure.web
 
+import fr.amory.libris.bibliography.application.cover.FindCover
 import fr.amory.libris.fixture.WebSliceTest
 import fr.amory.libris.library.application.AddBookToBookshelf
 import fr.amory.libris.library.application.FindDefaultBookshelf
@@ -36,6 +37,7 @@ private val TOPHE = readerNamed(
         FindDefaultBookshelf::class,
         AddBookToBookshelf::class,
         BrowseCatalogue::class,
+        FindCover::class,
     ],
 )
 class ProblemAdviceTest @Autowired constructor(

@@ -130,7 +130,6 @@ class CoversScenarios @Autowired constructor(
     }
 
     @Test
-    @Disabled("covers")
     fun `S5 Libris serves a stored cover, an address naming no cover`() {
         // Given
         val paul = reader("paul", "Paul")
@@ -330,7 +329,6 @@ class CoversScenarios @Autowired constructor(
     }
 
     @Test
-    @Disabled("covers")
     fun `S10 A held edition offers its own cover, not yet stored`() {
         // Given
         val hugo = reader("hugo", "Hugo")
@@ -369,7 +367,7 @@ class CoversScenarios @Autowired constructor(
     private fun picture(reader: Map<String, List<String>>, path: String): RestTestClient.ResponseSpec = http.get()
         .uri(path)
         .headers { it.putAll(reader) }
-        .accept(IMAGE_JPEG, WEBP, APPLICATION_PROBLEM_JSON)
+        .accept(parseMediaType("image/*"), APPLICATION_PROBLEM_JSON)
         .exchange()
 
     private fun servedAs(reader: Map<String, List<String>>, cover: String, type: MediaType) {

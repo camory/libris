@@ -60,7 +60,7 @@ class AddBookToBookshelfTest {
             language = "fr",
             pageCount = 208,
             summary = "Luffy prend la mer pour devenir le roi des pirates.",
-            coverUrl = "https://covers.libris.test/9782723488525.jpg",
+            coverUrl = null,
         )
         val copy = copies.stored.single()
         copy shouldBe Copy(copy.id, edition.id, bookshelf.id)
@@ -206,6 +206,5 @@ class AddBookToBookshelfTest {
         language = "fr",
         pageCount = 208,
         summary = "Luffy prend la mer pour devenir le roi des pirates.",
-        coverUrl = "https://covers.libris.test/9782723488525.jpg",
     )
 }

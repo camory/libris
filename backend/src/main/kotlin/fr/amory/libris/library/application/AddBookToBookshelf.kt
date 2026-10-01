@@ -57,6 +57,6 @@ class AddBookToBookshelf(
         language = book.language,
         pageCount = book.pageCount,
         summary = book.summary,
-        coverUrl = book.coverUrl,
+        coverUrl = null,
     )
 }

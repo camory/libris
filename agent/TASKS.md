@@ -160,7 +160,7 @@ read the empty sentence.*
 
 ## Covers — specs/covers.md
 
-Contract: release `v0.8.1` of `camory/libris-api`, after `v0.7.0`: `Edition`
+Contract: release `v0.8.2` of `camory/libris-api`, after `v0.7.0`: `Edition`
 loses `coverUrl`, `IsbnLookup` gains `id` and `covers`, `NewBook` gains
 `coverSource`, `Book` gains `coverUrl`, and the cover operation is new; the
 lookup keeps its deprecated `coverUrl`, so each side deploys alone. Fields and
@@ -169,19 +169,22 @@ the frontend pin moves in T060, once T059 is deployed. Release `v0.9.0`, the
 lookup losing `coverUrl`, removes a field, so the frontend goes first: the
 backend pins it in T064, once T063 is deployed. No other task touches the
 contract (D04). `v0.8.1` only keys the add's `201` again, so that its case
-sends an ISBN whose check digit holds; nothing pins `v0.8.0`.
+sends an ISBN whose check digit holds; `v0.8.2` adds the cover operation's
+`400` for a text that is not a cover name; nothing pins `v0.8.0` or
+`v0.8.1`.
 
 The backend is deployed once T059 is merged, not before: from T051 the
 catalogue rows show a cover only once the worker has stored it (Tophe,
 2026-09-30).
 
-- [ ] T051 Backend: covers on `v0.8.1`, the thinnest answer.
-      `ApiContractTest` pins `v0.8.1` (D04). The lookup answers `id`, the
+- [x] T051 Backend: covers on `v0.8.2`, the thinnest answer.
+      `ApiContractTest` pins `v0.8.2` (D04). The lookup answers `id`, the
       house's edition or null, `covers` empty, `coverUrl` as today; the add
       takes `coverSource`, no longer a cover address; `Book.coverUrl` is null.
       The cover operation serves by name a picture of the covers directory,
       one environment variable, with its year-long `Cache-Control`, else `404`
-      `/problems/not-found` (D09, D11); `deploy/compose.yaml` gives the
+      `/problems/not-found`, a text that is not a cover name refused with
+      `400` `/problems/validation` (D09, D11); `deploy/compose.yaml` gives the
       backend that variable and mounts there a second named volume, `covers`
       (D09); the fast entry's whole-body case gains the fields (D07).
       Realises S5's not-found and S10 not yet stored;
@@ -252,11 +255,14 @@ catalogue rows show a cover only once the worker has stored it (Tophe,
       schedule a configuration property, and takes the editions awaiting a
       picture one at a time, in the order they were added; two wakings never
       fetch at once (D02). Realises S9, and S12's run at start; un-skips the
-      backend test of S9; the schedule is checked by hand in the log.
+      backend test of S9; the schedule is checked by hand in the log. The
+      backend `Dockerfile` creates `/var/lib/libris/covers` owned by the
+      `libris` user, so the `covers` volume mounted there is writable; the
+      first stored cover on staging is checked by hand.
 
-- [ ] T060 Frontend: covers on `v0.8.1`, the card shows the first candidate.
+- [ ] T060 Frontend: covers on `v0.8.2`, the card shows the first candidate.
       Precondition (human): T059 deployed (D04).
-      `vitest.global-setup.ts` pins `v0.8.1` (D04). The lookup's found answer
+      `vitest.global-setup.ts` pins `v0.8.2` (D04). The lookup's found answer
       holds `id` and `covers` as required, its edition no `coverUrl`; `Book`
       holds its own `coverUrl`, which the rows show; the add sends
       `coverSource` null until T062. The card shows the first candidate, the

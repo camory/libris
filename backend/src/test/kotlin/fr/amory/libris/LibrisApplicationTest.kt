@@ -10,7 +10,7 @@ import org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDO
 import org.springframework.test.web.servlet.client.RestTestClient
 import java.time.Duration.ofSeconds
 
-@SpringBootTest(webEnvironment = RANDOM_PORT)
+@SpringBootTest(webEnvironment = RANDOM_PORT, properties = ["LIBRIS_COVERS_DIR=build/test-covers"])
 @AutoConfigureRestTestClient
 class LibrisApplicationTest @Autowired constructor(
     private val client: RestTestClient,

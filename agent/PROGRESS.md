@@ -264,3 +264,78 @@ Format:
   before `Onepiece`), where the JDK `Collator` ignored them; no scenario
   names it. A copy removed between the page and the copies would fail
   `getValue`; nothing removes copies yet.
+
+## 2026-09-30 — T051 Backend: covers on `v0.8.1`, the thinnest answer — done
+- Did: the backend pins `v0.8.2`, `v0.8.1` until the review; the lookup answers `id` and `covers: []`,
+  the add stores a new edition with no cover address, the catalogue answers
+  `coverUrl: null`. `GET /api/v1/covers/{name}` serves the file `{name}` of
+  `LIBRIS_COVERS_DIR` as JPEG or WebP by its bytes, kept a year, else `404`,
+  and `400` to a text that is not a cover name.
+- Decided: `CoverName`, `Cover` and the port `CoverStore` in
+  `bibliography.domain.cover`; `FindCover` in `bibliography.application.cover`;
+  `FileCoverStore`, `CoversProperties` and `CoversConfig` in
+  `bibliography.infrastructure.persistence`, as the brief placed them.
+- Decided, on review with Tophe: the backend knows no picture format, the
+  contract answering `image/*`. `Cover` is a media type and bytes: its
+  constructor refuses a media type that is not an image and `Cover.of`
+  answers null for one. The media type is saved beside the picture, in the
+  file `<name>.type`; `FileCoverStore` reads both through `Cover.of`, a
+  picture without an image's media type is no cover, and `CoverController`
+  passes the type on. `CoverControllerTest` is gone: `ApiContractTest`
+  proves the operation. The brief's `CoverFormat` and the reading of the
+  first bytes are gone.
+- Decided, on review with Tophe: `CoverController` is the bibliography's,
+  in the new `bibliography.infrastructure.web`, since it calls `FindCover`;
+  the brief had it in the library's web package. `Problems.kt` and
+  `ProblemAdvice` moved to `shared.infrastructure.web`, beside the
+  contexts, so both web packages answer the same problems;
+  `WebSliceConfiguration` scans the three. `ArchitectureTest` gained *what
+  is shared knows nothing of the contexts*, and its infrastructure rule
+  lets a package depend on `shared`. `SecurityConfig` and its filter moved
+  there too: the filter asks `RequestPrincipal`, an interface of `shared`,
+  for the principal, and the library's `ReaderPrincipal` answers the reader
+  `WelcomeReader` welcomes. `SecurityConfigTest` moved with the chain and
+  stubs `RequestPrincipal`.
+- Decided, on review with Tophe, after measuring by mutation what the
+  contract and scenario tests catch without them: `IsbnControllerTest`
+  keeps one case, the `id` of a held edition, which nothing else proves
+  (the contract leaves `id` nullable). Its field-by-field case went, a
+  swapped mapping being caught by `FastEntryScenarios`; its four refusals
+  went, the verifier sending none of them: the EAN is `IsbnTest`'s, the
+  separators `NewBookRequestTest`'s, and the ten digits and the trailing
+  space are two plain cases of the new `Isbn13Test` on `isbn13Of`.
+  `CatalogueControllerTest` keeps the null `coverUrl` of an edition that
+  carries an old cover address, which nothing else proves, and leaves the
+  presence of the field to `ApiContractTest`. The `PROPOSED.md` item on
+  the refusals is closed.
+- Left over, for the brief of the task that stores a picture: the media
+  type is extracted before the store, the one of the picture as stored
+  (after normalisation when it is taller than 600), and the use case builds
+  the `Cover`, which checks it; the store writes the picture and
+  `<name>.type`.
+- Decided, on review with Tophe: a malformed name goes through
+  `CoverName.of` in `CoverController` and never reaches `findCover` or the
+  file system; it is `400` `/problems/validation` with
+  `{field: "name", code: "not-a-cover-name"}`, on contract `v0.8.2`, keyed
+  `400_NOT_A_COVER_NAME`, `ApiContractTest` its only proof. The brief had
+  it `404`.
+- Decided: guards proven by mutation and reverted: a name of any length
+  (`{64}` dropped, red on 63 digits), bytes shorter than `WEBP`'s offset (the
+  size check dropped, red on `RIFF` alone with an index out of bounds).
+- Decided: `ApiContractTest`'s constructor reached seven parameters with
+  `FindCover`; `@Suppress("LongParameterList")` on the class, as `NewBook.of`.
+- Deviations from the brief: step 1 was also red on `404_NOT_MY_BOOKSHELF`
+  (403), the stubbed `NewBook` no longer matching, as for the keyed `201`;
+  step 4 made it green. Step 10 was green on its first run, step 9's
+  offset check already refusing both; its mutation was run instead. Step 14
+  also answered `404` to a name `findCover` does not find, so `404_NO_COVER`
+  went green there rather than at step 17. The backend started without
+  `LIBRIS_COVERS_DIR`, seen by `bootRun` without the variable: the
+  binder keeps `${LIBRIS_COVERS_DIR}` as a literal path. The setting is
+  `${LIBRIS_COVERS_DIR:}` and `LibrisApplicationTest` gained a case proving
+  the start refused; Tophe dropped it and the binding case on review, tests
+  of a setting's binding being unwanted. `FastEntryScenarios` *S1* gained
+  `id` and `covers`, as the brief allowed.
+- Left over: the `Dockerfile` must create the covers directory for the
+  `libris` user before T053 writes (in `PROPOSED.md`); `Edition.coverUrl` and
+  `cover_url` stay, read by the held lookup and by T057.

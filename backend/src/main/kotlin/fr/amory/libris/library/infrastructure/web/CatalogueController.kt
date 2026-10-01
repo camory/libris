@@ -60,7 +60,7 @@ class CatalogueController(private val browseCatalogue: BrowseCatalogue) {
         language = held.edition.language,
         pageCount = held.edition.pageCount,
         summary = held.edition.summary,
-        coverUrl = held.edition.coverUrl,
+        coverUrl = null,
         copies = held.copies.map { copyOf(it) },
     )
 

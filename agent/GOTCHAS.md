@@ -168,8 +168,18 @@ true; the diary keeps the date it was found.
 - `UnusedPrivateMember` fails two private overloads of one name that are
   called only from lambdas (`map { responseOf(it) }`), though both are used;
   give them distinct names (`bookOf`, `copyOf`).
+- Jackson 3 leaves `FAIL_ON_UNKNOWN_PROPERTIES` off: a body field no DTO
+  declares is dropped, never refused (the add takes `coverSource` unread).
+- `LongParameterList` counts a test class's `@Autowired` constructor too
+  (`ApiContractTest` at seven); `@Suppress("LongParameterList")` goes on its
+  own line above the class, since an annotation inside
+  `class X @Suppress(...) @Autowired constructor(` trips
+  `AnnotationOnSeparateLine`.
 - `check` also runs `jar`, which writes a `-plain.jar` beside the boot jar
   in `build/libs`; the image's build stage runs `bootJar` only.
+- A named volume mounted where the image has no directory is root-owned, so
+  the non-root backend cannot write it until the image creates that
+  directory for its user.
 
 ## Backend tests
 - The first HTTP request and the first XML parse of a JVM cost more than a
@@ -198,6 +208,25 @@ true; the diary keeps the date it was found.
   `null` throws `eq(...) must not be null`. The form that works:
   `browseCatalogue(ReaderId(eq(id.value) ?: id.value), any())`; `any()` is
   fine for a nullable value-class parameter.
+- A cover is the file named by its `CoverName` alone, no extension, in
+  `LIBRIS_COVERS_DIR` (`libris.covers.directory: ${LIBRIS_COVERS_DIR:}`);
+  its media type is the text of the file `<name>.type` beside it, and a
+  picture without one, or with one that is not `image/…`, is no cover.
+  Nothing reads a format from the bytes. `ScenarioTest` gives
+  the variable a temporary directory, `LibrisApplicationTest` its own
+  property. A Mockito
+  matcher on a `CoverName` argument takes a valid fallback, since the
+  constructor checks it: `findCover(CoverName(any() ?: NO_COVER))`.
+- The binder keeps an unresolved `${VAR}` as its literal text: a setting
+  bound from `${VAR}` alone starts without the variable (T051 found
+  the covers directory bound to the path `${LIBRIS_COVERS_DIR}`). An empty
+  default, `${VAR:}`, binds null, which a non-null property refuses at
+  start (seen with `bootRun`; no test covers it).
+- A variable must not carry the environment form of its own setting's name
+  (`LIBRIS_COVERS_DIR` for `libris.covers.dir`): the binder then reads it
+  straight from the environment, above `application.yaml`, and an exported
+  variable (from `backend/.env`) beats the value a test sets for it. Measured
+  2026-10-01; hence `libris.covers.directory`.
 - A scenario class boots the whole application and commits what its
   requests write; `FreshSchema` on `JdbcSliceTest` and `ScenarioTest` is
   what keeps the JDBC slice from meeting a reader it did not insert.
