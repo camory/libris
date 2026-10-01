@@ -22,7 +22,6 @@ import fr.amory.libris.library.domain.bookshelf.BookshelfId
 import fr.amory.libris.library.domain.copy.CopyId
 import fr.amory.libris.library.domain.reader.ReaderId
 import fr.amory.libris.library.fixture.readerNamed
-import io.kotest.matchers.collections.shouldContain
 import io.kotest.matchers.shouldBe
 import org.junit.jupiter.api.Test
 import org.mockito.BDDMockito.given
@@ -104,7 +103,6 @@ class CatalogueControllerTest @Autowired constructor(
         @Suppress("UNCHECKED_CAST")
         val book = (body?.get("books") as List<Map<String, Any?>>).single()
         book["id"] shouldBe "01991c3a-5b7e-7c1d-8f2a-3d4e5f6071a1"
-        book.keys shouldContain "coverUrl"
         book["coverUrl"] shouldBe null
     }
 }
