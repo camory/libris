@@ -367,7 +367,7 @@ class CoversScenarios @Autowired constructor(
     private fun picture(reader: Map<String, List<String>>, path: String): RestTestClient.ResponseSpec = http.get()
         .uri(path)
         .headers { it.putAll(reader) }
-        .accept(IMAGE_JPEG, WEBP, APPLICATION_PROBLEM_JSON)
+        .accept(parseMediaType("image/*"), APPLICATION_PROBLEM_JSON)
         .exchange()
 
     private fun servedAs(reader: Map<String, List<String>>, cover: String, type: MediaType) {
