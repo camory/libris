@@ -8,5 +8,5 @@ import org.springframework.context.annotation.Configuration
 @EnableConfigurationProperties(CoversProperties::class)
 class CoversConfig {
     @Bean
-    fun fileCoverStore(covers: CoversProperties) = FileCoverStore(covers.dir)
+    fun fileCoverStore(covers: CoversProperties) = FileCoverStore(covers.directory)
 }

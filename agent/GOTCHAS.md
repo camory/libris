@@ -209,7 +209,7 @@ true; the diary keeps the date it was found.
   `browseCatalogue(ReaderId(eq(id.value) ?: id.value), any())`; `any()` is
   fine for a nullable value-class parameter.
 - A cover is the file named by its `CoverName` alone, no extension, in
-  `LIBRIS_COVERS_DIR` (`libris.covers.dir: ${LIBRIS_COVERS_DIR:}`); its
+  `LIBRIS_COVERS_DIR` (`libris.covers.directory: ${LIBRIS_COVERS_DIR:}`); its
   format is read from its first bytes, and bytes of neither JPEG nor WebP
   are no cover. `ScenarioTest` gives the variable a
   temporary directory, `LibrisApplicationTest` its own property. A Mockito
@@ -217,9 +217,14 @@ true; the diary keeps the date it was found.
   constructor checks it: `findCover(CoverName(any() ?: NO_COVER))`.
 - The binder keeps an unresolved `${VAR}` as its literal text: a setting
   bound from `${VAR}` alone starts without the variable (T051 found
-  `libris.covers.dir` bound to the path `${LIBRIS_COVERS_DIR}`). An empty
+  the covers directory bound to the path `${LIBRIS_COVERS_DIR}`). An empty
   default, `${VAR:}`, binds null, which a non-null property refuses at
   start (seen with `bootRun`; no test covers it).
+- A variable must not carry the environment form of its own setting's name
+  (`LIBRIS_COVERS_DIR` for `libris.covers.dir`): the binder then reads it
+  straight from the environment, above `application.yaml`, and an exported
+  variable (from `backend/.env`) beats the value a test sets for it. Measured
+  2026-10-01; hence `libris.covers.directory`.
 - A scenario class boots the whole application and commits what its
   requests write; `FreshSchema` on `JdbcSliceTest` and `ScenarioTest` is
   what keeps the JDBC slice from meeting a reader it did not insert.
