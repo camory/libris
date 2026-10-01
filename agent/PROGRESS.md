@@ -296,6 +296,18 @@ Format:
   for the principal, and the library's `ReaderPrincipal` answers the reader
   `WelcomeReader` welcomes. `SecurityConfigTest` moved with the chain and
   stubs `RequestPrincipal`.
+- Decided, on review with Tophe, after measuring by mutation what the
+  contract and scenario tests catch without them: `IsbnControllerTest`
+  keeps one case, the `id` of a held edition, which nothing else proves
+  (the contract leaves `id` nullable). Its field-by-field case went, a
+  swapped mapping being caught by `FastEntryScenarios`; its four refusals
+  went, the verifier sending none of them: the EAN is `IsbnTest`'s, the
+  separators `NewBookRequestTest`'s, and the ten digits and the trailing
+  space are two plain cases of the new `Isbn13Test` on `isbn13Of`.
+  `CatalogueControllerTest` keeps the null `coverUrl` of an edition that
+  carries an old cover address, which nothing else proves, and leaves the
+  presence of the field to `ApiContractTest`. The `PROPOSED.md` item on
+  the refusals is closed.
 - Left over, for the brief of the task that stores a picture: the media
   type is extracted before the store, the one of the picture as stored
   (after normalisation when it is taller than 600), and the use case builds
