@@ -266,10 +266,11 @@ Format:
   `getValue`; nothing removes copies yet.
 
 ## 2026-09-30 — T051 Backend: covers on `v0.8.1`, the thinnest answer — done
-- Did: the backend pins `v0.8.1`; the lookup answers `id` and `covers: []`,
+- Did: the backend pins `v0.8.2`, `v0.8.1` until the review; the lookup answers `id` and `covers: []`,
   the add stores a new edition with no cover address, the catalogue answers
   `coverUrl: null`. `GET /api/v1/covers/{name}` serves the file `{name}` of
-  `LIBRIS_COVERS_DIR` as JPEG or WebP by its bytes, kept a year, else `404`.
+  `LIBRIS_COVERS_DIR` as JPEG or WebP by its bytes, kept a year, else `404`,
+  and `400` to a text that is not a cover name.
 - Decided: `CoverName`, `Cover` and the port `CoverStore` in
   `bibliography.domain.cover`; `FindCover` in `bibliography.application.cover`;
   `FileCoverStore`, `CoversProperties` and `CoversConfig` in
@@ -290,16 +291,22 @@ Format:
   contexts, so both web packages answer the same problems;
   `WebSliceConfiguration` scans the three. `ArchitectureTest` gained *what
   is shared knows nothing of the contexts*, and its infrastructure rule
-  lets a package depend on `shared`. `SecurityConfig` stays in the
-  library's web package: its filter calls `WelcomeReader`.
+  lets a package depend on `shared`. `SecurityConfig` and its filter moved
+  there too: the filter asks `RequestPrincipal`, an interface of `shared`,
+  for the principal, and the library's `ReaderPrincipal` answers the reader
+  `WelcomeReader` welcomes. `SecurityConfigTest` moved with the chain and
+  stubs `RequestPrincipal`.
 - Left over, for the brief of the task that stores a picture: the media
   type is extracted before the store, the one of the picture as stored
   (after normalisation when it is taller than 600), and the use case builds
   the `Cover`, which checks it; the store writes the picture and
   `<name>.type`.
-- Decided: a malformed name goes through `CoverName.of` in
-  `CoverController`, so it is `404` and never reaches `findCover` or the
-  file system.
+- Decided, on review with Tophe: a malformed name goes through
+  `CoverName.of` in `CoverController` and never reaches `findCover` or the
+  file system; it is `400` `/problems/validation` with
+  `{field: "name", code: "not-a-cover-name"}`, on contract `v0.8.2`, keyed
+  `400_NOT_A_COVER_NAME`, `ApiContractTest` its only proof. The brief had
+  it `404`.
 - Decided: guards proven by mutation and reverted: a name of any length
   (`{64}` dropped, red on 63 digits), bytes shorter than `WEBP`'s offset (the
   size check dropped, red on `RIFF` alone with an index out of bounds).
