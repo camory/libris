@@ -568,13 +568,16 @@ Contract
   repository, in the table D11 names after the child (`membership`).
   Changing a child is building the aggregate again with the new list and
   calling `update`; nothing addresses a child from outside its aggregate.
-- A value the domain can refuse has two doors. Its constructor `require`s
-  and throws, the last defence against a caller that builds it by hand. A
-  factory `of(...)` on the companion answers `null` for what the domain
-  refuses, and the caller decides what the `null` means: an adapter maps
-  through `of` and drops or refuses what it answers `null` to (`Isbn.of` for
-  a text typed or scanned). No use case or adapter catches the constructor's
-  exception.
+- A value the domain can refuse is built through a factory `of(...)` on the
+  companion, which answers `null` for what the domain refuses; the caller
+  decides what the `null` means: an adapter maps through `of` and drops or
+  refuses what it answers `null` to (`Isbn.of` for a text typed or scanned).
+  When `of` only checks its input, the constructor stays public and
+  `require`s the same rule, the last defence against a caller that builds
+  the value by hand (`CoverName`). When `of` also decides the value
+  (normalises, orders, reads it from what it is given), the constructor is
+  private and `of` is the only door (`Isbn`, `Contributions`, `Cover`). No
+  use case or adapter catches the constructor's exception.
 - A collection with a rule of its own is a type of its own, built through
   `of(...)` and never by hand, and held by the aggregate, so that no lookup,
   persistence or use case carries the rule and the order stored or answered
