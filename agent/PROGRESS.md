@@ -274,11 +274,18 @@ Format:
   `bibliography.domain.cover`; `FindCover` in `bibliography.application.cover`;
   `FileCoverStore`, `CoversProperties` and `CoversConfig` in
   `bibliography.infrastructure.persistence`, as the brief placed them.
-- Decided, on review with Tophe: the format left the domain, the contract
-  answering `image/*`. `Cover` is a media type and bytes; `FileCoverStore`
-  reads the media type from the file's first bytes and `CoverController`
-  passes it on. The brief's `CoverFormat`, `Cover.of` and `CoverTest` are
-  gone, their cases now `FileCoverStoreTest`'s.
+- Decided, on review with Tophe: the backend knows no picture format, the
+  contract answering `image/*`. `Cover` is a media type and bytes, and its
+  constructor refuses a media type that is not an image. The media type is
+  saved beside the picture, in the file `<name>.type`; `FileCoverStore`
+  reads both, a picture without its media type is no cover, and
+  `CoverController` passes the type on. The brief's `CoverFormat`,
+  `Cover.of` and the reading of the first bytes are gone.
+- Left over, for the brief of the task that stores a picture: the media
+  type is extracted before the store, the one of the picture as stored
+  (after normalisation when it is taller than 600), and the use case builds
+  the `Cover`, which checks it; the store writes the picture and
+  `<name>.type`.
 - Decided: a malformed name goes through `CoverName.of` in
   `CoverController`, so it is `404` and never reaches `findCover` or the
   file system.
