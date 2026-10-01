@@ -280,9 +280,14 @@ Format:
   answers null for one. The media type is saved beside the picture, in the
   file `<name>.type`; `FileCoverStore` reads both through `Cover.of`, a
   picture without an image's media type is no cover, and `CoverController`
-  passes the type on. `CoverControllerTest` keeps the malformed name alone,
-  the one case `ApiContractTest` does not send. The brief's `CoverFormat`,
-  `Cover.of` and the reading of the first bytes are gone.
+  passes the type on. `CoverControllerTest` is gone: `ApiContractTest`
+  proves the operation. The brief's `CoverFormat` and the reading of the
+  first bytes are gone.
+- Decided, on review with Tophe: `CoverController` is the bibliography's,
+  in the new `bibliography.infrastructure.web`, since it calls `FindCover`;
+  the brief had it in the library's web package. `Problems.kt` moved to
+  `fr.amory.libris.web`, beside the contexts, so both web packages answer
+  the same problems; `WebSliceConfiguration` scans both.
 - Left over, for the brief of the task that stores a picture: the media
   type is extracted before the store, the one of the picture as stored
   (after normalisation when it is taller than 600), and the use case builds

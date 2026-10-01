@@ -64,8 +64,10 @@ and the bookshelves they keep), each with the same three layers.
 - `<context>.application` — use-case services and transaction boundaries,
   the latter through Spring's `TransactionOperations`. Depends on `domain`
   only.
-- `<context>.infrastructure.web` — controllers, request/response DTOs,
-  problem details. A controller calls use cases and never a repository: a
+- `<context>.infrastructure.web` — controllers and request/response DTOs. A
+  controller sits in the context of the use case it calls: `CoverController`
+  calls the bibliography's `FindCover`, so it is the bibliography's. A
+  controller calls use cases and never a repository: a
   read of one aggregate with no rule is still a use case of its own
   (`FindDefaultBookshelf`), so the first rule that read gains lands in the
   use case, not at the edge. `library.infrastructure.web` also holds the
@@ -75,6 +77,9 @@ and the bookshelves they keep), each with the same three layers.
   and the row-to-aggregate mapping, which is the aggregate's constructor.
 - `bibliography.infrastructure.lookup` — the BnF and Open Library clients;
   Google Books later.
+
+Beside the contexts, `fr.amory.libris.web` holds what every web package
+answers with, the problem details of the API. It depends on no context.
 
 Enforced by ArchUnit rules in the test suite (see D07):
 1. `domain` depends only on the Kotlin/Java standard libraries and the uuid
