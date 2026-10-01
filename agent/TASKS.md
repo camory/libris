@@ -252,7 +252,10 @@ catalogue rows show a cover only once the worker has stored it (Tophe,
       schedule a configuration property, and takes the editions awaiting a
       picture one at a time, in the order they were added; two wakings never
       fetch at once (D02). Realises S9, and S12's run at start; un-skips the
-      backend test of S9; the schedule is checked by hand in the log.
+      backend test of S9; the schedule is checked by hand in the log. The
+      backend `Dockerfile` creates `/var/lib/libris/covers` owned by the
+      `libris` user, so the `covers` volume mounted there is writable; the
+      first stored cover on staging is checked by hand.
 
 - [ ] T060 Frontend: covers on `v0.8.1`, the card shows the first candidate.
       Precondition (human): T059 deployed (D04).
