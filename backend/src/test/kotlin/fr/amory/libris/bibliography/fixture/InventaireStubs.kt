@@ -31,6 +31,14 @@ class InventaireStubs(private val server: WireMockServer) {
         entityAnswers(isbn, entity.jsonString())
     }
 
+    fun answersTooLate(isbn: String) {
+        server.stubFor(
+            get(urlPathEqualTo(ENTITIES))
+                .withQueryParam("uris", equalTo("isbn:$isbn"))
+                .willReturn(json(recorded("inventaire/$isbn.json")).withFixedDelay(LATE)),
+        )
+    }
+
     fun doesNotKnow(isbn: String) = entityAnswers(isbn, recorded("inventaire/$isbn.json"))
 
     fun fails() {
@@ -62,5 +70,6 @@ class InventaireStubs(private val server: WireMockServer) {
     private companion object {
         const val ENTITIES = "/api/entities"
         const val NEVER = 30_000
+        const val LATE = 2_000
     }
 }

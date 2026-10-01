@@ -92,6 +92,18 @@ class InventaireCoverLookupTest {
         candidate.shouldBeNull()
     }
 
+    @Test
+    fun `an inventaire io that answers past the timeout offers no picture`() {
+        // Given
+        inventaire.answersTooLate(ONE_PIECE_1)
+
+        // When
+        val candidate = source.lookUp(isbnOf(ONE_PIECE_1))
+
+        // Then
+        candidate.shouldBeNull()
+    }
+
     private companion object {
         const val ONE_PIECE_1 = "9782723488525"
         const val LES_NERONIA = "9782505125990"
