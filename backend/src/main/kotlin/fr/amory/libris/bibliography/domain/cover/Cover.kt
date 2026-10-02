@@ -8,8 +8,9 @@ class Cover(val mediaType: String, val bytes: ByteArray) {
     require(isImage(mediaType)) { "a cover's media type is an image" }
   }
 
-  val name: CoverName =
-    CoverName(HexFormat.of().formatHex(MessageDigest.getInstance("SHA-256").digest(bytes)))
+  val name: CoverName
+    get() =
+      CoverName(HexFormat.of().formatHex(MessageDigest.getInstance("SHA-256").digest(bytes)))
 
   companion object {
     fun of(mediaType: String, bytes: ByteArray): Cover? =
