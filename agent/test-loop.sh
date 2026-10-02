@@ -108,4 +108,17 @@ args="$(launched_with reviewer)"
 check "run_role: a role without a threshold is given none" "yes" "$([[ "$args" == *"-e LIBRIS_HANDOFF_AT= agent "* ]] && echo yes || echo no)"
 check "run_role: a role without a window takes the general one" "yes" "$([[ "$args" == *"--autocompact '190000'"* ]] && echo yes || echo no)"
 
+# implement: a fresh implementer after each handoff, against a fake run_role that answers the statuses it is given in turn
+run_role() { echo "$1" >>"$tmp/runs"; STATUS=$(sed -n "$(wc -l <"$tmp/runs")p" "$tmp/statuses"); }
+implemented() {  # implemented <status>... → "<runs> <exit code>" of implement over those answers
+  printf '%s\n' "$@" >"$tmp/statuses"; : >"$tmp/runs"
+  local rc=0
+  ( implement T001 task/T001-x ) >/dev/null 2>&1 || rc=$?
+  echo "$(wc -l <"$tmp/runs") $rc"
+}
+IMPLEMENTER_SEGMENTS=4
+check "implement: a pull request on the first run launches one implementer" "1 0" "$(implemented pr_opened)"
+check "implement: a handoff launches a fresh implementer" "2 0" "$(implemented handoff pr_opened)"
+check "implement: handoffs up to the bound stop the loop as blocked" "4 4" "$(implemented handoff handoff handoff handoff pr_opened)"
+
 exit "$fail"
