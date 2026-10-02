@@ -6,6 +6,8 @@ import fr.amory.libris.bibliography.domain.Contributions
 import fr.amory.libris.bibliography.domain.Kind.MANGA
 import fr.amory.libris.bibliography.domain.SeriesEntry
 import fr.amory.libris.bibliography.domain.edition.Edition
+import fr.amory.libris.bibliography.domain.lookup.CoverSource
+import fr.amory.libris.bibliography.domain.lookup.CoverSource.INVENTAIRE
 import fr.amory.libris.bibliography.fixture.EditionsInMemory
 import fr.amory.libris.bibliography.fixture.isbnOf
 import fr.amory.libris.library.application.AddBookResult.Added
@@ -61,6 +63,7 @@ class AddBookToBookshelfTest {
       pageCount = 208,
       summary = "Luffy prend la mer pour devenir le roi des pirates.",
       coverUrl = null,
+      coverSource = INVENTAIRE,
     )
     val copy = copies.stored.single()
     copy shouldBe Copy(copy.id, edition.id, bookshelf.id)
@@ -193,7 +196,7 @@ class AddBookToBookshelfTest {
     transactions.recorded shouldBe listOf(Transaction(before = 0 to 0, after = 1 to 1))
   }
 
-  private fun onePieceTomeOne(): NewBook =
+  private fun onePieceTomeOne(coverSource: CoverSource? = INVENTAIRE): NewBook =
     NewBook(
       isbn = isbnOf(ONE_PIECE),
       kind = MANGA,
@@ -207,6 +210,6 @@ class AddBookToBookshelfTest {
       language = "fr",
       pageCount = 208,
       summary = "Luffy prend la mer pour devenir le roi des pirates.",
-      coverSource = null,
+      coverSource = coverSource,
     )
 }

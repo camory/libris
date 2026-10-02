@@ -137,6 +137,7 @@ class JdbcEditionRepository(private val jdbcClient: JdbcClient) : EditionReposit
         pageCount = rs.getObject("page_count", Int::class.javaObjectType),
         summary = rs.getString("summary"),
         coverUrl = rs.getString("cover_url"),
+        coverSource = null,
       ),
       contribution = rs.getString("author_name")?.let { name ->
         Contribution.of(name, ContributionRole.valueOf(rs.getString("role")))

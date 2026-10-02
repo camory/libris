@@ -54,6 +54,7 @@ private val ROMANCE_DAWN = HeldEdition(
     pageCount = 207,
     summary = "Luffy rêve de devenir le roi des pirates.",
     coverUrl = "https://couvertures.amory.fr/one-piece-01.jpg",
+    coverSource = null,
   ),
   copies = listOf(
     CopyOnBookshelf(

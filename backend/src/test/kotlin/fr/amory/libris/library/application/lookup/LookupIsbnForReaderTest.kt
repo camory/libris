@@ -50,6 +50,7 @@ private val ROMANCE_DAWN = Edition(
   pageCount = null,
   summary = null,
   coverUrl = null,
+  coverSource = null,
 )
 
 class LookupIsbnForReaderTest {

@@ -192,5 +192,6 @@ class JdbcCopyRepositoryTest @Autowired constructor(
       pageCount = null,
       summary = null,
       coverUrl = null,
+      coverSource = null,
     )
 }

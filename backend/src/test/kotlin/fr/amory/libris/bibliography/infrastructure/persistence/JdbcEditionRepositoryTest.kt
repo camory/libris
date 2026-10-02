@@ -178,5 +178,6 @@ class JdbcEditionRepositoryTest @Autowired constructor(
       pageCount = 208,
       summary = "Luffy prend la mer pour devenir le roi des pirates.",
       coverUrl = "https://covers.libris.test/9782723488525.jpg",
+      coverSource = null,
     )
 }

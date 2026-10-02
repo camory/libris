@@ -314,6 +314,7 @@ class JdbcCatalogueEditionsTest @Autowired constructor(
       pageCount = null,
       summary = null,
       coverUrl = null,
+      coverSource = null,
     ).also(editions::insert)
 
   private fun romansHeldOn(bookshelf: Bookshelf, numbers: IntRange): Map<Int, Edition> =
