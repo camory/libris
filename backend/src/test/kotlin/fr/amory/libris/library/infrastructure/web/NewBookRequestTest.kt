@@ -50,15 +50,19 @@ class NewBookRequestTest {
 
   @Test
   fun `the name of a source becomes the book's source`() {
+    // Given
     val request = romanceDawn(coverSource = "inventaire.io")
 
+    // When / Then
     request.validate().shouldBeInstanceOf<Accepted>().book.coverSource shouldBe INVENTAIRE
   }
 
   @Test
   fun `a name no source bears is accepted as no source`() {
+    // Given
     val request = romanceDawn(coverSource = "Libris")
 
+    // When / Then
     request.validate().shouldBeInstanceOf<Accepted>().book.coverSource shouldBe null
   }
 
