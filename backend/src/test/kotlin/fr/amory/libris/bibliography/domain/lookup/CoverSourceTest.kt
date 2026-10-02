@@ -9,6 +9,7 @@ import org.junit.jupiter.api.Test
 class CoverSourceTest {
   @Test
   fun `each source is found by its name`() {
+    // Given / When / Then
     CoverSource.of("inventaire.io") shouldBe INVENTAIRE
     CoverSource.of("Open Library") shouldBe OPEN_LIBRARY
     CoverSource.of("BnF") shouldBe BNF
