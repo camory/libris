@@ -119,9 +119,13 @@ class CoversScenarios @Autowired constructor(
     val response = picture(nina, cover)
 
     // Then
-    response.expectStatus().isOk()
-      .expectHeader().contentType(IMAGE_JPEG)
-      .expectHeader().value("Cache-Control") {
+    response
+      .expectStatus()
+      .isOk()
+      .expectHeader()
+      .contentType(IMAGE_JPEG)
+      .expectHeader()
+      .value("Cache-Control") {
         it shouldContain "max-age=31536000"
         it shouldContain "immutable"
       }
@@ -136,9 +140,14 @@ class CoversScenarios @Autowired constructor(
     val response = picture(paul, "/api/v1/covers/${"0".repeat(HASH_LENGTH)}")
 
     // Then
-    response.expectStatus().isNotFound()
-      .expectHeader().contentType(APPLICATION_PROBLEM_JSON)
-      .expectBody().jsonPath("$.type").isEqualTo("/problems/not-found")
+    response
+      .expectStatus()
+      .isNotFound()
+      .expectHeader()
+      .contentType(APPLICATION_PROBLEM_JSON)
+      .expectBody()
+      .jsonPath("$.type")
+      .isEqualTo("/problems/not-found")
   }
 
   @Test
@@ -268,7 +277,8 @@ class CoversScenarios @Autowired constructor(
 
     // When a run within the day, woken by another add
     add(luc, bookshelf, onePiece(ONE_PIECE_2, "Aux prises avec Baggy et ses hommes", 2, "Open Library"))
-      .expectStatus().isCreated()
+      .expectStatus()
+      .isCreated()
     awaitCover(luc, ONE_PIECE_2)
 
     // Then
@@ -296,7 +306,8 @@ class CoversScenarios @Autowired constructor(
     // When
     add(ana, bookshelf, onePiece1(coverSource = "Open Library")).expectStatus().isCreated()
     add(ana, bookshelf, onePiece(ONE_PIECE_2, "Aux prises avec Baggy et ses hommes", 2, "Open Library"))
-      .expectStatus().isCreated()
+      .expectStatus()
+      .isCreated()
     awaitCover(ana, ONE_PIECE_1)
     awaitCover(ana, ONE_PIECE_2)
 
@@ -342,14 +353,16 @@ class CoversScenarios @Autowired constructor(
   }
 
   private fun ask(reader: Map<String, List<String>>, isbn: String): RestTestClient.ResponseSpec =
-    http.get()
+    http
+      .get()
       .uri("/api/v1/isbn/$isbn")
       .headers { it.putAll(reader) }
       .accept(APPLICATION_JSON, APPLICATION_PROBLEM_JSON)
       .exchange()
 
   private fun add(reader: Map<String, List<String>>, bookshelf: String, book: String): RestTestClient.ResponseSpec =
-    http.post()
+    http
+      .post()
       .uri("/api/v1/bookshelves/$bookshelf/books")
       .headers { it.putAll(reader) }
       .contentType(APPLICATION_JSON)
@@ -358,14 +371,16 @@ class CoversScenarios @Autowired constructor(
       .exchange()
 
   private fun catalogue(reader: Map<String, List<String>>): RestTestClient.ResponseSpec =
-    http.get()
+    http
+      .get()
       .uri("/api/v1/books")
       .headers { it.putAll(reader) }
       .accept(APPLICATION_JSON, APPLICATION_PROBLEM_JSON)
       .exchange()
 
   private fun picture(reader: Map<String, List<String>>, path: String): RestTestClient.ResponseSpec =
-    http.get()
+    http
+      .get()
       .uri(path)
       .headers { it.putAll(reader) }
       .accept(parseMediaType("image/*"), APPLICATION_PROBLEM_JSON)
@@ -376,7 +391,8 @@ class CoversScenarios @Autowired constructor(
   }
 
   private fun me(reader: Map<String, List<String>>): RestTestClient.ResponseSpec =
-    http.get()
+    http
+      .get()
       .uri("/api/v1/me")
       .headers { it.putAll(reader) }
       .accept(APPLICATION_JSON)

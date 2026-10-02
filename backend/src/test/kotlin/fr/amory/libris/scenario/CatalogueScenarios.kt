@@ -23,10 +23,14 @@ class CatalogueScenarios @Autowired constructor(
     // When
     val response = catalogue(lea)
     // Then
-    response.expectStatus().isOk()
-      .expectHeader().contentType(APPLICATION_JSON)
+    response
+      .expectStatus()
+      .isOk()
+      .expectHeader()
+      .contentType(APPLICATION_JSON)
       .expectBody()
-      .jsonPath("$.books[*].title").isEqualTo(
+      .jsonPath("$.books[*].title")
+      .isEqualTo(
         listOf(
           "Astérix le Gaulois",
           "La serpe d'or",
@@ -36,15 +40,22 @@ class CatalogueScenarios @Autowired constructor(
           "Aux prises avec Baggy et ses hommes",
         ),
       )
-      .jsonPath("$.books[0].series.name").isEqualTo("Astérix")
-      .jsonPath("$.books[0].series.volumeNumber").isEqualTo(1)
-      .jsonPath("$.books[2].series.volumeNumber").isEqualTo(null)
-      .jsonPath("$.books[3].series").isEqualTo(null)
-      .jsonPath("$.books[4].copies.length()").isEqualTo(2)
+      .jsonPath("$.books[0].series.name")
+      .isEqualTo("Astérix")
+      .jsonPath("$.books[0].series.volumeNumber")
+      .isEqualTo(1)
+      .jsonPath("$.books[2].series.volumeNumber")
+      .isEqualTo(null)
+      .jsonPath("$.books[3].series")
+      .isEqualTo(null)
+      .jsonPath("$.books[4].copies.length()")
+      .isEqualTo(2)
       .jsonPath("$.books[4].copies[*].bookshelf.name")
       .isEqualTo(listOf("Bibliothèque de Léa", "Bibliothèque de Léa"))
-      .jsonPath("$.books[*].copies[*].bookshelf.id").isEqualTo(List(7) { leasBookshelf })
-      .jsonPath("$.next").isEqualTo(null)
+      .jsonPath("$.books[*].copies[*].bookshelf.id")
+      .isEqualTo(List(7) { leasBookshelf })
+      .jsonPath("$.next")
+      .isEqualTo(null)
   }
 
   @Test
@@ -56,17 +67,25 @@ class CatalogueScenarios @Autowired constructor(
     // When
     val firstPage = catalogue(marc)
     // Then
-    firstPage.expectStatus().isOk()
+    firstPage
+      .expectStatus()
+      .isOk()
       .expectBody()
-      .jsonPath("$.books.length()").isEqualTo(50)
-      .jsonPath("$.books[0].title").isEqualTo("Roman 01")
-      .jsonPath("$.books[49].title").isEqualTo("Roman 50")
-      .jsonPath("$.next").isNotEmpty()
+      .jsonPath("$.books.length()")
+      .isEqualTo(50)
+      .jsonPath("$.books[0].title")
+      .isEqualTo("Roman 01")
+      .jsonPath("$.books[49].title")
+      .isEqualTo("Roman 50")
+      .jsonPath("$.next")
+      .isNotEmpty()
     val next: String = JsonPath.read(bodyOf(firstPage), "$.next")
     catalogue(marc, after = next).expectStatus().isOk()
       .expectBody()
-      .jsonPath("$.books[*].title").isEqualTo(listOf("Roman 51"))
-      .jsonPath("$.next").isEqualTo(null)
+      .jsonPath("$.books[*].title")
+      .isEqualTo(listOf("Roman 51"))
+      .jsonPath("$.next")
+      .isEqualTo(null)
   }
 
   @Test
@@ -76,29 +95,37 @@ class CatalogueScenarios @Autowired constructor(
     // When
     val response = catalogue(nina)
     // Then
-    response.expectStatus().isOk()
-      .expectHeader().contentType(APPLICATION_JSON)
+    response
+      .expectStatus()
+      .isOk()
+      .expectHeader()
+      .contentType(APPLICATION_JSON)
       .expectBody()
-      .jsonPath("$.books").isEmpty()
-      .jsonPath("$.next").isEqualTo(null)
+      .jsonPath("$.books")
+      .isEmpty()
+      .jsonPath("$.next")
+      .isEqualTo(null)
   }
 
   private fun catalogue(reader: Map<String, List<String>>, after: String? = null): RestTestClient.ResponseSpec =
-    http.get()
+    http
+      .get()
       .uri { it.path("/api/v1/books").queryParamIfPresent("after", Optional.ofNullable(after)).build() }
       .headers { it.putAll(reader) }
       .accept(APPLICATION_JSON, APPLICATION_PROBLEM_JSON)
       .exchange()
 
   private fun me(reader: Map<String, List<String>>): RestTestClient.ResponseSpec =
-    http.get()
+    http
+      .get()
       .uri("/api/v1/me")
       .headers { it.putAll(reader) }
       .accept(APPLICATION_JSON)
       .exchange()
 
   private fun add(reader: Map<String, List<String>>, bookshelf: String, book: String): RestTestClient.ResponseSpec =
-    http.post()
+    http
+      .post()
       .uri("/api/v1/bookshelves/$bookshelf/books")
       .headers { it.putAll(reader) }
       .contentType(APPLICATION_JSON)

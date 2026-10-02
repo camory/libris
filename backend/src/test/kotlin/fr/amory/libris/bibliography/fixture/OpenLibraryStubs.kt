@@ -22,7 +22,8 @@ class OpenLibraryStubs(private val server: WireMockServer) {
     server.stubFor(get(urlPathEqualTo("/isbn/$isbn.json")).willReturn(temporaryRedirect("$baseUrl$key.json")))
     server.stubFor(get(urlPathEqualTo("$key.json")).willReturn(json(edition)))
     server.stubFor(
-      get(urlPathEqualTo("/search.json")).withQueryParam("isbn", equalTo(isbn))
+      get(urlPathEqualTo("/search.json"))
+        .withQueryParam("isbn", equalTo(isbn))
         .willReturn(json(recorded("open-library/search/$isbn.json"))),
     )
   }

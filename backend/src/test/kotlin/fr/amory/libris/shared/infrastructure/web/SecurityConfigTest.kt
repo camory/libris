@@ -29,56 +29,66 @@ class SecurityConfigTest @Autowired constructor(
   private val requestPrincipal: RequestPrincipal) {
   @Test
   fun `a request without the identity headers is refused`() {
-    client.get()
+    client
+      .get()
       .uri("/api/v1/me")
       .exchange()
-      .expectStatus().isForbidden()
+      .expectStatus()
+      .isForbidden()
   }
 
   @Test
   fun `a request whose user header is missing is refused`() {
-    client.get()
+    client
+      .get()
       .uri("/api/v1/me")
       .header("Remote-Name", "Juliette")
       .header("Remote-Email", "juliette@amory.fr")
       .header("Remote-Groups", "family")
       .exchange()
-      .expectStatus().isForbidden()
+      .expectStatus()
+      .isForbidden()
   }
 
   @Test
   fun `a request whose email header is blank is refused`() {
-    client.get()
+    client
+      .get()
       .uri("/api/v1/me")
       .header("Remote-User", "juliette")
       .header("Remote-Name", "Juliette")
       .header("Remote-Email", " ")
       .header("Remote-Groups", "family")
       .exchange()
-      .expectStatus().isForbidden()
+      .expectStatus()
+      .isForbidden()
   }
 
   @Test
   fun `a request whose email header is missing is refused`() {
-    client.get()
+    client
+      .get()
       .uri("/api/v1/me")
       .header("Remote-User", "juliette")
       .header("Remote-Name", "Juliette")
       .header("Remote-Groups", "family")
       .exchange()
-      .expectStatus().isForbidden()
+      .expectStatus()
+      .isForbidden()
   }
 
   @Test
   fun `a write without the X-Requested-With header is refused`() {
-    client.post()
+    client
+      .post()
       .uri("/api/v1/me")
       .header("Remote-User", "tophe")
       .header("Remote-Name", "Tophe")
       .header("Remote-Email", "tophe@amory.fr")
       .header("Remote-Groups", "family,libris-admin")
       .exchange()
-      .expectStatus().isForbidden()
+      .expectStatus()
+      .isForbidden()
   }
 
   @Test
@@ -87,7 +97,8 @@ class SecurityConfigTest @Autowired constructor(
     given(requestPrincipal.of("tophe", "tophe@amory.fr", "Tophe")).willReturn("tophe")
 
     // When, Then
-    client.post()
+    client
+      .post()
       .uri("/api/v1/me")
       .header("Remote-User", "tophe")
       .header("Remote-Name", "Tophe")
@@ -95,14 +106,17 @@ class SecurityConfigTest @Autowired constructor(
       .header("Remote-Groups", "family,libris-admin")
       .header("X-Requested-With", "XMLHttpRequest")
       .exchange()
-      .expectStatus().isEqualTo(HttpStatus.METHOD_NOT_ALLOWED)
+      .expectStatus()
+      .isEqualTo(HttpStatus.METHOD_NOT_ALLOWED)
   }
 
   @Test
   fun `the health endpoint answers without any header`() {
-    client.get()
+    client
+      .get()
       .uri("/actuator/health")
       .exchange()
-      .expectStatus().isOk()
+      .expectStatus()
+      .isOk()
   }
 }

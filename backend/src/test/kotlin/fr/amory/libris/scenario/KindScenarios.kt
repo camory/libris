@@ -26,8 +26,12 @@ class KindScenarios @Autowired constructor(
     // When
     val response = ask("9782723488525")
     // Then
-    response.expectStatus().isOk()
-      .expectBody().jsonPath("$.kind").isEqualTo("MANGA")
+    response
+      .expectStatus()
+      .isOk()
+      .expectBody()
+      .jsonPath("$.kind")
+      .isEqualTo("MANGA")
   }
 
   @Test
@@ -38,8 +42,12 @@ class KindScenarios @Autowired constructor(
     // When
     val response = ask("9782505083399")
     // Then
-    response.expectStatus().isOk()
-      .expectBody().jsonPath("$.kind").isEqualTo("BD")
+    response
+      .expectStatus()
+      .isOk()
+      .expectBody()
+      .jsonPath("$.kind")
+      .isEqualTo("BD")
   }
 
   @Test
@@ -50,8 +58,12 @@ class KindScenarios @Autowired constructor(
     // When
     val response = ask("9782371025219")
     // Then
-    response.expectStatus().isOk()
-      .expectBody().jsonPath("$.kind").isEqualTo("BOOK")
+    response
+      .expectStatus()
+      .isOk()
+      .expectBody()
+      .jsonPath("$.kind")
+      .isEqualTo("BOOK")
   }
 
   @Test
@@ -62,12 +74,17 @@ class KindScenarios @Autowired constructor(
     // When
     val response = ask("9782380751673")
     // Then
-    response.expectStatus().isOk()
-      .expectBody().jsonPath("$.kind").isEqualTo("BOOK")
+    response
+      .expectStatus()
+      .isOk()
+      .expectBody()
+      .jsonPath("$.kind")
+      .isEqualTo("BOOK")
   }
 
   private fun ask(isbn: String): RestTestClient.ResponseSpec =
-    http.get()
+    http
+      .get()
       .uri("/api/v1/isbn/$isbn")
       .headers { it.putAll(READER) }
       .accept(APPLICATION_JSON, APPLICATION_PROBLEM_JSON)

@@ -86,7 +86,8 @@ class CatalogueControllerTest @Autowired constructor(
     given(browseCatalogue(TOPHE.id, null)).willReturn(CataloguePage(listOf(ROMANCE_DAWN), null))
 
     // When
-    val body = client.get()
+    val body = client
+      .get()
       .uri("/api/v1/books")
       .headers {
         it.add("Remote-User", "tophe")
