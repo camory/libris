@@ -1,4 +1,4 @@
-package fr.amory.libris.bibliography.domain.lookup
+package fr.amory.libris.bibliography.domain.cover
 
 enum class CoverSource(val label: String, val order: Int) {
   INVENTAIRE("inventaire.io", 1),

@@ -5,8 +5,8 @@ import fr.amory.libris.bibliography.domain.ContributionRole.WRITER
 import fr.amory.libris.bibliography.domain.Contributions
 import fr.amory.libris.bibliography.domain.Isbn
 import fr.amory.libris.bibliography.domain.Kind.BOOK
+import fr.amory.libris.bibliography.domain.cover.CoverSource
 import fr.amory.libris.bibliography.domain.lookup.CoverCandidate
-import fr.amory.libris.bibliography.domain.lookup.CoverSource
 import fr.amory.libris.bibliography.domain.lookup.EditionLookup
 import fr.amory.libris.bibliography.domain.lookup.EditionPreview
 import fr.amory.libris.bibliography.domain.lookup.EditionSource

@@ -2,8 +2,8 @@ package fr.amory.libris.bibliography.infrastructure.lookup
 
 import com.github.tomakehurst.wiremock.WireMockServer
 import com.github.tomakehurst.wiremock.core.WireMockConfiguration.options
+import fr.amory.libris.bibliography.domain.cover.CoverSource.INVENTAIRE
 import fr.amory.libris.bibliography.domain.lookup.CoverCandidate
-import fr.amory.libris.bibliography.domain.lookup.CoverSource.INVENTAIRE
 import fr.amory.libris.bibliography.fixture.InventaireStubs
 import fr.amory.libris.bibliography.fixture.isbnOf
 import fr.amory.libris.bibliography.fixture.recordedBytes

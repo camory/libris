@@ -4,7 +4,7 @@ import fr.amory.libris.bibliography.domain.Contributions
 import fr.amory.libris.bibliography.domain.Isbn
 import fr.amory.libris.bibliography.domain.Kind
 import fr.amory.libris.bibliography.domain.SeriesEntry
-import fr.amory.libris.bibliography.domain.lookup.CoverSource
+import fr.amory.libris.bibliography.domain.cover.CoverSource
 
 data class NewBook(
   val isbn: Isbn?,

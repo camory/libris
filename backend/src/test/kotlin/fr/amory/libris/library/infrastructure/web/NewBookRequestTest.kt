@@ -2,7 +2,7 @@ package fr.amory.libris.library.infrastructure.web
 
 import fr.amory.libris.bibliography.domain.ContributionRole.WRITER
 import fr.amory.libris.bibliography.domain.Kind.MANGA
-import fr.amory.libris.bibliography.domain.lookup.CoverSource.INVENTAIRE
+import fr.amory.libris.bibliography.domain.cover.CoverSource.INVENTAIRE
 import fr.amory.libris.library.infrastructure.web.NewBookValidation.Accepted
 import fr.amory.libris.library.infrastructure.web.NewBookValidation.Refused
 import fr.amory.libris.shared.infrastructure.web.ValidationErrorResponse
