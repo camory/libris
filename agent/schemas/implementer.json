@@ -17,9 +17,10 @@
       "type": "string",
       "enum": [
         "pr_opened",
+        "handoff",
         "blocked"
       ],
-      "description": "pr_opened only if gh pr create succeeded"
+      "description": "pr_opened only if gh pr create succeeded; handoff only after a context signal, the work committed and the note written"
     },
     "branch": {
       "type": "string"
