@@ -11,42 +11,42 @@ import org.springframework.stereotype.Repository
 import java.util.UUID
 
 private const val INSERT_READER =
-    "INSERT INTO reader (id, username, email, display_name, default_bookshelf_id) " +
-        "VALUES (:id, :username, :email, :displayName, :defaultBookshelfId)"
+  "INSERT INTO reader (id, username, email, display_name, default_bookshelf_id) " +
+    "VALUES (:id, :username, :email, :displayName, :defaultBookshelfId)"
 
 private const val FIND_READER_BY_USERNAME =
-    "SELECT id, username, email, display_name, default_bookshelf_id FROM reader WHERE username = :username"
+  "SELECT id, username, email, display_name, default_bookshelf_id FROM reader WHERE username = :username"
 
 @Repository
 class JdbcReaderRepository(private val jdbcClient: JdbcClient) : ReaderRepository {
-    override fun insert(reader: Reader) {
-        try {
-            jdbcClient
-                .sql(INSERT_READER)
-                .param("id", reader.id.value)
-                .param("username", reader.username)
-                .param("email", reader.email)
-                .param("displayName", reader.displayName)
-                .param("defaultBookshelfId", reader.defaultBookshelfId.value)
-                .update()
-        } catch (duplicate: DuplicateKeyException) {
-            throw DuplicateUsernameException(reader.username, duplicate)
-        }
+  override fun insert(reader: Reader) {
+    try {
+      jdbcClient
+        .sql(INSERT_READER)
+        .param("id", reader.id.value)
+        .param("username", reader.username)
+        .param("email", reader.email)
+        .param("displayName", reader.displayName)
+        .param("defaultBookshelfId", reader.defaultBookshelfId.value)
+        .update()
+    } catch (duplicate: DuplicateKeyException) {
+      throw DuplicateUsernameException(reader.username, duplicate)
     }
+  }
 
-    override fun findByUsername(username: String): Reader? =
-        jdbcClient
-            .sql(FIND_READER_BY_USERNAME)
-            .param("username", username)
-            .query { rs, _ ->
-                Reader(
-                    id = ReaderId(rs.getObject("id", UUID::class.java)),
-                    username = rs.getString("username"),
-                    email = rs.getString("email"),
-                    displayName = rs.getString("display_name"),
-                    defaultBookshelfId = BookshelfId(rs.getObject("default_bookshelf_id", UUID::class.java)),
-                )
-            }
-            .optional()
-            .orElse(null)
+  override fun findByUsername(username: String): Reader? =
+    jdbcClient
+      .sql(FIND_READER_BY_USERNAME)
+      .param("username", username)
+      .query { rs, _ ->
+        Reader(
+          id = ReaderId(rs.getObject("id", UUID::class.java)),
+          username = rs.getString("username"),
+          email = rs.getString("email"),
+          displayName = rs.getString("display_name"),
+          defaultBookshelfId = BookshelfId(rs.getObject("default_bookshelf_id", UUID::class.java)),
+        )
+      }
+      .optional()
+      .orElse(null)
 }

@@ -7,6 +7,6 @@ import org.springframework.stereotype.Component
 
 @Component
 class ReaderPrincipal(private val welcomeReader: WelcomeReader) : RequestPrincipal {
-    override fun of(username: String, email: String, displayName: String): Reader =
-        welcomeReader(username, email, displayName)
+  override fun of(username: String, email: String, displayName: String): Reader =
+    welcomeReader(username, email, displayName)
 }

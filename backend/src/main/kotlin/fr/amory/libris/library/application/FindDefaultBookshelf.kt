@@ -7,6 +7,6 @@ import org.springframework.stereotype.Service
 
 @Service
 class FindDefaultBookshelf(private val bookshelves: BookshelfRepository) {
-    operator fun invoke(reader: Reader): Bookshelf =
-        checkNotNull(bookshelves.findById(reader.defaultBookshelfId)) { "a reader has a default bookshelf" }
+  operator fun invoke(reader: Reader): Bookshelf =
+    checkNotNull(bookshelves.findById(reader.defaultBookshelfId)) { "a reader has a default bookshelf" }
 }

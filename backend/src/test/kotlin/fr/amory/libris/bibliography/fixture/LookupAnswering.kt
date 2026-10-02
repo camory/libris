@@ -13,47 +13,44 @@ import java.util.concurrent.TimeUnit.MILLISECONDS
 private const val WAIT_AT_MOST = 2_000L
 
 class LookupAnswering(
-    private val answer: EditionSourceAnswer,
-    override val source: EditionSource = BNF,
-) : EditionLookup {
-    private val isbns = mutableListOf<Isbn>()
+  private val answer: EditionSourceAnswer,
+  override val source: EditionSource = BNF) : EditionLookup {
+  private val isbns = mutableListOf<Isbn>()
 
-    val asked: List<Isbn> get() = isbns.toList()
+  val asked: List<Isbn> get() = isbns.toList()
 
-    override fun lookUp(isbn: Isbn): EditionSourceAnswer {
-        isbns += isbn
-        return answer
-    }
+  override fun lookUp(isbn: Isbn): EditionSourceAnswer {
+    isbns += isbn
+    return answer
+  }
 }
 
 class CoverLookupAnswering(private val candidate: CoverCandidate?) : CoverLookup {
-    private val isbns = mutableListOf<Isbn>()
+  private val isbns = mutableListOf<Isbn>()
 
-    val asked: List<Isbn> get() = isbns.toList()
+  val asked: List<Isbn> get() = isbns.toList()
 
-    override fun lookUp(isbn: Isbn): CoverCandidate? {
-        isbns += isbn
-        return candidate
-    }
+  override fun lookUp(isbn: Isbn): CoverCandidate? {
+    isbns += isbn
+    return candidate
+  }
 }
 
 class LookupAnsweringAtRendezvous(
-    private val rendezvous: CyclicBarrier,
-    private val answer: EditionSourceAnswer,
-    override val source: EditionSource = BNF,
-) : EditionLookup {
-    override fun lookUp(isbn: Isbn): EditionSourceAnswer {
-        rendezvous.await(WAIT_AT_MOST, MILLISECONDS)
-        return answer
-    }
+  private val rendezvous: CyclicBarrier,
+  private val answer: EditionSourceAnswer,
+  override val source: EditionSource = BNF) : EditionLookup {
+  override fun lookUp(isbn: Isbn): EditionSourceAnswer {
+    rendezvous.await(WAIT_AT_MOST, MILLISECONDS)
+    return answer
+  }
 }
 
 class CoverLookupAnsweringAtRendezvous(
-    private val rendezvous: CyclicBarrier,
-    private val candidate: CoverCandidate?,
-) : CoverLookup {
-    override fun lookUp(isbn: Isbn): CoverCandidate? {
-        rendezvous.await(WAIT_AT_MOST, MILLISECONDS)
-        return candidate
-    }
+  private val rendezvous: CyclicBarrier,
+  private val candidate: CoverCandidate?) : CoverLookup {
+  override fun lookUp(isbn: Isbn): CoverCandidate? {
+    rendezvous.await(WAIT_AT_MOST, MILLISECONDS)
+    return candidate
+  }
 }

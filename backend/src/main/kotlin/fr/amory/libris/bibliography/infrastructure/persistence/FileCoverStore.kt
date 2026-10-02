@@ -9,13 +9,13 @@ import kotlin.io.path.readBytes
 import kotlin.io.path.readText
 
 class FileCoverStore(private val dir: Path) : CoverStore {
-    override fun read(name: CoverName): Cover? {
-        val picture = dir.resolve(name.value)
-        val mediaType = dir.resolve("${name.value}.type")
-        return if (picture.isRegularFile() && mediaType.isRegularFile()) {
-            Cover.of(mediaType.readText(), picture.readBytes())
-        } else {
-            null
-        }
+  override fun read(name: CoverName): Cover? {
+    val picture = dir.resolve(name.value)
+    val mediaType = dir.resolve("${name.value}.type")
+    return if (picture.isRegularFile() && mediaType.isRegularFile()) {
+      Cover.of(mediaType.readText(), picture.readBytes())
+    } else {
+      null
     }
+  }
 }

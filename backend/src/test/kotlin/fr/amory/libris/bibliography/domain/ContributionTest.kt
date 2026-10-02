@@ -6,14 +6,14 @@ import io.kotest.matchers.shouldBe
 import org.junit.jupiter.api.Test
 
 class ContributionTest {
-    @Test
-    fun `a contribution without a name is none`() {
-        Contribution.of(" ", WRITER) shouldBe null
-        Contribution.of(null, WRITER) shouldBe null
-    }
+  @Test
+  fun `a contribution without a name is none`() {
+    Contribution.of(" ", WRITER) shouldBe null
+    Contribution.of(null, WRITER) shouldBe null
+  }
 
-    @Test
-    fun `a contribution without a name is refused`() {
-        shouldThrow<IllegalArgumentException> { Contribution(" ", WRITER) }
-    }
+  @Test
+  fun `a contribution without a name is refused`() {
+    shouldThrow<IllegalArgumentException> { Contribution(" ", WRITER) }
+  }
 }

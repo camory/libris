@@ -26,62 +26,69 @@ private const val SEARCH_FIELDS = "key,author_name,edition_key"
 private val YEAR = Regex("\\d{4}")
 
 class OpenLibraryEditionLookup(baseUrl: String, timeout: Duration) : EditionLookup {
-    override val source = EditionSource.OPEN_LIBRARY
-    private val http = sourceRestClient(baseUrl, timeout)
+  override val source = EditionSource.OPEN_LIBRARY
+  private val http = sourceRestClient(baseUrl, timeout)
 
-    override fun lookUp(isbn: Isbn): EditionSourceAnswer =
-        try {
-            answerFor(isbn)
-        } catch (ignored: NotFound) {
-            NothingKnown
-        } catch (ignored: RestClientException) {
-            Failed
-        } catch (ignored: JsonNodeException) {
-            Failed
-        }
-
-    private fun answerFor(isbn: Isbn): EditionSourceAnswer =
-        Known(
-            previewOf(isbn, document("/isbn/${isbn.digits}.json")),
-            CoverCandidate(CoverSource.OPEN_LIBRARY, "$COVERS/${isbn.digits}-L.jpg?default=false"),
-        )
-
-    private fun previewOf(isbn: Isbn, edition: JsonNode): EditionPreview = EditionPreview(
-        isbn = isbn,
-        kind = BOOK,
-        title = edition.required("title").asString(),
-        subtitle = edition["subtitle"]?.asString(),
-        contributions = contributionsOf(edition, search(isbn)),
-        series = null,
-        collection = null,
-        publisher = edition.path("publishers").values().firstOrNull()?.asString(),
-        publicationYear = YEAR.find(edition["publish_date"]?.asString().orEmpty())?.value?.toIntOrNull(),
-        language = null,
-        pageCount = edition["number_of_pages"]?.asInt(),
-        summary = null,
-    )
-
-    private fun contributionsOf(edition: JsonNode, search: JsonNode): Contributions {
-        val key = edition["key"]?.asString()?.substringAfterLast("/")
-        return Contributions.of(
-            search.path("docs").values()
-                .firstOrNull { work -> work.path("edition_key").values().any { it.asString() == key } }
-                ?.path("author_name")?.values()
-                ?.mapNotNull { node -> Contribution.of(node.asString(), WRITER) }
-                .orEmpty(),
-        )
+  override fun lookUp(isbn: Isbn): EditionSourceAnswer =
+    try {
+      answerFor(isbn)
+    } catch (ignored: NotFound) {
+      NothingKnown
+    } catch (ignored: RestClientException) {
+      Failed
+    } catch (ignored: JsonNodeException) {
+      Failed
     }
 
-    private fun search(isbn: Isbn): JsonNode = http.get()
-        .uri { uri ->
-            uri.path("/search.json")
-                .queryParam("isbn", isbn.digits)
-                .queryParam("fields", SEARCH_FIELDS)
-                .build()
-        }
-        .retrieve()
-        .body(JsonNode::class.java) ?: MissingNode.getInstance()
+  private fun answerFor(isbn: Isbn): EditionSourceAnswer =
+    Known(
+      previewOf(isbn, document("/isbn/${isbn.digits}.json")),
+      CoverCandidate(CoverSource.OPEN_LIBRARY, "$COVERS/${isbn.digits}-L.jpg?default=false"),
+    )
 
-    private fun document(path: String): JsonNode =
-        http.get().uri(path).retrieve().body(JsonNode::class.java) ?: MissingNode.getInstance()
+  private fun previewOf(isbn: Isbn, edition: JsonNode): EditionPreview =
+    EditionPreview(
+      isbn = isbn,
+      kind = BOOK,
+      title = edition.required("title").asString(),
+      subtitle = edition["subtitle"]?.asString(),
+      contributions = contributionsOf(edition, search(isbn)),
+      series = null,
+      collection = null,
+      publisher = edition.path("publishers").values().firstOrNull()?.asString(),
+      publicationYear = YEAR.find(edition["publish_date"]?.asString().orEmpty())?.value?.toIntOrNull(),
+      language = null,
+      pageCount = edition["number_of_pages"]?.asInt(),
+      summary = null,
+    )
+
+  private fun contributionsOf(edition: JsonNode, search: JsonNode): Contributions {
+    val key = edition["key"]?.asString()?.substringAfterLast("/")
+    return Contributions.of(
+      search
+        .path("docs")
+        .values()
+        .firstOrNull { work -> work.path("edition_key").values().any { it.asString() == key } }
+        ?.path("author_name")
+        ?.values()
+        ?.mapNotNull { node -> Contribution.of(node.asString(), WRITER) }
+        .orEmpty(),
+    )
+  }
+
+  private fun search(isbn: Isbn): JsonNode =
+    http
+      .get()
+      .uri { uri ->
+        uri
+          .path("/search.json")
+          .queryParam("isbn", isbn.digits)
+          .queryParam("fields", SEARCH_FIELDS)
+          .build()
+      }
+      .retrieve()
+      .body(JsonNode::class.java) ?: MissingNode.getInstance()
+
+  private fun document(path: String): JsonNode =
+    http.get().uri(path).retrieve().body(JsonNode::class.java) ?: MissingNode.getInstance()
 }

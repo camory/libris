@@ -5,3 +5,32 @@ potential-bugs:
 style:
   MagicNumber:
     ignoreEnums: true
+
+formatting:
+  AnnotationOnSeparateLine:
+    indentSize: 2
+  ArgumentListWrapping:
+    indentSize: 2
+  ChainWrapping:
+    indentSize: 2
+  CommentWrapping:
+    indentSize: 2
+  Indentation:
+    indentSize: 2
+  KdocWrapping:
+    indentSize: 2
+  MultiLineIfElse:
+    indentSize: 2
+  NoMultipleSpaces:
+    active: false
+  ParameterListWrapping:
+    active: false
+  ParameterWrapping:
+    indentSize: 2
+  PropertyWrapping:
+    indentSize: 2
+  TrailingCommaOnDeclarationSite:
+    active: true
+    useTrailingCommaOnDeclarationSite: false
+  Wrapping:
+    active: false

@@ -9,7 +9,7 @@ import org.springframework.stereotype.Repository
 import java.util.UUID
 
 private const val FIND_PAGE =
-    """
+  """
     WITH ranked AS NOT MATERIALIZED (
         SELECT edition.id,
                COALESCE(series.name, edition.title) COLLATE ignoring_case_and_accents AS name,
@@ -42,15 +42,15 @@ private const val FIND_PAGE =
 
 @Repository
 class JdbcCatalogueEditions(private val jdbcClient: JdbcClient) : CatalogueEditions {
-    override fun findPage(readerId: ReaderId, after: EditionId?, size: Int): EditionIdPage {
-        val following = jdbcClient
-            .sql(FIND_PAGE)
-            .param("readerId", readerId.value)
-            .param("after", after?.value)
-            .param("size", size + 1)
-            .query { rs, _ -> EditionId(rs.getObject("id", UUID::class.java)) }
-            .list()
-        val page = following.take(size)
-        return EditionIdPage(page, if (following.size > size) page.last() else null)
-    }
+  override fun findPage(readerId: ReaderId, after: EditionId?, size: Int): EditionIdPage {
+    val following = jdbcClient
+      .sql(FIND_PAGE)
+      .param("readerId", readerId.value)
+      .param("after", after?.value)
+      .param("size", size + 1)
+      .query { rs, _ -> EditionId(rs.getObject("id", UUID::class.java)) }
+      .list()
+    val page = following.take(size)
+    return EditionIdPage(page, if (following.size > size) page.last() else null)
+  }
 }

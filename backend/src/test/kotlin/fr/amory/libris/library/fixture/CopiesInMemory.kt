@@ -5,16 +5,17 @@ import fr.amory.libris.library.domain.copy.Copy
 import fr.amory.libris.library.domain.copy.CopyRepository
 
 class CopiesInMemory : CopyRepository {
-    private val copies = mutableListOf<Copy>()
+  private val copies = mutableListOf<Copy>()
 
-    val stored: List<Copy> get() = copies.toList()
+  val stored: List<Copy> get() = copies.toList()
 
-    override fun insert(copy: Copy) {
-        copies += copy
-    }
+  override fun insert(copy: Copy) {
+    copies += copy
+  }
 
-    override fun findByEditionId(editionId: EditionId): List<Copy> = copies.filter { it.editionId == editionId }
+  override fun findByEditionId(editionId: EditionId): List<Copy> =
+    copies.filter { it.editionId == editionId }
 
-    override fun findByEditionIds(editionIds: List<EditionId>): List<Copy> =
-        copies.filter { it.editionId in editionIds }
+  override fun findByEditionIds(editionIds: List<EditionId>): List<Copy> =
+    copies.filter { it.editionId in editionIds }
 }

@@ -13,36 +13,35 @@ import org.springframework.context.annotation.Import
 @JdbcSliceTest
 @Import(JdbcReaderRepository::class, JdbcBookshelfRepository::class)
 class JdbcReaderRepositoryTest @Autowired constructor(
-    private val readers: JdbcReaderRepository,
-    private val bookshelves: JdbcBookshelfRepository,
-) {
-    @Test
-    fun `an inserted reader is read back whole`() {
-        // Given
-        val juliette = readerNamed("juliette", "Juliette")
+  private val readers: JdbcReaderRepository,
+  private val bookshelves: JdbcBookshelfRepository) {
+  @Test
+  fun `an inserted reader is read back whole`() {
+    // Given
+    val juliette = readerNamed("juliette", "Juliette")
 
-        // When
-        readers.insert(juliette)
-        bookshelves.insert(bookshelfOwnedBy(juliette))
+    // When
+    readers.insert(juliette)
+    bookshelves.insert(bookshelfOwnedBy(juliette))
 
-        // Then
-        readers.findByUsername("juliette") shouldBe juliette
-    }
+    // Then
+    readers.findByUsername("juliette") shouldBe juliette
+  }
 
-    @Test
-    fun `an unknown username finds no reader`() {
-        readers.findByUsername("nobody") shouldBe null
-    }
+  @Test
+  fun `an unknown username finds no reader`() {
+    readers.findByUsername("nobody") shouldBe null
+  }
 
-    @Test
-    fun `a second reader with the same username is refused`() {
-        // Given
-        val juliette = readerNamed("juliette", "Juliette")
-        readers.insert(juliette)
-        bookshelves.insert(bookshelfOwnedBy(juliette))
-        val juju = readerNamed("juliette", "Juju", email = "juju@amory.fr")
+  @Test
+  fun `a second reader with the same username is refused`() {
+    // Given
+    val juliette = readerNamed("juliette", "Juliette")
+    readers.insert(juliette)
+    bookshelves.insert(bookshelfOwnedBy(juliette))
+    val juju = readerNamed("juliette", "Juju", email = "juju@amory.fr")
 
-        // When, Then
-        shouldThrow<DuplicateUsernameException> { readers.insert(juju) }
-    }
+    // When, Then
+    shouldThrow<DuplicateUsernameException> { readers.insert(juju) }
+  }
 }

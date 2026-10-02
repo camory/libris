@@ -10,55 +10,60 @@ import com.github.tomakehurst.wiremock.client.WireMock.serverError
 import com.github.tomakehurst.wiremock.client.WireMock.urlPathEqualTo
 
 class BnfStubs(private val server: WireMockServer) {
-    val baseUrl: String get() = server.baseUrl()
+  val baseUrl: String get() = server.baseUrl()
 
-    fun knows(isbn: String) = answers(isbn, recorded("bnf/$isbn.xml"))
+  fun knows(isbn: String) =
+    answers(isbn, recorded("bnf/$isbn.xml"))
 
-    fun partiallyKnows(isbn: String) = answers(isbn, recorded("bnf/$isbn-without-pages-and-year.xml"))
+  fun partiallyKnows(isbn: String) =
+    answers(isbn, recorded("bnf/$isbn-without-pages-and-year.xml"))
 
-    fun doesNotKnow(isbn: String) = answers(isbn, recorded("bnf/$isbn.xml"))
+  fun doesNotKnow(isbn: String) =
+    answers(isbn, recorded("bnf/$isbn.xml"))
 
-    fun answersTooLate(isbn: String) {
-        server.stubFor(
-            get(urlPathEqualTo(SRU))
-                .withQueryParam("query", containing(isbn))
-                .willReturn(xml(recorded("bnf/$isbn.xml")).withFixedDelay(LATE)),
-        )
-    }
+  fun answersTooLate(isbn: String) {
+    server.stubFor(
+      get(urlPathEqualTo(SRU))
+        .withQueryParam("query", containing(isbn))
+        .willReturn(xml(recorded("bnf/$isbn.xml")).withFixedDelay(LATE)),
+    )
+  }
 
-    fun answersUnreadably(isbn: String) = answers(isbn, UNREADABLE)
+  fun answersUnreadably(isbn: String) =
+    answers(isbn, UNREADABLE)
 
-    fun fails() {
-        server.stubFor(get(urlPathEqualTo(SRU)).willReturn(serverError()))
-    }
+  fun fails() {
+    server.stubFor(get(urlPathEqualTo(SRU)).willReturn(serverError()))
+  }
 
-    fun hasCover(picture: ByteArray) {
-        server.stubFor(
-            get(urlPathEqualTo(COVER)).willReturn(ok().withHeader("Content-Type", "image/jpeg").withBody(picture)),
-        )
-    }
+  fun hasCover(picture: ByteArray) {
+    server.stubFor(
+      get(urlPathEqualTo(COVER)).willReturn(ok().withHeader("Content-Type", "image/jpeg").withBody(picture)),
+    )
+  }
 
-    fun hasNoCover() {
-        server.stubFor(get(urlPathEqualTo(COVER)).willReturn(serverError()))
-    }
+  fun hasNoCover() {
+    server.stubFor(get(urlPathEqualTo(COVER)).willReturn(serverError()))
+  }
 
-    fun coverRequests(): Int = server.findAll(getRequestedFor(urlPathEqualTo(COVER))).size
+  fun coverRequests(): Int =
+    server.findAll(getRequestedFor(urlPathEqualTo(COVER))).size
 
-    fun answers(isbn: String, envelope: String) {
-        server.stubFor(
-            get(urlPathEqualTo(SRU))
-                .withQueryParam("query", containing(isbn))
-                .willReturn(xml(envelope)),
-        )
-    }
+  fun answers(isbn: String, envelope: String) {
+    server.stubFor(
+      get(urlPathEqualTo(SRU))
+        .withQueryParam("query", containing(isbn))
+        .willReturn(xml(envelope)),
+    )
+  }
 
-    private fun xml(body: String): ResponseDefinitionBuilder =
-        ok().withHeader("Content-Type", "text/xml;charset=UTF-8").withBody(body)
+  private fun xml(body: String): ResponseDefinitionBuilder =
+    ok().withHeader("Content-Type", "text/xml;charset=UTF-8").withBody(body)
 
-    private companion object {
-        const val SRU = "/api/SRU"
-        const val COVER = "/couverture"
-        const val LATE = 2_000
-        const val UNREADABLE = "<srw:searchRetrieveResponse>"
-    }
+  private companion object {
+    const val SRU = "/api/SRU"
+    const val COVER = "/couverture"
+    const val LATE = 2_000
+    const val UNREADABLE = "<srw:searchRetrieveResponse>"
+  }
 }

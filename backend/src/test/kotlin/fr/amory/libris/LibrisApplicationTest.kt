@@ -13,25 +13,24 @@ import java.time.Duration.ofSeconds
 @SpringBootTest(webEnvironment = RANDOM_PORT, properties = ["LIBRIS_COVERS_DIR=build/test-covers"])
 @AutoConfigureRestTestClient
 class LibrisApplicationTest @Autowired constructor(
-    private val client: RestTestClient,
-    private val sources: SourcesProperties,
-) {
-    @Test
-    fun `the application starts and reports itself healthy`() {
-        client.get()
-            .uri("/actuator/health")
-            .exchange()
-            .expectStatus().isOk()
-            .expectBody().jsonPath("$.status").isEqualTo("UP")
-    }
+  private val client: RestTestClient,
+  private val sources: SourcesProperties) {
+  @Test
+  fun `the application starts and reports itself healthy`() {
+    client.get()
+      .uri("/actuator/health")
+      .exchange()
+      .expectStatus().isOk()
+      .expectBody().jsonPath("$.status").isEqualTo("UP")
+  }
 
-    @Test
-    fun `the sources are configured with their defaults`() {
-        sources shouldBe SourcesProperties(
-            bnfUrl = "https://catalogue.bnf.fr/api/SRU",
-            openLibraryUrl = "https://openlibrary.org",
-            inventaireUrl = "https://inventaire.io",
-            timeout = ofSeconds(5),
-        )
-    }
+  @Test
+  fun `the sources are configured with their defaults`() {
+    sources shouldBe SourcesProperties(
+      bnfUrl = "https://catalogue.bnf.fr/api/SRU",
+      openLibraryUrl = "https://openlibrary.org",
+      inventaireUrl = "https://inventaire.io",
+      timeout = ofSeconds(5),
+    )
+  }
 }

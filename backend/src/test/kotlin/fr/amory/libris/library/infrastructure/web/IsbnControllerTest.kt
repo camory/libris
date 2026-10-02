@@ -30,69 +30,68 @@ import org.springframework.test.web.servlet.client.RestTestClient
 import java.util.UUID
 
 private val TOPHE = readerNamed(
-    username = "tophe",
-    displayName = "Tophe",
-    id = ReaderId(UUID.fromString("01991c3a-5b7e-7c1d-8f2a-3d4e5f607181")),
-    defaultBookshelfId = BookshelfId(UUID.fromString("01991c3a-5b7e-7c1d-8f2a-3d4e5f607191")),
+  username = "tophe",
+  displayName = "Tophe",
+  id = ReaderId(UUID.fromString("01991c3a-5b7e-7c1d-8f2a-3d4e5f607181")),
+  defaultBookshelfId = BookshelfId(UUID.fromString("01991c3a-5b7e-7c1d-8f2a-3d4e5f607191")),
 )
 
 private val ROMANCE_DAWN = EditionPreview(
-    isbn = isbnOf("9782723488525"),
-    kind = MANGA,
-    title = "Romance dawn",
-    subtitle = "Tome 01",
-    contributions = Contributions.of(listOf(Contribution("Eiichirō Oda", WRITER))),
-    series = SeriesEntry("One Piece", 1),
-    collection = "Shōnen",
-    publisher = "Glénat",
-    publicationYear = 2013,
-    language = "fr",
-    pageCount = 207,
-    summary = "Luffy rêve de devenir le roi des pirates.",
+  isbn = isbnOf("9782723488525"),
+  kind = MANGA,
+  title = "Romance dawn",
+  subtitle = "Tome 01",
+  contributions = Contributions.of(listOf(Contribution("Eiichirō Oda", WRITER))),
+  series = SeriesEntry("One Piece", 1),
+  collection = "Shōnen",
+  publisher = "Glénat",
+  publicationYear = 2013,
+  language = "fr",
+  pageCount = 207,
+  summary = "Luffy rêve de devenir le roi des pirates.",
 )
 
 private val ROMANCE_DAWN_ID = EditionId(UUID.fromString("01991c3a-5b7e-7c1d-8f2a-3d4e5f6071a1"))
 
 @WebSliceTest
 @MockitoBean(
-    types = [
-        WelcomeReader::class,
-        LookupIsbnForReader::class,
-        FindDefaultBookshelf::class,
-        AddBookToBookshelf::class,
-        BrowseCatalogue::class,
-        FindCover::class,
-    ],
+  types = [
+    WelcomeReader::class,
+    LookupIsbnForReader::class,
+    FindDefaultBookshelf::class,
+    AddBookToBookshelf::class,
+    BrowseCatalogue::class,
+    FindCover::class,
+  ],
 )
 class IsbnControllerTest @Autowired constructor(
-    private val client: RestTestClient,
-    private val welcomeReader: WelcomeReader,
-    private val lookupIsbnForReader: LookupIsbnForReader,
-) {
-    @Test
-    fun `an edition the house holds is answered with its id`() {
-        // Given
-        given(welcomeReader("tophe", "tophe@amory.fr", "Tophe")).willReturn(TOPHE)
-        given(lookupIsbnForReader(TOPHE.id, isbnOf("9782723488525")))
-            .willReturn(IsbnLookup(Held(ROMANCE_DAWN_ID, ROMANCE_DAWN), emptyList()))
+  private val client: RestTestClient,
+  private val welcomeReader: WelcomeReader,
+  private val lookupIsbnForReader: LookupIsbnForReader) {
+  @Test
+  fun `an edition the house holds is answered with its id`() {
+    // Given
+    given(welcomeReader("tophe", "tophe@amory.fr", "Tophe")).willReturn(TOPHE)
+    given(lookupIsbnForReader(TOPHE.id, isbnOf("9782723488525")))
+      .willReturn(IsbnLookup(Held(ROMANCE_DAWN_ID, ROMANCE_DAWN), emptyList()))
 
-        // When
-        val body = lookUp("9782723488525")
+    // When
+    val body = lookUp("9782723488525")
 
-        // Then
-        body?.get("id") shouldBe "01991c3a-5b7e-7c1d-8f2a-3d4e5f6071a1"
-    }
+    // Then
+    body?.get("id") shouldBe "01991c3a-5b7e-7c1d-8f2a-3d4e5f6071a1"
+  }
 
-    private fun lookUp(isbn: String): Map<String, Any>? =
-        client.get()
-            .uri("/api/v1/isbn/{isbn}", isbn)
-            .headers {
-                it.add("Remote-User", "tophe")
-                it.add("Remote-Name", "Tophe")
-                it.add("Remote-Email", "tophe@amory.fr")
-            }
-            .exchange()
-            .expectStatus().isOk
-            .expectBody(object : ParameterizedTypeReference<Map<String, Any>>() {})
-            .returnResult().responseBody
+  private fun lookUp(isbn: String): Map<String, Any>? =
+    client.get()
+      .uri("/api/v1/isbn/{isbn}", isbn)
+      .headers {
+        it.add("Remote-User", "tophe")
+        it.add("Remote-Name", "Tophe")
+        it.add("Remote-Email", "tophe@amory.fr")
+      }
+      .exchange()
+      .expectStatus().isOk
+      .expectBody(object : ParameterizedTypeReference<Map<String, Any>>() {})
+      .returnResult().responseBody
 }

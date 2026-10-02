@@ -7,58 +7,58 @@ import io.kotest.matchers.shouldBe
 import org.junit.jupiter.api.Test
 
 class ContributionsTest {
-    @Test
-    fun `the contributions are ordered by role, then by name`() {
-        // Given
-        val given = listOf(
-            Contribution("Sylvain Chollet", TRANSLATOR),
-            Contribution("Jérémy", ARTIST),
-            Contribution("Théo", WRITER),
-            Contribution("Jean Dufaux", WRITER),
-        )
+  @Test
+  fun `the contributions are ordered by role, then by name`() {
+    // Given
+    val given = listOf(
+      Contribution("Sylvain Chollet", TRANSLATOR),
+      Contribution("Jérémy", ARTIST),
+      Contribution("Théo", WRITER),
+      Contribution("Jean Dufaux", WRITER),
+    )
 
-        // When
-        val contributions = Contributions.of(given)
+    // When
+    val contributions = Contributions.of(given)
 
-        // Then
-        contributions.toList() shouldBe listOf(
-            Contribution("Jean Dufaux", WRITER),
-            Contribution("Théo", WRITER),
-            Contribution("Jérémy", ARTIST),
-            Contribution("Sylvain Chollet", TRANSLATOR),
-        )
-    }
+    // Then
+    contributions.toList() shouldBe listOf(
+      Contribution("Jean Dufaux", WRITER),
+      Contribution("Théo", WRITER),
+      Contribution("Jérémy", ARTIST),
+      Contribution("Sylvain Chollet", TRANSLATOR),
+    )
+  }
 
-    @Test
-    fun `no contribution is empty, one is not`() {
-        Contributions.of(emptyList()).isEmpty() shouldBe true
-        Contributions.of(listOf(Contribution("Théo", WRITER))).isEmpty() shouldBe false
-    }
+  @Test
+  fun `no contribution is empty, one is not`() {
+    Contributions.of(emptyList()).isEmpty() shouldBe true
+    Contributions.of(listOf(Contribution("Théo", WRITER))).isEmpty() shouldBe false
+  }
 
-    @Test
-    fun `an author named twice in one role is kept once, under the first spelling`() {
-        // Given
-        val given = listOf(Contribution("Eiichirō Oda", WRITER), Contribution("EIICHIRŌ ODA", WRITER))
+  @Test
+  fun `an author named twice in one role is kept once, under the first spelling`() {
+    // Given
+    val given = listOf(Contribution("Eiichirō Oda", WRITER), Contribution("EIICHIRŌ ODA", WRITER))
 
-        // When
-        val contributions = Contributions.of(given)
+    // When
+    val contributions = Contributions.of(given)
 
-        // Then
-        contributions.toList() shouldBe listOf(Contribution("Eiichirō Oda", WRITER))
-    }
+    // Then
+    contributions.toList() shouldBe listOf(Contribution("Eiichirō Oda", WRITER))
+  }
 
-    @Test
-    fun `an author holds several roles`() {
-        // Given
-        val given = listOf(Contribution("Eiichirō Oda", ARTIST), Contribution("Eiichirō Oda", WRITER))
+  @Test
+  fun `an author holds several roles`() {
+    // Given
+    val given = listOf(Contribution("Eiichirō Oda", ARTIST), Contribution("Eiichirō Oda", WRITER))
 
-        // When
-        val contributions = Contributions.of(given)
+    // When
+    val contributions = Contributions.of(given)
 
-        // Then
-        contributions.toList() shouldBe listOf(
-            Contribution("Eiichirō Oda", WRITER),
-            Contribution("Eiichirō Oda", ARTIST),
-        )
-    }
+    // Then
+    contributions.toList() shouldBe listOf(
+      Contribution("Eiichirō Oda", WRITER),
+      Contribution("Eiichirō Oda", ARTIST),
+    )
+  }
 }

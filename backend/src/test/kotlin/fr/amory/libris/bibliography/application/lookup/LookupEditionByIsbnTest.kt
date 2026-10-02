@@ -30,249 +30,249 @@ import org.junit.jupiter.api.Test
 import java.util.concurrent.CyclicBarrier
 
 private val ROMANCE_DAWN = Edition(
-    id = EditionId.new(),
-    isbn = isbnOf("9782723488525"),
-    kind = MANGA,
-    title = "Romance dawn",
-    subtitle = "Tome 01",
-    contributions = Contributions.of(emptyList()),
-    series = null,
-    collection = null,
-    publisher = null,
-    publicationYear = null,
-    language = null,
-    pageCount = null,
-    summary = null,
-    coverUrl = null,
+  id = EditionId.new(),
+  isbn = isbnOf("9782723488525"),
+  kind = MANGA,
+  title = "Romance dawn",
+  subtitle = "Tome 01",
+  contributions = Contributions.of(emptyList()),
+  series = null,
+  collection = null,
+  publisher = null,
+  publicationYear = null,
+  language = null,
+  pageCount = null,
+  summary = null,
+  coverUrl = null,
 )
 
 private val NO_COVER = CoverCandidates.of(emptyList())
 
 class LookupEditionByIsbnTest {
-    @Test
-    fun `an ISBN the house holds is answered as the house holds it, without asking the sources`() {
-        // Given
-        val source = LookupAnswering(Known(A_PREVIEW.copy(title = "Un titre venu d'une source"), null))
-        val coverLookup = CoverLookupAnswering(CoverCandidate(INVENTAIRE, "https://inventaire/c"))
-        val lookupEditionByIsbn = LookupEditionByIsbn(
-            EditionsInMemory().also { it.insert(ROMANCE_DAWN) },
-            listOf(source),
-            coverLookup,
-        )
+  @Test
+  fun `an ISBN the house holds is answered as the house holds it, without asking the sources`() {
+    // Given
+    val source = LookupAnswering(Known(A_PREVIEW.copy(title = "Un titre venu d'une source"), null))
+    val coverLookup = CoverLookupAnswering(CoverCandidate(INVENTAIRE, "https://inventaire/c"))
+    val lookupEditionByIsbn = LookupEditionByIsbn(
+      EditionsInMemory().also { it.insert(ROMANCE_DAWN) },
+      listOf(source),
+      coverLookup,
+    )
 
-        // When
-        val result = lookupEditionByIsbn(isbnOf("9782723488525"))
+    // When
+    val result = lookupEditionByIsbn(isbnOf("9782723488525"))
 
-        // Then
-        result shouldBe Held(ROMANCE_DAWN.id, checkNotNull(EditionPreview.of(ROMANCE_DAWN)))
-        source.asked shouldBe emptyList()
-        coverLookup.asked shouldBe emptyList()
-    }
+    // Then
+    result shouldBe Held(ROMANCE_DAWN.id, checkNotNull(EditionPreview.of(ROMANCE_DAWN)))
+    source.asked shouldBe emptyList()
+    coverLookup.asked shouldBe emptyList()
+  }
 
-    @Test
-    fun `the BnF takes precedence over Open Library, whatever the order they were given`() {
-        // Given
-        val lookupEditionByIsbn = LookupEditionByIsbn(
-            EditionsInMemory(),
-            listOf(
-                LookupAnswering(
-                    Known(A_PREVIEW.copy(title = "Tome 01", pageCount = 207), null),
-                    EditionSource.OPEN_LIBRARY,
-                ),
-                LookupAnswering(Known(A_PREVIEW.copy(title = "Romance dawn"), null), EditionSource.BNF),
-            ),
-            NO_COVER_LOOKUP,
-        )
+  @Test
+  fun `the BnF takes precedence over Open Library, whatever the order they were given`() {
+    // Given
+    val lookupEditionByIsbn = LookupEditionByIsbn(
+      EditionsInMemory(),
+      listOf(
+        LookupAnswering(
+          Known(A_PREVIEW.copy(title = "Tome 01", pageCount = 207), null),
+          EditionSource.OPEN_LIBRARY,
+        ),
+        LookupAnswering(Known(A_PREVIEW.copy(title = "Romance dawn"), null), EditionSource.BNF),
+      ),
+      NO_COVER_LOOKUP,
+    )
 
-        // When
-        val result = lookupEditionByIsbn(isbnOf("9782723488525"))
+    // When
+    val result = lookupEditionByIsbn(isbnOf("9782723488525"))
 
-        // Then
-        result shouldBe Found(A_PREVIEW.copy(title = "Romance dawn", pageCount = 207), NO_COVER)
-    }
+    // Then
+    result shouldBe Found(A_PREVIEW.copy(title = "Romance dawn", pageCount = 207), NO_COVER)
+  }
 
-    @Test
-    fun `a source that failed takes no part in the answer`() {
-        // Given
-        val lookupEditionByIsbn = LookupEditionByIsbn(
-            EditionsInMemory(),
-            listOf(
-                LookupAnswering(Failed),
-                LookupAnswering(Known(A_PREVIEW.copy(title = "Romance dawn"), null)),
-            ),
-            NO_COVER_LOOKUP,
-        )
+  @Test
+  fun `a source that failed takes no part in the answer`() {
+    // Given
+    val lookupEditionByIsbn = LookupEditionByIsbn(
+      EditionsInMemory(),
+      listOf(
+        LookupAnswering(Failed),
+        LookupAnswering(Known(A_PREVIEW.copy(title = "Romance dawn"), null)),
+      ),
+      NO_COVER_LOOKUP,
+    )
 
-        // When
-        val result = lookupEditionByIsbn(isbnOf("9782723488525"))
+    // When
+    val result = lookupEditionByIsbn(isbnOf("9782723488525"))
 
-        // Then
-        result shouldBe Found(A_PREVIEW.copy(title = "Romance dawn"), NO_COVER)
-    }
+    // Then
+    result shouldBe Found(A_PREVIEW.copy(title = "Romance dawn"), NO_COVER)
+  }
 
-    @Test
-    fun `no source knowing the ISBN answers that it is unknown`() {
-        // Given
-        val lookupEditionByIsbn = LookupEditionByIsbn(
-            EditionsInMemory(),
-            listOf(LookupAnswering(NothingKnown), LookupAnswering(NothingKnown)),
-            NO_COVER_LOOKUP,
-        )
+  @Test
+  fun `no source knowing the ISBN answers that it is unknown`() {
+    // Given
+    val lookupEditionByIsbn = LookupEditionByIsbn(
+      EditionsInMemory(),
+      listOf(LookupAnswering(NothingKnown), LookupAnswering(NothingKnown)),
+      NO_COVER_LOOKUP,
+    )
 
-        // When
-        val result = lookupEditionByIsbn(isbnOf("9782000000013"))
+    // When
+    val result = lookupEditionByIsbn(isbnOf("9782000000013"))
 
-        // Then
-        result shouldBe UnknownIsbn
-    }
+    // Then
+    result shouldBe UnknownIsbn
+  }
 
-    @Test
-    fun `every source having failed answers that no source replied`() {
-        // Given
-        val lookupEditionByIsbn = LookupEditionByIsbn(
-            EditionsInMemory(),
-            listOf(LookupAnswering(Failed), LookupAnswering(Failed)),
-            NO_COVER_LOOKUP,
-        )
+  @Test
+  fun `every source having failed answers that no source replied`() {
+    // Given
+    val lookupEditionByIsbn = LookupEditionByIsbn(
+      EditionsInMemory(),
+      listOf(LookupAnswering(Failed), LookupAnswering(Failed)),
+      NO_COVER_LOOKUP,
+    )
 
-        // When
-        val result = lookupEditionByIsbn(isbnOf("9782723488525"))
+    // When
+    val result = lookupEditionByIsbn(isbnOf("9782723488525"))
 
-        // Then
-        result shouldBe SourcesUnavailable
-    }
+    // Then
+    result shouldBe SourcesUnavailable
+  }
 
-    @Test
-    fun `one source failing while the other knows nothing answers that the ISBN is unknown`() {
-        // Given
-        val lookupEditionByIsbn = LookupEditionByIsbn(
-            EditionsInMemory(),
-            listOf(LookupAnswering(Failed), LookupAnswering(NothingKnown)),
-            NO_COVER_LOOKUP,
-        )
+  @Test
+  fun `one source failing while the other knows nothing answers that the ISBN is unknown`() {
+    // Given
+    val lookupEditionByIsbn = LookupEditionByIsbn(
+      EditionsInMemory(),
+      listOf(LookupAnswering(Failed), LookupAnswering(NothingKnown)),
+      NO_COVER_LOOKUP,
+    )
 
-        // When
-        val result = lookupEditionByIsbn(isbnOf("9782000000013"))
+    // When
+    val result = lookupEditionByIsbn(isbnOf("9782000000013"))
 
-        // Then
-        result shouldBe UnknownIsbn
-    }
+    // Then
+    result shouldBe UnknownIsbn
+  }
 
-    @Test
-    fun `every source is asked at once`() {
-        // Given
-        val rendezvous = CyclicBarrier(3)
-        val lookupEditionByIsbn = LookupEditionByIsbn(
-            EditionsInMemory(),
-            listOf(
-                LookupAnsweringAtRendezvous(rendezvous, Known(A_PREVIEW.copy(title = "Romance dawn"), null)),
-                LookupAnsweringAtRendezvous(rendezvous, Known(A_PREVIEW.copy(pageCount = 207), null)),
-            ),
-            CoverLookupAnsweringAtRendezvous(rendezvous, CoverCandidate(INVENTAIRE, "https://inventaire/c")),
-        )
+  @Test
+  fun `every source is asked at once`() {
+    // Given
+    val rendezvous = CyclicBarrier(3)
+    val lookupEditionByIsbn = LookupEditionByIsbn(
+      EditionsInMemory(),
+      listOf(
+        LookupAnsweringAtRendezvous(rendezvous, Known(A_PREVIEW.copy(title = "Romance dawn"), null)),
+        LookupAnsweringAtRendezvous(rendezvous, Known(A_PREVIEW.copy(pageCount = 207), null)),
+      ),
+      CoverLookupAnsweringAtRendezvous(rendezvous, CoverCandidate(INVENTAIRE, "https://inventaire/c")),
+    )
 
-        // When
-        val result = lookupEditionByIsbn(isbnOf("9782723488525"))
+    // When
+    val result = lookupEditionByIsbn(isbnOf("9782723488525"))
 
-        // Then
-        result shouldBe Found(
-            A_PREVIEW.copy(title = "Romance dawn", pageCount = 207),
-            CoverCandidates.of(listOf(CoverCandidate(INVENTAIRE, "https://inventaire/c"))),
-        )
-    }
+    // Then
+    result shouldBe Found(
+      A_PREVIEW.copy(title = "Romance dawn", pageCount = 207),
+      CoverCandidates.of(listOf(CoverCandidate(INVENTAIRE, "https://inventaire/c"))),
+    )
+  }
 
-    @Test
-    fun `the edition sources offer their covers in the house's order, whatever the order they were given`() {
-        // Given
-        val lookupEditionByIsbn = LookupEditionByIsbn(
-            EditionsInMemory(),
-            listOf(
-                LookupAnswering(Known(A_PREVIEW, CoverCandidate(CoverSource.BNF, "https://bnf/b")), EditionSource.BNF),
-                LookupAnswering(
-                    Known(A_PREVIEW, CoverCandidate(CoverSource.OPEN_LIBRARY, "https://openlibrary/a")),
-                    EditionSource.OPEN_LIBRARY,
-                ),
-            ),
-            NO_COVER_LOOKUP,
-        )
+  @Test
+  fun `the edition sources offer their covers in the house's order, whatever the order they were given`() {
+    // Given
+    val lookupEditionByIsbn = LookupEditionByIsbn(
+      EditionsInMemory(),
+      listOf(
+        LookupAnswering(Known(A_PREVIEW, CoverCandidate(CoverSource.BNF, "https://bnf/b")), EditionSource.BNF),
+        LookupAnswering(
+          Known(A_PREVIEW, CoverCandidate(CoverSource.OPEN_LIBRARY, "https://openlibrary/a")),
+          EditionSource.OPEN_LIBRARY,
+        ),
+      ),
+      NO_COVER_LOOKUP,
+    )
 
-        // When
-        val result = lookupEditionByIsbn(isbnOf("9782723488525"))
+    // When
+    val result = lookupEditionByIsbn(isbnOf("9782723488525"))
 
-        // Then
-        result.shouldBeInstanceOf<Found>().covers.toList() shouldBe listOf(
-            CoverCandidate(CoverSource.OPEN_LIBRARY, "https://openlibrary/a"),
-            CoverCandidate(CoverSource.BNF, "https://bnf/b"),
-        )
-    }
+    // Then
+    result.shouldBeInstanceOf<Found>().covers.toList() shouldBe listOf(
+      CoverCandidate(CoverSource.OPEN_LIBRARY, "https://openlibrary/a"),
+      CoverCandidate(CoverSource.BNF, "https://bnf/b"),
+    )
+  }
 
-    @Test
-    fun `inventaire io's picture comes before the edition sources' covers`() {
-        // Given
-        val lookupEditionByIsbn = LookupEditionByIsbn(
-            EditionsInMemory(),
-            listOf(
-                LookupAnswering(Known(A_PREVIEW, CoverCandidate(CoverSource.BNF, "https://bnf/b")), EditionSource.BNF),
-                LookupAnswering(
-                    Known(A_PREVIEW, CoverCandidate(CoverSource.OPEN_LIBRARY, "https://openlibrary/a")),
-                    EditionSource.OPEN_LIBRARY,
-                ),
-            ),
-            CoverLookupAnswering(CoverCandidate(INVENTAIRE, "https://inventaire/c")),
-        )
+  @Test
+  fun `inventaire io's picture comes before the edition sources' covers`() {
+    // Given
+    val lookupEditionByIsbn = LookupEditionByIsbn(
+      EditionsInMemory(),
+      listOf(
+        LookupAnswering(Known(A_PREVIEW, CoverCandidate(CoverSource.BNF, "https://bnf/b")), EditionSource.BNF),
+        LookupAnswering(
+          Known(A_PREVIEW, CoverCandidate(CoverSource.OPEN_LIBRARY, "https://openlibrary/a")),
+          EditionSource.OPEN_LIBRARY,
+        ),
+      ),
+      CoverLookupAnswering(CoverCandidate(INVENTAIRE, "https://inventaire/c")),
+    )
 
-        // When
-        val result = lookupEditionByIsbn(isbnOf("9782723488525"))
+    // When
+    val result = lookupEditionByIsbn(isbnOf("9782723488525"))
 
-        // Then
-        result.shouldBeInstanceOf<Found>().covers.toList() shouldBe listOf(
-            CoverCandidate(INVENTAIRE, "https://inventaire/c"),
-            CoverCandidate(CoverSource.OPEN_LIBRARY, "https://openlibrary/a"),
-            CoverCandidate(CoverSource.BNF, "https://bnf/b"),
-        )
-    }
+    // Then
+    result.shouldBeInstanceOf<Found>().covers.toList() shouldBe listOf(
+      CoverCandidate(INVENTAIRE, "https://inventaire/c"),
+      CoverCandidate(CoverSource.OPEN_LIBRARY, "https://openlibrary/a"),
+      CoverCandidate(CoverSource.BNF, "https://bnf/b"),
+    )
+  }
 
-    @Test
-    fun `a source that knows the edition without a cover offers no candidate`() {
-        // Given
-        val lookupEditionByIsbn = LookupEditionByIsbn(
-            EditionsInMemory(),
-            listOf(
-                LookupAnswering(Known(A_PREVIEW, null), EditionSource.BNF),
-                LookupAnswering(
-                    Known(A_PREVIEW, CoverCandidate(CoverSource.OPEN_LIBRARY, "https://openlibrary/a")),
-                    EditionSource.OPEN_LIBRARY,
-                ),
-            ),
-            NO_COVER_LOOKUP,
-        )
+  @Test
+  fun `a source that knows the edition without a cover offers no candidate`() {
+    // Given
+    val lookupEditionByIsbn = LookupEditionByIsbn(
+      EditionsInMemory(),
+      listOf(
+        LookupAnswering(Known(A_PREVIEW, null), EditionSource.BNF),
+        LookupAnswering(
+          Known(A_PREVIEW, CoverCandidate(CoverSource.OPEN_LIBRARY, "https://openlibrary/a")),
+          EditionSource.OPEN_LIBRARY,
+        ),
+      ),
+      NO_COVER_LOOKUP,
+    )
 
-        // When
-        val result = lookupEditionByIsbn(isbnOf("9782723488525"))
+    // When
+    val result = lookupEditionByIsbn(isbnOf("9782723488525"))
 
-        // Then
-        result.shouldBeInstanceOf<Found>().covers.toList() shouldBe listOf(
-            CoverCandidate(CoverSource.OPEN_LIBRARY, "https://openlibrary/a"),
-        )
-    }
+    // Then
+    result.shouldBeInstanceOf<Found>().covers.toList() shouldBe listOf(
+      CoverCandidate(CoverSource.OPEN_LIBRARY, "https://openlibrary/a"),
+    )
+  }
 
-    @Test
-    fun `a picture alone, without an edition source that knows the ISBN, is an unknown ISBN`() {
-        // Given
-        val lookupEditionByIsbn = LookupEditionByIsbn(
-            EditionsInMemory(),
-            listOf(LookupAnswering(NothingKnown), LookupAnswering(NothingKnown)),
-            CoverLookupAnswering(CoverCandidate(INVENTAIRE, "https://inventaire/c")),
-        )
+  @Test
+  fun `a picture alone, without an edition source that knows the ISBN, is an unknown ISBN`() {
+    // Given
+    val lookupEditionByIsbn = LookupEditionByIsbn(
+      EditionsInMemory(),
+      listOf(LookupAnswering(NothingKnown), LookupAnswering(NothingKnown)),
+      CoverLookupAnswering(CoverCandidate(INVENTAIRE, "https://inventaire/c")),
+    )
 
-        // When
-        val result = lookupEditionByIsbn(isbnOf("9782723488525"))
+    // When
+    val result = lookupEditionByIsbn(isbnOf("9782723488525"))
 
-        // Then
-        result shouldBe UnknownIsbn
-    }
+    // Then
+    result shouldBe UnknownIsbn
+  }
 
-    private companion object {
-        val NO_COVER_LOOKUP get() = CoverLookupAnswering(null)
-    }
+  private companion object {
+    val NO_COVER_LOOKUP get() = CoverLookupAnswering(null)
+  }
 }

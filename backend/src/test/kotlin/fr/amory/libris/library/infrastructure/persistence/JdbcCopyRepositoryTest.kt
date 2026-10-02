@@ -26,171 +26,171 @@ private const val ONE_PIECE = "9782723488525"
 
 @JdbcSliceTest
 @Import(
-    JdbcCopyRepository::class,
-    JdbcEditionRepository::class,
-    JdbcBookshelfRepository::class,
-    JdbcReaderRepository::class,
+  JdbcCopyRepository::class,
+  JdbcEditionRepository::class,
+  JdbcBookshelfRepository::class,
+  JdbcReaderRepository::class,
 )
 class JdbcCopyRepositoryTest @Autowired constructor(
-    private val copies: JdbcCopyRepository,
-    private val editions: JdbcEditionRepository,
-    private val bookshelves: JdbcBookshelfRepository,
-    private val readers: JdbcReaderRepository,
-    private val jdbcClient: JdbcClient,
-) {
-    @Test
-    fun `a copy inserted sits on its bookshelf and its edition`() {
-        // Given
-        val bookshelf = bookshelfOf("lea", "Léa")
-        val edition = onePieceTomeOne()
-        editions.insert(edition)
-        val copy = Copy(CopyId.new(), edition.id, bookshelf.id)
+  private val copies: JdbcCopyRepository,
+  private val editions: JdbcEditionRepository,
+  private val bookshelves: JdbcBookshelfRepository,
+  private val readers: JdbcReaderRepository,
+  private val jdbcClient: JdbcClient) {
+  @Test
+  fun `a copy inserted sits on its bookshelf and its edition`() {
+    // Given
+    val bookshelf = bookshelfOf("lea", "Léa")
+    val edition = onePieceTomeOne()
+    editions.insert(edition)
+    val copy = Copy(CopyId.new(), edition.id, bookshelf.id)
 
-        // When
-        copies.insert(copy)
+    // When
+    copies.insert(copy)
 
-        // Then
-        rowOf(copy.id) shouldBe (edition.id.value to bookshelf.id.value)
-    }
+    // Then
+    rowOf(copy.id) shouldBe (edition.id.value to bookshelf.id.value)
+  }
 
-    @Test
-    fun `two copies of one edition on one bookshelf stand beside each other`() {
-        // Given
-        val bookshelf = bookshelfOf("lea", "Léa")
-        val edition = onePieceTomeOne()
-        editions.insert(edition)
-        val first = Copy(CopyId.new(), edition.id, bookshelf.id)
-        copies.insert(first)
+  @Test
+  fun `two copies of one edition on one bookshelf stand beside each other`() {
+    // Given
+    val bookshelf = bookshelfOf("lea", "Léa")
+    val edition = onePieceTomeOne()
+    editions.insert(edition)
+    val first = Copy(CopyId.new(), edition.id, bookshelf.id)
+    copies.insert(first)
 
-        // When
-        val second = Copy(CopyId.new(), edition.id, bookshelf.id)
-        copies.insert(second)
+    // When
+    val second = Copy(CopyId.new(), edition.id, bookshelf.id)
+    copies.insert(second)
 
-        // Then
-        rowOf(first.id) shouldBe (edition.id.value to bookshelf.id.value)
-        rowOf(second.id) shouldBe (edition.id.value to bookshelf.id.value)
-    }
+    // Then
+    rowOf(first.id) shouldBe (edition.id.value to bookshelf.id.value)
+    rowOf(second.id) shouldBe (edition.id.value to bookshelf.id.value)
+  }
 
-    @Test
-    fun `a copy of an edition the house does not hold is refused`() {
-        // Given
-        val bookshelf = bookshelfOf("lea", "Léa")
+  @Test
+  fun `a copy of an edition the house does not hold is refused`() {
+    // Given
+    val bookshelf = bookshelfOf("lea", "Léa")
 
-        // When
-        val copy = Copy(CopyId.new(), EditionId.new(), bookshelf.id)
+    // When
+    val copy = Copy(CopyId.new(), EditionId.new(), bookshelf.id)
 
-        // Then
-        shouldThrow<DataIntegrityViolationException> { copies.insert(copy) }
-    }
+    // Then
+    shouldThrow<DataIntegrityViolationException> { copies.insert(copy) }
+  }
 
-    @Test
-    fun `a copy on a bookshelf Libris does not know is refused`() {
-        // Given
-        val edition = onePieceTomeOne()
-        editions.insert(edition)
+  @Test
+  fun `a copy on a bookshelf Libris does not know is refused`() {
+    // Given
+    val edition = onePieceTomeOne()
+    editions.insert(edition)
 
-        // When
-        val copy = Copy(CopyId.new(), edition.id, BookshelfId.new())
+    // When
+    val copy = Copy(CopyId.new(), edition.id, BookshelfId.new())
 
-        // Then
-        shouldThrow<DataIntegrityViolationException> { copies.insert(copy) }
-    }
+    // Then
+    shouldThrow<DataIntegrityViolationException> { copies.insert(copy) }
+  }
 
-    @Test
-    fun `the copies of an edition are found, wherever they sit`() {
-        // Given
-        val leasBookshelf = bookshelfOf("lea", "Léa")
-        val juliettesBookshelf = bookshelfOf("juliette", "Juliette")
-        val edition = onePieceTomeOne()
-        editions.insert(edition)
-        val leasCopy = Copy(CopyId.new(), edition.id, leasBookshelf.id)
-        val juliettesCopy = Copy(CopyId.new(), edition.id, juliettesBookshelf.id)
-        copies.insert(leasCopy)
-        copies.insert(juliettesCopy)
+  @Test
+  fun `the copies of an edition are found, wherever they sit`() {
+    // Given
+    val leasBookshelf = bookshelfOf("lea", "Léa")
+    val juliettesBookshelf = bookshelfOf("juliette", "Juliette")
+    val edition = onePieceTomeOne()
+    editions.insert(edition)
+    val leasCopy = Copy(CopyId.new(), edition.id, leasBookshelf.id)
+    val juliettesCopy = Copy(CopyId.new(), edition.id, juliettesBookshelf.id)
+    copies.insert(leasCopy)
+    copies.insert(juliettesCopy)
 
-        // When
-        val found = copies.findByEditionId(edition.id)
+    // When
+    val found = copies.findByEditionId(edition.id)
 
-        // Then
-        found.toSet() shouldBe setOf(leasCopy, juliettesCopy)
-    }
+    // Then
+    found.toSet() shouldBe setOf(leasCopy, juliettesCopy)
+  }
 
-    @Test
-    fun `the copies of another edition are not found`() {
-        // Given
-        val bookshelf = bookshelfOf("lea", "Léa")
-        val edition = onePieceTomeOne()
-        editions.insert(edition)
-        val other = onePieceTomeOne().copy(id = EditionId.new(), isbn = isbnOf("9782723489898"))
-        editions.insert(other)
-        copies.insert(Copy(CopyId.new(), other.id, bookshelf.id))
+  @Test
+  fun `the copies of another edition are not found`() {
+    // Given
+    val bookshelf = bookshelfOf("lea", "Léa")
+    val edition = onePieceTomeOne()
+    editions.insert(edition)
+    val other = onePieceTomeOne().copy(id = EditionId.new(), isbn = isbnOf("9782723489898"))
+    editions.insert(other)
+    copies.insert(Copy(CopyId.new(), other.id, bookshelf.id))
 
-        // When
-        val found = copies.findByEditionId(edition.id)
+    // When
+    val found = copies.findByEditionId(edition.id)
 
-        // Then
-        found shouldBe emptyList()
-    }
+    // Then
+    found shouldBe emptyList()
+  }
 
-    @Test
-    fun `the copies of the given editions are found, wherever they sit, none of another`() {
-        // Given
-        val leasBookshelf = bookshelfOf("lea", "Léa")
-        val tomsBookshelf = bookshelfOf("tom", "Tom")
-        val romanceDawn = onePieceTomeOne()
-        val baggy = onePieceTomeOne().copy(id = EditionId.new(), isbn = isbnOf("9782723489898"))
-        val other = onePieceTomeOne().copy(id = EditionId.new(), isbn = isbnOf("9782723490030"))
-        listOf(romanceDawn, baggy, other).forEach(editions::insert)
-        val leasCopy = Copy(CopyId.new(), romanceDawn.id, leasBookshelf.id)
-        val tomsCopy = Copy(CopyId.new(), baggy.id, tomsBookshelf.id)
-        copies.insert(leasCopy)
-        copies.insert(tomsCopy)
-        copies.insert(Copy(CopyId.new(), other.id, leasBookshelf.id))
+  @Test
+  fun `the copies of the given editions are found, wherever they sit, none of another`() {
+    // Given
+    val leasBookshelf = bookshelfOf("lea", "Léa")
+    val tomsBookshelf = bookshelfOf("tom", "Tom")
+    val romanceDawn = onePieceTomeOne()
+    val baggy = onePieceTomeOne().copy(id = EditionId.new(), isbn = isbnOf("9782723489898"))
+    val other = onePieceTomeOne().copy(id = EditionId.new(), isbn = isbnOf("9782723490030"))
+    listOf(romanceDawn, baggy, other).forEach(editions::insert)
+    val leasCopy = Copy(CopyId.new(), romanceDawn.id, leasBookshelf.id)
+    val tomsCopy = Copy(CopyId.new(), baggy.id, tomsBookshelf.id)
+    copies.insert(leasCopy)
+    copies.insert(tomsCopy)
+    copies.insert(Copy(CopyId.new(), other.id, leasBookshelf.id))
 
-        // When
-        val found = copies.findByEditionIds(listOf(romanceDawn.id, baggy.id))
+    // When
+    val found = copies.findByEditionIds(listOf(romanceDawn.id, baggy.id))
 
-        // Then
-        found.toSet() shouldBe setOf(leasCopy, tomsCopy)
-    }
+    // Then
+    found.toSet() shouldBe setOf(leasCopy, tomsCopy)
+  }
 
-    @Test
-    fun `no edition finds no copy`() {
-        copies.findByEditionIds(emptyList()) shouldBe emptyList()
-    }
+  @Test
+  fun `no edition finds no copy`() {
+    copies.findByEditionIds(emptyList()) shouldBe emptyList()
+  }
 
-    private fun bookshelfOf(username: String, displayName: String): Bookshelf {
-        val reader = readerNamed(username, displayName)
-        readers.insert(reader)
-        val bookshelf = bookshelfOwnedBy(reader)
-        bookshelves.insert(bookshelf)
-        return bookshelf
-    }
+  private fun bookshelfOf(username: String, displayName: String): Bookshelf {
+    val reader = readerNamed(username, displayName)
+    readers.insert(reader)
+    val bookshelf = bookshelfOwnedBy(reader)
+    bookshelves.insert(bookshelf)
+    return bookshelf
+  }
 
-    private fun rowOf(id: CopyId): Pair<UUID, UUID>? =
-        jdbcClient
-            .sql("SELECT copy.edition_id, copy.bookshelf_id FROM copy WHERE copy.id = :id")
-            .param("id", id.value)
-            .query { rs, _ ->
-                rs.getObject("edition_id", UUID::class.java) to rs.getObject("bookshelf_id", UUID::class.java)
-            }
-            .list()
-            .singleOrNull()
+  private fun rowOf(id: CopyId): Pair<UUID, UUID>? =
+    jdbcClient
+      .sql("SELECT copy.edition_id, copy.bookshelf_id FROM copy WHERE copy.id = :id")
+      .param("id", id.value)
+      .query { rs, _ ->
+        rs.getObject("edition_id", UUID::class.java) to rs.getObject("bookshelf_id", UUID::class.java)
+      }
+      .list()
+      .singleOrNull()
 
-    private fun onePieceTomeOne(): Edition = Edition(
-        id = EditionId.new(),
-        isbn = isbnOf(ONE_PIECE),
-        kind = MANGA,
-        title = "Romance dawn",
-        subtitle = null,
-        contributions = Contributions.of(emptyList()),
-        series = null,
-        collection = null,
-        publisher = null,
-        publicationYear = null,
-        language = null,
-        pageCount = null,
-        summary = null,
-        coverUrl = null,
+  private fun onePieceTomeOne(): Edition =
+    Edition(
+      id = EditionId.new(),
+      isbn = isbnOf(ONE_PIECE),
+      kind = MANGA,
+      title = "Romance dawn",
+      subtitle = null,
+      contributions = Contributions.of(emptyList()),
+      series = null,
+      collection = null,
+      publisher = null,
+      publicationYear = null,
+      language = null,
+      pageCount = null,
+      summary = null,
+      coverUrl = null,
     )
 }

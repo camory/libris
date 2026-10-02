@@ -6,15 +6,17 @@ import fr.amory.libris.bibliography.domain.edition.EditionId
 import fr.amory.libris.bibliography.domain.edition.EditionRepository
 
 class EditionsInMemory : EditionRepository {
-    private val editions = mutableListOf<Edition>()
+  private val editions = mutableListOf<Edition>()
 
-    val stored: List<Edition> get() = editions.toList()
+  val stored: List<Edition> get() = editions.toList()
 
-    override fun insert(edition: Edition) {
-        editions += edition
-    }
+  override fun insert(edition: Edition) {
+    editions += edition
+  }
 
-    override fun findByIsbn(isbn: Isbn): Edition? = editions.find { it.isbn == isbn }
+  override fun findByIsbn(isbn: Isbn): Edition? =
+    editions.find { it.isbn == isbn }
 
-    override fun findByIds(ids: List<EditionId>): List<Edition> = editions.filter { it.id in ids }
+  override fun findByIds(ids: List<EditionId>): List<Edition> =
+    editions.filter { it.id in ids }
 }

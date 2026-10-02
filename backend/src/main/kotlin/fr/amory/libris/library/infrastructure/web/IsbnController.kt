@@ -30,91 +30,86 @@ import org.springframework.web.bind.annotation.RestController
 private const val SOURCES_UNAVAILABLE_PROBLEM = "/problems/sources-unavailable"
 
 data class IsbnAuthorResponse(
-    val name: String,
-    val role: ContributionRole,
-)
+  val name: String,
+  val role: ContributionRole)
 
 data class IsbnSeriesResponse(
-    val name: String,
-    val volumeNumber: Int?,
-)
+  val name: String,
+  val volumeNumber: Int?)
 
 data class CoverCandidateResponse(
-    val source: String,
-    val url: String,
-)
+  val source: String,
+  val url: String)
 
 data class IsbnResponse(
-    val id: String?,
-    val isbn13: String,
-    val kind: Kind,
-    val title: String,
-    val subtitle: String?,
-    val authors: List<IsbnAuthorResponse>,
-    val series: IsbnSeriesResponse?,
-    val collection: String?,
-    val publisher: String?,
-    val publicationYear: Int?,
-    val language: String?,
-    val pageCount: Int?,
-    val summary: String?,
-    val coverUrl: String?,
-    val covers: List<CoverCandidateResponse>,
-    val copies: List<CopyResponse>,
-)
+  val id: String?,
+  val isbn13: String,
+  val kind: Kind,
+  val title: String,
+  val subtitle: String?,
+  val authors: List<IsbnAuthorResponse>,
+  val series: IsbnSeriesResponse?,
+  val collection: String?,
+  val publisher: String?,
+  val publicationYear: Int?,
+  val language: String?,
+  val pageCount: Int?,
+  val summary: String?,
+  val coverUrl: String?,
+  val covers: List<CoverCandidateResponse>,
+  val copies: List<CopyResponse>)
 
 @RestController
 class IsbnController(private val lookupIsbnForReader: LookupIsbnForReader) {
-    @GetMapping("/api/v1/isbn/{isbn}")
-    fun isbn(@AuthenticationPrincipal reader: Reader, @PathVariable("isbn") text: String): ResponseEntity<Any> {
-        val isbn = isbn13Of(text) ?: return notAnIsbn().asResponse()
-        val lookup = lookupIsbnForReader(reader.id, isbn)
-        return when (val result = lookup.answer) {
-            is Held -> ResponseEntity.ok(responseOf(result.id, result.preview, lookup.copies))
-            is Found -> ResponseEntity.ok(responseOf(result.preview, result.covers, lookup.copies))
-            UnknownIsbn -> problem(NOT_FOUND, NOT_FOUND_PROBLEM).asResponse()
-            SourcesUnavailable -> problem(SERVICE_UNAVAILABLE, SOURCES_UNAVAILABLE_PROBLEM).asResponse()
-        }
+  @GetMapping("/api/v1/isbn/{isbn}")
+  fun isbn(@AuthenticationPrincipal reader: Reader, @PathVariable("isbn") text: String): ResponseEntity<Any> {
+    val isbn = isbn13Of(text) ?: return notAnIsbn().asResponse()
+    val lookup = lookupIsbnForReader(reader.id, isbn)
+    return when (val result = lookup.answer) {
+      is Held            -> ResponseEntity.ok(responseOf(result.id, result.preview, lookup.copies))
+      is Found           -> ResponseEntity.ok(responseOf(result.preview, result.covers, lookup.copies))
+      UnknownIsbn        -> problem(NOT_FOUND, NOT_FOUND_PROBLEM).asResponse()
+      SourcesUnavailable -> problem(SERVICE_UNAVAILABLE, SOURCES_UNAVAILABLE_PROBLEM).asResponse()
+    }
+  }
+
+  private fun notAnIsbn(): ProblemDetail =
+    problem(BAD_REQUEST, VALIDATION_PROBLEM).apply {
+      setProperty("errors", listOf(ValidationErrorResponse(field = "isbn", code = "not-an-isbn")))
     }
 
-    private fun notAnIsbn(): ProblemDetail = problem(BAD_REQUEST, VALIDATION_PROBLEM).apply {
-        setProperty("errors", listOf(ValidationErrorResponse(field = "isbn", code = "not-an-isbn")))
-    }
-
-    private fun responseOf(
-        id: EditionId?,
-        preview: EditionPreview,
-        copies: List<CopyOnBookshelf>,
-    ): IsbnResponse = IsbnResponse(
-        id = id?.value?.toString(),
-        isbn13 = preview.isbn.digits,
-        kind = preview.kind,
-        title = preview.title,
-        subtitle = preview.subtitle,
-        authors = preview.contributions.map { IsbnAuthorResponse(it.name, it.role) },
-        series = preview.series?.let { IsbnSeriesResponse(it.name, it.volumeNumber) },
-        collection = preview.collection,
-        publisher = preview.publisher,
-        publicationYear = preview.publicationYear,
-        language = preview.language,
-        pageCount = preview.pageCount,
-        summary = preview.summary,
-        coverUrl = null,
-        covers = emptyList(),
-        copies = copies.map { responseOf(it) },
+  private fun responseOf(id: EditionId?, preview: EditionPreview, copies: List<CopyOnBookshelf>): IsbnResponse =
+    IsbnResponse(
+      id = id?.value?.toString(),
+      isbn13 = preview.isbn.digits,
+      kind = preview.kind,
+      title = preview.title,
+      subtitle = preview.subtitle,
+      authors = preview.contributions.map { IsbnAuthorResponse(it.name, it.role) },
+      series = preview.series?.let { IsbnSeriesResponse(it.name, it.volumeNumber) },
+      collection = preview.collection,
+      publisher = preview.publisher,
+      publicationYear = preview.publicationYear,
+      language = preview.language,
+      pageCount = preview.pageCount,
+      summary = preview.summary,
+      coverUrl = null,
+      covers = emptyList(),
+      copies = copies.map { responseOf(it) },
     )
 
-    private fun responseOf(
-        preview: EditionPreview,
-        covers: CoverCandidates,
-        copies: List<CopyOnBookshelf>,
-    ): IsbnResponse = responseOf(null, preview, copies).copy(
-        coverUrl = covers.firstOrNull()?.url,
-        covers = covers.map { CoverCandidateResponse(it.source.label, it.url) },
+  private fun responseOf(
+    preview: EditionPreview,
+    covers: CoverCandidates,
+    copies: List<CopyOnBookshelf>): IsbnResponse =
+    responseOf(null, preview, copies).copy(
+      coverUrl = covers.firstOrNull()?.url,
+      covers = covers.map { CoverCandidateResponse(it.source.label, it.url) },
     )
 
-    private fun responseOf(copy: CopyOnBookshelf): CopyResponse = CopyResponse(
-        id = copy.copyId.value.toString(),
-        bookshelf = BookshelfResponse(copy.bookshelfId.value.toString(), copy.bookshelfName),
+  private fun responseOf(copy: CopyOnBookshelf): CopyResponse =
+    CopyResponse(
+      id = copy.copyId.value.toString(),
+      bookshelf = BookshelfResponse(copy.bookshelfId.value.toString(), copy.bookshelfName),
     )
 }

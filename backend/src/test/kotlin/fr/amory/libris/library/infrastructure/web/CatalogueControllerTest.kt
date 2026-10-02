@@ -32,77 +32,76 @@ import org.springframework.test.web.servlet.client.RestTestClient
 import java.util.UUID
 
 private val TOPHE = readerNamed(
-    username = "tophe",
-    displayName = "Tophe",
-    id = ReaderId(UUID.fromString("01991c3a-5b7e-7c1d-8f2a-3d4e5f607181")),
-    defaultBookshelfId = BookshelfId(UUID.fromString("01991c3a-5b7e-7c1d-8f2a-3d4e5f607191")),
+  username = "tophe",
+  displayName = "Tophe",
+  id = ReaderId(UUID.fromString("01991c3a-5b7e-7c1d-8f2a-3d4e5f607181")),
+  defaultBookshelfId = BookshelfId(UUID.fromString("01991c3a-5b7e-7c1d-8f2a-3d4e5f607191")),
 )
 
 private val ROMANCE_DAWN = HeldEdition(
-    edition = Edition(
-        id = EditionId(UUID.fromString("01991c3a-5b7e-7c1d-8f2a-3d4e5f6071a1")),
-        isbn = isbnOf("9782723488525"),
-        kind = MANGA,
-        title = "Romance dawn",
-        subtitle = "Tome 01",
-        contributions = Contributions.of(listOf(Contribution("Eiichirō Oda", WRITER))),
-        series = SeriesEntry("One Piece", 1),
-        collection = "Shōnen",
-        publisher = "Glénat",
-        publicationYear = 2013,
-        language = "fr",
-        pageCount = 207,
-        summary = "Luffy rêve de devenir le roi des pirates.",
-        coverUrl = "https://couvertures.amory.fr/one-piece-01.jpg",
+  edition = Edition(
+    id = EditionId(UUID.fromString("01991c3a-5b7e-7c1d-8f2a-3d4e5f6071a1")),
+    isbn = isbnOf("9782723488525"),
+    kind = MANGA,
+    title = "Romance dawn",
+    subtitle = "Tome 01",
+    contributions = Contributions.of(listOf(Contribution("Eiichirō Oda", WRITER))),
+    series = SeriesEntry("One Piece", 1),
+    collection = "Shōnen",
+    publisher = "Glénat",
+    publicationYear = 2013,
+    language = "fr",
+    pageCount = 207,
+    summary = "Luffy rêve de devenir le roi des pirates.",
+    coverUrl = "https://couvertures.amory.fr/one-piece-01.jpg",
+  ),
+  copies = listOf(
+    CopyOnBookshelf(
+      copyId = CopyId(UUID.fromString("01991c3a-5b7e-7c1d-8f2a-3d4e5f6071b1")),
+      bookshelfId = TOPHE.defaultBookshelfId,
+      bookshelfName = "Bibliothèque de Tophe",
     ),
-    copies = listOf(
-        CopyOnBookshelf(
-            copyId = CopyId(UUID.fromString("01991c3a-5b7e-7c1d-8f2a-3d4e5f6071b1")),
-            bookshelfId = TOPHE.defaultBookshelfId,
-            bookshelfName = "Bibliothèque de Tophe",
-        ),
-    ),
+  ),
 )
 
 @WebSliceTest
 @MockitoBean(
-    types = [
-        WelcomeReader::class,
-        LookupIsbnForReader::class,
-        FindDefaultBookshelf::class,
-        AddBookToBookshelf::class,
-        BrowseCatalogue::class,
-        FindCover::class,
-    ],
+  types = [
+    WelcomeReader::class,
+    LookupIsbnForReader::class,
+    FindDefaultBookshelf::class,
+    AddBookToBookshelf::class,
+    BrowseCatalogue::class,
+    FindCover::class,
+  ],
 )
 class CatalogueControllerTest @Autowired constructor(
-    private val client: RestTestClient,
-    private val welcomeReader: WelcomeReader,
-    private val browseCatalogue: BrowseCatalogue,
-) {
-    @Test
-    fun `a held edition is answered with no cover while none is stored`() {
-        // Given
-        given(welcomeReader("tophe", "tophe@amory.fr", "Tophe")).willReturn(TOPHE)
-        given(browseCatalogue(TOPHE.id, null)).willReturn(CataloguePage(listOf(ROMANCE_DAWN), null))
+  private val client: RestTestClient,
+  private val welcomeReader: WelcomeReader,
+  private val browseCatalogue: BrowseCatalogue) {
+  @Test
+  fun `a held edition is answered with no cover while none is stored`() {
+    // Given
+    given(welcomeReader("tophe", "tophe@amory.fr", "Tophe")).willReturn(TOPHE)
+    given(browseCatalogue(TOPHE.id, null)).willReturn(CataloguePage(listOf(ROMANCE_DAWN), null))
 
-        // When
-        val body = client.get()
-            .uri("/api/v1/books")
-            .headers {
-                it.add("Remote-User", "tophe")
-                it.add("Remote-Name", "Tophe")
-                it.add("Remote-Email", "tophe@amory.fr")
-            }
-            .exchange()
-            .expectStatus().isOk
-            .expectBody(object : ParameterizedTypeReference<Map<String, Any?>>() {})
-            .returnResult().responseBody
+    // When
+    val body = client.get()
+      .uri("/api/v1/books")
+      .headers {
+        it.add("Remote-User", "tophe")
+        it.add("Remote-Name", "Tophe")
+        it.add("Remote-Email", "tophe@amory.fr")
+      }
+      .exchange()
+      .expectStatus().isOk
+      .expectBody(object : ParameterizedTypeReference<Map<String, Any?>>() {})
+      .returnResult().responseBody
 
-        // Then
-        @Suppress("UNCHECKED_CAST")
-        val book = (body?.get("books") as List<Map<String, Any?>>).single()
-        book["id"] shouldBe "01991c3a-5b7e-7c1d-8f2a-3d4e5f6071a1"
-        book["coverUrl"] shouldBe null
-    }
+    // Then
+    @Suppress("UNCHECKED_CAST")
+    val book = (body?.get("books") as List<Map<String, Any?>>).single()
+    book["id"] shouldBe "01991c3a-5b7e-7c1d-8f2a-3d4e5f6071a1"
+    book["coverUrl"] shouldBe null
+  }
 }

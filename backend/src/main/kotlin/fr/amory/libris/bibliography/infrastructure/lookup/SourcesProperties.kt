@@ -5,8 +5,7 @@ import java.time.Duration
 
 @ConfigurationProperties("libris.sources")
 data class SourcesProperties(
-    val bnfUrl: String,
-    val openLibraryUrl: String,
-    val inventaireUrl: String,
-    val timeout: Duration,
-)
+  val bnfUrl: String,
+  val openLibraryUrl: String,
+  val inventaireUrl: String,
+  val timeout: Duration)
