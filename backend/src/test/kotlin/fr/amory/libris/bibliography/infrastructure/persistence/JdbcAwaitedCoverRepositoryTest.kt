@@ -8,10 +8,12 @@ import fr.amory.libris.bibliography.domain.edition.Edition
 import fr.amory.libris.bibliography.domain.edition.EditionId
 import fr.amory.libris.bibliography.fixture.isbnOf
 import fr.amory.libris.fixture.JdbcSliceTest
+import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.matchers.shouldBe
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.context.annotation.Import
+import org.springframework.dao.DataIntegrityViolationException
 import org.springframework.jdbc.core.simple.JdbcClient
 
 private const val ONE_PIECE = "9782723488525"
@@ -44,6 +46,13 @@ class JdbcAwaitedCoverRepositoryTest @Autowired constructor(
 
     // Then
     sourcesAwaitedFor(ONE_PIECE) shouldBe listOf(null)
+  }
+
+  @Test
+  fun `an awaited cover of an ISBN no edition bears is refused`() {
+    shouldThrow<DataIntegrityViolationException> {
+      awaitedCovers.insert(AwaitedCover(isbnOf(ONE_PIECE), INVENTAIRE))
+    }
   }
 
   private fun sourcesAwaitedFor(isbn13: String): List<String?> =
