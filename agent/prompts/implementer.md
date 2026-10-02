@@ -7,6 +7,13 @@ The planner created the branch `{{BRANCH}}` from `main` and committed
 `agent/briefs/{{TASK_ID}}.md` on it. Check that branch out; the working tree
 must be clean. If the branch or the brief is missing, report `blocked`.
 
+The branch may already carry the commits of an implementer that handed off:
+`git log main..HEAD` shows more than the brief. You then continue its work.
+Read the handoff entry of `agent/PROGRESS.md`, set the log against the
+brief's test plan, and start at the step the entry names. A committed step
+is not redone and history is not rewritten: a flaw you find in one is a new
+commit, declared in the entry.
+
 ## Read, in this order
 1. `CLAUDE.md` and `docs/ARCHITECTURE.md`; `docs/DESIGN.md` when the brief
    touches a screen
@@ -17,7 +24,8 @@ must be clean. If the branch or the brief is missing, report `blocked`.
 4. The last entries of `agent/PROGRESS.md`
 5. `agent/GOTCHAS.md`, its *every run* sections and those of the side the
    brief changes, before the first command
-6. The code and tests the brief points at, before writing anything
+6. The code and tests the brief points at, before writing anything; when
+   you continue a handoff, those of the steps left to do
 
 ## How to work
 - Invoke the `tdd` skill before the first test and follow its rules on
@@ -60,6 +68,29 @@ must be clean. If the branch or the brief is missing, report `blocked`.
 - Stay inside the task. Work you discover goes to `agent/PROPOSED.md`, one
   line each with the date, and is not done now.
 
+## Handing off
+A hook measures the context of the run. Past its threshold it adds a
+*Context signal* after a command, and repeats it after each one that
+follows. Without that signal a run never hands off. With it:
+1. Finish the cycle in progress, to green and its commit. Start no other
+   step, even a small one.
+2. Write the handoff entry in `agent/PROGRESS.md`, under the task's usual
+   heading followed by `— handoff`, ten lines at most: the steps of the test
+   plan that are done, by their numbers; the step to start with; what you
+   decided or deviated from, and why; for each guard, the mutation you ran
+   and the red you read, since the pull request body will need them; what
+   you learned that the brief does not say. A fact a later task must know
+   goes to `agent/GOTCHAS.md` as usual. An entry left by an earlier handoff
+   is rewritten, not followed by a second one.
+3. Run the gate of each side you changed, plainly. Commit the entry. If the
+   gates are green, push the branch. If a gate is red, do not push: the
+   commits stay on the local branch, where the next run finds them, and the
+   entry names every red test. A red test other than a cited scenario not
+   yet reached is the first step of the next run.
+4. Reply with the JSON report, status `handoff`: the summary says which
+   steps are done and which comes next, `tests` what the gates answered. Do
+   not tick the task, open no pull request.
+
 ## Before the pull request: self-review
 Once tests pass, read the whole diff once (`git diff main...HEAD`) against the
 brief's acceptance criteria and `CLAUDE.md`. Fix what you find. Note in the PR
@@ -70,7 +101,9 @@ body what the self-review changed, or "nothing".
    `agent/PROGRESS.md` in the shape its header gives: did in three lines,
    decided, deviations, left over, about twenty-five lines in all. What was
    built and how it was verified belong to the pull request body, not to
-   the entry. Add to `agent/GOTCHAS.md` each fact of this run a future run
+   the entry. When the entry of the task is a handoff entry, rewrite it as
+   the diary entry: its decisions, deviations and mutations go to the pull
+   request body with your own. Add to `agent/GOTCHAS.md` each fact of this run a future run
    must know, one item each in the section it belongs to, and rewrite or
    remove an item the run proved false.
 2. Commit, push the branch, open the pull request:
