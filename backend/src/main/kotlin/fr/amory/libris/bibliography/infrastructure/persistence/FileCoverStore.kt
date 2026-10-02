@@ -7,6 +7,8 @@ import java.nio.file.Path
 import kotlin.io.path.isRegularFile
 import kotlin.io.path.readBytes
 import kotlin.io.path.readText
+import kotlin.io.path.writeBytes
+import kotlin.io.path.writeText
 
 class FileCoverStore(private val dir: Path) : CoverStore {
   override fun read(name: CoverName): Cover? {
@@ -17,5 +19,10 @@ class FileCoverStore(private val dir: Path) : CoverStore {
     } else {
       null
     }
+  }
+
+  override fun write(cover: Cover) {
+    dir.resolve(cover.name.value).writeBytes(cover.bytes)
+    dir.resolve("${cover.name.value}.type").writeText(cover.mediaType)
   }
 }

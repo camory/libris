@@ -1,5 +1,6 @@
 package fr.amory.libris.bibliography.infrastructure.persistence
 
+import fr.amory.libris.bibliography.domain.cover.Cover
 import fr.amory.libris.bibliography.domain.cover.CoverName
 import fr.amory.libris.bibliography.fixture.recordedBytes
 import io.kotest.matchers.shouldBe
@@ -68,5 +69,20 @@ class FileCoverStoreTest {
   fun `a name no file carries is no cover`() {
     // Given / When / Then
     FileCoverStore(dir).read(CoverName(NAME)) shouldBe null
+  }
+
+  @Test
+  fun `a written cover is read back by its name`() {
+    // Given
+    val cover = Cover("image/webp", recordedBytes("covers/small.webp"))
+    val store = FileCoverStore(dir)
+
+    // When
+    store.write(cover)
+
+    // Then
+    val read = store.read(cover.name)
+    read?.mediaType shouldBe "image/webp"
+    read?.bytes shouldBe cover.bytes
   }
 }
