@@ -55,6 +55,13 @@ class NewBookRequestTest {
     request.validate().shouldBeInstanceOf<Accepted>().book.coverSource shouldBe INVENTAIRE
   }
 
+  @Test
+  fun `a name no source bears is accepted as no source`() {
+    val request = romanceDawn(coverSource = "Libris")
+
+    request.validate().shouldBeInstanceOf<Accepted>().book.coverSource shouldBe null
+  }
+
   private fun romanceDawn(
     isbn13: String = "9782723488525",
     title: String = "Romance dawn",
