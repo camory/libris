@@ -61,8 +61,8 @@ true; the diary keeps the date it was found.
   may be null says `type: [<type>, "null"]` where 3.0 said `nullable: true`,
   and a reference that may be null is a `oneOf` of it and `type: "null"`, as
   `Edition.series`. A side whose pin is older still reads 3.0.3. On an
-  operation without parameters a response example creates
-  no scenario; the verifier emits one generated case.
+  operation without parameters a response example creates no scenario; the
+  verifier emits one generated case.
 - On an operation with a `400` response and a typed body, the verifier adds
   a case of its own, `auto: body type mismatch`, and expects `400` with the
   declared problem body: the backend answers a `Problem` to a body of the
