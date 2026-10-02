@@ -418,3 +418,14 @@ Format:
   no `update`, so no other mutation reaches a held edition's source.
 - Left over: nothing; the worker reading the source is T066, `coverUrl`'s
   removal T065.
+
+## 2026-10-02 — T053 Backend: the add keeps the chosen source — reworked
+- Did: the three cases of several statements the task added gain the D07
+  markers: `CoverSourceTest` *each source is found by its name* takes
+  `// Given / When / Then`, and the two `coverSource` cases of
+  `NewBookRequestTest` take `// Given` and `// When / Then`.
+- Decided: the reviewer's verdict of 2026-10-02 amended nothing; its two
+  findings were D07 unmet. The older unmarked cases of `NewBookRequestTest`
+  stay as they are, as the finding excluded them.
+- Deviations from the brief: none.
+- Left over: nothing.

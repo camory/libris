@@ -201,6 +201,12 @@ true; the diary keeps the date it was found.
   directory for its user.
 
 ## Backend tests
+- The reviewer counts statements, not phases: a case of two or more
+  statements carries the markers even when they are all assertions on one
+  call. The tree's forms are `// Given / When / Then` above a run of
+  assertions (`IsbnTest`, `CoverNameTest`), and `// Given` then
+  `// When / Then` when a `val` sets up the case (`FileCoverStoreTest`).
+  Older unmarked cases (`NewBookRequestTest`'s first five) are not a model.
 - The first HTTP request and the first XML parse of a JVM cost more than a
   second. A client test with a short timeout warms the client once in
   `@BeforeAll` under a long timeout, then resets the stubs. A delay stub
