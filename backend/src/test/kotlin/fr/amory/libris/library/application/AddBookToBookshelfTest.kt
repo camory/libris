@@ -228,6 +228,20 @@ class AddBookToBookshelfTest {
   }
 
   @Test
+  fun `the ouvrage without an ISBN awaits no cover`() {
+    // Given
+    val lea = readerNamed("lea", "Léa")
+    val bookshelf = bookshelfOwnedBy(lea)
+    bookshelves.insert(bookshelf)
+
+    // When
+    addBookToBookshelf(lea.id, bookshelf.id, onePieceTomeOne().copy(isbn = null, coverSource = INVENTAIRE))
+
+    // Then
+    awaitedCovers.stored.shouldBeEmpty()
+  }
+
+  @Test
   fun `the edition and the copy land in one transaction`() {
     // Given
     val lea = readerNamed("lea", "Léa")
