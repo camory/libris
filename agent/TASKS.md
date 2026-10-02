@@ -214,7 +214,9 @@ catalogue rows show a cover only once the worker has stored it (Tophe,
       The covers' store writes a picture under a name made from its bytes,
       its media type beside it, as `FindCover` reads them; an edition records
       the name of its stored cover; the catalogue answers `coverUrl`, the
-      cover operation's address, null while none is stored (D11, D12). Tests
+      cover operation's address, null while none is stored (D11, D12). The
+      edition's former `coverUrl` and its `cover_url` column, a source's
+      address that nothing reads any more, leave in the same migration. Tests
       of the store over a temporary directory, of the JDBC slice and of the
       catalogue's web slice; no fetch, no worker; un-skips nothing.
 
