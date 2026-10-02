@@ -6,7 +6,6 @@ import fr.amory.libris.bibliography.domain.ContributionRole.WRITER
 import fr.amory.libris.bibliography.domain.Contributions
 import fr.amory.libris.bibliography.domain.Kind.MANGA
 import fr.amory.libris.bibliography.domain.SeriesEntry
-import fr.amory.libris.bibliography.domain.cover.CoverName
 import fr.amory.libris.bibliography.domain.edition.Edition
 import fr.amory.libris.bibliography.domain.edition.EditionId
 import fr.amory.libris.bibliography.fixture.isbnOf
@@ -87,33 +86,6 @@ class CatalogueControllerTest @Autowired constructor(
     given(browseCatalogue(TOPHE.id, null)).willReturn(CataloguePage(listOf(ROMANCE_DAWN), null))
 
     // When
-    val book = theOnlyBook()
-
-    // Then
-    book["id"] shouldBe "01991c3a-5b7e-7c1d-8f2a-3d4e5f6071a1"
-    book["coverUrl"] shouldBe null
-  }
-
-  @Test
-  fun `a held edition with a stored cover is answered with its address`() {
-    // Given
-    val stored = ROMANCE_DAWN.copy(
-      edition = ROMANCE_DAWN.edition.copy(
-        coverName = CoverName("9f86d081884c7d659a2feaa0c55ad015a3bf4f1b2b0b822cd15d6c15b0f00a08"),
-      ),
-    )
-    given(welcomeReader("tophe", "tophe@amory.fr", "Tophe")).willReturn(TOPHE)
-    given(browseCatalogue(TOPHE.id, null)).willReturn(CataloguePage(listOf(stored), null))
-
-    // When
-    val book = theOnlyBook()
-
-    // Then
-    book["coverUrl"] shouldBe "/api/v1/covers/9f86d081884c7d659a2feaa0c55ad015a3bf4f1b2b0b822cd15d6c15b0f00a08"
-  }
-
-  @Suppress("UNCHECKED_CAST")
-  private fun theOnlyBook(): Map<String, Any?> {
     val body = client.get()
       .uri("/api/v1/books")
       .headers {
@@ -125,6 +97,11 @@ class CatalogueControllerTest @Autowired constructor(
       .expectStatus().isOk
       .expectBody(object : ParameterizedTypeReference<Map<String, Any?>>() {})
       .returnResult().responseBody
-    return (body?.get("books") as List<Map<String, Any?>>).single()
+
+    // Then
+    @Suppress("UNCHECKED_CAST")
+    val book = (body?.get("books") as List<Map<String, Any?>>).single()
+    book["id"] shouldBe "01991c3a-5b7e-7c1d-8f2a-3d4e5f6071a1"
+    book["coverUrl"] shouldBe null
   }
 }

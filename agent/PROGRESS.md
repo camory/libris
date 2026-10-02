@@ -482,10 +482,16 @@ Format:
 ## 2026-10-02 — T065 Backend: the house keeps a cover — fixed up with Tophe
 - Did: `Cover.name` is computed when asked, so a cover read to be served is
   not hashed; `FileCoverStore.write` leaves a cover already stored as it is,
-  so a write cut short never breaks a stored picture; `CatalogueControllerTest` sends its request from one
-  helper; the GOTCHAS item on the contract's case count names no number.
-- Decided (Tophe): all four of the points raised on the PR are fixed.
+  so a write cut short never breaks a stored picture; the GOTCHAS item on
+  the contract's case count names no number; the `CatalogueControllerTest`
+  case on the stored cover's address is deleted.
+- Decided (Tophe): that case tested a mapping, which is not the
+  controller's to prove; the address's form goes to the contract, a
+  pattern on `Book.coverUrl` in `v0.9.0`.
 - Deviations from the brief: `Cover.name` is no longer computed once at
   construction; the store no longer overwrites a stored cover (a first
-  version moved each file into place whole, dropped for this simpler rule).
-- Left over: nothing.
+  version moved each file into place whole, dropped for this simpler rule);
+  step 7's case is gone, so the acceptance criterion naming
+  `CatalogueControllerTest` holds for the null case alone.
+- Left over: the address built in `CatalogueController.bookOf` has no test
+  until the contract's pattern or S3 at T066.
