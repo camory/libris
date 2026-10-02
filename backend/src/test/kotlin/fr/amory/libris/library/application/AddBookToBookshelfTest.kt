@@ -5,7 +5,11 @@ import fr.amory.libris.bibliography.domain.ContributionRole.WRITER
 import fr.amory.libris.bibliography.domain.Contributions
 import fr.amory.libris.bibliography.domain.Kind.MANGA
 import fr.amory.libris.bibliography.domain.SeriesEntry
+import fr.amory.libris.bibliography.domain.cover.AwaitedCover
+import fr.amory.libris.bibliography.domain.cover.CoverSource.INVENTAIRE
+import fr.amory.libris.bibliography.domain.cover.CoverSource.OPEN_LIBRARY
 import fr.amory.libris.bibliography.domain.edition.Edition
+import fr.amory.libris.bibliography.fixture.AwaitedCoversInMemory
 import fr.amory.libris.bibliography.fixture.EditionsInMemory
 import fr.amory.libris.bibliography.fixture.isbnOf
 import fr.amory.libris.library.application.AddBookResult.Added
@@ -30,9 +34,11 @@ private const val ONE_PIECE = "9782723488525"
 
 class AddBookToBookshelfTest {
   private val editions = EditionsInMemory()
+  private val awaitedCovers = AwaitedCoversInMemory()
   private val copies = CopiesInMemory()
   private val bookshelves = BookshelvesInMemory()
-  private val addBookToBookshelf = AddBookToBookshelf(editions, copies, bookshelves, withoutTransaction())
+  private val addBookToBookshelf =
+    AddBookToBookshelf(editions, awaitedCovers, copies, bookshelves, withoutTransaction())
 
   @Test
   fun `the house lacking the ISBN gains the edition and the copy`() {
@@ -68,6 +74,20 @@ class AddBookToBookshelfTest {
   }
 
   @Test
+  fun `the edition the house gains awaits its cover from the chosen source`() {
+    // Given
+    val lea = readerNamed("lea", "Léa")
+    val bookshelf = bookshelfOwnedBy(lea)
+    bookshelves.insert(bookshelf)
+
+    // When
+    addBookToBookshelf(lea.id, bookshelf.id, onePieceTomeOne().copy(coverSource = INVENTAIRE))
+
+    // Then
+    awaitedCovers.stored shouldBe listOf(AwaitedCover(isbnOf(ONE_PIECE), INVENTAIRE))
+  }
+
+  @Test
   fun `an ISBN the house holds reaches the existing edition`() {
     // Given
     val lea = readerNamed("lea", "Léa")
@@ -87,6 +107,35 @@ class AddBookToBookshelfTest {
     copy shouldBe Copy(copy.id, edition.id, juliettesBookshelf.id)
     copies.stored.map { it.editionId } shouldBe listOf(edition.id, edition.id)
     result shouldBe Added(copy, juliettesBookshelf)
+  }
+
+  @Test
+  fun `an edition gained with no chosen source awaits its cover all the same`() {
+    // Given
+    val lea = readerNamed("lea", "Léa")
+    val bookshelf = bookshelfOwnedBy(lea)
+    bookshelves.insert(bookshelf)
+
+    // When
+    addBookToBookshelf(lea.id, bookshelf.id, onePieceTomeOne().copy(coverSource = null))
+
+    // Then
+    awaitedCovers.stored shouldBe listOf(AwaitedCover(isbnOf(ONE_PIECE), null))
+  }
+
+  @Test
+  fun `an ISBN the house holds awaits no second cover`() {
+    // Given
+    val lea = readerNamed("lea", "Léa")
+    val bookshelf = bookshelfOwnedBy(lea)
+    bookshelves.insert(bookshelf)
+    addBookToBookshelf(lea.id, bookshelf.id, onePieceTomeOne().copy(coverSource = INVENTAIRE))
+
+    // When
+    addBookToBookshelf(lea.id, bookshelf.id, onePieceTomeOne().copy(coverSource = OPEN_LIBRARY))
+
+    // Then
+    awaitedCovers.stored shouldBe listOf(AwaitedCover(isbnOf(ONE_PIECE), INVENTAIRE))
   }
 
   @Test
@@ -179,18 +228,35 @@ class AddBookToBookshelfTest {
   }
 
   @Test
-  fun `the edition and the copy land in one transaction`() {
+  fun `the ouvrage without an ISBN awaits no cover`() {
     // Given
     val lea = readerNamed("lea", "Léa")
     val bookshelf = bookshelfOwnedBy(lea)
     bookshelves.insert(bookshelf)
-    val transactions = TransactionsObserving { editions.stored.size to copies.stored.size }
 
     // When
-    AddBookToBookshelf(editions, copies, bookshelves, transactions)(lea.id, bookshelf.id, onePieceTomeOne())
+    addBookToBookshelf(lea.id, bookshelf.id, onePieceTomeOne().copy(isbn = null, coverSource = INVENTAIRE))
 
     // Then
-    transactions.recorded shouldBe listOf(Transaction(before = 0 to 0, after = 1 to 1))
+    awaitedCovers.stored.shouldBeEmpty()
+  }
+
+  @Test
+  fun `the edition, its awaited cover and the copy land in one transaction`() {
+    // Given
+    val lea = readerNamed("lea", "Léa")
+    val bookshelf = bookshelfOwnedBy(lea)
+    bookshelves.insert(bookshelf)
+    val transactions = TransactionsObserving {
+      Triple(editions.stored.size, awaitedCovers.stored.size, copies.stored.size)
+    }
+    val addBookToBookshelf = AddBookToBookshelf(editions, awaitedCovers, copies, bookshelves, transactions)
+
+    // When
+    addBookToBookshelf(lea.id, bookshelf.id, onePieceTomeOne())
+
+    // Then
+    transactions.recorded shouldBe listOf(Transaction(before = Triple(0, 0, 0), after = Triple(1, 1, 1)))
   }
 
   private fun onePieceTomeOne(): NewBook =
@@ -207,5 +273,6 @@ class AddBookToBookshelfTest {
       language = "fr",
       pageCount = 208,
       summary = "Luffy prend la mer pour devenir le roi des pirates.",
+      coverSource = null,
     )
 }

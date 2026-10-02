@@ -12,8 +12,8 @@ import fr.amory.libris.bibliography.domain.Kind.BD
 import fr.amory.libris.bibliography.domain.Kind.BOOK
 import fr.amory.libris.bibliography.domain.Kind.MANGA
 import fr.amory.libris.bibliography.domain.SeriesEntry
+import fr.amory.libris.bibliography.domain.cover.CoverSource.BNF
 import fr.amory.libris.bibliography.domain.lookup.CoverCandidate
-import fr.amory.libris.bibliography.domain.lookup.CoverSource.BNF
 import fr.amory.libris.bibliography.domain.lookup.EditionPreview
 import fr.amory.libris.bibliography.domain.lookup.EditionSourceAnswer.Failed
 import fr.amory.libris.bibliography.domain.lookup.EditionSourceAnswer.Known

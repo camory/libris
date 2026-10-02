@@ -400,3 +400,55 @@ Format:
 - Left over: `Edition.coverUrl` and its column, null on every add since
   T051, for T053; `docs/ARCHITECTURE.md` D10 still names
   `ExternalEditionLookup.lookUp`, the wording is proposed in the PR body.
+
+## 2026-10-02 — T053 Backend: the add keeps the chosen source — done
+- Did: `CoverSource.of(label)` reads a source back from its name; the add's
+  `coverSource` reaches `NewBook` and the edition the add creates; `V006`
+  gives `edition` a nullable `cover_source`, written and read as the enum's name.
+- Decided: the request maps the name through `coverSource?.let {
+  CoverSource.of(it) }`, so an absent field and a name no source bears are
+  both "no source"; no error is added to `validate()`.
+- Decided: step 5's first red was a compile error (`Edition` had no
+  `coverSource`); the behavioural red was read too, by having the use case
+  pass `null`: `data class diff … Edition`, then reverted.
+- Deviations from the brief: `EditionPreviewTest` builds two `Edition`s and
+  gains `coverSource = null` too, a file the brief did not list. The guard of
+  step 6 reds under the brief's mutation at `editions.stored.single()`, which
+  the case already asserted, not at the new `coverSource` line; the port has
+  no `update`, so no other mutation reaches a held edition's source.
+- Left over: nothing; the worker reading the source is T066, `coverUrl`'s
+  removal T065.
+
+## 2026-10-02 — T053 Backend: the add keeps the chosen source — reworked
+- Did: the three cases of several statements the task added gain the D07
+  markers: `CoverSourceTest` *each source is found by its name* takes
+  `// Given / When / Then`, and the two `coverSource` cases of
+  `NewBookRequestTest` take `// Given` and `// When / Then`.
+- Decided: the reviewer's verdict of 2026-10-02 amended nothing; its two
+  findings were D07 unmet. The older unmarked cases of `NewBookRequestTest`
+  stay as they are, as the finding excluded them.
+- Deviations from the brief: none.
+- Left over: nothing.
+
+## 2026-10-02 — T053 Backend: the add records the awaited cover — reshaped with Tophe
+- Did: the chosen source left `Edition`. An `AwaitedCover` (the ISBN, the
+  chosen source or none) is inserted by `AddBookToBookshelf` beside a new
+  edition that has an ISBN, in the add's transaction, through
+  `AwaitedCoverRepository`; `V006` creates `awaited_cover` instead of the
+  column on `edition`; `CoverSource` moved to `bibliography.domain.cover`.
+- Decided (Tophe): nothing that reads an edition back needs the source,
+  only the worker does, so the source belongs to the wait, not to the
+  edition. The awaited cover is keyed by the ISBN alone; the table stores
+  the source under the name the contract uses, written from `label`.
+- Deviations from the brief: the brief describes the first shape and is
+  kept as written. Two guards have no red of their own: the no-ISBN case
+  (the type refuses an `AwaitedCover` without an ISBN) and the foreign key
+  (a migration that has run cannot be mutated).
+- Decided (Tophe): `CoverSource.order` stays on the enum, as D12 says. The
+  T066, T057 and T058 lines are reworded to the awaited cover in this PR.
+- Left over: D11 says a uuid key on every table and UPPER_SNAKE enum values
+  in SQL; Tophe accepted both exceptions, their wording is proposed in the
+  PR body for a docs PR.
+- Decided (Tophe): only a stored picture ends the wait; a cascade that finds
+  no picture is dated and tried again a day later, like a failed fetch (S7's
+  note, the T057 and T058 lines).

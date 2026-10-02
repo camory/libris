@@ -16,13 +16,13 @@ import fr.amory.libris.bibliography.domain.Kind.MANGA
 import fr.amory.libris.bibliography.domain.SeriesEntry
 import fr.amory.libris.bibliography.domain.cover.Cover
 import fr.amory.libris.bibliography.domain.cover.CoverName
+import fr.amory.libris.bibliography.domain.cover.CoverSource.BNF
+import fr.amory.libris.bibliography.domain.cover.CoverSource.INVENTAIRE
+import fr.amory.libris.bibliography.domain.cover.CoverSource.OPEN_LIBRARY
 import fr.amory.libris.bibliography.domain.edition.Edition
 import fr.amory.libris.bibliography.domain.edition.EditionId
 import fr.amory.libris.bibliography.domain.lookup.CoverCandidate
 import fr.amory.libris.bibliography.domain.lookup.CoverCandidates
-import fr.amory.libris.bibliography.domain.lookup.CoverSource.BNF
-import fr.amory.libris.bibliography.domain.lookup.CoverSource.INVENTAIRE
-import fr.amory.libris.bibliography.domain.lookup.CoverSource.OPEN_LIBRARY
 import fr.amory.libris.bibliography.domain.lookup.EditionPreview
 import fr.amory.libris.bibliography.fixture.isbnOf
 import fr.amory.libris.bibliography.fixture.recordedBytes
@@ -130,6 +130,7 @@ private val NEW_ONE_PIECE_1 = NewBook(
   language = ONE_PIECE_1.language,
   pageCount = ONE_PIECE_1.pageCount,
   summary = ONE_PIECE_1.summary,
+  coverSource = INVENTAIRE,
 )
 
 private val ONE_PIECE_1_HELD = HeldEdition(

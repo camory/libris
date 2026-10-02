@@ -188,7 +188,7 @@ true; the diary keeps the date it was found.
   called only from lambdas (`map { responseOf(it) }`), though both are used;
   give them distinct names (`bookOf`, `copyOf`).
 - Jackson 3 leaves `FAIL_ON_UNKNOWN_PROPERTIES` off: a body field no DTO
-  declares is dropped, never refused (the add takes `coverSource` unread).
+  declares is dropped, never refused.
 - `LongParameterList` counts a test class's `@Autowired` constructor too
   (`ApiContractTest` at seven); `@Suppress("LongParameterList")` goes on its
   own line above the class, since an annotation inside
@@ -201,6 +201,12 @@ true; the diary keeps the date it was found.
   directory for its user.
 
 ## Backend tests
+- The reviewer counts statements, not phases: a case of two or more
+  statements carries the markers even when they are all assertions on one
+  call. The tree's forms are `// Given / When / Then` above a run of
+  assertions (`IsbnTest`, `CoverNameTest`), and `// Given` then
+  `// When / Then` when a `val` sets up the case (`FileCoverStoreTest`).
+  Older unmarked cases (`NewBookRequestTest`'s first five) are not a model.
 - The first HTTP request and the first XML parse of a JVM cost more than a
   second. A client test with a short timeout warms the client once in
   `@BeforeAll` under a long timeout, then resets the stubs. A delay stub
@@ -393,7 +399,14 @@ true; the diary keeps the date it was found.
   PostgreSQL refuses (`BadSqlGrammarException`): a finder over a list of ids
   answers `emptyList()` without a statement when given none, and a slice case
   (`no edition finds no copy`, `no id finds no edition`) proves it.
-
+- `awaited_cover` is keyed by `edition.isbn13` and references it: a slice
+  case inserts the edition before its awaited cover, hence
+  `JdbcEditionRepository` in the `@Import` of `JdbcAwaitedCoverRepositoryTest`.
+  The port has no read yet, so that class reads the row through `JdbcClient`.
+- `EditionsInMemory.insert` appends without looking at the ISBN, so a use
+  case that inserts a held edition a second time fails at
+  `editions.stored.single()` ("List has more than one element") before any
+  later assertion of the case runs; there is no `update` on the port.
 - `LookupAnswering`, in `bibliography.fixture`, records the ISBNs it was asked
   and answers them as `asked`, so a case proves a source was never called with
   `source.asked shouldBe emptyList()`.

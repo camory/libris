@@ -4,6 +4,7 @@ import fr.amory.libris.bibliography.domain.Contributions
 import fr.amory.libris.bibliography.domain.Isbn
 import fr.amory.libris.bibliography.domain.Kind
 import fr.amory.libris.bibliography.domain.SeriesEntry
+import fr.amory.libris.bibliography.domain.cover.CoverSource
 
 data class NewBook(
   val isbn: Isbn?,
@@ -17,7 +18,8 @@ data class NewBook(
   val publicationYear: Int?,
   val language: String?,
   val pageCount: Int?,
-  val summary: String?) {
+  val summary: String?,
+  val coverSource: CoverSource?) {
   init {
     require(title.isNotBlank()) { "a new book needs a title" }
   }
@@ -36,7 +38,8 @@ data class NewBook(
       publicationYear: Int?,
       language: String?,
       pageCount: Int?,
-      summary: String?): NewBook? =
+      summary: String?,
+      coverSource: CoverSource?): NewBook? =
       title.takeUnless { it.isBlank() }?.let {
         NewBook(
           isbn = isbn,
@@ -51,6 +54,7 @@ data class NewBook(
           language = language,
           pageCount = pageCount,
           summary = summary,
+          coverSource = coverSource,
         )
       }
   }

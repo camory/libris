@@ -6,12 +6,12 @@ import fr.amory.libris.bibliography.application.lookup.EditionLookupResult.Sourc
 import fr.amory.libris.bibliography.application.lookup.EditionLookupResult.UnknownIsbn
 import fr.amory.libris.bibliography.domain.Contributions
 import fr.amory.libris.bibliography.domain.Kind.MANGA
+import fr.amory.libris.bibliography.domain.cover.CoverSource
+import fr.amory.libris.bibliography.domain.cover.CoverSource.INVENTAIRE
 import fr.amory.libris.bibliography.domain.edition.Edition
 import fr.amory.libris.bibliography.domain.edition.EditionId
 import fr.amory.libris.bibliography.domain.lookup.CoverCandidate
 import fr.amory.libris.bibliography.domain.lookup.CoverCandidates
-import fr.amory.libris.bibliography.domain.lookup.CoverSource
-import fr.amory.libris.bibliography.domain.lookup.CoverSource.INVENTAIRE
 import fr.amory.libris.bibliography.domain.lookup.EditionPreview
 import fr.amory.libris.bibliography.domain.lookup.EditionSource
 import fr.amory.libris.bibliography.domain.lookup.EditionSourceAnswer.Failed
