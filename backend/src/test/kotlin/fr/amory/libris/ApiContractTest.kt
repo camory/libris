@@ -14,7 +14,6 @@ import fr.amory.libris.bibliography.domain.ContributionRole.WRITER
 import fr.amory.libris.bibliography.domain.Contributions
 import fr.amory.libris.bibliography.domain.Kind.MANGA
 import fr.amory.libris.bibliography.domain.SeriesEntry
-import fr.amory.libris.bibliography.domain.cover.Cover
 import fr.amory.libris.bibliography.domain.cover.CoverName
 import fr.amory.libris.bibliography.domain.cover.CoverSource.BNF
 import fr.amory.libris.bibliography.domain.cover.CoverSource.INVENTAIRE
@@ -24,6 +23,7 @@ import fr.amory.libris.bibliography.domain.edition.EditionId
 import fr.amory.libris.bibliography.domain.lookup.CoverCandidate
 import fr.amory.libris.bibliography.domain.lookup.CoverCandidates
 import fr.amory.libris.bibliography.domain.lookup.EditionPreview
+import fr.amory.libris.bibliography.fixture.coverOf
 import fr.amory.libris.bibliography.fixture.isbnOf
 import fr.amory.libris.bibliography.fixture.recordedBytes
 import fr.amory.libris.fixture.WebSliceTest
@@ -209,7 +209,7 @@ class ApiContractTest @Autowired constructor(
     given(browseCatalogue(ReaderId(eq(contracteer.id.value) ?: contracteer.id.value), any()))
       .willReturn(CataloguePage(listOf(ONE_PIECE_1_HELD), null))
     given(findCover(CoverName(any() ?: NO_COVER)))
-      .willReturn(Cover("image/jpeg", recordedBytes("covers/tall.jpg")))
+      .willReturn(coverOf("image/jpeg", recordedBytes("covers/tall.jpg")))
     given(findCover(CoverName(eq(NO_COVER) ?: NO_COVER))).willReturn(null)
   }
 

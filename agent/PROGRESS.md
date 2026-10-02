@@ -484,7 +484,9 @@ Format:
   not hashed; `FileCoverStore.write` leaves a cover already stored as it is,
   so a write cut short never breaks a stored picture; the GOTCHAS item on
   the contract's case count names no number; the `CatalogueControllerTest`
-  case on the stored cover's address is deleted.
+  case on the stored cover's address is deleted; `Cover`'s constructor is
+  private, `Cover.of` its only door, and tests build one with the fixture
+  `coverOf`.
 - Decided (Tophe): that case tested a mapping, which is not the
   controller's to prove; the address's form goes to the contract, a
   pattern on `Book.coverUrl` in `v0.9.0`.
