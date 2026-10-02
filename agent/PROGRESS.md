@@ -452,3 +452,20 @@ Format:
 - Decided (Tophe): only a stored picture ends the wait; a cascade that finds
   no picture is dated and tried again a day later, like a failed fetch (S7's
   note, the T057 and T058 lines).
+
+## 2026-10-02 — T065 Backend: the house keeps a cover — done
+- Did: `Cover.name` is the SHA-256 of the bytes; `FileCoverStore.write` puts
+  the picture, then its `.type`, under that name; `Edition.coverName` replaces
+  `coverUrl`, `V007` swaps `cover_url` for `cover_name`; the catalogue answers
+  `/api/v1/covers/<name>`, null without one.
+- Decided: `Cover.name` is computed once, at construction, with
+  `HexFormat`, so step 2 was a guard from the start (its mutation read).
+- Decided: step 5's first red was a compile error; the behavioural red was
+  read by having the repository read `null` (`data class diff … Edition`).
+- Deviations from the brief: step 6 has no commit of its own: `bare()` had
+  to take `coverName = null` in step 5 to compile, so step 6 is the
+  mutation alone, read and listed in the PR. Step 2's mutation also reds
+  *a picture and the media type of an image are a cover*, whose bytes
+  `1, 2, 3` hash to a name beginning with `0`.
+- Left over: the worker that writes and records a cover, T066; the record of
+  a name on an edition already stored needs a port write, T066's to shape.

@@ -213,7 +213,7 @@ catalogue rows show a cover only once the worker has stored it (Tophe,
       the JDBC slice (D07). Realises S3's first *Then* on the backend;
       un-skips nothing.
 
-- [ ] T065 Backend: the house keeps a cover.
+- [x] T065 Backend: the house keeps a cover.
       The covers' store writes a picture under a name made from its bytes,
       its media type beside it, as `FindCover` reads them; an edition records
       the name of its stored cover; the catalogue answers `coverUrl`, the

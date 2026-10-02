@@ -237,7 +237,11 @@ true; the diary keeps the date it was found.
   `LIBRIS_COVERS_DIR` (`libris.covers.directory: ${LIBRIS_COVERS_DIR:}`);
   its media type is the text of the file `<name>.type` beside it, and a
   picture without one, or with one that is not `image/…`, is no cover.
-  Nothing reads a format from the bytes. `ScenarioTest` gives
+  Nothing reads a format from the bytes. The name is `Cover.name`, the
+  SHA-256 of the bytes in 64 lower-case digits (`"test"` names
+  `9f86d0…0a08`, the contract's example); `FileCoverStore.write` writes the
+  picture before its `.type`, overwriting both. An edition holds the name as
+  `coverName`, the `cover_name` column since `V007`. `ScenarioTest` gives
   the variable a temporary directory, `LibrisApplicationTest` its own
   property. A Mockito
   matcher on a `CoverName` argument takes a valid fallback, since the
