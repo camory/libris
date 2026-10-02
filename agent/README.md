@@ -3,7 +3,7 @@
 | Path | What |
 |------|------|
 | `loop.sh` | The orchestrator: `plan`, `next`, `run N`, `review <pr>`, `rework <pr>`, `status` |
-| `test-loop.sh` | Behavioural tests of `loop.sh`'s state derivation against a fake `gh`, run by the CI `guardrails` job |
+| `test-loop.sh` | Behavioural tests of `loop.sh`'s state derivation, of what it launches the sandbox with and of the relaunch after a handoff, against a fake `gh`, run by the CI `guardrails` job |
 | `prompts/` | One prompt per role: `planner-backlog.md`, `planner-brief.md`, `implementer.md`, `reviewer.md` (`{{TASK_ID}}`, `{{BRANCH}}` substituted) |
 | `schemas/` | The JSON report each role must end with; enforced by `--json-schema`. No `$schema` key: the CLI's validator rejects the 2020-12 meta-schema URL |
 | `briefs/` | One brief per task, written by the planner on the task branch; `TEMPLATE.md` |
@@ -17,6 +17,8 @@
 | `hooks/test-guard-git.sh` | Behavioural tests of the guard hook, run by the CI `guardrails` job |
 | `hooks/record-check.sh`, `hooks/proof-lib.sh` | PostToolUse hooks recording each gate run (`./gradlew check`, `npm test`) with a content hash; the guard refuses `git push` / `gh pr create` without a green run on the current tree |
 | `hooks/test-proof.sh` | Behavioural tests of the proof-of-test pair, run by CI |
+| `hooks/context-signal.sh` | PostToolUse hook measuring the run's context from its transcript; past `LIBRIS_HANDOFF_AT` it tells the run to hand off, and writes a line to `logs/context-signal.log` |
+| `hooks/test-context-signal.sh` | Behavioural tests of the context signal hook, run by CI |
 | `.env.example` | Credentials and limits template → copy to `.env` (git-ignored) |
 | `host/` | Host-side pieces: the LAN firewall script and its systemd unit |
 | `logs/` | One JSON + stderr per run (git-ignored) |
@@ -110,7 +112,7 @@ Ctrl-C removes the sandbox container; a branch already pushed stays on GitHub.
 | 1 | setup problem (env file, dirty tree, credentials, bad argument) | fix and rerun |
 | 2 | a PR was closed without merge, or a stale branch/PR blocks the task | follow the message, usually delete the task branch or fix `TASKS.md` |
 | 3 | a run reported success but the branch or PR it claims does not exist | inspect the log |
-| 4 | the planner or implementer reported `blocked` | answer the blocker in docs, tasks or env |
+| 4 | the planner or implementer reported `blocked`, or the implementer handed off `IMPLEMENTER_SEGMENTS` times without finishing | answer the blocker in docs, tasks or env; after handoffs, split the task or rerun to continue from its branch |
 | 6 | no valid report (crash, budget or turn cap hit) | inspect the log and its `.stderr` |
 
 The reviewer never stops the loop: its verdict is advisory.
@@ -124,10 +126,18 @@ The reviewer never stops the loop: its verdict is advisory.
   scaffolding and dependency downloads can legitimately reach $10 or more.
 - `MODEL` / `EFFORT`: `fable` + `high` by default. Per-role overrides such as
   `REVIEWER_MODEL=sonnet` or `PLANNER_BRIEF_MAX_TURNS=40` go in `.env`.
-- `AUTOCOMPACT`: the context size, in tokens, at which the CLI summarises the
-  run's history and continues; 150000 by default, `auto` for the CLI's own
-  threshold. A compaction shows in the session transcript kept in the
-  `claude-state` volume.
+- `AUTOCOMPACT`: the window, in tokens, the CLI keeps a run's context in;
+  it summarises the history and continues some way below it (measured: at
+  about 118k for a window of 150000). 190000 by default, `auto` for the
+  CLI's own. A compaction shows in the run's `.jsonl` as a
+  `compact_boundary` line.
+- `IMPLEMENTER_HANDOFF_AT`: the context size, in tokens, past which the
+  implementer is told to hand off: it finishes its cycle, commits, writes
+  the handoff entry in `PROGRESS.md` and reports `handoff`, and the loop
+  launches a fresh implementer on the same branch, `IMPLEMENTER_SEGMENTS`
+  runs at most (4 by default). With it, `IMPLEMENTER_AUTOCOMPACT=1000000`
+  keeps the implementer from compacting. A role without a `_HANDOFF_AT`
+  never hands off.
 - Each run writes `agent/logs/<timestamp>-<task>-<role>.jsonl` (the whole
   session as the CLI streams it: every tool call with its input, every
   answer), the `.json` next to it (the last line of the stream: the result
