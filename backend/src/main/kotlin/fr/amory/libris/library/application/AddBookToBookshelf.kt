@@ -2,6 +2,7 @@ package fr.amory.libris.library.application
 
 import fr.amory.libris.bibliography.domain.cover.AwaitedCover
 import fr.amory.libris.bibliography.domain.cover.AwaitedCoverRepository
+import fr.amory.libris.bibliography.domain.cover.CoverSource
 import fr.amory.libris.bibliography.domain.edition.Edition
 import fr.amory.libris.bibliography.domain.edition.EditionId
 import fr.amory.libris.bibliography.domain.edition.EditionRepository
@@ -39,11 +40,15 @@ class AddBookToBookshelf(
     val edition = heldEdition ?: newEdition(book)
     val copy = Copy(CopyId.new(), edition.id, bookshelf.id)
     transactions.executeWithoutResult {
-      if (heldEdition == null) editions.insert(edition)
-      book.isbn?.let { awaitedCovers.insert(AwaitedCover(it, book.coverSource)) }
+      if (heldEdition == null) insert(edition, book.coverSource)
       copies.insert(copy)
     }
     return Added(copy, bookshelf)
+  }
+
+  private fun insert(edition: Edition, chosenSource: CoverSource?) {
+    editions.insert(edition)
+    edition.isbn?.let { awaitedCovers.insert(AwaitedCover(it, chosenSource)) }
   }
 
   private fun newEdition(book: NewBook): Edition =
