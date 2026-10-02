@@ -56,11 +56,14 @@ and the bookshelves they keep), each with the same three layers.
   framework type; the only library is the uuid generator of D11, used by the
   id types (`ReaderId.new()`), never by an aggregate, which takes its id.
   A concern lives in a sub-package: `bibliography.domain.lookup` holds the
-  external lookup port, what it answers, and the `EditionPreview` it answers
-  with; `library.domain.reader` and `library.domain.bookshelf` hold one
-  aggregate each with its repository port. The port's contract on time: a
-  source answers within `LIBRIS_SOURCE_TIMEOUT` or answers `Failed`; the
-  bound is the adapter's, and the use case never sees time.
+  two lookup ports and what they answer: `EditionLookup`, which answers a
+  source's `EditionPreview` and the cover that source offers with it, and
+  `CoverLookup`, which answers a `CoverCandidate` alone;
+  `library.domain.reader` and `library.domain.bookshelf` hold one aggregate
+  each with its repository port. The ports' contract on time: a source
+  answers within `LIBRIS_SOURCE_TIMEOUT`, or the edition port answers
+  `Failed` and the cover port answers no candidate; the bound is the
+  adapter's, and the use case never sees time.
 - `<context>.application` — use-case services and transaction boundaries,
   the latter through Spring's `TransactionOperations`. Depends on `domain`
   only.
@@ -76,8 +79,9 @@ and the bookshelves they keep), each with the same three layers.
 - `<context>.infrastructure.persistence` — the port implementations over
   `JdbcClient`: the SQL of every insert, update, lookup, search and listing,
   and the row-to-aggregate mapping, which is the aggregate's constructor.
-- `bibliography.infrastructure.lookup` — the BnF and Open Library clients;
-  Google Books later.
+- `bibliography.infrastructure.lookup` — the BnF and Open Library clients,
+  which answer an edition, and the inventaire.io client, which answers a
+  picture's address alone; Google Books later.
 
 Beside the contexts, `shared` holds what both use and neither owns, in the
 same layers: `shared.infrastructure.web` has the problem details of the API
@@ -299,9 +303,9 @@ session, no BCrypt.
   `infrastructure.persistence` runs in the JDBC slice against the PostgreSQL of D08,
   each test in a transaction rolled back at the end. Every class that
   touches the database, the JDBC slice and the scenario classes, starts
-  from a schema cleaned and migrated by Flyway before the class. One test
-  boots the whole application and reads its health. Test classes do not run
-  in parallel.
+  each case from a schema cleaned and migrated by Flyway. One test boots
+  the whole application and reads its health. Test classes do not run in
+  parallel.
 - The frontend follows the same slicing. `domain` is plain Vitest, no
   doubles. `application` composables and stores run over fakes of their
   ports, with a fresh Pinia per test and no component mounted: a composable
@@ -410,12 +414,24 @@ deliberately lacks), no other service. A test that needs more blocks the task.
   Libris there; the server's runbook documents the restore.
 
 ### D10 — Conventions
-- Kotlin: official style, immutable by default, sealed types for states,
-  constructor injection, no `!!`, no `lateinit` in production code — all
-  enforced by detekt. Package root `fr.amory.libris`. A member is imported,
-  not qualified, whenever its bare name is unambiguous: `OPEN_LIBRARY`,
-  `Failed`, `RANDOM_PORT`, `ofSeconds(5)`; `MissingNode.getInstance()` stays
-  qualified because `getInstance()` alone says nothing.
+- Kotlin: official style but for the layout below, immutable by default,
+  sealed types for states, constructor injection, no `!!`, no `lateinit` in
+  production code — all enforced by detekt. Package root `fr.amory.libris`.
+  A member is imported, not qualified, whenever its bare name is
+  unambiguous: `OPEN_LIBRARY`, `Failed`, `RANDOM_PORT`, `ofSeconds(5)`;
+  `MissingNode.getInstance()` stays qualified because `getInstance()` alone
+  says nothing.
+- Kotlin layout, in the Gradle scripts too. The indent is 2 spaces. The
+  arrows of a `when` are aligned in a column, one column per `when`, and a
+  branch whose body would span several lines calls a method. The body of a
+  function written with `=` starts on the next line. The last parameter, the
+  closing parenthesis, the return type and the `=` or `{` share one line, in
+  a constructor too. No comma follows the last parameter of a declaration; a
+  call keeps its trailing comma. A chain broken over several lines has one
+  call per line, the receiver alone on the first, in the production code
+  only: a test keeps its chains as they read best. detekt enforces the
+  indent and the declaration's comma; the others are kept by hand and by the
+  reviewer.
 - The words of `docs/PRD.md` §3 name variables and parameters as they name
   types: an aggregate is called by its name, never shortened (`bookshelf`,
   not `shelf`), and an identifier is the aggregate's name with `Id`
@@ -430,7 +446,7 @@ deliberately lacks), no other service. A test that needs more blocks the task.
   (`useAddBookToBookshelf`), that takes its ports as arguments and exposes
   the state the view renders and one function, the verb of the sentence
   (`add(edition)`); the view injects the ports, calls the composable and
-  renders. A port keeps a verb of its own (`ExternalEditionLookup.lookUp`,
+  renders. A port keeps a verb of its own (`EditionLookup.lookUp`,
   `CopyRepository.findByEditionId`): its name says what it is, not what it
   does. A repository of D12 ends in `Repository` (`CopyRepository`); a
   query port of D12 does not, and is named by what it answers
