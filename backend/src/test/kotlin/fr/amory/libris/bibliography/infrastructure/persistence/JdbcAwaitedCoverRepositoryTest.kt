@@ -34,6 +34,18 @@ class JdbcAwaitedCoverRepositoryTest @Autowired constructor(
     sourcesAwaitedFor(ONE_PIECE) shouldBe listOf("inventaire.io")
   }
 
+  @Test
+  fun `an awaited cover with no chosen source is stored with none`() {
+    // Given
+    editions.insert(onePieceTomeOne())
+
+    // When
+    awaitedCovers.insert(AwaitedCover(isbnOf(ONE_PIECE), null))
+
+    // Then
+    sourcesAwaitedFor(ONE_PIECE) shouldBe listOf(null)
+  }
+
   private fun sourcesAwaitedFor(isbn13: String): List<String?> =
     jdbcClient
       .sql("SELECT awaited_cover.source FROM awaited_cover WHERE awaited_cover.isbn13 = :isbn13")
