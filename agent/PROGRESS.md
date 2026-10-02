@@ -452,3 +452,48 @@ Format:
 - Decided (Tophe): only a stored picture ends the wait; a cascade that finds
   no picture is dated and tried again a day later, like a failed fetch (S7's
   note, the T057 and T058 lines).
+
+## 2026-10-02 — T065 Backend: the house keeps a cover — done
+- Did: `Cover.name` is the SHA-256 of the bytes; `FileCoverStore.write` puts
+  the picture, then its `.type`, under that name; `Edition.coverName` replaces
+  `coverUrl`, `V007` swaps `cover_url` for `cover_name`; the catalogue answers
+  `/api/v1/covers/<name>`, null without one.
+- Decided: `Cover.name` is computed once, at construction, with
+  `HexFormat`, so step 2 was a guard from the start (its mutation read).
+- Decided: step 5's first red was a compile error; the behavioural red was
+  read by having the repository read `null` (`data class diff … Edition`).
+- Deviations from the brief: step 6 has no commit of its own: `bare()` had
+  to take `coverName = null` in step 5 to compile, so step 6 is the
+  mutation alone, read and listed in the PR. Step 2's mutation also reds
+  *a picture and the media type of an image are a cover*, whose bytes
+  `1, 2, 3` hash to a name beginning with `0`.
+- Left over: the worker that writes and records a cover, T066; the record of
+  a name on an edition already stored needs a port write, T066's to shape.
+
+## 2026-10-02 — T065 Backend: the house keeps a cover — reworked
+- Did: the PR body's `ApiContractTest` line now says 15 cases, as the run's
+  report gives them (`/me` 1, `/isbn` 5, `/books` 2, the add 4, `/covers` 3),
+  not 17; no code changed.
+- Decided: the reviewer's verdict of 2026-10-02 amended nothing; its one
+  finding was a verification claim the run contradicted.
+- Deviations from the brief: none.
+- Left over: nothing.
+
+## 2026-10-02 — T065 Backend: the house keeps a cover — fixed up with Tophe
+- Did: `Cover.name` is computed when asked, so a cover read to be served is
+  not hashed; `FileCoverStore.write` leaves a cover already stored as it is,
+  so a write cut short never breaks a stored picture; the GOTCHAS item on
+  the contract's case count names no number; the `CatalogueControllerTest`
+  case on the stored cover's address is deleted; `Cover`'s constructor is
+  private, `Cover.of` its only door, and tests build one with the fixture
+  `coverOf`.
+- Decided (Tophe): that case tested a mapping, which is not the
+  controller's to prove; the address's form goes to the contract, a
+  pattern on `Book.coverUrl` in `v0.9.0`.
+- Deviations from the brief: `Cover.name` is no longer computed once at
+  construction; the store no longer overwrites a stored cover (a first
+  version moved each file into place whole, dropped for this simpler rule);
+  step 7's case is gone, so the acceptance criterion naming
+  `CatalogueControllerTest` holds for the null case alone.
+- Left over: the address built in `CatalogueController.bookOf` has no test
+  until the contract's pattern or S3 at T066.

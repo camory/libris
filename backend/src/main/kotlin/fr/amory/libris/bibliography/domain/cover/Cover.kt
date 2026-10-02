@@ -1,9 +1,12 @@
 package fr.amory.libris.bibliography.domain.cover
 
-class Cover(val mediaType: String, val bytes: ByteArray) {
-  init {
-    require(isImage(mediaType)) { "a cover's media type is an image" }
-  }
+import java.security.MessageDigest
+import java.util.HexFormat
+
+class Cover private constructor(val mediaType: String, val bytes: ByteArray) {
+  val name: CoverName
+    get() =
+      CoverName(HexFormat.of().formatHex(MessageDigest.getInstance("SHA-256").digest(bytes)))
 
   companion object {
     fun of(mediaType: String, bytes: ByteArray): Cover? =

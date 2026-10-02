@@ -1,6 +1,7 @@
 package fr.amory.libris.bibliography.infrastructure.persistence
 
 import fr.amory.libris.bibliography.domain.cover.CoverName
+import fr.amory.libris.bibliography.fixture.coverOf
 import fr.amory.libris.bibliography.fixture.recordedBytes
 import io.kotest.matchers.shouldBe
 import org.junit.jupiter.api.Test
@@ -68,5 +69,50 @@ class FileCoverStoreTest {
   fun `a name no file carries is no cover`() {
     // Given / When / Then
     FileCoverStore(dir).read(CoverName(NAME)) shouldBe null
+  }
+
+  @Test
+  fun `a written cover is read back by its name`() {
+    // Given
+    val cover = coverOf("image/webp", recordedBytes("covers/small.webp"))
+    val store = FileCoverStore(dir)
+
+    // When
+    store.write(cover)
+
+    // Then
+    val read = store.read(cover.name)
+    read?.mediaType shouldBe "image/webp"
+    read?.bytes shouldBe cover.bytes
+  }
+
+  @Test
+  fun `a cover written twice is still read back whole`() {
+    // Given
+    val cover = coverOf("image/webp", recordedBytes("covers/small.webp"))
+    val store = FileCoverStore(dir)
+
+    // When
+    store.write(cover)
+    store.write(cover)
+
+    // Then
+    val read = store.read(cover.name)
+    read?.mediaType shouldBe "image/webp"
+    read?.bytes shouldBe cover.bytes
+  }
+
+  @Test
+  fun `a cover already stored is left as it is`() {
+    // Given
+    val bytes = recordedBytes("covers/small.webp")
+    val store = FileCoverStore(dir)
+    store.write(coverOf("image/webp", bytes))
+
+    // When
+    store.write(coverOf("image/png", bytes))
+
+    // Then
+    store.read(coverOf("image/png", bytes).name)?.mediaType shouldBe "image/webp"
   }
 }

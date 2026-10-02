@@ -66,7 +66,7 @@ class AddBookToBookshelfTest {
       language = "fr",
       pageCount = 208,
       summary = "Luffy prend la mer pour devenir le roi des pirates.",
-      coverUrl = null,
+      coverName = null,
     )
     val copy = copies.stored.single()
     copy shouldBe Copy(copy.id, edition.id, bookshelf.id)

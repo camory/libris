@@ -56,7 +56,7 @@ class CatalogueController(private val browseCatalogue: BrowseCatalogue) {
       language = held.edition.language,
       pageCount = held.edition.pageCount,
       summary = held.edition.summary,
-      coverUrl = null,
+      coverUrl = held.edition.coverName?.let { "/api/v1/covers/${it.value}" },
       copies = held.copies.map { copyOf(it) },
     )
 

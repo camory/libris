@@ -103,7 +103,10 @@ true; the diary keeps the date it was found.
   `Problem` schema. `externalValue` is not read: the example is seen as null.
   The backend's `ApiContractTest` is a web slice over `MockitoBean` use cases,
   so a stub answering `any()` serves the generated cases, where a stub on
-  exact arguments answers nothing to a random value.
+  exact arguments answers nothing to a random value. The reviewer checks
+  the number of cases a PR claims against `tests=` in
+  `backend/build/test-results/test/TEST-fr.amory.libris.ApiContractTest.xml`:
+  read it there after the gate, never count by hand.
 - `additionalProperties: false` cannot sit on a branch of an `allOf`: the
   standard applies each branch on its own, so the base refuses the fields
   the other branch adds, and no instance passes. Contracteer merges the
@@ -237,7 +240,12 @@ true; the diary keeps the date it was found.
   `LIBRIS_COVERS_DIR` (`libris.covers.directory: ${LIBRIS_COVERS_DIR:}`);
   its media type is the text of the file `<name>.type` beside it, and a
   picture without one, or with one that is not `image/…`, is no cover.
-  Nothing reads a format from the bytes. `ScenarioTest` gives
+  Nothing reads a format from the bytes. The name is `Cover.name`, the
+  SHA-256 of the bytes in 64 lower-case digits (`"test"` names
+  `9f86d0…0a08`, the contract's example); `FileCoverStore.write` writes the
+  picture before its `.type`, and leaves a cover already stored as it is.
+  An edition holds the name as
+  `coverName`, the `cover_name` column since `V007`. `ScenarioTest` gives
   the variable a temporary directory, `LibrisApplicationTest` its own
   property. A Mockito
   matcher on a `CoverName` argument takes a valid fallback, since the

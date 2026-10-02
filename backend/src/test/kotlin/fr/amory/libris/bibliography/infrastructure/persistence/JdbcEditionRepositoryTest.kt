@@ -6,6 +6,7 @@ import fr.amory.libris.bibliography.domain.ContributionRole.WRITER
 import fr.amory.libris.bibliography.domain.Contributions
 import fr.amory.libris.bibliography.domain.Kind.MANGA
 import fr.amory.libris.bibliography.domain.SeriesEntry
+import fr.amory.libris.bibliography.domain.cover.CoverName
 import fr.amory.libris.bibliography.domain.edition.Edition
 import fr.amory.libris.bibliography.domain.edition.EditionId
 import fr.amory.libris.bibliography.fixture.isbnOf
@@ -157,7 +158,7 @@ class JdbcEditionRepositoryTest @Autowired constructor(
       language = null,
       pageCount = null,
       summary = null,
-      coverUrl = null,
+      coverName = null,
     )
 
   private fun onePieceTomeOne(): Edition =
@@ -177,6 +178,6 @@ class JdbcEditionRepositoryTest @Autowired constructor(
       language = "fr",
       pageCount = 208,
       summary = "Luffy prend la mer pour devenir le roi des pirates.",
-      coverUrl = "https://covers.libris.test/9782723488525.jpg",
+      coverName = CoverName("9f86d081884c7d659a2feaa0c55ad015a3bf4f1b2b0b822cd15d6c15b0f00a08"),
     )
 }
