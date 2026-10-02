@@ -153,12 +153,20 @@ true; the diary keeps the date it was found.
   JDK on that classpath, so two JDK exception types caught in one `try`
   (`IOException` and `SAXException`) read as one class to
   `UnreachableCatchBlock`, and `!!` on a Java-typed receiver goes unreported.
-- Kotlin is indented by 2 spaces, the Gradle scripts too; detekt's formatting
-  rules refuse anything else and `./gradlew detekt --auto-correct` reindents
-  a file. The arrows of a `when` are aligned in a column by hand, one column
-  per `when`, and a branch whose body would span several lines calls a
-  method instead: `NoMultipleSpaces` is off for the alignment, so detekt
-  neither aligns the arrows nor reports a misaligned one.
+- Kotlin is indented by 2 spaces, the Gradle scripts too; detekt refuses
+  anything else and `./gradlew detekt --auto-correct` reindents a file. It
+  also refuses a comma after the last parameter of a declaration (a
+  function, a constructor, an enum's last entry); a call keeps its own.
+- Kept by hand, since detekt neither reports nor corrects them
+  (`NoMultipleSpaces`, `Wrapping` and `ParameterListWrapping` are off for
+  them, and `FunctionSignature` cannot be on: it puts the closing
+  parenthesis on its own line):
+  the body of a function written with `=` starts on the next line; the last
+  parameter, the closing parenthesis, the return type and the `=` or `{`
+  share one line, in a constructor too; a chain broken over several lines
+  has one call per line, the receiver alone on the first; the arrows of a
+  `when` are aligned in a column, one column per `when`, and a branch whose
+  body would span several lines calls a method instead.
 - `./gradlew detekt` reports on the test sources as well as the main ones
   (T050 saw `MaxLineLength` and `ArgumentListWrapping` in a slice test from
   it). Run `./gradlew detekt` before each commit: `ImportOrdering` fails an import added by hand
