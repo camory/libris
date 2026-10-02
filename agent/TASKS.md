@@ -224,12 +224,13 @@ catalogue rows show a cover only once the worker has stored it (Tophe,
       catalogue's web slice; no fetch, no worker; un-skips nothing.
 
 - [ ] T066 Backend: the worker fetches the chosen inventaire.io cover.
-      An added edition awaits a picture. The add answers the copy, then wakes
-      the worker, one piece behind an application port the tests call the
-      same way (D02). The worker asks inventaire.io by ISBN for the picture
-      of an edition that chose it and stores it as T065 does, the catalogue
-      then answering its address. Realises S3, S4; un-skips the backend tests
-      of S3, S4.
+      The add answers the copy, then wakes the worker, one piece behind an
+      application port the tests call the same way (D02). The worker takes
+      an awaited cover whose chosen source is inventaire.io, asks it by ISBN
+      for the picture and stores it as T065 does; the edition of that ISBN
+      records the cover's name and the wait ends, the catalogue then
+      answering its address. Realises S3, S4; un-skips the backend tests of
+      S3, S4.
 
 - [ ] T054 Backend: Open Library as the chosen source.
       The worker of T066 fetches the picture of an edition whose chosen
@@ -255,18 +256,20 @@ catalogue rows show a cover only once the worker has stored it (Tophe,
       Realises S6; un-skips the backend tests of S6, both cases.
 
 - [ ] T057 Backend: the cascade for an edition with no chosen source.
-      The worker asks, for an edition with an ISBN and no chosen source,
+      The worker asks, for an awaited cover with no chosen source,
       inventaire.io, then Open Library, then the BnF, its picture read from
       the record's ark, stopping at the first picture and storing it as T066
-      does; an edition no source has a picture for stays without. The
-      editions stored before this feature, each with an ISBN, await a picture
-      with no chosen source, a migration of the gate proving it (D03, D07).
+      does; an edition no source has a picture for stays without. A
+      migration gives each edition stored before this feature that has an
+      ISBN an awaited cover with no chosen source, the gate proving it
+      (D03, D07).
       Realises S7 and S12; un-skips the backend tests of S7, its three cases.
 
 - [ ] T058 Backend: a failed fetch waits a day.
       A fetch that gets no answer, an error, or what is not a picture leaves
-      the edition without one and dates the attempt from the application's
-      clock; a run within a day passes it by, a run a day later tries again.
+      the edition without one and dates the attempt on its awaited cover
+      from the application's clock; a run within a day passes it by, a run a
+      day later tries again.
       A fetch gives up after five seconds or five megabytes.
       Tests of the limits over a stubbed source; the scenario tests advance
       the clock. Realises S8; un-skips the backend tests of S8, its three

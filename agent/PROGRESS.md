@@ -444,7 +444,9 @@ Format:
   kept as written. Two guards have no red of their own: the no-ISBN case
   (the type refuses an `AwaitedCover` without an ISBN) and the foreign key
   (a migration that has run cannot be mutated).
-- Left over: the T066, T057 and T058 lines still speak of the edition's
-  source and attempt; `CoverSource.order` stays on the enum; D11 says a
-  uuid key on every table and UPPER_SNAKE enum values in SQL, both proposed
-  for amendment in the PR body.
+- Decided (Tophe): `CoverSource.order` stays on the enum, as D12 says. The
+  T066, T057 and T058 lines are reworded to the awaited cover in this PR.
+- Left over: D11 says a uuid key on every table and UPPER_SNAKE enum values
+  in SQL; Tophe accepted both exceptions, their wording is proposed in the
+  PR body for a docs PR. T057 does not say whether an awaited cover no
+  source has a picture for ends its wait.
