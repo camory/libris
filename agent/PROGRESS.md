@@ -497,3 +497,18 @@ Format:
   `CatalogueControllerTest` holds for the null case alone.
 - Left over: the address built in `CatalogueController.bookOf` has no test
   until the contract's pattern or S3 at T066.
+
+## 2026-10-03 — Covers: the plan on contract v0.9.0 — with Tophe
+- Did: `v0.9.0` of `camory/libris-api` is released (OpenAPI 3.1.0, a pattern
+  on `Book.coverUrl`, `format: uuid` on the add's bookshelf id, the unknown
+  ISBN `9782000000013`); T067 pins it on the backend, before T066; T060
+  pins it on the frontend; the removal of the lookup's `coverUrl` becomes
+  `v0.10.0`, pinned in T064.
+- Decided (Tophe): the move to 3.1 and the new constraints change no byte
+  of an answer, so they ship as their own release ahead of the removal; the
+  backend pins it before the worker, so the cover address the catalogue
+  answers is checked by the contract before covers are stored; the frontend
+  never pins `v0.8.2`. D04 and D11 now say 3.1 and "which fields may be
+  null", since `nullable` is gone.
+- Deviations from the brief: none; no brief, a human session.
+- Left over: nothing.
