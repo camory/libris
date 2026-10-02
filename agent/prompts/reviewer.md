@@ -63,6 +63,16 @@ is blocking. The *Rework* section of the PR body says how the run met them.
    it (`CLAUDE.md`, "Only what the task uses")? Does any comment, build
    script or configuration carry rationale or a decision number
    (`CLAUDE.md`, "No rationale in code")?
+   For every Kotlin line the diff adds or changes, the Gradle scripts
+   included, check by eye the four layout rules of D10 that the gate does
+   not: the body of a function written with `=` starts on the next line;
+   the last parameter, the closing parenthesis, the return type and the `=`
+   or `{` share one line, in a constructor too; a chain broken over several
+   lines has one call per line, the receiver alone on the first, in the
+   production code only; the arrows of a `when` are aligned in one column,
+   and a branch whose body would span several lines calls a method. A green
+   `detekt` says nothing about them. A line the diff does not touch is not
+   a finding.
    Then `git log --stat origin/main..HEAD`: does each commit add one test with the
    code that passes it, refactors in their own commits (`tdd` skill, "One
    cycle, one commit")? A commit adding several tests is a finding.
@@ -77,8 +87,9 @@ is blocking. The *Rework* section of the PR body says how the run met them.
      prove its claim, or was skipped or weakened; a cited scenario test
      still skipped or altered; an architecture decision
      violated, the shape it gives a test included (its name, its place,
-     its Given / When / Then layout); a security or data-loss risk; a verification claim your run
-     contradicted; a file, dependency or setting that no criterion or
+     its Given / When / Then layout), and the Kotlin layout of D10 on a
+     line the diff adds or changes; a security or data-loss risk; a
+     verification claim your run contradicted; a file, dependency or setting that no criterion or
      declared deviation needs; rationale or a decision number in code,
      build scripts or configuration.
    - **Suggestion**: everything else — naming or structure no decision
