@@ -95,6 +95,7 @@ FAKE
 chmod +x "$tmp/bin/compose"
 COMPOSE=("$tmp/bin/compose")
 MODEL=m EFFORT=e MAX_TURNS=1 MAX_BUDGET_USD=1 AUTOCOMPACT=190000
+mkdir -p agent/logs
 launched_with() {  # launched_with <role> → the arguments compose received, on one line
   run_role "$1" T000 >/dev/null
   rm -f "${LAST_LOG%.json}".{json,jsonl,stderr}
