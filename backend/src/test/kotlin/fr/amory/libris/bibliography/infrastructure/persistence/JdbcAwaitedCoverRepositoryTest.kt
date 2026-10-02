@@ -77,6 +77,6 @@ class JdbcAwaitedCoverRepositoryTest @Autowired constructor(
       language = null,
       pageCount = null,
       summary = null,
-      coverUrl = null,
+      coverName = null,
     )
 }
