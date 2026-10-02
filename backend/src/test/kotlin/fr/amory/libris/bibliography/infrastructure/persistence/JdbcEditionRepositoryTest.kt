@@ -159,6 +159,7 @@ class JdbcEditionRepositoryTest @Autowired constructor(
       pageCount = null,
       summary = null,
       coverUrl = null,
+      coverSource = null,
     )
 
   private fun onePieceTomeOne(): Edition =
