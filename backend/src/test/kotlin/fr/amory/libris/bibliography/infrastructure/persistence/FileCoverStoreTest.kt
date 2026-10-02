@@ -85,4 +85,20 @@ class FileCoverStoreTest {
     read?.mediaType shouldBe "image/webp"
     read?.bytes shouldBe cover.bytes
   }
+
+  @Test
+  fun `a cover written twice is still read back whole`() {
+    // Given
+    val cover = Cover("image/webp", recordedBytes("covers/small.webp"))
+    val store = FileCoverStore(dir)
+
+    // When
+    store.write(cover)
+    store.write(cover)
+
+    // Then
+    val read = store.read(cover.name)
+    read?.mediaType shouldBe "image/webp"
+    read?.bytes shouldBe cover.bytes
+  }
 }
