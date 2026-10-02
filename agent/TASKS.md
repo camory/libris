@@ -200,18 +200,37 @@ catalogue rows show a cover only once the worker has stored it (Tophe,
       of the inventaire.io reading; the fast entry's whole-body case follows.
       Realises S1 on the backend; un-skips the backend test of S1.
 
-- [ ] T053 Backend: the add carries the source, the worker fetches it.
-      An added edition keeps its `coverSource` when it names a source, none
-      otherwise, `Libris` included, ignored on a held ISBN, and awaits a
-      picture. The add answers the copy, then wakes the worker, one piece
-      behind an application port the tests call the same way (D02). Asked by
-      ISBN, a chosen inventaire.io's picture is stored under a name made from
-      its bytes; the catalogue answers `coverUrl`, the cover operation's
-      address (D11). Realises S3, S4; un-skips the backend tests of S3, S4.
+- [ ] T053 Backend: the add keeps the chosen source.
+      An edition the add creates keeps its `coverSource` when the name is a
+      source's, `inventaire.io`, `Open Library` or `BnF`, none otherwise,
+      `Libris` included; on an ISBN the house holds the field is ignored.
+      One migration gives `edition` the source, as text (D11, D12).
+      `ApiContractTest`'s keyed `201_ADD_ONE_PIECE_1` sends `inventaire.io`,
+      so its stub carries the source; tests of the request, the use case and
+      the JDBC slice (D07). Realises S3's first *Then* on the backend;
+      un-skips nothing.
+
+- [ ] T065 Backend: the house keeps a cover.
+      The covers' store writes a picture under a name made from its bytes,
+      its media type beside it, as `FindCover` reads them; an edition records
+      the name of its stored cover; the catalogue answers `coverUrl`, the
+      cover operation's address, null while none is stored (D11, D12). The
+      edition's former `coverUrl` and its `cover_url` column, a source's
+      address that nothing reads any more, leave in the same migration. Tests
+      of the store over a temporary directory, of the JDBC slice and of the
+      catalogue's web slice; no fetch, no worker; un-skips nothing.
+
+- [ ] T066 Backend: the worker fetches the chosen inventaire.io cover.
+      An added edition awaits a picture. The add answers the copy, then wakes
+      the worker, one piece behind an application port the tests call the
+      same way (D02). The worker asks inventaire.io by ISBN for the picture
+      of an edition that chose it and stores it as T065 does, the catalogue
+      then answering its address. Realises S3, S4; un-skips the backend tests
+      of S3, S4.
 
 - [ ] T054 Backend: Open Library as the chosen source.
-      The worker of T053 fetches the picture of an edition whose chosen
-      source is Open Library from its covers by ISBN, and stores it as T053
+      The worker of T066 fetches the picture of an edition whose chosen
+      source is Open Library from its covers by ISBN, and stores it as T066
       does, as fetched; the cover operation serves it as JPEG with its
       year-long `Cache-Control`. Only the chosen source is asked.
       Realises S5 on a stored cover; un-skips the backend test *S5 Libris
@@ -235,7 +254,7 @@ catalogue rows show a cover only once the worker has stored it (Tophe,
 - [ ] T057 Backend: the cascade for an edition with no chosen source.
       The worker asks, for an edition with an ISBN and no chosen source,
       inventaire.io, then Open Library, then the BnF, its picture read from
-      the record's ark, stopping at the first picture and storing it as T053
+      the record's ark, stopping at the first picture and storing it as T066
       does; an edition no source has a picture for stays without. The
       editions stored before this feature, each with an ISBN, await a picture
       with no chosen source, a migration of the gate proving it (D03, D07).
