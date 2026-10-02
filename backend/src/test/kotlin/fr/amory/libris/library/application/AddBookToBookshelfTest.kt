@@ -242,19 +242,21 @@ class AddBookToBookshelfTest {
   }
 
   @Test
-  fun `the edition and the copy land in one transaction`() {
+  fun `the edition, its awaited cover and the copy land in one transaction`() {
     // Given
     val lea = readerNamed("lea", "Léa")
     val bookshelf = bookshelfOwnedBy(lea)
     bookshelves.insert(bookshelf)
-    val transactions = TransactionsObserving { editions.stored.size to copies.stored.size }
+    val transactions = TransactionsObserving {
+      Triple(editions.stored.size, awaitedCovers.stored.size, copies.stored.size)
+    }
     val addBookToBookshelf = AddBookToBookshelf(editions, awaitedCovers, copies, bookshelves, transactions)
 
     // When
     addBookToBookshelf(lea.id, bookshelf.id, onePieceTomeOne())
 
     // Then
-    transactions.recorded shouldBe listOf(Transaction(before = 0 to 0, after = 1 to 1))
+    transactions.recorded shouldBe listOf(Transaction(before = Triple(0, 0, 0), after = Triple(1, 1, 1)))
   }
 
   private fun onePieceTomeOne(): NewBook =
