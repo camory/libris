@@ -478,3 +478,14 @@ Format:
   finding was a verification claim the run contradicted.
 - Deviations from the brief: none.
 - Left over: nothing.
+
+## 2026-10-02 — T065 Backend: the house keeps a cover — fixed up with Tophe
+- Did: `Cover.name` is computed when asked, so a cover read to be served is
+  not hashed; `FileCoverStore.write` writes each file beside its place and
+  moves it there whole; `CatalogueControllerTest` sends its request from one
+  helper; the GOTCHAS item on the contract's case count names no number.
+- Decided (Tophe): all four of the points raised on the PR are fixed.
+- Deviations from the brief: `Cover.name` is no longer computed once at
+  construction; the store's write has no test of its own, the two written
+  cases cover it.
+- Left over: nothing.

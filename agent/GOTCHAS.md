@@ -106,7 +106,7 @@ true; the diary keeps the date it was found.
   exact arguments answers nothing to a random value. The reviewer checks
   the number of cases a PR claims against `tests=` in
   `backend/build/test-results/test/TEST-fr.amory.libris.ApiContractTest.xml`:
-  read it there after the gate, never count by hand (on `v0.8.2`, 15 cases).
+  read it there after the gate, never count by hand.
 - `additionalProperties: false` cannot sit on a branch of an `allOf`: the
   standard applies each branch on its own, so the base refuses the fields
   the other branch adds, and no instance passes. Contracteer merges the
