@@ -57,9 +57,11 @@ true; the diary keeps the date it was found.
   `docker`, so a run inside it calls the gate directly.
 
 ## Contract and release — every run
-- The contract is OpenAPI 3.0.3 and `nullable` is the 3.0 keyword (the
-  4.0.0 CLI could not load a 3.1 document; 4.1.0 can, and the contract has
-  not moved). On an operation without parameters a response example creates
+- The contract is OpenAPI 3.1.0 since `v0.9.0`, 3.0.3 before: a field that
+  may be null says `type: [<type>, "null"]` where 3.0 said `nullable: true`,
+  and a reference that may be null is a `oneOf` of it and `type: "null"`, as
+  `Edition.series`. A side whose pin is older still reads 3.0.3. On an
+  operation without parameters a response example creates
   no scenario; the verifier emits one generated case.
 - On an operation with a `400` response and a typed body, the verifier adds
   a case of its own, `auto: body type mismatch`, and expects `400` with the
