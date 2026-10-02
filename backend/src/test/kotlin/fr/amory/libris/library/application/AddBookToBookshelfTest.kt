@@ -6,9 +6,6 @@ import fr.amory.libris.bibliography.domain.Contributions
 import fr.amory.libris.bibliography.domain.Kind.MANGA
 import fr.amory.libris.bibliography.domain.SeriesEntry
 import fr.amory.libris.bibliography.domain.edition.Edition
-import fr.amory.libris.bibliography.domain.lookup.CoverSource
-import fr.amory.libris.bibliography.domain.lookup.CoverSource.INVENTAIRE
-import fr.amory.libris.bibliography.domain.lookup.CoverSource.OPEN_LIBRARY
 import fr.amory.libris.bibliography.fixture.EditionsInMemory
 import fr.amory.libris.bibliography.fixture.isbnOf
 import fr.amory.libris.library.application.AddBookResult.Added
@@ -64,7 +61,6 @@ class AddBookToBookshelfTest {
       pageCount = 208,
       summary = "Luffy prend la mer pour devenir le roi des pirates.",
       coverUrl = null,
-      coverSource = INVENTAIRE,
     )
     val copy = copies.stored.single()
     copy shouldBe Copy(copy.id, edition.id, bookshelf.id)
@@ -77,17 +73,16 @@ class AddBookToBookshelfTest {
     val lea = readerNamed("lea", "Léa")
     val leasBookshelf = bookshelfOwnedBy(lea)
     bookshelves.insert(leasBookshelf)
-    addBookToBookshelf(lea.id, leasBookshelf.id, onePieceTomeOne(coverSource = INVENTAIRE))
+    addBookToBookshelf(lea.id, leasBookshelf.id, onePieceTomeOne())
     val juliette = readerNamed("juliette", "Juliette")
     val juliettesBookshelf = bookshelfOwnedBy(juliette)
     bookshelves.insert(juliettesBookshelf)
 
     // When
-    val result = addBookToBookshelf(juliette.id, juliettesBookshelf.id, onePieceTomeOne(coverSource = OPEN_LIBRARY))
+    val result = addBookToBookshelf(juliette.id, juliettesBookshelf.id, onePieceTomeOne())
 
     // Then
     val edition = editions.stored.single()
-    edition.coverSource shouldBe INVENTAIRE
     val copy = copies.stored.last()
     copy shouldBe Copy(copy.id, edition.id, juliettesBookshelf.id)
     copies.stored.map { it.editionId } shouldBe listOf(edition.id, edition.id)
@@ -198,7 +193,7 @@ class AddBookToBookshelfTest {
     transactions.recorded shouldBe listOf(Transaction(before = 0 to 0, after = 1 to 1))
   }
 
-  private fun onePieceTomeOne(coverSource: CoverSource? = INVENTAIRE): NewBook =
+  private fun onePieceTomeOne(): NewBook =
     NewBook(
       isbn = isbnOf(ONE_PIECE),
       kind = MANGA,
@@ -212,6 +207,6 @@ class AddBookToBookshelfTest {
       language = "fr",
       pageCount = 208,
       summary = "Luffy prend la mer pour devenir le roi des pirates.",
-      coverSource = coverSource,
+      coverSource = null,
     )
 }

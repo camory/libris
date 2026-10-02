@@ -141,7 +141,6 @@ class EditionPreviewTest {
       pageCount = 207,
       summary = "Luffy rêve de devenir le roi des pirates.",
       coverUrl = "https://couvertures.amory.fr/one-piece-01.jpg",
-      coverSource = null,
     )
 
     // When
@@ -182,7 +181,6 @@ class EditionPreviewTest {
       pageCount = null,
       summary = null,
       coverUrl = null,
-      coverSource = null,
     )
 
     // When

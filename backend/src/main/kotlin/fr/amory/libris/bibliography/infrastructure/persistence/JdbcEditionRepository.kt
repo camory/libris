@@ -10,7 +10,6 @@ import fr.amory.libris.bibliography.domain.SeriesEntry
 import fr.amory.libris.bibliography.domain.edition.Edition
 import fr.amory.libris.bibliography.domain.edition.EditionId
 import fr.amory.libris.bibliography.domain.edition.EditionRepository
-import fr.amory.libris.bibliography.domain.lookup.CoverSource
 import org.springframework.jdbc.core.simple.JdbcClient
 import org.springframework.stereotype.Repository
 import java.sql.ResultSet
@@ -19,9 +18,9 @@ import java.util.UUID
 private const val INSERT_EDITION =
   """
     INSERT INTO edition (id, isbn13, kind, title, subtitle, series_id, volume_number, collection,
-                         publisher, publication_year, language, page_count, summary, cover_url, cover_source)
+                         publisher, publication_year, language, page_count, summary, cover_url)
     VALUES (:id, :isbn13, :kind, :title, :subtitle, :seriesId, :volumeNumber, :collection,
-            :publisher, :publicationYear, :language, :pageCount, :summary, :coverUrl, :coverSource)
+            :publisher, :publicationYear, :language, :pageCount, :summary, :coverUrl)
     """
 
 private const val INSERT_SERIES =
@@ -45,7 +44,7 @@ private const val SELECT_EDITIONS =
   """
     SELECT edition.id, edition.isbn13, edition.kind, edition.title, edition.subtitle,
            edition.volume_number, edition.collection, edition.publisher, edition.publication_year,
-           edition.language, edition.page_count, edition.summary, edition.cover_url, edition.cover_source,
+           edition.language, edition.page_count, edition.summary, edition.cover_url,
            series.name AS series_name, author.name AS author_name, contribution.role
     FROM edition
     LEFT JOIN series ON series.id = edition.series_id
@@ -83,7 +82,6 @@ class JdbcEditionRepository(private val jdbcClient: JdbcClient) : EditionReposit
       .param("pageCount", edition.pageCount)
       .param("summary", edition.summary)
       .param("coverUrl", edition.coverUrl)
-      .param("coverSource", edition.coverSource?.name)
       .update()
     edition.contributions.forEach { contribution ->
       val authorId = authorIdOf(contribution.name)
@@ -139,7 +137,6 @@ class JdbcEditionRepository(private val jdbcClient: JdbcClient) : EditionReposit
         pageCount = rs.getObject("page_count", Int::class.javaObjectType),
         summary = rs.getString("summary"),
         coverUrl = rs.getString("cover_url"),
-        coverSource = rs.getString("cover_source")?.let { CoverSource.valueOf(it) },
       ),
       contribution = rs.getString("author_name")?.let { name ->
         Contribution.of(name, ContributionRole.valueOf(rs.getString("role")))

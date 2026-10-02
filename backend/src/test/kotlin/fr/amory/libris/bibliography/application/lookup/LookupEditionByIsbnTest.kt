@@ -44,7 +44,6 @@ private val ROMANCE_DAWN = Edition(
   pageCount = null,
   summary = null,
   coverUrl = null,
-  coverSource = null,
 )
 
 private val NO_COVER = CoverCandidates.of(emptyList())

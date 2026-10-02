@@ -27,6 +27,5 @@ class EditionTest {
       pageCount = null,
       summary = null,
       coverUrl = null,
-      coverSource = null,
     )
 }

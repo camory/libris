@@ -38,7 +38,6 @@ private val CIGARES = Edition(
   pageCount = null,
   summary = null,
   coverUrl = null,
-  coverSource = null,
 )
 
 private val PIERRE = CIGARES.copy(

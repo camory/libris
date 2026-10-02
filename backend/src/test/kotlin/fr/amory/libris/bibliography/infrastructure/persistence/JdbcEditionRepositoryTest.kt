@@ -8,7 +8,6 @@ import fr.amory.libris.bibliography.domain.Kind.MANGA
 import fr.amory.libris.bibliography.domain.SeriesEntry
 import fr.amory.libris.bibliography.domain.edition.Edition
 import fr.amory.libris.bibliography.domain.edition.EditionId
-import fr.amory.libris.bibliography.domain.lookup.CoverSource.INVENTAIRE
 import fr.amory.libris.bibliography.fixture.isbnOf
 import fr.amory.libris.fixture.JdbcSliceTest
 import io.kotest.assertions.throwables.shouldThrow
@@ -159,7 +158,6 @@ class JdbcEditionRepositoryTest @Autowired constructor(
       pageCount = null,
       summary = null,
       coverUrl = null,
-      coverSource = null,
     )
 
   private fun onePieceTomeOne(): Edition =
@@ -180,6 +178,5 @@ class JdbcEditionRepositoryTest @Autowired constructor(
       pageCount = 208,
       summary = "Luffy prend la mer pour devenir le roi des pirates.",
       coverUrl = "https://covers.libris.test/9782723488525.jpg",
-      coverSource = INVENTAIRE,
     )
 }

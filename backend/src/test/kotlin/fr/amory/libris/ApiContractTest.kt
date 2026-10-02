@@ -149,7 +149,6 @@ private val ONE_PIECE_1_HELD = HeldEdition(
     pageCount = ONE_PIECE_1.pageCount,
     summary = ONE_PIECE_1.summary,
     coverUrl = null,
-    coverSource = null,
   ),
   copies = listOf(
     copyOn(

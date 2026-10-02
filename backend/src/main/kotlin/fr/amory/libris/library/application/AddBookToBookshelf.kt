@@ -58,6 +58,5 @@ class AddBookToBookshelf(
       pageCount = book.pageCount,
       summary = book.summary,
       coverUrl = null,
-      coverSource = book.coverSource,
     )
 }
