@@ -34,7 +34,7 @@ load_env() {
   [[ -f "$ENV_FILE" ]] || die "missing $ENV_FILE (copy agent/.env.example and fill it in)" 1
   set -a; # shellcheck disable=SC1090
   source "$ENV_FILE"; set +a
-  : "${MODEL:=fable}" "${EFFORT:=high}" "${MAX_TURNS:=120}" "${MAX_BUDGET_USD:=15}" "${AUTOCOMPACT:=150000}" "${PR_POLL_SECONDS:=300}" "${REWORK_ROUNDS:=1}"
+  : "${MODEL:=fable}" "${EFFORT:=high}" "${MAX_TURNS:=120}" "${MAX_BUDGET_USD:=15}" "${AUTOCOMPACT:=190000}" "${PR_POLL_SECONDS:=300}" "${REWORK_ROUNDS:=1}"
   [[ -n "${CLAUDE_CODE_OAUTH_TOKEN:-}${ANTHROPIC_API_KEY:-}" ]] || die "no Claude credential in $ENV_FILE" 1
   [[ -n "${GH_TOKEN:-}" ]] || die "no GH_TOKEN in $ENV_FILE" 1
   mkdir -p agent/logs
@@ -116,19 +116,20 @@ fill() {  # fill <text> [KEY=VALUE ...] — replaces every {{KEY}} with its VALU
 #   tag:  goes into the log file name (task id, "plan", ...)
 #   KEY=VALUE: replaces {{KEY}} in the prompt
 # Sets STATUS and LAST_LOG. Per-role overrides: PLANNER_BRIEF_MODEL, REVIEWER_EFFORT, IMPLEMENTER_MAX_TURNS, IMPLEMENTER_AUTOCOMPACT, ...
+# A role hands off past <ROLE>_HANDOFF_AT tokens of context; a role without one never does.
 run_role() {
   local role="$1" tag="$2"; shift 2
   local prompt; prompt=$(fill "$(cat "agent/prompts/$role.md")" "$@")
 
   local var; var=$(tr 'a-z-' 'A-Z_' <<<"$role")
-  local mv="${var}_MODEL" ev="${var}_EFFORT" tv="${var}_MAX_TURNS" bv="${var}_MAX_BUDGET_USD" cv="${var}_AUTOCOMPACT"
-  local model="${!mv:-$MODEL}" effort="${!ev:-$EFFORT}" turns="${!tv:-$MAX_TURNS}" budget="${!bv:-$MAX_BUDGET_USD}" compact="${!cv:-$AUTOCOMPACT}"
+  local mv="${var}_MODEL" ev="${var}_EFFORT" tv="${var}_MAX_TURNS" bv="${var}_MAX_BUDGET_USD" cv="${var}_AUTOCOMPACT" hv="${var}_HANDOFF_AT"
+  local model="${!mv:-$MODEL}" effort="${!ev:-$EFFORT}" turns="${!tv:-$MAX_TURNS}" budget="${!bv:-$MAX_BUDGET_USD}" compact="${!cv:-$AUTOCOMPACT}" handoff="${!hv:-}"
 
   LAST_LOG="agent/logs/$(date +%Y%m%d-%H%M%S)-${tag}-${role}.json"
   local trace="${LAST_LOG%.json}.jsonl"
-  log "▶ $role for $tag — model=$model effort=$effort max_turns=$turns budget=\$$budget autocompact=$compact"
+  log "▶ $role for $tag — model=$model effort=$effort max_turns=$turns budget=\$$budget autocompact=$compact handoff_at=${handoff:-none}"
   set +e
-  "${COMPOSE[@]}" run --rm -T agent \
+  "${COMPOSE[@]}" run --rm -T -e "LIBRIS_HANDOFF_AT=$handoff" agent \
     "claude -p --output-format stream-json --verbose --json-schema \"\$(cat agent/schemas/$role.json)\" \
        --model '$model' --effort '$effort' --max-turns '$turns' --max-budget-usd '$budget' \
        --autocompact '$compact' \

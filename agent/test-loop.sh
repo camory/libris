@@ -86,4 +86,26 @@ check "cmd_status: a task branch shows once" "done on task/T001-x" "$(status_lin
 check "cmd_status: a task PR shows once with its state" "PR #12 (CLOSED)" "$(status_line 'implement')"
 check "cmd_status: a review label shows" "review:approve" "$(status_line 'review')"
 
+# run_role: what the sandbox is launched with, against a fake compose that records its arguments
+cat >"$tmp/bin/compose" <<FAKE
+#!/usr/bin/env bash
+printf '%s\n' "\$@" > "$tmp/compose.args"
+echo '{"type":"result","structured_output":{"status":"pr_opened"}}'
+FAKE
+chmod +x "$tmp/bin/compose"
+COMPOSE=("$tmp/bin/compose")
+MODEL=m EFFORT=e MAX_TURNS=1 MAX_BUDGET_USD=1 AUTOCOMPACT=190000
+launched_with() {  # launched_with <role> → the arguments compose received, on one line
+  run_role "$1" T000 >/dev/null
+  rm -f "${LAST_LOG%.json}".{json,jsonl,stderr}
+  tr '\n' ' ' <"$tmp/compose.args"
+}
+IMPLEMENTER_HANDOFF_AT=120000 IMPLEMENTER_AUTOCOMPACT=1000000
+args="$(launched_with implementer)"
+check "run_role: a role's handoff threshold reaches the sandbox" "yes" "$([[ "$args" == *"-e LIBRIS_HANDOFF_AT=120000 agent "* ]] && echo yes || echo no)"
+check "run_role: a role's own window replaces the general one" "yes" "$([[ "$args" == *"--autocompact '1000000'"* ]] && echo yes || echo no)"
+args="$(launched_with reviewer)"
+check "run_role: a role without a threshold is given none" "yes" "$([[ "$args" == *"-e LIBRIS_HANDOFF_AT= agent "* ]] && echo yes || echo no)"
+check "run_role: a role without a window takes the general one" "yes" "$([[ "$args" == *"--autocompact '190000'"* ]] && echo yes || echo no)"
+
 exit "$fail"
