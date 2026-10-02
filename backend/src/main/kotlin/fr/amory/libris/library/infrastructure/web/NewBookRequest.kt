@@ -18,13 +18,11 @@ sealed interface NewBookValidation {
 
 data class NewAuthorRequest(
   val name: String,
-  val role: ContributionRole,
-)
+  val role: ContributionRole)
 
 data class NewSeriesRequest(
   val name: String,
-  val volumeNumber: Int?,
-)
+  val volumeNumber: Int?)
 
 data class NewBookRequest(
   val isbn13: String?,
@@ -38,8 +36,7 @@ data class NewBookRequest(
   val publicationYear: Int?,
   val language: String?,
   val pageCount: Int?,
-  val summary: String?,
-) {
+  val summary: String?) {
   fun validate(): NewBookValidation {
     val isbn = isbn13?.let { isbn13Of(it) }
     val contributions = authors.map { Contribution.of(it.name, it.role) }

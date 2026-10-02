@@ -19,8 +19,7 @@ class FastEntryScenarios @Autowired constructor(
   private val http: RestTestClient,
   private val environment: Environment,
   @Qualifier("bnf") bnfServer: WireMockServer,
-  @Qualifier("openLibrary") openLibraryServer: WireMockServer,
-) {
+  @Qualifier("openLibrary") openLibraryServer: WireMockServer) {
   private val bnf = BnfStubs(bnfServer)
   private val openLibrary = OpenLibraryStubs(openLibraryServer)
 
@@ -163,11 +162,12 @@ class FastEntryScenarios @Autowired constructor(
       .expectBody().jsonPath("$.type").isEqualTo("/problems/sources-unavailable")
   }
 
-  private fun ask(isbn: String): RestTestClient.ResponseSpec = http.get()
-    .uri("/api/v1/isbn/$isbn")
-    .headers { it.putAll(READER) }
-    .accept(APPLICATION_JSON, APPLICATION_PROBLEM_JSON)
-    .exchange()
+  private fun ask(isbn: String): RestTestClient.ResponseSpec =
+    http.get()
+      .uri("/api/v1/isbn/$isbn")
+      .headers { it.putAll(READER) }
+      .accept(APPLICATION_JSON, APPLICATION_PROBLEM_JSON)
+      .exchange()
 
   private companion object {
     const val ONE_PIECE_COVER =

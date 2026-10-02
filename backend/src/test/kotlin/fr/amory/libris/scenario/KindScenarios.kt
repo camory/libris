@@ -14,8 +14,7 @@ import org.springframework.test.web.servlet.client.RestTestClient
 class KindScenarios @Autowired constructor(
   private val http: RestTestClient,
   @Qualifier("bnf") bnfServer: WireMockServer,
-  @Qualifier("openLibrary") openLibraryServer: WireMockServer,
-) {
+  @Qualifier("openLibrary") openLibraryServer: WireMockServer) {
   private val bnf = BnfStubs(bnfServer)
   private val openLibrary = OpenLibraryStubs(openLibraryServer)
 
@@ -67,11 +66,12 @@ class KindScenarios @Autowired constructor(
       .expectBody().jsonPath("$.kind").isEqualTo("BOOK")
   }
 
-  private fun ask(isbn: String): RestTestClient.ResponseSpec = http.get()
-    .uri("/api/v1/isbn/$isbn")
-    .headers { it.putAll(READER) }
-    .accept(APPLICATION_JSON, APPLICATION_PROBLEM_JSON)
-    .exchange()
+  private fun ask(isbn: String): RestTestClient.ResponseSpec =
+    http.get()
+      .uri("/api/v1/isbn/$isbn")
+      .headers { it.putAll(READER) }
+      .accept(APPLICATION_JSON, APPLICATION_PROBLEM_JSON)
+      .exchange()
 
   private companion object {
     val READER = mapOf(

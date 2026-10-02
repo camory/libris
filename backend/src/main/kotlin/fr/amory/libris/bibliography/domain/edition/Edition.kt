@@ -19,8 +19,7 @@ data class Edition(
   val language: String?,
   val pageCount: Int?,
   val summary: String?,
-  val coverUrl: String?,
-) {
+  val coverUrl: String?) {
   init {
     require(title.isNotBlank()) { "an edition needs a title" }
   }

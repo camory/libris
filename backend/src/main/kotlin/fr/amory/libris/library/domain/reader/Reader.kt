@@ -7,5 +7,4 @@ data class Reader(
   val username: String,
   val email: String,
   val displayName: String,
-  val defaultBookshelfId: BookshelfId,
-)
+  val defaultBookshelfId: BookshelfId)

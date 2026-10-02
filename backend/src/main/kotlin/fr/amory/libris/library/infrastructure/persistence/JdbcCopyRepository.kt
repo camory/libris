@@ -48,9 +48,10 @@ class JdbcCopyRepository(private val jdbcClient: JdbcClient) : CopyRepository {
         .list()
     }
 
-  private fun copyOf(rs: ResultSet): Copy = Copy(
-    id = CopyId(rs.getObject("id", UUID::class.java)),
-    editionId = EditionId(rs.getObject("edition_id", UUID::class.java)),
-    bookshelfId = BookshelfId(rs.getObject("bookshelf_id", UUID::class.java)),
-  )
+  private fun copyOf(rs: ResultSet): Copy =
+    Copy(
+      id = CopyId(rs.getObject("id", UUID::class.java)),
+      editionId = EditionId(rs.getObject("edition_id", UUID::class.java)),
+      bookshelfId = BookshelfId(rs.getObject("bookshelf_id", UUID::class.java)),
+    )
 }

@@ -78,8 +78,7 @@ private val ROMANCE_DAWN = HeldEdition(
 class CatalogueControllerTest @Autowired constructor(
   private val client: RestTestClient,
   private val welcomeReader: WelcomeReader,
-  private val browseCatalogue: BrowseCatalogue,
-) {
+  private val browseCatalogue: BrowseCatalogue) {
   @Test
   fun `a held edition is answered with no cover while none is stored`() {
     // Given

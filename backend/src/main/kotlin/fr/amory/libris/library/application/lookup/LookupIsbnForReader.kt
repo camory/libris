@@ -14,8 +14,7 @@ import org.springframework.stereotype.Service
 class LookupIsbnForReader(
   private val lookupEditionByIsbn: LookupEditionByIsbn,
   private val copies: CopyRepository,
-  private val bookshelves: BookshelfRepository,
-) {
+  private val bookshelves: BookshelfRepository) {
   operator fun invoke(readerId: ReaderId, isbn: Isbn): IsbnLookup {
     val answer = lookupEditionByIsbn(isbn)
     return IsbnLookup(answer, copiesVisibleTo(readerId, answer))

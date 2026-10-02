@@ -14,8 +14,7 @@ import org.springframework.context.annotation.Import
 @Import(JdbcReaderRepository::class, JdbcBookshelfRepository::class)
 class JdbcReaderRepositoryTest @Autowired constructor(
   private val readers: JdbcReaderRepository,
-  private val bookshelves: JdbcBookshelfRepository,
-) {
+  private val bookshelves: JdbcBookshelfRepository) {
   @Test
   fun `an inserted reader is read back whole`() {
     // Given

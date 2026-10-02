@@ -13,7 +13,8 @@ class CopiesInMemory : CopyRepository {
     copies += copy
   }
 
-  override fun findByEditionId(editionId: EditionId): List<Copy> = copies.filter { it.editionId == editionId }
+  override fun findByEditionId(editionId: EditionId): List<Copy> =
+    copies.filter { it.editionId == editionId }
 
   override fun findByEditionIds(editionIds: List<EditionId>): List<Copy> =
     copies.filter { it.editionId in editionIds }

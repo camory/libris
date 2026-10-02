@@ -10,5 +10,6 @@ import org.springframework.web.bind.annotation.RestControllerAdvice
 @RestControllerAdvice
 class ProblemAdvice {
   @ExceptionHandler(TypeMismatchException::class, HttpMessageNotReadableException::class)
-  fun validation(): ResponseEntity<Any> = problem(BAD_REQUEST, VALIDATION_PROBLEM).asResponse()
+  fun validation(): ResponseEntity<Any> =
+    problem(BAD_REQUEST, VALIDATION_PROBLEM).asResponse()
 }

@@ -6,6 +6,7 @@ import java.util.UUID
 @JvmInline
 value class ReaderId(val value: UUID) {
   companion object {
-    fun new(): ReaderId = ReaderId(Generators.timeBasedEpochGenerator().generate())
+    fun new(): ReaderId =
+      ReaderId(Generators.timeBasedEpochGenerator().generate())
   }
 }

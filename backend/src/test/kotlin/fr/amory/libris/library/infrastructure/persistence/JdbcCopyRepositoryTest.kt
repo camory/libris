@@ -36,8 +36,7 @@ class JdbcCopyRepositoryTest @Autowired constructor(
   private val editions: JdbcEditionRepository,
   private val bookshelves: JdbcBookshelfRepository,
   private val readers: JdbcReaderRepository,
-  private val jdbcClient: JdbcClient,
-) {
+  private val jdbcClient: JdbcClient) {
   @Test
   fun `a copy inserted sits on its bookshelf and its edition`() {
     // Given
@@ -177,20 +176,21 @@ class JdbcCopyRepositoryTest @Autowired constructor(
       .list()
       .singleOrNull()
 
-  private fun onePieceTomeOne(): Edition = Edition(
-    id = EditionId.new(),
-    isbn = isbnOf(ONE_PIECE),
-    kind = MANGA,
-    title = "Romance dawn",
-    subtitle = null,
-    contributions = Contributions.of(emptyList()),
-    series = null,
-    collection = null,
-    publisher = null,
-    publicationYear = null,
-    language = null,
-    pageCount = null,
-    summary = null,
-    coverUrl = null,
-  )
+  private fun onePieceTomeOne(): Edition =
+    Edition(
+      id = EditionId.new(),
+      isbn = isbnOf(ONE_PIECE),
+      kind = MANGA,
+      title = "Romance dawn",
+      subtitle = null,
+      contributions = Contributions.of(emptyList()),
+      series = null,
+      collection = null,
+      publisher = null,
+      publicationYear = null,
+      language = null,
+      pageCount = null,
+      summary = null,
+      coverUrl = null,
+    )
 }

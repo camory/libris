@@ -9,6 +9,7 @@ value class CoverName(val value: String) {
   companion object {
     private val PATTERN = Regex("[0-9a-f]{64}")
 
-    fun of(text: String): CoverName? = text.takeIf { PATTERN.matches(it) }?.let { CoverName(it) }
+    fun of(text: String): CoverName? =
+      text.takeIf { PATTERN.matches(it) }?.let { CoverName(it) }
   }
 }

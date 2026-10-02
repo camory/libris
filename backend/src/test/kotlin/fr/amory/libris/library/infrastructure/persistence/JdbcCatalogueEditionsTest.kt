@@ -40,8 +40,7 @@ class JdbcCatalogueEditionsTest @Autowired constructor(
   private val copies: JdbcCopyRepository,
   private val editions: JdbcEditionRepository,
   private val bookshelves: JdbcBookshelfRepository,
-  private val readers: JdbcReaderRepository,
-) {
+  private val readers: JdbcReaderRepository) {
   private val lea = readerNamed("lea", "Léa")
   private val tom = readerNamed("tom", "Tom")
   private val leasBookshelf = bookshelfOwnedBy(lea)
@@ -299,23 +298,23 @@ class JdbcCatalogueEditionsTest @Autowired constructor(
     title: String,
     seriesName: String? = null,
     volumeNumber: Int? = null,
-    id: EditionId = EditionId.new(),
-  ): Edition = Edition(
-    id = id,
-    isbn = null,
-    kind = BD,
-    title = title,
-    subtitle = null,
-    contributions = Contributions.of(emptyList()),
-    series = seriesName?.let { SeriesEntry(it, volumeNumber) },
-    collection = null,
-    publisher = null,
-    publicationYear = null,
-    language = null,
-    pageCount = null,
-    summary = null,
-    coverUrl = null,
-  ).also(editions::insert)
+    id: EditionId = EditionId.new()): Edition =
+    Edition(
+      id = id,
+      isbn = null,
+      kind = BD,
+      title = title,
+      subtitle = null,
+      contributions = Contributions.of(emptyList()),
+      series = seriesName?.let { SeriesEntry(it, volumeNumber) },
+      collection = null,
+      publisher = null,
+      publicationYear = null,
+      language = null,
+      pageCount = null,
+      summary = null,
+      coverUrl = null,
+    ).also(editions::insert)
 
   private fun romansHeldOn(bookshelf: Bookshelf, numbers: IntRange): Map<Int, Edition> =
     numbers.reversed().associateWith { heldOn(bookshelf, roman(it)) }

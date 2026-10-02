@@ -67,8 +67,7 @@ private val ROMANCE_DAWN_ID = EditionId(UUID.fromString("01991c3a-5b7e-7c1d-8f2a
 class IsbnControllerTest @Autowired constructor(
   private val client: RestTestClient,
   private val welcomeReader: WelcomeReader,
-  private val lookupIsbnForReader: LookupIsbnForReader,
-) {
+  private val lookupIsbnForReader: LookupIsbnForReader) {
   @Test
   fun `an edition the house holds is answered with its id`() {
     // Given

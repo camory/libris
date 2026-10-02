@@ -18,36 +18,37 @@ data class EditionPreview(
   val publicationYear: Int?,
   val language: String?,
   val pageCount: Int?,
-  val summary: String?,
-) {
-  fun merge(other: EditionPreview): EditionPreview = copy(
-    subtitle = subtitle ?: other.subtitle,
-    contributions = if (contributions.isEmpty()) other.contributions else contributions,
-    series = series ?: other.series,
-    collection = collection ?: other.collection,
-    publisher = publisher ?: other.publisher,
-    publicationYear = publicationYear ?: other.publicationYear,
-    language = language ?: other.language,
-    pageCount = pageCount ?: other.pageCount,
-    summary = summary ?: other.summary,
-  )
+  val summary: String?) {
+  fun merge(other: EditionPreview): EditionPreview =
+    copy(
+      subtitle = subtitle ?: other.subtitle,
+      contributions = if (contributions.isEmpty()) other.contributions else contributions,
+      series = series ?: other.series,
+      collection = collection ?: other.collection,
+      publisher = publisher ?: other.publisher,
+      publicationYear = publicationYear ?: other.publicationYear,
+      language = language ?: other.language,
+      pageCount = pageCount ?: other.pageCount,
+      summary = summary ?: other.summary,
+    )
 
   companion object {
-    fun of(edition: Edition): EditionPreview? = edition.isbn?.let {
-      EditionPreview(
-        isbn = it,
-        kind = edition.kind,
-        title = edition.title,
-        subtitle = edition.subtitle,
-        contributions = edition.contributions,
-        series = edition.series,
-        collection = edition.collection,
-        publisher = edition.publisher,
-        publicationYear = edition.publicationYear,
-        language = edition.language,
-        pageCount = edition.pageCount,
-        summary = edition.summary,
-      )
-    }
+    fun of(edition: Edition): EditionPreview? =
+      edition.isbn?.let {
+        EditionPreview(
+          isbn = it,
+          kind = edition.kind,
+          title = edition.title,
+          subtitle = edition.subtitle,
+          contributions = edition.contributions,
+          series = edition.series,
+          collection = edition.collection,
+          publisher = edition.publisher,
+          publicationYear = edition.publicationYear,
+          language = edition.language,
+          pageCount = edition.pageCount,
+          summary = edition.summary,
+        )
+      }
   }
 }

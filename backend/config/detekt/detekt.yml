@@ -24,10 +24,13 @@ formatting:
   NoMultipleSpaces:
     active: false
   ParameterListWrapping:
-    indentSize: 2
+    active: false
   ParameterWrapping:
     indentSize: 2
   PropertyWrapping:
     indentSize: 2
+  TrailingCommaOnDeclarationSite:
+    active: true
+    useTrailingCommaOnDeclarationSite: false
   Wrapping:
-    indentSize: 2
+    active: false

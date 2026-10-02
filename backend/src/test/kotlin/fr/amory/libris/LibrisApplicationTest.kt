@@ -14,8 +14,7 @@ import java.time.Duration.ofSeconds
 @AutoConfigureRestTestClient
 class LibrisApplicationTest @Autowired constructor(
   private val client: RestTestClient,
-  private val sources: SourcesProperties,
-) {
+  private val sources: SourcesProperties) {
   @Test
   fun `the application starts and reports itself healthy`() {
     client.get()

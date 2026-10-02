@@ -47,8 +47,7 @@ private val JULIETTE = readerNamed(
 class MeControllerTest @Autowired constructor(
   private val client: RestTestClient,
   private val welcomeReader: WelcomeReader,
-  private val findDefaultBookshelf: FindDefaultBookshelf,
-) {
+  private val findDefaultBookshelf: FindDefaultBookshelf) {
   @Test
   fun `a reader of the admin group is an admin`() {
     // Given

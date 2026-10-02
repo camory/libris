@@ -49,19 +49,19 @@ class NewBookRequestTest {
     isbn13: String = "9782723488525",
     title: String = "Romance dawn",
     author: String = "Eiichirō Oda",
-    series: String = "One Piece",
-  ) = NewBookRequest(
-    isbn13 = isbn13,
-    kind = MANGA,
-    title = title,
-    subtitle = null,
-    authors = listOf(NewAuthorRequest(author, WRITER)),
-    series = NewSeriesRequest(series, 1),
-    collection = null,
-    publisher = "Glénat",
-    publicationYear = 2013,
-    language = "fr",
-    pageCount = 207,
-    summary = null,
-  )
+    series: String = "One Piece") =
+    NewBookRequest(
+      isbn13 = isbn13,
+      kind = MANGA,
+      title = title,
+      subtitle = null,
+      authors = listOf(NewAuthorRequest(author, WRITER)),
+      series = NewSeriesRequest(series, 1),
+      collection = null,
+      publisher = "Glénat",
+      publicationYear = 2013,
+      language = "fr",
+      pageCount = 207,
+      summary = null,
+    )
 }

@@ -9,6 +9,7 @@ class Cover(val mediaType: String, val bytes: ByteArray) {
     fun of(mediaType: String, bytes: ByteArray): Cover? =
       mediaType.takeIf { isImage(it) }?.let { Cover(it, bytes) }
 
-    private fun isImage(mediaType: String): Boolean = mediaType.startsWith("image/")
+    private fun isImage(mediaType: String): Boolean =
+      mediaType.startsWith("image/")
   }
 }

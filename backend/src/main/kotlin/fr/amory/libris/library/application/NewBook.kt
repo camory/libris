@@ -17,8 +17,7 @@ data class NewBook(
   val publicationYear: Int?,
   val language: String?,
   val pageCount: Int?,
-  val summary: String?,
-) {
+  val summary: String?) {
   init {
     require(title.isNotBlank()) { "a new book needs a title" }
   }
@@ -37,22 +36,22 @@ data class NewBook(
       publicationYear: Int?,
       language: String?,
       pageCount: Int?,
-      summary: String?,
-    ): NewBook? = title.takeUnless { it.isBlank() }?.let {
-      NewBook(
-        isbn = isbn,
-        kind = kind,
-        title = it,
-        subtitle = subtitle,
-        contributions = contributions,
-        series = series,
-        collection = collection,
-        publisher = publisher,
-        publicationYear = publicationYear,
-        language = language,
-        pageCount = pageCount,
-        summary = summary,
-      )
-    }
+      summary: String?): NewBook? =
+      title.takeUnless { it.isBlank() }?.let {
+        NewBook(
+          isbn = isbn,
+          kind = kind,
+          title = it,
+          subtitle = subtitle,
+          contributions = contributions,
+          series = series,
+          collection = collection,
+          publisher = publisher,
+          publicationYear = publicationYear,
+          language = language,
+          pageCount = pageCount,
+          summary = summary,
+        )
+      }
   }
 }

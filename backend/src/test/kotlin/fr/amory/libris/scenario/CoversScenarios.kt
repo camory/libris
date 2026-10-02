@@ -39,8 +39,7 @@ class CoversScenarios @Autowired constructor(
   private val clock: MutableClock,
   @Qualifier("bnf") bnfServer: WireMockServer,
   @Qualifier("openLibrary") openLibraryServer: WireMockServer,
-  @Qualifier("inventaire") inventaireServer: WireMockServer,
-) {
+  @Qualifier("inventaire") inventaireServer: WireMockServer) {
   private val bnf = BnfStubs(bnfServer)
   private val openLibrary = OpenLibraryStubs(openLibraryServer)
   private val inventaire = InventaireStubs(inventaireServer)
@@ -342,11 +341,12 @@ class CoversScenarios @Autowired constructor(
     JsonPath.read<List<String>>(body, "$.covers[*].source") shouldBe emptyList()
   }
 
-  private fun ask(reader: Map<String, List<String>>, isbn: String): RestTestClient.ResponseSpec = http.get()
-    .uri("/api/v1/isbn/$isbn")
-    .headers { it.putAll(reader) }
-    .accept(APPLICATION_JSON, APPLICATION_PROBLEM_JSON)
-    .exchange()
+  private fun ask(reader: Map<String, List<String>>, isbn: String): RestTestClient.ResponseSpec =
+    http.get()
+      .uri("/api/v1/isbn/$isbn")
+      .headers { it.putAll(reader) }
+      .accept(APPLICATION_JSON, APPLICATION_PROBLEM_JSON)
+      .exchange()
 
   private fun add(reader: Map<String, List<String>>, bookshelf: String, book: String): RestTestClient.ResponseSpec =
     http.post()
@@ -357,27 +357,30 @@ class CoversScenarios @Autowired constructor(
       .body(book)
       .exchange()
 
-  private fun catalogue(reader: Map<String, List<String>>): RestTestClient.ResponseSpec = http.get()
-    .uri("/api/v1/books")
-    .headers { it.putAll(reader) }
-    .accept(APPLICATION_JSON, APPLICATION_PROBLEM_JSON)
-    .exchange()
+  private fun catalogue(reader: Map<String, List<String>>): RestTestClient.ResponseSpec =
+    http.get()
+      .uri("/api/v1/books")
+      .headers { it.putAll(reader) }
+      .accept(APPLICATION_JSON, APPLICATION_PROBLEM_JSON)
+      .exchange()
 
-  private fun picture(reader: Map<String, List<String>>, path: String): RestTestClient.ResponseSpec = http.get()
-    .uri(path)
-    .headers { it.putAll(reader) }
-    .accept(parseMediaType("image/*"), APPLICATION_PROBLEM_JSON)
-    .exchange()
+  private fun picture(reader: Map<String, List<String>>, path: String): RestTestClient.ResponseSpec =
+    http.get()
+      .uri(path)
+      .headers { it.putAll(reader) }
+      .accept(parseMediaType("image/*"), APPLICATION_PROBLEM_JSON)
+      .exchange()
 
   private fun servedAs(reader: Map<String, List<String>>, cover: String, type: MediaType) {
     picture(reader, cover).expectStatus().isOk().expectHeader().contentType(type)
   }
 
-  private fun me(reader: Map<String, List<String>>): RestTestClient.ResponseSpec = http.get()
-    .uri("/api/v1/me")
-    .headers { it.putAll(reader) }
-    .accept(APPLICATION_JSON)
-    .exchange()
+  private fun me(reader: Map<String, List<String>>): RestTestClient.ResponseSpec =
+    http.get()
+      .uri("/api/v1/me")
+      .headers { it.putAll(reader) }
+      .accept(APPLICATION_JSON)
+      .exchange()
 
   private fun defaultBookshelfOf(reader: Map<String, List<String>>): String =
     JsonPath.read(bodyOf(me(reader).expectStatus().isOk()), "$.defaultBookshelf.id")
@@ -417,12 +420,13 @@ class CoversScenarios @Autowired constructor(
     sources.forEach { it.verify(0, anyRequestedFor(anyUrl())) }
   }
 
-  private fun reader(username: String, name: String) = mapOf(
-    "Remote-User" to listOf(username),
-    "Remote-Name" to listOf(name),
-    "Remote-Email" to listOf("$username@amory.fr"),
-    "Remote-Groups" to listOf("family"),
-  )
+  private fun reader(username: String, name: String) =
+    mapOf(
+      "Remote-User" to listOf(username),
+      "Remote-Name" to listOf(name),
+      "Remote-Email" to listOf("$username@amory.fr"),
+      "Remote-Groups" to listOf("family"),
+    )
 
   private companion object {
     const val ONE_PIECE_1 = "9782723488525"
@@ -443,29 +447,32 @@ class CoversScenarios @Autowired constructor(
     val TALL_JPEG = recordedBytes("covers/tall.jpg")
     val SMALL_WEBP = recordedBytes("covers/small.webp")
 
-    fun onePiece1(coverSource: String?) = onePiece(ONE_PIECE_1, "Romance dawn", 1, coverSource)
+    fun onePiece1(coverSource: String?) =
+      onePiece(ONE_PIECE_1, "Romance dawn", 1, coverSource)
 
-    fun onePiece(isbn: String, title: String, volume: Int, coverSource: String?) = edition(
-      isbn = isbn,
-      kind = "MANGA",
-      title = title,
-      authorsAndSeries = """
+    fun onePiece(isbn: String, title: String, volume: Int, coverSource: String?) =
+      edition(
+        isbn = isbn,
+        kind = "MANGA",
+        title = title,
+        authorsAndSeries = """
                 "authors": [{ "name": "Eiichirō Oda", "role": "WRITER" }, { "name": "Eiichirō Oda", "role": "ARTIST" }],
                 "series": { "name": "One piece", "volumeNumber": $volume }
-      """.trimIndent(),
-      coverSource = coverSource,
-    )
+        """.trimIndent(),
+        coverSource = coverSource,
+      )
 
-    fun lesNeronia(coverSource: String?) = edition(
-      isbn = LES_NERONIA,
-      kind = "BD",
-      title = "Les Neronia",
-      authorsAndSeries = """
+    fun lesNeronia(coverSource: String?) =
+      edition(
+        isbn = LES_NERONIA,
+        kind = "BD",
+        title = "Les Neronia",
+        authorsAndSeries = """
                 "authors": [{ "name": "Jean Dufaux", "role": "WRITER" }, { "name": "Jérémy", "role": "ARTIST" }],
                 "series": null
-      """.trimIndent(),
-      coverSource = coverSource,
-    )
+        """.trimIndent(),
+        coverSource = coverSource,
+      )
 
     fun edition(isbn: String, kind: String, title: String, authorsAndSeries: String, coverSource: String?) =
       """

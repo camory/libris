@@ -16,13 +16,13 @@ class BrowseCatalogue(
   private val catalogueEditions: CatalogueEditions,
   private val bookshelves: BookshelfRepository,
   private val copies: CopyRepository,
-  private val editions: EditionRepository,
-) {
+  private val editions: EditionRepository) {
   operator fun invoke(readerId: ReaderId, after: EditionId?): CataloguePage {
     val page = catalogueEditions.findPage(readerId, after, PAGE_SIZE)
     val readersBookshelves = bookshelves.findByMember(readerId).associateBy { it.id }
     val editionsById = editions.findByIds(page.editionIds).associateBy { it.id }
-    val copiesByEdition = copies.findByEditionIds(page.editionIds)
+    val copiesByEdition = copies
+      .findByEditionIds(page.editionIds)
       .filter { it.bookshelfId in readersBookshelves }
       .groupBy { it.editionId }
     return CataloguePage(

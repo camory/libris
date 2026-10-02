@@ -26,8 +26,7 @@ private const val ONE_PIECE_TOME_TWO = "9782723489898"
 @Import(JdbcEditionRepository::class)
 class JdbcEditionRepositoryTest @Autowired constructor(
   private val editions: JdbcEditionRepository,
-  private val jdbcClient: JdbcClient,
-) {
+  private val jdbcClient: JdbcClient) {
   @Test
   fun `an inserted edition is read back whole by its ISBN-13`() {
     // Given
@@ -147,35 +146,37 @@ class JdbcEditionRepositoryTest @Autowired constructor(
   private fun rowsOf(table: String): Int =
     jdbcClient.sql("SELECT COUNT(*) FROM $table").query(Int::class.java).single()
 
-  private fun bare(edition: Edition): Edition = edition.copy(
-    subtitle = null,
-    contributions = Contributions.of(emptyList()),
-    series = null,
-    collection = null,
-    publisher = null,
-    publicationYear = null,
-    language = null,
-    pageCount = null,
-    summary = null,
-    coverUrl = null,
-  )
+  private fun bare(edition: Edition): Edition =
+    edition.copy(
+      subtitle = null,
+      contributions = Contributions.of(emptyList()),
+      series = null,
+      collection = null,
+      publisher = null,
+      publicationYear = null,
+      language = null,
+      pageCount = null,
+      summary = null,
+      coverUrl = null,
+    )
 
-  private fun onePieceTomeOne(): Edition = Edition(
-    id = EditionId.new(),
-    isbn = isbnOf(ONE_PIECE),
-    kind = MANGA,
-    title = "Romance dawn",
-    subtitle = "À l'aube d'une grande aventure",
-    contributions = Contributions.of(
-      listOf(Contribution("Akiko Indei", TRANSLATOR), Contribution("Eiichiro Oda", WRITER)),
-    ),
-    series = SeriesEntry("One piece", 1),
-    collection = "Shonen manga",
-    publisher = "Glénat",
-    publicationYear = 2013,
-    language = "fr",
-    pageCount = 208,
-    summary = "Luffy prend la mer pour devenir le roi des pirates.",
-    coverUrl = "https://covers.libris.test/9782723488525.jpg",
-  )
+  private fun onePieceTomeOne(): Edition =
+    Edition(
+      id = EditionId.new(),
+      isbn = isbnOf(ONE_PIECE),
+      kind = MANGA,
+      title = "Romance dawn",
+      subtitle = "À l'aube d'une grande aventure",
+      contributions = Contributions.of(
+        listOf(Contribution("Akiko Indei", TRANSLATOR), Contribution("Eiichiro Oda", WRITER)),
+      ),
+      series = SeriesEntry("One piece", 1),
+      collection = "Shonen manga",
+      publisher = "Glénat",
+      publicationYear = 2013,
+      language = "fr",
+      pageCount = 208,
+      summary = "Luffy prend la mer pour devenir le roi des pirates.",
+      coverUrl = "https://covers.libris.test/9782723488525.jpg",
+    )
 }

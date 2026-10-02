@@ -20,8 +20,7 @@ import org.springframework.dao.DataIntegrityViolationException
 @Import(JdbcBookshelfRepository::class, JdbcReaderRepository::class)
 class JdbcBookshelfRepositoryTest @Autowired constructor(
   private val bookshelves: JdbcBookshelfRepository,
-  private val readers: JdbcReaderRepository,
-) {
+  private val readers: JdbcReaderRepository) {
   @Test
   fun `an inserted bookshelf is read back whole, its members included`() {
     // Given

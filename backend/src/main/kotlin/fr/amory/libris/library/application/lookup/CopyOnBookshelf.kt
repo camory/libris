@@ -6,5 +6,4 @@ import fr.amory.libris.library.domain.copy.CopyId
 data class CopyOnBookshelf(
   val copyId: CopyId,
   val bookshelfId: BookshelfId,
-  val bookshelfName: String,
-)
+  val bookshelfName: String)

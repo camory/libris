@@ -10,8 +10,7 @@ import java.util.Optional
 
 @ScenarioTest
 class CatalogueScenarios @Autowired constructor(
-  private val http: RestTestClient,
-) {
+  private val http: RestTestClient) {
   @Test
   fun `S1 The catalogue lists the house's editions`() {
     // Given
@@ -91,11 +90,12 @@ class CatalogueScenarios @Autowired constructor(
       .accept(APPLICATION_JSON, APPLICATION_PROBLEM_JSON)
       .exchange()
 
-  private fun me(reader: Map<String, List<String>>): RestTestClient.ResponseSpec = http.get()
-    .uri("/api/v1/me")
-    .headers { it.putAll(reader) }
-    .accept(APPLICATION_JSON)
-    .exchange()
+  private fun me(reader: Map<String, List<String>>): RestTestClient.ResponseSpec =
+    http.get()
+      .uri("/api/v1/me")
+      .headers { it.putAll(reader) }
+      .accept(APPLICATION_JSON)
+      .exchange()
 
   private fun add(reader: Map<String, List<String>>, bookshelf: String, book: String): RestTestClient.ResponseSpec =
     http.post()
@@ -112,12 +112,13 @@ class CatalogueScenarios @Autowired constructor(
   private fun bodyOf(response: RestTestClient.ResponseSpec): String =
     requireNotNull(response.expectBody(String::class.java).returnResult().responseBody)
 
-  private fun reader(username: String, name: String) = mapOf(
-    "Remote-User" to listOf(username),
-    "Remote-Name" to listOf(name),
-    "Remote-Email" to listOf("$username@amory.fr"),
-    "Remote-Groups" to listOf("family"),
-  )
+  private fun reader(username: String, name: String) =
+    mapOf(
+      "Remote-User" to listOf(username),
+      "Remote-Name" to listOf(name),
+      "Remote-Email" to listOf("$username@amory.fr"),
+      "Remote-Groups" to listOf("family"),
+    )
 
   private companion object {
     val ONE_PIECE_1 = manga("9782723488525", "Romance dawn", "One piece", 1)
@@ -128,41 +129,45 @@ class CatalogueScenarios @Autowired constructor(
     val ASTERIX_ET_SES_AMIS = bd("9782226174208", "Astérix et ses amis", "Astérix", null)
     val EMILE = book("9782013224895", "Émile et les détectives")
 
-    fun manga(isbn: String, title: String, series: String, volume: Int) = edition(
-      isbn = isbn,
-      kind = "MANGA",
-      title = title,
-      authors = """
+    fun manga(isbn: String, title: String, series: String, volume: Int) =
+      edition(
+        isbn = isbn,
+        kind = "MANGA",
+        title = title,
+        authors = """
                 [{ "name": "Eiichirō Oda", "role": "WRITER" }, { "name": "Eiichirō Oda", "role": "ARTIST" }]
-      """.trimIndent(),
-      series = """{ "name": "$series", "volumeNumber": $volume }""",
-    )
+        """.trimIndent(),
+        series = """{ "name": "$series", "volumeNumber": $volume }""",
+      )
 
-    fun bd(isbn: String, title: String, series: String, volume: Int?) = edition(
-      isbn = isbn,
-      kind = "BD",
-      title = title,
-      authors = """
+    fun bd(isbn: String, title: String, series: String, volume: Int?) =
+      edition(
+        isbn = isbn,
+        kind = "BD",
+        title = title,
+        authors = """
                 [{ "name": "René Goscinny", "role": "WRITER" }, { "name": "Albert Uderzo", "role": "ARTIST" }]
-      """.trimIndent(),
-      series = """{ "name": "$series", "volumeNumber": $volume }""",
-    )
+        """.trimIndent(),
+        series = """{ "name": "$series", "volumeNumber": $volume }""",
+      )
 
-    fun book(isbn: String, title: String) = edition(
-      isbn = isbn,
-      kind = "BOOK",
-      title = title,
-      authors = """[{ "name": "Erich Kästner", "role": "WRITER" }]""",
-      series = "null",
-    )
+    fun book(isbn: String, title: String) =
+      edition(
+        isbn = isbn,
+        kind = "BOOK",
+        title = title,
+        authors = """[{ "name": "Erich Kästner", "role": "WRITER" }]""",
+        series = "null",
+      )
 
-    fun roman(number: Int) = edition(
-      isbn = isbn(number),
-      kind = "BOOK",
-      title = "Roman " + number.toString().padStart(2, '0'),
-      authors = """[{ "name": "Anonyme", "role": "WRITER" }]""",
-      series = "null",
-    )
+    fun roman(number: Int) =
+      edition(
+        isbn = isbn(number),
+        kind = "BOOK",
+        title = "Roman " + number.toString().padStart(2, '0'),
+        authors = """[{ "name": "Anonyme", "role": "WRITER" }]""",
+        series = "null",
+      )
 
     fun isbn(number: Int): String {
       val body = "978200" + number.toString().padStart(6, '0')

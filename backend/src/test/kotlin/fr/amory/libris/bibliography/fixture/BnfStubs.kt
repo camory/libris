@@ -12,11 +12,14 @@ import com.github.tomakehurst.wiremock.client.WireMock.urlPathEqualTo
 class BnfStubs(private val server: WireMockServer) {
   val baseUrl: String get() = server.baseUrl()
 
-  fun knows(isbn: String) = answers(isbn, recorded("bnf/$isbn.xml"))
+  fun knows(isbn: String) =
+    answers(isbn, recorded("bnf/$isbn.xml"))
 
-  fun partiallyKnows(isbn: String) = answers(isbn, recorded("bnf/$isbn-without-pages-and-year.xml"))
+  fun partiallyKnows(isbn: String) =
+    answers(isbn, recorded("bnf/$isbn-without-pages-and-year.xml"))
 
-  fun doesNotKnow(isbn: String) = answers(isbn, recorded("bnf/$isbn.xml"))
+  fun doesNotKnow(isbn: String) =
+    answers(isbn, recorded("bnf/$isbn.xml"))
 
   fun answersTooLate(isbn: String) {
     server.stubFor(
@@ -26,7 +29,8 @@ class BnfStubs(private val server: WireMockServer) {
     )
   }
 
-  fun answersUnreadably(isbn: String) = answers(isbn, UNREADABLE)
+  fun answersUnreadably(isbn: String) =
+    answers(isbn, UNREADABLE)
 
   fun fails() {
     server.stubFor(get(urlPathEqualTo(SRU)).willReturn(serverError()))
@@ -42,7 +46,8 @@ class BnfStubs(private val server: WireMockServer) {
     server.stubFor(get(urlPathEqualTo(COVER)).willReturn(serverError()))
   }
 
-  fun coverRequests(): Int = server.findAll(getRequestedFor(urlPathEqualTo(COVER))).size
+  fun coverRequests(): Int =
+    server.findAll(getRequestedFor(urlPathEqualTo(COVER))).size
 
   fun answers(isbn: String, envelope: String) {
     server.stubFor(

@@ -119,5 +119,6 @@ private class ReadersLosingTheRace(private val winner: Reader) : ReaderRepositor
     throw DuplicateUsernameException(reader.username)
   }
 
-  override fun findByUsername(username: String): Reader? = winner.takeIf { raceLost }
+  override fun findByUsername(username: String): Reader? =
+    winner.takeIf { raceLost }
 }

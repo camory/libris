@@ -14,8 +14,7 @@ import org.springframework.transaction.support.TransactionOperations
 class WelcomeReader(
   private val readers: ReaderRepository,
   private val bookshelves: BookshelfRepository,
-  private val transactions: TransactionOperations,
-) {
+  private val transactions: TransactionOperations) {
   operator fun invoke(username: String, email: String, displayName: String): Reader {
     readers.findByUsername(username)?.let { return it }
     return try {

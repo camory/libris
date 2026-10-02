@@ -21,8 +21,7 @@ class AddBookToBookshelf(
   private val editions: EditionRepository,
   private val copies: CopyRepository,
   private val bookshelves: BookshelfRepository,
-  private val transactions: TransactionOperations,
-) {
+  private val transactions: TransactionOperations) {
   operator fun invoke(readerId: ReaderId, bookshelfId: BookshelfId, book: NewBook): AddBookResult {
     val bookshelf = bookshelves.findById(bookshelfId)?.takeIf { it.hasMember(readerId) }
     return when {
@@ -43,20 +42,21 @@ class AddBookToBookshelf(
     return Added(copy, bookshelf)
   }
 
-  private fun newEdition(book: NewBook): Edition = Edition(
-    id = EditionId.new(),
-    isbn = book.isbn,
-    kind = book.kind,
-    title = book.title,
-    subtitle = book.subtitle,
-    contributions = book.contributions,
-    series = book.series,
-    collection = book.collection,
-    publisher = book.publisher,
-    publicationYear = book.publicationYear,
-    language = book.language,
-    pageCount = book.pageCount,
-    summary = book.summary,
-    coverUrl = null,
-  )
+  private fun newEdition(book: NewBook): Edition =
+    Edition(
+      id = EditionId.new(),
+      isbn = book.isbn,
+      kind = book.kind,
+      title = book.title,
+      subtitle = book.subtitle,
+      contributions = book.contributions,
+      series = book.series,
+      collection = book.collection,
+      publisher = book.publisher,
+      publicationYear = book.publicationYear,
+      language = book.language,
+      pageCount = book.pageCount,
+      summary = book.summary,
+      coverUrl = null,
+    )
 }

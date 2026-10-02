@@ -31,18 +31,15 @@ private const val SOURCES_UNAVAILABLE_PROBLEM = "/problems/sources-unavailable"
 
 data class IsbnAuthorResponse(
   val name: String,
-  val role: ContributionRole,
-)
+  val role: ContributionRole)
 
 data class IsbnSeriesResponse(
   val name: String,
-  val volumeNumber: Int?,
-)
+  val volumeNumber: Int?)
 
 data class CoverCandidateResponse(
   val source: String,
-  val url: String,
-)
+  val url: String)
 
 data class IsbnResponse(
   val id: String?,
@@ -60,8 +57,7 @@ data class IsbnResponse(
   val summary: String?,
   val coverUrl: String?,
   val covers: List<CoverCandidateResponse>,
-  val copies: List<CopyResponse>,
-)
+  val copies: List<CopyResponse>)
 
 @RestController
 class IsbnController(private val lookupIsbnForReader: LookupIsbnForReader) {
@@ -77,44 +73,43 @@ class IsbnController(private val lookupIsbnForReader: LookupIsbnForReader) {
     }
   }
 
-  private fun notAnIsbn(): ProblemDetail = problem(BAD_REQUEST, VALIDATION_PROBLEM).apply {
-    setProperty("errors", listOf(ValidationErrorResponse(field = "isbn", code = "not-an-isbn")))
-  }
+  private fun notAnIsbn(): ProblemDetail =
+    problem(BAD_REQUEST, VALIDATION_PROBLEM).apply {
+      setProperty("errors", listOf(ValidationErrorResponse(field = "isbn", code = "not-an-isbn")))
+    }
 
-  private fun responseOf(
-    id: EditionId?,
-    preview: EditionPreview,
-    copies: List<CopyOnBookshelf>,
-  ): IsbnResponse = IsbnResponse(
-    id = id?.value?.toString(),
-    isbn13 = preview.isbn.digits,
-    kind = preview.kind,
-    title = preview.title,
-    subtitle = preview.subtitle,
-    authors = preview.contributions.map { IsbnAuthorResponse(it.name, it.role) },
-    series = preview.series?.let { IsbnSeriesResponse(it.name, it.volumeNumber) },
-    collection = preview.collection,
-    publisher = preview.publisher,
-    publicationYear = preview.publicationYear,
-    language = preview.language,
-    pageCount = preview.pageCount,
-    summary = preview.summary,
-    coverUrl = null,
-    covers = emptyList(),
-    copies = copies.map { responseOf(it) },
-  )
+  private fun responseOf(id: EditionId?, preview: EditionPreview, copies: List<CopyOnBookshelf>): IsbnResponse =
+    IsbnResponse(
+      id = id?.value?.toString(),
+      isbn13 = preview.isbn.digits,
+      kind = preview.kind,
+      title = preview.title,
+      subtitle = preview.subtitle,
+      authors = preview.contributions.map { IsbnAuthorResponse(it.name, it.role) },
+      series = preview.series?.let { IsbnSeriesResponse(it.name, it.volumeNumber) },
+      collection = preview.collection,
+      publisher = preview.publisher,
+      publicationYear = preview.publicationYear,
+      language = preview.language,
+      pageCount = preview.pageCount,
+      summary = preview.summary,
+      coverUrl = null,
+      covers = emptyList(),
+      copies = copies.map { responseOf(it) },
+    )
 
   private fun responseOf(
     preview: EditionPreview,
     covers: CoverCandidates,
-    copies: List<CopyOnBookshelf>,
-  ): IsbnResponse = responseOf(null, preview, copies).copy(
-    coverUrl = covers.firstOrNull()?.url,
-    covers = covers.map { CoverCandidateResponse(it.source.label, it.url) },
-  )
+    copies: List<CopyOnBookshelf>): IsbnResponse =
+    responseOf(null, preview, copies).copy(
+      coverUrl = covers.firstOrNull()?.url,
+      covers = covers.map { CoverCandidateResponse(it.source.label, it.url) },
+    )
 
-  private fun responseOf(copy: CopyOnBookshelf): CopyResponse = CopyResponse(
-    id = copy.copyId.value.toString(),
-    bookshelf = BookshelfResponse(copy.bookshelfId.value.toString(), copy.bookshelfName),
-  )
+  private fun responseOf(copy: CopyOnBookshelf): CopyResponse =
+    CopyResponse(
+      id = copy.copyId.value.toString(),
+      bookshelf = BookshelfResponse(copy.bookshelfId.value.toString(), copy.bookshelfName),
+    )
 }

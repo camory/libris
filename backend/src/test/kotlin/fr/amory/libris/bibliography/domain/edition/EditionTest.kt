@@ -11,20 +11,21 @@ class EditionTest {
     shouldThrow<IllegalArgumentException> { edition(title = " ") }
   }
 
-  private fun edition(title: String): Edition = Edition(
-    id = EditionId.new(),
-    isbn = null,
-    kind = MANGA,
-    title = title,
-    subtitle = null,
-    contributions = Contributions.of(emptyList()),
-    series = null,
-    collection = null,
-    publisher = null,
-    publicationYear = null,
-    language = null,
-    pageCount = null,
-    summary = null,
-    coverUrl = null,
-  )
+  private fun edition(title: String): Edition =
+    Edition(
+      id = EditionId.new(),
+      isbn = null,
+      kind = MANGA,
+      title = title,
+      subtitle = null,
+      contributions = Contributions.of(emptyList()),
+      series = null,
+      collection = null,
+      publisher = null,
+      publicationYear = null,
+      language = null,
+      pageCount = null,
+      summary = null,
+      coverUrl = null,
+    )
 }

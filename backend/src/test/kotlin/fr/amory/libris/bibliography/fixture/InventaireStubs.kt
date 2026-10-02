@@ -44,13 +44,15 @@ class InventaireStubs(private val server: WireMockServer) {
     )
   }
 
-  fun doesNotKnow(isbn: String) = entityAnswers(isbn, recorded("inventaire/$isbn.json"))
+  fun doesNotKnow(isbn: String) =
+    entityAnswers(isbn, recorded("inventaire/$isbn.json"))
 
   fun fails() {
     server.stubFor(get(urlPathEqualTo(ENTITIES)).willReturn(serverError()))
   }
 
-  fun pictureRequests(): Int = server.findAll(getRequestedFor(urlPathMatching(picturePath(".*")))).size
+  fun pictureRequests(): Int =
+    server.findAll(getRequestedFor(urlPathMatching(picturePath(".*")))).size
 
   private fun entityAnswers(isbn: String, entity: String) {
     server.stubFor(
@@ -64,7 +66,8 @@ class InventaireStubs(private val server: WireMockServer) {
   private fun hashOf(entity: String): String =
     JsonPath.read<List<String>>(entity, "$.entities.*.claims['invp:P2'][0]").single()
 
-  private fun picturePath(hash: String) = "/img/entities/([0-9]+x[0-9]+/)?$hash"
+  private fun picturePath(hash: String) =
+    "/img/entities/([0-9]+x[0-9]+/)?$hash"
 
   private fun json(body: String): ResponseDefinitionBuilder =
     ok().withHeader("Content-Type", "application/json").withBody(body)

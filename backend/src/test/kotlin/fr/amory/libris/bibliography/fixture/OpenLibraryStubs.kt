@@ -83,12 +83,14 @@ class OpenLibraryStubs(private val server: WireMockServer) {
     )
   }
 
-  fun coverRequests(isbn: String): Int = server.findAll(getRequestedFor(urlPathEqualTo(cover(isbn)))).size
+  fun coverRequests(isbn: String): Int =
+    server.findAll(getRequestedFor(urlPathEqualTo(cover(isbn)))).size
 
   fun coverRequestTimes(isbn: String): List<java.util.Date> =
     server.findAll(getRequestedFor(urlPathEqualTo(cover(isbn)))).map { it.loggedDate }
 
-  private fun cover(isbn: String) = "/b/isbn/$isbn-L.jpg"
+  private fun cover(isbn: String) =
+    "/b/isbn/$isbn-L.jpg"
 
   private fun jpeg(body: ByteArray): ResponseDefinitionBuilder =
     ok().withHeader("Content-Type", "image/jpeg").withBody(body)

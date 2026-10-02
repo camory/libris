@@ -14,7 +14,9 @@ class BookshelvesInMemory : BookshelfRepository {
     bookshelves += bookshelf
   }
 
-  override fun findById(id: BookshelfId): Bookshelf? = bookshelves.find { it.id == id }
+  override fun findById(id: BookshelfId): Bookshelf? =
+    bookshelves.find { it.id == id }
 
-  override fun findByMember(readerId: ReaderId): List<Bookshelf> = bookshelves.filter { it.hasMember(readerId) }
+  override fun findByMember(readerId: ReaderId): List<Bookshelf> =
+    bookshelves.filter { it.hasMember(readerId) }
 }

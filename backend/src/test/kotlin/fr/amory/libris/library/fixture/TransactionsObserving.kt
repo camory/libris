@@ -7,8 +7,7 @@ import org.springframework.transaction.support.TransactionOperations
 
 data class Transaction<S>(
   val before: S,
-  val after: S,
-)
+  val after: S)
 
 class TransactionsObserving<S>(private val observe: () -> S) : TransactionOperations {
   private val transactions = mutableListOf<Transaction<S>>()
@@ -22,5 +21,6 @@ class TransactionsObserving<S>(private val observe: () -> S) : TransactionOperat
     return result
   }
 
-  private fun status(): TransactionStatus = SimpleTransactionStatus()
+  private fun status(): TransactionStatus =
+    SimpleTransactionStatus()
 }

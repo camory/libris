@@ -4,5 +4,4 @@ import fr.amory.libris.library.domain.reader.ReaderId
 
 data class Membership(
   val readerId: ReaderId,
-  val role: MembershipRole,
-)
+  val role: MembershipRole)

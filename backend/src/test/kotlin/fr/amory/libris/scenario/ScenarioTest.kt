@@ -41,35 +41,36 @@ class FreshSources : BeforeEachCallback {
 @TestConfiguration(proxyBeanMethods = false)
 class StubbedSources {
   @Bean(initMethod = "start", destroyMethod = "stop")
-  fun bnf(): WireMockServer = WireMockServer(options().dynamicPort())
+  fun bnf(): WireMockServer =
+    WireMockServer(options().dynamicPort())
 
   @Bean(initMethod = "start", destroyMethod = "stop")
-  fun openLibrary(): WireMockServer = WireMockServer(options().dynamicPort())
+  fun openLibrary(): WireMockServer =
+    WireMockServer(options().dynamicPort())
 
   @Bean(initMethod = "start", destroyMethod = "stop")
-  fun inventaire(): WireMockServer = WireMockServer(options().dynamicPort())
+  fun inventaire(): WireMockServer =
+    WireMockServer(options().dynamicPort())
 
   @Bean
-  fun coversDir(): Path = Files.createTempDirectory("libris-covers")
+  fun coversDir(): Path =
+    Files.createTempDirectory("libris-covers")
 
   @Bean
-  fun clock(): MutableClock = MutableClock()
+  fun clock(): MutableClock =
+    MutableClock()
 
   @Bean
-  fun sourceVariables(
-    bnf: WireMockServer,
-    openLibrary: WireMockServer,
-    inventaire: WireMockServer,
-    coversDir: Path,
-  ) = DynamicPropertyRegistrar { registry ->
-    registry.add("LIBRIS_BNF_URL") { bnf.baseUrl() + "/api/SRU" }
-    registry.add("LIBRIS_BNF_COVERS_URL") { bnf.baseUrl() + "/couverture" }
-    registry.add("LIBRIS_OPEN_LIBRARY_URL") { openLibrary.baseUrl() }
-    registry.add("LIBRIS_OPEN_LIBRARY_COVERS_URL") { openLibrary.baseUrl() + "/b/isbn" }
-    registry.add("LIBRIS_INVENTAIRE_URL") { inventaire.baseUrl() }
-    registry.add("LIBRIS_COVERS_DIR") { coversDir.toString() }
-    registry.add("LIBRIS_SOURCE_TIMEOUT") { "1s" }
-  }
+  fun sourceVariables(bnf: WireMockServer, openLibrary: WireMockServer, inventaire: WireMockServer, coversDir: Path) =
+    DynamicPropertyRegistrar { registry ->
+      registry.add("LIBRIS_BNF_URL") { bnf.baseUrl() + "/api/SRU" }
+      registry.add("LIBRIS_BNF_COVERS_URL") { bnf.baseUrl() + "/couverture" }
+      registry.add("LIBRIS_OPEN_LIBRARY_URL") { openLibrary.baseUrl() }
+      registry.add("LIBRIS_OPEN_LIBRARY_COVERS_URL") { openLibrary.baseUrl() + "/b/isbn" }
+      registry.add("LIBRIS_INVENTAIRE_URL") { inventaire.baseUrl() }
+      registry.add("LIBRIS_COVERS_DIR") { coversDir.toString() }
+      registry.add("LIBRIS_SOURCE_TIMEOUT") { "1s" }
+    }
 
   @Bean
   fun restTestClient(context: ApplicationContext): RestTestClient =

@@ -17,8 +17,7 @@ import org.springframework.test.web.servlet.client.RestTestClient
 class BookshelfScenarios @Autowired constructor(
   private val http: RestTestClient,
   @Qualifier("bnf") bnfServer: WireMockServer,
-  @Qualifier("openLibrary") openLibraryServer: WireMockServer,
-) {
+  @Qualifier("openLibrary") openLibraryServer: WireMockServer) {
   private val bnf = BnfStubs(bnfServer)
   private val sources = listOf(bnfServer, openLibraryServer)
 
@@ -131,17 +130,19 @@ class BookshelfScenarios @Autowired constructor(
     noSourceWasAsked()
   }
 
-  private fun me(reader: Map<String, List<String>>): RestTestClient.ResponseSpec = http.get()
-    .uri("/api/v1/me")
-    .headers { it.putAll(reader) }
-    .accept(APPLICATION_JSON)
-    .exchange()
+  private fun me(reader: Map<String, List<String>>): RestTestClient.ResponseSpec =
+    http.get()
+      .uri("/api/v1/me")
+      .headers { it.putAll(reader) }
+      .accept(APPLICATION_JSON)
+      .exchange()
 
-  private fun ask(reader: Map<String, List<String>>, isbn: String): RestTestClient.ResponseSpec = http.get()
-    .uri("/api/v1/isbn/$isbn")
-    .headers { it.putAll(reader) }
-    .accept(APPLICATION_JSON, APPLICATION_PROBLEM_JSON)
-    .exchange()
+  private fun ask(reader: Map<String, List<String>>, isbn: String): RestTestClient.ResponseSpec =
+    http.get()
+      .uri("/api/v1/isbn/$isbn")
+      .headers { it.putAll(reader) }
+      .accept(APPLICATION_JSON, APPLICATION_PROBLEM_JSON)
+      .exchange()
 
   private fun add(reader: Map<String, List<String>>, bookshelf: String, book: String): RestTestClient.ResponseSpec =
     http.post()
@@ -155,7 +156,8 @@ class BookshelfScenarios @Autowired constructor(
   private fun defaultBookshelfOf(reader: Map<String, List<String>>): String =
     JsonPath.read(bodyOf(me(reader).expectStatus().isOk()), "$.defaultBookshelf.id")
 
-  private fun idOf(response: RestTestClient.ResponseSpec): String = JsonPath.read(bodyOf(response), "$.id")
+  private fun idOf(response: RestTestClient.ResponseSpec): String =
+    JsonPath.read(bodyOf(response), "$.id")
 
   private fun bodyOf(response: RestTestClient.ResponseSpec): String =
     requireNotNull(response.expectBody(String::class.java).returnResult().responseBody)
@@ -164,12 +166,13 @@ class BookshelfScenarios @Autowired constructor(
     sources.forEach { it.verify(0, anyRequestedFor(anyUrl())) }
   }
 
-  private fun reader(username: String, name: String) = mapOf(
-    "Remote-User" to listOf(username),
-    "Remote-Name" to listOf(name),
-    "Remote-Email" to listOf("$username@amory.fr"),
-    "Remote-Groups" to listOf("family"),
-  )
+  private fun reader(username: String, name: String) =
+    mapOf(
+      "Remote-User" to listOf(username),
+      "Remote-Name" to listOf(name),
+      "Remote-Email" to listOf("$username@amory.fr"),
+      "Remote-Groups" to listOf("family"),
+    )
 
   private companion object {
     val NEW_ONE_PIECE_1 = onePiece(

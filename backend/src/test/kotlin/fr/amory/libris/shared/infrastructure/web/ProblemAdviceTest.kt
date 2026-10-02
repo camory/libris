@@ -43,8 +43,7 @@ private val TOPHE = readerNamed(
 class ProblemAdviceTest @Autowired constructor(
   private val client: RestTestClient,
   private val welcomeReader: WelcomeReader,
-  private val addBookToBookshelf: AddBookToBookshelf,
-) {
+  private val addBookToBookshelf: AddBookToBookshelf) {
   @Test
   fun `a bookshelf id that is not a uuid is a validation problem`() {
     // Given

@@ -14,8 +14,7 @@ private const val WAIT_AT_MOST = 2_000L
 
 class LookupAnswering(
   private val answer: EditionSourceAnswer,
-  override val source: EditionSource = BNF,
-) : EditionLookup {
+  override val source: EditionSource = BNF) : EditionLookup {
   private val isbns = mutableListOf<Isbn>()
 
   val asked: List<Isbn> get() = isbns.toList()
@@ -40,8 +39,7 @@ class CoverLookupAnswering(private val candidate: CoverCandidate?) : CoverLookup
 class LookupAnsweringAtRendezvous(
   private val rendezvous: CyclicBarrier,
   private val answer: EditionSourceAnswer,
-  override val source: EditionSource = BNF,
-) : EditionLookup {
+  override val source: EditionSource = BNF) : EditionLookup {
   override fun lookUp(isbn: Isbn): EditionSourceAnswer {
     rendezvous.await(WAIT_AT_MOST, MILLISECONDS)
     return answer
@@ -50,8 +48,7 @@ class LookupAnsweringAtRendezvous(
 
 class CoverLookupAnsweringAtRendezvous(
   private val rendezvous: CyclicBarrier,
-  private val candidate: CoverCandidate?,
-) : CoverLookup {
+  private val candidate: CoverCandidate?) : CoverLookup {
   override fun lookUp(isbn: Isbn): CoverCandidate? {
     rendezvous.await(WAIT_AT_MOST, MILLISECONDS)
     return candidate

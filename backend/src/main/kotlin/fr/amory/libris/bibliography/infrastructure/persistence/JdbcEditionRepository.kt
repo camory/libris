@@ -58,8 +58,7 @@ private const val FIND_EDITIONS_BY_IDS = "$SELECT_EDITIONS WHERE edition.id IN (
 
 private class EditionRow(
   val edition: Edition,
-  val contribution: Contribution?,
-)
+  val contribution: Contribution?)
 
 @Repository
 class JdbcEditionRepository(private val jdbcClient: JdbcClient) : EditionRepository {

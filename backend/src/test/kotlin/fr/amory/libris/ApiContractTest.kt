@@ -96,11 +96,12 @@ private val COPIES_OF_ONE_PIECE_2 = listOf(
   copyOn("7a2e3d4c-5b6a-4f70-9c81-2d3e4f5a6b72", "1c2f3e4d-5a6b-4c7d-9e8f-0a1b2c3d4e5f", "Salon"),
 )
 
-private fun copyOn(copyId: String, bookshelfId: String, bookshelfName: String) = CopyOnBookshelf(
-  CopyId(UUID.fromString(copyId)),
-  bookshelfId(bookshelfId),
-  bookshelfName,
-)
+private fun copyOn(copyId: String, bookshelfId: String, bookshelfName: String) =
+  CopyOnBookshelf(
+    CopyId(UUID.fromString(copyId)),
+    bookshelfId(bookshelfId),
+    bookshelfName,
+  )
 
 private val ONE_PIECE_1_COVERS = CoverCandidates.of(
   listOf(
@@ -157,9 +158,11 @@ private val ONE_PIECE_1_HELD = HeldEdition(
   ),
 )
 
-private fun bookshelfId(id: String) = BookshelfId(UUID.fromString(id))
+private fun bookshelfId(id: String) =
+  BookshelfId(UUID.fromString(id))
 
-private fun noCopy(answer: EditionLookupResult) = IsbnLookup(answer, emptyList())
+private fun noCopy(answer: EditionLookupResult) =
+  IsbnLookup(answer, emptyList())
 
 @WebSliceTest
 @Import(ApiContractTest.FixedReaderHeaders::class)
@@ -181,8 +184,7 @@ class ApiContractTest @Autowired constructor(
   private val findDefaultBookshelf: FindDefaultBookshelf,
   private val addBookToBookshelf: AddBookToBookshelf,
   private val browseCatalogue: BrowseCatalogue,
-  private val findCover: FindCover,
-) {
+  private val findCover: FindCover) {
   @ContracteerTest(openApiDoc = "https://raw.githubusercontent.com/camory/libris-api/v0.8.2/openapi.yaml")
   fun `the API matches the contract`() {
     val contracteer = readerNamed(

@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RestController
 
 enum class Role {
   READER,
-  ADMIN,
+  ADMIN
 }
 
 data class CurrentReaderResponse(
@@ -21,8 +21,7 @@ data class CurrentReaderResponse(
   val displayName: String,
   val email: String,
   val role: Role,
-  val defaultBookshelf: BookshelfResponse,
-)
+  val defaultBookshelf: BookshelfResponse)
 
 @RestController
 class MeController(private val findDefaultBookshelf: FindDefaultBookshelf) {

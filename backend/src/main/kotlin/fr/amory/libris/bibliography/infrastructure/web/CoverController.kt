@@ -29,12 +29,14 @@ class CoverController(private val findCover: FindCover) {
   }
 
   private fun pictureOf(cover: Cover): ResponseEntity<Any> =
-    ResponseEntity.ok()
+    ResponseEntity
+      .ok()
       .contentType(parseMediaType(cover.mediaType))
       .header(CACHE_CONTROL, KEPT_A_YEAR)
       .body(cover.bytes)
 
-  private fun notACoverName(): ProblemDetail = problem(BAD_REQUEST, VALIDATION_PROBLEM).apply {
-    setProperty("errors", listOf(ValidationErrorResponse(field = "name", code = "not-a-cover-name")))
-  }
+  private fun notACoverName(): ProblemDetail =
+    problem(BAD_REQUEST, VALIDATION_PROBLEM).apply {
+      setProperty("errors", listOf(ValidationErrorResponse(field = "name", code = "not-a-cover-name")))
+    }
 }

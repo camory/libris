@@ -3,7 +3,8 @@ package fr.amory.libris.bibliography.domain
 @JvmInline
 value class Isbn private constructor(val digits: String) {
   val isbn10: String?
-    get() = digits.takeIf { it.startsWith(TEN_PREFIX) }
+    get() = digits
+      .takeIf { it.startsWith(TEN_PREFIX) }
       ?.substring(TEN_PREFIX.length, LENGTH - 1)
       ?.let { it + tenCheckDigitOf(it) }
 
@@ -27,11 +28,12 @@ value class Isbn private constructor(val digits: String) {
       }
     }
 
-    private fun ofThirteen(text: String): Isbn? = when {
-      !THIRTEEN_DIGITS.matches(text)                             -> null
-      text.last().digitToInt() != checkDigitOf(text.dropLast(1)) -> null
-      else                                                       -> Isbn(text)
-    }
+    private fun ofThirteen(text: String): Isbn? =
+      when {
+        !THIRTEEN_DIGITS.matches(text)                             -> null
+        text.last().digitToInt() != checkDigitOf(text.dropLast(1)) -> null
+        else                                                       -> Isbn(text)
+      }
 
     private fun ofTen(text: String): Isbn? {
       val nine = text.dropLast(1)

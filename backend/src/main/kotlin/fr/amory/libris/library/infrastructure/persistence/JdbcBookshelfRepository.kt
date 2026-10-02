@@ -37,8 +37,7 @@ private const val FIND_BOOKSHELVES_BY_MEMBER =
 private class BookshelfRow(
   val id: BookshelfId,
   val name: String,
-  val membership: Membership,
-)
+  val membership: Membership)
 
 @Repository
 class JdbcBookshelfRepository(private val jdbcClient: JdbcClient) : BookshelfRepository {
@@ -77,14 +76,15 @@ class JdbcBookshelfRepository(private val jdbcClient: JdbcClient) : BookshelfRep
       .values
       .map { bookshelfOf(it) }
 
-  private fun rowOf(rs: ResultSet): BookshelfRow = BookshelfRow(
-    id = BookshelfId(rs.getObject("id", UUID::class.java)),
-    name = rs.getString("name"),
-    membership = Membership(
-      ReaderId(rs.getObject("reader_id", UUID::class.java)),
-      MembershipRole.valueOf(rs.getString("role")),
-    ),
-  )
+  private fun rowOf(rs: ResultSet): BookshelfRow =
+    BookshelfRow(
+      id = BookshelfId(rs.getObject("id", UUID::class.java)),
+      name = rs.getString("name"),
+      membership = Membership(
+        ReaderId(rs.getObject("reader_id", UUID::class.java)),
+        MembershipRole.valueOf(rs.getString("role")),
+      ),
+    )
 
   private fun bookshelfOf(rows: List<BookshelfRow>): Bookshelf =
     Bookshelf(rows.first().id, rows.first().name, rows.map { it.membership })

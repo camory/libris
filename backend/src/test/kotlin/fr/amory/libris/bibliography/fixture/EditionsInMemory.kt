@@ -14,7 +14,9 @@ class EditionsInMemory : EditionRepository {
     editions += edition
   }
 
-  override fun findByIsbn(isbn: Isbn): Edition? = editions.find { it.isbn == isbn }
+  override fun findByIsbn(isbn: Isbn): Edition? =
+    editions.find { it.isbn == isbn }
 
-  override fun findByIds(ids: List<EditionId>): List<Edition> = editions.filter { it.id in ids }
+  override fun findByIds(ids: List<EditionId>): List<Edition> =
+    editions.filter { it.id in ids }
 }

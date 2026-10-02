@@ -4,5 +4,4 @@ import fr.amory.libris.bibliography.domain.edition.EditionId
 
 data class CataloguePage(
   val held: List<HeldEdition>,
-  val next: EditionId?,
-)
+  val next: EditionId?)

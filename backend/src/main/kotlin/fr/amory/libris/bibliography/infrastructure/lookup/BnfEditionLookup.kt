@@ -54,7 +54,8 @@ internal fun kindOf(codedData: String?, translatedFrom: String?): Kind =
     else                                                                -> BD
   }
 
-internal fun contributionRoleOf(functionCode: String?): ContributionRole = ROLES[functionCode] ?: WRITER
+internal fun contributionRoleOf(functionCode: String?): ContributionRole =
+  ROLES[functionCode] ?: WRITER
 
 internal fun publicationYearOf(dateOfPublication: String?, publication: String?): Int? =
   dateOfPublication?.drop(YEAR_AT)?.take(YEAR_LENGTH)?.takeIf { YEAR.matches(it) }?.toInt()
@@ -67,7 +68,9 @@ internal fun pageCountOf(extent: String?): Int? =
   PAGES.find(extent.orEmpty())?.groupValues?.get(1)?.toIntOrNull()
 
 internal fun coverOf(controlField: String?): CoverCandidate? =
-  controlField?.indexOf(ARK)?.takeIf { it >= 0 }
+  controlField
+    ?.indexOf(ARK)
+    ?.takeIf { it >= 0 }
     ?.let { CoverCandidate(CoverSource.BNF, COVER_BEFORE + controlField.substring(it) + COVER_AFTER) }
 
 class BnfEditionLookup(baseUrl: String, timeout: Duration) : EditionLookup {
@@ -110,11 +113,12 @@ class BnfEditionLookup(baseUrl: String, timeout: Duration) : EditionLookup {
   private fun publicationOf(record: UnimarcRecord): UnimarcField? =
     record.field("214", PUBLISHER_INDICATOR) ?: record.field("210")
 
-  private fun contributionsOf(record: UnimarcRecord): Contributions = Contributions.of(
-    record.fields(AUTHOR_TAGS).mapNotNull { field ->
-      Contribution.of(nameOf(field), contributionRoleOf(field.value("4")))
-    },
-  )
+  private fun contributionsOf(record: UnimarcRecord): Contributions =
+    Contributions.of(
+      record.fields(AUTHOR_TAGS).mapNotNull { field ->
+        Contribution.of(nameOf(field), contributionRoleOf(field.value("4")))
+      },
+    )
 
   private fun nameOf(field: UnimarcField): String =
     "${field.value("b").orEmpty()} ${field.value("a").orEmpty()}".trim()
@@ -126,18 +130,21 @@ class BnfEditionLookup(baseUrl: String, timeout: Duration) : EditionLookup {
   private fun titleStatementSeriesOf(record: UnimarcRecord): SeriesEntry? =
     tomeOf(record.value("200", "h"))?.let { tome -> SeriesEntry.of(record.value("200", "a"), tome) }
 
-  private fun search(isbn: Isbn): String = http.get()
-    .uri { uri ->
-      uri.queryParam("version", "1.2")
-        .queryParam("operation", "searchRetrieve")
-        .queryParam("recordSchema", "unimarcxchange")
-        .queryParam("maximumRecords", "1")
-        .queryParam("query", queryFor(isbn))
-        .build()
-    }
-    .retrieve()
-    .body(String::class.java)
-    .orEmpty()
+  private fun search(isbn: Isbn): String =
+    http
+      .get()
+      .uri { uri ->
+        uri
+          .queryParam("version", "1.2")
+          .queryParam("operation", "searchRetrieve")
+          .queryParam("recordSchema", "unimarcxchange")
+          .queryParam("maximumRecords", "1")
+          .queryParam("query", queryFor(isbn))
+          .build()
+      }
+      .retrieve()
+      .body(String::class.java)
+      .orEmpty()
 
   private companion object {
     fun queryFor(isbn: Isbn): String =
@@ -180,24 +187,27 @@ class BnfEditionLookup(baseUrl: String, timeout: Duration) : EditionLookup {
 
 private class UnimarcRecord(
   private val controls: List<Pair<String, String>>,
-  private val fields: List<UnimarcField>,
-) {
-  fun control(tag: String): String? = controls.firstOrNull { it.first == tag }?.second
+  private val fields: List<UnimarcField>) {
+  fun control(tag: String): String? =
+    controls.firstOrNull { it.first == tag }?.second
 
-  fun value(tag: String, code: String): String? = field(tag)?.value(code)
+  fun value(tag: String, code: String): String? =
+    field(tag)?.value(code)
 
-  fun field(tag: String): UnimarcField? = fields.firstOrNull { it.tag == tag }
+  fun field(tag: String): UnimarcField? =
+    fields.firstOrNull { it.tag == tag }
 
   fun field(tag: String, indicator2: String): UnimarcField? =
     fields.firstOrNull { it.tag == tag && it.indicator2 == indicator2 }
 
-  fun fields(tags: Set<String>): List<UnimarcField> = fields.filter { it.tag in tags }
+  fun fields(tags: Set<String>): List<UnimarcField> =
+    fields.filter { it.tag in tags }
 }
 
 private class UnimarcField(
   val tag: String,
   val indicator2: String,
-  private val subfields: List<Pair<String, String>>,
-) {
-  fun value(code: String): String? = subfields.firstOrNull { it.first == code }?.second
+  private val subfields: List<Pair<String, String>>) {
+  fun value(code: String): String? =
+    subfields.firstOrNull { it.first == code }?.second
 }

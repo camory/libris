@@ -22,13 +22,10 @@ const val READER_AUTHORITY = "ROLE_READER"
 const val ADMIN_AUTHORITY = "ROLE_ADMIN"
 
 class RemoteHeaderAuthenticationFilter(private val requestPrincipal: RequestPrincipal) : OncePerRequestFilter() {
-  override fun shouldNotFilterErrorDispatch(): Boolean = false
+  override fun shouldNotFilterErrorDispatch(): Boolean =
+    false
 
-  override fun doFilterInternal(
-    request: HttpServletRequest,
-    response: HttpServletResponse,
-    filterChain: FilterChain,
-  ) {
+  override fun doFilterInternal(request: HttpServletRequest, response: HttpServletResponse, filterChain: FilterChain) {
     authenticationOf(request)?.let { SecurityContextHolder.getContext().authentication = it }
     filterChain.doFilter(request, response)
   }
@@ -47,7 +44,8 @@ class RemoteHeaderAuthenticationFilter(private val requestPrincipal: RequestPrin
     return PreAuthenticatedAuthenticationToken(principal, "N/A", authorities)
   }
 
-  private fun utf8(header: String): String = String(header.toByteArray(Charsets.ISO_8859_1), Charsets.UTF_8)
+  private fun utf8(header: String): String =
+    String(header.toByteArray(Charsets.ISO_8859_1), Charsets.UTF_8)
 }
 
 @Configuration

@@ -26,8 +26,7 @@ import org.springframework.test.web.servlet.client.RestTestClient
 )
 class SecurityConfigTest @Autowired constructor(
   private val client: RestTestClient,
-  private val requestPrincipal: RequestPrincipal,
-) {
+  private val requestPrincipal: RequestPrincipal) {
   @Test
   fun `a request without the identity headers is refused`() {
     client.get()

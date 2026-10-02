@@ -23,26 +23,25 @@ import java.util.concurrent.Executors.newVirtualThreadPerTaskExecutor
 class LookupEditionByIsbn(
   private val editions: EditionRepository,
   editionLookups: List<EditionLookup>,
-  private val coverLookup: CoverLookup,
-) {
+  private val coverLookup: CoverLookup) {
   private val editionLookups = editionLookups.sortedBy { it.source.precedence }
 
-  operator fun invoke(isbn: Isbn): EditionLookupResult = editions.findByIsbn(isbn)?.let(::held) ?: askTheSources(isbn)
+  operator fun invoke(isbn: Isbn): EditionLookupResult =
+    editions.findByIsbn(isbn)?.let(::held) ?: askTheSources(isbn)
 
-  private fun held(edition: Edition): Held? = EditionPreview.of(edition)?.let { Held(edition.id, it) }
+  private fun held(edition: Edition): Held? =
+    EditionPreview.of(edition)?.let { Held(edition.id, it) }
 
   private fun askTheSources(isbn: Isbn): EditionLookupResult =
     newVirtualThreadPerTaskExecutor().use { executor ->
       val coverCandidate = executor.submit(Callable { coverLookup.lookUp(isbn) })
-      val sourceAnswers = executor.invokeAll(editionLookups.map { lookup -> Callable { lookup.lookUp(isbn) } })
+      val sourceAnswers = executor
+        .invokeAll(editionLookups.map { lookup -> Callable { lookup.lookUp(isbn) } })
         .map { it.get() }
       answerOf(sourceAnswers, coverCandidate.get())
     }
 
-  private fun answerOf(
-    sourceAnswers: List<EditionSourceAnswer>,
-    coverCandidate: CoverCandidate?,
-  ): EditionLookupResult {
+  private fun answerOf(sourceAnswers: List<EditionSourceAnswer>, coverCandidate: CoverCandidate?): EditionLookupResult {
     val known = sourceAnswers.filterIsInstance<Known>()
     return when {
       known.isNotEmpty()                 -> found(known, coverCandidate)
@@ -51,8 +50,9 @@ class LookupEditionByIsbn(
     }
   }
 
-  private fun found(known: List<Known>, coverCandidate: CoverCandidate?): Found = Found(
-    known.map { it.preview }.reduce(EditionPreview::merge),
-    CoverCandidates.of(listOfNotNull(coverCandidate) + known.mapNotNull { it.cover }),
-  )
+  private fun found(known: List<Known>, coverCandidate: CoverCandidate?): Found =
+    Found(
+      known.map { it.preview }.reduce(EditionPreview::merge),
+      CoverCandidates.of(listOfNotNull(coverCandidate) + known.mapNotNull { it.cover }),
+    )
 }

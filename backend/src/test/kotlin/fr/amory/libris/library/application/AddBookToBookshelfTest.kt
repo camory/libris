@@ -193,18 +193,19 @@ class AddBookToBookshelfTest {
     transactions.recorded shouldBe listOf(Transaction(before = 0 to 0, after = 1 to 1))
   }
 
-  private fun onePieceTomeOne(): NewBook = NewBook(
-    isbn = isbnOf(ONE_PIECE),
-    kind = MANGA,
-    title = "Romance dawn",
-    subtitle = "À l'aube d'une grande aventure",
-    contributions = Contributions.of(listOf(Contribution("Eiichiro Oda", WRITER))),
-    series = SeriesEntry("One piece", 1),
-    collection = "Shonen manga",
-    publisher = "Glénat",
-    publicationYear = 2013,
-    language = "fr",
-    pageCount = 208,
-    summary = "Luffy prend la mer pour devenir le roi des pirates.",
-  )
+  private fun onePieceTomeOne(): NewBook =
+    NewBook(
+      isbn = isbnOf(ONE_PIECE),
+      kind = MANGA,
+      title = "Romance dawn",
+      subtitle = "À l'aube d'une grande aventure",
+      contributions = Contributions.of(listOf(Contribution("Eiichiro Oda", WRITER))),
+      series = SeriesEntry("One piece", 1),
+      collection = "Shonen manga",
+      publisher = "Glénat",
+      publicationYear = 2013,
+      language = "fr",
+      pageCount = 208,
+      summary = "Luffy prend la mer pour devenir le roi des pirates.",
+    )
 }
