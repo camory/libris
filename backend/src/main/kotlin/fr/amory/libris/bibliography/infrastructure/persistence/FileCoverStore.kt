@@ -4,11 +4,14 @@ import fr.amory.libris.bibliography.domain.cover.Cover
 import fr.amory.libris.bibliography.domain.cover.CoverName
 import fr.amory.libris.bibliography.domain.cover.CoverStore
 import java.nio.file.Path
+import java.nio.file.StandardCopyOption.ATOMIC_MOVE
+import java.nio.file.StandardCopyOption.REPLACE_EXISTING
+import kotlin.io.path.createTempFile
 import kotlin.io.path.isRegularFile
+import kotlin.io.path.moveTo
 import kotlin.io.path.readBytes
 import kotlin.io.path.readText
 import kotlin.io.path.writeBytes
-import kotlin.io.path.writeText
 
 class FileCoverStore(private val dir: Path) : CoverStore {
   override fun read(name: CoverName): Cover? {
@@ -22,7 +25,13 @@ class FileCoverStore(private val dir: Path) : CoverStore {
   }
 
   override fun write(cover: Cover) {
-    dir.resolve(cover.name.value).writeBytes(cover.bytes)
-    dir.resolve("${cover.name.value}.type").writeText(cover.mediaType)
+    place(cover.name.value, cover.bytes)
+    place("${cover.name.value}.type", cover.mediaType.encodeToByteArray())
+  }
+
+  private fun place(fileName: String, bytes: ByteArray) {
+    val draft = createTempFile(dir, fileName, ".draft")
+    draft.writeBytes(bytes)
+    draft.moveTo(dir.resolve(fileName), ATOMIC_MOVE, REPLACE_EXISTING)
   }
 }
