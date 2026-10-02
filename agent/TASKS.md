@@ -259,17 +259,17 @@ catalogue rows show a cover only once the worker has stored it (Tophe,
       The worker asks, for an awaited cover with no chosen source,
       inventaire.io, then Open Library, then the BnF, its picture read from
       the record's ark, stopping at the first picture and storing it as T066
-      does; an edition no source has a picture for stays without. A
-      migration gives each edition stored before this feature that has an
-      ISBN an awaited cover with no chosen source, the gate proving it
-      (D03, D07).
+      does; an edition no source has a picture for stays without, its
+      awaited cover kept. A migration gives each edition stored before this
+      feature that has an ISBN an awaited cover with no chosen source, the
+      gate proving it (D03, D07).
       Realises S7 and S12; un-skips the backend tests of S7, its three cases.
 
 - [ ] T058 Backend: a failed fetch waits a day.
-      A fetch that gets no answer, an error, or what is not a picture leaves
-      the edition without one and dates the attempt on its awaited cover
-      from the application's clock; a run within a day passes it by, a run a
-      day later tries again.
+      A fetch that gets no answer, an error, or what is not a picture, and a
+      cascade that finds no picture, leaves the edition without one and
+      dates the attempt on its awaited cover from the application's clock; a
+      run within a day passes it by, a run a day later tries again.
       A fetch gives up after five seconds or five megabytes.
       Tests of the limits over a stubbed source; the scenario tests advance
       the clock. Realises S8; un-skips the backend tests of S8, its three

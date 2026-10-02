@@ -448,5 +448,7 @@ Format:
   T066, T057 and T058 lines are reworded to the awaited cover in this PR.
 - Left over: D11 says a uuid key on every table and UPPER_SNAKE enum values
   in SQL; Tophe accepted both exceptions, their wording is proposed in the
-  PR body for a docs PR. T057 does not say whether an awaited cover no
-  source has a picture for ends its wait.
+  PR body for a docs PR.
+- Decided (Tophe): only a stored picture ends the wait; a cascade that finds
+  no picture is dated and tried again a day later, like a failed fetch (S7's
+  note, the T057 and T058 lines).

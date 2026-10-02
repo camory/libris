@@ -128,6 +128,9 @@ Then it asks inventaire.io, then Open Library, then the BnF, stopping at
 ```
 
 Three cases: the first source has it; only the last has it; none has it.
+An edition no source has a picture for keeps awaiting: only a stored picture
+ends the wait, and the attempt is dated and tried again a day later, as S8
+says.
 Proof: backend scenario test over HTTP with the sources stubbed, one per
 case.
 
