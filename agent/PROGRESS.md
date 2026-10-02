@@ -400,3 +400,21 @@ Format:
 - Left over: `Edition.coverUrl` and its column, null on every add since
   T051, for T053; `docs/ARCHITECTURE.md` D10 still names
   `ExternalEditionLookup.lookUp`, the wording is proposed in the PR body.
+
+## 2026-10-02 — T053 Backend: the add keeps the chosen source — done
+- Did: `CoverSource.of(label)` reads a source back from its name; the add's
+  `coverSource` reaches `NewBook` and the edition the add creates; `V006`
+  gives `edition` a nullable `cover_source`, written and read as the enum's name.
+- Decided: the request maps the name through `coverSource?.let {
+  CoverSource.of(it) }`, so an absent field and a name no source bears are
+  both "no source"; no error is added to `validate()`.
+- Decided: step 5's first red was a compile error (`Edition` had no
+  `coverSource`); the behavioural red was read too, by having the use case
+  pass `null`: `data class diff … Edition`, then reverted.
+- Deviations from the brief: `EditionPreviewTest` builds two `Edition`s and
+  gains `coverSource = null` too, a file the brief did not list. The guard of
+  step 6 reds under the brief's mutation at `editions.stored.single()`, which
+  the case already asserted, not at the new `coverSource` line; the port has
+  no `update`, so no other mutation reaches a held edition's source.
+- Left over: nothing; the worker reading the source is T066, `coverUrl`'s
+  removal T065.

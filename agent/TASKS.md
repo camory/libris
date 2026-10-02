@@ -200,7 +200,7 @@ catalogue rows show a cover only once the worker has stored it (Tophe,
       of the inventaire.io reading; the fast entry's whole-body case follows.
       Realises S1 on the backend; un-skips the backend test of S1.
 
-- [ ] T053 Backend: the add keeps the chosen source.
+- [x] T053 Backend: the add keeps the chosen source.
       An edition the add creates keeps its `coverSource` when the name is a
       source's, `inventaire.io`, `Open Library` or `BnF`, none otherwise,
       `Libris` included; on an ISBN the house holds the field is ignored.

@@ -188,7 +188,7 @@ true; the diary keeps the date it was found.
   called only from lambdas (`map { responseOf(it) }`), though both are used;
   give them distinct names (`bookOf`, `copyOf`).
 - Jackson 3 leaves `FAIL_ON_UNKNOWN_PROPERTIES` off: a body field no DTO
-  declares is dropped, never refused (the add takes `coverSource` unread).
+  declares is dropped, never refused.
 - `LongParameterList` counts a test class's `@Autowired` constructor too
   (`ApiContractTest` at seven); `@Suppress("LongParameterList")` goes on its
   own line above the class, since an annotation inside
@@ -394,6 +394,10 @@ true; the diary keeps the date it was found.
   answers `emptyList()` without a statement when given none, and a slice case
   (`no edition finds no copy`, `no id finds no edition`) proves it.
 
+- `EditionsInMemory.insert` appends without looking at the ISBN, so a use
+  case that inserts a held edition a second time fails at
+  `editions.stored.single()` ("List has more than one element") before any
+  later assertion of the case runs; there is no `update` on the port.
 - `LookupAnswering`, in `bibliography.fixture`, records the ISBNs it was asked
   and answers them as `asked`, so a case proves a source was never called with
   `source.asked shouldBe emptyList()`.
