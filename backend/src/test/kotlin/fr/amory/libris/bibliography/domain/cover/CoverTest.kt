@@ -38,4 +38,11 @@ class CoverTest {
     Cover("image/png", "test".encodeToByteArray()).name shouldBe
       CoverName("9f86d081884c7d659a2feaa0c55ad015a3bf4f1b2b0b822cd15d6c15b0f00a08")
   }
+
+  @Test
+  fun `a hash that begins with zeros keeps all its digits`() {
+    // Given / When / Then
+    Cover("image/png", "cover 59".encodeToByteArray()).name shouldBe
+      CoverName("005cbc1fbb9398468b932b0a7417723d1134b4cad70831f5587e236583f1a458")
+  }
 }
