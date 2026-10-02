@@ -34,7 +34,7 @@ load_env() {
   [[ -f "$ENV_FILE" ]] || die "missing $ENV_FILE (copy agent/.env.example and fill it in)" 1
   set -a; # shellcheck disable=SC1090
   source "$ENV_FILE"; set +a
-  : "${MODEL:=fable}" "${EFFORT:=high}" "${MAX_TURNS:=120}" "${MAX_BUDGET_USD:=15}" "${AUTOCOMPACT:=150000}" "${PR_POLL_SECONDS:=300}" "${REWORK_ROUNDS:=1}"
+  : "${MODEL:=fable}" "${EFFORT:=high}" "${MAX_TURNS:=120}" "${MAX_BUDGET_USD:=15}" "${AUTOCOMPACT:=190000}" "${PR_POLL_SECONDS:=300}" "${REWORK_ROUNDS:=1}" "${IMPLEMENTER_SEGMENTS:=4}"
   [[ -n "${CLAUDE_CODE_OAUTH_TOKEN:-}${ANTHROPIC_API_KEY:-}" ]] || die "no Claude credential in $ENV_FILE" 1
   [[ -n "${GH_TOKEN:-}" ]] || die "no GH_TOKEN in $ENV_FILE" 1
   mkdir -p agent/logs
@@ -116,19 +116,20 @@ fill() {  # fill <text> [KEY=VALUE ...] — replaces every {{KEY}} with its VALU
 #   tag:  goes into the log file name (task id, "plan", ...)
 #   KEY=VALUE: replaces {{KEY}} in the prompt
 # Sets STATUS and LAST_LOG. Per-role overrides: PLANNER_BRIEF_MODEL, REVIEWER_EFFORT, IMPLEMENTER_MAX_TURNS, IMPLEMENTER_AUTOCOMPACT, ...
+# A role hands off past <ROLE>_HANDOFF_AT tokens of context; a role without one never does.
 run_role() {
   local role="$1" tag="$2"; shift 2
   local prompt; prompt=$(fill "$(cat "agent/prompts/$role.md")" "$@")
 
   local var; var=$(tr 'a-z-' 'A-Z_' <<<"$role")
-  local mv="${var}_MODEL" ev="${var}_EFFORT" tv="${var}_MAX_TURNS" bv="${var}_MAX_BUDGET_USD" cv="${var}_AUTOCOMPACT"
-  local model="${!mv:-$MODEL}" effort="${!ev:-$EFFORT}" turns="${!tv:-$MAX_TURNS}" budget="${!bv:-$MAX_BUDGET_USD}" compact="${!cv:-$AUTOCOMPACT}"
+  local mv="${var}_MODEL" ev="${var}_EFFORT" tv="${var}_MAX_TURNS" bv="${var}_MAX_BUDGET_USD" cv="${var}_AUTOCOMPACT" hv="${var}_HANDOFF_AT"
+  local model="${!mv:-$MODEL}" effort="${!ev:-$EFFORT}" turns="${!tv:-$MAX_TURNS}" budget="${!bv:-$MAX_BUDGET_USD}" compact="${!cv:-$AUTOCOMPACT}" handoff="${!hv:-}"
 
   LAST_LOG="agent/logs/$(date +%Y%m%d-%H%M%S)-${tag}-${role}.json"
   local trace="${LAST_LOG%.json}.jsonl"
-  log "▶ $role for $tag — model=$model effort=$effort max_turns=$turns budget=\$$budget autocompact=$compact"
+  log "▶ $role for $tag — model=$model effort=$effort max_turns=$turns budget=\$$budget autocompact=$compact handoff_at=${handoff:-none}"
   set +e
-  "${COMPOSE[@]}" run --rm -T agent \
+  "${COMPOSE[@]}" run --rm -T -e "LIBRIS_HANDOFF_AT=$handoff" agent \
     "claude -p --output-format stream-json --verbose --json-schema \"\$(cat agent/schemas/$role.json)\" \
        --model '$model' --effort '$effort' --max-turns '$turns' --max-budget-usd '$budget' \
        --autocompact '$compact' \
@@ -155,6 +156,22 @@ sandbox_up()   { "${COMPOSE[@]}" up -d --wait postgres >/dev/null 2>&1; }
 sandbox_down() { "${COMPOSE[@]}" down >/dev/null 2>&1 || true; }
 
 # ------------------------------------------------------------------- phases
+# implement <task> <branch> — runs the implementer until it opens the pull request: a fresh run after each handoff,
+# IMPLEMENTER_SEGMENTS runs at most.
+implement() {
+  local task="$1" branch="$2" segment
+  for (( segment = 1; segment <= IMPLEMENTER_SEGMENTS; segment++ )); do
+    run_role implementer "$task" TASK_ID="$task" BRANCH="$branch"
+    case "$STATUS" in
+      pr_opened) return 0 ;;
+      handoff) log "  handoff: segment $segment of $IMPLEMENTER_SEGMENTS" ;;
+      blocked) die "implementer blocked: $(field blocker)" 4 ;;
+      *) die "implementer produced no valid report — inspect $LAST_LOG and ${LAST_LOG%.json}.stderr" 6 ;;
+    esac
+  done
+  die "implementer handed off $IMPLEMENTER_SEGMENTS times without finishing $task — split the task, or rerun to continue from its branch" 4
+}
+
 # do_task <wait:0|1> — takes the first unchecked task through the phases it still needs.
 # Returns 0 when done for now (PR open, or merged when waiting), 10 when the backlog is empty.
 do_task() {
@@ -204,14 +221,10 @@ do_task() {
     MERGED) die "PR #$pr for $branch is merged but $task is still unchecked — tick it in agent/TASKS.md on main" 2 ;;
   esac
   if [[ -z "$pr" ]]; then
-    run_role implementer "$task" TASK_ID="$task" BRANCH="$branch"
-    case "$STATUS" in
-      pr_opened) prinfo=$(branch_pr "$branch"); pr="${prinfo%% *}"
-                 [[ -n "$pr" ]] || die "pr_opened reported but no PR found for $branch" 3
-                 log "  PR #$pr opened: $(pr_url "$pr")" ;;
-      blocked) die "implementer blocked: $(field blocker)" 4 ;;
-      *) die "implementer produced no valid report — inspect $LAST_LOG and ${LAST_LOG%.json}.stderr" 6 ;;
-    esac
+    implement "$task" "$branch"
+    prinfo=$(branch_pr "$branch"); pr="${prinfo%% *}"
+    [[ -n "$pr" ]] || die "pr_opened reported but no PR found for $branch" 3
+    log "  PR #$pr opened: $(pr_url "$pr")"
   else
     log "  implementation phase already done (PR #$pr open)"
   fi

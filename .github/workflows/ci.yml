@@ -111,6 +111,8 @@ jobs:
         run: bash agent/hooks/test-guard-git.sh
       - name: Proof-of-test hooks behave
         run: bash agent/hooks/test-proof.sh
+      - name: Context signal hook behaves
+        run: bash agent/hooks/test-context-signal.sh
 
   images:
     needs: [changes, backend, frontend]
