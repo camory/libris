@@ -207,5 +207,6 @@ class AddBookToBookshelfTest {
       language = "fr",
       pageCount = 208,
       summary = "Luffy prend la mer pour devenir le roi des pirates.",
+      coverSource = null,
     )
 }

@@ -5,6 +5,7 @@ import fr.amory.libris.bibliography.domain.ContributionRole
 import fr.amory.libris.bibliography.domain.Contributions
 import fr.amory.libris.bibliography.domain.Kind
 import fr.amory.libris.bibliography.domain.SeriesEntry
+import fr.amory.libris.bibliography.domain.lookup.CoverSource
 import fr.amory.libris.library.application.NewBook
 import fr.amory.libris.library.infrastructure.web.NewBookValidation.Accepted
 import fr.amory.libris.library.infrastructure.web.NewBookValidation.Refused
@@ -36,7 +37,8 @@ data class NewBookRequest(
   val publicationYear: Int?,
   val language: String?,
   val pageCount: Int?,
-  val summary: String?) {
+  val summary: String?,
+  val coverSource: String?) {
   fun validate(): NewBookValidation {
     val isbn = isbn13?.let { isbn13Of(it) }
     val contributions = authors.map { Contribution.of(it.name, it.role) }
@@ -54,6 +56,7 @@ data class NewBookRequest(
       language = language,
       pageCount = pageCount,
       summary = summary,
+      coverSource = coverSource?.let { CoverSource.of(it) },
     )
     val errors = buildList {
       if (isbn13 != null && isbn == null) add(ValidationErrorResponse("isbn13", "not-an-isbn"))

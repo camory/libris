@@ -26,6 +26,7 @@ class NewBookTest {
       language = "fr",
       pageCount = 207,
       summary = null,
+      coverSource = null,
     )
 
     book shouldBe null
@@ -47,6 +48,7 @@ class NewBookTest {
         language = "fr",
         pageCount = 207,
         summary = null,
+        coverSource = null,
       )
     }
   }

@@ -2,9 +2,12 @@ package fr.amory.libris.library.infrastructure.web
 
 import fr.amory.libris.bibliography.domain.ContributionRole.WRITER
 import fr.amory.libris.bibliography.domain.Kind.MANGA
+import fr.amory.libris.bibliography.domain.lookup.CoverSource.INVENTAIRE
+import fr.amory.libris.library.infrastructure.web.NewBookValidation.Accepted
 import fr.amory.libris.library.infrastructure.web.NewBookValidation.Refused
 import fr.amory.libris.shared.infrastructure.web.ValidationErrorResponse
 import io.kotest.matchers.shouldBe
+import io.kotest.matchers.types.shouldBeInstanceOf
 import org.junit.jupiter.api.Test
 
 class NewBookRequestTest {
@@ -45,11 +48,19 @@ class NewBookRequestTest {
     )
   }
 
+  @Test
+  fun `the name of a source becomes the book's source`() {
+    val request = romanceDawn(coverSource = "inventaire.io")
+
+    request.validate().shouldBeInstanceOf<Accepted>().book.coverSource shouldBe INVENTAIRE
+  }
+
   private fun romanceDawn(
     isbn13: String = "9782723488525",
     title: String = "Romance dawn",
     author: String = "Eiichirō Oda",
-    series: String = "One Piece") =
+    series: String = "One Piece",
+    coverSource: String? = null) =
     NewBookRequest(
       isbn13 = isbn13,
       kind = MANGA,
@@ -63,5 +74,6 @@ class NewBookRequestTest {
       language = "fr",
       pageCount = 207,
       summary = null,
+      coverSource = coverSource,
     )
 }
