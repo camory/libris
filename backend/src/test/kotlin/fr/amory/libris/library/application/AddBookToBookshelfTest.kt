@@ -8,6 +8,7 @@ import fr.amory.libris.bibliography.domain.SeriesEntry
 import fr.amory.libris.bibliography.domain.edition.Edition
 import fr.amory.libris.bibliography.domain.lookup.CoverSource
 import fr.amory.libris.bibliography.domain.lookup.CoverSource.INVENTAIRE
+import fr.amory.libris.bibliography.domain.lookup.CoverSource.OPEN_LIBRARY
 import fr.amory.libris.bibliography.fixture.EditionsInMemory
 import fr.amory.libris.bibliography.fixture.isbnOf
 import fr.amory.libris.library.application.AddBookResult.Added
@@ -76,16 +77,17 @@ class AddBookToBookshelfTest {
     val lea = readerNamed("lea", "Léa")
     val leasBookshelf = bookshelfOwnedBy(lea)
     bookshelves.insert(leasBookshelf)
-    addBookToBookshelf(lea.id, leasBookshelf.id, onePieceTomeOne())
+    addBookToBookshelf(lea.id, leasBookshelf.id, onePieceTomeOne(coverSource = INVENTAIRE))
     val juliette = readerNamed("juliette", "Juliette")
     val juliettesBookshelf = bookshelfOwnedBy(juliette)
     bookshelves.insert(juliettesBookshelf)
 
     // When
-    val result = addBookToBookshelf(juliette.id, juliettesBookshelf.id, onePieceTomeOne())
+    val result = addBookToBookshelf(juliette.id, juliettesBookshelf.id, onePieceTomeOne(coverSource = OPEN_LIBRARY))
 
     // Then
     val edition = editions.stored.single()
+    edition.coverSource shouldBe INVENTAIRE
     val copy = copies.stored.last()
     copy shouldBe Copy(copy.id, edition.id, juliettesBookshelf.id)
     copies.stored.map { it.editionId } shouldBe listOf(edition.id, edition.id)
