@@ -13,4 +13,9 @@ class CoverSourceTest {
     CoverSource.of("Open Library") shouldBe OPEN_LIBRARY
     CoverSource.of("BnF") shouldBe BNF
   }
+
+  @Test
+  fun `the house's own name is no source`() {
+    CoverSource.of("Libris") shouldBe null
+  }
 }

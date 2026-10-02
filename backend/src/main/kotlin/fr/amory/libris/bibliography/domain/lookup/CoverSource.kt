@@ -6,7 +6,7 @@ enum class CoverSource(val label: String, val order: Int) {
   BNF("BnF", 3);
 
   companion object {
-    fun of(label: String): CoverSource =
-      entries.first { it.label == label }
+    fun of(label: String): CoverSource? =
+      entries.firstOrNull { it.label == label }
   }
 }
