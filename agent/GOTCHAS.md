@@ -399,7 +399,10 @@ true; the diary keeps the date it was found.
   PostgreSQL refuses (`BadSqlGrammarException`): a finder over a list of ids
   answers `emptyList()` without a statement when given none, and a slice case
   (`no edition finds no copy`, `no id finds no edition`) proves it.
-
+- `awaited_cover` is keyed by `edition.isbn13` and references it: a slice
+  case inserts the edition before its awaited cover, hence
+  `JdbcEditionRepository` in the `@Import` of `JdbcAwaitedCoverRepositoryTest`.
+  The port has no read yet, so that class reads the row through `JdbcClient`.
 - `EditionsInMemory.insert` appends without looking at the ISBN, so a use
   case that inserts a held edition a second time fails at
   `editions.stored.single()` ("List has more than one element") before any

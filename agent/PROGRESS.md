@@ -429,3 +429,22 @@ Format:
   stay as they are, as the finding excluded them.
 - Deviations from the brief: none.
 - Left over: nothing.
+
+## 2026-10-02 — T053 Backend: the add records the awaited cover — reshaped with Tophe
+- Did: the chosen source left `Edition`. An `AwaitedCover` (the ISBN, the
+  chosen source or none) is inserted by `AddBookToBookshelf` beside a new
+  edition that has an ISBN, in the add's transaction, through
+  `AwaitedCoverRepository`; `V006` creates `awaited_cover` instead of the
+  column on `edition`; `CoverSource` moved to `bibliography.domain.cover`.
+- Decided (Tophe): nothing that reads an edition back needs the source,
+  only the worker does, so the source belongs to the wait, not to the
+  edition. The awaited cover is keyed by the ISBN alone; the table stores
+  the source under the name the contract uses, written from `label`.
+- Deviations from the brief: the brief describes the first shape and is
+  kept as written. Two guards have no red of their own: the no-ISBN case
+  (the type refuses an `AwaitedCover` without an ISBN) and the foreign key
+  (a migration that has run cannot be mutated).
+- Left over: the T066, T057 and T058 lines still speak of the edition's
+  source and attempt; `CoverSource.order` stays on the enum; D11 says a
+  uuid key on every table and UPPER_SNAKE enum values in SQL, both proposed
+  for amendment in the PR body.

@@ -200,11 +200,14 @@ catalogue rows show a cover only once the worker has stored it (Tophe,
       of the inventaire.io reading; the fast entry's whole-body case follows.
       Realises S1 on the backend; un-skips the backend test of S1.
 
-- [x] T053 Backend: the add keeps the chosen source.
-      An edition the add creates keeps its `coverSource` when the name is a
+- [x] T053 Backend: the add records the awaited cover.
+      An edition the add creates with an ISBN awaits its cover: an
+      `AwaitedCover` holds the ISBN and the chosen source when the name is a
       source's, `inventaire.io`, `Open Library` or `BnF`, none otherwise,
-      `Libris` included; on an ISBN the house holds the field is ignored.
-      One migration gives `edition` the source, as text (D11, D12).
+      `Libris` included. A book with no ISBN awaits none; on an ISBN the
+      house holds the field is ignored. One migration creates
+      `awaited_cover`, keyed by the edition's ISBN, the source stored under
+      its name (D11, D12). `CoverSource` moves to the cover domain.
       `ApiContractTest`'s keyed `201_ADD_ONE_PIECE_1` sends `inventaire.io`,
       so its stub carries the source; tests of the request, the use case and
       the JDBC slice (D07). Realises S3's first *Then* on the backend;

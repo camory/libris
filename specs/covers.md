@@ -304,7 +304,8 @@ show their covers, save those no source has a picture for.
 
 - T051 — S5 not found, S10 not yet stored, the backend on `v0.8.2` — backend
 - T052 — S1 — backend
-- T053 — the source of S3 kept by the add, no scenario of its own — backend
+- T053 — the awaited cover of S3 recorded by the add, no scenario of its
+  own — backend
 - T065 — the cover of S4 stored and answered by the catalogue, no scenario
   of its own — backend
 - T066 — S3, S4, inventaire.io chosen — backend
