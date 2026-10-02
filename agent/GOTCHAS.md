@@ -164,7 +164,8 @@ true; the diary keeps the date it was found.
   the body of a function written with `=` starts on the next line; the last
   parameter, the closing parenthesis, the return type and the `=` or `{`
   share one line, in a constructor too; a chain broken over several lines
-  has one call per line, the receiver alone on the first; the arrows of a
+  has one call per line, the receiver alone on the first, in the production
+  code only, a test keeps its chains as they read best; the arrows of a
   `when` are aligned in a column, one column per `when`, and a branch whose
   body would span several lines calls a method instead.
 - `./gradlew detekt` reports on the test sources as well as the main ones
