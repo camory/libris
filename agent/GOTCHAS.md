@@ -103,7 +103,10 @@ true; the diary keeps the date it was found.
   `Problem` schema. `externalValue` is not read: the example is seen as null.
   The backend's `ApiContractTest` is a web slice over `MockitoBean` use cases,
   so a stub answering `any()` serves the generated cases, where a stub on
-  exact arguments answers nothing to a random value.
+  exact arguments answers nothing to a random value. The reviewer checks
+  the number of cases a PR claims against `tests=` in
+  `backend/build/test-results/test/TEST-fr.amory.libris.ApiContractTest.xml`:
+  read it there after the gate, never count by hand (on `v0.8.2`, 15 cases).
 - `additionalProperties: false` cannot sit on a branch of an `allOf`: the
   standard applies each branch on its own, so the base refuses the fields
   the other branch adds, and no instance passes. Contracteer merges the

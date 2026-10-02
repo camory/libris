@@ -469,3 +469,12 @@ Format:
   `1, 2, 3` hash to a name beginning with `0`.
 - Left over: the worker that writes and records a cover, T066; the record of
   a name on an edition already stored needs a port write, T066's to shape.
+
+## 2026-10-02 — T065 Backend: the house keeps a cover — reworked
+- Did: the PR body's `ApiContractTest` line now says 15 cases, as the run's
+  report gives them (`/me` 1, `/isbn` 5, `/books` 2, the add 4, `/covers` 3),
+  not 17; no code changed.
+- Decided: the reviewer's verdict of 2026-10-02 amended nothing; its one
+  finding was a verification claim the run contradicted.
+- Deviations from the brief: none.
+- Left over: nothing.
