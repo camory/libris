@@ -243,7 +243,8 @@ true; the diary keeps the date it was found.
   Nothing reads a format from the bytes. The name is `Cover.name`, the
   SHA-256 of the bytes in 64 lower-case digits (`"test"` names
   `9f86d0…0a08`, the contract's example); `FileCoverStore.write` writes the
-  picture before its `.type`, overwriting both. An edition holds the name as
+  picture before its `.type`, and leaves a cover already stored as it is.
+  An edition holds the name as
   `coverName`, the `cover_name` column since `V007`. `ScenarioTest` gives
   the variable a temporary directory, `LibrisApplicationTest` its own
   property. A Mockito

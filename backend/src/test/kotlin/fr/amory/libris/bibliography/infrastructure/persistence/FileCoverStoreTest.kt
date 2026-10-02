@@ -101,4 +101,18 @@ class FileCoverStoreTest {
     read?.mediaType shouldBe "image/webp"
     read?.bytes shouldBe cover.bytes
   }
+
+  @Test
+  fun `a cover already stored is left as it is`() {
+    // Given
+    val bytes = recordedBytes("covers/small.webp")
+    val store = FileCoverStore(dir)
+    store.write(Cover("image/webp", bytes))
+
+    // When
+    store.write(Cover("image/png", bytes))
+
+    // Then
+    store.read(Cover("image/png", bytes).name)?.mediaType shouldBe "image/webp"
+  }
 }
