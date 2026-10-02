@@ -110,6 +110,20 @@ class AddBookToBookshelfTest {
   }
 
   @Test
+  fun `an edition gained with no chosen source awaits its cover all the same`() {
+    // Given
+    val lea = readerNamed("lea", "Léa")
+    val bookshelf = bookshelfOwnedBy(lea)
+    bookshelves.insert(bookshelf)
+
+    // When
+    addBookToBookshelf(lea.id, bookshelf.id, onePieceTomeOne().copy(coverSource = null))
+
+    // Then
+    awaitedCovers.stored shouldBe listOf(AwaitedCover(isbnOf(ONE_PIECE), null))
+  }
+
+  @Test
   fun `an ISBN the house holds awaits no second cover`() {
     // Given
     val lea = readerNamed("lea", "Léa")
