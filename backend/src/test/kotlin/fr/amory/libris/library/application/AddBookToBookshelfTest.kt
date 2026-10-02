@@ -5,7 +5,10 @@ import fr.amory.libris.bibliography.domain.ContributionRole.WRITER
 import fr.amory.libris.bibliography.domain.Contributions
 import fr.amory.libris.bibliography.domain.Kind.MANGA
 import fr.amory.libris.bibliography.domain.SeriesEntry
+import fr.amory.libris.bibliography.domain.cover.AwaitedCover
+import fr.amory.libris.bibliography.domain.cover.CoverSource.INVENTAIRE
 import fr.amory.libris.bibliography.domain.edition.Edition
+import fr.amory.libris.bibliography.fixture.AwaitedCoversInMemory
 import fr.amory.libris.bibliography.fixture.EditionsInMemory
 import fr.amory.libris.bibliography.fixture.isbnOf
 import fr.amory.libris.library.application.AddBookResult.Added
@@ -30,9 +33,10 @@ private const val ONE_PIECE = "9782723488525"
 
 class AddBookToBookshelfTest {
   private val editions = EditionsInMemory()
+  private val awaitedCovers = AwaitedCoversInMemory()
   private val copies = CopiesInMemory()
   private val bookshelves = BookshelvesInMemory()
-  private val addBookToBookshelf = AddBookToBookshelf(editions, copies, bookshelves, withoutTransaction())
+  private val addBookToBookshelf = AddBookToBookshelf(editions, awaitedCovers, copies, bookshelves, withoutTransaction())
 
   @Test
   fun `the house lacking the ISBN gains the edition and the copy`() {
@@ -65,6 +69,20 @@ class AddBookToBookshelfTest {
     val copy = copies.stored.single()
     copy shouldBe Copy(copy.id, edition.id, bookshelf.id)
     result shouldBe Added(copy, bookshelf)
+  }
+
+  @Test
+  fun `the edition the house gains awaits its cover from the chosen source`() {
+    // Given
+    val lea = readerNamed("lea", "Léa")
+    val bookshelf = bookshelfOwnedBy(lea)
+    bookshelves.insert(bookshelf)
+
+    // When
+    addBookToBookshelf(lea.id, bookshelf.id, onePieceTomeOne().copy(coverSource = INVENTAIRE))
+
+    // Then
+    awaitedCovers.stored shouldBe listOf(AwaitedCover(isbnOf(ONE_PIECE), INVENTAIRE))
   }
 
   @Test
@@ -187,7 +205,7 @@ class AddBookToBookshelfTest {
     val transactions = TransactionsObserving { editions.stored.size to copies.stored.size }
 
     // When
-    AddBookToBookshelf(editions, copies, bookshelves, transactions)(lea.id, bookshelf.id, onePieceTomeOne())
+    AddBookToBookshelf(editions, awaitedCovers, copies, bookshelves, transactions)(lea.id, bookshelf.id, onePieceTomeOne())
 
     // Then
     transactions.recorded shouldBe listOf(Transaction(before = 0 to 0, after = 1 to 1))

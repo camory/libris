@@ -1,5 +1,7 @@
 package fr.amory.libris.library.application
 
+import fr.amory.libris.bibliography.domain.cover.AwaitedCover
+import fr.amory.libris.bibliography.domain.cover.AwaitedCoverRepository
 import fr.amory.libris.bibliography.domain.edition.Edition
 import fr.amory.libris.bibliography.domain.edition.EditionId
 import fr.amory.libris.bibliography.domain.edition.EditionRepository
@@ -19,6 +21,7 @@ import org.springframework.transaction.support.TransactionOperations
 @Service
 class AddBookToBookshelf(
   private val editions: EditionRepository,
+  private val awaitedCovers: AwaitedCoverRepository,
   private val copies: CopyRepository,
   private val bookshelves: BookshelfRepository,
   private val transactions: TransactionOperations) {
@@ -37,6 +40,7 @@ class AddBookToBookshelf(
     val copy = Copy(CopyId.new(), edition.id, bookshelf.id)
     transactions.executeWithoutResult {
       if (heldEdition == null) editions.insert(edition)
+      book.isbn?.let { awaitedCovers.insert(AwaitedCover(it, book.coverSource)) }
       copies.insert(copy)
     }
     return Added(copy, bookshelf)
