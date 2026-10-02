@@ -31,4 +31,11 @@ class CoverTest {
     Cover.of("text/html", byteArrayOf(1, 2, 3)) shouldBe null
     Cover.of("jpeg", byteArrayOf(1, 2, 3)) shouldBe null
   }
+
+  @Test
+  fun `a cover is named by the SHA-256 of its bytes`() {
+    // Given / When / Then
+    Cover("image/png", "test".encodeToByteArray()).name shouldBe
+      CoverName("9f86d081884c7d659a2feaa0c55ad015a3bf4f1b2b0b822cd15d6c15b0f00a08")
+  }
 }
