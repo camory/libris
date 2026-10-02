@@ -193,13 +193,11 @@ class MeControllerTest @Autowired constructor(
   }
 
   private fun me(headers: List<Pair<String, String>>): Map<String, Any>? =
-    client
-      .get()
+    client.get()
       .uri("/api/v1/me")
       .headers { headers.forEach { (name, value) -> it.add(name, value) } }
       .exchange()
-      .expectStatus()
-      .isOk()
+      .expectStatus().isOk()
       .expectBody(object : ParameterizedTypeReference<Map<String, Any>>() {})
       .returnResult().responseBody
 }

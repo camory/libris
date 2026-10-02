@@ -37,13 +37,9 @@ class FastEntryScenarios @Autowired constructor(
     // When
     val response = ask("9782723488525")
     // Then
-    response
-      .expectStatus()
-      .isOk()
-      .expectHeader()
-      .contentType(APPLICATION_JSON)
-      .expectBody()
-      .json(
+    response.expectStatus().isOk()
+      .expectHeader().contentType(APPLICATION_JSON)
+      .expectBody().json(
         """
                 {
                   "id": null,
@@ -76,14 +72,9 @@ class FastEntryScenarios @Autowired constructor(
     // When
     val response = ask("9782000000013")
     // Then
-    response
-      .expectStatus()
-      .isNotFound()
-      .expectHeader()
-      .contentType(APPLICATION_PROBLEM_JSON)
-      .expectBody()
-      .jsonPath("$.type")
-      .isEqualTo("/problems/not-found")
+    response.expectStatus().isNotFound()
+      .expectHeader().contentType(APPLICATION_PROBLEM_JSON)
+      .expectBody().jsonPath("$.type").isEqualTo("/problems/not-found")
   }
 
   @Test
@@ -94,18 +85,12 @@ class FastEntryScenarios @Autowired constructor(
     // When
     val response = ask("9782723488525")
     // Then
-    response
-      .expectStatus()
-      .isOk()
+    response.expectStatus().isOk()
       .expectBody()
-      .jsonPath("$.title")
-      .isEqualTo("Romance dawn")
-      .jsonPath("$.authors[0].name")
-      .isEqualTo("Eiichirō Oda")
-      .jsonPath("$.pageCount")
-      .isEqualTo(207)
-      .jsonPath("$.publicationYear")
-      .isEqualTo(2013)
+      .jsonPath("$.title").isEqualTo("Romance dawn")
+      .jsonPath("$.authors[0].name").isEqualTo("Eiichirō Oda")
+      .jsonPath("$.pageCount").isEqualTo(207)
+      .jsonPath("$.publicationYear").isEqualTo(2013)
   }
 
   @Test
@@ -116,20 +101,13 @@ class FastEntryScenarios @Autowired constructor(
     // When
     val response = ask("9782380751673")
     // Then
-    response
-      .expectStatus()
-      .isOk()
-      .expectHeader()
-      .contentType(APPLICATION_JSON)
+    response.expectStatus().isOk()
+      .expectHeader().contentType(APPLICATION_JSON)
       .expectBody()
-      .jsonPath("$.title")
-      .isEqualTo("Space Wars - Chapitre 1")
-      .jsonPath("$.authors[*].name")
-      .isEqualTo(listOf("Baba", "Stéphane Lapuss'", "Tartuff"))
-      .jsonPath("$.publisher")
-      .isEqualTo("KENNES EDITIONS")
-      .jsonPath("$.coverUrl")
-      .isEqualTo("https://covers.openlibrary.org/b/isbn/9782380751673-L.jpg?default=false")
+      .jsonPath("$.title").isEqualTo("Space Wars - Chapitre 1")
+      .jsonPath("$.authors[*].name").isEqualTo(listOf("Baba", "Stéphane Lapuss'", "Tartuff"))
+      .jsonPath("$.publisher").isEqualTo("KENNES EDITIONS")
+      .jsonPath("$.coverUrl").isEqualTo("https://covers.openlibrary.org/b/isbn/9782380751673-L.jpg?default=false")
   }
 
   @Test
@@ -140,12 +118,9 @@ class FastEntryScenarios @Autowired constructor(
     // When
     val response = ask("9782380751673")
     // Then
-    response
-      .expectStatus()
-      .isOk()
+    response.expectStatus().isOk()
       .expectBody()
-      .jsonPath("$.title")
-      .isEqualTo("Space Wars - Chapitre 1")
+      .jsonPath("$.title").isEqualTo("Space Wars - Chapitre 1")
   }
 
   @Test
@@ -156,12 +131,9 @@ class FastEntryScenarios @Autowired constructor(
     // When
     val response = ask("9782723488525")
     // Then
-    response
-      .expectStatus()
-      .isOk()
+    response.expectStatus().isOk()
       .expectBody()
-      .jsonPath("$.title")
-      .isEqualTo("Romance dawn")
+      .jsonPath("$.title").isEqualTo("Romance dawn")
   }
 
   @Test
@@ -172,14 +144,9 @@ class FastEntryScenarios @Autowired constructor(
     // When
     val response = ask("9782723488525")
     // Then
-    response
-      .expectStatus()
-      .isEqualTo(SERVICE_UNAVAILABLE)
-      .expectHeader()
-      .contentType(APPLICATION_PROBLEM_JSON)
-      .expectBody()
-      .jsonPath("$.type")
-      .isEqualTo("/problems/sources-unavailable")
+    response.expectStatus().isEqualTo(SERVICE_UNAVAILABLE)
+      .expectHeader().contentType(APPLICATION_PROBLEM_JSON)
+      .expectBody().jsonPath("$.type").isEqualTo("/problems/sources-unavailable")
   }
 
   @Test
@@ -190,19 +157,13 @@ class FastEntryScenarios @Autowired constructor(
     // When
     val response = ask("9782723488525")
     // Then
-    response
-      .expectStatus()
-      .isEqualTo(SERVICE_UNAVAILABLE)
-      .expectHeader()
-      .contentType(APPLICATION_PROBLEM_JSON)
-      .expectBody()
-      .jsonPath("$.type")
-      .isEqualTo("/problems/sources-unavailable")
+    response.expectStatus().isEqualTo(SERVICE_UNAVAILABLE)
+      .expectHeader().contentType(APPLICATION_PROBLEM_JSON)
+      .expectBody().jsonPath("$.type").isEqualTo("/problems/sources-unavailable")
   }
 
   private fun ask(isbn: String): RestTestClient.ResponseSpec =
-    http
-      .get()
+    http.get()
       .uri("/api/v1/isbn/$isbn")
       .headers { it.putAll(READER) }
       .accept(APPLICATION_JSON, APPLICATION_PROBLEM_JSON)

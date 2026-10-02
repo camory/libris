@@ -73,8 +73,7 @@ class ProblemAdviceTest @Autowired constructor(
   }
 
   private fun add(bookshelf: String, book: String): Map<String, Any>? =
-    client
-      .post()
+    client.post()
       .uri("/api/v1/bookshelves/{id}/books", bookshelf)
       .headers {
         it.add("Remote-User", "tophe")

@@ -17,15 +17,11 @@ class LibrisApplicationTest @Autowired constructor(
   private val sources: SourcesProperties) {
   @Test
   fun `the application starts and reports itself healthy`() {
-    client
-      .get()
+    client.get()
       .uri("/actuator/health")
       .exchange()
-      .expectStatus()
-      .isOk()
-      .expectBody()
-      .jsonPath("$.status")
-      .isEqualTo("UP")
+      .expectStatus().isOk()
+      .expectBody().jsonPath("$.status").isEqualTo("UP")
   }
 
   @Test

@@ -28,14 +28,10 @@ class BookshelfScenarios @Autowired constructor(
     // When
     val response = me(lea)
     // Then
-    response
-      .expectStatus()
-      .isOk()
+    response.expectStatus().isOk()
       .expectBody()
-      .jsonPath("$.defaultBookshelf.id")
-      .isNotEmpty()
-      .jsonPath("$.defaultBookshelf.name")
-      .isEqualTo("Bibliothèque de Léa")
+      .jsonPath("$.defaultBookshelf.id").isNotEmpty()
+      .jsonPath("$.defaultBookshelf.name").isEqualTo("Bibliothèque de Léa")
   }
 
   @Test
@@ -43,38 +39,23 @@ class BookshelfScenarios @Autowired constructor(
     // Given
     val juliette = reader("juliette", "Juliette")
     bnf.knows("9782723488525")
-    ask(juliette, "9782723488525")
-      .expectStatus()
-      .isOk()
-      .expectBody()
-      .jsonPath("$.copies")
-      .isEmpty()
+    ask(juliette, "9782723488525").expectStatus().isOk()
+      .expectBody().jsonPath("$.copies").isEmpty()
     val bookshelf = defaultBookshelfOf(juliette)
     // When
     val response = add(juliette, bookshelf, NEW_ONE_PIECE_1)
     // Then
-    response
-      .expectStatus()
-      .isCreated()
-      .expectHeader()
-      .contentType(APPLICATION_JSON)
+    response.expectStatus().isCreated()
+      .expectHeader().contentType(APPLICATION_JSON)
       .expectBody()
-      .jsonPath("$.id")
-      .isNotEmpty()
-      .jsonPath("$.bookshelf.id")
-      .isEqualTo(bookshelf)
-      .jsonPath("$.bookshelf.name")
-      .isEqualTo("Bibliothèque de Juliette")
-    ask(juliette, "9782723488525")
-      .expectStatus()
-      .isOk()
+      .jsonPath("$.id").isNotEmpty()
+      .jsonPath("$.bookshelf.id").isEqualTo(bookshelf)
+      .jsonPath("$.bookshelf.name").isEqualTo("Bibliothèque de Juliette")
+    ask(juliette, "9782723488525").expectStatus().isOk()
       .expectBody()
-      .jsonPath("$.kind")
-      .isEqualTo("MANGA")
-      .jsonPath("$.copies.length()")
-      .isEqualTo(1)
-      .jsonPath("$.copies[0].bookshelf.name")
-      .isEqualTo("Bibliothèque de Juliette")
+      .jsonPath("$.kind").isEqualTo("MANGA")
+      .jsonPath("$.copies.length()").isEqualTo(1)
+      .jsonPath("$.copies[0].bookshelf.name").isEqualTo("Bibliothèque de Juliette")
   }
 
   @Test
@@ -86,22 +67,13 @@ class BookshelfScenarios @Autowired constructor(
     // When
     val response = add(nina, defaultBookshelfOf(nina), NEW_ONE_PIECE_2)
     // Then
-    response
-      .expectStatus()
-      .isCreated()
+    response.expectStatus().isCreated()
+      .expectBody().jsonPath("$.bookshelf.name").isEqualTo("Bibliothèque de Nina")
+    ask(nina, "9782723489898").expectStatus().isOk()
       .expectBody()
-      .jsonPath("$.bookshelf.name")
-      .isEqualTo("Bibliothèque de Nina")
-    ask(nina, "9782723489898")
-      .expectStatus()
-      .isOk()
-      .expectBody()
-      .jsonPath("$.title")
-      .isEqualTo("Aux prises avec Baggy et ses hommes")
-      .jsonPath("$.copies.length()")
-      .isEqualTo(1)
-      .jsonPath("$.copies[0].bookshelf.name")
-      .isEqualTo("Bibliothèque de Nina")
+      .jsonPath("$.title").isEqualTo("Aux prises avec Baggy et ses hommes")
+      .jsonPath("$.copies.length()").isEqualTo(1)
+      .jsonPath("$.copies[0].bookshelf.name").isEqualTo("Bibliothèque de Nina")
   }
 
   @Test
@@ -115,14 +87,10 @@ class BookshelfScenarios @Autowired constructor(
     // Then
     val second = idOf(response.expectStatus().isCreated())
     second shouldNotBe first
-    ask(paul, "9782723489898")
-      .expectStatus()
-      .isOk()
+    ask(paul, "9782723489898").expectStatus().isOk()
       .expectBody()
-      .jsonPath("$.copies.length()")
-      .isEqualTo(2)
-      .jsonPath("$.copies[*].bookshelf.name")
-      .isEqualTo(listOf("Bibliothèque de Paul", "Bibliothèque de Paul"))
+      .jsonPath("$.copies.length()").isEqualTo(2)
+      .jsonPath("$.copies[*].bookshelf.name").isEqualTo(listOf("Bibliothèque de Paul", "Bibliothèque de Paul"))
   }
 
   @Test
@@ -135,22 +103,14 @@ class BookshelfScenarios @Autowired constructor(
     // When
     val response = ask(rose, "9782723489904")
     // Then
-    response
-      .expectStatus()
-      .isOk()
-      .expectHeader()
-      .contentType(APPLICATION_JSON)
+    response.expectStatus().isOk()
+      .expectHeader().contentType(APPLICATION_JSON)
       .expectBody()
-      .jsonPath("$.title")
-      .isEqualTo("Piège")
-      .jsonPath("$.kind")
-      .isEqualTo("MANGA")
-      .jsonPath("$.copies.length()")
-      .isEqualTo(1)
-      .jsonPath("$.copies[0].id")
-      .isEqualTo(rosesCopy)
-      .jsonPath("$.copies[0].bookshelf.name")
-      .isEqualTo("Bibliothèque de Rose")
+      .jsonPath("$.title").isEqualTo("Piège")
+      .jsonPath("$.kind").isEqualTo("MANGA")
+      .jsonPath("$.copies.length()").isEqualTo(1)
+      .jsonPath("$.copies[0].id").isEqualTo(rosesCopy)
+      .jsonPath("$.copies[0].bookshelf.name").isEqualTo("Bibliothèque de Rose")
     noSourceWasAsked()
   }
 
@@ -163,36 +123,29 @@ class BookshelfScenarios @Autowired constructor(
     // When
     val response = ask(zoe, "9782723489904")
     // Then
-    response
-      .expectStatus()
-      .isOk()
+    response.expectStatus().isOk()
       .expectBody()
-      .jsonPath("$.title")
-      .isEqualTo("Piège")
-      .jsonPath("$.copies")
-      .isEmpty()
+      .jsonPath("$.title").isEqualTo("Piège")
+      .jsonPath("$.copies").isEmpty()
     noSourceWasAsked()
   }
 
   private fun me(reader: Map<String, List<String>>): RestTestClient.ResponseSpec =
-    http
-      .get()
+    http.get()
       .uri("/api/v1/me")
       .headers { it.putAll(reader) }
       .accept(APPLICATION_JSON)
       .exchange()
 
   private fun ask(reader: Map<String, List<String>>, isbn: String): RestTestClient.ResponseSpec =
-    http
-      .get()
+    http.get()
       .uri("/api/v1/isbn/$isbn")
       .headers { it.putAll(reader) }
       .accept(APPLICATION_JSON, APPLICATION_PROBLEM_JSON)
       .exchange()
 
   private fun add(reader: Map<String, List<String>>, bookshelf: String, book: String): RestTestClient.ResponseSpec =
-    http
-      .post()
+    http.post()
       .uri("/api/v1/bookshelves/$bookshelf/books")
       .headers { it.putAll(reader) }
       .contentType(APPLICATION_JSON)

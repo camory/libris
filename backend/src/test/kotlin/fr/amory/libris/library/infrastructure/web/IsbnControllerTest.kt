@@ -83,8 +83,7 @@ class IsbnControllerTest @Autowired constructor(
   }
 
   private fun lookUp(isbn: String): Map<String, Any>? =
-    client
-      .get()
+    client.get()
       .uri("/api/v1/isbn/{isbn}", isbn)
       .headers {
         it.add("Remote-User", "tophe")

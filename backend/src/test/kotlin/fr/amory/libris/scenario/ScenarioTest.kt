@@ -74,8 +74,7 @@ class StubbedSources {
 
   @Bean
   fun restTestClient(context: ApplicationContext): RestTestClient =
-    RestTestClient
-      .bindToServer(SimpleClientHttpRequestFactory())
+    RestTestClient.bindToServer(SimpleClientHttpRequestFactory())
       .uriBuilderFactory(LocalTestWebServer.obtain(context).uriBuilderFactory())
       .defaultHeader("X-Requested-With", "XMLHttpRequest")
       .build()
