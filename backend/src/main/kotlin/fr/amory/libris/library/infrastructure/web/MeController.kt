@@ -21,7 +21,25 @@ data class CurrentReaderResponse(
   val displayName: String,
   val email: String,
   val role: Role,
-  val defaultBookshelf: BookshelfResponse)
+  val defaultBookshelf: BookshelfResponse) {
+  companion object {
+    fun from(
+      reader: Reader,
+      defaultBookshelf: Bookshelf,
+      authorities: Collection<GrantedAuthority>): CurrentReaderResponse =
+      CurrentReaderResponse(
+        id = reader.id.value.toString(),
+        username = reader.username,
+        displayName = reader.displayName,
+        email = reader.email,
+        role = roleOf(authorities),
+        defaultBookshelf = BookshelfResponse(defaultBookshelf.id.value.toString(), defaultBookshelf.name),
+      )
+
+    private fun roleOf(authorities: Collection<GrantedAuthority>): Role =
+      if (authorities.any { it.authority == ADMIN_AUTHORITY }) Role.ADMIN else Role.READER
+  }
+}
 
 @RestController
 class MeController(private val findDefaultBookshelf: FindDefaultBookshelf) {
