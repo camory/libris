@@ -635,3 +635,17 @@ Format:
 - Deviations from the brief: none.
 - Left over: the brief's notes, the adapter's failure modes and D11's
   "one SQL statement", are the planner's; as in the entry above otherwise.
+
+## 2026-10-03 — T066 Backend: the worker's run fetches the chosen inventaire.io cover — fixed up with Tophe
+- Did: the second verdict's two blocking findings, on Tophe's ask. A picture
+  claim `RestClient` cannot read as an address (`{x}`, `50%zz`) is no cover:
+  `pictureAt` catches `IllegalArgumentException`, which covers
+  `InvalidMediaTypeException` too, so that catch left it. `pictureAt` moved
+  below `pictureOf` and `entities`, in the order it is reached. Tophe's IDE
+  edit (`_` catch names, `toEntity<ByteArray>()`, `body<JsonNode>()`) is a
+  commit of its own before them.
+- Decided: the claim is still read as a URI template; no case asks for
+  `URI.create`. The gotchas item on `RestClient` now names the template
+  trap and says only `InventaireCoverLookup` catches these.
+- Left over: the lookup's candidate address carries an unchecked claim to
+  the reader as it is; as in the entries above otherwise.
