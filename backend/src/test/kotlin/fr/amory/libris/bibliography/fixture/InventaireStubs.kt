@@ -14,10 +14,10 @@ import com.jayway.jsonpath.JsonPath
 class InventaireStubs(private val server: WireMockServer) {
   val baseUrl: String get() = server.baseUrl()
 
-  fun knows(isbn: String, picture: ByteArray) {
+  fun knows(isbn: String, picture: ByteArray, mediaType: String = WEBP) {
     val entity = recorded("inventaire/$isbn.json")
     entityAnswers(isbn, entity)
-    server.stubFor(get(urlPathMatching(picturePath(hashOf(entity)))).willReturn(webp(picture)))
+    server.stubFor(get(urlPathMatching(picturePath(hashOf(entity)))).willReturn(picture(picture, mediaType)))
   }
 
   fun knowsButThePictureNeverComes(isbn: String) {
@@ -81,11 +81,12 @@ class InventaireStubs(private val server: WireMockServer) {
   private fun json(body: String): ResponseDefinitionBuilder =
     ok().withHeader("Content-Type", "application/json").withBody(body)
 
-  private fun webp(body: ByteArray): ResponseDefinitionBuilder =
-    ok().withHeader("Content-Type", "image/webp").withBody(body)
+  private fun picture(body: ByteArray, mediaType: String): ResponseDefinitionBuilder =
+    ok().withHeader("Content-Type", mediaType).withBody(body)
 
   private companion object {
     const val ENTITIES = "/api/entities"
+    const val WEBP = "image/webp"
     const val NEVER = 30_000
     const val LATE = 2_000
   }

@@ -6,6 +6,7 @@ import fr.amory.libris.bibliography.domain.cover.CoverFetch
 import fr.amory.libris.bibliography.domain.cover.CoverSource.INVENTAIRE
 import fr.amory.libris.bibliography.domain.lookup.CoverCandidate
 import fr.amory.libris.bibliography.domain.lookup.CoverLookup
+import org.springframework.http.InvalidMediaTypeException
 import org.springframework.web.client.RestClientException
 import tools.jackson.databind.JsonNode
 import tools.jackson.databind.exc.JsonNodeException
@@ -36,6 +37,8 @@ class InventaireCoverLookup(private val baseUrl: String, timeout: Duration) : Co
         .toEntity(ByteArray::class.java)
       answer.headers.contentType?.let { Cover.of(it.toString(), answer.body ?: ByteArray(0)) }
     } catch (ignored: RestClientException) {
+      null
+    } catch (ignored: InvalidMediaTypeException) {
       null
     }
 
