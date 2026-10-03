@@ -31,6 +31,19 @@ class RemoteIdentityTest {
     identity.displayName shouldBe "Juliette"
   }
 
+  @Test
+  fun `a name sent in UTF-8 is read whole`() {
+    // Given
+    val asTomcatReadsIt = String("Léa".toByteArray(Charsets.UTF_8), Charsets.ISO_8859_1)
+    val request = julietteSending("Remote-Name" to asTomcatReadsIt)
+
+    // When
+    val identity = RemoteIdentity.of(request).shouldNotBeNull()
+
+    // Then
+    identity.displayName shouldBe "Léa"
+  }
+
   private fun julietteSending(vararg headers: Pair<String, String>): MockHttpServletRequest =
     requestOf("Remote-User" to "juliette", "Remote-Email" to "juliette@amory.fr", *headers)
 

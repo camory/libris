@@ -11,7 +11,10 @@ class RemoteIdentity private constructor(
       RemoteIdentity(
         username = request.getHeader("Remote-User"),
         email = request.getHeader("Remote-Email"),
-        displayName = request.getHeader("Remote-Name").orEmpty(),
+        displayName = utf8(request.getHeader("Remote-Name").orEmpty()),
       )
+
+    private fun utf8(header: String): String =
+      String(header.toByteArray(Charsets.ISO_8859_1), Charsets.UTF_8)
   }
 }
