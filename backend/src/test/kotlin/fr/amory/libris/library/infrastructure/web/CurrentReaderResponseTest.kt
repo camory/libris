@@ -22,4 +22,20 @@ class CurrentReaderResponseTest {
     // Then
     response.role shouldBe Role.READER
   }
+
+  @Test
+  fun `the admin authority is an admin`() {
+    // Given
+    val tophe = readerNamed("tophe", "Tophe")
+
+    // When
+    val response = CurrentReaderResponse.from(
+      tophe,
+      bookshelfOwnedBy(tophe),
+      listOf(SimpleGrantedAuthority("ROLE_READER"), SimpleGrantedAuthority("ROLE_ADMIN")),
+    )
+
+    // Then
+    response.role shouldBe Role.ADMIN
+  }
 }
