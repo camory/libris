@@ -69,6 +69,7 @@ tasks.detekt {
 
 tasks.test {
   useJUnitPlatform()
+  jvmArgs("-XX:TieredStopAtLevel=1")
   environmentFromDotenv()
   testLogging {
     events(TestLogEvent.PASSED, TestLogEvent.SKIPPED, TestLogEvent.FAILED)
