@@ -667,9 +667,9 @@ Format:
   `FetchAwaitedCovers` on Spring Boot's `applicationTaskExecutor`. S3, S4 un-skipped.
 - Decided: the `Executor` is injected by type, unqualified: the booted
   application resolves it to `applicationTaskExecutor` with no ambiguity.
-  The scenario un-skip was the first cycle (S4 red, S3 green on arrival),
-  the scenarios' guards checked last, as the brief's steps 6 and 7.
-- Deviations from the brief: none.
+- Deviations from the brief: the scenario un-skip was the first cycle, as
+  the implementer prompt asks (S4 red, S3 green on arrival), not steps 6
+  and 7; their guards' mutations were still checked last.
 - Left over: runs one at a time, at start and daily (T059); the other
   chosen sources (T054); the D02 bullet on `bibliography.infrastructure.worker`
   is proposed in the PR, Tophe's to settle.
