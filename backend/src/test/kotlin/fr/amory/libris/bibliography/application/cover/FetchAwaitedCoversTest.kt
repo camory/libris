@@ -110,6 +110,21 @@ class FetchAwaitedCoversTest {
     editions.findByIsbn(isbnOf(ONE_PIECE)) shouldBe edition
   }
 
+  @Test
+  fun `a fetch that brings no picture keeps the wait`() {
+    // Given
+    awaiting(INVENTAIRE)
+    val fetchAwaitedCovers = fetchAwaitedCoversOver(CoverFetchAnswering(null))
+
+    // When
+    fetchAwaitedCovers()
+
+    // Then
+    awaitedCovers.findAll() shouldBe listOf(AwaitedCover(isbnOf(ONE_PIECE), INVENTAIRE))
+    editions.findByIsbn(isbnOf(ONE_PIECE)) shouldBe edition
+    covers.stored.shouldBeEmpty()
+  }
+
   private fun awaiting(chosenSource: CoverSource?) {
     editions.insert(edition)
     awaitedCovers.insert(AwaitedCover(isbnOf(ONE_PIECE), chosenSource))
