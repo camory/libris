@@ -176,7 +176,9 @@ true; the diary keeps the date it was found.
 - `./gradlew detekt` reports on the test sources as well as the main ones
   (T050 saw `MaxLineLength` and `ArgumentListWrapping` in a slice test from
   it). Run `./gradlew detekt` before each commit: `ImportOrdering` fails an import added by hand
-  out of lexicographic order, `VariableNaming` refuses a backticked property
+  out of its order, lexicographic but for `java.`, `javax.` and `kotlin.`,
+  which come last in that order (`kotlin.text.Charsets.UTF_8` after
+  `org.…`), `VariableNaming` refuses a backticked property
   (`@ArchTest fun \`name\`(classes: JavaClasses)` instead of a `val`),
   `ReturnCount` allows two returns, `LongParameterList` refuses a function of
   more than six parameters but exempts data classes (a shared fixture is a
@@ -189,6 +191,10 @@ true; the diary keeps the date it was found.
   stay quiet when the parameter is named `ignored` (a query parameter the
   contract declares and the answer does not read yet). An elvis over a platform type Kotlin reads
   as non-null is unreachable code.
+- A gradle command piped into `tail` or `grep` answers the pipe's exit
+  status, not Gradle's: a red `detekt` read through `| tail -5` looks green
+  unless `BUILD FAILED` is in the lines kept (T068 committed two `style`
+  fixes for it). Read for `BUILD SUCCESSFUL`, or run it unpiped.
 - `UnusedPrivateMember` fails two private overloads of one name that are
   called only from lambdas (`map { responseOf(it) }`), though both are used;
   give them distinct names (`bookOf`, `copyOf`).
@@ -221,10 +227,11 @@ true; the diary keeps the date it was found.
   `@SpringBootTest` with explicit `classes` does not detect nested
   `@TestConfiguration` classes: `@Import` them.
 - The web slice (`@WebSliceTest`, in the `fixture` package) component-scans
-  `library.infrastructure.web`, the only web package since T037 moved the
-  ISBN endpoint there, so every use case a controller of it takes must be in
-  the class-level
-  `@MockitoBean(types = [...])` of every web-slice test, not only the one
+  the packages of `MeController`, `CoverController` and `ProblemAdvice`
+  (`library.infrastructure.web`, `bibliography.infrastructure.web`,
+  `shared.infrastructure.web`), so every use case a controller of them
+  takes must be in the class-level `@MockitoBean(types = [...])` of every
+  web-slice test, not only the one
   exercised. Its `WebSliceConfiguration` cannot live in the root test
   package: a `@SpringBootTest` without `classes` looks for one
   `@SpringBootConfiguration` in the test's own package and finds two there,
@@ -363,9 +370,9 @@ true; the diary keeps the date it was found.
   `RestTestClientBuilderCustomizer` would not reach it.
 - The JDK `HttpClient` writes header values as US-ASCII (`Léa` leaves as
   `L?a`) and Tomcat reads them as ISO-8859-1. The scenario client is built on
-  `SimpleClientHttpRequestFactory`, which sends the UTF-8 bytes, and the
-  security filter decodes `Remote-Name` from ISO-8859-1 bytes to UTF-8; the
-  other `Remote-*` headers are read as they come.
+  `SimpleClientHttpRequestFactory`, which sends the UTF-8 bytes, and
+  `RemoteIdentity.of` decodes `Remote-Name` from ISO-8859-1 bytes to UTF-8;
+  the other `Remote-*` headers are read as they come.
 - The scenario WireMock servers live as long as the context, across classes;
   `FreshSources` on `ScenarioTest` resets their stubs and request journal
   before each case, so a case stubs every source it needs and `verify(0, …)`

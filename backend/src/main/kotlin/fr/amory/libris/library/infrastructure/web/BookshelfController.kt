@@ -5,6 +5,8 @@ import fr.amory.libris.library.application.AddBookResult.Added
 import fr.amory.libris.library.application.AddBookResult.NoSuchBookshelf
 import fr.amory.libris.library.application.AddBookResult.NotAnOwner
 import fr.amory.libris.library.application.AddBookToBookshelf
+import fr.amory.libris.library.application.lookup.CopyOnBookshelf
+import fr.amory.libris.library.domain.bookshelf.Bookshelf
 import fr.amory.libris.library.domain.bookshelf.BookshelfId
 import fr.amory.libris.library.domain.reader.Reader
 import fr.amory.libris.library.infrastructure.web.NewBookValidation.Accepted
@@ -26,14 +28,6 @@ import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RestController
 import java.util.UUID
 
-data class BookshelfResponse(
-  val id: String,
-  val name: String)
-
-data class CopyResponse(
-  val id: String,
-  val bookshelf: BookshelfResponse)
-
 @RestController
 class BookshelfController(private val addBookToBookshelf: AddBookToBookshelf) {
   @PostMapping("/api/v1/bookshelves/{id}/books")
@@ -46,22 +40,36 @@ class BookshelfController(private val addBookToBookshelf: AddBookToBookshelf) {
       is Accepted -> responseOf(addBookToBookshelf(reader.id, BookshelfId(id), validation.book))
     }
 
-  private fun responseOf(result: AddBookResult): ResponseEntity<Any> =
-    when (result) {
-      is Added                    -> created(result)
-      NoSuchBookshelf, NotAnOwner -> problem(NOT_FOUND, NOT_FOUND_PROBLEM).asResponse()
-    }
-
-  private fun created(added: Added): ResponseEntity<Any> =
-    ResponseEntity
-      .status(CREATED)
-      .body(
-        CopyResponse(
-          id = added.copy.id.value.toString(),
-          bookshelf = BookshelfResponse(added.bookshelf.id.value.toString(), added.bookshelf.name),
-        ),
-      )
-
   private fun invalid(errors: List<ValidationErrorResponse>): ProblemDetail =
     problem(BAD_REQUEST, VALIDATION_PROBLEM).apply { setProperty("errors", errors) }
+
+  private fun responseOf(result: AddBookResult): ResponseEntity<Any> =
+    when (result) {
+      is Added                    -> ResponseEntity.status(CREATED).body(CopyResponse.from(result))
+      NoSuchBookshelf, NotAnOwner -> problem(NOT_FOUND, NOT_FOUND_PROBLEM).asResponse()
+    }
+}
+
+data class CopyResponse(
+  val id: String,
+  val bookshelf: BookshelfResponse) {
+  companion object {
+    fun from(copy: CopyOnBookshelf): CopyResponse =
+      CopyResponse(copy.copyId.value.toString(), BookshelfResponse.from(copy))
+
+    fun from(added: Added): CopyResponse =
+      CopyResponse(added.copy.id.value.toString(), BookshelfResponse.from(added.bookshelf))
+  }
+}
+
+data class BookshelfResponse(
+  val id: String,
+  val name: String) {
+  companion object {
+    fun from(bookshelf: Bookshelf): BookshelfResponse =
+      BookshelfResponse(bookshelf.id.value.toString(), bookshelf.name)
+
+    fun from(copy: CopyOnBookshelf): BookshelfResponse =
+      BookshelfResponse(copy.bookshelfId.value.toString(), copy.bookshelfName)
+  }
 }

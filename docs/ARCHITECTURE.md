@@ -439,6 +439,16 @@ deliberately lacks), no other service. A test that needs more blocks the task.
   only: a test keeps its chains as they read best. detekt enforces the
   indent and the declaration's comma; the others are kept by hand and by the
   reviewer.
+- A file reads from the top down, the most important first (the newspaper
+  metaphor, Robert C. Martin): the declaration the file is named after
+  comes first, and each declaration it uses comes below its first user, in
+  the order it is reached (the stepdown rule, Robert C. Martin). This holds
+  for every component, in production code and tests alike: a controller
+  then its responses, a use case then its steps, an adapter then its
+  mapping, a test class then its helpers, then its fixtures. A function too
+  long to take in at a glance is made of calls to functions named for what
+  they do, all at one level of detail (Compose Method, Kent Beck); a test's
+  setup too.
 - The words of `docs/PRD.md` §3 name variables and parameters as they name
   types: an aggregate is called by its name, never shortened (`bookshelf`,
   not `shelf`), and an identifier is the aggregate's name with `Id`

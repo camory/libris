@@ -361,12 +361,6 @@
   `unavailable` then gets the message S6 of `specs/fast-entry.md` asks for,
   which the view never shows today (found 2026-09-30 reviewing contract
   v0.8.0 with Tophe).
-- Backend: `ApiContractTest` mirrors the contract's `ONE_PIECE_1` and
-  `ONE_PIECE_2_OWNED` field by field and stubs on exact arguments, though
-  the verifier checks a keyed 200 on its schema only, as measured on
-  2026-09-30. Stubs on `any()` answering any Found or Held edition serve
-  every case, and a changed example value stops costing a backend edit
-  (found 2026-09-30 reviewing contract v0.8.0 with Tophe).
 - Frontend: `FetchIsbnApi.spec.ts` and `FetchBookshelfApi.spec.ts` assert
   the problem `type` the mock answers, a value no schema of the contract
   defines and that v0.8.0 no longer carries as an example; with the ports

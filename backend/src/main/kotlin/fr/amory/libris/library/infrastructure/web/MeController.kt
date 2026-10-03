@@ -3,6 +3,8 @@ package fr.amory.libris.library.infrastructure.web
 import fr.amory.libris.library.application.FindDefaultBookshelf
 import fr.amory.libris.library.domain.bookshelf.Bookshelf
 import fr.amory.libris.library.domain.reader.Reader
+import fr.amory.libris.library.infrastructure.web.Role.ADMIN
+import fr.amory.libris.library.infrastructure.web.Role.READER
 import fr.amory.libris.shared.infrastructure.web.ADMIN_AUTHORITY
 import org.springframework.security.core.Authentication
 import org.springframework.security.core.GrantedAuthority
@@ -10,9 +12,11 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.RestController
 
-enum class Role {
-  READER,
-  ADMIN
+@RestController
+class MeController(private val findDefaultBookshelf: FindDefaultBookshelf) {
+  @GetMapping("/api/v1/me")
+  fun me(@AuthenticationPrincipal reader: Reader, authentication: Authentication): CurrentReaderResponse =
+    CurrentReaderResponse.from(reader, findDefaultBookshelf(reader), authentication.authorities)
 }
 
 data class CurrentReaderResponse(
@@ -21,24 +25,24 @@ data class CurrentReaderResponse(
   val displayName: String,
   val email: String,
   val role: Role,
-  val defaultBookshelf: BookshelfResponse)
+  val defaultBookshelf: BookshelfResponse) {
+  companion object {
+    fun from(
+      reader: Reader,
+      defaultBookshelf: Bookshelf,
+      authorities: Collection<GrantedAuthority>): CurrentReaderResponse =
+      CurrentReaderResponse(
+        id = reader.id.value.toString(),
+        username = reader.username,
+        displayName = reader.displayName,
+        email = reader.email,
+        role = if (authorities.any { it.authority == ADMIN_AUTHORITY }) ADMIN else READER,
+        defaultBookshelf = BookshelfResponse.from(defaultBookshelf),
+      )
+  }
+}
 
-@RestController
-class MeController(private val findDefaultBookshelf: FindDefaultBookshelf) {
-  @GetMapping("/api/v1/me")
-  fun me(@AuthenticationPrincipal reader: Reader, authentication: Authentication): CurrentReaderResponse =
-    CurrentReaderResponse(
-      id = reader.id.value.toString(),
-      username = reader.username,
-      displayName = reader.displayName,
-      email = reader.email,
-      role = roleOf(authentication.authorities),
-      defaultBookshelf = responseOf(findDefaultBookshelf(reader)),
-    )
-
-  private fun responseOf(bookshelf: Bookshelf): BookshelfResponse =
-    BookshelfResponse(bookshelf.id.value.toString(), bookshelf.name)
-
-  private fun roleOf(authorities: Collection<GrantedAuthority>): Role =
-    if (authorities.any { it.authority == ADMIN_AUTHORITY }) Role.ADMIN else Role.READER
+enum class Role {
+  READER,
+  ADMIN
 }

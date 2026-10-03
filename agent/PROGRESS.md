@@ -529,3 +529,48 @@ Format:
 - Deviations from the brief: none; no brief, a human session.
 - Left over: the GOTCHAS item on the web slice still says
   `library.infrastructure.web` is the only web package; T068's run meets it.
+
+## 2026-10-03 — T068 Backend: the web layer as D07 and D10 say — done
+- Did: `RemoteIdentity` in `shared.infrastructure.web` reads the proxy's
+  headers, the filter builds its token from it; every response is built by
+  `from` on its companion; three controller tests gone; `ApiContractTest`
+  answers its own Astérix values. Two runs, a handoff after step 16.
+- Decided: `READER_AUTHORITY` and `ADMIN_AUTHORITY` moved beside
+  `ADMIN_GROUP` in `RemoteIdentity.kt`, still public; the role is computed
+  inline in `CurrentReaderResponse.from`, no private `roleOf`; `IsbnResponse`
+  keeps a private `from(id, preview, copies)` the two public ones share.
+- Decided: the contract test's held copy sits on a random bookshelf id
+  named `Grenier`; the found edition offers one candidate at an
+  `example.org` address; the catalogue's edition has no cover, as before.
+- Deviations from the brief: step 14 was a guard, not a red: detekt's
+  `UnusedParameter` refused a `from` ignoring `authorities`, so step 13
+  already read the role. Step 15's guard mutation, `displayName` from the
+  username, was run in `RemoteIdentity.of`: in `CurrentReaderResponse.from`
+  it leaves S1 green, which asserts the bookshelf name only. Two `style`
+  commits fix `MaxLineLength` in `RemoteIdentityTest`, committed when a
+  piped detekt hid its failure.
+- Left over: D06 still names the filter as the class reading the headers;
+  the PR proposes the wording. The criterion's grep on `copyOf` also
+  answers `JdbcCopyRepository.copyOf`, a row mapper outside the web layer.
+
+## 2026-10-03 — T068 Backend: the web layer as D07 and D10 say — reworked
+- Did: `RemoteIdentity` and `RemoteIdentityTest` import `ISO_8859_1` and
+  `UTF_8` from `kotlin.text.Charsets`, `CurrentReaderResponseTest` imports
+  `READER` and `ADMIN` from `Role`; the three use the bare names.
+- Decided: the reviewer's verdict of 2026-10-03 amended nothing; its
+  blocking finding was D10's import rule, unmet on four added lines. The
+  companion factories (`from`, `of`, `new`) stay qualified, their bare name
+  saying nothing, as `MissingNode.getInstance()`. Its suggestion on the two
+  `style` commits asks for nothing: history is not rewritten.
+- Deviations from the brief: none.
+- Left over: as in the entry above; D06's wording is Tophe's to settle.
+
+## 2026-10-03 — T068 Backend: the web layer as D07 and D10 say — fixed up with Tophe
+- Did: each controller file reads from the controller down, its responses
+  in the order reached, constants last; `ApiContractTest` composes its
+  stubs into five named steps, fixtures below the class.
+- Decided: with Tophe, a D10 bullet: a file reads from the top down (the
+  newspaper metaphor and the stepdown rule, Robert C. Martin), a long
+  function or a test's setup is composed (Compose Method, Kent Beck).
+- Left over: the rest of the tree predates the bullet; it is applied to
+  the files a task touches.
