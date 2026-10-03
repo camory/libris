@@ -8,6 +8,8 @@ import fr.amory.libris.bibliography.domain.lookup.CoverCandidate
 import fr.amory.libris.bibliography.domain.lookup.CoverLookup
 import org.springframework.http.InvalidMediaTypeException
 import org.springframework.web.client.RestClientException
+import org.springframework.web.client.body
+import org.springframework.web.client.toEntity
 import tools.jackson.databind.JsonNode
 import tools.jackson.databind.exc.JsonNodeException
 import tools.jackson.databind.node.MissingNode
@@ -19,11 +21,11 @@ class InventaireCoverLookup(private val baseUrl: String, timeout: Duration) : Co
   override fun lookUp(isbn: Isbn): CoverCandidate? =
     try {
       pictureOf(entities(isbn))?.let { CoverCandidate(INVENTAIRE, "$baseUrl/img/entities/100x600/$it") }
-    } catch (ignored: RestClientException) {
+    } catch (_: RestClientException) {
       null
-    } catch (ignored: JsonNodeException) {
+    } catch (_: JsonNodeException) {
       null
-    } catch (ignored: InvalidMediaTypeException) {
+    } catch (_: InvalidMediaTypeException) {
       null
     }
 
@@ -36,11 +38,11 @@ class InventaireCoverLookup(private val baseUrl: String, timeout: Duration) : Co
         .get()
         .uri(address)
         .retrieve()
-        .toEntity(ByteArray::class.java)
+        .toEntity<ByteArray>()
       answer.body?.let { bytes -> answer.headers.contentType?.let { Cover.of(it.toString(), bytes) } }
-    } catch (ignored: RestClientException) {
+    } catch (_: RestClientException) {
       null
-    } catch (ignored: InvalidMediaTypeException) {
+    } catch (_: InvalidMediaTypeException) {
       null
     }
 
@@ -68,5 +70,5 @@ class InventaireCoverLookup(private val baseUrl: String, timeout: Duration) : Co
           .build()
       }
       .retrieve()
-      .body(JsonNode::class.java) ?: MissingNode.getInstance()
+      .body<JsonNode>() ?: MissingNode.getInstance()
 }
