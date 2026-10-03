@@ -26,6 +26,12 @@ class InventaireStubs(private val server: WireMockServer) {
     server.stubFor(get(urlPathMatching(picturePath(hashOf(entity)))).willReturn(ok().withFixedDelay(NEVER)))
   }
 
+  fun knowsButThePictureFails(isbn: String) {
+    val entity = recorded("inventaire/$isbn.json")
+    entityAnswers(isbn, entity)
+    server.stubFor(get(urlPathMatching(picturePath(hashOf(entity)))).willReturn(serverError()))
+  }
+
   fun knowsWithoutPicture(isbn: String) {
     val entity = JsonPath.parse(recorded("inventaire/$isbn.json")).delete("$..claims['invp:P2']")
     entityAnswers(isbn, entity.jsonString())

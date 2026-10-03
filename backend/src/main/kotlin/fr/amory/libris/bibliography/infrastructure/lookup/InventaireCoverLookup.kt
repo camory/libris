@@ -27,14 +27,17 @@ class InventaireCoverLookup(private val baseUrl: String, timeout: Duration) : Co
   override fun fetch(isbn: Isbn): Cover? =
     lookUp(isbn)?.let { pictureAt(it.url) }
 
-  private fun pictureAt(address: String): Cover? {
-    val answer = http
-      .get()
-      .uri(address)
-      .retrieve()
-      .toEntity(ByteArray::class.java)
-    return answer.headers.contentType?.let { Cover.of(it.toString(), answer.body ?: ByteArray(0)) }
-  }
+  private fun pictureAt(address: String): Cover? =
+    try {
+      val answer = http
+        .get()
+        .uri(address)
+        .retrieve()
+        .toEntity(ByteArray::class.java)
+      answer.headers.contentType?.let { Cover.of(it.toString(), answer.body ?: ByteArray(0)) }
+    } catch (ignored: RestClientException) {
+      null
+    }
 
   private fun pictureOf(answer: JsonNode): String? =
     answer
