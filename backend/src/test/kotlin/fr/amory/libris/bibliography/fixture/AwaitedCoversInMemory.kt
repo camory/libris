@@ -14,4 +14,8 @@ class AwaitedCoversInMemory : AwaitedCoverRepository {
 
   override fun findAll(): List<AwaitedCover> =
     awaitedCovers.toList()
+
+  override fun delete(awaitedCover: AwaitedCover) {
+    awaitedCovers.removeIf { it.isbn == awaitedCover.isbn }
+  }
 }

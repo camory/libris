@@ -17,6 +17,9 @@ private const val INSERT_AWAITED_COVER =
 private const val SELECT_AWAITED_COVERS =
   "SELECT awaited_cover.isbn13, awaited_cover.source FROM awaited_cover"
 
+private const val DELETE_AWAITED_COVER =
+  "DELETE FROM awaited_cover WHERE awaited_cover.isbn13 = :isbn13"
+
 @Repository
 class JdbcAwaitedCoverRepository(private val jdbcClient: JdbcClient) : AwaitedCoverRepository {
   override fun insert(awaitedCover: AwaitedCover) {
@@ -33,6 +36,13 @@ class JdbcAwaitedCoverRepository(private val jdbcClient: JdbcClient) : AwaitedCo
       .query { rs, _ -> awaitedCoverOf(rs) }
       .list()
       .filterNotNull()
+
+  override fun delete(awaitedCover: AwaitedCover) {
+    jdbcClient
+      .sql(DELETE_AWAITED_COVER)
+      .param("isbn13", awaitedCover.isbn.digits)
+      .update()
+  }
 
   private fun awaitedCoverOf(rs: ResultSet): AwaitedCover? =
     Isbn

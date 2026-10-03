@@ -4,4 +4,6 @@ interface AwaitedCoverRepository {
   fun insert(awaitedCover: AwaitedCover)
 
   fun findAll(): List<AwaitedCover>
+
+  fun delete(awaitedCover: AwaitedCover)
 }

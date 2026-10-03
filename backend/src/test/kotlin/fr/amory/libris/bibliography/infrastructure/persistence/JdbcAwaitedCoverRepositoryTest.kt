@@ -75,6 +75,21 @@ class JdbcAwaitedCoverRepositoryTest @Autowired constructor(
     )
   }
 
+  @Test
+  fun `a deleted awaited cover is awaited no more`() {
+    // Given
+    editions.insert(onePieceTomeOne())
+    editions.insert(onePieceTomeOne().copy(id = EditionId.new(), isbn = isbnOf(ONE_PIECE_TOME_TWO)))
+    awaitedCovers.insert(AwaitedCover(isbnOf(ONE_PIECE), INVENTAIRE))
+    awaitedCovers.insert(AwaitedCover(isbnOf(ONE_PIECE_TOME_TWO), null))
+
+    // When
+    awaitedCovers.delete(AwaitedCover(isbnOf(ONE_PIECE), INVENTAIRE))
+
+    // Then
+    awaitedCovers.findAll() shouldBe listOf(AwaitedCover(isbnOf(ONE_PIECE_TOME_TWO), null))
+  }
+
   private fun sourcesAwaitedFor(isbn13: String): List<String?> =
     jdbcClient
       .sql("SELECT awaited_cover.source FROM awaited_cover WHERE awaited_cover.isbn13 = :isbn13")
