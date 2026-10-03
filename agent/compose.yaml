@@ -48,7 +48,7 @@ services:
       LIBRIS_DB_USER: libris
       LIBRIS_DB_PASSWORD: libris
       # --- quieter, deterministic tooling ---
-      GRADLE_OPTS: -Dorg.gradle.daemon=false -Dorg.gradle.console=plain
+      GRADLE_OPTS: -Dorg.gradle.console=plain
       CI: "true"
     volumes:
       - ..:/work                       # the repository, and nothing else from the host
