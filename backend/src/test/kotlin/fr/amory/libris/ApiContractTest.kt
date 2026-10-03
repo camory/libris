@@ -82,7 +82,7 @@ class ApiContractTest @Autowired constructor(
   private val addBookToBookshelf: AddBookToBookshelf,
   private val browseCatalogue: BrowseCatalogue,
   private val findCover: FindCover) {
-  @ContracteerTest(openApiDoc = "https://raw.githubusercontent.com/camory/libris-api/v0.8.2/openapi.yaml")
+  @ContracteerTest(openApiDoc = "https://raw.githubusercontent.com/camory/libris-api/v0.9.0/openapi.yaml")
   fun `the API matches the contract`() {
     contracteerIsWelcomed()
     isbnLookupsAnswer()
@@ -99,7 +99,7 @@ class ApiContractTest @Autowired constructor(
   private fun isbnLookupsAnswer() {
     given(lookupIsbnForReader(CONTRACTEER.id, isbnOf("9782723488525")))
       .willReturn(noCopy(Found(ASTERIX_1, ASTERIX_1_COVERS)))
-    given(lookupIsbnForReader(CONTRACTEER.id, isbnOf("9782000000006"))).willReturn(noCopy(UnknownIsbn))
+    given(lookupIsbnForReader(CONTRACTEER.id, isbnOf("9782000000013"))).willReturn(noCopy(UnknownIsbn))
     given(lookupIsbnForReader(CONTRACTEER.id, isbnOf("9791000000008"))).willReturn(noCopy(SourcesUnavailable))
     given(lookupIsbnForReader(CONTRACTEER.id, isbnOf("9782723489898")))
       .willReturn(IsbnLookup(Held(EditionId.new(), ASTERIX_1), listOf(COPY_OF_ASTERIX_1)))
