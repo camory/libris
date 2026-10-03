@@ -142,6 +142,18 @@ class InventaireCoverLookupTest {
   }
 
   @Test
+  fun `an entity served with a malformed media type offers no picture`() {
+    // Given
+    inventaire.knowsWithEntityServedAs(ONE_PIECE_1, "json")
+
+    // When
+    val candidate = source.lookUp(isbnOf(ONE_PIECE_1))
+
+    // Then
+    candidate.shouldBeNull()
+  }
+
+  @Test
   fun `a known ISBN's picture is fetched with the media type it was served with`() {
     // Given
     inventaire.knows(ONE_PIECE_1, SMALL_WEBP)

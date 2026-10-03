@@ -42,6 +42,14 @@ class InventaireStubs(private val server: WireMockServer) {
     entityAnswers(isbn, entity.jsonString())
   }
 
+  fun knowsWithEntityServedAs(isbn: String, mediaType: String) {
+    server.stubFor(
+      get(urlPathEqualTo(ENTITIES))
+        .withQueryParam("uris", equalTo("isbn:$isbn"))
+        .willReturn(ok().withHeader("Content-Type", mediaType).withBody(recorded("inventaire/$isbn.json"))),
+    )
+  }
+
   fun answersTooLate(isbn: String) {
     server.stubFor(
       get(urlPathEqualTo(ENTITIES))

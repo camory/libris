@@ -23,6 +23,8 @@ class InventaireCoverLookup(private val baseUrl: String, timeout: Duration) : Co
       null
     } catch (ignored: JsonNodeException) {
       null
+    } catch (ignored: InvalidMediaTypeException) {
+      null
     }
 
   override fun fetch(isbn: Isbn): Cover? =
