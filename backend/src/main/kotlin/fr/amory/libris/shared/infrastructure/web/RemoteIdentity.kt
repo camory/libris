@@ -12,7 +12,7 @@ class RemoteIdentity private constructor(
       return RemoteIdentity(
         username = username,
         email = request.getHeader("Remote-Email"),
-        displayName = request.getHeader("Remote-Name")?.let(::utf8) ?: username,
+        displayName = request.getHeader("Remote-Name")?.let(::utf8)?.takeUnless { it.isBlank() } ?: username,
       )
     }
 
