@@ -88,7 +88,9 @@ is blocking. The *Rework* section of the PR body says how the run met them.
      still skipped or altered; an architecture decision
      violated, the shape it gives a test included (its name, its place,
      its Given / When / Then layout), and the Kotlin layout of D10 on a
-     line the diff adds or changes; a security or data-loss risk; a
+     line the diff adds or changes; a test case added in a
+     `*ControllerTest`, or a hand-written test that calls a controller (name
+     the component that owns what it asserts); a security or data-loss risk; a
      verification claim your run contradicted; a file, dependency or setting that no criterion or
      declared deviation needs; rationale or a decision number in code,
      build scripts or configuration.

@@ -158,6 +158,26 @@ Piece 1 first with Bibliothèque de Christophe · 2 exemplaires, and the rows
 read as a shelf; on the second account of the family, open Catalogue and
 read the empty sentence.*
 
+## Web layer — docs/ARCHITECTURE.md
+
+- [ ] T068 Backend: the web layer as D07 and D10 say.
+      No behaviour changes and no scenario. Each response of
+      `infrastructure.web` is built by `from` on its companion, and the
+      controllers map nothing (D10). The reading of the proxy's headers,
+      the username, the email, the display name falling back to the
+      username, the authorities from the groups, leaves the filter of
+      `SecurityConfig` for a class of its own in `shared.infrastructure.web`,
+      tested in plain JUnit; `SecurityConfigTest` keeps the refusals and the
+      `X-Requested-With` rule. The role read from the authorities is tested
+      on `CurrentReaderResponse.from`, plain JUnit. Each case of a
+      `*ControllerTest` moves to the class that decides what it asserts, or
+      leaves when it asserts a value copied into a response (D07):
+      `MeControllerTest`, `IsbnControllerTest` and `CatalogueControllerTest`
+      leave. `ApiContractTest`'s stubs match the arguments a scenario key
+      fixes and answer fixtures of their own, no longer the document's
+      examples (D07); the PROPOSED item on the mirrored examples leaves.
+      Un-skips nothing.
+
 ## Covers — specs/covers.md
 
 Contract: release `v0.8.2` of `camory/libris-api`, after `v0.7.0`: `Edition`

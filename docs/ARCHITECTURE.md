@@ -291,15 +291,22 @@ session, no BCrypt.
   (LCOV).
 - Each layer is tested in isolation, and a test asserts what its layer
   owns. `domain` and `application` own the behaviour and the values:
-  `application` runs plain JUnit over the fakes of its ports. `infrastructure.web` is
-  proven by the Contracteer test: the web slice, the package with its
-  security chain on a real port and no datasource, over stubbed use cases
-  whose stubs mirror the document's examples; it proves structure and types,
-  never values, by design. A hand-written test in the web slice exists only
-  for behaviour the contract cannot express, such as a role derived from a
-  header, and asserts no value the contract leaves free. A task that
-  implements an operation of the contract opens with the pin bump: the new
-  verification cases are its first red, the controller their green.
+  `application` runs plain JUnit over the fakes of its ports. A value is
+  tested where it is computed; a value only copied into a response gets no
+  test, and the form of a value the API answers is the contract's to state,
+  by a `pattern` or a `format`. `infrastructure.web` is proven by the
+  Contracteer test: the web slice, the package with its security chain on a
+  real port and no datasource, over stubbed use cases. A stub matches
+  exactly the arguments a scenario key fixes and answers any value its
+  schema accepts, filling every field the contract constrains; the verifier
+  checks a `2xx` against its schema, never against its example. A
+  hand-written test of the web layer exists only for what it decides from
+  the request and the Contracteer test cannot vary, such as the reader and
+  the role read from the proxy's headers, and it tests the class that
+  decides, never a controller. A task that implements an operation of the
+  contract opens with the pin bump: the new verification cases are its
+  first red, the controller their green. When the pin bump brings no red,
+  the first red is in the test of the component that computes the value.
   `infrastructure.persistence` runs in the JDBC slice against the PostgreSQL of D08,
   each test in a transaction rolled back at the end. Every class that
   touches the database, the JDBC slice and the scenario classes, starts
@@ -452,6 +459,11 @@ deliberately lacks), no other service. A test that needs more blocks the task.
   query port of D12 does not, and is named by what it answers
   (`CatalogueEditions`): the suffix alone tells an aggregate's port from a
   read's.
+- A DTO of `infrastructure.web` maps itself, and the controller maps
+  nothing. A response is built from the application's type by `from` on its
+  companion (`BookResponse.from(held)`); a request turns itself into the
+  application's type (`NewBookRequest.validate`). A mapping grown big or
+  complicated moves to a mapper of its own in `infrastructure.web`.
 - A member's visibility is what the type exposes: a private member is not
   made public for a new caller. A caller that needs what the private member
   does either goes through the public door (`Isbn.of`) or the type gains a
