@@ -18,8 +18,8 @@ import java.time.Duration
 import java.time.Duration.ofMillis
 import java.time.Duration.ofSeconds
 
-class InventaireCoverLookupTest {
-  private val source = InventaireCoverLookup(server.baseUrl(), TIMEOUT)
+class InventaireSourceTest {
+  private val source = InventaireSource(server.baseUrl(), TIMEOUT)
 
   @AfterEach
   fun forgetTheStubs() {
@@ -266,7 +266,7 @@ class InventaireCoverLookupTest {
     fun startWireMock() {
       server.start()
       inventaire.knows(ONE_PIECE_1, SMALL_WEBP)
-      InventaireCoverLookup(server.baseUrl(), WARM_UP_TIMEOUT).lookUp(isbnOf(ONE_PIECE_1))
+      InventaireSource(server.baseUrl(), WARM_UP_TIMEOUT).lookUp(isbnOf(ONE_PIECE_1))
       server.resetAll()
     }
 

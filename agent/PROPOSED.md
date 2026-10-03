@@ -375,3 +375,9 @@
   mismatch` now proves too, since `v0.9.0` types the add's id `format:
   uuid`; whether D07 lets the hand-written case go is Tophe's (found
   2026-10-03 on T067).
+- Backend: a source adapter is named after its source, not one of its
+  ports, since a chosen source implements `CoverFetch` beside its lookup
+  (`InventaireSource`); `OpenLibraryEditionLookup` becomes
+  `OpenLibrarySource` in T054, `BnfEditionLookup` becomes `BnfSource` in
+  the task giving the BnF its fetch (decided 2026-10-03 reviewing T066 with
+  Tophe).

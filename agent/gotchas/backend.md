@@ -219,7 +219,7 @@ Read whole by a run that changes `backend/`, after `every-run.md`.
   an `IllegalArgumentException`, not a `RestClientException`. `uri(String)`
   reads its address as a URI template, so an address built from a source's
   answer throws an `IllegalArgumentException` on `{x}` or `50%zz`.
-  `InventaireCoverLookup` catches both beside `RestClientException`; the
+  `InventaireSource` catches both beside `RestClientException`; the
   other source adapters do not. An empty body is read as no body, `null`,
   never as an empty array.
 - WireMock serves the most recently added matching stub, so

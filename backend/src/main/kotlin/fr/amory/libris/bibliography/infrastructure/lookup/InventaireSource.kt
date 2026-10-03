@@ -15,7 +15,7 @@ import tools.jackson.databind.exc.JsonNodeException
 import tools.jackson.databind.node.MissingNode
 import java.time.Duration
 
-class InventaireCoverLookup(private val baseUrl: String, timeout: Duration) : CoverLookup, CoverFetch {
+class InventaireSource(private val baseUrl: String, timeout: Duration) : CoverLookup, CoverFetch {
   private val http = sourceRestClient(baseUrl, timeout)
 
   override fun lookUp(isbn: Isbn): CoverCandidate? =
