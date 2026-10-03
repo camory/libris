@@ -67,7 +67,6 @@ class CoversScenarios @Autowired constructor(
   }
 
   @Test
-  @Disabled("covers")
   fun `S3 The add carries the cover's source`() {
     // Given
     val juliette = reader("juliette", "Juliette")
@@ -85,7 +84,6 @@ class CoversScenarios @Autowired constructor(
   }
 
   @Test
-  @Disabled("covers")
   fun `S4 The worker fetches the chosen cover`() {
     // Given
     val marc = reader("marc", "Marc")
