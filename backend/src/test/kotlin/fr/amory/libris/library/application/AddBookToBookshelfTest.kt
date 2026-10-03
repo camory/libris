@@ -275,6 +275,23 @@ class AddBookToBookshelfTest {
     coverWorker.wakings.size shouldBe 1
   }
 
+  @Test
+  fun `the worker is woken after the add's transaction`() {
+    // Given
+    val lea = readerNamed("lea", "Léa")
+    val bookshelf = bookshelfOwnedBy(lea)
+    bookshelves.insert(bookshelf)
+    val transactions = TransactionsObserving {}
+    val coverWorker = CoverWorkerObserving { transactions.recorded.size }
+    val addBookToBookshelf = AddBookToBookshelf(editions, awaitedCovers, copies, bookshelves, transactions, coverWorker)
+
+    // When
+    addBookToBookshelf(lea.id, bookshelf.id, onePieceTomeOne())
+
+    // Then
+    coverWorker.wakings shouldBe listOf(1)
+  }
+
   private fun onePieceTomeOne(): NewBook =
     NewBook(
       isbn = isbnOf(ONE_PIECE),
