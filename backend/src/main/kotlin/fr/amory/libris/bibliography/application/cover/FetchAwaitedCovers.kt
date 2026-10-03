@@ -4,6 +4,7 @@ import fr.amory.libris.bibliography.domain.cover.AwaitedCover
 import fr.amory.libris.bibliography.domain.cover.AwaitedCoverRepository
 import fr.amory.libris.bibliography.domain.cover.Cover
 import fr.amory.libris.bibliography.domain.cover.CoverFetch
+import fr.amory.libris.bibliography.domain.cover.CoverSource.INVENTAIRE
 import fr.amory.libris.bibliography.domain.cover.CoverStore
 import fr.amory.libris.bibliography.domain.edition.EditionRepository
 import org.springframework.stereotype.Service
@@ -19,6 +20,7 @@ class FetchAwaitedCovers(
   operator fun invoke() {
     awaitedCovers
       .findAll()
+      .filter { it.chosenSource == INVENTAIRE }
       .forEach { take(it) }
   }
 

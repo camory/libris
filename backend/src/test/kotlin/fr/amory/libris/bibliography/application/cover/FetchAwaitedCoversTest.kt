@@ -3,8 +3,10 @@ package fr.amory.libris.bibliography.application.cover
 import fr.amory.libris.bibliography.domain.Contributions
 import fr.amory.libris.bibliography.domain.Kind.MANGA
 import fr.amory.libris.bibliography.domain.cover.AwaitedCover
+import fr.amory.libris.bibliography.domain.cover.CoverFetch
 import fr.amory.libris.bibliography.domain.cover.CoverSource
 import fr.amory.libris.bibliography.domain.cover.CoverSource.INVENTAIRE
+import fr.amory.libris.bibliography.domain.cover.CoverSource.OPEN_LIBRARY
 import fr.amory.libris.bibliography.domain.edition.Edition
 import fr.amory.libris.bibliography.domain.edition.EditionId
 import fr.amory.libris.bibliography.fixture.AwaitedCoversInMemory
@@ -34,7 +36,7 @@ class FetchAwaitedCoversTest {
   fun `the fetched cover is stored and named on its edition`() {
     // Given
     awaiting(INVENTAIRE)
-    val fetchAwaitedCovers = fetchAwaitedCoversAnswering()
+    val fetchAwaitedCovers = fetchAwaitedCoversOver()
 
     // When
     fetchAwaitedCovers()
@@ -48,7 +50,7 @@ class FetchAwaitedCoversTest {
   fun `a stored cover is awaited no more`() {
     // Given
     awaiting(INVENTAIRE)
-    val fetchAwaitedCovers = fetchAwaitedCoversAnswering()
+    val fetchAwaitedCovers = fetchAwaitedCoversOver()
 
     // When
     fetchAwaitedCovers()
@@ -76,13 +78,29 @@ class FetchAwaitedCoversTest {
     )
   }
 
+  @Test
+  fun `an awaited cover of another source is passed by`() {
+    // Given
+    awaiting(OPEN_LIBRARY)
+    val coverFetch = CoverFetchAnswering(cover)
+    val fetchAwaitedCovers = fetchAwaitedCoversOver(coverFetch)
+
+    // When
+    fetchAwaitedCovers()
+
+    // Then
+    coverFetch.asked.shouldBeEmpty()
+    awaitedCovers.findAll() shouldBe listOf(AwaitedCover(isbnOf(ONE_PIECE), OPEN_LIBRARY))
+    editions.findByIsbn(isbnOf(ONE_PIECE)) shouldBe edition
+  }
+
   private fun awaiting(chosenSource: CoverSource?) {
     editions.insert(edition)
     awaitedCovers.insert(AwaitedCover(isbnOf(ONE_PIECE), chosenSource))
   }
 
-  private fun fetchAwaitedCoversAnswering(): FetchAwaitedCovers =
-    FetchAwaitedCovers(awaitedCovers, CoverFetchAnswering(cover), covers, editions, withoutTransaction())
+  private fun fetchAwaitedCoversOver(coverFetch: CoverFetch = CoverFetchAnswering(cover)): FetchAwaitedCovers =
+    FetchAwaitedCovers(awaitedCovers, coverFetch, covers, editions, withoutTransaction())
 
   private fun onePiece(): Edition =
     Edition(
