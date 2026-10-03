@@ -574,3 +574,14 @@ Format:
   function or a test's setup is composed (Compose Method, Kent Beck).
 - Left over: the rest of the tree predates the bullet; it is applied to
   the files a task touches.
+
+## 2026-10-03 — T067 Backend: the API on `v0.9.0`, the contract in OpenAPI 3.1 — done
+- Did: `ApiContractTest` pins `v0.9.0`; its unknown ISBN stub is keyed on
+  `9782000000013`, and the catalogue's edition holds a stored cover, so the
+  address `BookResponse.from` builds is checked by the contract's pattern.
+- Decided: the stored cover's name is a fixed 64-digit hexadecimal literal,
+  distinct from `NO_COVER`, as the brief asks; no production file changed.
+- Deviations from the brief: none.
+- Left over: whether `ProblemAdviceTest`'s case on a bookshelf id that is
+  not a uuid may go, now that the contract varies it too, is Tophe's
+  (`agent/PROPOSED.md`). The frontend's pin and `9782000000006`: T060.

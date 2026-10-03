@@ -245,7 +245,7 @@ catalogue rows show a cover only once the worker has stored it (Tophe,
       of the store over a temporary directory, of the JDBC slice and of the
       catalogue's web slice; no fetch, no worker; un-skips nothing.
 
-- [ ] T067 Backend: the API on `v0.9.0`, the contract in OpenAPI 3.1.
+- [x] T067 Backend: the API on `v0.9.0`, the contract in OpenAPI 3.1.
       Precondition (human): `v0.9.0` released (D04).
       `ApiContractTest` pins `v0.9.0`, the only contract edit of the task
       (D04). No byte of an answer changes: the unknown ISBN is stubbed as

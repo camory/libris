@@ -72,8 +72,9 @@ true; the diary keeps the date it was found.
   `<<not a string/uuid>>`, whose encoded slash Tomcat rejected with its own
   `text/html` 400 before Spring), answered `400`, `404` or `422` with the
   declared problem body. No hand-written `400` scenario removes a generated
-  case. The contract still types the bookshelf id as a string with a uuid
-  pattern, which the verifier does not mutate (`agent/PROPOSED.md`).
+  case. The add's bookshelf id is `format: uuid` since `v0.9.0`, so its
+  `auto: path 'id' type mismatch` case runs, and `ProblemAdvice`'s
+  `TypeMismatchException` handler answers it before the controller.
 - A scenario needs its key on a request element when the operation has
   one: a key on the response alone creates no scenario there, and the mock
   answers random data. The request without an optional query parameter is
