@@ -69,6 +69,11 @@ class RemoteIdentityTest {
     authoritiesOf("Remote-Groups" to "family, libris-admin") shouldBe listOf("ROLE_READER", "ROLE_ADMIN")
   }
 
+  @Test
+  fun `another group is no admin`() {
+    authoritiesOf("Remote-Groups" to "family") shouldBe listOf("ROLE_READER")
+  }
+
   private fun authoritiesOf(vararg headers: Pair<String, String>): List<String?> =
     RemoteIdentity.of(julietteSending(*headers)).shouldNotBeNull().authorities.map { it.authority }
 
