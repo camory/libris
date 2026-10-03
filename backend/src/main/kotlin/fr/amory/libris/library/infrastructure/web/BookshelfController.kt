@@ -28,16 +28,26 @@ import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RestController
 import java.util.UUID
 
-data class BookshelfResponse(
-  val id: String,
-  val name: String) {
-  companion object {
-    fun from(bookshelf: Bookshelf): BookshelfResponse =
-      BookshelfResponse(bookshelf.id.value.toString(), bookshelf.name)
+@RestController
+class BookshelfController(private val addBookToBookshelf: AddBookToBookshelf) {
+  @PostMapping("/api/v1/bookshelves/{id}/books")
+  fun add(
+    @AuthenticationPrincipal reader: Reader,
+    @PathVariable("id") id: UUID,
+    @RequestBody request: NewBookRequest): ResponseEntity<Any> =
+    when (val validation = request.validate()) {
+      is Refused  -> invalid(validation.errors).asResponse()
+      is Accepted -> responseOf(addBookToBookshelf(reader.id, BookshelfId(id), validation.book))
+    }
 
-    fun from(copy: CopyOnBookshelf): BookshelfResponse =
-      BookshelfResponse(copy.bookshelfId.value.toString(), copy.bookshelfName)
-  }
+  private fun invalid(errors: List<ValidationErrorResponse>): ProblemDetail =
+    problem(BAD_REQUEST, VALIDATION_PROBLEM).apply { setProperty("errors", errors) }
+
+  private fun responseOf(result: AddBookResult): ResponseEntity<Any> =
+    when (result) {
+      is Added                    -> ResponseEntity.status(CREATED).body(CopyResponse.from(result))
+      NoSuchBookshelf, NotAnOwner -> problem(NOT_FOUND, NOT_FOUND_PROBLEM).asResponse()
+    }
 }
 
 data class CopyResponse(
@@ -52,24 +62,14 @@ data class CopyResponse(
   }
 }
 
-@RestController
-class BookshelfController(private val addBookToBookshelf: AddBookToBookshelf) {
-  @PostMapping("/api/v1/bookshelves/{id}/books")
-  fun add(
-    @AuthenticationPrincipal reader: Reader,
-    @PathVariable("id") id: UUID,
-    @RequestBody request: NewBookRequest): ResponseEntity<Any> =
-    when (val validation = request.validate()) {
-      is Refused  -> invalid(validation.errors).asResponse()
-      is Accepted -> responseOf(addBookToBookshelf(reader.id, BookshelfId(id), validation.book))
-    }
+data class BookshelfResponse(
+  val id: String,
+  val name: String) {
+  companion object {
+    fun from(bookshelf: Bookshelf): BookshelfResponse =
+      BookshelfResponse(bookshelf.id.value.toString(), bookshelf.name)
 
-  private fun responseOf(result: AddBookResult): ResponseEntity<Any> =
-    when (result) {
-      is Added                    -> ResponseEntity.status(CREATED).body(CopyResponse.from(result))
-      NoSuchBookshelf, NotAnOwner -> problem(NOT_FOUND, NOT_FOUND_PROBLEM).asResponse()
-    }
-
-  private fun invalid(errors: List<ValidationErrorResponse>): ProblemDetail =
-    problem(BAD_REQUEST, VALIDATION_PROBLEM).apply { setProperty("errors", errors) }
+    fun from(copy: CopyOnBookshelf): BookshelfResponse =
+      BookshelfResponse(copy.bookshelfId.value.toString(), copy.bookshelfName)
+  }
 }

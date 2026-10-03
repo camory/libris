@@ -12,9 +12,11 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.RestController
 
-enum class Role {
-  READER,
-  ADMIN
+@RestController
+class MeController(private val findDefaultBookshelf: FindDefaultBookshelf) {
+  @GetMapping("/api/v1/me")
+  fun me(@AuthenticationPrincipal reader: Reader, authentication: Authentication): CurrentReaderResponse =
+    CurrentReaderResponse.from(reader, findDefaultBookshelf(reader), authentication.authorities)
 }
 
 data class CurrentReaderResponse(
@@ -40,9 +42,7 @@ data class CurrentReaderResponse(
   }
 }
 
-@RestController
-class MeController(private val findDefaultBookshelf: FindDefaultBookshelf) {
-  @GetMapping("/api/v1/me")
-  fun me(@AuthenticationPrincipal reader: Reader, authentication: Authentication): CurrentReaderResponse =
-    CurrentReaderResponse.from(reader, findDefaultBookshelf(reader), authentication.authorities)
+enum class Role {
+  READER,
+  ADMIN
 }

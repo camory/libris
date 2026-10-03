@@ -12,6 +12,22 @@ import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
 import java.util.UUID
 
+@RestController
+class CatalogueController(private val browseCatalogue: BrowseCatalogue) {
+  @GetMapping("/api/v1/books")
+  fun books(@AuthenticationPrincipal reader: Reader, @RequestParam("after") after: UUID?): BookPageResponse =
+    BookPageResponse.from(browseCatalogue(reader.id, after?.let { EditionId(it) }))
+}
+
+data class BookPageResponse(
+  val books: List<BookResponse>,
+  val next: String?) {
+  companion object {
+    fun from(page: CataloguePage): BookPageResponse =
+      BookPageResponse(books = page.held.map { BookResponse.from(it) }, next = page.next?.value?.toString())
+  }
+}
+
 data class BookResponse(
   val id: String,
   val isbn13: String?,
@@ -48,20 +64,4 @@ data class BookResponse(
         copies = held.copies.map { CopyResponse.from(it) },
       )
   }
-}
-
-data class BookPageResponse(
-  val books: List<BookResponse>,
-  val next: String?) {
-  companion object {
-    fun from(page: CataloguePage): BookPageResponse =
-      BookPageResponse(books = page.held.map { BookResponse.from(it) }, next = page.next?.value?.toString())
-  }
-}
-
-@RestController
-class CatalogueController(private val browseCatalogue: BrowseCatalogue) {
-  @GetMapping("/api/v1/books")
-  fun books(@AuthenticationPrincipal reader: Reader, @RequestParam("after") after: UUID?): BookPageResponse =
-    BookPageResponse.from(browseCatalogue(reader.id, after?.let { EditionId(it) }))
 }

@@ -29,33 +29,24 @@ import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.RestController
 
-private const val SOURCES_UNAVAILABLE_PROBLEM = "/problems/sources-unavailable"
-
-data class IsbnAuthorResponse(
-  val name: String,
-  val role: ContributionRole) {
-  companion object {
-    fun from(contribution: Contribution): IsbnAuthorResponse =
-      IsbnAuthorResponse(contribution.name, contribution.role)
+@RestController
+class IsbnController(private val lookupIsbnForReader: LookupIsbnForReader) {
+  @GetMapping("/api/v1/isbn/{isbn}")
+  fun isbn(@AuthenticationPrincipal reader: Reader, @PathVariable("isbn") text: String): ResponseEntity<Any> {
+    val isbn = isbn13Of(text) ?: return notAnIsbn().asResponse()
+    val lookup = lookupIsbnForReader(reader.id, isbn)
+    return when (val result = lookup.answer) {
+      is Held            -> ResponseEntity.ok(IsbnResponse.from(result, lookup.copies))
+      is Found           -> ResponseEntity.ok(IsbnResponse.from(result, lookup.copies))
+      UnknownIsbn        -> problem(NOT_FOUND, NOT_FOUND_PROBLEM).asResponse()
+      SourcesUnavailable -> problem(SERVICE_UNAVAILABLE, SOURCES_UNAVAILABLE_PROBLEM).asResponse()
+    }
   }
-}
 
-data class IsbnSeriesResponse(
-  val name: String,
-  val volumeNumber: Int?) {
-  companion object {
-    fun from(series: SeriesEntry): IsbnSeriesResponse =
-      IsbnSeriesResponse(series.name, series.volumeNumber)
-  }
-}
-
-data class CoverCandidateResponse(
-  val source: String,
-  val url: String) {
-  companion object {
-    fun from(candidate: CoverCandidate): CoverCandidateResponse =
-      CoverCandidateResponse(candidate.source.label, candidate.url)
-  }
+  private fun notAnIsbn(): ProblemDetail =
+    problem(BAD_REQUEST, VALIDATION_PROBLEM).apply {
+      setProperty("errors", listOf(ValidationErrorResponse(field = "isbn", code = "not-an-isbn")))
+    }
 }
 
 data class IsbnResponse(
@@ -107,22 +98,31 @@ data class IsbnResponse(
   }
 }
 
-@RestController
-class IsbnController(private val lookupIsbnForReader: LookupIsbnForReader) {
-  @GetMapping("/api/v1/isbn/{isbn}")
-  fun isbn(@AuthenticationPrincipal reader: Reader, @PathVariable("isbn") text: String): ResponseEntity<Any> {
-    val isbn = isbn13Of(text) ?: return notAnIsbn().asResponse()
-    val lookup = lookupIsbnForReader(reader.id, isbn)
-    return when (val result = lookup.answer) {
-      is Held            -> ResponseEntity.ok(IsbnResponse.from(result, lookup.copies))
-      is Found           -> ResponseEntity.ok(IsbnResponse.from(result, lookup.copies))
-      UnknownIsbn        -> problem(NOT_FOUND, NOT_FOUND_PROBLEM).asResponse()
-      SourcesUnavailable -> problem(SERVICE_UNAVAILABLE, SOURCES_UNAVAILABLE_PROBLEM).asResponse()
-    }
+data class IsbnAuthorResponse(
+  val name: String,
+  val role: ContributionRole) {
+  companion object {
+    fun from(contribution: Contribution): IsbnAuthorResponse =
+      IsbnAuthorResponse(contribution.name, contribution.role)
   }
-
-  private fun notAnIsbn(): ProblemDetail =
-    problem(BAD_REQUEST, VALIDATION_PROBLEM).apply {
-      setProperty("errors", listOf(ValidationErrorResponse(field = "isbn", code = "not-an-isbn")))
-    }
 }
+
+data class IsbnSeriesResponse(
+  val name: String,
+  val volumeNumber: Int?) {
+  companion object {
+    fun from(series: SeriesEntry): IsbnSeriesResponse =
+      IsbnSeriesResponse(series.name, series.volumeNumber)
+  }
+}
+
+data class CoverCandidateResponse(
+  val source: String,
+  val url: String) {
+  companion object {
+    fun from(candidate: CoverCandidate): CoverCandidateResponse =
+      CoverCandidateResponse(candidate.source.label, candidate.url)
+  }
+}
+
+private const val SOURCES_UNAVAILABLE_PROBLEM = "/problems/sources-unavailable"
