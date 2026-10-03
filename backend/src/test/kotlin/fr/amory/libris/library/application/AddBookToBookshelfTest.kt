@@ -292,6 +292,24 @@ class AddBookToBookshelfTest {
     coverWorker.wakings shouldBe listOf(1)
   }
 
+  @Test
+  fun `a refused add wakes no worker`() {
+    // Given
+    val lea = readerNamed("lea", "Léa")
+    val juliette = readerNamed("juliette", "Juliette")
+    val leasBookshelf = bookshelfOwnedBy(lea).let {
+      it.copy(memberships = it.memberships + Membership(juliette.id, VIEWER))
+    }
+    bookshelves.insert(leasBookshelf)
+
+    // When
+    val result = addBookToBookshelf(juliette.id, leasBookshelf.id, onePieceTomeOne())
+
+    // Then
+    result shouldBe NotAnOwner
+    coverWorker.wakings.shouldBeEmpty()
+  }
+
   private fun onePieceTomeOne(): NewBook =
     NewBook(
       isbn = isbnOf(ONE_PIECE),
