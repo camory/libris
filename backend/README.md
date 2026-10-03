@@ -47,8 +47,7 @@ curl http://localhost:8080/api/v1/me \
 ```
 
 It compiles with warnings as errors, runs detekt with its formatting ruleset,
-runs the JUnit 5 tests with Kotest assertions against the database above, and
-writes a Kover XML coverage report to `build/reports/kover/report.xml`.
+and runs the JUnit 5 tests with Kotest assertions against the database above.
 
 ## Image
 

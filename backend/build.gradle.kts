@@ -8,7 +8,6 @@ plugins {
   alias(libs.plugins.kotlin.spring)
   alias(libs.plugins.spring.boot)
   alias(libs.plugins.detekt)
-  alias(libs.plugins.kover)
 }
 
 version = providers.gradleProperty("version").getOrElse("dev")
@@ -79,10 +78,6 @@ tasks.test {
 
 tasks.bootRun {
   environmentFromDotenv()
-}
-
-tasks.check {
-  dependsOn(tasks.koverXmlReport)
 }
 
 val dotenv: Map<String, String> = file(".env").takeIf { it.isFile }?.readLines().orEmpty()
