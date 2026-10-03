@@ -86,14 +86,6 @@
   do not answer the same list. A spec change: `specs/fast-entry.md` names
   the edition endpoint, the recorded answers and the scenario stubs follow
   it. To weigh with Tophe when T014 is planned (found reviewing T013).
-- Contract: the unknown-ISBN example is known. `9782000000006`, the
-  `404_UNKNOWN_ISBN` example of `libris-api`, is a real Open Library record
-  on 2026-09-12 ("Test", John le Carré, Michelin Editions des Voyages, a
-  placeholder someone created). The scenarios stub the sources, so nothing
-  fails, but a manual S4 against the real source finds a book.
-  `9782000000013` and `9791000000008` are unknown at both endpoints; the
-  latter is already the `503_SOURCES_DOWN` example. To change in the
-  contract with Tophe on its next release (found reviewing T013).
 - Backend: the web slice grows a mock per controller. Every `@WebSliceTest`
   class must name every use case of `infra.web` in its `@MockitoBean`, because
   `WebSliceConfiguration` scans the whole package; the list will be copied into
@@ -310,17 +302,6 @@
 - Backend: only `Remote-Name` is decoded from UTF-8; a non-ASCII
   `Remote-User`, `Remote-Email` or `Remote-Groups` would be read mangled
   (found on T037, 2026-09-24).
-- Contract: the bookshelf `id` of `POST /api/v1/bookshelves/{id}/books` is a
-  string with a uuid pattern since `v0.6.1`, because Contracteer 4.0.0's
-  generated case for `format: uuid` carried an encoded slash; put
-  `format: uuid` back now that the backend verifies with Contracteer 4.1.1,
-  whose case sends `<<not-a-uuid>>` and expects `400`, `404` or `422` with
-  a `Problem`. Measured 2026-09-27 with the 4.1.1 verifier over a local
-  copy of `v0.6.2` with `format: uuid`: the case fails, the backend answers
-  the conversion failure with Spring's `text/html` 400 and no `Problem`.
-  T043 must answer a `Problem` to a non-uuid `after`, and the same handler
-  should cover the path id: check it after T043, then release the contract
-  change (decided with Tophe on T037, 2026-09-24).
 - Frontend: no case proves that a second lookup replaces the copies of the
   first on the card: `IsbnView.spec.ts` has one answer per `FakeIsbnApi`, and
   each scenario boots a fresh app; the mutation keeping the previous copies
@@ -391,9 +372,6 @@
   defines and that v0.8.0 no longer carries as an example; with the ports
   answering outcomes by status they assert the outcome instead (found
   2026-09-30 reviewing contract v0.8.0 with Tophe).
-- Contract: the example `ONE_PIECE_1` offers inventaire.io at `480x600`,
-  which is not 600 tall; Tophe to align it on `100x600` (found 2026-10-01 on
-  T052).
 - Backend: `BookshelfScenarios` *S2* answered `503` once, first case of the
   JVM, green alone and on rerun; three lookups now run at once under the 1 s
   source timeout of the scenarios, a cold start may exceed it (found

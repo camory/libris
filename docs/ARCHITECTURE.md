@@ -129,7 +129,7 @@ proves insufficient, `search_text` is exactly the document a Meilisearch
 container would index.
 
 ### D04 — Contract-first API, Contracteer on both sides
-The OpenAPI 3.0.3 document `openapi.yaml` in the repository
+The OpenAPI 3.1 document `openapi.yaml` in the repository
 `camory/libris-api` is the single source of truth of the HTTP API. It is
 released, never consumed from a branch: one GitHub release per change, tagged
 `v<info.version>`, with release immutability on, so a released tag never
@@ -575,8 +575,8 @@ API shapes
   coupled to the layout of a translation file).
 
 Contract
-- Every schema in the contract states `required` and `nullable`
-  explicitly, since the frontend types are written by hand from it.
+- Every schema in the contract states `required` and which fields may be
+  null explicitly, since the frontend types are written by hand from it.
 
 ### D12 — The domain model
 - An aggregate keeps its own rules. What must hold for it to exist is
