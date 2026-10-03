@@ -181,7 +181,7 @@ class InventaireSourceTest {
   }
 
   @Test
-  fun `the picture is asked at most 600 tall`() {
+  fun `the picture is asked at 100x600`() {
     // Given
     inventaire.knows(ONE_PIECE_1, SMALL_WEBP)
 
