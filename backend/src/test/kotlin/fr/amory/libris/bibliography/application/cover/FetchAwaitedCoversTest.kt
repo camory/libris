@@ -24,6 +24,7 @@ import org.junit.jupiter.api.Test
 import org.springframework.transaction.support.TransactionOperations.withoutTransaction
 
 private const val ONE_PIECE = "9782723488525"
+private const val ONE_PIECE_2 = "9782723489898"
 
 class FetchAwaitedCoversTest {
   private val editions = EditionsInMemory()
@@ -125,18 +126,35 @@ class FetchAwaitedCoversTest {
     covers.stored.shouldBeEmpty()
   }
 
-  private fun awaiting(chosenSource: CoverSource?) {
-    editions.insert(edition)
-    awaitedCovers.insert(AwaitedCover(isbnOf(ONE_PIECE), chosenSource))
+  @Test
+  fun `each awaited inventaire io cover is taken`() {
+    // Given
+    val second = onePiece(ONE_PIECE_2)
+    awaiting(INVENTAIRE)
+    awaiting(INVENTAIRE, second)
+    val fetchAwaitedCovers = fetchAwaitedCoversOver()
+
+    // When
+    fetchAwaitedCovers()
+
+    // Then
+    editions.findByIsbn(isbnOf(ONE_PIECE)) shouldBe edition.copy(coverName = cover.name)
+    editions.findByIsbn(isbnOf(ONE_PIECE_2)) shouldBe second.copy(coverName = cover.name)
+    awaitedCovers.findAll().shouldBeEmpty()
+  }
+
+  private fun awaiting(chosenSource: CoverSource?, awaited: Edition = edition) {
+    editions.insert(awaited)
+    awaitedCovers.insert(AwaitedCover(checkNotNull(awaited.isbn), chosenSource))
   }
 
   private fun fetchAwaitedCoversOver(coverFetch: CoverFetch = CoverFetchAnswering(cover)): FetchAwaitedCovers =
     FetchAwaitedCovers(awaitedCovers, coverFetch, covers, editions, withoutTransaction())
 
-  private fun onePiece(): Edition =
+  private fun onePiece(isbn: String = ONE_PIECE): Edition =
     Edition(
       id = EditionId.new(),
-      isbn = isbnOf(ONE_PIECE),
+      isbn = isbnOf(isbn),
       kind = MANGA,
       title = "Romance dawn",
       subtitle = null,
