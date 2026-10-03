@@ -18,6 +18,8 @@ Read whole by a run that changes `backend/`, after `every-run.md`.
   or array throws `JsonNodeException`, so a source's text is read as
   `takeIf { it.isString }?.asString()` and an adapter catches
   `JsonNodeException` beside `RestClientException`.
+- Jackson 3 leaves `FAIL_ON_UNKNOWN_PROPERTIES` off: a body field no DTO
+  declares is dropped, never refused.
 - Kotlin 2.3.21 emits no warning for an unused local: prove
   warnings-as-errors with a useless cast.
 - detekt 1.23.8 runs in-process with `jdkHome` cleared; handing it a JDK 25
@@ -42,12 +44,11 @@ Read whole by a run that changes `backend/`, after `every-run.md`.
   code only, a test keeps its chains as they read best; the arrows of a
   `when` are aligned in a column, one column per `when`, and a branch whose
   body would span several lines calls a method instead.
-- `./gradlew detekt` reports on the test sources as well as the main ones
-  (T050 saw `MaxLineLength` and `ArgumentListWrapping` in a slice test from
-  it). Run `./gradlew detekt` before each commit: `ImportOrdering` fails an import added by hand
-  out of its order, lexicographic but for `java.`, `javax.` and `kotlin.`,
-  which come last in that order (`kotlin.text.Charsets.UTF_8` after
-  `org.…`), `VariableNaming` refuses a backticked property
+- `./gradlew detekt` reports on the test sources as well as the main ones.
+  Run `./gradlew detekt` before each commit: `ImportOrdering` fails an
+  import added by hand out of its order, lexicographic but for `java.`,
+  `javax.` and `kotlin.`, which come last in that order
+  (`kotlin.text.Charsets.UTF_8` after `org.…`), `VariableNaming` refuses a backticked property
   (`@ArchTest fun \`name\`(classes: JavaClasses)` instead of a `val`),
   `ReturnCount` allows two returns, `LongParameterList` refuses a function of
   more than six parameters but exempts data classes (a shared fixture is a
@@ -57,18 +58,15 @@ Read whole by a run that changes `backend/`, after `every-run.md`.
   case reads yet (write the case that motivates it first: a use case reaches
   the signature its brief names one cycle at a time),
   `SwallowedException`, `TooGenericExceptionCaught` and `UnusedParameter`
-  stay quiet when the parameter is named `ignored` (a query parameter the
-  contract declares and the answer does not read yet). An elvis over a platform type Kotlin reads
-  as non-null is unreachable code.
+  stay quiet when the parameter is named `ignored`. An elvis over a
+  platform type Kotlin reads as non-null is unreachable code.
 - A gradle command piped into `tail` or `grep` answers the pipe's exit
   status, not Gradle's: a red `detekt` read through `| tail -5` looks green
-  unless `BUILD FAILED` is in the lines kept (T068 committed two `style`
-  fixes for it). Read for `BUILD SUCCESSFUL`, or run it unpiped.
+  unless `BUILD FAILED` is in the lines kept. Read for `BUILD SUCCESSFUL`,
+  or run it unpiped.
 - `UnusedPrivateMember` fails two private overloads of one name that are
   called only from lambdas (`map { responseOf(it) }`), though both are used;
   give them distinct names (`bookOf`, `copyOf`).
-- Jackson 3 leaves `FAIL_ON_UNKNOWN_PROPERTIES` off: a body field no DTO
-  declares is dropped, never refused.
 - `LongParameterList` counts a test class's `@Autowired` constructor too
   (`ApiContractTest` at seven); `@Suppress("LongParameterList")` goes on its
   own line above the class, since an annotation inside
@@ -110,7 +108,7 @@ Read whole by a run that changes `backend/`, after `every-run.md`.
 - A Mockito matcher on a value-class argument must match the underlying
   value: the mangled JVM method receives the bare `UUID`, so
   `eq(contracteer.id)` never matches (the stub answers `null`, seen as a
-  403 from the error dispatch), and Kotlin's null check on the matcher's
+  `403` in `ApiContractTest`), and Kotlin's null check on the matcher's
   `null` throws `eq(...) must not be null`. The form that works:
   `browseCatalogue(ReaderId(eq(id.value) ?: id.value), any())`; `any()` is
   fine for a nullable value-class parameter.
@@ -122,11 +120,10 @@ Read whole by a run that changes `backend/`, after `every-run.md`.
   SHA-256 of the bytes in 64 lower-case digits (`"test"` names
   `9f86d0…0a08`, the contract's example); `FileCoverStore.write` writes the
   picture before its `.type`, and leaves a cover already stored as it is.
-  An edition holds the name as
-  `coverName`, the `cover_name` column since `V007`. `ScenarioTest` gives
-  the variable a temporary directory, `LibrisApplicationTest` its own
-  property. A Mockito
-  matcher on a `CoverName` argument takes a valid fallback, since the
+  An edition holds the name as `coverName`, the `cover_name` column since
+  `V007`. `ScenarioTest` gives the variable a temporary directory,
+  `LibrisApplicationTest` its own property. A Mockito matcher on a
+  `CoverName` argument takes a valid fallback, since the
   constructor checks it: `findCover(CoverName(any() ?: NO_COVER))`.
 - The binder keeps an unresolved `${VAR}` as its literal text: a setting
   bound from `${VAR}` alone starts without the variable (T051 found
@@ -143,16 +140,28 @@ Read whole by a run that changes `backend/`, after `every-run.md`.
   and migrates before each case, so no case meets a row another case wrote
   (JUnit's method order is not alphabetical: *S10* ran before *S1*).
 - The sandbox PostgreSQL survives between runs (tmpfs: gone when the
-  container is recreated). Editing a migration the database has applied breaks
-  every context start with a Flyway checksum mismatch, and `FreshSchema` does
-  not rescue it: Flyway's autoconfiguration validates and migrates while the
-  context loads, before `FreshSchema` cleans, so every database-backed class
-  fails whole with `initializationError` and `Failed to load
-  ApplicationContext`, and running one slice class alone changes nothing.
-  Restoring the file's bytes is the cheap fix as long as the edited version
-  never applied; otherwise the database must be recreated. D11 forbids editing
-  a merged migration anyway, and the price of the trap is that a constraint a
-  migration declares cannot be mutation-checked once it has run.
+  container is recreated). Editing a migration the database has already
+  applied (the one of the current task, before its PR is merged) breaks
+  every context start: Flyway validates the checksums and migrates while
+  the context loads, before `FreshSchema` cleans, so every database-backed
+  class fails whole with `initializationError`, `Failed to load
+  ApplicationContext` and `Validate failed: Migrations have failed
+  validation`, and running one slice class alone changes nothing. Restoring
+  the file's bytes is the cheap fix as long as the edited version never
+  applied. Otherwise forget the row,
+  `DELETE FROM flyway_schema_history WHERE version = '003'` (the version is
+  zero-padded), and drop its tables. From the host:
+  `docker compose --env-file agent/.env -f agent/compose.yaml exec -T
+  postgres psql -U libris -d libris -c "…"`. Inside the sandbox there is
+  neither `docker` nor `psql`: run the statement through `jshell` and the
+  driver already in the Gradle cache,
+  `jshell --class-path "$(find ~/.gradle/caches -name 'postgresql-*.jar' |
+  head -1)" -q <script>`, the script opening
+  `java.sql.DriverManager.getConnection(System.getenv("LIBRIS_DB_URL"),
+  System.getenv("LIBRIS_DB_USER"), System.getenv("LIBRIS_DB_PASSWORD"))`.
+  D11 forbids editing a merged migration anyway, and the price of the trap
+  is that a constraint a migration declares cannot be mutation-checked once
+  it has run.
 - `reader.default_bookshelf_id` references `bookshelf` `deferrable initially
   deferred`: the reader is inserted before the bookshelf that is their
   default, and PostgreSQL checks the reference at commit. A JDBC slice test
@@ -215,8 +224,6 @@ Read whole by a run that changes `backend/`, after `every-run.md`.
   `/api/entities?action=by-uris&uris=isbn:<13 digits>` answers an unknown
   ISBN `200` with `entities: {}` and the ISBN under `notFound`, a known one
   under its `inv:` id, the picture's hash at `claims["invp:P2"][0]`.
-- `@Order` on the `@Bean` methods of a `@Configuration` orders the
-  `List<T>` Spring injects; the order of the methods in the file does not.
 - A test double that proves two calls overlap waits on a `CyclicBarrier` with
   a bounded `await(timeout, unit)`: sequential code then fails with
   `TimeoutException` instead of hanging the suite forever.
@@ -230,13 +237,21 @@ Read whole by a run that changes `backend/`, after `every-run.md`.
   variable of the wrong type and an unreadable body, as
   `/problems/validation` without `detail`, through one `@ExceptionHandler`
   of the two exceptions. It extends nothing, so any other framework failure
-  keeps Boot's plain error answer. No `spring.mvc.problemdetails.enabled`.
+  keeps Boot's plain error answer. No `spring.mvc.problemdetails.enabled`:
+  turned on alone, it answers these two with no `type` (Spring leaves
+  `about:blank` out) and with a `detail`, and three contract cases go red.
 - A request that is not a `GET` and carries no `X-Requested-With` is denied,
   so every test posting through the security chain sends it: the web-slice
   tests by hand, `ApiContractTest`'s `FixedReaderHeaders` in its map, the
   scenarios through the `restTestClient` bean of `StubbedSources` as a
   default header. That bean replaces the autoconfigured client, so a
   `RestTestClientBuilderCustomizer` would not reach it.
+- In `ApiContractTest` an exception nothing answers shows as `403`, not
+  `500`: `FixedReaderHeaders` is a filter registered for the `REQUEST`
+  dispatch only, so the error dispatch to `/error` arrives without the
+  reader headers and the security chain refuses it. A `403` there is a stub
+  that answered `null` (an argument no stub names, a matcher that missed)
+  or a framework failure no handler turned into a problem.
 - The JDK `HttpClient` writes header values as US-ASCII (`Léa` leaves as
   `L?a`) and Tomcat reads them as ISO-8859-1. The scenario client is built on
   `SimpleClientHttpRequestFactory`, which sends the UTF-8 bytes, and
@@ -275,8 +290,7 @@ Read whole by a run that changes `backend/`, after `every-run.md`.
   of editions without an `isbn13` sit side by side while two editions cannot
   share one.
 - `@JdbcSliceTest` lives in `fr.amory.libris.fixture` beside `FreshSchema` and
-  `WebSliceTest`, and serves both contexts; it was in
-  `library.infrastructure.persistence` until T034 moved it. A slice test
+  `WebSliceTest`, and serves both contexts. A slice test
   imports the repository it proves with `@Import(Jdbc…Repository::class)` and
   takes it through an `@Autowired` constructor, with `JdbcClient` beside it
   only when a case queries through it: detekt's `UnusedPrivateProperty` fails

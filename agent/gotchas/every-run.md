@@ -36,26 +36,13 @@ true; the diary keeps the date it was found.
   `docker compose --env-file agent/.env -f agent/compose.yaml up -d postgres`.
   `backend/.env` points the host gate at that database, and `FreshSchema`
   wipes it: what was entered by hand through `bootRun` is gone after a gate.
-- Editing a migration the gate database has already applied (the one of the
-  current task, before its PR is merged) fails every JDBC slice with
-  `Validate failed: Migrations have failed validation`: Flyway checks the
-  checksums on context start, before `FreshSchema` cleans. Forget the row
-  first: `DELETE FROM flyway_schema_history WHERE version = '003'` (the
-  version is zero-padded) and drop its tables. From the host:
-  `docker compose --env-file agent/.env -f agent/compose.yaml exec -T
-  postgres psql -U libris -d libris -c "…"`. Inside the sandbox there is
-  neither `docker` nor `psql`: run the statement through `jshell` and the
-  driver already in the Gradle cache —
-  `jshell --class-path "$(find ~/.gradle/caches -name 'postgresql-*.jar' |
-  head -1)" -q <script>`, the script opening
-  `java.sql.DriverManager.getConnection(System.getenv("LIBRIS_DB_URL"),
-  System.getenv("LIBRIS_DB_USER"), System.getenv("LIBRIS_DB_PASSWORD"))`.
-- Tophe's host box has no `contracteer` binary and an old Node: from the host,
-  the frontend gate and the Contracteer CLI run inside the sandbox image
-  (`docker run --rm --network none -v "$PWD":/work -w /work/frontend
-  libris-agent:local 'npm test'`). The sandbox itself is the other way round:
-  Node 24, `npm` and `/usr/local/bin/contracteer` are there and there is no
-  `docker`, so a run inside it calls the gate directly.
+- From the host, the frontend gate needs Node 24 and `contracteer` on the
+  `PATH`; without them it runs inside the sandbox image,
+  `docker run --rm -v "$PWD":/work -w /work/frontend libris-agent:local
+  'npm test'`, with the network on, since the mock reads the contract from
+  GitHub. The sandbox is the other way round: Node 24, `npm` and
+  `/usr/local/bin/contracteer` are there and there is no `docker`, so a run
+  inside it calls the gate directly.
 
 ## Contract and release
 - The contract is OpenAPI 3.1.0 since `v0.9.0`, 3.0.3 before: a field that
@@ -79,36 +66,34 @@ true; the diary keeps the date it was found.
 - A scenario needs its key on a request element when the operation has
   one: a key on the response alone creates no scenario there, and the mock
   answers random data. The request without an optional query parameter is
-  the example `null` on that parameter, whose schema is then `nullable:
-  true`; a `null` example on a response header is sent as the four letters,
-  so "no header" has no example and a page's end travels in the body.
+  the example `null` on that parameter, whose schema must then admit null
+  (`type: [<type>, "null"]`); a `null` example on a response header is sent
+  as the four letters, so "no header" has no example and a page's end
+  travels in the body.
 - The verifier checks an answer against the schema only, never against the
   example's value, so an example fixes an input the server must accept and
-  nothing else. The ISBN operations need one for their 200 and 201: the
-  pattern cannot say the check digit, and a generated ISBN fails it nine
-  times in ten. A key with a status prefix on the request alone,
-  `404_UNKNOWN_ISBN`, builds the scenario for the verifier, which then
-  checks the content type and the shape of the 404; the response examples
-  of the document exist for the mock only (see the mock item under
-  *Frontend build and tests*).
-- Measured on Contracteer 4.1.1 (2026-09-30): a `2xx` response with no key is
-  sent as a generated case, its body built from the schema; with a key it runs
-  as that scenario, checked on the schema, so a changed example value leaves
-  the run green. A key counts for a response when the response holds an
-  example under it or when the key starts with its status:
-  `201_ADD_ONE_PIECE_1` on the request alone runs keyed, its answer checked on
-  the `Copy` schema; `ADD_ONE_PIECE_1` on the request alone leaves the `201`
-  generated. A generated `isbn13` only matches the pattern and fails its check
-  digit about nine times in ten, hence the add's keyed `201`. A response with
-  two content types gets one generated case per type, each with a random
-  parameter value; the cover operation answers `image/*` alone, one case sent
-  with `Accept: image/*`, any image accepted, no example needed. A keyed error
-  case with no body example still checks the status, the content type and the
-  `Problem` schema. `externalValue` is not read: the example is seen as null.
-  The backend's `ApiContractTest` is a web slice over `MockitoBean` use cases,
-  so a stub answering `any()` serves the generated cases, where a stub on
-  exact arguments answers nothing to a random value. The reviewer checks
-  the number of cases a PR claims against `tests=` in
+  nothing else (measured on Contracteer 4.1.1, 2026-09-30). A `2xx`
+  response with no key is sent as a generated case, its body built from the
+  schema; with a key it runs as that scenario, checked on the schema, so a
+  changed example value leaves the run green. A key counts for a response
+  when the response holds an example under it or when the key starts with
+  its status: `201_ADD_ONE_PIECE_1` on the request alone runs keyed, its
+  answer checked on the `Copy` schema, where `ADD_ONE_PIECE_1` would leave
+  the `201` generated; `404_UNKNOWN_ISBN` on the request alone builds the
+  404 scenario. A keyed error case with no body example still checks the
+  status, the content type and the `Problem` schema. A generated `isbn13`
+  only matches the pattern and fails its check digit about nine times in
+  ten, hence the keyed examples of the ISBN operations' 200 and 201. The
+  response examples of the document exist for the mock only (see the mock
+  items of `frontend.md`). A response with two content types gets one
+  generated case per type, each with a random parameter value; the cover
+  operation answers `image/*` alone, one case sent with `Accept: image/*`,
+  any image accepted, no example needed. `externalValue` is not read: the
+  example is seen as null.
+- The backend's `ApiContractTest` is a web slice over `MockitoBean` use
+  cases, so a stub answering `any()` serves the generated cases, where a
+  stub on exact arguments answers nothing to a random value. The reviewer
+  checks the number of cases a PR claims against `tests=` in
   `backend/build/test-results/test/TEST-fr.amory.libris.ApiContractTest.xml`:
   read it there after the gate, never count by hand.
 - `additionalProperties: false` cannot sit on a branch of an `allOf`: the

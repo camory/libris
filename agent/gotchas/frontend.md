@@ -20,8 +20,10 @@ Read whole by a run that changes `frontend/`, after `every-run.md`.
   `vitest/config`. `fetch` works in the `jsdom` environment on Node 24 with
   no polyfill. `vi.stubGlobal("fetch", …)` needs `vi.unstubAllGlobals()` in
   an `afterEach`, or the contract case passes only by running first.
-- `contracteer mock api/openapi.yaml -p 9099` starts in about four seconds
-  and logs `Contracteer mock server started on port 9099` last; the global
+- `vitest.global-setup.ts` starts `contracteer mock` on port 9099 over the
+  contract the frontend pins, a `raw.githubusercontent.com` URL of
+  `camory/libris-api` (`v0.7.0` until T060); it starts in about four seconds
+  and logs `Contracteer mock server started on port 9099` last, and the
   setup resolves on that line and kills the process in its teardown. The
   mock generates values, so an `infra/api` spec asserts shape and types,
   never a value, and cannot catch a swapped mapping between two strings.
@@ -32,17 +34,19 @@ Read whole by a run that changes `frontend/`, after `every-run.md`.
   makes the three problem cases of `FetchIsbnApi.spec.ts` possible.
 - The mock picks its response from the request's path parameter: a value the
   document gives as a named example of that parameter gets that example's
-  response, so `9782723488525` answers 200 and `9782000000006` answers 404.
+  response, so `9782723488525` answers 200 and `9782000000006` answers 404
+  (`9782000000013` from `v0.9.0`).
   A value that matches no example gets a generated 200. A `POST` is matched
   on the path parameter and the body together, so one bookshelf id answers
   201 to the body `NewOnePiece1` and 400 to `NewOnePiece1WrongDigit`, and
   the 404 id answers 404 to `NewOnePiece1`. A scenario whose key sits on
   the request alone got its status from the mock with no body and no
   `Content-Type` until Contracteer 4.1.1, which generates the body from the
-  schema. Since `v0.8.0` no error response holds an example: the mock
-  answers the right status and `application/problem+json` with a random
-  `type`, `title` and `status` in the body, so an adapter spec asserts the
-  outcome of the HTTP status, never the body's `type`.
+  schema. The error responses of `v0.7.0` still hold examples; from
+  `v0.8.0` none does, and the mock answers the right status and
+  `application/problem+json` with a random `type`, `title` and `status` in
+  the body, so an adapter spec asserts the outcome of the HTTP status,
+  never the body's `type`.
 - A scenario file builds the application through `createLibrisApp` over the
   fakes of `src/fixture`; only `infra/api` specs and the smoke case *the
   application runs over the mock* use `inject("mockBaseUrl")`. A new port
@@ -192,16 +196,23 @@ Read whole by a run that changes `frontend/`, after `every-run.md`.
 - `/` is a prefix of every path, so `router-link-active` sits on a link to `/`
   on every screen. What follows the screen shown is the *exactly* active link:
   `RouterLink` writes `aria-current="page"` and `router-link-exact-active` on
-  it alone. A test reads it with `getByRole("link", { current: "page" })`, a
-  template styles it with `exact-active-class`.
+  it alone, and only when the router resolves the link's `to` to a route:
+  a link to a path no route declares is never current, whatever the
+  location, so an active-tab case needs the route first. A test reads it
+  with `getByRole("link", { current: "page" })`, a template styles it with
+  `exact-active-class`.
 - Two Tailwind utilities for the same property on the same element are settled
   by the order Tailwind emits them, not by the order in the attribute. Where a
   state must win — the active tab's colour and weight over the bar's — put the
   common value on the ancestor, to be inherited, and the state's value on the
   element: its own declaration beats an inherited one whatever the order.
-- `App.vue` is the full-height shell: `h-dvh` flex column, a
-  `min-h-0 flex-1 overflow-y-auto` wrapper around `RouterView`, then the tab
-  bar. A view that fills the screen writes `min-h-full` on its
+- `App.vue` is the full-height shell: a `fixed inset-0` flex column, a
+  `min-h-0 flex-1 overflow-y-auto` wrapper around `RouterView`, then the
+  tab bar. It is fixed at the four edges of the window, not measured in
+  `dvh`: Chrome on Android resolves a viewport unit stale right after
+  `location.reload()` in the installed app, until the next resize, and laid
+  the tab bar out below the window after the update's reload (seen on the
+  Pixel 2026-09-19). A view that fills the screen writes `min-h-full` on its
   `<main>`, never `h-full`, or content longer than the viewport is clipped
   instead of scrolling.
 - Mounting a component that holds a `RouterLink` needs the route settled first:
@@ -247,14 +258,6 @@ Read whole by a run that changes `frontend/`, after `every-run.md`.
   in a module constant, so a `vi.stubGlobal("BarcodeDetector", …)` installed
   after the module loads is seen, and `vi.unstubAllGlobals()` is enough to
   forget it.
-- Chrome on Android resolves a viewport unit (`dvh`) stale right after
-  `location.reload()` in the installed app, until the next resize: a shell
-  measured in it lays its tab bar out below the window after the update's
-  reload (seen on the Pixel 2026-09-19). The shell is `fixed` at the four
-  edges of the window instead.
-- `RouterLink` sets `aria-current="page"` only when the router resolves its
-  `to` to a route: a link to a path no route declares is never current,
-  whatever the location, so an active-tab case needs the route first.
 - A mutation that keeps state at module scope of a composable leaks from one
   case to the next of the same spec file and reddens unrelated cases; run
   the guard's case alone (`npx vitest run <file> -t "<name>"`) to read its
