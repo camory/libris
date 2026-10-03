@@ -302,11 +302,20 @@ Read whole by a run that changes `backend/`, after `every-run.md`.
 - `awaited_cover` is keyed by `edition.isbn13` and references it: a slice
   case inserts the edition before its awaited cover, hence
   `JdbcEditionRepository` in the `@Import` of `JdbcAwaitedCoverRepositoryTest`.
-  The port has no read yet, so that class reads the row through `JdbcClient`.
+  The port reads with `findAll`, the chosen source back through
+  `CoverSource.of`; that class still queries `JdbcClient` for the label stored.
 - `EditionsInMemory.insert` appends without looking at the ISBN, so a use
   case that inserts a held edition a second time fails at
   `editions.stored.single()` ("List has more than one element") before any
-  later assertion of the case runs; there is no `update` on the port.
+  later assertion of the case runs. A changed edition goes through
+  `update`, which replaces the edition of that id, and
+  `JdbcEditionRepository.update` writes the whole aggregate, its
+  contributions deleted and inserted again.
+- `TransactionsObserving` and `Transaction` live in the root
+  `fr.amory.libris.fixture`, shared by both contexts' use-case tests.
+- `InventaireStubs.picturePaths()` answers the URLs of the picture requests
+  served, `pictureRequests()` their count; `knowsButThePictureFails(isbn)`
+  serves the entity, then `500` on the picture.
 - `LookupAnswering`, in `bibliography.fixture`, records the ISBNs it was asked
   and answers them as `asked`, so a case proves a source was never called with
   `source.asked shouldBe emptyList()`.

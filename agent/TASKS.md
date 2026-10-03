@@ -255,7 +255,7 @@ catalogue rows show a cover only once the worker has stored it (Tophe,
       is not a uuid answers `400` with a `Problem`, as it already does.
       Realises no scenario; un-skips nothing.
 
-- [ ] T066 Backend: the worker's run fetches the chosen inventaire.io cover.
+- [x] T066 Backend: the worker's run fetches the chosen inventaire.io cover.
       A use case of the bibliography takes each awaited cover whose chosen
       source is inventaire.io, asks inventaire.io by ISBN for the picture and
       stores it as T065 does; the edition of that ISBN records the cover's

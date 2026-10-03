@@ -601,10 +601,19 @@ Format:
   names `api/` as a side the proof hook records, a directory that no longer
   exists.
 
-## 2026-10-03 — T066 Backend: the worker's run fetches the chosen inventaire.io cover — handoff
-- Done: steps 1 to 12, one commit each. Start with step 13 (guard: no chosen source passed by).
-- Decided: `JdbcEditionRepository`'s `seriesIdOf`/`authorIdOf` became one `nameIdOf(statement, name)`, detekt's `TooManyFunctions` (11) refusing a twelfth function. `FetchAwaitedCovers` carries `@Service`, as `FindCover`; `findAll` drops a row whose ISBN `Isbn.of` refuses. Test helper: `fetchAwaitedCoversOver(coverFetch = CoverFetchAnswering(cover))`.
-- Deviation: step 11 was green on arrival, so it is a guard: step 8 had to use the constructor's `transactions` (detekt's `UnusedPrivateProperty`), and wrote the update inside the block. Declare it in the PR.
-- Guards checked: step 2, the contributions' `DELETE` without `WHERE` reds `an update leaves the other editions alone` (data class diff). Step 6, the address without `100x600/` reds `the picture is asked at most 600 tall` and the lookup's `at most 600 tall`. Step 11, the store's write moved into the block reds it (before `(0, null, 1)`); the delete moved out of the block reds it (after `(1, name, 1)`).
-- Learned: `InventaireStubs.picturePaths()` answers the picture requests' URLs; `pictureRequests()` is its size.
-- Left: steps 13 to 16, the gotchas rewrite the brief names, the PR body's D02 proposal.
+## 2026-10-03 — T066 Backend: the worker's run fetches the chosen inventaire.io cover — done
+- Did: `FetchAwaitedCovers` takes each awaited cover whose chosen source is
+  inventaire.io, fetches the picture through `CoverFetch` (implemented by
+  `InventaireCoverLookup`), stores it, names it on the edition and ends the wait.
+- Decided: `JdbcEditionRepository`'s `seriesIdOf` and `authorIdOf` became
+  one `nameIdOf(statement, name)`, detekt's `TooManyFunctions` refusing a
+  twelfth function. `FetchAwaitedCovers` carries `@Service`, as `FindCover`.
+  `findAll` drops a row whose ISBN `Isbn.of` refuses. The edition is read
+  before the transaction, its update and the delete inside it.
+- Decided: two runs, a handoff after step 12; steps 13 to 16 in the second.
+- Deviations from the brief: step 11 was green on arrival: step 8 already
+  used the constructor's `transactions` (detekt's `UnusedPrivateProperty`
+  refuses an unread one), so it is a guard, its mutations in the PR body.
+- Left over: running the use case, S3 and S4 un-skipped (T069); the other
+  sources' fetches (T054); the D02 sentence on
+  `bibliography.infrastructure.lookup` is proposed in the PR, Tophe's to settle.
