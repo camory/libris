@@ -12,10 +12,10 @@ import fr.amory.libris.bibliography.domain.Contribution
 import fr.amory.libris.bibliography.domain.ContributionRole.ARTIST
 import fr.amory.libris.bibliography.domain.ContributionRole.WRITER
 import fr.amory.libris.bibliography.domain.Contributions
+import fr.amory.libris.bibliography.domain.Kind.BD
 import fr.amory.libris.bibliography.domain.Kind.MANGA
 import fr.amory.libris.bibliography.domain.SeriesEntry
 import fr.amory.libris.bibliography.domain.cover.CoverName
-import fr.amory.libris.bibliography.domain.cover.CoverSource.BNF
 import fr.amory.libris.bibliography.domain.cover.CoverSource.INVENTAIRE
 import fr.amory.libris.bibliography.domain.cover.CoverSource.OPEN_LIBRARY
 import fr.amory.libris.bibliography.domain.edition.Edition
@@ -63,7 +63,52 @@ import java.util.UUID
 
 private val NO_COVER = "0".repeat(64)
 
-private val ONE_PIECE_1 = EditionPreview(
+private val ASTERIX_1 = EditionPreview(
+  isbn = isbnOf("9782012101333"),
+  kind = BD,
+  title = "Astérix le Gaulois",
+  subtitle = "une aventure d'Astérix",
+  contributions = Contributions.of(listOf(Contribution("René Goscinny", WRITER))),
+  series = SeriesEntry("Astérix", 1),
+  collection = "Les aventures d'Astérix",
+  publisher = "Hachette",
+  publicationYear = 1961,
+  language = "fr",
+  pageCount = 48,
+  summary = "Un village d'irréductibles Gaulois résiste encore à l'envahisseur.",
+)
+
+private val ASTERIX_1_COVERS = CoverCandidates.of(
+  listOf(CoverCandidate(OPEN_LIBRARY, "https://covers.example.org/asterix-1.jpg")),
+)
+
+private val COPY_OF_ASTERIX_1 = CopyOnBookshelf(
+  CopyId.new(),
+  BookshelfId(UUID.randomUUID()),
+  "Grenier",
+)
+
+private val ASTERIX_1_HELD = HeldEdition(
+  edition = Edition(
+    id = EditionId.new(),
+    isbn = ASTERIX_1.isbn,
+    kind = ASTERIX_1.kind,
+    title = ASTERIX_1.title,
+    subtitle = ASTERIX_1.subtitle,
+    contributions = ASTERIX_1.contributions,
+    series = ASTERIX_1.series,
+    collection = ASTERIX_1.collection,
+    publisher = ASTERIX_1.publisher,
+    publicationYear = ASTERIX_1.publicationYear,
+    language = ASTERIX_1.language,
+    pageCount = ASTERIX_1.pageCount,
+    summary = ASTERIX_1.summary,
+    coverName = null,
+  ),
+  copies = listOf(COPY_OF_ASTERIX_1),
+)
+
+private val NEW_ONE_PIECE_1 = NewBook(
   isbn = isbnOf("9782723488525"),
   kind = MANGA,
   title = "Romance dawn",
@@ -81,82 +126,7 @@ private val ONE_PIECE_1 = EditionPreview(
   language = "fr",
   pageCount = 203,
   summary = null,
-)
-
-private val ONE_PIECE_2 = ONE_PIECE_1.copy(
-  isbn = isbnOf("9782723489898"),
-  title = "Aux prises avec Baggy et ses hommes",
-  subtitle = null,
-  series = SeriesEntry("One piece", 2),
-  pageCount = 208,
-)
-
-private val COPIES_OF_ONE_PIECE_2 = listOf(
-  copyOn("6f1d2c3b-4a59-4e6f-8b70-1c2d3e4f5a61", "0b1e2d3c-4f5a-4b6c-8d7e-9f0a1b2c3d4e", "Bibliothèque de Léa"),
-  copyOn("7a2e3d4c-5b6a-4f70-9c81-2d3e4f5a6b72", "1c2f3e4d-5a6b-4c7d-9e8f-0a1b2c3d4e5f", "Salon"),
-)
-
-private fun copyOn(copyId: String, bookshelfId: String, bookshelfName: String) =
-  CopyOnBookshelf(
-    CopyId(UUID.fromString(copyId)),
-    bookshelfId(bookshelfId),
-    bookshelfName,
-  )
-
-private val ONE_PIECE_1_COVERS = CoverCandidates.of(
-  listOf(
-    CoverCandidate(
-      INVENTAIRE,
-      "https://inventaire.io/img/entities/480x600/34d6e7d99cec5b0922b9eccfeb03748ab2b4db99",
-    ),
-    CoverCandidate(OPEN_LIBRARY, "https://covers.openlibrary.org/b/isbn/9782723488525-L.jpg?default=false"),
-    CoverCandidate(
-      BNF,
-      "https://catalogue.bnf.fr/couverture?&appName=NE&idArk=ark:/12148/cb43636708p&couverture=1",
-    ),
-  ),
-)
-
-private val NEW_ONE_PIECE_1 = NewBook(
-  isbn = ONE_PIECE_1.isbn,
-  kind = ONE_PIECE_1.kind,
-  title = ONE_PIECE_1.title,
-  subtitle = ONE_PIECE_1.subtitle,
-  contributions = ONE_PIECE_1.contributions,
-  series = ONE_PIECE_1.series,
-  collection = ONE_PIECE_1.collection,
-  publisher = ONE_PIECE_1.publisher,
-  publicationYear = ONE_PIECE_1.publicationYear,
-  language = ONE_PIECE_1.language,
-  pageCount = ONE_PIECE_1.pageCount,
-  summary = ONE_PIECE_1.summary,
   coverSource = INVENTAIRE,
-)
-
-private val ONE_PIECE_1_HELD = HeldEdition(
-  edition = Edition(
-    id = EditionId.new(),
-    isbn = ONE_PIECE_1.isbn,
-    kind = ONE_PIECE_1.kind,
-    title = ONE_PIECE_1.title,
-    subtitle = ONE_PIECE_1.subtitle,
-    contributions = Contributions.of(listOf(Contribution("Eiichirō Oda", WRITER))),
-    series = ONE_PIECE_1.series,
-    collection = ONE_PIECE_1.collection,
-    publisher = ONE_PIECE_1.publisher,
-    publicationYear = ONE_PIECE_1.publicationYear,
-    language = ONE_PIECE_1.language,
-    pageCount = ONE_PIECE_1.pageCount,
-    summary = ONE_PIECE_1.summary,
-    coverName = null,
-  ),
-  copies = listOf(
-    copyOn(
-      "8b3f4e5d-6c7b-4081-9d92-3e4f5a6b7c83",
-      "0b1e2d3c-4f5a-4b6c-8d7e-9f0a1b2c3d4e",
-      "Bibliothèque de Contracteer",
-    ),
-  ),
 )
 
 private fun bookshelfId(id: String) =
@@ -197,17 +167,17 @@ class ApiContractTest @Autowired constructor(
     given(welcomeReader("contracteer", "contracteer@amory.fr", "Contracteer")).willReturn(contracteer)
     given(findDefaultBookshelf(contracteer)).willReturn(bookshelf)
     given(lookupIsbnForReader(contracteer.id, isbnOf("9782723488525")))
-      .willReturn(noCopy(Found(ONE_PIECE_1, ONE_PIECE_1_COVERS)))
+      .willReturn(noCopy(Found(ASTERIX_1, ASTERIX_1_COVERS)))
     given(lookupIsbnForReader(contracteer.id, isbnOf("9782000000006"))).willReturn(noCopy(UnknownIsbn))
     given(lookupIsbnForReader(contracteer.id, isbnOf("9791000000008"))).willReturn(noCopy(SourcesUnavailable))
     given(lookupIsbnForReader(contracteer.id, isbnOf("9782723489898")))
-      .willReturn(IsbnLookup(Held(EditionId.new(), ONE_PIECE_2), COPIES_OF_ONE_PIECE_2))
+      .willReturn(IsbnLookup(Held(EditionId.new(), ASTERIX_1), listOf(COPY_OF_ASTERIX_1)))
     given(addBookToBookshelf(contracteer.id, bookshelf.id, NEW_ONE_PIECE_1))
       .willReturn(Added(Copy(CopyId.new(), EditionId.new(), bookshelf.id), bookshelf))
     given(addBookToBookshelf(contracteer.id, bookshelfId("9e8d7c6b-5a4f-4e3d-8c2b-1a0f9e8d7c6b"), NEW_ONE_PIECE_1))
       .willReturn(NotAnOwner)
     given(browseCatalogue(ReaderId(eq(contracteer.id.value) ?: contracteer.id.value), any()))
-      .willReturn(CataloguePage(listOf(ONE_PIECE_1_HELD), null))
+      .willReturn(CataloguePage(listOf(ASTERIX_1_HELD), null))
     given(findCover(CoverName(any() ?: NO_COVER)))
       .willReturn(coverOf("image/jpeg", recordedBytes("covers/tall.jpg")))
     given(findCover(CoverName(eq(NO_COVER) ?: NO_COVER))).willReturn(null)
