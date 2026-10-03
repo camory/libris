@@ -12,6 +12,8 @@ import fr.amory.libris.bibliography.domain.edition.Edition
 import fr.amory.libris.bibliography.fixture.AwaitedCoversInMemory
 import fr.amory.libris.bibliography.fixture.EditionsInMemory
 import fr.amory.libris.bibliography.fixture.isbnOf
+import fr.amory.libris.fixture.Transaction
+import fr.amory.libris.fixture.TransactionsObserving
 import fr.amory.libris.library.application.AddBookResult.Added
 import fr.amory.libris.library.application.AddBookResult.NoSuchBookshelf
 import fr.amory.libris.library.application.AddBookResult.NotAnOwner
@@ -20,8 +22,6 @@ import fr.amory.libris.library.domain.bookshelf.MembershipRole.VIEWER
 import fr.amory.libris.library.domain.copy.Copy
 import fr.amory.libris.library.fixture.BookshelvesInMemory
 import fr.amory.libris.library.fixture.CopiesInMemory
-import fr.amory.libris.library.fixture.Transaction
-import fr.amory.libris.library.fixture.TransactionsObserving
 import fr.amory.libris.library.fixture.bookshelfOwnedBy
 import fr.amory.libris.library.fixture.readerNamed
 import io.kotest.matchers.collections.shouldBeEmpty
