@@ -30,9 +30,10 @@ is blocking. The *Rework* section of the PR body says how the run met them.
 1. `gh pr view {{PR_NUMBER}} --json title,body,headRefName,files` and
    `gh pr diff {{PR_NUMBER}}`. Read the brief as it is on the branch.
 2. Fetch and check out the head branch. The working tree must be clean.
-   Read `agent/GOTCHAS.md` as it is on the branch, its *every run* sections
-   and those of the side the diff changes, before running anything: it
-   names the traps of the gate and the tools.
+   Read `agent/gotchas/every-run.md` as it is on the branch, and
+   `backend.md` or `frontend.md` beside it for each side the diff changes,
+   each whole with the Read tool, before running anything: they name the
+   traps of the gate and the tools.
 3. Run the verification the PR body claims (`./gradlew check`, `npm test`,
    `npm run build`, whichever apply) and compare the real output with the
    *How verified* section. A claim contradicted by your own run is blocking.
@@ -47,7 +48,7 @@ is blocking. The *Rework* section of the PR body says how the run met them.
    counterexample (an input, a response, a missing field) and, if you find
    one, the criterion is not met even when no test or recorded answer
    exercises it.
-   Read the PROGRESS entry of the task and the diff of `agent/GOTCHAS.md`:
+   Read the PROGRESS entry of the task and the diff of `agent/gotchas/`:
    every claim a future run would act on (an API's behaviour, a library's
    shape, a command, a trap) must be true of the code on the branch; check
    each one against the code. A fact of that kind the entry tells and the
@@ -98,7 +99,7 @@ is blocking. The *Rework* section of the PR body says how the run met them.
      rules on, a simplification, a
      missing edge-case test that no criterion asks for, a commit history
      that does not show one test per cycle (history is never rewritten, so
-     it is reported, not fixed), a PROGRESS claim or a GOTCHAS item that is
+     it is reported, not fixed), a PROGRESS claim or a gotchas item that is
      false of the branch (name the claim and what the code says instead).
 7. Verdict: `REQUEST CHANGES` if at least one blocking finding, else `APPROVE`.
 8. Write the comment body to a file under `/tmp`, post it with

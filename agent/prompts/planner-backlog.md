@@ -15,7 +15,7 @@ to approve.
 5. `agent/TASKS.md` — the current backlog. Unchecked tasks are yours to
    reshape. Ticked tasks are history: never edit, move or renumber them
 6. `agent/PROGRESS.md` — what was learned while building, and
-   `agent/GOTCHAS.md` — what of it is still true
+   `agent/gotchas/` — what of it is still true
 7. The repository tree and the modules that exist, so the plan matches reality
 
 ## What a good backlog looks like

@@ -6,7 +6,7 @@ session that changed something a future run must know).
 An entry is the story of one task in about twenty-five lines, never more
 than forty. It repeats nothing the pull request holds: what was built and
 how it was verified are its body, and the diff is the diff. A fact a future
-run must know goes in `agent/GOTCHAS.md`, not here. The entries of a
+run must know goes in `agent/gotchas/`, not here. The entries of a
 finished phase move to `agent/archive/`, one file per phase.
 
 Format:

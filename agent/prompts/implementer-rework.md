@@ -26,8 +26,9 @@ missing, report `blocked`.
 3. `gh pr view {{PR_NUMBER}} --json body` and `gh pr diff {{PR_NUMBER}}`:
    what the first run built and claimed
 4. The last entries of `agent/PROGRESS.md`, including the one of this task
-5. `agent/GOTCHAS.md`, its *every run* sections and those of the side the
-   change touches, before the first command
+5. `agent/gotchas/every-run.md`, and `backend.md` or `frontend.md` beside
+   it for each side the change touches, each whole with the Read tool,
+   before the first command
 6. The code and tests the reviews point at, before writing anything
 
 ## How to work
@@ -57,9 +58,9 @@ against the reviews and `CLAUDE.md`, then the whole branch
 1. Append a diary entry to `agent/PROGRESS.md`, in the shape its header
    gives, titled `{{TASK_ID}} <task title> — reworked`: *Did* is what the
    rework changed, *Decided* names the review that amended the brief and
-   what it settled. Add to `agent/GOTCHAS.md` each fact of this run a future
-   run must know, one item each, and rewrite or remove an item the run
-   proved false.
+   what it settled. Add to `agent/gotchas/` each fact of this run a future
+   run must know, one item each in the file it belongs to, and rewrite or
+   remove an item the run proved false.
 2. Commit and push the branch. Then edit the pull request:
    append a **Rework** section to its body (`gh pr edit {{PR_NUMBER}}
    --body-file <file>` on the current body): the date, each request from the
