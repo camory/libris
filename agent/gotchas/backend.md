@@ -64,6 +64,10 @@ Read whole by a run that changes `backend/`, after `every-run.md`.
   status, not Gradle's: a red `detekt` read through `| tail -5` looks green
   unless `BUILD FAILED` is in the lines kept. Read for `BUILD SUCCESSFUL`,
   or run it unpiped.
+- detekt's `TooManyFunctions` keeps its default `thresholdInClasses: 11`
+  (`config/detekt/detekt.yml` does not override it) and reports a class
+  that reaches 11 functions, private ones included: `JdbcEditionRepository`
+  sits at 10 since T066, so a function it gains costs another its place.
 - `UnusedPrivateMember` fails two private overloads of one name that are
   called only from lambdas (`map { responseOf(it) }`), though both are used;
   give them distinct names (`bookOf`, `copyOf`).
@@ -210,6 +214,14 @@ Read whole by a run that changes `backend/`, after `every-run.md`.
   on a 404, and `NotFound` is a `RestClientException`: a source that tells a
   miss from a failure catches `NotFound` first, or every miss reads as a
   failure.
+- `RestClient` parses an answer's `Content-Type` before any converter runs,
+  and a malformed one (`webp`, no slash) throws `InvalidMediaTypeException`,
+  an `IllegalArgumentException`, not a `RestClientException`. `uri(String)`
+  reads its address as a URI template, so an address built from a source's
+  answer throws an `IllegalArgumentException` on `{x}` or `50%zz`.
+  `InventaireSource` catches both beside `RestClientException`; the
+  other source adapters do not. An empty body is read as no body, `null`,
+  never as an empty array.
 - WireMock serves the most recently added matching stub, so
   `OpenLibraryStubs.answers("/search.json", body)` called after `knows(isbn)`
   replaces the recorded search of that lookup.
@@ -302,11 +314,23 @@ Read whole by a run that changes `backend/`, after `every-run.md`.
 - `awaited_cover` is keyed by `edition.isbn13` and references it: a slice
   case inserts the edition before its awaited cover, hence
   `JdbcEditionRepository` in the `@Import` of `JdbcAwaitedCoverRepositoryTest`.
-  The port has no read yet, so that class reads the row through `JdbcClient`.
+  The port reads with `findAll`, the chosen source back through
+  `CoverSource.of`; that class still queries `JdbcClient` for the label stored.
 - `EditionsInMemory.insert` appends without looking at the ISBN, so a use
   case that inserts a held edition a second time fails at
   `editions.stored.single()` ("List has more than one element") before any
-  later assertion of the case runs; there is no `update` on the port.
+  later assertion of the case runs. A changed edition goes through
+  `update`, which replaces the edition of that id, and
+  `JdbcEditionRepository.update` writes the whole aggregate, its
+  contributions deleted and inserted again.
+- `TransactionsObserving` and `Transaction` live in the root
+  `fr.amory.libris.fixture`, shared by both contexts' use-case tests.
+- `InventaireStubs.picturePaths()` answers the URLs of the picture requests
+  served, `pictureRequests()` their count; `knowsButThePictureFails(isbn)`
+  serves the entity, then `500` on the picture; `knows(isbn, picture,
+  mediaType)` serves the picture under the given `Content-Type`,
+  `image/webp` by default, and `knowsWithEntityServedAs(isbn, mediaType)`
+  the recorded entity under one.
 - `LookupAnswering`, in `bibliography.fixture`, records the ISBNs it was asked
   and answers them as `asked`, so a case proves a source was never called with
   `source.asked shouldBe emptyList()`.

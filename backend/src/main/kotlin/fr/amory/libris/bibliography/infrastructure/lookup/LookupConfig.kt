@@ -16,6 +16,6 @@ class LookupConfig {
     OpenLibraryEditionLookup(sources.openLibraryUrl, sources.timeout)
 
   @Bean
-  fun inventaireCoverLookup(sources: SourcesProperties) =
-    InventaireCoverLookup(sources.inventaireUrl, sources.timeout)
+  fun inventaireSource(sources: SourcesProperties) =
+    InventaireSource(sources.inventaireUrl, sources.timeout)
 }

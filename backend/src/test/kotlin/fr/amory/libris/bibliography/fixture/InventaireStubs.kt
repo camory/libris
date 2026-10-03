@@ -14,16 +14,22 @@ import com.jayway.jsonpath.JsonPath
 class InventaireStubs(private val server: WireMockServer) {
   val baseUrl: String get() = server.baseUrl()
 
-  fun knows(isbn: String, picture: ByteArray) {
+  fun knows(isbn: String, picture: ByteArray, mediaType: String = WEBP) {
     val entity = recorded("inventaire/$isbn.json")
     entityAnswers(isbn, entity)
-    server.stubFor(get(urlPathMatching(picturePath(hashOf(entity)))).willReturn(webp(picture)))
+    server.stubFor(get(urlPathMatching(picturePath(hashOf(entity)))).willReturn(picture(picture, mediaType)))
   }
 
   fun knowsButThePictureNeverComes(isbn: String) {
     val entity = recorded("inventaire/$isbn.json")
     entityAnswers(isbn, entity)
     server.stubFor(get(urlPathMatching(picturePath(hashOf(entity)))).willReturn(ok().withFixedDelay(NEVER)))
+  }
+
+  fun knowsButThePictureFails(isbn: String) {
+    val entity = recorded("inventaire/$isbn.json")
+    entityAnswers(isbn, entity)
+    server.stubFor(get(urlPathMatching(picturePath(hashOf(entity)))).willReturn(serverError()))
   }
 
   fun knowsWithoutPicture(isbn: String) {
@@ -34,6 +40,14 @@ class InventaireStubs(private val server: WireMockServer) {
   fun knowsWithPictureClaim(isbn: String, claim: Any?) {
     val entity = JsonPath.parse(recorded("inventaire/$isbn.json")).set("$..claims['invp:P2'][0]", claim)
     entityAnswers(isbn, entity.jsonString())
+  }
+
+  fun knowsWithEntityServedAs(isbn: String, mediaType: String) {
+    server.stubFor(
+      get(urlPathEqualTo(ENTITIES))
+        .withQueryParam("uris", equalTo("isbn:$isbn"))
+        .willReturn(ok().withHeader("Content-Type", mediaType).withBody(recorded("inventaire/$isbn.json"))),
+    )
   }
 
   fun answersTooLate(isbn: String) {
@@ -52,7 +66,10 @@ class InventaireStubs(private val server: WireMockServer) {
   }
 
   fun pictureRequests(): Int =
-    server.findAll(getRequestedFor(urlPathMatching(picturePath(".*")))).size
+    picturePaths().size
+
+  fun picturePaths(): List<String> =
+    server.findAll(getRequestedFor(urlPathMatching(picturePath(".*")))).map { it.url }
 
   private fun entityAnswers(isbn: String, entity: String) {
     server.stubFor(
@@ -72,11 +89,12 @@ class InventaireStubs(private val server: WireMockServer) {
   private fun json(body: String): ResponseDefinitionBuilder =
     ok().withHeader("Content-Type", "application/json").withBody(body)
 
-  private fun webp(body: ByteArray): ResponseDefinitionBuilder =
-    ok().withHeader("Content-Type", "image/webp").withBody(body)
+  private fun picture(body: ByteArray, mediaType: String): ResponseDefinitionBuilder =
+    ok().withHeader("Content-Type", mediaType).withBody(body)
 
   private companion object {
     const val ENTITIES = "/api/entities"
+    const val WEBP = "image/webp"
     const val NEVER = 30_000
     const val LATE = 2_000
   }

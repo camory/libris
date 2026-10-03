@@ -8,6 +8,7 @@ import fr.amory.libris.bibliography.fixture.InventaireStubs
 import fr.amory.libris.bibliography.fixture.isbnOf
 import fr.amory.libris.bibliography.fixture.recordedBytes
 import io.kotest.matchers.nulls.shouldBeNull
+import io.kotest.matchers.nulls.shouldNotBeNull
 import io.kotest.matchers.shouldBe
 import org.junit.jupiter.api.AfterAll
 import org.junit.jupiter.api.AfterEach
@@ -17,8 +18,8 @@ import java.time.Duration
 import java.time.Duration.ofMillis
 import java.time.Duration.ofSeconds
 
-class InventaireCoverLookupTest {
-  private val source = InventaireCoverLookup(server.baseUrl(), TIMEOUT)
+class InventaireSourceTest {
+  private val source = InventaireSource(server.baseUrl(), TIMEOUT)
 
   @AfterEach
   fun forgetTheStubs() {
@@ -140,6 +141,117 @@ class InventaireCoverLookupTest {
     candidate.shouldBeNull()
   }
 
+  @Test
+  fun `an entity served with a malformed media type offers no picture`() {
+    // Given
+    inventaire.knowsWithEntityServedAs(ONE_PIECE_1, "json")
+
+    // When
+    val candidate = source.lookUp(isbnOf(ONE_PIECE_1))
+
+    // Then
+    candidate.shouldBeNull()
+  }
+
+  @Test
+  fun `a known ISBN's picture is fetched with the media type it was served with`() {
+    // Given
+    inventaire.knows(ONE_PIECE_1, SMALL_WEBP)
+
+    // When
+    val cover = source.fetch(isbnOf(ONE_PIECE_1))
+
+    // Then
+    cover.shouldNotBeNull()
+    cover.mediaType shouldBe "image/webp"
+    cover.bytes shouldBe SMALL_WEBP
+  }
+
+  @Test
+  fun `a picture served as JPEG is fetched as JPEG`() {
+    // Given
+    inventaire.knows(ONE_PIECE_1, SMALL_WEBP, "image/jpeg")
+
+    // When
+    val cover = source.fetch(isbnOf(ONE_PIECE_1))
+
+    // Then
+    cover.shouldNotBeNull()
+    cover.mediaType shouldBe "image/jpeg"
+  }
+
+  @Test
+  fun `the picture is asked at 100x600`() {
+    // Given
+    inventaire.knows(ONE_PIECE_1, SMALL_WEBP)
+
+    // When
+    source.fetch(isbnOf(ONE_PIECE_1))
+
+    // Then
+    inventaire.picturePaths() shouldBe listOf("/img/entities/100x600/34d6e7d99cec5b0922b9eccfeb03748ab2b4db99")
+  }
+
+  @Test
+  fun `a picture inventaire io fails to serve is no cover`() {
+    // Given
+    inventaire.knowsButThePictureFails(ONE_PIECE_1)
+
+    // When
+    val cover = source.fetch(isbnOf(ONE_PIECE_1))
+
+    // Then
+    cover.shouldBeNull()
+  }
+
+  @Test
+  fun `a picture served with a malformed media type is no cover`() {
+    // Given
+    inventaire.knows(ONE_PIECE_1, SMALL_WEBP, "webp")
+
+    // When
+    val cover = source.fetch(isbnOf(ONE_PIECE_1))
+
+    // Then
+    cover.shouldBeNull()
+  }
+
+  @Test
+  fun `a picture served empty is no cover`() {
+    // Given
+    inventaire.knows(ONE_PIECE_1, ByteArray(0))
+
+    // When
+    val cover = source.fetch(isbnOf(ONE_PIECE_1))
+
+    // Then
+    cover.shouldBeNull()
+  }
+
+  @Test
+  fun `a picture claim in braces is no cover`() {
+    // Given
+    inventaire.knowsWithPictureClaim(ONE_PIECE_1, "{x}")
+
+    // When
+    val cover = source.fetch(isbnOf(ONE_PIECE_1))
+
+    // Then
+    cover.shouldBeNull()
+  }
+
+  @Test
+  fun `a picture claim with a broken escape is no cover`() {
+    // Given
+    inventaire.knowsWithPictureClaim(ONE_PIECE_1, "50%zz")
+
+    // When
+    val cover = source.fetch(isbnOf(ONE_PIECE_1))
+
+    // Then
+    cover.shouldBeNull()
+  }
+
   private companion object {
     const val ONE_PIECE_1 = "9782723488525"
     const val LES_NERONIA = "9782505125990"
@@ -154,7 +266,7 @@ class InventaireCoverLookupTest {
     fun startWireMock() {
       server.start()
       inventaire.knows(ONE_PIECE_1, SMALL_WEBP)
-      InventaireCoverLookup(server.baseUrl(), WARM_UP_TIMEOUT).lookUp(isbnOf(ONE_PIECE_1))
+      InventaireSource(server.baseUrl(), WARM_UP_TIMEOUT).lookUp(isbnOf(ONE_PIECE_1))
       server.resetAll()
     }
 

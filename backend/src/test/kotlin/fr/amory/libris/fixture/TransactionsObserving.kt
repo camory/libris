@@ -1,4 +1,4 @@
-package fr.amory.libris.library.fixture
+package fr.amory.libris.fixture
 
 import org.springframework.transaction.TransactionStatus
 import org.springframework.transaction.support.SimpleTransactionStatus

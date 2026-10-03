@@ -600,3 +600,63 @@ Format:
   so a missing stub reads `500`; not decided. The implementer prompt still
   names `api/` as a side the proof hook records, a directory that no longer
   exists.
+
+## 2026-10-03 — T066 Backend: the worker's run fetches the chosen inventaire.io cover — done
+- Did: `FetchAwaitedCovers` takes each awaited cover whose chosen source is
+  inventaire.io, fetches the picture through `CoverFetch` (implemented by
+  `InventaireCoverLookup`), stores it, names it on the edition and ends the wait.
+- Decided: `JdbcEditionRepository`'s `seriesIdOf` and `authorIdOf` became
+  one `nameIdOf(statement, name)`, detekt's `TooManyFunctions` refusing a
+  twelfth function. `FetchAwaitedCovers` carries `@Service`, as `FindCover`.
+  `findAll` drops a row whose ISBN `Isbn.of` refuses. The edition is read
+  before the transaction, its update and the delete inside it.
+- Decided: two runs, a handoff after step 12; steps 13 to 16 in the second.
+- Deviations from the brief: step 11 was green on arrival: step 8 already
+  used the constructor's `transactions` (detekt's `UnusedPrivateProperty`
+  refuses an unread one), so it is a guard, its mutations in the PR body.
+- Left over: running the use case, S3 and S4 un-skipped (T069); the other
+  sources' fetches (T054); the D02 sentence on
+  `bibliography.infrastructure.lookup` is proposed in the PR, Tophe's to settle.
+
+## 2026-10-03 — T066 Backend: the worker's run fetches the chosen inventaire.io cover — reworked
+- Did: `InventaireCoverLookup` answers no picture when the entity or the
+  picture comes with a malformed `Content-Type`, and no cover for a picture
+  served empty; a case serves the picture as `image/jpeg`.
+- Decided: the reviewer's verdict of 2026-10-03 amended nothing; its
+  blocking finding was the brief's "fails to serve is no cover" and "each
+  … is taken", unmet. `InvalidMediaTypeException` is caught beside
+  `RestClientException` in both requests, the lookup's included, since the
+  fetch goes through it; the use case keeps no catch of its own, the port
+  answering `null` for a failure. The empty body keeps the wait, as S7's
+  "only a stored picture ends the wait" reads.
+- Decided: the `TooManyFunctions` trap is in `agent/gotchas/backend.md`;
+  the entry above says "a twelfth function", it was the eleventh.
+  `b90ba59` mixing a refactor with its cycle is reported, not rewritten.
+- Deviations from the brief: none.
+- Left over: the brief's notes, the adapter's failure modes and D11's
+  "one SQL statement", are the planner's; as in the entry above otherwise.
+
+## 2026-10-03 — T066 Backend: the worker's run fetches the chosen inventaire.io cover — fixed up with Tophe
+- Did: the second verdict's two blocking findings, on Tophe's ask. A picture
+  claim `RestClient` cannot read as an address (`{x}`, `50%zz`) is no cover:
+  `pictureAt` catches `IllegalArgumentException`, which covers
+  `InvalidMediaTypeException` too, so that catch left it. `pictureAt` moved
+  below `pictureOf` and `entities`, in the order it is reached. Tophe's IDE
+  edit (`_` catch names, `toEntity<ByteArray>()`, `body<JsonNode>()`) is a
+  commit of its own before them.
+- Decided: the claim is still read as a URI template; no case asks for
+  `URI.create`. The gotchas item on `RestClient` now names the template
+  trap and says only `InventaireCoverLookup` catches these.
+- Left over: the lookup's candidate address carries an unchecked claim to
+  the reader as it is; as in the entries above otherwise.
+
+## 2026-10-03 — T066 Backend: the worker's run fetches the chosen inventaire.io cover — reviewed by Tophe
+- Did: `InventaireCoverLookup` is `InventaireSource`, its bean
+  `inventaireSource`, its test `InventaireSourceTest`; the guard is
+  `the picture is asked at 100x600`, the size it asserts.
+- Decided: `CoverLookup` and `CoverFetch` stay two ports: different callers
+  (the lookup, the worker), different answers (a candidate, a cover),
+  different implementers (inventaire.io alone offers a cover without an
+  edition; every chosen source fetches). An adapter is named after its
+  source; the siblings follow in their fetch tasks, in `agent/PROPOSED.md`.
+- Left over: as in the entries above.

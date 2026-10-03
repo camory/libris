@@ -24,6 +24,16 @@ private const val INSERT_EDITION =
             :publisher, :publicationYear, :language, :pageCount, :summary, :coverName)
     """
 
+private const val UPDATE_EDITION =
+  """
+    UPDATE edition
+    SET isbn13 = :isbn13, kind = :kind, title = :title, subtitle = :subtitle, series_id = :seriesId,
+        volume_number = :volumeNumber, collection = :collection, publisher = :publisher,
+        publication_year = :publicationYear, language = :language, page_count = :pageCount,
+        summary = :summary, cover_name = :coverName
+    WHERE edition.id = :id
+    """
+
 private const val INSERT_SERIES =
   """
     INSERT INTO series (id, name) VALUES (:id, :name)
@@ -40,6 +50,9 @@ private const val INSERT_AUTHOR =
 
 private const val INSERT_CONTRIBUTION =
   "INSERT INTO contribution (edition_id, author_id, role) VALUES (:editionId, :authorId, :role)"
+
+private const val DELETE_CONTRIBUTIONS =
+  "DELETE FROM contribution WHERE contribution.edition_id = :editionId"
 
 private const val SELECT_EDITIONS =
   """
@@ -66,33 +79,17 @@ class JdbcEditionRepository(private val jdbcClient: JdbcClient) : EditionReposit
   private val uuids = Generators.timeBasedEpochGenerator()
 
   override fun insert(edition: Edition) {
-    val seriesId = edition.series?.let { seriesIdOf(it.name) }
+    write(INSERT_EDITION, edition)
+    insertContributionsOf(edition)
+  }
+
+  override fun update(edition: Edition) {
+    write(UPDATE_EDITION, edition)
     jdbcClient
-      .sql(INSERT_EDITION)
-      .param("id", edition.id.value)
-      .param("isbn13", edition.isbn?.digits)
-      .param("kind", edition.kind.name)
-      .param("title", edition.title)
-      .param("subtitle", edition.subtitle)
-      .param("seriesId", seriesId)
-      .param("volumeNumber", edition.series?.volumeNumber)
-      .param("collection", edition.collection)
-      .param("publisher", edition.publisher)
-      .param("publicationYear", edition.publicationYear)
-      .param("language", edition.language)
-      .param("pageCount", edition.pageCount)
-      .param("summary", edition.summary)
-      .param("coverName", edition.coverName?.value)
+      .sql(DELETE_CONTRIBUTIONS)
+      .param("editionId", edition.id.value)
       .update()
-    edition.contributions.forEach { contribution ->
-      val authorId = authorIdOf(contribution.name)
-      jdbcClient
-        .sql(INSERT_CONTRIBUTION)
-        .param("editionId", edition.id.value)
-        .param("authorId", authorId)
-        .param("role", contribution.role.name)
-        .update()
-    }
+    insertContributionsOf(edition)
   }
 
   override fun findByIsbn(isbn: Isbn): Edition? =
@@ -117,6 +114,39 @@ class JdbcEditionRepository(private val jdbcClient: JdbcClient) : EditionReposit
         .values
         .map(::editionOf)
     }
+
+  private fun write(statement: String, edition: Edition) {
+    val seriesId = edition.series?.let { nameIdOf(INSERT_SERIES, it.name) }
+    jdbcClient
+      .sql(statement)
+      .param("id", edition.id.value)
+      .param("isbn13", edition.isbn?.digits)
+      .param("kind", edition.kind.name)
+      .param("title", edition.title)
+      .param("subtitle", edition.subtitle)
+      .param("seriesId", seriesId)
+      .param("volumeNumber", edition.series?.volumeNumber)
+      .param("collection", edition.collection)
+      .param("publisher", edition.publisher)
+      .param("publicationYear", edition.publicationYear)
+      .param("language", edition.language)
+      .param("pageCount", edition.pageCount)
+      .param("summary", edition.summary)
+      .param("coverName", edition.coverName?.value)
+      .update()
+  }
+
+  private fun insertContributionsOf(edition: Edition) {
+    edition.contributions.forEach { contribution ->
+      val authorId = nameIdOf(INSERT_AUTHOR, contribution.name)
+      jdbcClient
+        .sql(INSERT_CONTRIBUTION)
+        .param("editionId", edition.id.value)
+        .param("authorId", authorId)
+        .param("role", contribution.role.name)
+        .update()
+    }
+  }
 
   private fun rowOf(rs: ResultSet): EditionRow =
     EditionRow(
@@ -150,17 +180,9 @@ class JdbcEditionRepository(private val jdbcClient: JdbcClient) : EditionReposit
   private fun contributionsOf(rows: List<EditionRow>): Contributions =
     Contributions.of(rows.mapNotNull { it.contribution })
 
-  private fun seriesIdOf(name: String): UUID =
+  private fun nameIdOf(statement: String, name: String): UUID =
     jdbcClient
-      .sql(INSERT_SERIES)
-      .param("id", uuids.generate())
-      .param("name", name)
-      .query(UUID::class.java)
-      .single()
-
-  private fun authorIdOf(name: String): UUID =
-    jdbcClient
-      .sql(INSERT_AUTHOR)
+      .sql(statement)
       .param("id", uuids.generate())
       .param("name", name)
       .query(UUID::class.java)
