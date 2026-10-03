@@ -617,3 +617,21 @@ Format:
 - Left over: running the use case, S3 and S4 un-skipped (T069); the other
   sources' fetches (T054); the D02 sentence on
   `bibliography.infrastructure.lookup` is proposed in the PR, Tophe's to settle.
+
+## 2026-10-03 — T066 Backend: the worker's run fetches the chosen inventaire.io cover — reworked
+- Did: `InventaireCoverLookup` answers no picture when the entity or the
+  picture comes with a malformed `Content-Type`, and no cover for a picture
+  served empty; a case serves the picture as `image/jpeg`.
+- Decided: the reviewer's verdict of 2026-10-03 amended nothing; its
+  blocking finding was the brief's "fails to serve is no cover" and "each
+  … is taken", unmet. `InvalidMediaTypeException` is caught beside
+  `RestClientException` in both requests, the lookup's included, since the
+  fetch goes through it; the use case keeps no catch of its own, the port
+  answering `null` for a failure. The empty body keeps the wait, as S7's
+  "only a stored picture ends the wait" reads.
+- Decided: the `TooManyFunctions` trap is in `agent/gotchas/backend.md`;
+  the entry above says "a twelfth function", it was the eleventh.
+  `b90ba59` mixing a refactor with its cycle is reported, not rewritten.
+- Deviations from the brief: none.
+- Left over: the brief's notes, the adapter's failure modes and D11's
+  "one SQL statement", are the planner's; as in the entry above otherwise.

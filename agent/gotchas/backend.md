@@ -64,6 +64,10 @@ Read whole by a run that changes `backend/`, after `every-run.md`.
   status, not Gradle's: a red `detekt` read through `| tail -5` looks green
   unless `BUILD FAILED` is in the lines kept. Read for `BUILD SUCCESSFUL`,
   or run it unpiped.
+- detekt's `TooManyFunctions` keeps its default `thresholdInClasses: 11`
+  (`config/detekt/detekt.yml` does not override it) and reports a class
+  that reaches 11 functions, private ones included: `JdbcEditionRepository`
+  sits at 10 since T066, so a function it gains costs another its place.
 - `UnusedPrivateMember` fails two private overloads of one name that are
   called only from lambdas (`map { responseOf(it) }`), though both are used;
   give them distinct names (`bookOf`, `copyOf`).
@@ -210,6 +214,11 @@ Read whole by a run that changes `backend/`, after `every-run.md`.
   on a 404, and `NotFound` is a `RestClientException`: a source that tells a
   miss from a failure catches `NotFound` first, or every miss reads as a
   failure.
+- `RestClient` parses an answer's `Content-Type` before any converter runs,
+  and a malformed one (`webp`, no slash) throws `InvalidMediaTypeException`,
+  an `IllegalArgumentException`, not a `RestClientException`: a source
+  adapter catches it beside `RestClientException`, on each request. An empty
+  body is read as no body, `null`, never as an empty array.
 - WireMock serves the most recently added matching stub, so
   `OpenLibraryStubs.answers("/search.json", body)` called after `knows(isbn)`
   replaces the recorded search of that lookup.
@@ -315,7 +324,10 @@ Read whole by a run that changes `backend/`, after `every-run.md`.
   `fr.amory.libris.fixture`, shared by both contexts' use-case tests.
 - `InventaireStubs.picturePaths()` answers the URLs of the picture requests
   served, `pictureRequests()` their count; `knowsButThePictureFails(isbn)`
-  serves the entity, then `500` on the picture.
+  serves the entity, then `500` on the picture; `knows(isbn, picture,
+  mediaType)` serves the picture under the given `Content-Type`,
+  `image/webp` by default, and `knowsWithEntityServedAs(isbn, mediaType)`
+  the recorded entity under one.
 - `LookupAnswering`, in `bibliography.fixture`, records the ISBNs it was asked
   and answers them as `asked`, so a case proves a source was never called with
   `source.asked shouldBe emptyList()`.
