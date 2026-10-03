@@ -529,3 +529,12 @@ Format:
 - Deviations from the brief: none; no brief, a human session.
 - Left over: the GOTCHAS item on the web slice still says
   `library.infrastructure.web` is the only web package; T068's run meets it.
+
+## 2026-10-03 — T068 Backend: the web layer as D07 and D10 say — handoff
+- Done: steps 1–16 committed; guards read red then reverted: 9 (ROLE_ADMIN whenever groups ≠ "": *another group is no admin*), 11 (user `.orEmpty()` and the null test on email alone, since `username == null` on a non-null is a warning-as-error: *user header is missing* 500≠403), 12 (no blank check on email: *email header is blank* 500≠403), 14 (role always READER: *the admin authority is an admin*).
+- Start with: step 16's guard (`FastEntryScenarios` *S1*, `IsbnResponse.from(Found, …)` with `coverUrl` null), then step 17 (`ApiContractTest`), then 18.
+- Deviation, step 14: a guard, not a red: detekt's `UnusedParameter` refused a `from` ignoring `authorities`, so step 13 already read the role.
+- Deviation, step 15's guard: `displayName` from the username in `CurrentReaderResponse.from` leaves S1 green (it asserts the bookshelf name only); the mutation run in `RemoteIdentity.of` reds S1 (`Bibliothèque de lea`), S2, S3 ×2, S4.
+- Decided: `READER_AUTHORITY`/`ADMIN_AUTHORITY` moved to `RemoteIdentity.kt`, still public; `roleOf` inlined in `CurrentReaderResponse.from`, so the criterion's grep stays clean; `IsbnResponse` keeps a private `from(id, preview, copies)`.
+- Learned: the criterion's `git grep … copyOf` also answers `JdbcCopyRepository.copyOf`, a row mapper outside the web layer; say so in the PR. Two `style` commits (b5365cc, c0707da) fix `MaxLineLength` in `RemoteIdentityTest`, committed when a `| tail` masked detekt's failure.
+- Left for 18: the GOTCHAS items on the web slice and on the JDK `HttpClient` header decoding; the PROPOSED bullet on `ONE_PIECE_1`; D06 wording proposal in the PR body.
