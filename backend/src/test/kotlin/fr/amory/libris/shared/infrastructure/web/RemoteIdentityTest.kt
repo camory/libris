@@ -64,6 +64,11 @@ class RemoteIdentityTest {
     authoritiesOf("Remote-Groups" to "family,libris-admin") shouldBe listOf("ROLE_READER", "ROLE_ADMIN")
   }
 
+  @Test
+  fun `a group after a comma and a space is read`() {
+    authoritiesOf("Remote-Groups" to "family, libris-admin") shouldBe listOf("ROLE_READER", "ROLE_ADMIN")
+  }
+
   private fun authoritiesOf(vararg headers: Pair<String, String>): List<String?> =
     RemoteIdentity.of(julietteSending(*headers)).shouldNotBeNull().authorities.map { it.authority }
 

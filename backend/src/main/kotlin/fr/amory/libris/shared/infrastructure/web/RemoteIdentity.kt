@@ -18,7 +18,7 @@ class RemoteIdentity private constructor(
         username = username,
         email = request.getHeader("Remote-Email"),
         displayName = request.getHeader("Remote-Name")?.let(::utf8)?.takeUnless { it.isBlank() } ?: username,
-        authorities = authoritiesOf(request.getHeader("Remote-Groups").orEmpty().split(",")),
+        authorities = authoritiesOf(request.getHeader("Remote-Groups").orEmpty().split(",").map { it.trim() }),
       )
     }
 
