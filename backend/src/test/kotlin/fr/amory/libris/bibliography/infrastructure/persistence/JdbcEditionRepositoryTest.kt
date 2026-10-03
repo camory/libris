@@ -1,9 +1,11 @@
 package fr.amory.libris.bibliography.infrastructure.persistence
 
 import fr.amory.libris.bibliography.domain.Contribution
+import fr.amory.libris.bibliography.domain.ContributionRole.ARTIST
 import fr.amory.libris.bibliography.domain.ContributionRole.TRANSLATOR
 import fr.amory.libris.bibliography.domain.ContributionRole.WRITER
 import fr.amory.libris.bibliography.domain.Contributions
+import fr.amory.libris.bibliography.domain.Kind.BD
 import fr.amory.libris.bibliography.domain.Kind.MANGA
 import fr.amory.libris.bibliography.domain.SeriesEntry
 import fr.amory.libris.bibliography.domain.cover.CoverName
@@ -130,6 +132,34 @@ class JdbcEditionRepositoryTest @Autowired constructor(
 
     // Then
     found shouldContainExactlyInAnyOrder listOf(tomeOne, tomeTwo)
+  }
+
+  @Test
+  fun `an updated edition is read back whole`() {
+    // Given
+    val edition = onePieceTomeOne()
+    editions.insert(edition)
+    val updated = edition.copy(
+      isbn = isbnOf(ONE_PIECE_TOME_TWO),
+      kind = BD,
+      title = "Aux prises avec Baggy et ses hommes",
+      subtitle = "Le clown",
+      contributions = Contributions.of(listOf(Contribution("Eiichiro Oda", ARTIST))),
+      series = SeriesEntry("One piece Color", 2),
+      collection = "Edition originale",
+      publisher = "Glénat Manga",
+      publicationYear = 2014,
+      language = "ja",
+      pageCount = 192,
+      summary = "Luffy affronte Baggy le clown.",
+      coverName = CoverName("34d6e7d99cec5b0922b9eccfeb03748ab2b4db9934d6e7d99cec5b0922b9eccf"),
+    )
+
+    // When
+    editions.update(updated)
+
+    // Then
+    editions.findByIsbn(isbnOf(ONE_PIECE_TOME_TWO)) shouldBe updated
   }
 
   @Test

@@ -14,6 +14,10 @@ class EditionsInMemory : EditionRepository {
     editions += edition
   }
 
+  override fun update(edition: Edition) {
+    editions.replaceAll { if (it.id == edition.id) edition else it }
+  }
+
   override fun findByIsbn(isbn: Isbn): Edition? =
     editions.find { it.isbn == isbn }
 
