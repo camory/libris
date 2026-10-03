@@ -564,3 +564,13 @@ Format:
   `style` commits asks for nothing: history is not rewritten.
 - Deviations from the brief: none.
 - Left over: as in the entry above; D06's wording is Tophe's to settle.
+
+## 2026-10-03 — T068 Backend: the web layer as D07 and D10 say — fixed up with Tophe
+- Did: each controller file reads from the controller down, its responses
+  in the order reached, constants last; `ApiContractTest` composes its
+  stubs into five named steps, fixtures below the class.
+- Decided: with Tophe, a D10 bullet: a file reads from the top down (the
+  newspaper metaphor and the stepdown rule, Robert C. Martin), a long
+  function or a test's setup is composed (Compose Method, Kent Beck).
+- Left over: the rest of the tree predates the bullet; it is applied to
+  the files a task touches.
