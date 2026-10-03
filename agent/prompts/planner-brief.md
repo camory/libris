@@ -65,7 +65,9 @@ much of the code base the implementer must understand first.
   it in the PR body. A step that is neither red first nor a named guard is
   a case weaker than its claim: rewrite it. One step names one case: a step
   with two cases is two steps, and guards are steps of their own, so that
-  one step is one cycle is one commit.
+  one step is one cycle is one commit. Each step names the component that
+  owns what it asserts; a value copied into a response gets no step, its
+  form is the contract's, and no step tests a controller.
 - Fill the **First of its kind** line of the template. It names the kind of
   thing this task introduces and the code base has none of yet — the first
   outbound client, the first configuration setting, the first sub-package of
