@@ -660,3 +660,16 @@ Format:
   edition; every chosen source fetches). An adapter is named after its
   source; the siblings follow in their fetch tasks, in `agent/PROPOSED.md`.
 - Left over: as in the entries above.
+
+## 2026-10-03 — T069 Backend: the add wakes the worker — done
+- Did: an add that answers a copy wakes `CoverWorker` (bibliography's
+  application port) after its transaction; `ExecutorCoverWorker` runs
+  `FetchAwaitedCovers` on Spring Boot's `applicationTaskExecutor`. S3, S4 un-skipped.
+- Decided: the `Executor` is injected by type, unqualified: the booted
+  application resolves it to `applicationTaskExecutor` with no ambiguity.
+  The scenario un-skip was the first cycle (S4 red, S3 green on arrival),
+  the scenarios' guards checked last, as the brief's steps 6 and 7.
+- Deviations from the brief: none.
+- Left over: runs one at a time, at start and daily (T059); the other
+  chosen sources (T054); the D02 bullet on `bibliography.infrastructure.worker`
+  is proposed in the PR, Tophe's to settle.

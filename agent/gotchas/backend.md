@@ -331,6 +331,12 @@ Read whole by a run that changes `backend/`, after `every-run.md`.
   mediaType)` serves the picture under the given `Content-Type`,
   `image/webp` by default, and `knowsWithEntityServedAs(isbn, mediaType)`
   the recorded entity under one.
+- An add answering a copy wakes the cover worker, which runs
+  `FetchAwaitedCovers` on `applicationTaskExecutor`: a scenario add whose
+  chosen source is inventaire.io starts a run that may outlive its case
+  (S3's waits a second on a picture that never comes); an add with no
+  chosen source asks no source. `CoverWorkerObserving`, in
+  `bibliography.fixture`, records what its `observe` answers at each waking.
 - `LookupAnswering`, in `bibliography.fixture`, records the ISBNs it was asked
   and answers them as `asked`, so a case proves a source was never called with
   `source.asked shouldBe emptyList()`.

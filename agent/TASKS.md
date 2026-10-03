@@ -265,7 +265,7 @@ catalogue rows show a cover only once the worker has stored it (Tophe,
       the inventaire.io fetch over a stubbed source and of the JDBC slice;
       nothing runs it yet; un-skips nothing.
 
-- [ ] T069 Backend: the add wakes the worker.
+- [x] T069 Backend: the add wakes the worker.
       The add answers the copy, then wakes the worker, one piece behind an
       application port the tests call the same way (D02), which runs T066's
       use case away from the request; the catalogue then answers the cover's
