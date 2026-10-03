@@ -155,6 +155,18 @@ class InventaireCoverLookupTest {
     cover.bytes shouldBe SMALL_WEBP
   }
 
+  @Test
+  fun `the picture is asked at most 600 tall`() {
+    // Given
+    inventaire.knows(ONE_PIECE_1, SMALL_WEBP)
+
+    // When
+    source.fetch(isbnOf(ONE_PIECE_1))
+
+    // Then
+    inventaire.picturePaths() shouldBe listOf("/img/entities/100x600/34d6e7d99cec5b0922b9eccfeb03748ab2b4db99")
+  }
+
   private companion object {
     const val ONE_PIECE_1 = "9782723488525"
     const val LES_NERONIA = "9782505125990"

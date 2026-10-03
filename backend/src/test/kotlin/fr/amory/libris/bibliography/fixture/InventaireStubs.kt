@@ -52,7 +52,10 @@ class InventaireStubs(private val server: WireMockServer) {
   }
 
   fun pictureRequests(): Int =
-    server.findAll(getRequestedFor(urlPathMatching(picturePath(".*")))).size
+    picturePaths().size
+
+  fun picturePaths(): List<String> =
+    server.findAll(getRequestedFor(urlPathMatching(picturePath(".*")))).map { it.url }
 
   private fun entityAnswers(isbn: String, entity: String) {
     server.stubFor(
