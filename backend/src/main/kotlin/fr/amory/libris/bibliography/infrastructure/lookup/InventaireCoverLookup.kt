@@ -37,7 +37,7 @@ class InventaireCoverLookup(private val baseUrl: String, timeout: Duration) : Co
         .uri(address)
         .retrieve()
         .toEntity(ByteArray::class.java)
-      answer.headers.contentType?.let { Cover.of(it.toString(), answer.body ?: ByteArray(0)) }
+      answer.body?.let { bytes -> answer.headers.contentType?.let { Cover.of(it.toString(), bytes) } }
     } catch (ignored: RestClientException) {
       null
     } catch (ignored: InvalidMediaTypeException) {

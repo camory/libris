@@ -203,6 +203,18 @@ class InventaireCoverLookupTest {
     cover.shouldBeNull()
   }
 
+  @Test
+  fun `a picture served empty is no cover`() {
+    // Given
+    inventaire.knows(ONE_PIECE_1, ByteArray(0))
+
+    // When
+    val cover = source.fetch(isbnOf(ONE_PIECE_1))
+
+    // Then
+    cover.shouldBeNull()
+  }
+
   private companion object {
     const val ONE_PIECE_1 = "9782723488525"
     const val LES_NERONIA = "9782505125990"
