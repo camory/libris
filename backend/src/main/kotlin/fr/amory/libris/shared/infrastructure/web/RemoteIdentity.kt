@@ -7,12 +7,14 @@ class RemoteIdentity private constructor(
   val email: String,
   val displayName: String) {
   companion object {
-    fun of(request: HttpServletRequest): RemoteIdentity? =
-      RemoteIdentity(
-        username = request.getHeader("Remote-User"),
+    fun of(request: HttpServletRequest): RemoteIdentity? {
+      val username = request.getHeader("Remote-User")
+      return RemoteIdentity(
+        username = username,
         email = request.getHeader("Remote-Email"),
-        displayName = utf8(request.getHeader("Remote-Name").orEmpty()),
+        displayName = request.getHeader("Remote-Name")?.let(::utf8) ?: username,
       )
+    }
 
     private fun utf8(header: String): String =
       String(header.toByteArray(Charsets.ISO_8859_1), Charsets.UTF_8)

@@ -44,6 +44,11 @@ class RemoteIdentityTest {
     identity.displayName shouldBe "Léa"
   }
 
+  @Test
+  fun `without a name, the reader is their username`() {
+    RemoteIdentity.of(julietteSending()).shouldNotBeNull().displayName shouldBe "juliette"
+  }
+
   private fun julietteSending(vararg headers: Pair<String, String>): MockHttpServletRequest =
     requestOf("Remote-User" to "juliette", "Remote-Email" to "juliette@amory.fr", *headers)
 
