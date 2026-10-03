@@ -32,20 +32,6 @@ class InventaireCoverLookup(private val baseUrl: String, timeout: Duration) : Co
   override fun fetch(isbn: Isbn): Cover? =
     lookUp(isbn)?.let { pictureAt(it.url) }
 
-  private fun pictureAt(address: String): Cover? =
-    try {
-      val answer = http
-        .get()
-        .uri(address)
-        .retrieve()
-        .toEntity<ByteArray>()
-      answer.body?.let { bytes -> answer.headers.contentType?.let { Cover.of(it.toString(), bytes) } }
-    } catch (_: RestClientException) {
-      null
-    } catch (_: IllegalArgumentException) {
-      null
-    }
-
   private fun pictureOf(answer: JsonNode): String? =
     answer
       .path("entities")
@@ -71,4 +57,18 @@ class InventaireCoverLookup(private val baseUrl: String, timeout: Duration) : Co
       }
       .retrieve()
       .body<JsonNode>() ?: MissingNode.getInstance()
+
+  private fun pictureAt(address: String): Cover? =
+    try {
+      val answer = http
+        .get()
+        .uri(address)
+        .retrieve()
+        .toEntity<ByteArray>()
+      answer.body?.let { bytes -> answer.headers.contentType?.let { Cover.of(it.toString(), bytes) } }
+    } catch (_: RestClientException) {
+      null
+    } catch (_: IllegalArgumentException) {
+      null
+    }
 }
