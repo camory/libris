@@ -216,9 +216,12 @@ Read whole by a run that changes `backend/`, after `every-run.md`.
   failure.
 - `RestClient` parses an answer's `Content-Type` before any converter runs,
   and a malformed one (`webp`, no slash) throws `InvalidMediaTypeException`,
-  an `IllegalArgumentException`, not a `RestClientException`: a source
-  adapter catches it beside `RestClientException`, on each request. An empty
-  body is read as no body, `null`, never as an empty array.
+  an `IllegalArgumentException`, not a `RestClientException`. `uri(String)`
+  reads its address as a URI template, so an address built from a source's
+  answer throws an `IllegalArgumentException` on `{x}` or `50%zz`.
+  `InventaireCoverLookup` catches both beside `RestClientException`; the
+  other source adapters do not. An empty body is read as no body, `null`,
+  never as an empty array.
 - WireMock serves the most recently added matching stub, so
   `OpenLibraryStubs.answers("/search.json", body)` called after `knows(isbn)`
   replaces the recorded search of that lookup.

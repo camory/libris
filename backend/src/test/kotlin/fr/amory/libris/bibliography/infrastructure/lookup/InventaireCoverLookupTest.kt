@@ -228,6 +228,30 @@ class InventaireCoverLookupTest {
     cover.shouldBeNull()
   }
 
+  @Test
+  fun `a picture claim in braces is no cover`() {
+    // Given
+    inventaire.knowsWithPictureClaim(ONE_PIECE_1, "{x}")
+
+    // When
+    val cover = source.fetch(isbnOf(ONE_PIECE_1))
+
+    // Then
+    cover.shouldBeNull()
+  }
+
+  @Test
+  fun `a picture claim with a broken escape is no cover`() {
+    // Given
+    inventaire.knowsWithPictureClaim(ONE_PIECE_1, "50%zz")
+
+    // When
+    val cover = source.fetch(isbnOf(ONE_PIECE_1))
+
+    // Then
+    cover.shouldBeNull()
+  }
+
   private companion object {
     const val ONE_PIECE_1 = "9782723488525"
     const val LES_NERONIA = "9782505125990"

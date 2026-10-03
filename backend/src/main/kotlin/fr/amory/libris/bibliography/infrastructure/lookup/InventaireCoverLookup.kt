@@ -42,7 +42,7 @@ class InventaireCoverLookup(private val baseUrl: String, timeout: Duration) : Co
       answer.body?.let { bytes -> answer.headers.contentType?.let { Cover.of(it.toString(), bytes) } }
     } catch (_: RestClientException) {
       null
-    } catch (_: InvalidMediaTypeException) {
+    } catch (_: IllegalArgumentException) {
       null
     }
 
