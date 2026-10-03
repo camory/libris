@@ -552,3 +552,15 @@ Format:
 - Left over: D06 still names the filter as the class reading the headers;
   the PR proposes the wording. The criterion's grep on `copyOf` also
   answers `JdbcCopyRepository.copyOf`, a row mapper outside the web layer.
+
+## 2026-10-03 — T068 Backend: the web layer as D07 and D10 say — reworked
+- Did: `RemoteIdentity` and `RemoteIdentityTest` import `ISO_8859_1` and
+  `UTF_8` from `kotlin.text.Charsets`, `CurrentReaderResponseTest` imports
+  `READER` and `ADMIN` from `Role`; the three use the bare names.
+- Decided: the reviewer's verdict of 2026-10-03 amended nothing; its
+  blocking finding was D10's import rule, unmet on four added lines. The
+  companion factories (`from`, `of`, `new`) stay qualified, their bare name
+  saying nothing, as `MissingNode.getInstance()`. Its suggestion on the two
+  `style` commits asks for nothing: history is not rewritten.
+- Deviations from the brief: none.
+- Left over: as in the entry above; D06's wording is Tophe's to settle.

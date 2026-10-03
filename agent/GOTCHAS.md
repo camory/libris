@@ -176,7 +176,9 @@ true; the diary keeps the date it was found.
 - `./gradlew detekt` reports on the test sources as well as the main ones
   (T050 saw `MaxLineLength` and `ArgumentListWrapping` in a slice test from
   it). Run `./gradlew detekt` before each commit: `ImportOrdering` fails an import added by hand
-  out of lexicographic order, `VariableNaming` refuses a backticked property
+  out of its order, lexicographic but for `java.`, `javax.` and `kotlin.`,
+  which come last in that order (`kotlin.text.Charsets.UTF_8` after
+  `org.…`), `VariableNaming` refuses a backticked property
   (`@ArchTest fun \`name\`(classes: JavaClasses)` instead of a `val`),
   `ReturnCount` allows two returns, `LongParameterList` refuses a function of
   more than six parameters but exempts data classes (a shared fixture is a
