@@ -56,16 +56,16 @@ class RemoteIdentityTest {
 
   @Test
   fun `without groups, a reader holds the reader authority alone`() {
-    authoritiesOf(julietteSending()) shouldBe listOf("ROLE_READER")
+    authoritiesOf() shouldBe listOf("ROLE_READER")
   }
 
   @Test
   fun `a member of libris-admin is also an admin`() {
-    authoritiesOf(julietteSending("Remote-Groups" to "family,libris-admin")) shouldBe listOf("ROLE_READER", "ROLE_ADMIN")
+    authoritiesOf("Remote-Groups" to "family,libris-admin") shouldBe listOf("ROLE_READER", "ROLE_ADMIN")
   }
 
-  private fun authoritiesOf(request: MockHttpServletRequest): List<String?> =
-    RemoteIdentity.of(request).shouldNotBeNull().authorities.map { it.authority }
+  private fun authoritiesOf(vararg headers: Pair<String, String>): List<String?> =
+    RemoteIdentity.of(julietteSending(*headers)).shouldNotBeNull().authorities.map { it.authority }
 
   private fun julietteSending(vararg headers: Pair<String, String>): MockHttpServletRequest =
     requestOf("Remote-User" to "juliette", "Remote-Email" to "juliette@amory.fr", *headers)
