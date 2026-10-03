@@ -381,3 +381,10 @@
   `OpenLibrarySource` in T054, `BnfEditionLookup` becomes `BnfSource` in
   the task giving the BnF its fetch (decided 2026-10-03 reviewing T066 with
   Tophe).
+- Backend build: detekt 1.23.8's plugin calls `ReportingExtension.file(String)`
+  (`DetektPlugin.apply`), deprecated in Gradle 9 and removed in Gradle 10, so
+  every build warns "incompatible with Gradle 10" and the wrapper cannot move
+  to 10 before detekt does. Before that upgrade, look at detekt's next major
+  version, and whether it also lifts the cleared `jdkHome` on JDK 25 (found
+  2026-10-04 measuring the configuration cache with Tophe, traced with
+  `--warning-mode all -Dorg.gradle.deprecation.trace=true`).
