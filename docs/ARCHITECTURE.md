@@ -459,6 +459,11 @@ deliberately lacks), no other service. A test that needs more blocks the task.
   query port of D12 does not, and is named by what it answers
   (`CatalogueEditions`): the suffix alone tells an aggregate's port from a
   read's.
+- A DTO of `infrastructure.web` maps itself, and the controller maps
+  nothing. A response is built from the application's type by `from` on its
+  companion (`BookResponse.from(held)`); a request turns itself into the
+  application's type (`NewBookRequest.validate`). A mapping grown big or
+  complicated moves to a mapper of its own in `infrastructure.web`.
 - A member's visibility is what the type exposes: a private member is not
   made public for a new caller. A caller that needs what the private member
   does either goes through the public door (`Isbn.of`) or the type gains a
