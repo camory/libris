@@ -33,6 +33,7 @@ class FetchAwaitedCovers(
     val edition = editions.findByIsbn(awaitedCover.isbn)
     transactions.executeWithoutResult {
       edition?.let { editions.update(it.copy(coverName = cover.name)) }
+      awaitedCovers.delete(awaitedCover)
     }
   }
 }

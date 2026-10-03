@@ -14,6 +14,7 @@ import fr.amory.libris.bibliography.fixture.EditionsInMemory
 import fr.amory.libris.bibliography.fixture.coverOf
 import fr.amory.libris.bibliography.fixture.isbnOf
 import fr.amory.libris.bibliography.fixture.recordedBytes
+import io.kotest.matchers.collections.shouldBeEmpty
 import io.kotest.matchers.shouldBe
 import org.junit.jupiter.api.Test
 import org.springframework.transaction.support.TransactionOperations.withoutTransaction
@@ -39,6 +40,19 @@ class FetchAwaitedCoversTest {
     // Then
     covers.read(cover.name) shouldBe cover
     editions.findByIsbn(isbnOf(ONE_PIECE)) shouldBe edition.copy(coverName = cover.name)
+  }
+
+  @Test
+  fun `a stored cover is awaited no more`() {
+    // Given
+    awaiting(INVENTAIRE)
+    val fetchAwaitedCovers = fetchAwaitedCoversAnswering()
+
+    // When
+    fetchAwaitedCovers()
+
+    // Then
+    awaitedCovers.findAll().shouldBeEmpty()
   }
 
   private fun awaiting(chosenSource: CoverSource?) {
