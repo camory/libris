@@ -14,9 +14,11 @@ import fr.amory.libris.bibliography.fixture.EditionsInMemory
 import fr.amory.libris.bibliography.fixture.coverOf
 import fr.amory.libris.bibliography.fixture.isbnOf
 import fr.amory.libris.bibliography.fixture.recordedBytes
+import io.kotest.matchers.collections.shouldBeEmpty
 import io.kotest.matchers.shouldBe
 import org.junit.jupiter.api.Test
 import org.springframework.transaction.support.TransactionOperations.withoutTransaction
+import java.util.concurrent.Executor
 
 private const val ONE_PIECE = "9782723488525"
 
@@ -31,13 +33,28 @@ class ExecutorCoverWorkerTest {
   fun `a waking runs the fetch of the awaited covers`() {
     // Given
     awaitingOnePiece()
-    val coverWorker = ExecutorCoverWorker(fetchAwaitedCovers)
+    val executor = ExecutorKeeping()
+    val coverWorker = ExecutorCoverWorker(fetchAwaitedCovers, executor)
+
+    // When
+    coverWorker.wake()
+    executor.runKept()
+
+    // Then
+    coverFetch.asked shouldBe listOf(isbnOf(ONE_PIECE))
+  }
+
+  @Test
+  fun `a waking leaves the run to the executor`() {
+    // Given
+    awaitingOnePiece()
+    val coverWorker = ExecutorCoverWorker(fetchAwaitedCovers, ExecutorKeeping())
 
     // When
     coverWorker.wake()
 
     // Then
-    coverFetch.asked shouldBe listOf(isbnOf(ONE_PIECE))
+    coverFetch.asked.shouldBeEmpty()
   }
 
   private fun awaitingOnePiece() {
@@ -60,5 +77,17 @@ class ExecutorCoverWorkerTest {
       ),
     )
     awaitedCovers.insert(AwaitedCover(isbnOf(ONE_PIECE), INVENTAIRE))
+  }
+
+  private class ExecutorKeeping : Executor {
+    private val kept = mutableListOf<Runnable>()
+
+    override fun execute(command: Runnable) {
+      kept += command
+    }
+
+    fun runKept() {
+      kept.forEach { it.run() }
+    }
   }
 }
