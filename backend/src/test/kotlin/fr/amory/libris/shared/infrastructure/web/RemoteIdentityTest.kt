@@ -54,6 +54,11 @@ class RemoteIdentityTest {
     RemoteIdentity.of(julietteSending("Remote-Name" to " ")).shouldNotBeNull().displayName shouldBe "juliette"
   }
 
+  @Test
+  fun `without groups, a reader holds the reader authority alone`() {
+    RemoteIdentity.of(julietteSending()).shouldNotBeNull().authorities.map { it.authority } shouldBe listOf("ROLE_READER")
+  }
+
   private fun julietteSending(vararg headers: Pair<String, String>): MockHttpServletRequest =
     requestOf("Remote-User" to "juliette", "Remote-Email" to "juliette@amory.fr", *headers)
 
