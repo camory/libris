@@ -1,6 +1,8 @@
 package fr.amory.libris.bibliography.infrastructure.lookup
 
 import fr.amory.libris.bibliography.domain.Isbn
+import fr.amory.libris.bibliography.domain.cover.Cover
+import fr.amory.libris.bibliography.domain.cover.CoverFetch
 import fr.amory.libris.bibliography.domain.cover.CoverSource.INVENTAIRE
 import fr.amory.libris.bibliography.domain.lookup.CoverCandidate
 import fr.amory.libris.bibliography.domain.lookup.CoverLookup
@@ -10,7 +12,7 @@ import tools.jackson.databind.exc.JsonNodeException
 import tools.jackson.databind.node.MissingNode
 import java.time.Duration
 
-class InventaireCoverLookup(private val baseUrl: String, timeout: Duration) : CoverLookup {
+class InventaireCoverLookup(private val baseUrl: String, timeout: Duration) : CoverLookup, CoverFetch {
   private val http = sourceRestClient(baseUrl, timeout)
 
   override fun lookUp(isbn: Isbn): CoverCandidate? =
@@ -21,6 +23,18 @@ class InventaireCoverLookup(private val baseUrl: String, timeout: Duration) : Co
     } catch (ignored: JsonNodeException) {
       null
     }
+
+  override fun fetch(isbn: Isbn): Cover? =
+    lookUp(isbn)?.let { pictureAt(it.url) }
+
+  private fun pictureAt(address: String): Cover? {
+    val answer = http
+      .get()
+      .uri(address)
+      .retrieve()
+      .toEntity(ByteArray::class.java)
+    return answer.headers.contentType?.let { Cover.of(it.toString(), answer.body ?: ByteArray(0)) }
+  }
 
   private fun pictureOf(answer: JsonNode): String? =
     answer

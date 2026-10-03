@@ -8,6 +8,7 @@ import fr.amory.libris.bibliography.fixture.InventaireStubs
 import fr.amory.libris.bibliography.fixture.isbnOf
 import fr.amory.libris.bibliography.fixture.recordedBytes
 import io.kotest.matchers.nulls.shouldBeNull
+import io.kotest.matchers.nulls.shouldNotBeNull
 import io.kotest.matchers.shouldBe
 import org.junit.jupiter.api.AfterAll
 import org.junit.jupiter.api.AfterEach
@@ -138,6 +139,20 @@ class InventaireCoverLookupTest {
 
     // Then
     candidate.shouldBeNull()
+  }
+
+  @Test
+  fun `a known ISBN's picture is fetched with the media type it was served with`() {
+    // Given
+    inventaire.knows(ONE_PIECE_1, SMALL_WEBP)
+
+    // When
+    val cover = source.fetch(isbnOf(ONE_PIECE_1))
+
+    // Then
+    cover.shouldNotBeNull()
+    cover.mediaType shouldBe "image/webp"
+    cover.bytes shouldBe SMALL_WEBP
   }
 
   private companion object {
