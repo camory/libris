@@ -168,6 +168,19 @@ class InventaireCoverLookupTest {
   }
 
   @Test
+  fun `a picture served as JPEG is fetched as JPEG`() {
+    // Given
+    inventaire.knows(ONE_PIECE_1, SMALL_WEBP, "image/jpeg")
+
+    // When
+    val cover = source.fetch(isbnOf(ONE_PIECE_1))
+
+    // Then
+    cover.shouldNotBeNull()
+    cover.mediaType shouldBe "image/jpeg"
+  }
+
+  @Test
   fun `the picture is asked at most 600 tall`() {
     // Given
     inventaire.knows(ONE_PIECE_1, SMALL_WEBP)
