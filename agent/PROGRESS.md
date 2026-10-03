@@ -497,3 +497,20 @@ Format:
   `CatalogueControllerTest` holds for the null case alone.
 - Left over: the address built in `CatalogueController.bookOf` has no test
   until the contract's pattern or S3 at T066.
+
+## 2026-10-03 — Web layer: testing and mapping rules — with Tophe
+- Did: D07 says a value is tested where it is computed, its form is the
+  contract's, the stubs of the Contracteer test answer any value the schema
+  accepts, and a hand-written web test tests the class that decides, never
+  a controller; D10 says a DTO of the web layer maps itself (`from` on a
+  response); the tdd skill, the brief planner and the reviewer follow;
+  T068 brings the backend in line, before Covers.
+- Decided (Tophe): when the pin bump brings no red, the first red is in the
+  test of the component computing the value, and a copied value gets none;
+  the reading of the proxy's headers leaves the filter for a class of its
+  own, so `MeControllerTest` has nothing left; one task, not split.
+  Measured on `v0.8.2`: the keyed `200`s pass with stubs answering values
+  unrelated to the examples (15 cases), and fail on a wrong status.
+- Deviations from the brief: none; no brief, a human session.
+- Left over: the GOTCHAS item on the web slice still says
+  `library.infrastructure.web` is the only web package; T068's run meets it.
