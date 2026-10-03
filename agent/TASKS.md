@@ -164,11 +164,13 @@ Contract: release `v0.8.2` of `camory/libris-api`, after `v0.7.0`: `Edition`
 loses `coverUrl`, `IsbnLookup` gains `id` and `covers`, `NewBook` gains
 `coverSource`, `Book` gains `coverUrl`, and the cover operation is new; the
 lookup keeps its deprecated `coverUrl`, so each side deploys alone. Fields and
-an operation are added, so the backend goes first and its pin moves in T051;
-the frontend pin moves in T060, once T059 is deployed. Release `v0.9.0`, the
-lookup losing `coverUrl`, removes a field, so the frontend goes first: the
-backend pins it in T064, once T063 is deployed. No other task touches the
-contract (D04). `v0.8.1` only keys the add's `201` again, so that its case
+an operation are added, so the backend goes first and its pin moves in T051.
+Release `v0.9.0` moves the document to OpenAPI 3.1.0 and changes no byte of
+an answer: the backend pins it in T067, before the worker; the frontend pins
+it in T060, once T059 is deployed, and never pins `v0.8.2`. Release
+`v0.10.0`, the lookup losing `coverUrl`, removes a field, so the frontend goes
+first: the backend pins it in T064, once T063 is deployed. No other task
+touches the contract (D04). `v0.8.1` only keys the add's `201` again, so that its case
 sends an ISBN whose check digit holds; `v0.8.2` adds the cover operation's
 `400` for a text that is not a cover name; nothing pins `v0.8.0` or
 `v0.8.1`.
@@ -222,6 +224,16 @@ catalogue rows show a cover only once the worker has stored it (Tophe,
       address that nothing reads any more, leave in the same migration. Tests
       of the store over a temporary directory, of the JDBC slice and of the
       catalogue's web slice; no fetch, no worker; un-skips nothing.
+
+- [ ] T067 Backend: the API on `v0.9.0`, the contract in OpenAPI 3.1.
+      Precondition (human): `v0.9.0` released (D04).
+      `ApiContractTest` pins `v0.9.0`, the only contract edit of the task
+      (D04). No byte of an answer changes: the unknown ISBN is stubbed as
+      `9782000000013`, no longer `9782000000006`; the catalogue's book holds
+      a stored cover, so the address its `coverUrl` answers is checked
+      against the pattern of `Book.coverUrl`; an add on a bookshelf id that
+      is not a uuid answers `400` with a `Problem`, as it already does.
+      Realises no scenario; un-skips nothing.
 
 - [ ] T066 Backend: the worker fetches the chosen inventaire.io cover.
       The add answers the copy, then wakes the worker, one piece behind an
@@ -285,9 +297,10 @@ catalogue rows show a cover only once the worker has stored it (Tophe,
       `libris` user, so the `covers` volume mounted there is writable; the
       first stored cover on staging is checked by hand.
 
-- [ ] T060 Frontend: covers on `v0.8.2`, the card shows the first candidate.
+- [ ] T060 Frontend: covers on `v0.9.0`, the card shows the first candidate.
       Precondition (human): T059 deployed (D04).
-      `vitest.global-setup.ts` pins `v0.8.2` (D04). The lookup's found answer
+      `vitest.global-setup.ts` pins `v0.9.0` (D04); the mock's unknown ISBN
+      is `9782000000013`. The lookup's found answer
       holds `id` and `covers` as required, its edition no `coverUrl`; `Book`
       holds its own `coverUrl`, which the rows show; the add sends
       `coverSource` null until T062. The card shows the first candidate, the
@@ -320,9 +333,9 @@ catalogue rows show a cover only once the worker has stored it (Tophe,
       Realises S10 on the frontend; un-skips the frontend tests of S10, both
       cases.
 
-- [ ] T064 Backend: the lookup on `v0.9.0`, its deprecated cover gone.
-      Precondition (human): T063 deployed; `v0.9.0` released (D04).
-      `ApiContractTest` pins `v0.9.0`, the only contract edit of the task
+- [ ] T064 Backend: the lookup on `v0.10.0`, its deprecated cover gone.
+      Precondition (human): T063 deployed; `v0.10.0` released (D04).
+      `ApiContractTest` pins `v0.10.0`, the only contract edit of the task
       (D04): the lookup no longer answers `coverUrl`, the candidates of
       `covers` saying it all; nothing else changes, and the fast entry's
       whole-body case loses the field (D07). Un-skips nothing: a field

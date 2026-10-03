@@ -280,7 +280,14 @@ the new one, so each side deploys alone.
   bears. The `200` case generated, the `400` keyed `400_NOT_A_COVER_NAME` on
   the path example `ABC`, the `404` keyed `404_NO_COVER`.
 
-Release `v0.9.0`, after the frontend's deploy: `IsbnLookup` loses
+Release `v0.9.0`, before the worker: the document moves to OpenAPI 3.1.0
+and states what the backend already answers. `Book.coverUrl` gains a
+`pattern`, the address of the cover operation; `CoverCandidate.url` is a
+`uri-reference`; the bookshelf `id` of the add is a `format: uuid` again;
+`404_UNKNOWN_ISBN` sends `9782000000013`, which no source knows. No byte of
+an answer changes, so the backend pins it at once and the frontend at T060.
+
+Release `v0.10.0`, after the frontend's deploy: `IsbnLookup` loses
 `coverUrl`. Nothing else changes.
 
 Outside the contract, for the PR bodies: the covers live as files in a
@@ -311,6 +318,7 @@ show their covers, save those no source has a picture for.
   own — backend
 - T065 — the cover of S4 stored and answered by the catalogue, no scenario
   of its own — backend
+- T067 — the backend on `v0.9.0` — backend
 - T066 — S3, S4, inventaire.io chosen — backend
 - T054 — S5 stored, Open Library chosen — backend
 - T055 — S10 stored — backend
@@ -318,8 +326,8 @@ show their covers, save those no source has a picture for.
 - T057 — S7, S12 — backend
 - T058 — S8 — backend
 - T059 — S9, and S12 at start — backend
-- T060 — S1, S11, the frontend on `v0.8.2` — frontend
+- T060 — S1, S11, the frontend on `v0.9.0` — frontend
 - T061 — S2 — frontend
 - T062 — S3 — frontend
 - T063 — S10 — frontend
-- T064 — the backend on `v0.9.0` — backend
+- T064 — the backend on `v0.10.0` — backend
