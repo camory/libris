@@ -163,6 +163,26 @@ class JdbcEditionRepositoryTest @Autowired constructor(
   }
 
   @Test
+  fun `an update leaves the other editions alone`() {
+    // Given
+    val tomeOne = onePieceTomeOne()
+    val tomeTwo = tomeOne.copy(
+      id = EditionId.new(),
+      isbn = isbnOf(ONE_PIECE_TOME_TWO),
+      title = "Aux prises avec Baggy et ses hommes",
+      series = SeriesEntry("One piece", 2),
+    )
+    editions.insert(tomeOne)
+    editions.insert(tomeTwo)
+
+    // When
+    editions.update(tomeOne.copy(title = "Le début de l'aventure", contributions = Contributions.of(emptyList())))
+
+    // Then
+    editions.findByIsbn(isbnOf(ONE_PIECE_TOME_TWO)) shouldBe tomeTwo
+  }
+
+  @Test
   fun `no id finds no edition`() {
     // Given
     editions.insert(onePieceTomeOne())
