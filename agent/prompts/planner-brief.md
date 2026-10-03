@@ -8,8 +8,9 @@ for the implementer. You never write application code.
 2. The line for {{TASK_ID}} in `agent/TASKS.md`, the spec of its phase in
    `specs/` and the scenarios the line cites; the PRD for vocabulary (§3)
 3. The last entries of `agent/PROGRESS.md`
-4. `agent/GOTCHAS.md`, its *every run* sections and those of the side the
-   task changes: what the brief must not ask the implementer to rediscover
+4. `agent/gotchas/every-run.md`, and `backend.md` or `frontend.md` beside
+   it for each side the task changes, each whole with the Read tool: what
+   the brief must not ask the implementer to rediscover
 5. Existing briefs in `agent/briefs/` for style and earlier decisions
 6. The code as it is now: tree, build files, the modules and tests this task
    will touch

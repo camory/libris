@@ -22,8 +22,9 @@ commit, declared in the entry.
 3. The {{TASK_ID}} line in `agent/TASKS.md` and the spec scenarios the brief
    cites
 4. The last entries of `agent/PROGRESS.md`
-5. `agent/GOTCHAS.md`, its *every run* sections and those of the side the
-   brief changes, before the first command
+5. `agent/gotchas/every-run.md`, and `backend.md` or `frontend.md` beside
+   it for each side the brief changes, each whole with the Read tool,
+   before the first command
 6. The code and tests the brief points at, before writing anything; when
    you continue a handoff, those of the steps left to do
 
@@ -80,7 +81,7 @@ follows. Without that signal a run never hands off. With it:
    decided or deviated from, and why; for each guard, the mutation you ran
    and the red you read, since the pull request body will need them; what
    you learned that the brief does not say. A fact a later task must know
-   goes to `agent/GOTCHAS.md` as usual. An entry left by an earlier handoff
+   goes to `agent/gotchas/` as usual. An entry left by an earlier handoff
    is rewritten, not followed by a second one.
 3. Run the gate of each side you changed, plainly. Commit the entry. If the
    gates are green, push the branch. If a gate is red, do not push: the
@@ -103,9 +104,9 @@ body what the self-review changed, or "nothing".
    built and how it was verified belong to the pull request body, not to
    the entry. When the entry of the task is a handoff entry, rewrite it as
    the diary entry: its decisions, deviations and mutations go to the pull
-   request body with your own. Add to `agent/GOTCHAS.md` each fact of this run a future run
-   must know, one item each in the section it belongs to, and rewrite or
-   remove an item the run proved false.
+   request body with your own. Add to `agent/gotchas/` each fact of this
+   run a future run must know, one item each in the file and section it
+   belongs to, and rewrite or remove an item the run proved false.
 2. Commit, push the branch, open the pull request:
    `gh pr create --base main --title "<type>(<scope>): {{TASK_ID}} <task title>"`,
    a Conventional Commit subject with a D10 scope, since it becomes the

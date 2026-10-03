@@ -9,7 +9,7 @@
 | `briefs/` | One brief per task, written by the planner on the task branch; `TEMPLATE.md` |
 | `TASKS.md` | Ordered backlog with checkboxes (the loop's queue), one phase per spec in `../specs/` |
 | `PROGRESS.md` | Append-only diary written by runs |
-| `GOTCHAS.md` | What a run must know before it starts, read whole by every role, kept true |
+| `gotchas/` | What a run must know before it starts, kept true: `every-run.md`, read whole by every role, and `backend.md`, `frontend.md`, read whole by a role whose task changes that side |
 | `archive/` | The diary entries of finished phases, one file per phase |
 | `PROPOSED.md` | Follow-ups and ideas, appended by runs and by Tophe, promoted by a human |
 | `Dockerfile`, `compose.yaml` | Sandbox image (JDK 25, Node 24, contracteer, git, gh, claude) + PostgreSQL 18 sidecar |

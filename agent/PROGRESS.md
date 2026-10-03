@@ -6,7 +6,7 @@ session that changed something a future run must know).
 An entry is the story of one task in about twenty-five lines, never more
 than forty. It repeats nothing the pull request holds: what was built and
 how it was verified are its body, and the diff is the diff. A fact a future
-run must know goes in `agent/GOTCHAS.md`, not here. The entries of a
+run must know goes in `agent/gotchas/`, not here. The entries of a
 finished phase move to `agent/archive/`, one file per phase.
 
 Format:
@@ -585,3 +585,18 @@ Format:
 - Left over: whether `ProblemAdviceTest`'s case on a bookshelf id that is
   not a uuid may go, now that the contract varies it too, is Tophe's
   (`agent/PROPOSED.md`). The frontend's pin and `9782000000006`: T060.
+
+## 2026-10-03 — The gotchas split by side, with Tophe
+- Did: `agent/GOTCHAS.md` became `agent/gotchas/every-run.md`,
+  `backend.md` and `frontend.md`, each read whole with the Read tool; the
+  prompts, `CLAUDE.md`, `docs/LOOP.md` and `agent/README.md` name them.
+  Then every item was checked against the tree: 120 became 117.
+- Decided: a file per side, since 48 KB no longer fit one Bash read (the
+  CLI answers a 2 KB preview past about 30 KB) and T067's implementer read
+  lines 1 to 200, missing *Backend tests*. `ProblemAdvice` stays: Spring's
+  `spring.mvc.problemdetails.enabled` needs four `messages.properties` keys
+  to give the same bodies (measured on the T067 branch).
+- Left over: `FixedReaderHeaders` could register for the error dispatch too,
+  so a missing stub reads `500`; not decided. The implementer prompt still
+  names `api/` as a side the proof hook records, a directory that no longer
+  exists.
