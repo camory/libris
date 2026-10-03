@@ -11,4 +11,7 @@ class AwaitedCoversInMemory : AwaitedCoverRepository {
   override fun insert(awaitedCover: AwaitedCover) {
     awaitedCovers += awaitedCover
   }
+
+  override fun findAll(): List<AwaitedCover> =
+    awaitedCovers.toList()
 }
