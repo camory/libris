@@ -59,6 +59,11 @@ class RemoteIdentityTest {
     authoritiesOf(julietteSending()) shouldBe listOf("ROLE_READER")
   }
 
+  @Test
+  fun `a member of libris-admin is also an admin`() {
+    authoritiesOf(julietteSending("Remote-Groups" to "family,libris-admin")) shouldBe listOf("ROLE_READER", "ROLE_ADMIN")
+  }
+
   private fun authoritiesOf(request: MockHttpServletRequest): List<String?> =
     RemoteIdentity.of(request).shouldNotBeNull().authorities.map { it.authority }
 
