@@ -25,7 +25,9 @@ kotlin {
 }
 
 springBoot {
-  buildInfo()
+  buildInfo {
+    excludes = setOf("time")
+  }
 }
 
 dependencies {
