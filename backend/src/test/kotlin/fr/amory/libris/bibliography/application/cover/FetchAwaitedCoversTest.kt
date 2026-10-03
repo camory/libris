@@ -14,6 +14,8 @@ import fr.amory.libris.bibliography.fixture.EditionsInMemory
 import fr.amory.libris.bibliography.fixture.coverOf
 import fr.amory.libris.bibliography.fixture.isbnOf
 import fr.amory.libris.bibliography.fixture.recordedBytes
+import fr.amory.libris.fixture.Transaction
+import fr.amory.libris.fixture.TransactionsObserving
 import io.kotest.matchers.collections.shouldBeEmpty
 import io.kotest.matchers.shouldBe
 import org.junit.jupiter.api.Test
@@ -53,6 +55,25 @@ class FetchAwaitedCoversTest {
 
     // Then
     awaitedCovers.findAll().shouldBeEmpty()
+  }
+
+  @Test
+  fun `the name and the end of the wait land in one transaction, after the store's write`() {
+    // Given
+    awaiting(INVENTAIRE)
+    val transactions = TransactionsObserving {
+      Triple(covers.stored.size, editions.findByIsbn(isbnOf(ONE_PIECE))?.coverName, awaitedCovers.findAll().size)
+    }
+    val fetchAwaitedCovers =
+      FetchAwaitedCovers(awaitedCovers, CoverFetchAnswering(cover), covers, editions, transactions)
+
+    // When
+    fetchAwaitedCovers()
+
+    // Then
+    transactions.recorded shouldBe listOf(
+      Transaction(before = Triple(1, null, 1), after = Triple(1, cover.name, 0)),
+    )
   }
 
   private fun awaiting(chosenSource: CoverSource?) {
