@@ -6,6 +6,9 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority
 
 private const val ADMIN_GROUP = "libris-admin"
 
+const val READER_AUTHORITY = "ROLE_READER"
+const val ADMIN_AUTHORITY = "ROLE_ADMIN"
+
 class RemoteIdentity private constructor(
   val username: String,
   val email: String,
@@ -14,9 +17,11 @@ class RemoteIdentity private constructor(
   companion object {
     fun of(request: HttpServletRequest): RemoteIdentity? {
       val username = request.getHeader("Remote-User")
+      val email = request.getHeader("Remote-Email")?.takeUnless { it.isBlank() }
+      if (username == null || email == null) return null
       return RemoteIdentity(
         username = username,
-        email = request.getHeader("Remote-Email"),
+        email = email,
         displayName = request.getHeader("Remote-Name")?.let(::utf8)?.takeUnless { it.isBlank() } ?: username,
         authorities = authoritiesOf(request.getHeader("Remote-Groups").orEmpty().split(",").map { it.trim() }),
       )
