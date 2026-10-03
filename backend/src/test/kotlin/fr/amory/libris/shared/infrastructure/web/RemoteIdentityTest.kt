@@ -19,6 +19,21 @@ class RemoteIdentityTest {
     identity.email shouldBe "juliette@amory.fr"
   }
 
+  @Test
+  fun `the display name is the name header`() {
+    // Given
+    val request = julietteSending("Remote-Name" to "Juliette")
+
+    // When
+    val identity = RemoteIdentity.of(request).shouldNotBeNull()
+
+    // Then
+    identity.displayName shouldBe "Juliette"
+  }
+
+  private fun julietteSending(vararg headers: Pair<String, String>): MockHttpServletRequest =
+    requestOf("Remote-User" to "juliette", "Remote-Email" to "juliette@amory.fr", *headers)
+
   private fun requestOf(vararg headers: Pair<String, String>): MockHttpServletRequest =
     MockHttpServletRequest().apply { headers.forEach { (name, value) -> addHeader(name, value) } }
 }

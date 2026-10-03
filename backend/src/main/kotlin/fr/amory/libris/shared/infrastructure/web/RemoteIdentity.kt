@@ -2,9 +2,16 @@ package fr.amory.libris.shared.infrastructure.web
 
 import jakarta.servlet.http.HttpServletRequest
 
-class RemoteIdentity private constructor(val username: String, val email: String) {
+class RemoteIdentity private constructor(
+  val username: String,
+  val email: String,
+  val displayName: String) {
   companion object {
     fun of(request: HttpServletRequest): RemoteIdentity? =
-      RemoteIdentity(request.getHeader("Remote-User"), request.getHeader("Remote-Email"))
+      RemoteIdentity(
+        username = request.getHeader("Remote-User"),
+        email = request.getHeader("Remote-Email"),
+        displayName = request.getHeader("Remote-Name").orEmpty(),
+      )
   }
 }
