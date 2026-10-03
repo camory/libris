@@ -4,10 +4,12 @@ import fr.amory.libris.bibliography.application.lookup.EditionLookupResult.Found
 import fr.amory.libris.bibliography.application.lookup.EditionLookupResult.Held
 import fr.amory.libris.bibliography.application.lookup.EditionLookupResult.SourcesUnavailable
 import fr.amory.libris.bibliography.application.lookup.EditionLookupResult.UnknownIsbn
+import fr.amory.libris.bibliography.domain.Contribution
 import fr.amory.libris.bibliography.domain.ContributionRole
 import fr.amory.libris.bibliography.domain.Kind
+import fr.amory.libris.bibliography.domain.SeriesEntry
 import fr.amory.libris.bibliography.domain.edition.EditionId
-import fr.amory.libris.bibliography.domain.lookup.CoverCandidates
+import fr.amory.libris.bibliography.domain.lookup.CoverCandidate
 import fr.amory.libris.bibliography.domain.lookup.EditionPreview
 import fr.amory.libris.library.application.lookup.CopyOnBookshelf
 import fr.amory.libris.library.application.lookup.LookupIsbnForReader
@@ -31,15 +33,30 @@ private const val SOURCES_UNAVAILABLE_PROBLEM = "/problems/sources-unavailable"
 
 data class IsbnAuthorResponse(
   val name: String,
-  val role: ContributionRole)
+  val role: ContributionRole) {
+  companion object {
+    fun from(contribution: Contribution): IsbnAuthorResponse =
+      IsbnAuthorResponse(contribution.name, contribution.role)
+  }
+}
 
 data class IsbnSeriesResponse(
   val name: String,
-  val volumeNumber: Int?)
+  val volumeNumber: Int?) {
+  companion object {
+    fun from(series: SeriesEntry): IsbnSeriesResponse =
+      IsbnSeriesResponse(series.name, series.volumeNumber)
+  }
+}
 
 data class CoverCandidateResponse(
   val source: String,
-  val url: String)
+  val url: String) {
+  companion object {
+    fun from(candidate: CoverCandidate): CoverCandidateResponse =
+      CoverCandidateResponse(candidate.source.label, candidate.url)
+  }
+}
 
 data class IsbnResponse(
   val id: String?,
@@ -57,7 +74,38 @@ data class IsbnResponse(
   val summary: String?,
   val coverUrl: String?,
   val covers: List<CoverCandidateResponse>,
-  val copies: List<CopyResponse>)
+  val copies: List<CopyResponse>) {
+  companion object {
+    fun from(held: Held, copies: List<CopyOnBookshelf>): IsbnResponse =
+      from(held.id, held.preview, copies)
+
+    fun from(found: Found, copies: List<CopyOnBookshelf>): IsbnResponse =
+      from(null, found.preview, copies).copy(
+        coverUrl = found.covers.firstOrNull()?.url,
+        covers = found.covers.map { CoverCandidateResponse.from(it) },
+      )
+
+    private fun from(id: EditionId?, preview: EditionPreview, copies: List<CopyOnBookshelf>): IsbnResponse =
+      IsbnResponse(
+        id = id?.value?.toString(),
+        isbn13 = preview.isbn.digits,
+        kind = preview.kind,
+        title = preview.title,
+        subtitle = preview.subtitle,
+        authors = preview.contributions.map { IsbnAuthorResponse.from(it) },
+        series = preview.series?.let { IsbnSeriesResponse.from(it) },
+        collection = preview.collection,
+        publisher = preview.publisher,
+        publicationYear = preview.publicationYear,
+        language = preview.language,
+        pageCount = preview.pageCount,
+        summary = preview.summary,
+        coverUrl = null,
+        covers = emptyList(),
+        copies = copies.map { CopyResponse.from(it) },
+      )
+  }
+}
 
 @RestController
 class IsbnController(private val lookupIsbnForReader: LookupIsbnForReader) {
@@ -66,8 +114,8 @@ class IsbnController(private val lookupIsbnForReader: LookupIsbnForReader) {
     val isbn = isbn13Of(text) ?: return notAnIsbn().asResponse()
     val lookup = lookupIsbnForReader(reader.id, isbn)
     return when (val result = lookup.answer) {
-      is Held            -> ResponseEntity.ok(responseOf(result.id, result.preview, lookup.copies))
-      is Found           -> ResponseEntity.ok(responseOf(result.preview, result.covers, lookup.copies))
+      is Held            -> ResponseEntity.ok(IsbnResponse.from(result, lookup.copies))
+      is Found           -> ResponseEntity.ok(IsbnResponse.from(result, lookup.copies))
       UnknownIsbn        -> problem(NOT_FOUND, NOT_FOUND_PROBLEM).asResponse()
       SourcesUnavailable -> problem(SERVICE_UNAVAILABLE, SOURCES_UNAVAILABLE_PROBLEM).asResponse()
     }
@@ -77,39 +125,4 @@ class IsbnController(private val lookupIsbnForReader: LookupIsbnForReader) {
     problem(BAD_REQUEST, VALIDATION_PROBLEM).apply {
       setProperty("errors", listOf(ValidationErrorResponse(field = "isbn", code = "not-an-isbn")))
     }
-
-  private fun responseOf(id: EditionId?, preview: EditionPreview, copies: List<CopyOnBookshelf>): IsbnResponse =
-    IsbnResponse(
-      id = id?.value?.toString(),
-      isbn13 = preview.isbn.digits,
-      kind = preview.kind,
-      title = preview.title,
-      subtitle = preview.subtitle,
-      authors = preview.contributions.map { IsbnAuthorResponse(it.name, it.role) },
-      series = preview.series?.let { IsbnSeriesResponse(it.name, it.volumeNumber) },
-      collection = preview.collection,
-      publisher = preview.publisher,
-      publicationYear = preview.publicationYear,
-      language = preview.language,
-      pageCount = preview.pageCount,
-      summary = preview.summary,
-      coverUrl = null,
-      covers = emptyList(),
-      copies = copies.map { responseOf(it) },
-    )
-
-  private fun responseOf(
-    preview: EditionPreview,
-    covers: CoverCandidates,
-    copies: List<CopyOnBookshelf>): IsbnResponse =
-    responseOf(null, preview, copies).copy(
-      coverUrl = covers.firstOrNull()?.url,
-      covers = covers.map { CoverCandidateResponse(it.source.label, it.url) },
-    )
-
-  private fun responseOf(copy: CopyOnBookshelf): CopyResponse =
-    CopyResponse(
-      id = copy.copyId.value.toString(),
-      bookshelf = BookshelfResponse(copy.bookshelfId.value.toString(), copy.bookshelfName),
-    )
 }

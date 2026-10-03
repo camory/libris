@@ -3,8 +3,8 @@ package fr.amory.libris.library.infrastructure.web
 import fr.amory.libris.bibliography.domain.Kind
 import fr.amory.libris.bibliography.domain.edition.EditionId
 import fr.amory.libris.library.application.catalogue.BrowseCatalogue
+import fr.amory.libris.library.application.catalogue.CataloguePage
 import fr.amory.libris.library.application.catalogue.HeldEdition
-import fr.amory.libris.library.application.lookup.CopyOnBookshelf
 import fr.amory.libris.library.domain.reader.Reader
 import org.springframework.security.core.annotation.AuthenticationPrincipal
 import org.springframework.web.bind.annotation.GetMapping
@@ -27,42 +27,41 @@ data class BookResponse(
   val pageCount: Int?,
   val summary: String?,
   val coverUrl: String?,
-  val copies: List<CopyResponse>)
+  val copies: List<CopyResponse>) {
+  companion object {
+    fun from(held: HeldEdition): BookResponse =
+      BookResponse(
+        id = held.edition.id.value.toString(),
+        isbn13 = held.edition.isbn?.digits,
+        kind = held.edition.kind,
+        title = held.edition.title,
+        subtitle = held.edition.subtitle,
+        authors = held.edition.contributions.map { IsbnAuthorResponse.from(it) },
+        series = held.edition.series?.let { IsbnSeriesResponse.from(it) },
+        collection = held.edition.collection,
+        publisher = held.edition.publisher,
+        publicationYear = held.edition.publicationYear,
+        language = held.edition.language,
+        pageCount = held.edition.pageCount,
+        summary = held.edition.summary,
+        coverUrl = held.edition.coverName?.let { "/api/v1/covers/${it.value}" },
+        copies = held.copies.map { CopyResponse.from(it) },
+      )
+  }
+}
 
 data class BookPageResponse(
   val books: List<BookResponse>,
-  val next: String?)
+  val next: String?) {
+  companion object {
+    fun from(page: CataloguePage): BookPageResponse =
+      BookPageResponse(books = page.held.map { BookResponse.from(it) }, next = page.next?.value?.toString())
+  }
+}
 
 @RestController
 class CatalogueController(private val browseCatalogue: BrowseCatalogue) {
   @GetMapping("/api/v1/books")
-  fun books(@AuthenticationPrincipal reader: Reader, @RequestParam("after") after: UUID?): BookPageResponse {
-    val page = browseCatalogue(reader.id, after?.let { EditionId(it) })
-    return BookPageResponse(books = page.held.map { bookOf(it) }, next = page.next?.value?.toString())
-  }
-
-  private fun bookOf(held: HeldEdition): BookResponse =
-    BookResponse(
-      id = held.edition.id.value.toString(),
-      isbn13 = held.edition.isbn?.digits,
-      kind = held.edition.kind,
-      title = held.edition.title,
-      subtitle = held.edition.subtitle,
-      authors = held.edition.contributions.map { IsbnAuthorResponse(it.name, it.role) },
-      series = held.edition.series?.let { IsbnSeriesResponse(it.name, it.volumeNumber) },
-      collection = held.edition.collection,
-      publisher = held.edition.publisher,
-      publicationYear = held.edition.publicationYear,
-      language = held.edition.language,
-      pageCount = held.edition.pageCount,
-      summary = held.edition.summary,
-      coverUrl = held.edition.coverName?.let { "/api/v1/covers/${it.value}" },
-      copies = held.copies.map { copyOf(it) },
-    )
-
-  private fun copyOf(copy: CopyOnBookshelf): CopyResponse =
-    CopyResponse(
-      id = copy.copyId.value.toString(),
-      bookshelf = BookshelfResponse(copy.bookshelfId.value.toString(), copy.bookshelfName),
-    )
+  fun books(@AuthenticationPrincipal reader: Reader, @RequestParam("after") after: UUID?): BookPageResponse =
+    BookPageResponse.from(browseCatalogue(reader.id, after?.let { EditionId(it) }))
 }

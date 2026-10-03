@@ -34,12 +34,9 @@ data class CurrentReaderResponse(
         username = reader.username,
         displayName = reader.displayName,
         email = reader.email,
-        role = roleOf(authorities),
-        defaultBookshelf = BookshelfResponse(defaultBookshelf.id.value.toString(), defaultBookshelf.name),
+        role = if (authorities.any { it.authority == ADMIN_AUTHORITY }) ADMIN else READER,
+        defaultBookshelf = BookshelfResponse.from(defaultBookshelf),
       )
-
-    private fun roleOf(authorities: Collection<GrantedAuthority>): Role =
-      if (authorities.any { it.authority == ADMIN_AUTHORITY }) ADMIN else READER
   }
 }
 
