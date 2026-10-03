@@ -94,6 +94,22 @@ class FetchAwaitedCoversTest {
     editions.findByIsbn(isbnOf(ONE_PIECE)) shouldBe edition
   }
 
+  @Test
+  fun `an awaited cover with no chosen source is passed by`() {
+    // Given
+    awaiting(null)
+    val coverFetch = CoverFetchAnswering(cover)
+    val fetchAwaitedCovers = fetchAwaitedCoversOver(coverFetch)
+
+    // When
+    fetchAwaitedCovers()
+
+    // Then
+    coverFetch.asked.shouldBeEmpty()
+    awaitedCovers.findAll() shouldBe listOf(AwaitedCover(isbnOf(ONE_PIECE), null))
+    editions.findByIsbn(isbnOf(ONE_PIECE)) shouldBe edition
+  }
+
   private fun awaiting(chosenSource: CoverSource?) {
     editions.insert(edition)
     awaitedCovers.insert(AwaitedCover(isbnOf(ONE_PIECE), chosenSource))
