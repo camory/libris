@@ -370,3 +370,8 @@
   JVM, green alone and on rerun; three lookups now run at once under the 1 s
   source timeout of the scenarios, a cold start may exceed it (found
   2026-10-01 on T052).
+- Backend: `ProblemAdviceTest`'s *a bookshelf id that is not a uuid is a
+  validation problem* proves what the contract case `auto: path 'id' type
+  mismatch` now proves too, since `v0.9.0` types the add's id `format:
+  uuid`; whether D07 lets the hand-written case go is Tophe's (found
+  2026-10-03 on T067).
