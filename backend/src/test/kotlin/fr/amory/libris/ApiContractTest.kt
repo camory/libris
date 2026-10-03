@@ -225,7 +225,7 @@ private val ASTERIX_1_HELD = HeldEdition(
     language = ASTERIX_1.language,
     pageCount = ASTERIX_1.pageCount,
     summary = ASTERIX_1.summary,
-    coverName = null,
+    coverName = CoverName("9c56cc51b374c3ba189210d5b6d4bf57790d351c96c47c02190ecf1e430635ab"),
   ),
   copies = listOf(COPY_OF_ASTERIX_1),
 )
