@@ -160,7 +160,7 @@ read the empty sentence.*
 
 ## Web layer — docs/ARCHITECTURE.md
 
-- [ ] T068 Backend: the web layer as D07 and D10 say.
+- [x] T068 Backend: the web layer as D07 and D10 say.
       No behaviour changes and no scenario. Each response of
       `infrastructure.web` is built by `from` on its companion, and the
       controllers map nothing (D10). The reading of the proxy's headers,
