@@ -649,3 +649,14 @@ Format:
   trap and says only `InventaireCoverLookup` catches these.
 - Left over: the lookup's candidate address carries an unchecked claim to
   the reader as it is; as in the entries above otherwise.
+
+## 2026-10-03 — T066 Backend: the worker's run fetches the chosen inventaire.io cover — reviewed by Tophe
+- Did: `InventaireCoverLookup` is `InventaireSource`, its bean
+  `inventaireSource`, its test `InventaireSourceTest`; the guard is
+  `the picture is asked at 100x600`, the size it asserts.
+- Decided: `CoverLookup` and `CoverFetch` stay two ports: different callers
+  (the lookup, the worker), different answers (a candidate, a cover),
+  different implementers (inventaire.io alone offers a cover without an
+  edition; every chosen source fetches). An adapter is named after its
+  source; the siblings follow in their fetch tasks, in `agent/PROPOSED.md`.
+- Left over: as in the entries above.
