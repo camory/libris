@@ -255,14 +255,21 @@ catalogue rows show a cover only once the worker has stored it (Tophe,
       is not a uuid answers `400` with a `Problem`, as it already does.
       Realises no scenario; un-skips nothing.
 
-- [ ] T066 Backend: the worker fetches the chosen inventaire.io cover.
+- [ ] T066 Backend: the worker's run fetches the chosen inventaire.io cover.
+      A use case of the bibliography takes each awaited cover whose chosen
+      source is inventaire.io, asks inventaire.io by ISBN for the picture and
+      stores it as T065 does; the edition of that ISBN records the cover's
+      name and the wait ends, in one transaction (D12). An awaited cover
+      whose chosen source is another, or none, is passed by; one whose fetch
+      brings no picture keeps waiting. Tests of the use case over fakes, of
+      the inventaire.io fetch over a stubbed source and of the JDBC slice;
+      nothing runs it yet; un-skips nothing.
+
+- [ ] T069 Backend: the add wakes the worker.
       The add answers the copy, then wakes the worker, one piece behind an
-      application port the tests call the same way (D02). The worker takes
-      an awaited cover whose chosen source is inventaire.io, asks it by ISBN
-      for the picture and stores it as T065 does; the edition of that ISBN
-      records the cover's name and the wait ends, the catalogue then
-      answering its address. Realises S3, S4; un-skips the backend tests of
-      S3, S4.
+      application port the tests call the same way (D02), which runs T066's
+      use case away from the request; the catalogue then answers the cover's
+      address. Realises S3, S4; un-skips the backend tests of S3, S4.
 
 - [ ] T054 Backend: Open Library as the chosen source.
       The worker of T066 fetches the picture of an edition whose chosen

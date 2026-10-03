@@ -319,7 +319,9 @@ show their covers, save those no source has a picture for.
 - T065 — the cover of S4 stored and answered by the catalogue, no scenario
   of its own — backend
 - T067 — the backend on `v0.9.0` — backend
-- T066 — S3, S4, inventaire.io chosen — backend
+- T066 — the cover of S4 fetched from inventaire.io, no scenario of its
+  own — backend
+- T069 — S3, S4, the add wakes the worker — backend
 - T054 — S5 stored, Open Library chosen — backend
 - T055 — S10 stored — backend
 - T056 — S6 — backend
