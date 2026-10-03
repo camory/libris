@@ -3,6 +3,8 @@ package fr.amory.libris.shared.infrastructure.web
 import jakarta.servlet.http.HttpServletRequest
 import org.springframework.security.core.GrantedAuthority
 import org.springframework.security.core.authority.SimpleGrantedAuthority
+import kotlin.text.Charsets.ISO_8859_1
+import kotlin.text.Charsets.UTF_8
 
 private const val ADMIN_GROUP = "libris-admin"
 
@@ -34,6 +36,6 @@ class RemoteIdentity private constructor(
       }
 
     private fun utf8(header: String): String =
-      String(header.toByteArray(Charsets.ISO_8859_1), Charsets.UTF_8)
+      String(header.toByteArray(ISO_8859_1), UTF_8)
   }
 }

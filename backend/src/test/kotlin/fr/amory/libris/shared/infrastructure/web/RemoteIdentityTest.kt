@@ -4,6 +4,8 @@ import io.kotest.matchers.nulls.shouldNotBeNull
 import io.kotest.matchers.shouldBe
 import org.junit.jupiter.api.Test
 import org.springframework.mock.web.MockHttpServletRequest
+import kotlin.text.Charsets.ISO_8859_1
+import kotlin.text.Charsets.UTF_8
 
 class RemoteIdentityTest {
   @Test
@@ -34,7 +36,7 @@ class RemoteIdentityTest {
   @Test
   fun `a name sent in UTF-8 is read whole`() {
     // Given
-    val asTomcatReadsIt = String("Léa".toByteArray(Charsets.UTF_8), Charsets.ISO_8859_1)
+    val asTomcatReadsIt = String("Léa".toByteArray(UTF_8), ISO_8859_1)
     val request = julietteSending("Remote-Name" to asTomcatReadsIt)
 
     // When
