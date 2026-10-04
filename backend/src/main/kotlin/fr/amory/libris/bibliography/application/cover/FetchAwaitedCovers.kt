@@ -12,10 +12,12 @@ import org.springframework.transaction.support.TransactionOperations
 @Service
 class FetchAwaitedCovers(
   private val awaitedCovers: AwaitedCoverRepository,
-  private val coverFetches: List<CoverFetch>,
+  coverFetches: List<CoverFetch>,
   private val covers: CoverStore,
   private val editions: EditionRepository,
   private val transactions: TransactionOperations) {
+  private val coverFetches = coverFetches.sortedBy { it.coverSource.order }
+
   operator fun invoke() {
     awaitedCovers
       .findAll()
@@ -23,11 +25,15 @@ class FetchAwaitedCovers(
   }
 
   private fun take(awaitedCover: AwaitedCover) {
-    coverFetches
-      .firstOrNull { it.coverSource == awaitedCover.chosenSource }
-      ?.fetch(awaitedCover.isbn)
+    fetchesFor(awaitedCover)
+      .firstNotNullOfOrNull { it.fetch(awaitedCover.isbn) }
       ?.let { store(awaitedCover, it.normalised()) }
   }
+
+  private fun fetchesFor(awaitedCover: AwaitedCover): List<CoverFetch> =
+    awaitedCover.chosenSource
+      ?.let { source -> coverFetches.filter { it.coverSource == source } }
+      ?: coverFetches
 
   private fun store(awaitedCover: AwaitedCover, cover: Cover) {
     covers.write(cover)

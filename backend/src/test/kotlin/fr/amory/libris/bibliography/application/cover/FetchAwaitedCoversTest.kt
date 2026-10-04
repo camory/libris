@@ -133,19 +133,20 @@ class FetchAwaitedCoversTest {
   }
 
   @Test
-  fun `an awaited cover with no chosen source is passed by`() {
+  fun `with no chosen source, the first source in order that has a picture is fetched`() {
     // Given
     awaiting(null)
-    val coverFetch = CoverFetchAnswering(INVENTAIRE, cover)
-    val fetchAwaitedCovers = fetchAwaitedCoversOver(listOf(coverFetch))
+    val openLibrary = CoverFetchAnswering(OPEN_LIBRARY, coverOf("image/jpeg", recordedBytes("covers/tall.jpg")))
+    val fetchAwaitedCovers = fetchAwaitedCoversOver(listOf(openLibrary, CoverFetchAnswering(INVENTAIRE, cover)))
 
     // When
     fetchAwaitedCovers()
 
     // Then
-    coverFetch.asked.shouldBeEmpty()
-    awaitedCovers.findAll() shouldBe listOf(AwaitedCover(isbnOf(ONE_PIECE), null))
-    editions.findByIsbn(isbnOf(ONE_PIECE)) shouldBe edition
+    covers.read(cover.name) shouldBe cover
+    editions.findByIsbn(isbnOf(ONE_PIECE)) shouldBe edition.copy(coverName = cover.name)
+    awaitedCovers.findAll().shouldBeEmpty()
+    openLibrary.asked.shouldBeEmpty()
   }
 
   @Test
