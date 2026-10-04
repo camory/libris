@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.RestController
 
 @RestController
 class CoverController(private val findCover: FindCover) {
-  @GetMapping("/api/v1/covers/{name}")
+  @GetMapping("$COVERS/{name}")
   fun cover(@PathVariable("name") name: String): ResponseEntity<Any> {
     val coverName = CoverName.of(name) ?: return notACoverName().asResponse()
     return findCover(coverName)?.let(::pictureOf) ?: problem(NOT_FOUND, NOT_FOUND_PROBLEM).asResponse()
@@ -34,4 +34,8 @@ class CoverController(private val findCover: FindCover) {
       .body(cover.bytes)
 }
 
+internal fun coverPathOf(name: CoverName): String =
+  "$COVERS/${name.value}"
+
+private const val COVERS = "/api/v1/covers"
 private const val KEPT_A_YEAR = "public, max-age=31536000, immutable"
