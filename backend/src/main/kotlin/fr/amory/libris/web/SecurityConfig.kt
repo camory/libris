@@ -1,5 +1,6 @@
 package fr.amory.libris.web
 
+import fr.amory.libris.library.application.WelcomeReader
 import jakarta.servlet.FilterChain
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
@@ -15,7 +16,7 @@ import org.springframework.security.web.authentication.preauth.PreAuthenticatedA
 import org.springframework.security.web.util.matcher.RequestMatcher
 import org.springframework.web.filter.OncePerRequestFilter
 
-class RemoteHeaderAuthenticationFilter(private val requestPrincipal: RequestPrincipal) : OncePerRequestFilter() {
+class RemoteHeaderAuthenticationFilter(private val welcomeReader: WelcomeReader) : OncePerRequestFilter() {
   override fun shouldNotFilterErrorDispatch(): Boolean =
     false
 
@@ -26,7 +27,7 @@ class RemoteHeaderAuthenticationFilter(private val requestPrincipal: RequestPrin
 
   private fun authenticationOf(request: HttpServletRequest): PreAuthenticatedAuthenticationToken? =
     RemoteIdentity.of(request)?.let {
-      val principal = requestPrincipal.of(it.username, it.email, it.displayName)
+      val principal = welcomeReader(it.username, it.email, it.displayName)
       PreAuthenticatedAuthenticationToken(principal, "N/A", it.authorities)
     }
 }
@@ -34,7 +35,7 @@ class RemoteHeaderAuthenticationFilter(private val requestPrincipal: RequestPrin
 @Configuration
 class SecurityConfig {
   @Bean
-  fun filterChain(http: HttpSecurity, requestPrincipal: RequestPrincipal): SecurityFilterChain {
+  fun filterChain(http: HttpSecurity, welcomeReader: WelcomeReader): SecurityFilterChain {
     val unsafeWrite = RequestMatcher {
       it.method != HttpMethod.GET.name() && it.getHeader("X-Requested-With") == null
     }
@@ -42,7 +43,7 @@ class SecurityConfig {
       .csrf { it.disable() }
       .sessionManagement { it.sessionCreationPolicy(SessionCreationPolicy.STATELESS) }
       .addFilterBefore(
-        RemoteHeaderAuthenticationFilter(requestPrincipal),
+        RemoteHeaderAuthenticationFilter(welcomeReader),
         UsernamePasswordAuthenticationFilter::class.java,
       )
       .authorizeHttpRequests {
