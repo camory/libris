@@ -673,3 +673,20 @@ Format:
 - Left over: runs one at a time, at start and daily (T059); the other
   chosen sources (T054); the D02 bullet on `bibliography.infrastructure.worker`
   is proposed in the PR, Tophe's to settle.
+
+## 2026-10-04 — T054 Backend: Open Library as the chosen source — done
+- Did: `OpenLibraryEditionLookup` is `OpenLibrarySource`, which implements
+  `CoverFetch` too, at `libris.sources.open-library-covers-url`;
+  `FetchAwaitedCovers` runs the fetch whose `coverSource` the awaited cover
+  chose. S5 *Libris serves a stored cover* un-skipped and green.
+- Decided: the fetch's answer is turned into a `Cover` the way
+  `InventaireSource.pictureAt` does it, written again rather than shared:
+  two copies, and their catches differ (Open Library catches
+  `RestClientException` alone until T058 sets the malformed answers).
+- Deviations from the brief: none. Step 9's mutation was written as an
+  elvis around `firstOrNull`, since `?.fetch` after a non-null fallback
+  fails the compile under warnings-as-errors.
+- Left over: the BnF's fetch and the cascade (T057), which iterate the
+  same list of fetches; the D02 sentence on `bibliography.infrastructure.
+  lookup` is proposed in the PR, Tophe's to settle; `BnfEditionLookup`
+  keeps its name until its fetch (`agent/PROPOSED.md`).

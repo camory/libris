@@ -271,7 +271,7 @@ catalogue rows show a cover only once the worker has stored it (Tophe,
       use case away from the request; the catalogue then answers the cover's
       address. Realises S3, S4; un-skips the backend tests of S3, S4.
 
-- [ ] T054 Backend: Open Library as the chosen source.
+- [x] T054 Backend: Open Library as the chosen source.
       The worker of T066 fetches the picture of an edition whose chosen
       source is Open Library from its covers by ISBN, and stores it as T066
       does, as fetched; the cover operation serves it as JPEG with its
