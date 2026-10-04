@@ -797,3 +797,14 @@ Format:
 - Deviations from the brief: none.
 - Left over: the reviewer's note on where a deferred guard's mutation is
   recorded is the planner's; D02's rule 1 wording is still Tophe's.
+
+## 2026-10-04 — The commit trailer, with Tophe
+- Did: `.claude/settings.json` sets `attribution.commit` to the trailer
+  `CLAUDE.md` names, and `attribution.sessionUrl` to `false`. Claude Code's
+  default trailer names the model (`Claude Opus 5.5`), so every loop commit
+  since the model pin carried it, T055's and T056's included.
+- Verified: in the sandbox image (Claude Code 2.1.283), `claude -p` making
+  an empty commit in a clone of this branch writes `Co-Authored-By: Claude
+  <noreply@anthropic.com>`; in a clone of `main`, `Co-Authored-By: Claude
+  Haiku 4.5 <noreply@anthropic.com>`.
+- Left over: the pull request line stays Claude Code's default.
