@@ -394,3 +394,14 @@
   Their failure branch could go through `nullOnFailure`'s catch-all as the
   fetches do, `NotFound` still first (found 2026-10-04 fixing up T054 with
   Tophe, not measured on the lookups).
+- Backend: `Cover.normalised()` decodes a picture at the size its header
+  claims, before any pixel is read: a JPEG of a few kilobytes claiming
+  20000×20000 throws `OutOfMemoryError` under `-Xmx1g`, which nothing
+  catches, out of `FetchAwaitedCovers`' run (a PNG claiming the same comes
+  back as a caught `IIOException` under `-Xmx256m`, and decodes 400 MB
+  under `-Xmx2g`). T058's five megabytes bound bytes, not pixels. With
+  Tophe, for T058's spec: a bound in pixels, read from the header through an
+  `ImageReader` before decoding, and what a picture above it becomes; and
+  the property *one bad cover never stops the run*, stated with its bound,
+  which T056's brief only promised in its risks (found 2026-10-04 reviewing
+  T056, measured with jshell on JDK 25).

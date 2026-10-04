@@ -130,6 +130,13 @@ Read whole by a run that changes `backend/`, after `every-run.md`.
   `LibrisApplicationTest` its own property. A Mockito matcher on a
   `CoverName` argument takes a valid fallback, since the
   constructor checks it: `findCover(CoverName(any() ?: NO_COVER))`.
+- The JDK reads no WebP: `ImageIO.read` answers `null` for one. It throws
+  `IIOException` on a broken JPEG (the first 200 bytes of
+  `covers/tall.jpg`: *missing SOS marker*). `ImageIO.write` of an image
+  with an alpha channel as `jpeg` answers `false` and writes nothing, so a
+  JPEG is written from an image without alpha (`TYPE_INT_RGB`); the
+  fixture's `pictureOf` checks what `write` answers. Measured on JDK 25,
+  2026-10-04. `Cover.normalised()` keeps a picture it cannot read.
 - The binder keeps an unresolved `${VAR}` as its literal text: a setting
   bound from `${VAR}` alone starts without the variable (T051 found
   the covers directory bound to the path `${LIBRIS_COVERS_DIR}`). An empty

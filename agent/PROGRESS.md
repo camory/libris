@@ -764,3 +764,36 @@ Format:
 - Left over: `bibliography.infrastructure.worker` is still missing from
   D02's package list. `BookResponse` reads `web.isbn`'s author and series
   responses and `web.me` reads `web.bookshelf`'s `BookshelfResponse`.
+
+## 2026-10-04 — T056 Backend: the picture is normalised — done
+- Did: `Cover.normalised()` scales a picture taller than 600 to 600 tall,
+  its proportions kept, as JPEG, and keeps any other as fetched, a picture
+  the JDK cannot read included; `FetchAwaitedCovers` stores the normalised
+  cover. S6, both cases, un-skipped and green.
+- Decided: the scaled width is `width * 600 / height`, integer division,
+  and the drawing is bicubic over an RGB image (no alpha, so `ImageIO`
+  writes the JPEG); the writer's default quality is kept.
+- Decided: the failure caught is `IIOException`, the one the broken JPEG
+  of step 6 throws; nothing broader, since no case motivates it.
+- Decided: the fixture's `pictureOf(format, width, height, type)` takes the
+  image type, `TYPE_INT_RGB` by default, so CoverTest's alpha channel reads
+  in the case, and checks what `ImageIO.write` answers.
+- Deviations from the brief: none.
+- Left over: a picture more than 600 times taller than wide scales to a
+  width of 0 and throws (`agent/PROPOSED.md`); D02's rule 1 naming the
+  JDK's image libraries is proposed in the PR, Tophe's to settle.
+
+
+## 2026-10-04 — T056 Backend: the picture is normalised — reworked
+- Did: the scaled width is at least one pixel, so a picture more than 600
+  times taller than wide (1×1201) is answered as a JPEG 1×600 instead of
+  throwing out of the worker's run; one `CoverTest` case proves it.
+- Decided: the reviewer's verdict of 2026-10-04 amended nothing; its
+  blocking finding was the brief's "a picture taller than 600 is normalised
+  to 600 tall", unmet for such a picture. S6 had already decided it is
+  scaled, so keeping it as fetched was no option; the width is
+  `(width * 600 / height).coerceAtLeast(1)`, the nearest proportion a pixel
+  allows. The `agent/PROPOSED.md` item that left it to the spec is removed.
+- Deviations from the brief: none.
+- Left over: the reviewer's note on where a deferred guard's mutation is
+  recorded is the planner's; D02's rule 1 wording is still Tophe's.

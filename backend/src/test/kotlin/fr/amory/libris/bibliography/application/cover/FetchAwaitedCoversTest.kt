@@ -16,6 +16,7 @@ import fr.amory.libris.bibliography.fixture.CoversInMemory
 import fr.amory.libris.bibliography.fixture.EditionsInMemory
 import fr.amory.libris.bibliography.fixture.coverOf
 import fr.amory.libris.bibliography.fixture.isbnOf
+import fr.amory.libris.bibliography.fixture.pictureOf
 import fr.amory.libris.bibliography.fixture.recordedBytes
 import fr.amory.libris.fixture.Transaction
 import fr.amory.libris.fixture.TransactionsObserving
@@ -46,6 +47,21 @@ class FetchAwaitedCoversTest {
     // Then
     covers.read(cover.name) shouldBe cover
     editions.findByIsbn(isbnOf(ONE_PIECE)) shouldBe edition.copy(coverName = cover.name)
+  }
+
+  @Test
+  fun `the fetched cover is stored normalised and named on its edition`() {
+    // Given
+    awaiting(OPEN_LIBRARY)
+    val tall = coverOf("image/jpeg", recordedBytes("covers/tall.jpg"))
+    val fetchAwaitedCovers = fetchAwaitedCoversOver(listOf(CoverFetchAnswering(OPEN_LIBRARY, tall)))
+
+    // When
+    fetchAwaitedCovers()
+
+    // Then
+    covers.stored.single().name shouldBe tall.normalised().name
+    editions.findByIsbn(isbnOf(ONE_PIECE))?.coverName shouldBe tall.normalised().name
   }
 
   @Test
@@ -84,7 +100,7 @@ class FetchAwaitedCoversTest {
   fun `an awaited Open Library cover is fetched from Open Library alone`() {
     // Given
     awaiting(OPEN_LIBRARY)
-    val jpeg = coverOf("image/jpeg", recordedBytes("covers/tall.jpg"))
+    val jpeg = coverOf("image/jpeg", pictureOf("jpeg", 400, 600))
     val inventaire = CoverFetchAnswering(INVENTAIRE, cover)
     val fetchAwaitedCovers = fetchAwaitedCoversOver(listOf(inventaire, CoverFetchAnswering(OPEN_LIBRARY, jpeg)))
 

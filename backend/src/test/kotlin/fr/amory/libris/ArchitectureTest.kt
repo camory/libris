@@ -26,6 +26,7 @@ class ArchitectureTest {
       .should().onlyDependOnClassesThat()
       .resideInAnyPackage(
         "java..",
+        "javax.imageio..",
         "kotlin..",
         "org.jetbrains.annotations..",
         "com.fasterxml.uuid..",
