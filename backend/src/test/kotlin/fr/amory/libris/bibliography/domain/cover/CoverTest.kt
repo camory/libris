@@ -1,5 +1,6 @@
 package fr.amory.libris.bibliography.domain.cover
 
+import fr.amory.libris.bibliography.fixture.recordedBytes
 import io.kotest.matchers.shouldBe
 import org.junit.jupiter.api.Test
 import java.awt.image.BufferedImage
@@ -69,6 +70,20 @@ class CoverTest {
 
     // Then
     normalised.mediaType shouldBe "image/png"
+    normalised.bytes shouldBe bytes
+  }
+
+  @Test
+  fun `a picture the JDK reads no image from is kept as fetched`() {
+    // Given
+    val bytes = recordedBytes("covers/small.webp")
+    val cover = checkNotNull(Cover.of("image/webp", bytes))
+
+    // When
+    val normalised = cover.normalised()
+
+    // Then
+    normalised.mediaType shouldBe "image/webp"
     normalised.bytes shouldBe bytes
   }
 
