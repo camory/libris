@@ -23,4 +23,16 @@ class CoverFetchesTest {
     // Then
     asked shouldBe listOf(openLibrary)
   }
+
+  @Test
+  fun `with no chosen source, every fetch is asked, inventaire io, Open Library, then the BnF`() {
+    // Given
+    val coverFetches = CoverFetches.of(listOf(bnf, inventaire, openLibrary))
+
+    // When
+    val asked = coverFetches.askedFor(null)
+
+    // Then
+    asked shouldBe listOf(inventaire, openLibrary, bnf)
+  }
 }
