@@ -808,3 +808,22 @@ Format:
   <noreply@anthropic.com>`; in a clone of `main`, `Co-Authored-By: Claude
   Haiku 4.5 <noreply@anthropic.com>`.
 - Left over: the pull request line stays Claude Code's default.
+
+## 2026-10-04 — Bookshelf S4's Given with Tophe
+- Did: the brief planner blocked T057: both *S4 The ouvrage is already in
+  a bookshelf* cases add One Piece 3 with no chosen source, then check
+  that no source was asked; once T057's cascade runs for that add, its
+  requests reach the stubs during the case. The Given now adds the book
+  through `addedWithItsCover`: Open Library has the picture, the book is
+  added with that source, the worker stores it, and the stubs' request
+  logs are cleared. Sam's add, of an edition already held, waits for no
+  cover. The fixture sends `coverSource` instead of the old `coverUrl`,
+  and no longer a page count, which no case reads.
+- Verified: with a stand-in cascade in `FetchAwaitedCovers` (an awaited
+  cover with no chosen source asks every source), the old Given is red in
+  both cases (1 and 2 requests), the new one green; stand-in reverted.
+  `./gradlew check` green, 300 tests, 7 skipped.
+- Decided with Tophe: a chosen source that answers, as S10's Given, rather
+  than stubbing inventaire.io for the cascade, which would be red on
+  `main` until T057; the page count leaves the fixture to stay within
+  detekt's parameter limit.
