@@ -299,7 +299,7 @@ Read whole by a run that changes `backend/`, after `every-run.md`.
   codes sit at positions 4 to 7, `t` marking a comic strip; a record without
   the field names no form. The language an ouvrage was translated from is
   field 101 `$c`, in the BnF's own three-letter codes (`jpn`, `kor`, `chi`),
-  which are not the ISO 639-1 codes the `LANGUAGES` map of `BnfEditionLookup`
+  which are not the ISO 639-1 codes the `LANGUAGES` map of `BnfSource`
   answers for the `language` field.
 - A name row shared by many parents is inserted or matched in one statement:
   `insert into author (id, name) values (:id, :name) on conflict (lower(name))
@@ -347,13 +347,21 @@ Read whole by a run that changes `backend/`, after `every-run.md`.
   `image/webp` by default, and `knowsWithEntityServedAs(isbn, mediaType)`
   the recorded entity under one.
 - An add answering a copy wakes the cover worker, which runs
-  `FetchAwaitedCovers` on `applicationTaskExecutor`: a scenario add whose
-  chosen source is inventaire.io or Open Library starts a run that may
-  outlive its case (S3's waits a second on a picture that never comes, and
-  *S10 …, not yet stored* starts an Open Library fetch that gives up on the
-  one-second timeout after its case); an add with no chosen source, or the
-  BnF's, asks no source. `CoverWorkerObserving`, in
-  `bibliography.fixture`, records what its `observe` answers at each waking.
+  `FetchAwaitedCovers` on `applicationTaskExecutor`: every add of an edition
+  with an ISBN starts a run that asks a source and may outlive its case (S3's
+  waits a second on a picture that never comes, and *S10 …, not yet stored*
+  starts an Open Library fetch that gives up on the one-second timeout after
+  its case). With no chosen source the run asks inventaire.io, Open Library,
+  then the BnF's SRU and covers address, so a scenario counting a source's
+  requests resets them after its Given (`BookshelfScenarios`' S4,
+  `aStoredCover`). `CoverWorkerObserving`, in `bibliography.fixture`,
+  records what its `observe` answers at each waking.
+- The BnF's fetch asks `libris.sources.bnf-covers-url`
+  (`LIBRIS_BNF_COVERS_URL`, the stub's `/couverture` in the scenarios) with
+  the record's ark, read from the same SRU search the lookup sends; the BnF
+  answers `500` `text/html` for an ark without a cover, never a blank picture
+  (seen 2026-10-04). The lookup's candidate keeps the public
+  `catalogue.bnf.fr` address, which *FastEntryScenarios* asserts.
 - Open Library's fetch and its lookup's candidate both build on
   `libris.sources.open-library-covers-url` (`LIBRIS_OPEN_LIBRARY_COVERS_URL`,
   the stub's `/b/isbn` in the scenarios), so *S5 Merged answer, from Open

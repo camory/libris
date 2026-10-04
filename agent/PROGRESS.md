@@ -854,12 +854,23 @@ Format:
   Spring Security does it.
 - Left over: T057's branch resumes at step 10 once this is on `main`.
 
-## 2026-10-04 — T057 Backend: the cascade for an edition with no chosen source — handoff
-- Done: steps 1–9 of the test plan, one commit each; start with step 10 (`FetchAwaitedCoversTest`, the cascade past a source with no picture; green on arrival is likely, its mutation then asks the first fetch alone).
-- Blocker for Tophe: *S7 …, none has it* reds at `defaultBookshelfOf` (`Status expected:<200 OK> but was:<400 BAD_REQUEST>`), before its When. Spring Security's `StrictHttpFirewall` refuses `Remote-Name: Ève`: the UTF-8 bytes of `È` (`C3 88`), read as ISO-8859-1, hold U+0088, a control character (`É`, `À`, `Ç` likewise; `é` passes). Proven by a throwaway `StrictHttpFirewall` bean with `setAllowedHeaderValues { true }`: the case then reaches the brief's red, `still not true after 5s`. Which header values the chain admits is a `web.security` decision no document makes.
-- Guards: step 6, dropping `&couverture=1` reds it with `IllegalStateException: No value for couverture`; step 8, asking the covers address with an empty `idArk` when there is no record reds it with `Expected value to be null, but was …Cover@…`. Both reverted.
-- Deviation: step 5 moved `nameOf` and `publicationOf` out of `BnfSource` to file-level private functions: `fetch` and `pictureOf` would push the class to 12 functions, over detekt's `TooManyFunctions` (11).
-- Decided: the public candidate and the fetch share `coverAddress(coversUrl, ark)` and `arkOf`; the candidate keeps `https://catalogue.bnf.fr/couverture`.
-- Gate after step 9: 304 tests, 4 skipped, 1 failed, *S7 …, none has it* alone (the 400 above); the two other S7 cases are green. Not pushed.
-- Resolved: the blocker, by #196 (`7b25114`, header values checked after the UTF-8 decoding), merged into this branch.
-- Left: steps 10–13 and the gotchas/PROPOSED edits the brief lists.
+## 2026-10-04 — T057 Backend: the cascade for an edition with no chosen source — done
+- Did: an awaited cover with no chosen source is asked of every fetch in
+  `CoverSource.order` until one brings a picture; the BnF fetches its
+  picture by the record's ark; `V008` gives the editions stored before
+  covers an awaited cover. S7's three cases are green.
+- Decided: the BnF's public candidate and its fetch share
+  `coverAddress(coversUrl, ark)` and `arkOf`; the candidate keeps
+  `https://catalogue.bnf.fr/couverture`.
+- Decided: `V008` checked by hand on four rows in a rolled-back transaction
+  (an edition stored before covers, one named, one already awaited, one
+  without an ISBN): only the first gains a wait.
+- Deviations from the brief: `nameOf` and `publicationOf` left `BnfSource`
+  for file-level private functions, since `fetch` and `pictureOf` would put
+  the class at detekt's `TooManyFunctions` threshold (11). Steps 10 and 11
+  were green on arrival and became guards.
+- Blocked once, after step 9: *S7 …, none has it* was refused `400` on
+  `Remote-Name: Ève` by `StrictHttpFirewall`; resolved by #196 with Tophe,
+  merged into the branch, then steps 10–13.
+- Left over: the BnF candidate on the covers setting, in
+  `agent/PROPOSED.md`; S8 (T058) and S9 (T059).

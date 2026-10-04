@@ -375,11 +375,6 @@
   mismatch` now proves too, since `v0.9.0` types the add's id `format:
   uuid`; whether D07 lets the hand-written case go is Tophe's (found
   2026-10-03 on T067).
-- Backend: a source adapter is named after its source, not one of its
-  ports, since a chosen source implements `CoverFetch` beside its lookup
-  (`InventaireSource`, `OpenLibrarySource`); `BnfEditionLookup` becomes
-  `BnfSource` in the task giving the BnF its fetch (decided 2026-10-03
-  reviewing T066 with Tophe).
 - Backend build: detekt 1.23.8's plugin calls `ReportingExtension.file(String)`
   (`DetektPlugin.apply`), deprecated in Gradle 9 and removed in Gradle 10, so
   every build warns "incompatible with Gradle 10" and the wrapper cannot move
@@ -405,3 +400,8 @@
   the property *one bad cover never stops the run*, stated with its bound,
   which T056's brief only promised in its risks (found 2026-10-04 reviewing
   T056, measured with jshell on JDK 25).
+- Backend: the BnF's cover candidate is built on the public constant
+  `https://catalogue.bnf.fr/couverture`, while Open Library's is built on its
+  covers setting (decided with Tophe after T054); building the BnF's on
+  `libris.sources.bnf-covers-url` needs *FastEntryScenarios* to read the
+  stub's address, a scenario edit that is Tophe's (found 2026-10-04 on T057).
