@@ -362,6 +362,25 @@ class BnfSourceTest {
     cover.bytes shouldBe TALL_JPEG
   }
 
+  @Test
+  fun `fetching a picture sends one search, then asks the covers address once with the record's ark`() {
+    // Given
+    bnf.knows(NERONIA)
+    bnf.hasCover(TALL_JPEG)
+
+    // When
+    source.fetch(isbnOf(NERONIA))
+
+    // Then
+    server.allServeEvents.size shouldBe 2
+    val (search, picture) = server.allServeEvents.map { it.request }.sortedBy { it.loggedDate }
+    search.url.substringBefore("?") shouldBe SRU
+    picture.url.substringBefore("?") shouldBe COVERS
+    picture.queryParameter("appName").values() shouldBe listOf("NE")
+    picture.queryParameter("idArk").values() shouldBe listOf("ark:/12148/cb486302521")
+    picture.queryParameter("couverture").values() shouldBe listOf("1")
+  }
+
   private companion object {
     const val ONE_PIECE = "9782723488525"
     const val ONE_PIECE_TEN = "2723488527"
