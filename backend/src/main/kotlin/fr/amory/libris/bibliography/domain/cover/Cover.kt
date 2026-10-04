@@ -8,6 +8,7 @@ import java.io.ByteArrayInputStream
 import java.io.ByteArrayOutputStream
 import java.security.MessageDigest
 import java.util.HexFormat
+import javax.imageio.IIOException
 import javax.imageio.ImageIO
 
 class Cover private constructor(val mediaType: String, val bytes: ByteArray) {
@@ -16,10 +17,17 @@ class Cover private constructor(val mediaType: String, val bytes: ByteArray) {
       CoverName(HexFormat.of().formatHex(MessageDigest.getInstance("SHA-256").digest(bytes)))
 
   fun normalised(): Cover =
-    ImageIO.read(ByteArrayInputStream(bytes))
+    picture()
       ?.takeIf { it.height > MAX_HEIGHT }
       ?.let { Cover(JPEG, jpegOf(scaled(it))) }
       ?: this
+
+  private fun picture(): BufferedImage? =
+    try {
+      ImageIO.read(ByteArrayInputStream(bytes))
+    } catch (ignored: IIOException) {
+      null
+    }
 
   private fun scaled(picture: BufferedImage): BufferedImage {
     val scaled = BufferedImage(picture.width * MAX_HEIGHT / picture.height, MAX_HEIGHT, TYPE_INT_RGB)

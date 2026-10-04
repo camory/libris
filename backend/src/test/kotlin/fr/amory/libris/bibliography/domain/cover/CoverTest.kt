@@ -87,6 +87,20 @@ class CoverTest {
     normalised.bytes shouldBe bytes
   }
 
+  @Test
+  fun `a picture the JDK fails to read is kept as fetched`() {
+    // Given
+    val bytes = recordedBytes("covers/tall.jpg").copyOf(200)
+    val cover = checkNotNull(Cover.of("image/jpeg", bytes))
+
+    // When
+    val normalised = cover.normalised()
+
+    // Then
+    normalised.mediaType shouldBe "image/jpeg"
+    normalised.bytes shouldBe bytes
+  }
+
   private fun pictureOf(width: Int, height: Int): ByteArray {
     val bytes = ByteArrayOutputStream()
     ImageIO.write(BufferedImage(width, height, TYPE_INT_ARGB), "png", bytes)
