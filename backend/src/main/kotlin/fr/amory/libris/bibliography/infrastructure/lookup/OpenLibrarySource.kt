@@ -5,6 +5,8 @@ import fr.amory.libris.bibliography.domain.ContributionRole.WRITER
 import fr.amory.libris.bibliography.domain.Contributions
 import fr.amory.libris.bibliography.domain.Isbn
 import fr.amory.libris.bibliography.domain.Kind.BOOK
+import fr.amory.libris.bibliography.domain.cover.Cover
+import fr.amory.libris.bibliography.domain.cover.CoverFetch
 import fr.amory.libris.bibliography.domain.cover.CoverSource
 import fr.amory.libris.bibliography.domain.lookup.CoverCandidate
 import fr.amory.libris.bibliography.domain.lookup.EditionLookup
@@ -16,6 +18,7 @@ import fr.amory.libris.bibliography.domain.lookup.EditionSourceAnswer.Known
 import fr.amory.libris.bibliography.domain.lookup.EditionSourceAnswer.NothingKnown
 import org.springframework.web.client.HttpClientErrorException.NotFound
 import org.springframework.web.client.RestClientException
+import org.springframework.web.client.toEntity
 import tools.jackson.databind.JsonNode
 import tools.jackson.databind.exc.JsonNodeException
 import tools.jackson.databind.node.MissingNode
@@ -25,7 +28,7 @@ private const val COVERS = "https://covers.openlibrary.org/b/isbn"
 private const val SEARCH_FIELDS = "key,author_name,edition_key"
 private val YEAR = Regex("\\d{4}")
 
-class OpenLibrarySource(baseUrl: String, timeout: Duration) : EditionLookup {
+class OpenLibrarySource(baseUrl: String, private val coversUrl: String, timeout: Duration) : EditionLookup, CoverFetch {
   override val source = EditionSource.OPEN_LIBRARY
   private val http = sourceRestClient(baseUrl, timeout)
 
@@ -39,6 +42,15 @@ class OpenLibrarySource(baseUrl: String, timeout: Duration) : EditionLookup {
     } catch (ignored: JsonNodeException) {
       Failed
     }
+
+  override fun fetch(isbn: Isbn): Cover? {
+    val answer = http
+      .get()
+      .uri("$coversUrl/${isbn.digits}-L.jpg")
+      .retrieve()
+      .toEntity<ByteArray>()
+    return answer.body?.let { bytes -> answer.headers.contentType?.let { Cover.of(it.toString(), bytes) } }
+  }
 
   private fun answerFor(isbn: Isbn): EditionSourceAnswer =
     Known(

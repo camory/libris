@@ -14,7 +14,9 @@ import fr.amory.libris.bibliography.domain.lookup.EditionSourceAnswer.Known
 import fr.amory.libris.bibliography.domain.lookup.EditionSourceAnswer.NothingKnown
 import fr.amory.libris.bibliography.fixture.OpenLibraryStubs
 import fr.amory.libris.bibliography.fixture.isbnOf
+import fr.amory.libris.bibliography.fixture.recordedBytes
 import io.kotest.matchers.collections.shouldContainExactlyInAnyOrder
+import io.kotest.matchers.nulls.shouldNotBeNull
 import io.kotest.matchers.shouldBe
 import org.junit.jupiter.api.AfterAll
 import org.junit.jupiter.api.AfterEach
@@ -25,7 +27,7 @@ import java.time.Duration.ofMillis
 import java.time.Duration.ofSeconds
 
 class OpenLibrarySourceTest {
-  private val source = OpenLibrarySource(server.baseUrl(), TIMEOUT)
+  private val source = OpenLibrarySource(server.baseUrl(), "${server.baseUrl()}/b/isbn", TIMEOUT)
 
   @AfterEach
   fun forgetTheStubs() {
@@ -185,10 +187,25 @@ class OpenLibrarySourceTest {
     answer shouldBe Failed
   }
 
+  @Test
+  fun `a known ISBN's cover is fetched with the media type it was served with`() {
+    // Given
+    openLibrary.hasCover(SPACE_WARS, TALL_JPEG)
+
+    // When
+    val cover = source.fetch(isbnOf(SPACE_WARS))
+
+    // Then
+    cover.shouldNotBeNull()
+    cover.mediaType shouldBe "image/jpeg"
+    cover.bytes shouldBe TALL_JPEG
+  }
+
   private companion object {
     const val SPACE_WARS = "9782380751673"
     const val MONTE_CRISTO = "9782253098058"
     const val UNKNOWN = "9782000000013"
+    val TALL_JPEG = recordedBytes("covers/tall.jpg")
     val MONTE_CRISTO_EDITION = EditionPreview(
       isbn = isbnOf(MONTE_CRISTO),
       kind = BOOK,
@@ -225,7 +242,7 @@ class OpenLibrarySourceTest {
     fun startWireMock() {
       server.start()
       openLibrary.knows(SPACE_WARS)
-      OpenLibrarySource(server.baseUrl(), WARM_UP_TIMEOUT).lookUp(isbnOf(SPACE_WARS))
+      OpenLibrarySource(server.baseUrl(), "${server.baseUrl()}/b/isbn", WARM_UP_TIMEOUT).lookUp(isbnOf(SPACE_WARS))
       server.resetAll()
     }
 

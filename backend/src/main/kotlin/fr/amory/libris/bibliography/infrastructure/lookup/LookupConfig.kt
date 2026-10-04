@@ -13,7 +13,7 @@ class LookupConfig {
 
   @Bean
   fun openLibrarySource(sources: SourcesProperties) =
-    OpenLibrarySource(sources.openLibraryUrl, sources.timeout)
+    OpenLibrarySource(sources.openLibraryUrl, sources.openLibraryCoversUrl, sources.timeout)
 
   @Bean
   fun inventaireSource(sources: SourcesProperties) =
