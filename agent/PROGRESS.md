@@ -712,3 +712,14 @@ Format:
   deploy, no test carries the public addresses any more.
 - Left over: the BnF and Open Library lookups keep their lists
   (`agent/PROPOSED.md`).
+
+## 2026-10-04 — S10's Given with Tophe
+- Did: the brief planner blocked T055: *S10 A held edition offers its own
+  cover* stores its cover through the worker's Open Library fetch, and its
+  `noSourceWasAsked()` counted that fetch, since the stubs' request logs
+  are cleared only before each case. The Given is now `aStoredCover`,
+  which stores a cover and then clears the three stubs' request logs.
+- Verified: S10 un-skipped with only `noSourceWasAsked()` in its Then is
+  green with the clearing, red without it (1 request); restored skipped.
+- Decided with Tophe: keep the real fetch in the Given and clear the logs,
+  rather than writing the picture and the edition's cover name by hand.
