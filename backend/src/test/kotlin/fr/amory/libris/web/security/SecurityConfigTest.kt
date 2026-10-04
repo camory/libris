@@ -121,6 +121,18 @@ class SecurityConfigTest @Autowired constructor(
   }
 
   @Test
+  fun `a header holding a control character is refused`() {
+    client.get()
+      .uri("/api/v1/me")
+      .header("Remote-User", "eve")
+      .header("Remote-Name", "Ève\u0085")
+      .header("Remote-Email", "eve@amory.fr")
+      .header("Remote-Groups", "family")
+      .exchange()
+      .expectStatus().isBadRequest()
+  }
+
+  @Test
   fun `the health endpoint answers without any header`() {
     client.get()
       .uri("/actuator/health")
