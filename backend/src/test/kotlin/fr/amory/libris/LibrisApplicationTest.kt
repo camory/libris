@@ -29,6 +29,7 @@ class LibrisApplicationTest @Autowired constructor(
     sources shouldBe SourcesProperties(
       bnfUrl = "https://catalogue.bnf.fr/api/SRU",
       openLibraryUrl = "https://openlibrary.org",
+      openLibraryCoversUrl = "https://covers.openlibrary.org/b/isbn",
       inventaireUrl = "https://inventaire.io",
       timeout = ofSeconds(5),
     )
