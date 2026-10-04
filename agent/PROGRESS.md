@@ -827,3 +827,29 @@ Format:
   than stubbing inventaire.io for the cascade, which would be red on
   `main` until T057; the page count leaves the fixture to stay within
   detekt's parameter limit.
+
+## 2026-10-05 — UTF-8 header values pass the firewall, with Tophe
+- Did: the T057 implementer blocked on S7 *none has it*: `Remote-Name: Ève`
+  is refused with `400` before the When. Authelia writes the display name
+  as raw UTF-8 bytes (fasthttp `SetBytesK`), Tomcat reads them as
+  ISO-8859-1, and `È` (`C3 88`) becomes `Ã` and the control character
+  `U+0088`, which `StrictHttpFirewall` refuses; `é` (`C3 A9`) passes. Any
+  reader whose display name holds É, È, À, Ç… got `400` on every request.
+  `SecurityConfig` declares a `StrictHttpFirewall` whose header values are
+  checked after the UTF-8 decoding `RemoteIdentity` already applied
+  (assigned, no control character), the recipe of Spring Security's
+  reference; the decoding is one function shared by both. The web slice's
+  client is now `SimpleClientHttpRequestFactory`, as the scenarios', since
+  the JDK client sends `È` as `?`.
+- Verified: staging backend, outside the proxy: `Léa` 200, `Ève` and
+  `Élodie` 400. New `SecurityConfigTest` case red (`400`) then green; the
+  guard *a control character in a header value is still refused* (`\u0085`)
+  is red with `setAllowedHeaderValues { true }`, reverted. Tomcat refuses a
+  C0 character itself, so `\u0007` proved nothing. `./gradlew check` green,
+  302 tests, 7 skipped.
+- Decided with Tophe: decode then check, for every header (the predicate
+  does not know the header's name), rather than admit every value or an
+  ASCII name in S7; the UTF-8 client for the whole web slice rather than in
+  `SecurityConfigTest` alone. No connector setting of Tomcat or switch of
+  Spring Security does it.
+- Left over: T057's branch resumes at step 10 once this is on `main`.
