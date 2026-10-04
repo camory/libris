@@ -24,7 +24,6 @@ import fr.amory.libris.bibliography.domain.lookup.EditionSourceAnswer.Failed
 import fr.amory.libris.bibliography.domain.lookup.EditionSourceAnswer.Known
 import fr.amory.libris.bibliography.domain.lookup.EditionSourceAnswer.NothingKnown
 import org.springframework.web.client.RestClientException
-import org.springframework.web.client.toEntity
 import org.w3c.dom.Element
 import org.xml.sax.InputSource
 import org.xml.sax.SAXException
@@ -99,17 +98,8 @@ class BnfSource(baseUrl: String, private val coversUrl: String, timeout: Duratio
     nullOnFailure {
       recordIn(search(isbn))
         ?.let { arkOf(it.control("003")) }
-        ?.let { pictureOf(it) }
+        ?.let { http.pictureAt(coverAddress(coversUrl, it)) }
     }
-
-  private fun pictureOf(ark: String): Cover? {
-    val answer = http
-      .get()
-      .uri(coverAddress(coversUrl, ark))
-      .retrieve()
-      .toEntity<ByteArray>()
-    return answer.body?.let { bytes -> answer.headers.contentType?.let { Cover.of(it.toString(), bytes) } }
-  }
 
   private fun answerFor(isbn: Isbn): EditionSourceAnswer =
     recordIn(search(isbn))?.let { answerFrom(isbn, it) } ?: NothingKnown
