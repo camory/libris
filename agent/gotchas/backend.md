@@ -333,10 +333,18 @@ Read whole by a run that changes `backend/`, after `every-run.md`.
   the recorded entity under one.
 - An add answering a copy wakes the cover worker, which runs
   `FetchAwaitedCovers` on `applicationTaskExecutor`: a scenario add whose
-  chosen source is inventaire.io starts a run that may outlive its case
-  (S3's waits a second on a picture that never comes); an add with no
-  chosen source asks no source. `CoverWorkerObserving`, in
+  chosen source is inventaire.io or Open Library starts a run that may
+  outlive its case (S3's waits a second on a picture that never comes, and
+  *S10 …, not yet stored* starts an Open Library fetch that gives up on the
+  one-second timeout after its case); an add with no chosen source, or the
+  BnF's, asks no source. `CoverWorkerObserving`, in
   `bibliography.fixture`, records what its `observe` answers at each waking.
+- Open Library's fetch asks `libris.sources.open-library-covers-url`
+  (`LIBRIS_OPEN_LIBRARY_COVERS_URL`, the stub's `/b/isbn` in the scenarios),
+  while its lookup's candidate keeps the public `covers.openlibrary.org`
+  address, which *S5 Merged answer, from Open Library alone* asserts.
+  `?default=false` makes Open Library answer `404` for a missing cover
+  instead of a blank picture.
 - `LookupAnswering`, in `bibliography.fixture`, records the ISBNs it was asked
   and answers them as `asked`, so a case proves a source was never called with
   `source.asked shouldBe emptyList()`.
