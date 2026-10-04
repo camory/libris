@@ -352,14 +352,14 @@ class BnfSourceTest {
   fun `a known ISBN's picture is fetched with the media type it was served with`() {
     // Given
     bnf.knows(NERONIA)
-    bnf.hasCover(TALL_JPEG)
+    bnf.hasCover(TALL_JPEG, "image/png")
 
     // When
     val cover = source.fetch(isbnOf(NERONIA))
 
     // Then
     cover.shouldNotBeNull()
-    cover.mediaType shouldBe "image/jpeg"
+    cover.mediaType shouldBe "image/png"
     cover.bytes shouldBe TALL_JPEG
   }
 

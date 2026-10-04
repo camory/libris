@@ -36,9 +36,9 @@ class BnfStubs(private val server: WireMockServer) {
     server.stubFor(get(urlPathEqualTo(SRU)).willReturn(serverError()))
   }
 
-  fun hasCover(picture: ByteArray) {
+  fun hasCover(picture: ByteArray, mediaType: String = JPEG) {
     server.stubFor(
-      get(urlPathEqualTo(COVER)).willReturn(ok().withHeader("Content-Type", "image/jpeg").withBody(picture)),
+      get(urlPathEqualTo(COVER)).willReturn(ok().withHeader("Content-Type", mediaType).withBody(picture)),
     )
   }
 
@@ -63,6 +63,7 @@ class BnfStubs(private val server: WireMockServer) {
   private companion object {
     const val SRU = "/api/SRU"
     const val COVER = "/couverture"
+    const val JPEG = "image/jpeg"
     const val LATE = 2_000
     const val UNREADABLE = "<srw:searchRetrieveResponse>"
   }
