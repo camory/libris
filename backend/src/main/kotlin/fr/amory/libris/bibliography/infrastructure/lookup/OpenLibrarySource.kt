@@ -24,7 +24,6 @@ import tools.jackson.databind.exc.JsonNodeException
 import tools.jackson.databind.node.MissingNode
 import java.time.Duration
 
-private const val COVERS = "https://covers.openlibrary.org/b/isbn"
 private const val SEARCH_FIELDS = "key,author_name,edition_key"
 private val YEAR = Regex("\\d{4}")
 
@@ -50,7 +49,7 @@ class OpenLibrarySource(baseUrl: String, private val coversUrl: String, timeout:
   private fun answerFor(isbn: Isbn): EditionSourceAnswer =
     Known(
       previewOf(isbn, document("/isbn/${isbn.digits}.json")),
-      CoverCandidate(CoverSource.OPEN_LIBRARY, "$COVERS/${isbn.digits}-L.jpg?default=false"),
+      CoverCandidate(CoverSource.OPEN_LIBRARY, "$coversUrl/${isbn.digits}-L.jpg?default=false"),
     )
 
   private fun previewOf(isbn: Isbn, edition: JsonNode): EditionPreview =
