@@ -1,9 +1,9 @@
-package fr.amory.libris.library.infrastructure.web
+package fr.amory.libris.web
 
 import fr.amory.libris.library.fixture.bookshelfOwnedBy
 import fr.amory.libris.library.fixture.readerNamed
-import fr.amory.libris.library.infrastructure.web.Role.ADMIN
-import fr.amory.libris.library.infrastructure.web.Role.READER
+import fr.amory.libris.web.Role.ADMIN
+import fr.amory.libris.web.Role.READER
 import io.kotest.matchers.shouldBe
 import org.junit.jupiter.api.Test
 import org.springframework.security.core.authority.SimpleGrantedAuthority

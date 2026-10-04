@@ -1,4 +1,4 @@
-package fr.amory.libris.shared.infrastructure.web
+package fr.amory.libris.web
 
 import fr.amory.libris.bibliography.application.cover.FindCover
 import fr.amory.libris.fixture.WebSliceTest

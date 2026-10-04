@@ -1,4 +1,4 @@
-package fr.amory.libris.shared.infrastructure.web
+package fr.amory.libris.web
 
 import io.kotest.matchers.nulls.shouldNotBeNull
 import io.kotest.matchers.shouldBe

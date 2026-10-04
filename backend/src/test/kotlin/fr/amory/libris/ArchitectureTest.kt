@@ -1,6 +1,5 @@
 package fr.amory.libris
 
-import com.tngtech.archunit.base.DescribedPredicate.alwaysTrue
 import com.tngtech.archunit.core.domain.JavaClass.Predicates.resideInAPackage
 import com.tngtech.archunit.core.domain.JavaClass.Predicates.resideInAnyPackage
 import com.tngtech.archunit.core.domain.JavaClass.Predicates.type
@@ -12,6 +11,8 @@ import com.tngtech.archunit.lang.syntax.ArchRuleDefinition.classes
 import com.tngtech.archunit.lang.syntax.ArchRuleDefinition.noClasses
 import com.tngtech.archunit.library.dependencies.SlicesRuleDefinition.slices
 import org.springframework.transaction.TransactionStatus
+import org.springframework.web.bind.annotation.RestController
+import org.springframework.web.bind.annotation.RestControllerAdvice
 
 @AnalyzeClasses(
   packages = ["fr.amory.libris"],
@@ -52,11 +53,27 @@ class ArchitectureTest {
   }
 
   @ArchTest
-  fun `the infrastructure packages depend on each other through what is shared only`(libris: JavaClasses) {
+  fun `the infrastructure packages never depend on each other`(libris: JavaClasses) {
     slices()
       .matching("fr.amory.libris.(*).infrastructure.(*)..")
       .should().notDependOnEachOther()
-      .ignoreDependency(alwaysTrue(), resideInAPackage("..shared.."))
+      .check(libris)
+  }
+
+  @ArchTest
+  fun `the controllers sit in the web`(libris: JavaClasses) {
+    classes()
+      .that().areAnnotatedWith(RestController::class.java)
+      .or().areAnnotatedWith(RestControllerAdvice::class.java)
+      .should().resideInAPackage("fr.amory.libris.web")
+      .check(libris)
+  }
+
+  @ArchTest
+  fun `the contexts know nothing of the web`(libris: JavaClasses) {
+    noClasses()
+      .that().resideInAnyPackage("fr.amory.libris.bibliography..", "fr.amory.libris.library..")
+      .should().dependOnClassesThat().resideInAPackage("fr.amory.libris.web..")
       .check(libris)
   }
 
@@ -81,14 +98,6 @@ class ArchitectureTest {
     noClasses()
       .that().resideInAPackage("..bibliography..")
       .should().dependOnClassesThat().resideInAPackage("..library..")
-      .check(libris)
-  }
-
-  @ArchTest
-  fun `what is shared knows nothing of the contexts`(libris: JavaClasses) {
-    noClasses()
-      .that().resideInAPackage("..shared..")
-      .should().dependOnClassesThat().resideInAnyPackage("..bibliography..", "..library..")
       .check(libris)
   }
 }

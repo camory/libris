@@ -1,4 +1,4 @@
-package fr.amory.libris.shared.infrastructure.web
+package fr.amory.libris.web
 
 import jakarta.servlet.FilterChain
 import jakarta.servlet.http.HttpServletRequest

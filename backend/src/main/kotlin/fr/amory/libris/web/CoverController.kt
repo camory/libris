@@ -1,13 +1,8 @@
-package fr.amory.libris.bibliography.infrastructure.web
+package fr.amory.libris.web
 
 import fr.amory.libris.bibliography.application.cover.FindCover
 import fr.amory.libris.bibliography.domain.cover.Cover
 import fr.amory.libris.bibliography.domain.cover.CoverName
-import fr.amory.libris.shared.infrastructure.web.NOT_FOUND_PROBLEM
-import fr.amory.libris.shared.infrastructure.web.VALIDATION_PROBLEM
-import fr.amory.libris.shared.infrastructure.web.ValidationErrorResponse
-import fr.amory.libris.shared.infrastructure.web.asResponse
-import fr.amory.libris.shared.infrastructure.web.problem
 import org.springframework.http.HttpHeaders.CACHE_CONTROL
 import org.springframework.http.HttpStatus.BAD_REQUEST
 import org.springframework.http.HttpStatus.NOT_FOUND

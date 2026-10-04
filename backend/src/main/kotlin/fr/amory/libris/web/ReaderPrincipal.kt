@@ -1,8 +1,7 @@
-package fr.amory.libris.library.infrastructure.web
+package fr.amory.libris.web
 
 import fr.amory.libris.library.application.WelcomeReader
 import fr.amory.libris.library.domain.reader.Reader
-import fr.amory.libris.shared.infrastructure.web.RequestPrincipal
 import org.springframework.stereotype.Component
 
 @Component
