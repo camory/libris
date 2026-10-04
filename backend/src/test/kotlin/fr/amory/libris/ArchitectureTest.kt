@@ -65,7 +65,7 @@ class ArchitectureTest {
     classes()
       .that().areAnnotatedWith(RestController::class.java)
       .or().areAnnotatedWith(RestControllerAdvice::class.java)
-      .should().resideInAPackage("fr.amory.libris.web")
+      .should().resideInAPackage("fr.amory.libris.web..")
       .check(libris)
   }
 

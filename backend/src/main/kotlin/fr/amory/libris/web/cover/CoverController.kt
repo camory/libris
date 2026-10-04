@@ -1,8 +1,13 @@
-package fr.amory.libris.web
+package fr.amory.libris.web.cover
 
 import fr.amory.libris.bibliography.application.cover.FindCover
 import fr.amory.libris.bibliography.domain.cover.Cover
 import fr.amory.libris.bibliography.domain.cover.CoverName
+import fr.amory.libris.web.problem.NOT_FOUND_PROBLEM
+import fr.amory.libris.web.problem.VALIDATION_PROBLEM
+import fr.amory.libris.web.problem.ValidationErrorResponse
+import fr.amory.libris.web.problem.asResponse
+import fr.amory.libris.web.problem.problem
 import org.springframework.http.HttpHeaders.CACHE_CONTROL
 import org.springframework.http.HttpStatus.BAD_REQUEST
 import org.springframework.http.HttpStatus.NOT_FOUND

@@ -1,4 +1,4 @@
-package fr.amory.libris.web
+package fr.amory.libris.web.security
 
 import fr.amory.libris.library.application.WelcomeReader
 import jakarta.servlet.FilterChain

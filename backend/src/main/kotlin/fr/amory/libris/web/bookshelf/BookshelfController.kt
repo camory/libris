@@ -1,4 +1,4 @@
-package fr.amory.libris.web
+package fr.amory.libris.web.bookshelf
 
 import fr.amory.libris.library.application.AddBookResult
 import fr.amory.libris.library.application.AddBookResult.Added
@@ -9,8 +9,13 @@ import fr.amory.libris.library.application.lookup.CopyOnBookshelf
 import fr.amory.libris.library.domain.bookshelf.Bookshelf
 import fr.amory.libris.library.domain.bookshelf.BookshelfId
 import fr.amory.libris.library.domain.reader.Reader
-import fr.amory.libris.web.NewBookValidation.Accepted
-import fr.amory.libris.web.NewBookValidation.Refused
+import fr.amory.libris.web.bookshelf.NewBookValidation.Accepted
+import fr.amory.libris.web.bookshelf.NewBookValidation.Refused
+import fr.amory.libris.web.problem.NOT_FOUND_PROBLEM
+import fr.amory.libris.web.problem.VALIDATION_PROBLEM
+import fr.amory.libris.web.problem.ValidationErrorResponse
+import fr.amory.libris.web.problem.asResponse
+import fr.amory.libris.web.problem.problem
 import org.springframework.http.HttpStatus.BAD_REQUEST
 import org.springframework.http.HttpStatus.CREATED
 import org.springframework.http.HttpStatus.NOT_FOUND

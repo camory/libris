@@ -1,10 +1,11 @@
-package fr.amory.libris.web
+package fr.amory.libris.web.bookshelf
 
 import fr.amory.libris.bibliography.domain.ContributionRole.WRITER
 import fr.amory.libris.bibliography.domain.Kind.MANGA
 import fr.amory.libris.bibliography.domain.cover.CoverSource.INVENTAIRE
-import fr.amory.libris.web.NewBookValidation.Accepted
-import fr.amory.libris.web.NewBookValidation.Refused
+import fr.amory.libris.web.bookshelf.NewBookValidation.Accepted
+import fr.amory.libris.web.bookshelf.NewBookValidation.Refused
+import fr.amory.libris.web.problem.ValidationErrorResponse
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.types.shouldBeInstanceOf
 import org.junit.jupiter.api.Test

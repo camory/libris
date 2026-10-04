@@ -1,4 +1,4 @@
-package fr.amory.libris.web
+package fr.amory.libris.web.security
 
 import jakarta.servlet.http.HttpServletRequest
 import org.springframework.security.core.GrantedAuthority
