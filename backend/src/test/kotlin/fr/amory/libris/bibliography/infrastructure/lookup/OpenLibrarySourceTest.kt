@@ -226,6 +226,18 @@ class OpenLibrarySourceTest {
     cover.shouldBeNull()
   }
 
+  @Test
+  fun `a cover Open Library does not have is no cover`() {
+    // Given
+    openLibrary.hasNoCover(SPACE_WARS)
+
+    // When
+    val cover = source.fetch(isbnOf(SPACE_WARS))
+
+    // Then
+    cover.shouldBeNull()
+  }
+
   private companion object {
     const val SPACE_WARS = "9782380751673"
     const val MONTE_CRISTO = "9782253098058"
