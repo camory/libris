@@ -34,8 +34,8 @@ class RemoteIdentity private constructor(
         add(SimpleGrantedAuthority(READER_AUTHORITY))
         if (ADMIN_GROUP in groups) add(SimpleGrantedAuthority(ADMIN_AUTHORITY))
       }
-
-    private fun utf8(header: String): String =
-      String(header.toByteArray(ISO_8859_1), UTF_8)
   }
 }
+
+fun utf8(header: String): String =
+  String(header.toByteArray(ISO_8859_1), UTF_8)
