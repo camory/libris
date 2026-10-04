@@ -834,4 +834,5 @@ Format:
 - Guards: step 6, dropping `&couverture=1` reds it with `IllegalStateException: No value for couverture`; step 8, asking the covers address with an empty `idArk` when there is no record reds it with `Expected value to be null, but was …Cover@…`. Both reverted.
 - Deviation: step 5 moved `nameOf` and `publicationOf` out of `BnfSource` to file-level private functions: `fetch` and `pictureOf` would push the class to 12 functions, over detekt's `TooManyFunctions` (11).
 - Decided: the public candidate and the fetch share `coverAddress(coversUrl, ark)` and `arkOf`; the candidate keeps `https://catalogue.bnf.fr/couverture`.
+- Gate after step 9: 304 tests, 4 skipped, 1 failed, *S7 …, none has it* alone (the 400 above); the two other S7 cases are green. Not pushed.
 - Left: steps 10–13 and the gotchas/PROPOSED edits the brief lists.
