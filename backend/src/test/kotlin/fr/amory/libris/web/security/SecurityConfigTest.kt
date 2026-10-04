@@ -7,6 +7,7 @@ import fr.amory.libris.library.application.FindDefaultBookshelf
 import fr.amory.libris.library.application.WelcomeReader
 import fr.amory.libris.library.application.catalogue.BrowseCatalogue
 import fr.amory.libris.library.application.lookup.LookupIsbnForReader
+import fr.amory.libris.library.fixture.bookshelfOwnedBy
 import fr.amory.libris.library.fixture.readerNamed
 import org.junit.jupiter.api.Test
 import org.mockito.BDDMockito.given
@@ -28,7 +29,8 @@ import org.springframework.test.web.servlet.client.RestTestClient
 )
 class SecurityConfigTest @Autowired constructor(
   private val client: RestTestClient,
-  private val welcomeReader: WelcomeReader) {
+  private val welcomeReader: WelcomeReader,
+  private val findDefaultBookshelf: FindDefaultBookshelf) {
   @Test
   fun `a request without the identity headers is refused`() {
     client.get()
@@ -98,6 +100,36 @@ class SecurityConfigTest @Autowired constructor(
       .header("X-Requested-With", "XMLHttpRequest")
       .exchange()
       .expectStatus().isEqualTo(HttpStatus.METHOD_NOT_ALLOWED)
+  }
+
+  @Test
+  fun `a name sent in UTF-8 with a capital accented letter is welcomed`() {
+    // Given
+    val eve = readerNamed("eve", "Ève")
+    given(welcomeReader("eve", "eve@amory.fr", "Ève")).willReturn(eve)
+    given(findDefaultBookshelf(eve)).willReturn(bookshelfOwnedBy(eve))
+
+    // When, Then
+    client.get()
+      .uri("/api/v1/me")
+      .header("Remote-User", "eve")
+      .header("Remote-Name", "Ève")
+      .header("Remote-Email", "eve@amory.fr")
+      .header("Remote-Groups", "family")
+      .exchange()
+      .expectStatus().isOk()
+  }
+
+  @Test
+  fun `a header holding a control character is refused`() {
+    client.get()
+      .uri("/api/v1/me")
+      .header("Remote-User", "eve")
+      .header("Remote-Name", "Ève\u0085")
+      .header("Remote-Email", "eve@amory.fr")
+      .header("Remote-Groups", "family")
+      .exchange()
+      .expectStatus().isBadRequest()
   }
 
   @Test

@@ -828,6 +828,32 @@ Format:
   `main` until T057; the page count leaves the fixture to stay within
   detekt's parameter limit.
 
+## 2026-10-05 — UTF-8 header values pass the firewall, with Tophe
+- Did: the T057 implementer blocked on S7 *none has it*: `Remote-Name: Ève`
+  is refused with `400` before the When. Authelia writes the display name
+  as raw UTF-8 bytes (fasthttp `SetBytesK`), Tomcat reads them as
+  ISO-8859-1, and `È` (`C3 88`) becomes `Ã` and the control character
+  `U+0088`, which `StrictHttpFirewall` refuses; `é` (`C3 A9`) passes. Any
+  reader whose display name holds É, È, À, Ç… got `400` on every request.
+  `SecurityConfig` declares a `StrictHttpFirewall` whose header values are
+  checked after the UTF-8 decoding `RemoteIdentity` already applied
+  (assigned, no control character), the recipe of Spring Security's
+  reference; the decoding is one function shared by both. The web slice's
+  client is now `SimpleClientHttpRequestFactory`, as the scenarios', since
+  the JDK client sends `È` as `?`.
+- Verified: staging backend, outside the proxy: `Léa` 200, `Ève` and
+  `Élodie` 400. New `SecurityConfigTest` case red (`400`) then green; the
+  guard *a control character in a header value is still refused* (`\u0085`)
+  is red with `setAllowedHeaderValues { true }`, reverted. Tomcat refuses a
+  C0 character itself, so `\u0007` proved nothing. `./gradlew check` green,
+  302 tests, 7 skipped.
+- Decided with Tophe: decode then check, for every header (the predicate
+  does not know the header's name), rather than admit every value or an
+  ASCII name in S7; the UTF-8 client for the whole web slice rather than in
+  `SecurityConfigTest` alone. No connector setting of Tomcat or switch of
+  Spring Security does it.
+- Left over: T057's branch resumes at step 10 once this is on `main`.
+
 ## 2026-10-04 — T057 Backend: the cascade for an edition with no chosen source — handoff
 - Done: steps 1–9 of the test plan, one commit each; start with step 10 (`FetchAwaitedCoversTest`, the cascade past a source with no picture; green on arrival is likely, its mutation then asks the first fetch alone).
 - Blocker for Tophe: *S7 …, none has it* reds at `defaultBookshelfOf` (`Status expected:<200 OK> but was:<400 BAD_REQUEST>`), before its When. Spring Security's `StrictHttpFirewall` refuses `Remote-Name: Ève`: the UTF-8 bytes of `È` (`C3 88`), read as ISO-8859-1, hold U+0088, a control character (`É`, `À`, `Ç` likewise; `é` passes). Proven by a throwaway `StrictHttpFirewall` bean with `setAllowedHeaderValues { true }`: the case then reaches the brief's red, `still not true after 5s`. Which header values the chain admits is a `web.security` decision no document makes.
@@ -835,4 +861,5 @@ Format:
 - Deviation: step 5 moved `nameOf` and `publicationOf` out of `BnfSource` to file-level private functions: `fetch` and `pictureOf` would push the class to 12 functions, over detekt's `TooManyFunctions` (11).
 - Decided: the public candidate and the fetch share `coverAddress(coversUrl, ark)` and `arkOf`; the candidate keeps `https://catalogue.bnf.fr/couverture`.
 - Gate after step 9: 304 tests, 4 skipped, 1 failed, *S7 …, none has it* alone (the 400 above); the two other S7 cases are green. Not pushed.
+- Resolved: the blocker, by #196 (`7b25114`, header values checked after the UTF-8 decoding), merged into this branch.
 - Left: steps 10–13 and the gotchas/PROPOSED edits the brief lists.

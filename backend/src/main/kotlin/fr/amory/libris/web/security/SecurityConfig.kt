@@ -13,6 +13,7 @@ import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.security.web.SecurityFilterChain
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter
 import org.springframework.security.web.authentication.preauth.PreAuthenticatedAuthenticationToken
+import org.springframework.security.web.firewall.StrictHttpFirewall
 import org.springframework.security.web.util.matcher.RequestMatcher
 import org.springframework.web.filter.OncePerRequestFilter
 
@@ -53,4 +54,10 @@ class SecurityConfig {
       }
       .build()
   }
+
+  @Bean
+  fun httpFirewall(): StrictHttpFirewall =
+    StrictHttpFirewall().apply {
+      setAllowedHeaderValues { value -> utf8(value).all { Character.isDefined(it) && !it.isISOControl() } }
+    }
 }
