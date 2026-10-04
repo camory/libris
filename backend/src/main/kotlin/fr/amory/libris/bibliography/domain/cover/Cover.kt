@@ -15,8 +15,10 @@ class Cover private constructor(val mediaType: String, val bytes: ByteArray) {
     get() =
       CoverName(HexFormat.of().formatHex(MessageDigest.getInstance("SHA-256").digest(bytes)))
 
-  fun normalised(): Cover =
-    Cover(JPEG, jpegOf(scaled(ImageIO.read(ByteArrayInputStream(bytes)))))
+  fun normalised(): Cover {
+    val picture = ImageIO.read(ByteArrayInputStream(bytes))
+    return if (picture.height > MAX_HEIGHT) Cover(JPEG, jpegOf(scaled(picture))) else this
+  }
 
   private fun scaled(picture: BufferedImage): BufferedImage {
     val scaled = BufferedImage(picture.width * MAX_HEIGHT / picture.height, MAX_HEIGHT, TYPE_INT_RGB)

@@ -58,6 +58,20 @@ class CoverTest {
     picture.height shouldBe 600
   }
 
+  @Test
+  fun `a picture 600 tall is kept as fetched`() {
+    // Given
+    val bytes = pictureOf(400, 600)
+    val cover = checkNotNull(Cover.of("image/png", bytes))
+
+    // When
+    val normalised = cover.normalised()
+
+    // Then
+    normalised.mediaType shouldBe "image/png"
+    normalised.bytes shouldBe bytes
+  }
+
   private fun pictureOf(width: Int, height: Int): ByteArray {
     val bytes = ByteArrayOutputStream()
     ImageIO.write(BufferedImage(width, height, TYPE_INT_ARGB), "png", bytes)
