@@ -60,6 +60,21 @@ class CoverTest {
   }
 
   @Test
+  fun `a picture more than 600 times taller than wide is scaled to 1 wide`() {
+    // Given
+    val cover = coverOf("image/png", pictureOf("png", 1, 1201))
+
+    // When
+    val normalised = cover.normalised()
+
+    // Then
+    normalised.mediaType shouldBe "image/jpeg"
+    val picture = ImageIO.read(ByteArrayInputStream(normalised.bytes))
+    picture.width shouldBe 1
+    picture.height shouldBe 600
+  }
+
+  @Test
   fun `a picture 600 tall is kept as fetched`() {
     // Given
     val bytes = pictureOf("png", 400, 600)

@@ -30,7 +30,8 @@ class Cover private constructor(val mediaType: String, val bytes: ByteArray) {
     }
 
   private fun scaled(picture: BufferedImage): BufferedImage {
-    val scaled = BufferedImage(picture.width * MAX_HEIGHT / picture.height, MAX_HEIGHT, TYPE_INT_RGB)
+    val width = (picture.width * MAX_HEIGHT / picture.height).coerceAtLeast(1)
+    val scaled = BufferedImage(width, MAX_HEIGHT, TYPE_INT_RGB)
     val graphics = scaled.createGraphics()
     graphics.setRenderingHint(KEY_INTERPOLATION, VALUE_INTERPOLATION_BICUBIC)
     graphics.drawImage(picture, 0, 0, scaled.width, scaled.height, null)
