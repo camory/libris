@@ -9,7 +9,7 @@ import org.springframework.context.annotation.Configuration
 class LookupConfig {
   @Bean
   fun bnfSource(sources: SourcesProperties) =
-    BnfSource(sources.bnfUrl, sources.timeout)
+    BnfSource(sources.bnfUrl, sources.bnfCoversUrl, sources.timeout)
 
   @Bean
   fun openLibrarySource(sources: SourcesProperties) =

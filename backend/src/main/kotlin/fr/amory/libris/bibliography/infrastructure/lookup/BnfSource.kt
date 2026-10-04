@@ -12,6 +12,8 @@ import fr.amory.libris.bibliography.domain.Kind.BD
 import fr.amory.libris.bibliography.domain.Kind.BOOK
 import fr.amory.libris.bibliography.domain.Kind.MANGA
 import fr.amory.libris.bibliography.domain.SeriesEntry
+import fr.amory.libris.bibliography.domain.cover.Cover
+import fr.amory.libris.bibliography.domain.cover.CoverFetch
 import fr.amory.libris.bibliography.domain.cover.CoverSource
 import fr.amory.libris.bibliography.domain.lookup.CoverCandidate
 import fr.amory.libris.bibliography.domain.lookup.EditionLookup
@@ -22,6 +24,7 @@ import fr.amory.libris.bibliography.domain.lookup.EditionSourceAnswer.Failed
 import fr.amory.libris.bibliography.domain.lookup.EditionSourceAnswer.Known
 import fr.amory.libris.bibliography.domain.lookup.EditionSourceAnswer.NothingKnown
 import org.springframework.web.client.RestClientException
+import org.springframework.web.client.toEntity
 import org.w3c.dom.Element
 import org.xml.sax.InputSource
 import org.xml.sax.SAXException
@@ -44,8 +47,7 @@ private const val YEAR_AT = 9
 private const val YEAR_LENGTH = 4
 private const val PUBLISHER_INDICATOR = "0"
 private const val ARK = "ark:/"
-private const val COVER_BEFORE = "https://catalogue.bnf.fr/couverture?&appName=NE&idArk="
-private const val COVER_AFTER = "&couverture=1"
+private const val PUBLIC_COVERS = "https://catalogue.bnf.fr/couverture"
 
 internal fun kindOf(codedData: String?, translatedFrom: String?): Kind =
   when {
@@ -68,13 +70,26 @@ internal fun pageCountOf(extent: String?): Int? =
   PAGES.find(extent.orEmpty())?.groupValues?.get(1)?.toIntOrNull()
 
 internal fun coverOf(controlField: String?): CoverCandidate? =
+  arkOf(controlField)?.let { CoverCandidate(CoverSource.BNF, coverAddress(PUBLIC_COVERS, it)) }
+
+private fun arkOf(controlField: String?): String? =
   controlField
     ?.indexOf(ARK)
     ?.takeIf { it >= 0 }
-    ?.let { CoverCandidate(CoverSource.BNF, COVER_BEFORE + controlField.substring(it) + COVER_AFTER) }
+    ?.let { controlField.substring(it) }
 
-class BnfSource(baseUrl: String, timeout: Duration) : EditionLookup {
+private fun publicationOf(record: UnimarcRecord): UnimarcField? =
+  record.field("214", PUBLISHER_INDICATOR) ?: record.field("210")
+
+private fun nameOf(field: UnimarcField): String =
+  "${field.value("b").orEmpty()} ${field.value("a").orEmpty()}".trim()
+
+private fun coverAddress(coversUrl: String, ark: String): String =
+  "$coversUrl?&appName=NE&idArk=$ark&couverture=1"
+
+class BnfSource(baseUrl: String, private val coversUrl: String, timeout: Duration) : EditionLookup, CoverFetch {
   override val source = EditionSource.BNF
+  override val coverSource = CoverSource.BNF
   private val http = sourceRestClient(baseUrl, timeout)
 
   override fun lookUp(isbn: Isbn): EditionSourceAnswer =
@@ -85,6 +100,20 @@ class BnfSource(baseUrl: String, timeout: Duration) : EditionLookup {
     } catch (ignored: SAXException) {
       Failed
     }
+
+  override fun fetch(isbn: Isbn): Cover? =
+    recordIn(search(isbn))
+      ?.let { arkOf(it.control("003")) }
+      ?.let { pictureOf(it) }
+
+  private fun pictureOf(ark: String): Cover? {
+    val answer = http
+      .get()
+      .uri(coverAddress(coversUrl, ark))
+      .retrieve()
+      .toEntity<ByteArray>()
+    return answer.body?.let { bytes -> answer.headers.contentType?.let { Cover.of(it.toString(), bytes) } }
+  }
 
   private fun answerFor(isbn: Isbn): EditionSourceAnswer =
     recordIn(search(isbn))?.let { answerFrom(isbn, it) } ?: NothingKnown
@@ -110,18 +139,12 @@ class BnfSource(baseUrl: String, timeout: Duration) : EditionLookup {
     )
   }
 
-  private fun publicationOf(record: UnimarcRecord): UnimarcField? =
-    record.field("214", PUBLISHER_INDICATOR) ?: record.field("210")
-
   private fun contributionsOf(record: UnimarcRecord): Contributions =
     Contributions.of(
       record.fields(AUTHOR_TAGS).mapNotNull { field ->
         Contribution.of(nameOf(field), contributionRoleOf(field.value("4")))
       },
     )
-
-  private fun nameOf(field: UnimarcField): String =
-    "${field.value("b").orEmpty()} ${field.value("a").orEmpty()}".trim()
 
   private fun seriesOf(record: UnimarcRecord): SeriesEntry? =
     SeriesEntry.of(record.value("461", "t"), record.value("461", "v")?.toIntOrNull())

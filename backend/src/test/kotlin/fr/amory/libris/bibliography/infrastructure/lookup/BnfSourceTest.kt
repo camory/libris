@@ -20,6 +20,8 @@ import fr.amory.libris.bibliography.domain.lookup.EditionSourceAnswer.Known
 import fr.amory.libris.bibliography.domain.lookup.EditionSourceAnswer.NothingKnown
 import fr.amory.libris.bibliography.fixture.BnfStubs
 import fr.amory.libris.bibliography.fixture.isbnOf
+import fr.amory.libris.bibliography.fixture.recordedBytes
+import io.kotest.matchers.nulls.shouldNotBeNull
 import io.kotest.matchers.shouldBe
 import org.junit.jupiter.api.AfterAll
 import org.junit.jupiter.api.AfterEach
@@ -30,7 +32,7 @@ import java.time.Duration.ofMillis
 import java.time.Duration.ofSeconds
 
 class BnfSourceTest {
-  private val source = BnfSource(server.baseUrl() + SRU, TIMEOUT)
+  private val source = BnfSource(server.baseUrl() + SRU, server.baseUrl() + COVERS, TIMEOUT)
 
   @AfterEach
   fun forgetTheStubs() {
@@ -345,6 +347,21 @@ class BnfSourceTest {
     request.queryParameter("query").values() shouldBe listOf("""bib.isbn all "$WITHOUT_A_TEN"""")
   }
 
+  @Test
+  fun `a known ISBN's picture is fetched with the media type it was served with`() {
+    // Given
+    bnf.knows(NERONIA)
+    bnf.hasCover(TALL_JPEG)
+
+    // When
+    val cover = source.fetch(isbnOf(NERONIA))
+
+    // Then
+    cover.shouldNotBeNull()
+    cover.mediaType shouldBe "image/jpeg"
+    cover.bytes shouldBe TALL_JPEG
+  }
+
   private companion object {
     const val ONE_PIECE = "9782723488525"
     const val ONE_PIECE_TEN = "2723488527"
@@ -355,6 +372,7 @@ class BnfSourceTest {
     const val UNKNOWN = "9782000000013"
     const val WITHOUT_A_TEN = "9791000000008"
     const val SRU = "/api/SRU"
+    const val COVERS = "/couverture"
     const val ONE_PIECE_COVER =
       "https://catalogue.bnf.fr/couverture?&appName=NE&idArk=ark:/12148/cb43636708p&couverture=1"
     const val NERONIA_COVER =
@@ -434,6 +452,7 @@ class BnfSourceTest {
       pageCount = 203,
       summary = null,
     )
+    val TALL_JPEG = recordedBytes("covers/tall.jpg")
     val TIMEOUT: Duration = ofMillis(200)
     val WARM_UP_TIMEOUT: Duration = ofSeconds(20)
     val server = WireMockServer(options().dynamicPort())
@@ -444,7 +463,7 @@ class BnfSourceTest {
     fun startWireMock() {
       server.start()
       bnf.knows(ONE_PIECE)
-      BnfSource(server.baseUrl() + SRU, WARM_UP_TIMEOUT).lookUp(isbnOf(ONE_PIECE))
+      BnfSource(server.baseUrl() + SRU, server.baseUrl() + COVERS, WARM_UP_TIMEOUT).lookUp(isbnOf(ONE_PIECE))
       server.resetAll()
     }
 
