@@ -395,6 +395,20 @@ class BnfSourceTest {
     cover.shouldBeNull()
   }
 
+  @Test
+  fun `an ISBN the BnF does not know is no cover, the covers address never asked`() {
+    // Given
+    bnf.doesNotKnow(UNKNOWN)
+    bnf.hasCover(TALL_JPEG)
+
+    // When
+    val cover = source.fetch(isbnOf(UNKNOWN))
+
+    // Then
+    cover.shouldBeNull()
+    bnf.coverRequests() shouldBe 0
+  }
+
   private companion object {
     const val ONE_PIECE = "9782723488525"
     const val ONE_PIECE_TEN = "2723488527"
