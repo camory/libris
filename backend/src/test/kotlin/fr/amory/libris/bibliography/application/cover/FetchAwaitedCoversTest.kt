@@ -150,6 +150,27 @@ class FetchAwaitedCoversTest {
   }
 
   @Test
+  fun `the cascade goes on past a source with no picture`() {
+    // Given
+    awaiting(null)
+    val tall = coverOf("image/jpeg", recordedBytes("covers/tall.jpg"))
+    val inventaire = CoverFetchAnswering(INVENTAIRE, null)
+    val openLibrary = CoverFetchAnswering(OPEN_LIBRARY, null)
+    val bnf = CoverFetchAnswering(BNF, tall)
+    val fetchAwaitedCovers = fetchAwaitedCoversOver(listOf(bnf, openLibrary, inventaire))
+
+    // When
+    fetchAwaitedCovers()
+
+    // Then
+    covers.stored.single().name shouldBe tall.normalised().name
+    editions.findByIsbn(isbnOf(ONE_PIECE))?.coverName shouldBe tall.normalised().name
+    inventaire.asked shouldBe listOf(isbnOf(ONE_PIECE))
+    openLibrary.asked shouldBe listOf(isbnOf(ONE_PIECE))
+    bnf.asked shouldBe listOf(isbnOf(ONE_PIECE))
+  }
+
+  @Test
   fun `a fetch that brings no picture keeps the wait`() {
     // Given
     awaiting(INVENTAIRE)
