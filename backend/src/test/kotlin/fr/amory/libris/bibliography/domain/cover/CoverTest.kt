@@ -2,6 +2,11 @@ package fr.amory.libris.bibliography.domain.cover
 
 import io.kotest.matchers.shouldBe
 import org.junit.jupiter.api.Test
+import java.awt.image.BufferedImage
+import java.awt.image.BufferedImage.TYPE_INT_ARGB
+import java.io.ByteArrayInputStream
+import java.io.ByteArrayOutputStream
+import javax.imageio.ImageIO
 
 class CoverTest {
   @Test
@@ -36,5 +41,26 @@ class CoverTest {
     // Given / When / Then
     Cover.of("image/png", "cover 59".encodeToByteArray())?.name shouldBe
       CoverName("005cbc1fbb9398468b932b0a7417723d1134b4cad70831f5587e236583f1a458")
+  }
+
+  @Test
+  fun `a picture taller than 600 is scaled to 600 tall, as JPEG`() {
+    // Given
+    val cover = checkNotNull(Cover.of("image/png", pictureOf(400, 1000)))
+
+    // When
+    val normalised = cover.normalised()
+
+    // Then
+    normalised.mediaType shouldBe "image/jpeg"
+    val picture = ImageIO.read(ByteArrayInputStream(normalised.bytes))
+    picture.width shouldBe 240
+    picture.height shouldBe 600
+  }
+
+  private fun pictureOf(width: Int, height: Int): ByteArray {
+    val bytes = ByteArrayOutputStream()
+    ImageIO.write(BufferedImage(width, height, TYPE_INT_ARGB), "png", bytes)
+    return bytes.toByteArray()
   }
 }
