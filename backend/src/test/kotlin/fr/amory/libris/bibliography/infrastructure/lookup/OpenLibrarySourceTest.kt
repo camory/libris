@@ -16,6 +16,7 @@ import fr.amory.libris.bibliography.fixture.OpenLibraryStubs
 import fr.amory.libris.bibliography.fixture.isbnOf
 import fr.amory.libris.bibliography.fixture.recordedBytes
 import io.kotest.matchers.collections.shouldContainExactlyInAnyOrder
+import io.kotest.matchers.nulls.shouldBeNull
 import io.kotest.matchers.nulls.shouldNotBeNull
 import io.kotest.matchers.shouldBe
 import org.junit.jupiter.api.AfterAll
@@ -211,6 +212,18 @@ class OpenLibrarySourceTest {
 
     // Then
     server.allServeEvents.map { it.request.url } shouldBe listOf("/b/isbn/$SPACE_WARS-L.jpg?default=false")
+  }
+
+  @Test
+  fun `a cover Open Library fails to serve is no cover`() {
+    // Given
+    openLibrary.coverFails(SPACE_WARS)
+
+    // When
+    val cover = source.fetch(isbnOf(SPACE_WARS))
+
+    // Then
+    cover.shouldBeNull()
   }
 
   private companion object {

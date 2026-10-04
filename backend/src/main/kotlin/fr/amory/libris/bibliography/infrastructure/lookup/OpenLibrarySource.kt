@@ -43,14 +43,12 @@ class OpenLibrarySource(baseUrl: String, private val coversUrl: String, timeout:
       Failed
     }
 
-  override fun fetch(isbn: Isbn): Cover? {
-    val answer = http
-      .get()
-      .uri("$coversUrl/${isbn.digits}-L.jpg?default=false")
-      .retrieve()
-      .toEntity<ByteArray>()
-    return answer.body?.let { bytes -> answer.headers.contentType?.let { Cover.of(it.toString(), bytes) } }
-  }
+  override fun fetch(isbn: Isbn): Cover? =
+    try {
+      coverOf(isbn)
+    } catch (ignored: RestClientException) {
+      null
+    }
 
   private fun answerFor(isbn: Isbn): EditionSourceAnswer =
     Known(
@@ -103,4 +101,13 @@ class OpenLibrarySource(baseUrl: String, private val coversUrl: String, timeout:
 
   private fun document(path: String): JsonNode =
     http.get().uri(path).retrieve().body(JsonNode::class.java) ?: MissingNode.getInstance()
+
+  private fun coverOf(isbn: Isbn): Cover? {
+    val answer = http
+      .get()
+      .uri("$coversUrl/${isbn.digits}-L.jpg?default=false")
+      .retrieve()
+      .toEntity<ByteArray>()
+    return answer.body?.let { bytes -> answer.headers.contentType?.let { Cover.of(it.toString(), bytes) } }
+  }
 }
