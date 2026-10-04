@@ -102,7 +102,7 @@ class ApiContractTest @Autowired constructor(
     given(lookupIsbnForReader(CONTRACTEER.id, isbnOf("9782000000013"))).willReturn(noCopy(UnknownIsbn))
     given(lookupIsbnForReader(CONTRACTEER.id, isbnOf("9791000000008"))).willReturn(noCopy(SourcesUnavailable))
     given(lookupIsbnForReader(CONTRACTEER.id, isbnOf("9782723489898")))
-      .willReturn(IsbnLookup(Held(EditionId.new(), ASTERIX_1), listOf(COPY_OF_ASTERIX_1)))
+      .willReturn(IsbnLookup(Held(EditionId.new(), ASTERIX_1, ASTERIX_1_COVER), listOf(COPY_OF_ASTERIX_1)))
   }
 
   private fun addingABookAnswers() {
@@ -210,6 +210,8 @@ private val NEW_ONE_PIECE_1 = NewBook(
   coverSource = INVENTAIRE,
 )
 
+private val ASTERIX_1_COVER = CoverName("9c56cc51b374c3ba189210d5b6d4bf57790d351c96c47c02190ecf1e430635ab")
+
 private val ASTERIX_1_HELD = HeldEdition(
   edition = Edition(
     id = EditionId.new(),
@@ -225,7 +227,7 @@ private val ASTERIX_1_HELD = HeldEdition(
     language = ASTERIX_1.language,
     pageCount = ASTERIX_1.pageCount,
     summary = ASTERIX_1.summary,
-    coverName = CoverName("9c56cc51b374c3ba189210d5b6d4bf57790d351c96c47c02190ecf1e430635ab"),
+    coverName = ASTERIX_1_COVER,
   ),
   copies = listOf(COPY_OF_ASTERIX_1),
 )

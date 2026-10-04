@@ -8,6 +8,7 @@ import fr.amory.libris.bibliography.domain.Contribution
 import fr.amory.libris.bibliography.domain.ContributionRole
 import fr.amory.libris.bibliography.domain.Kind
 import fr.amory.libris.bibliography.domain.SeriesEntry
+import fr.amory.libris.bibliography.domain.cover.CoverName
 import fr.amory.libris.bibliography.domain.edition.EditionId
 import fr.amory.libris.bibliography.domain.lookup.CoverCandidate
 import fr.amory.libris.bibliography.domain.lookup.EditionPreview
@@ -68,15 +69,16 @@ data class IsbnResponse(
   val copies: List<CopyResponse>) {
   companion object {
     fun from(held: Held, copies: List<CopyOnBookshelf>): IsbnResponse =
-      from(held.id, held.preview, copies)
+      from(held.id, held.preview, listOfNotNull(held.coverName?.let { CoverCandidateResponse.from(it) }), copies)
 
     fun from(found: Found, copies: List<CopyOnBookshelf>): IsbnResponse =
-      from(null, found.preview, copies).copy(
-        coverUrl = found.covers.firstOrNull()?.url,
-        covers = found.covers.map { CoverCandidateResponse.from(it) },
-      )
+      from(null, found.preview, found.covers.map { CoverCandidateResponse.from(it) }, copies)
 
-    private fun from(id: EditionId?, preview: EditionPreview, copies: List<CopyOnBookshelf>): IsbnResponse =
+    private fun from(
+      id: EditionId?,
+      preview: EditionPreview,
+      covers: List<CoverCandidateResponse>,
+      copies: List<CopyOnBookshelf>): IsbnResponse =
       IsbnResponse(
         id = id?.value?.toString(),
         isbn13 = preview.isbn.digits,
@@ -91,8 +93,8 @@ data class IsbnResponse(
         language = preview.language,
         pageCount = preview.pageCount,
         summary = preview.summary,
-        coverUrl = null,
-        covers = emptyList(),
+        coverUrl = covers.firstOrNull()?.url,
+        covers = covers,
         copies = copies.map { CopyResponse.from(it) },
       )
   }
@@ -122,6 +124,9 @@ data class CoverCandidateResponse(
   companion object {
     fun from(candidate: CoverCandidate): CoverCandidateResponse =
       CoverCandidateResponse(candidate.source.label, candidate.url)
+
+    fun from(name: CoverName): CoverCandidateResponse =
+      CoverCandidateResponse("Libris", coverPathOf(name))
   }
 }
 

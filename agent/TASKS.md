@@ -279,7 +279,7 @@ catalogue rows show a cover only once the worker has stored it (Tophe,
       Realises S5 on a stored cover; un-skips the backend test *S5 Libris
       serves a stored cover*.
 
-- [ ] T055 Backend: a held edition offers its own cover.
+- [x] T055 Backend: a held edition offers its own cover.
       For an ISBN the house holds, the lookup answers the edition's `id` and,
       once its picture is stored, one candidate named `Libris` at the cover
       operation's address, `coverUrl` the same; no source is asked for the

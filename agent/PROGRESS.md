@@ -723,3 +723,27 @@ Format:
   green with the clearing, red without it (1 request); restored skipped.
 - Decided with Tophe: keep the real fetch in the Given and clear the logs,
   rather than writing the picture and the edition's cover name by hand.
+
+## 2026-10-04 — T055 Backend: a held edition offers its own cover — done
+- Did: `Held` carries the edition's `coverName`; the ISBN answer offers it
+  as the one `Libris` candidate at the cover operation's address, and
+  `coverUrl` is the first candidate's url, set once in the shared `from`.
+  S10 *A held edition offers its own cover* un-skipped and green.
+- Decided: the address is `coverPathOf(CoverName)`, a top-level `internal`
+  function in its own file `CoverPath.kt` of `library.infrastructure.web`,
+  as `isbn13Of` sits in `Isbn13.kt`; `BookResponse.from` reads it too.
+- Decided: `ApiContractTest`'s held stub and the catalogue's edition share
+  one constant, `ASTERIX_1_COVER`, the name the catalogue already used.
+- Deviations from the brief: none.
+- Left over: the frontend's *Already there* card is T063. The path is
+  still spelled twice: `CoverController`'s mapping in
+  `bibliography.infrastructure.web` and `coverPathOf` in
+  `library.infrastructure.web`; the infrastructure rule forbids the
+  library's web from reading the bibliography's.
+- Reviewed by Tophe: the web layer is one adapter of one contract, split by
+  context only by the package rule. Decided with him, as a PR of its own
+  right after this one: every controller and DTO, and the whole of
+  `shared`, move to one package `fr.amory.libris.web`; `shared`
+  disappears, `RequestPrincipal` goes, `coverPathOf` sits beside
+  `CoverController`, and the package rules of ARCHITECTURE are rewritten
+  with him.
