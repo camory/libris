@@ -43,14 +43,15 @@ pull request the backend and frontend jobs run only when their directory or
 the workflow changed, and the images job builds the sides that ran. A job
 skips itself while its application does not exist.
 
-### D02 — Backend: Kotlin + Spring Boot, a hexagon per bounded context
+### D02 — Backend: Kotlin + Spring Boot, a hexagon per bounded context, one web adapter
 Spring Boot, Kotlin, JDK 25, one Gradle module. Persistence with
 **Spring JDBC** (`JdbcClient`, hand-written SQL; no Spring Data, no JPA, no
 Exposed, no jOOQ). Migrations with **Flyway**, SQL files, never `ddl-auto`.
 
 Packages under `fr.amory.libris`: one per bounded context, `bibliography`
 (what an edition is and where it is looked up) and `library` (who reads,
-and the bookshelves they keep), each with the same three layers.
+and the bookshelves they keep), each with the same layers, and `web`, the
+one HTTP adapter of both.
 - `<context>.domain` — aggregates as data classes, value types, domain rules,
   and the ports as plain Kotlin interfaces. Framework-free: no annotation, no
   framework type; the only library is the uuid generator of D11, used by the
@@ -67,15 +68,6 @@ and the bookshelves they keep), each with the same three layers.
 - `<context>.application` — use-case services and transaction boundaries,
   the latter through Spring's `TransactionOperations`. Depends on `domain`
   only.
-- `<context>.infrastructure.web` — controllers and request/response DTOs. A
-  controller sits in the context of the use case it calls: `CoverController`
-  calls the bibliography's `FindCover`, so it is the bibliography's. A
-  controller calls use cases and never a repository: a
-  read of one aggregate with no rule is still a use case of its own
-  (`FindDefaultBookshelf`), so the first rule that read gains lands in the
-  use case, not at the edge. `library.infrastructure.web` also holds
-  `ReaderPrincipal`, which answers the security chain of `shared` with the
-  reader `WelcomeReader` welcomes: the identity a request carries is a reader.
 - `<context>.infrastructure.persistence` — the port implementations over
   `JdbcClient`: the SQL of every insert, update, lookup, search and listing,
   and the row-to-aggregate mapping, which is the aggregate's constructor.
@@ -83,24 +75,34 @@ and the bookshelves they keep), each with the same three layers.
   which answer an edition, and the inventaire.io client, which answers a
   picture's address alone; Google Books later.
 
-Beside the contexts, `shared` holds what both use and neither owns, in the
-same layers: `shared.infrastructure.web` has the problem details of the API
-and the advice that answers them, and the security filter chain with the
-filter that reads the `Remote-*` headers. The chain asks for its principal
-through `RequestPrincipal`, an interface it declares and a context
-implements. It depends on no context.
+`web` holds the controllers and their request and response DTOs, for both
+contexts: the API is one contract (D04), and its answers join the two (an
+ISBN's answer is the bibliography's edition and the library's copies). It
+has one sub-package per path of the contract, named after it (`web.isbn`
+for `/api/v1/isbn/{isbn}`, `web.cover` for `/api/v1/covers/{name}`),
+holding that operation's controller with its requests and responses. A
+response another operation answers too is imported from the operation that
+declares it. Two sub-packages hold what every operation uses: `web.problem`,
+the problem details of the API and the advice that answers them, and
+`web.security`, the security filter chain with the filter that reads the
+`Remote-*` headers and asks `WelcomeReader` for the reader they name: the
+identity a request carries is a reader. A controller calls use cases and
+never a repository: a read of one aggregate with no rule is still a use
+case of its own (`FindDefaultBookshelf`), so the first rule that read gains
+lands in the use case, not at the edge.
 
 Enforced by ArchUnit rules in the test suite (see D07):
 1. `domain` depends only on the Kotlin/Java standard libraries and the uuid
    generator of D11.
 2. `application` depends only on `domain` (plus `@Service` and Spring's
    `TransactionOperations`, never `@Transactional`).
-3. `infrastructure.*` packages depend on `domain` and `application`, never
-   on each other, `shared` excepted.
-4. No cycles between contexts, and `bibliography` never depends on
-   `library`.
+3. The `infrastructure.*` packages of the contexts depend on `domain` and
+   `application`, never on each other.
+4. No cycles between the packages under `fr.amory.libris`, and
+   `bibliography` never depends on `library`.
 5. Ports declared in `domain` are implemented only in `infrastructure`.
-6. `shared` depends on no context.
+6. Every controller and controller advice sits in `web`, and no context
+   depends on `web`.
 
 Considered and rejected: Ktor and http4k (the human reviewer's fluency is the
 merge gate), Spring Modulith (over-engineering at this size), Spring Data
@@ -109,7 +111,10 @@ so a framework-free domain would carry a second persistence model and a
 mapper per aggregate, which is all the framework saved), jOOQ (typed SQL is
 the upgrade path if queries multiply; its code generator needs the migrated
 schema at build time, machinery this size does not justify), Exposed and
-SQLDelight (a second schema definition beside the Flyway files).
+SQLDelight (a second schema definition beside the Flyway files), a web
+package per context (until 2026-10-04: the API's answers join both contexts,
+so the library's web rendered the bibliography's types and could not reach
+the bibliography's paths).
 
 ### D03 — Database: PostgreSQL only
 PostgreSQL 18, nothing else. Search is one ranked SQL query over:
@@ -294,7 +299,7 @@ session, no BCrypt.
   `application` runs plain JUnit over the fakes of its ports. A value is
   tested where it is computed; a value only copied into a response gets no
   test, and the form of a value the API answers is the contract's to state,
-  by a `pattern` or a `format`. `infrastructure.web` is proven by the
+  by a `pattern` or a `format`. `web` is proven by the
   Contracteer test: the web slice, the package with its security chain on a
   real port and no datasource, over stubbed use cases. A stub matches
   exactly the arguments a scenario key fixes and answers any value its
@@ -469,11 +474,11 @@ deliberately lacks), no other service. A test that needs more blocks the task.
   query port of D12 does not, and is named by what it answers
   (`CatalogueEditions`): the suffix alone tells an aggregate's port from a
   read's.
-- A DTO of `infrastructure.web` maps itself, and the controller maps
+- A DTO of `web` maps itself, and the controller maps
   nothing. A response is built from the application's type by `from` on its
   companion (`BookResponse.from(held)`); a request turns itself into the
   application's type (`NewBookRequest.validate`). A mapping grown big or
-  complicated moves to a mapper of its own in `infrastructure.web`.
+  complicated moves to a mapper of its own in its operation's sub-package.
 - A member's visibility is what the type exposes: a private member is not
   made public for a new caller. A caller that needs what the private member
   does either goes through the public door (`Isbn.of`) or the type gains a

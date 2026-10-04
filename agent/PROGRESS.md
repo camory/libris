@@ -747,3 +747,20 @@ Format:
   disappears, `RequestPrincipal` goes, `coverPathOf` sits beside
   `CoverController`, and the package rules of ARCHITECTURE are rewritten
   with him.
+
+## 2026-10-04 — One web package, with Tophe
+- Did: every controller and DTO of both contexts, and the whole of
+  `shared`, live in `fr.amory.libris.web`, one sub-package per path of the
+  contract (`me`, `isbn`, `bookshelf`, `catalogue`, `cover`) and two for
+  what every operation uses (`problem`, `security`); `shared` is gone.
+- Decided: the identity filter calls `WelcomeReader` itself;
+  `RequestPrincipal`, `ReaderPrincipal` and its test go. `coverPathOf` and
+  the private `COVERS` sit in `CoverController.kt`, the mapping reads it.
+- Decided: `ArchitectureTest` gains *the controllers sit in the web* and
+  *the contexts know nothing of the web* (kept, though the cycles rule
+  already reds a context reading the web); the shared rule and its
+  exception go. D02's package section and rules rewritten, D07, D10 and the
+  tdd skill follow.
+- Left over: `bibliography.infrastructure.worker` is still missing from
+  D02's package list. `BookResponse` reads `web.isbn`'s author and series
+  responses and `web.me` reads `web.bookshelf`'s `BookshelfResponse`.
