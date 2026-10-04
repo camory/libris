@@ -1,5 +1,6 @@
 package fr.amory.libris.bibliography.domain.cover
 
+import fr.amory.libris.bibliography.fixture.coverOf
 import fr.amory.libris.bibliography.fixture.pictureOf
 import fr.amory.libris.bibliography.fixture.recordedBytes
 import io.kotest.matchers.shouldBe
@@ -46,7 +47,7 @@ class CoverTest {
   @Test
   fun `a picture taller than 600 is scaled to 600 tall, as JPEG`() {
     // Given
-    val cover = checkNotNull(Cover.of("image/png", pictureOf("png", 400, 1000, TYPE_INT_ARGB)))
+    val cover = coverOf("image/png", pictureOf("png", 400, 1000, TYPE_INT_ARGB))
 
     // When
     val normalised = cover.normalised()
@@ -62,7 +63,7 @@ class CoverTest {
   fun `a picture 600 tall is kept as fetched`() {
     // Given
     val bytes = pictureOf("png", 400, 600)
-    val cover = checkNotNull(Cover.of("image/png", bytes))
+    val cover = coverOf("image/png", bytes)
 
     // When
     val normalised = cover.normalised()
@@ -76,7 +77,7 @@ class CoverTest {
   fun `a picture the JDK reads no image from is kept as fetched`() {
     // Given
     val bytes = recordedBytes("covers/small.webp")
-    val cover = checkNotNull(Cover.of("image/webp", bytes))
+    val cover = coverOf("image/webp", bytes)
 
     // When
     val normalised = cover.normalised()
@@ -90,7 +91,7 @@ class CoverTest {
   fun `a picture the JDK fails to read is kept as fetched`() {
     // Given
     val bytes = recordedBytes("covers/tall.jpg").copyOf(200)
-    val cover = checkNotNull(Cover.of("image/jpeg", bytes))
+    val cover = coverOf("image/jpeg", bytes)
 
     // When
     val normalised = cover.normalised()
