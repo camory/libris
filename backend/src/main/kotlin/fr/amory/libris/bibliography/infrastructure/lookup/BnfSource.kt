@@ -78,12 +78,6 @@ private fun arkOf(controlField: String?): String? =
     ?.takeIf { it >= 0 }
     ?.let { controlField.substring(it) }
 
-private fun publicationOf(record: UnimarcRecord): UnimarcField? =
-  record.field("214", PUBLISHER_INDICATOR) ?: record.field("210")
-
-private fun nameOf(field: UnimarcField): String =
-  "${field.value("b").orEmpty()} ${field.value("a").orEmpty()}".trim()
-
 private fun coverAddress(coversUrl: String, ark: String): String =
   "$coversUrl?&appName=NE&idArk=$ark&couverture=1"
 
@@ -209,6 +203,12 @@ class BnfSource(baseUrl: String, private val coversUrl: String, timeout: Duratio
       }
   }
 }
+
+private fun publicationOf(record: UnimarcRecord): UnimarcField? =
+  record.field("214", PUBLISHER_INDICATOR) ?: record.field("210")
+
+private fun nameOf(field: UnimarcField): String =
+  "${field.value("b").orEmpty()} ${field.value("a").orEmpty()}".trim()
 
 private class UnimarcRecord(
   private val controls: List<Pair<String, String>>,
