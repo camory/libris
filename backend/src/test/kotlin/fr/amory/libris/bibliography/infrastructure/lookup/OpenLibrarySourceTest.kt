@@ -24,8 +24,8 @@ import java.time.Duration
 import java.time.Duration.ofMillis
 import java.time.Duration.ofSeconds
 
-class OpenLibraryEditionLookupTest {
-  private val source = OpenLibraryEditionLookup(server.baseUrl(), TIMEOUT)
+class OpenLibrarySourceTest {
+  private val source = OpenLibrarySource(server.baseUrl(), TIMEOUT)
 
   @AfterEach
   fun forgetTheStubs() {
@@ -225,7 +225,7 @@ class OpenLibraryEditionLookupTest {
     fun startWireMock() {
       server.start()
       openLibrary.knows(SPACE_WARS)
-      OpenLibraryEditionLookup(server.baseUrl(), WARM_UP_TIMEOUT).lookUp(isbnOf(SPACE_WARS))
+      OpenLibrarySource(server.baseUrl(), WARM_UP_TIMEOUT).lookUp(isbnOf(SPACE_WARS))
       server.resetAll()
     }
 

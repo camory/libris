@@ -25,7 +25,7 @@ private const val COVERS = "https://covers.openlibrary.org/b/isbn"
 private const val SEARCH_FIELDS = "key,author_name,edition_key"
 private val YEAR = Regex("\\d{4}")
 
-class OpenLibraryEditionLookup(baseUrl: String, timeout: Duration) : EditionLookup {
+class OpenLibrarySource(baseUrl: String, timeout: Duration) : EditionLookup {
   override val source = EditionSource.OPEN_LIBRARY
   private val http = sourceRestClient(baseUrl, timeout)
 
