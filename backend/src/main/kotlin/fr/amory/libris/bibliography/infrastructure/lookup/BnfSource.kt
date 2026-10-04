@@ -73,7 +73,7 @@ internal fun coverOf(controlField: String?): CoverCandidate? =
     ?.takeIf { it >= 0 }
     ?.let { CoverCandidate(CoverSource.BNF, COVER_BEFORE + controlField.substring(it) + COVER_AFTER) }
 
-class BnfEditionLookup(baseUrl: String, timeout: Duration) : EditionLookup {
+class BnfSource(baseUrl: String, timeout: Duration) : EditionLookup {
   override val source = EditionSource.BNF
   private val http = sourceRestClient(baseUrl, timeout)
 

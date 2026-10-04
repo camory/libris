@@ -29,8 +29,8 @@ import java.time.Duration
 import java.time.Duration.ofMillis
 import java.time.Duration.ofSeconds
 
-class BnfEditionLookupTest {
-  private val source = BnfEditionLookup(server.baseUrl() + SRU, TIMEOUT)
+class BnfSourceTest {
+  private val source = BnfSource(server.baseUrl() + SRU, TIMEOUT)
 
   @AfterEach
   fun forgetTheStubs() {
@@ -444,7 +444,7 @@ class BnfEditionLookupTest {
     fun startWireMock() {
       server.start()
       bnf.knows(ONE_PIECE)
-      BnfEditionLookup(server.baseUrl() + SRU, WARM_UP_TIMEOUT).lookUp(isbnOf(ONE_PIECE))
+      BnfSource(server.baseUrl() + SRU, WARM_UP_TIMEOUT).lookUp(isbnOf(ONE_PIECE))
       server.resetAll()
     }
 
