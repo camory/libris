@@ -1,5 +1,6 @@
 package fr.amory.libris.library.application
 
+import fr.amory.libris.bibliography.application.cover.CoverWorker
 import fr.amory.libris.bibliography.domain.cover.AwaitedCover
 import fr.amory.libris.bibliography.domain.cover.AwaitedCoverRepository
 import fr.amory.libris.bibliography.domain.cover.CoverSource
@@ -25,7 +26,8 @@ class AddBookToBookshelf(
   private val awaitedCovers: AwaitedCoverRepository,
   private val copies: CopyRepository,
   private val bookshelves: BookshelfRepository,
-  private val transactions: TransactionOperations) {
+  private val transactions: TransactionOperations,
+  private val coverWorker: CoverWorker) {
   operator fun invoke(readerId: ReaderId, bookshelfId: BookshelfId, book: NewBook): AddBookResult {
     val bookshelf = bookshelves.findById(bookshelfId)?.takeIf { it.hasMember(readerId) }
     return when {
@@ -43,6 +45,7 @@ class AddBookToBookshelf(
       if (heldEdition == null) insert(edition, book.coverSource)
       copies.insert(copy)
     }
+    coverWorker.wake()
     return Added(copy, bookshelf)
   }
 

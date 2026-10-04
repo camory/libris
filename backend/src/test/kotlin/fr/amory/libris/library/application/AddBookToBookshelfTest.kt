@@ -10,6 +10,7 @@ import fr.amory.libris.bibliography.domain.cover.CoverSource.INVENTAIRE
 import fr.amory.libris.bibliography.domain.cover.CoverSource.OPEN_LIBRARY
 import fr.amory.libris.bibliography.domain.edition.Edition
 import fr.amory.libris.bibliography.fixture.AwaitedCoversInMemory
+import fr.amory.libris.bibliography.fixture.CoverWorkerObserving
 import fr.amory.libris.bibliography.fixture.EditionsInMemory
 import fr.amory.libris.bibliography.fixture.isbnOf
 import fr.amory.libris.fixture.Transaction
@@ -37,8 +38,9 @@ class AddBookToBookshelfTest {
   private val awaitedCovers = AwaitedCoversInMemory()
   private val copies = CopiesInMemory()
   private val bookshelves = BookshelvesInMemory()
+  private val coverWorker = CoverWorkerObserving {}
   private val addBookToBookshelf =
-    AddBookToBookshelf(editions, awaitedCovers, copies, bookshelves, withoutTransaction())
+    AddBookToBookshelf(editions, awaitedCovers, copies, bookshelves, withoutTransaction(), coverWorker)
 
   @Test
   fun `the house lacking the ISBN gains the edition and the copy`() {
@@ -250,13 +252,62 @@ class AddBookToBookshelfTest {
     val transactions = TransactionsObserving {
       Triple(editions.stored.size, awaitedCovers.stored.size, copies.stored.size)
     }
-    val addBookToBookshelf = AddBookToBookshelf(editions, awaitedCovers, copies, bookshelves, transactions)
+    val addBookToBookshelf = AddBookToBookshelf(editions, awaitedCovers, copies, bookshelves, transactions, coverWorker)
 
     // When
     addBookToBookshelf(lea.id, bookshelf.id, onePieceTomeOne())
 
     // Then
     transactions.recorded shouldBe listOf(Transaction(before = Triple(0, 0, 0), after = Triple(1, 1, 1)))
+  }
+
+  @Test
+  fun `an added ouvrage wakes the worker`() {
+    // Given
+    val lea = readerNamed("lea", "Léa")
+    val bookshelf = bookshelfOwnedBy(lea)
+    bookshelves.insert(bookshelf)
+
+    // When
+    addBookToBookshelf(lea.id, bookshelf.id, onePieceTomeOne())
+
+    // Then
+    coverWorker.wakings.size shouldBe 1
+  }
+
+  @Test
+  fun `the worker is woken after the add's transaction`() {
+    // Given
+    val lea = readerNamed("lea", "Léa")
+    val bookshelf = bookshelfOwnedBy(lea)
+    bookshelves.insert(bookshelf)
+    val transactions = TransactionsObserving {}
+    val coverWorker = CoverWorkerObserving { transactions.recorded.size }
+    val addBookToBookshelf = AddBookToBookshelf(editions, awaitedCovers, copies, bookshelves, transactions, coverWorker)
+
+    // When
+    addBookToBookshelf(lea.id, bookshelf.id, onePieceTomeOne())
+
+    // Then
+    coverWorker.wakings shouldBe listOf(1)
+  }
+
+  @Test
+  fun `a refused add wakes no worker`() {
+    // Given
+    val lea = readerNamed("lea", "Léa")
+    val juliette = readerNamed("juliette", "Juliette")
+    val leasBookshelf = bookshelfOwnedBy(lea).let {
+      it.copy(memberships = it.memberships + Membership(juliette.id, VIEWER))
+    }
+    bookshelves.insert(leasBookshelf)
+
+    // When
+    val result = addBookToBookshelf(juliette.id, leasBookshelf.id, onePieceTomeOne())
+
+    // Then
+    result shouldBe NotAnOwner
+    coverWorker.wakings.shouldBeEmpty()
   }
 
   private fun onePieceTomeOne(): NewBook =
