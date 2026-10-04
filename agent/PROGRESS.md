@@ -702,5 +702,9 @@ Format:
   source it serves as `EditionLookup.source` does; one catch-all at the
   source boundary rather than lists that miss the next unknown type. The
   diary entry above on Open Library's catches is superseded.
+- Did, second ask: the lookup's Open Library candidate is built on the
+  covers setting too, the fetch's address, and the `COVERS` constant is
+  gone; *S5 Merged answer, from Open Library alone* and two
+  `OpenLibrarySourceTest` expectations now read the stub's address.
 - Left over: the BnF and Open Library lookups keep their lists
   (`agent/PROPOSED.md`).

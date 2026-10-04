@@ -341,12 +341,12 @@ Read whole by a run that changes `backend/`, after `every-run.md`.
   one-second timeout after its case); an add with no chosen source, or the
   BnF's, asks no source. `CoverWorkerObserving`, in
   `bibliography.fixture`, records what its `observe` answers at each waking.
-- Open Library's fetch asks `libris.sources.open-library-covers-url`
-  (`LIBRIS_OPEN_LIBRARY_COVERS_URL`, the stub's `/b/isbn` in the scenarios),
-  while its lookup's candidate keeps the public `covers.openlibrary.org`
-  address, which *S5 Merged answer, from Open Library alone* asserts.
-  `?default=false` makes Open Library answer `404` for a missing cover
-  instead of a blank picture.
+- Open Library's fetch and its lookup's candidate both build on
+  `libris.sources.open-library-covers-url` (`LIBRIS_OPEN_LIBRARY_COVERS_URL`,
+  the stub's `/b/isbn` in the scenarios), so *S5 Merged answer, from Open
+  Library alone* expects the stub's address in `coverUrl`, never
+  `covers.openlibrary.org`. `?default=false` makes Open Library answer `404`
+  for a missing cover instead of a blank picture.
 - `LookupAnswering`, in `bibliography.fixture`, records the ISBNs it was asked
   and answers them as `asked`, so a case proves a source was never called with
   `source.asked shouldBe emptyList()`.
