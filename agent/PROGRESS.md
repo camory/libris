@@ -690,3 +690,17 @@ Format:
   same list of fetches; the D02 sentence on `bibliography.infrastructure.
   lookup` is proposed in the PR, Tophe's to settle; `BnfEditionLookup`
   keeps its name until its fetch (`agent/PROPOSED.md`).
+
+## 2026-10-04 — T054 fixed up with Tophe
+- Did: `OpenLibrarySource.fetch` let `InvalidMediaTypeException` out on a
+  malformed `Content-Type`, which stopped `FetchAwaitedCovers` before the
+  awaited covers after it; a case reds it. Every cover fetch and
+  inventaire.io's lookup now read through `nullOnFailure` of
+  `SourceHttp.kt`, one catch of `Exception` answering `null`, in place of
+  each adapter's list of exceptions.
+- Decided with Tophe: `CoverFetch.coverSource` stays, the adapter naming the
+  source it serves as `EditionLookup.source` does; one catch-all at the
+  source boundary rather than lists that miss the next unknown type. The
+  diary entry above on Open Library's catches is superseded.
+- Left over: the BnF and Open Library lookups keep their lists
+  (`agent/PROPOSED.md`).

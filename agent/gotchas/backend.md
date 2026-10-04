@@ -219,8 +219,10 @@ Read whole by a run that changes `backend/`, after `every-run.md`.
   an `IllegalArgumentException`, not a `RestClientException`. `uri(String)`
   reads its address as a URI template, so an address built from a source's
   answer throws an `IllegalArgumentException` on `{x}` or `50%zz`.
-  `InventaireSource` catches both beside `RestClientException`; the
-  other source adapters do not. An empty body is read as no body, `null`,
+  A cover fetch and inventaire.io's lookup read through `nullOnFailure`, in
+  `SourceHttp.kt`, which answers `null` on any `Exception`; the BnF and Open
+  Library lookups tell a miss (`NotFound`) from a failure with catches of
+  their own, which leave both out. An empty body is read as no body, `null`,
   never as an empty array.
 - WireMock serves the most recently added matching stub, so
   `OpenLibraryStubs.answers("/search.json", body)` called after `knows(isbn)`

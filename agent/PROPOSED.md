@@ -387,3 +387,10 @@
   version, and whether it also lifts the cleared `jdkHome` on JDK 25 (found
   2026-10-04 measuring the configuration cache with Tophe, traced with
   `--warning-mode all -Dorg.gradle.deprecation.trace=true`).
+- Backend: the BnF and Open Library lookups catch `NotFound` for a miss and
+  a list of exceptions for a failure (`RestClientException`, `SAXException`,
+  `JsonNodeException`), so an answer with a malformed `Content-Type` throws
+  `InvalidMediaTypeException` out of `lookUp`, past what `Failed` means.
+  Their failure branch could go through `nullOnFailure`'s catch-all as the
+  fetches do, `NotFound` still first (found 2026-10-04 fixing up T054 with
+  Tophe, not measured on the lookups).
