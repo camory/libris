@@ -201,6 +201,18 @@ class OpenLibrarySourceTest {
     cover.bytes shouldBe TALL_JPEG
   }
 
+  @Test
+  fun `fetching a cover asks for the cover once, with no default picture, and nothing else`() {
+    // Given
+    openLibrary.hasCover(SPACE_WARS, TALL_JPEG)
+
+    // When
+    source.fetch(isbnOf(SPACE_WARS))
+
+    // Then
+    server.allServeEvents.map { it.request.url } shouldBe listOf("/b/isbn/$SPACE_WARS-L.jpg?default=false")
+  }
+
   private companion object {
     const val SPACE_WARS = "9782380751673"
     const val MONTE_CRISTO = "9782253098058"

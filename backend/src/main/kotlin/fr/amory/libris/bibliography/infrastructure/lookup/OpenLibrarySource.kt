@@ -46,7 +46,7 @@ class OpenLibrarySource(baseUrl: String, private val coversUrl: String, timeout:
   override fun fetch(isbn: Isbn): Cover? {
     val answer = http
       .get()
-      .uri("$coversUrl/${isbn.digits}-L.jpg")
+      .uri("$coversUrl/${isbn.digits}-L.jpg?default=false")
       .retrieve()
       .toEntity<ByteArray>()
     return answer.body?.let { bytes -> answer.headers.contentType?.let { Cover.of(it.toString(), bytes) } }
