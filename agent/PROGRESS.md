@@ -827,3 +827,11 @@ Format:
   than stubbing inventaire.io for the cascade, which would be red on
   `main` until T057; the page count leaves the fixture to stay within
   detekt's parameter limit.
+
+## 2026-10-04 — T057 Backend: the cascade for an edition with no chosen source — handoff
+- Done: steps 1–9 of the test plan, one commit each; start with step 10 (`FetchAwaitedCoversTest`, the cascade past a source with no picture; green on arrival is likely, its mutation then asks the first fetch alone).
+- Blocker for Tophe: *S7 …, none has it* reds at `defaultBookshelfOf` (`Status expected:<200 OK> but was:<400 BAD_REQUEST>`), before its When. Spring Security's `StrictHttpFirewall` refuses `Remote-Name: Ève`: the UTF-8 bytes of `È` (`C3 88`), read as ISO-8859-1, hold U+0088, a control character (`É`, `À`, `Ç` likewise; `é` passes). Proven by a throwaway `StrictHttpFirewall` bean with `setAllowedHeaderValues { true }`: the case then reaches the brief's red, `still not true after 5s`. Which header values the chain admits is a `web.security` decision no document makes.
+- Guards: step 6, dropping `&couverture=1` reds it with `IllegalStateException: No value for couverture`; step 8, asking the covers address with an empty `idArk` when there is no record reds it with `Expected value to be null, but was …Cover@…`. Both reverted.
+- Deviation: step 5 moved `nameOf` and `publicationOf` out of `BnfSource` to file-level private functions: `fetch` and `pictureOf` would push the class to 12 functions, over detekt's `TooManyFunctions` (11).
+- Decided: the public candidate and the fetch share `coverAddress(coversUrl, ark)` and `arkOf`; the candidate keeps `https://catalogue.bnf.fr/couverture`.
+- Left: steps 10–13 and the gotchas/PROPOSED edits the brief lists.
