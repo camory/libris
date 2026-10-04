@@ -764,3 +764,22 @@ Format:
 - Left over: `bibliography.infrastructure.worker` is still missing from
   D02's package list. `BookResponse` reads `web.isbn`'s author and series
   responses and `web.me` reads `web.bookshelf`'s `BookshelfResponse`.
+
+## 2026-10-04 — T056 Backend: the picture is normalised — done
+- Did: `Cover.normalised()` scales a picture taller than 600 to 600 tall,
+  its proportions kept, as JPEG, and keeps any other as fetched, a picture
+  the JDK cannot read included; `FetchAwaitedCovers` stores the normalised
+  cover. S6, both cases, un-skipped and green.
+- Decided: the scaled width is `width * 600 / height`, integer division,
+  and the drawing is bicubic over an RGB image (no alpha, so `ImageIO`
+  writes the JPEG); the writer's default quality is kept.
+- Decided: the failure caught is `IIOException`, the one the broken JPEG
+  of step 6 throws; nothing broader, since no case motivates it.
+- Decided: the fixture's `pictureOf(format, width, height, type)` takes the
+  image type, `TYPE_INT_RGB` by default, so CoverTest's alpha channel reads
+  in the case, and checks what `ImageIO.write` answers.
+- Deviations from the brief: none.
+- Left over: a picture more than 600 times taller than wide scales to a
+  width of 0 and throws (`agent/PROPOSED.md`); D02's rule 1 naming the
+  JDK's image libraries is proposed in the PR, Tophe's to settle.
+

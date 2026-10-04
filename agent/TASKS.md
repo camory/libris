@@ -287,7 +287,7 @@ catalogue rows show a cover only once the worker has stored it (Tophe,
       `id` and no candidate (D11). Realises S10; un-skips the backend test
       *S10 A held edition offers its own cover*.
 
-- [ ] T056 Backend: the picture is normalised.
+- [x] T056 Backend: the picture is normalised.
       Before it is stored, a fetched picture taller than 600 pixels is scaled
       to 600 tall, its proportions kept, and encoded as JPEG; one 600 tall or
       less is kept as fetched, in its own format, its bytes unchanged.

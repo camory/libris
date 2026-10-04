@@ -394,3 +394,9 @@
   Their failure branch could go through `nullOnFailure`'s catch-all as the
   fetches do, `NotFound` still first (found 2026-10-04 fixing up T054 with
   Tophe, not measured on the lookups).
+- 2026-10-04 — `Cover.normalised()` computes the scaled width as
+  `width * 600 / height`, which is 0 for a picture more than 600 times
+  taller than wide (1×1201): `BufferedImage` then throws
+  `IllegalArgumentException` out of `FetchAwaitedCovers`' run. A width of
+  at least 1, or keeping such a picture as fetched, is a decision for the
+  spec (found in T056's self-review, not measured).
