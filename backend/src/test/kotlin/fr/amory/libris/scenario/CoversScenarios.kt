@@ -308,9 +308,7 @@ class CoversScenarios @Autowired constructor(
   fun `S10 A held edition offers its own cover`() {
     // Given
     val iris = reader("iris", "Iris")
-    openLibrary.hasCover(ONE_PIECE_1, TALL_JPEG)
-    add(iris, defaultBookshelfOf(iris), onePiece1(coverSource = "Open Library")).expectStatus().isCreated()
-    val cover = awaitCover(iris, ONE_PIECE_1)
+    val cover = aStoredCover(iris, ONE_PIECE_1)
 
     // When
     val response = ask(iris, ONE_PIECE_1)
@@ -387,6 +385,15 @@ class CoversScenarios @Autowired constructor(
       bodyOf(catalogue(reader).expectStatus().isOk()),
       "$.books[?(@.isbn13 == '$isbn')].coverUrl",
     ).single()
+
+  private fun aStoredCover(reader: Map<String, List<String>>, isbn: String): String {
+    openLibrary.hasCover(isbn, TALL_JPEG)
+    add(reader, defaultBookshelfOf(reader), onePiece(isbn, "Romance dawn", 1, "Open Library"))
+      .expectStatus().isCreated()
+    val cover = awaitCover(reader, isbn)
+    sources.forEach { it.resetRequests() }
+    return cover
+  }
 
   private fun awaitCover(reader: Map<String, List<String>>, isbn: String): String {
     await { coverOf(reader, isbn) != null }
