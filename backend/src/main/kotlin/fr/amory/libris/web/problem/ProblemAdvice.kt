@@ -1,4 +1,4 @@
-package fr.amory.libris.shared.infrastructure.web
+package fr.amory.libris.web.problem
 
 import org.springframework.beans.TypeMismatchException
 import org.springframework.http.HttpStatus.BAD_REQUEST

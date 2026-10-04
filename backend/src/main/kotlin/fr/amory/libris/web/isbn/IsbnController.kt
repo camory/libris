@@ -1,4 +1,4 @@
-package fr.amory.libris.library.infrastructure.web
+package fr.amory.libris.web.isbn
 
 import fr.amory.libris.bibliography.application.lookup.EditionLookupResult.Found
 import fr.amory.libris.bibliography.application.lookup.EditionLookupResult.Held
@@ -15,11 +15,13 @@ import fr.amory.libris.bibliography.domain.lookup.EditionPreview
 import fr.amory.libris.library.application.lookup.CopyOnBookshelf
 import fr.amory.libris.library.application.lookup.LookupIsbnForReader
 import fr.amory.libris.library.domain.reader.Reader
-import fr.amory.libris.shared.infrastructure.web.NOT_FOUND_PROBLEM
-import fr.amory.libris.shared.infrastructure.web.VALIDATION_PROBLEM
-import fr.amory.libris.shared.infrastructure.web.ValidationErrorResponse
-import fr.amory.libris.shared.infrastructure.web.asResponse
-import fr.amory.libris.shared.infrastructure.web.problem
+import fr.amory.libris.web.bookshelf.CopyResponse
+import fr.amory.libris.web.cover.coverPathOf
+import fr.amory.libris.web.problem.NOT_FOUND_PROBLEM
+import fr.amory.libris.web.problem.VALIDATION_PROBLEM
+import fr.amory.libris.web.problem.ValidationErrorResponse
+import fr.amory.libris.web.problem.asResponse
+import fr.amory.libris.web.problem.problem
 import org.springframework.http.HttpStatus.BAD_REQUEST
 import org.springframework.http.HttpStatus.NOT_FOUND
 import org.springframework.http.HttpStatus.SERVICE_UNAVAILABLE

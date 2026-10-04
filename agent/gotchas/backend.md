@@ -76,6 +76,10 @@ Read whole by a run that changes `backend/`, after `every-run.md`.
   own line above the class, since an annotation inside
   `class X @Suppress(...) @Autowired constructor(` trips
   `AnnotationOnSeparateLine`.
+- A class moved to another package leaves its old `.class` in
+  `build/classes`: every context boot then fails with
+  `ConflictingBeanDefinitionException` on two beans of one name. Run
+  `./gradlew clean` after a move.
 - `check` also runs `jar`, which writes a `-plain.jar` beside the boot jar
   in `build/libs`; the image's build stage runs `bootJar` only.
 - A named volume mounted where the image has no directory is root-owned, so
@@ -98,12 +102,9 @@ Read whole by a run that changes `backend/`, after `every-run.md`.
   `@SpringBootTest` with explicit `classes` does not detect nested
   `@TestConfiguration` classes: `@Import` them.
 - The web slice (`@WebSliceTest`, in the `fixture` package) component-scans
-  the packages of `MeController`, `CoverController` and `ProblemAdvice`
-  (`library.infrastructure.web`, `bibliography.infrastructure.web`,
-  `shared.infrastructure.web`), so every use case a controller of them
-  takes must be in the class-level `@MockitoBean(types = [...])` of every
-  web-slice test, not only the one
-  exercised. Its `WebSliceConfiguration` cannot live in the root test
+  `fr.amory.libris.web`, so every use case a controller there takes must be
+  in the class-level `@MockitoBean(types = [...])` of every web-slice test,
+  not only the one exercised. Its `WebSliceConfiguration` cannot live in the root test
   package: a `@SpringBootTest` without `classes` looks for one
   `@SpringBootConfiguration` in the test's own package and finds two there,
   `@TestComponent` notwithstanding. Mockito stubs a method taking a value

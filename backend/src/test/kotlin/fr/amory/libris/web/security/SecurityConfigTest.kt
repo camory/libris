@@ -1,11 +1,13 @@
-package fr.amory.libris.shared.infrastructure.web
+package fr.amory.libris.web.security
 
 import fr.amory.libris.bibliography.application.cover.FindCover
 import fr.amory.libris.fixture.WebSliceTest
 import fr.amory.libris.library.application.AddBookToBookshelf
 import fr.amory.libris.library.application.FindDefaultBookshelf
+import fr.amory.libris.library.application.WelcomeReader
 import fr.amory.libris.library.application.catalogue.BrowseCatalogue
 import fr.amory.libris.library.application.lookup.LookupIsbnForReader
+import fr.amory.libris.library.fixture.readerNamed
 import org.junit.jupiter.api.Test
 import org.mockito.BDDMockito.given
 import org.springframework.beans.factory.annotation.Autowired
@@ -16,7 +18,7 @@ import org.springframework.test.web.servlet.client.RestTestClient
 @WebSliceTest
 @MockitoBean(
   types = [
-    RequestPrincipal::class,
+    WelcomeReader::class,
     LookupIsbnForReader::class,
     FindDefaultBookshelf::class,
     AddBookToBookshelf::class,
@@ -26,7 +28,7 @@ import org.springframework.test.web.servlet.client.RestTestClient
 )
 class SecurityConfigTest @Autowired constructor(
   private val client: RestTestClient,
-  private val requestPrincipal: RequestPrincipal) {
+  private val welcomeReader: WelcomeReader) {
   @Test
   fun `a request without the identity headers is refused`() {
     client.get()
@@ -84,7 +86,7 @@ class SecurityConfigTest @Autowired constructor(
   @Test
   fun `a write carrying the X-Requested-With header reaches the application`() {
     // Given
-    given(requestPrincipal.of("tophe", "tophe@amory.fr", "Tophe")).willReturn("tophe")
+    given(welcomeReader("tophe", "tophe@amory.fr", "Tophe")).willReturn(readerNamed("tophe", "Tophe"))
 
     // When, Then
     client.post()

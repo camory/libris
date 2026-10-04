@@ -1,11 +1,12 @@
-package fr.amory.libris.library.infrastructure.web
+package fr.amory.libris.web.me
 
 import fr.amory.libris.library.application.FindDefaultBookshelf
 import fr.amory.libris.library.domain.bookshelf.Bookshelf
 import fr.amory.libris.library.domain.reader.Reader
-import fr.amory.libris.library.infrastructure.web.Role.ADMIN
-import fr.amory.libris.library.infrastructure.web.Role.READER
-import fr.amory.libris.shared.infrastructure.web.ADMIN_AUTHORITY
+import fr.amory.libris.web.bookshelf.BookshelfResponse
+import fr.amory.libris.web.me.Role.ADMIN
+import fr.amory.libris.web.me.Role.READER
+import fr.amory.libris.web.security.ADMIN_AUTHORITY
 import org.springframework.security.core.Authentication
 import org.springframework.security.core.GrantedAuthority
 import org.springframework.security.core.annotation.AuthenticationPrincipal

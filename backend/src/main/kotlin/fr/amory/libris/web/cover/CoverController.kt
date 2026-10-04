@@ -1,13 +1,13 @@
-package fr.amory.libris.bibliography.infrastructure.web
+package fr.amory.libris.web.cover
 
 import fr.amory.libris.bibliography.application.cover.FindCover
 import fr.amory.libris.bibliography.domain.cover.Cover
 import fr.amory.libris.bibliography.domain.cover.CoverName
-import fr.amory.libris.shared.infrastructure.web.NOT_FOUND_PROBLEM
-import fr.amory.libris.shared.infrastructure.web.VALIDATION_PROBLEM
-import fr.amory.libris.shared.infrastructure.web.ValidationErrorResponse
-import fr.amory.libris.shared.infrastructure.web.asResponse
-import fr.amory.libris.shared.infrastructure.web.problem
+import fr.amory.libris.web.problem.NOT_FOUND_PROBLEM
+import fr.amory.libris.web.problem.VALIDATION_PROBLEM
+import fr.amory.libris.web.problem.ValidationErrorResponse
+import fr.amory.libris.web.problem.asResponse
+import fr.amory.libris.web.problem.problem
 import org.springframework.http.HttpHeaders.CACHE_CONTROL
 import org.springframework.http.HttpStatus.BAD_REQUEST
 import org.springframework.http.HttpStatus.NOT_FOUND
@@ -20,7 +20,7 @@ import org.springframework.web.bind.annotation.RestController
 
 @RestController
 class CoverController(private val findCover: FindCover) {
-  @GetMapping("/api/v1/covers/{name}")
+  @GetMapping("$COVERS/{name}")
   fun cover(@PathVariable("name") name: String): ResponseEntity<Any> {
     val coverName = CoverName.of(name) ?: return notACoverName().asResponse()
     return findCover(coverName)?.let(::pictureOf) ?: problem(NOT_FOUND, NOT_FOUND_PROBLEM).asResponse()
@@ -39,4 +39,8 @@ class CoverController(private val findCover: FindCover) {
       .body(cover.bytes)
 }
 
+internal fun coverPathOf(name: CoverName): String =
+  "$COVERS/${name.value}"
+
+private const val COVERS = "/api/v1/covers"
 private const val KEPT_A_YEAR = "public, max-age=31536000, immutable"

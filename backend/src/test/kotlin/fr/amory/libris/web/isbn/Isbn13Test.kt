@@ -1,4 +1,4 @@
-package fr.amory.libris.library.infrastructure.web
+package fr.amory.libris.web.isbn
 
 import io.kotest.matchers.shouldBe
 import org.junit.jupiter.api.Test

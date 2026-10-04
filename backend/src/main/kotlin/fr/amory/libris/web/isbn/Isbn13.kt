@@ -1,4 +1,4 @@
-package fr.amory.libris.library.infrastructure.web
+package fr.amory.libris.web.isbn
 
 import fr.amory.libris.bibliography.domain.Isbn
 

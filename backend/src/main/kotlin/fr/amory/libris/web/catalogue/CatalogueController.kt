@@ -1,4 +1,4 @@
-package fr.amory.libris.library.infrastructure.web
+package fr.amory.libris.web.catalogue
 
 import fr.amory.libris.bibliography.domain.Kind
 import fr.amory.libris.bibliography.domain.edition.EditionId
@@ -6,6 +6,10 @@ import fr.amory.libris.library.application.catalogue.BrowseCatalogue
 import fr.amory.libris.library.application.catalogue.CataloguePage
 import fr.amory.libris.library.application.catalogue.HeldEdition
 import fr.amory.libris.library.domain.reader.Reader
+import fr.amory.libris.web.bookshelf.CopyResponse
+import fr.amory.libris.web.cover.coverPathOf
+import fr.amory.libris.web.isbn.IsbnAuthorResponse
+import fr.amory.libris.web.isbn.IsbnSeriesResponse
 import org.springframework.security.core.annotation.AuthenticationPrincipal
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.RequestParam
