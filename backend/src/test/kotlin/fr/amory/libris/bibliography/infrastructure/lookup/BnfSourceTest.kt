@@ -21,6 +21,7 @@ import fr.amory.libris.bibliography.domain.lookup.EditionSourceAnswer.NothingKno
 import fr.amory.libris.bibliography.fixture.BnfStubs
 import fr.amory.libris.bibliography.fixture.isbnOf
 import fr.amory.libris.bibliography.fixture.recordedBytes
+import io.kotest.matchers.nulls.shouldBeNull
 import io.kotest.matchers.nulls.shouldNotBeNull
 import io.kotest.matchers.shouldBe
 import org.junit.jupiter.api.AfterAll
@@ -379,6 +380,19 @@ class BnfSourceTest {
     picture.queryParameter("appName").values() shouldBe listOf("NE")
     picture.queryParameter("idArk").values() shouldBe listOf("ark:/12148/cb486302521")
     picture.queryParameter("couverture").values() shouldBe listOf("1")
+  }
+
+  @Test
+  fun `a picture the BnF fails to serve is no cover`() {
+    // Given
+    bnf.knows(NERONIA)
+    bnf.hasNoCover()
+
+    // When
+    val cover = source.fetch(isbnOf(NERONIA))
+
+    // Then
+    cover.shouldBeNull()
   }
 
   private companion object {

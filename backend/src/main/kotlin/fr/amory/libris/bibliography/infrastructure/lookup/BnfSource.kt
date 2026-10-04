@@ -102,9 +102,11 @@ class BnfSource(baseUrl: String, private val coversUrl: String, timeout: Duratio
     }
 
   override fun fetch(isbn: Isbn): Cover? =
-    recordIn(search(isbn))
-      ?.let { arkOf(it.control("003")) }
-      ?.let { pictureOf(it) }
+    nullOnFailure {
+      recordIn(search(isbn))
+        ?.let { arkOf(it.control("003")) }
+        ?.let { pictureOf(it) }
+    }
 
   private fun pictureOf(ark: String): Cover? {
     val answer = http
