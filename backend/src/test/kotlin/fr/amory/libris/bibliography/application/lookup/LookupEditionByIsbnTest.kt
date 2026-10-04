@@ -6,6 +6,7 @@ import fr.amory.libris.bibliography.application.lookup.EditionLookupResult.Sourc
 import fr.amory.libris.bibliography.application.lookup.EditionLookupResult.UnknownIsbn
 import fr.amory.libris.bibliography.domain.Contributions
 import fr.amory.libris.bibliography.domain.Kind.MANGA
+import fr.amory.libris.bibliography.domain.cover.CoverName
 import fr.amory.libris.bibliography.domain.cover.CoverSource
 import fr.amory.libris.bibliography.domain.cover.CoverSource.INVENTAIRE
 import fr.amory.libris.bibliography.domain.edition.Edition
@@ -48,6 +49,8 @@ private val ROMANCE_DAWN = Edition(
 
 private val NO_COVER = CoverCandidates.of(emptyList())
 
+private val ROMANCE_DAWN_COVER = CoverName("9c56cc51b374c3ba189210d5b6d4bf57790d351c96c47c02190ecf1e430635ab")
+
 class LookupEditionByIsbnTest {
   @Test
   fun `an ISBN the house holds is answered as the house holds it, without asking the sources`() {
@@ -64,7 +67,28 @@ class LookupEditionByIsbnTest {
     val result = lookupEditionByIsbn(isbnOf("9782723488525"))
 
     // Then
-    result shouldBe Held(ROMANCE_DAWN.id, checkNotNull(EditionPreview.of(ROMANCE_DAWN)))
+    result shouldBe Held(ROMANCE_DAWN.id, checkNotNull(EditionPreview.of(ROMANCE_DAWN)), null)
+    source.asked shouldBe emptyList()
+    coverLookup.asked shouldBe emptyList()
+  }
+
+  @Test
+  fun `an ISBN the house holds is answered with the name of its stored cover`() {
+    // Given
+    val source = LookupAnswering(Known(A_PREVIEW, null))
+    val coverLookup = CoverLookupAnswering(CoverCandidate(INVENTAIRE, "https://inventaire/c"))
+    val romanceDawn = ROMANCE_DAWN.copy(coverName = ROMANCE_DAWN_COVER)
+    val lookupEditionByIsbn = LookupEditionByIsbn(
+      EditionsInMemory().also { it.insert(romanceDawn) },
+      listOf(source),
+      coverLookup,
+    )
+
+    // When
+    val result = lookupEditionByIsbn(isbnOf("9782723488525"))
+
+    // Then
+    result shouldBe Held(ROMANCE_DAWN.id, checkNotNull(EditionPreview.of(romanceDawn)), ROMANCE_DAWN_COVER)
     source.asked shouldBe emptyList()
     coverLookup.asked shouldBe emptyList()
   }

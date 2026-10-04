@@ -30,7 +30,7 @@ class LookupEditionByIsbn(
     editions.findByIsbn(isbn)?.let(::held) ?: askTheSources(isbn)
 
   private fun held(edition: Edition): Held? =
-    EditionPreview.of(edition)?.let { Held(edition.id, it) }
+    EditionPreview.of(edition)?.let { Held(edition.id, it, edition.coverName) }
 
   private fun askTheSources(isbn: Isbn): EditionLookupResult =
     newVirtualThreadPerTaskExecutor().use { executor ->
