@@ -723,3 +723,16 @@ Format:
   green with the clearing, red without it (1 request); restored skipped.
 - Decided with Tophe: keep the real fetch in the Given and clear the logs,
   rather than writing the picture and the edition's cover name by hand.
+
+## 2026-10-04 — T055 Backend: a held edition offers its own cover — done
+- Did: `Held` carries the edition's `coverName`; the ISBN answer offers it
+  as the one `Libris` candidate at the cover operation's address, and
+  `coverUrl` is the first candidate's url, set once in the shared `from`.
+  S10 *A held edition offers its own cover* un-skipped and green.
+- Decided: the address is `coverPathOf(CoverName)`, a top-level `internal`
+  function in its own file `CoverPath.kt` of `library.infrastructure.web`,
+  as `isbn13Of` sits in `Isbn13.kt`; `BookResponse.from` reads it too.
+- Decided: `ApiContractTest`'s held stub and the catalogue's edition share
+  one constant, `ASTERIX_1_COVER`, the name the catalogue already used.
+- Deviations from the brief: none.
+- Left over: nothing; the frontend's *Already there* card is T063.
