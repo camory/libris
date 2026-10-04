@@ -275,10 +275,15 @@ Read whole by a run that changes `backend/`, after `every-run.md`.
   that answered `null` (an argument no stub names, a matcher that missed)
   or a framework failure no handler turned into a problem.
 - The JDK `HttpClient` writes header values as US-ASCII (`Léa` leaves as
-  `L?a`) and Tomcat reads them as ISO-8859-1. The scenario client is built on
-  `SimpleClientHttpRequestFactory`, which sends the UTF-8 bytes, and
-  `RemoteIdentity.of` decodes `Remote-Name` from ISO-8859-1 bytes to UTF-8;
+  `L?a`) and Tomcat reads them as ISO-8859-1. The scenario client and the
+  web slice's client are built on `SimpleClientHttpRequestFactory`, which
+  sends the UTF-8 bytes as Authelia does; `RemoteIdentity.of` decodes
+  `Remote-Name` from ISO-8859-1 bytes to UTF-8, and the security chain's
+  `StrictHttpFirewall` checks every header value after the same decoding;
   the other `Remote-*` headers are read as they come.
+- Tomcat itself answers `400` to a C0 control character (`\u0007`) in a
+  header value, before Spring: a case on the firewall's header check sends a
+  C1 one (`\u0085`, on the wire `C2 85`), which only the firewall refuses.
 - The scenario WireMock servers live as long as the context, across classes;
   `FreshSources` on `ScenarioTest` resets their stubs and request journal
   before each case, so a case stubs every source it needs and `verify(0, …)`
