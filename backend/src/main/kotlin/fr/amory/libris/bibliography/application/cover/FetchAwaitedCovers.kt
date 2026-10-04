@@ -4,6 +4,7 @@ import fr.amory.libris.bibliography.domain.cover.AwaitedCover
 import fr.amory.libris.bibliography.domain.cover.AwaitedCoverRepository
 import fr.amory.libris.bibliography.domain.cover.Cover
 import fr.amory.libris.bibliography.domain.cover.CoverFetch
+import fr.amory.libris.bibliography.domain.cover.CoverFetches
 import fr.amory.libris.bibliography.domain.cover.CoverStore
 import fr.amory.libris.bibliography.domain.edition.EditionRepository
 import org.springframework.stereotype.Service
@@ -16,7 +17,7 @@ class FetchAwaitedCovers(
   private val covers: CoverStore,
   private val editions: EditionRepository,
   private val transactions: TransactionOperations) {
-  private val coverFetches = coverFetches.sortedBy { it.coverSource.order }
+  private val coverFetches = CoverFetches.of(coverFetches)
 
   operator fun invoke() {
     awaitedCovers
@@ -25,15 +26,11 @@ class FetchAwaitedCovers(
   }
 
   private fun take(awaitedCover: AwaitedCover) {
-    fetchesFor(awaitedCover)
+    coverFetches
+      .askedFor(awaitedCover.chosenSource)
       .firstNotNullOfOrNull { it.fetch(awaitedCover.isbn) }
       ?.let { store(awaitedCover, it.normalised()) }
   }
-
-  private fun fetchesFor(awaitedCover: AwaitedCover): List<CoverFetch> =
-    awaitedCover.chosenSource
-      ?.let { source -> coverFetches.filter { it.coverSource == source } }
-      ?: coverFetches
 
   private fun store(awaitedCover: AwaitedCover, cover: Cover) {
     covers.write(cover)
