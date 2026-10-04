@@ -139,7 +139,6 @@ class CoversScenarios @Autowired constructor(
   }
 
   @Test
-  @Disabled("covers")
   fun `S6 The picture is normalised, taller than 600`() {
     // Given
     val rose = reader("rose", "Rose")
