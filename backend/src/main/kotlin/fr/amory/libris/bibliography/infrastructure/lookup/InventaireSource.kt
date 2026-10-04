@@ -16,6 +16,7 @@ import tools.jackson.databind.node.MissingNode
 import java.time.Duration
 
 class InventaireSource(private val baseUrl: String, timeout: Duration) : CoverLookup, CoverFetch {
+  override val coverSource = INVENTAIRE
   private val http = sourceRestClient(baseUrl, timeout)
 
   override fun lookUp(isbn: Isbn): CoverCandidate? =

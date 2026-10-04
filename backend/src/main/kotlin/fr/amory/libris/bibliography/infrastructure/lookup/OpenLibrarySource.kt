@@ -30,6 +30,7 @@ private val YEAR = Regex("\\d{4}")
 
 class OpenLibrarySource(baseUrl: String, private val coversUrl: String, timeout: Duration) : EditionLookup, CoverFetch {
   override val source = EditionSource.OPEN_LIBRARY
+  override val coverSource = CoverSource.OPEN_LIBRARY
   private val http = sourceRestClient(baseUrl, timeout)
 
   override fun lookUp(isbn: Isbn): EditionSourceAnswer =
