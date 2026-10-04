@@ -126,7 +126,7 @@ data class CoverCandidateResponse(
       CoverCandidateResponse(candidate.source.label, candidate.url)
 
     fun from(name: CoverName): CoverCandidateResponse =
-      CoverCandidateResponse("Libris", "/api/v1/covers/${name.value}")
+      CoverCandidateResponse("Libris", coverPathOf(name))
   }
 }
 

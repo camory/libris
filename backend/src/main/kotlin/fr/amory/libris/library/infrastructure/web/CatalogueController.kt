@@ -60,7 +60,7 @@ data class BookResponse(
         language = held.edition.language,
         pageCount = held.edition.pageCount,
         summary = held.edition.summary,
-        coverUrl = held.edition.coverName?.let { "/api/v1/covers/${it.value}" },
+        coverUrl = held.edition.coverName?.let { coverPathOf(it) },
         copies = held.copies.map { CopyResponse.from(it) },
       )
   }
