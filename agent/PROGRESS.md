@@ -706,5 +706,9 @@ Format:
   covers setting too, the fetch's address, and the `COVERS` constant is
   gone; *S5 Merged answer, from Open Library alone* and two
   `OpenLibrarySourceTest` expectations now read the stub's address.
+- Did, third ask: `LibrisApplicationTest`'s *the sources are configured
+  with their defaults* deleted, a binding test from T013 that every new
+  source setting extended; the sources' defaults show at `bootRun` and
+  deploy, no test carries the public addresses any more.
 - Left over: the BnF and Open Library lookups keep their lists
   (`agent/PROPOSED.md`).
