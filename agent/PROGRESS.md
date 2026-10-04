@@ -889,3 +889,10 @@ Format:
   asked. `nameOf` and `publicationOf` stay out of the class: with `pictureOf`
   gone it holds nine functions, and the two would bring it to eleven.
 - Left over: nothing new.
+- Reviewed by Tophe: choosing the fetches an awaited cover asks is a rule of
+  its own, so it leaves the use case for a domain type,
+  `CoverFetches.of(list)` sorted by `CoverSource.order`, whose
+  `askedFor(chosenSource)` answers the chosen source's fetch alone, or every
+  one in order when there is none. It only chooses: asking the sources stays
+  the use case's. Built in `FetchAwaitedCovers`' constructor, no bean;
+  `CoverFetchesTest` holds its two cases.
