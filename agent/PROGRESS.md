@@ -673,3 +673,42 @@ Format:
 - Left over: runs one at a time, at start and daily (T059); the other
   chosen sources (T054); the D02 bullet on `bibliography.infrastructure.worker`
   is proposed in the PR, Tophe's to settle.
+
+## 2026-10-04 — T054 Backend: Open Library as the chosen source — done
+- Did: `OpenLibraryEditionLookup` is `OpenLibrarySource`, which implements
+  `CoverFetch` too, at `libris.sources.open-library-covers-url`;
+  `FetchAwaitedCovers` runs the fetch whose `coverSource` the awaited cover
+  chose. S5 *Libris serves a stored cover* un-skipped and green.
+- Decided: the fetch's answer is turned into a `Cover` the way
+  `InventaireSource.pictureAt` does it, written again rather than shared:
+  two copies, and their catches differ (Open Library catches
+  `RestClientException` alone until T058 sets the malformed answers).
+- Deviations from the brief: none. Step 9's mutation was written as an
+  elvis around `firstOrNull`, since `?.fetch` after a non-null fallback
+  fails the compile under warnings-as-errors.
+- Left over: the BnF's fetch and the cascade (T057), which iterate the
+  same list of fetches; the D02 sentence on `bibliography.infrastructure.
+  lookup` is proposed in the PR, Tophe's to settle; `BnfEditionLookup`
+  keeps its name until its fetch (`agent/PROPOSED.md`).
+
+## 2026-10-04 — T054 fixed up with Tophe
+- Did: `OpenLibrarySource.fetch` let `InvalidMediaTypeException` out on a
+  malformed `Content-Type`, which stopped `FetchAwaitedCovers` before the
+  awaited covers after it; a case reds it. Every cover fetch and
+  inventaire.io's lookup now read through `nullOnFailure` of
+  `SourceHttp.kt`, one catch of `Exception` answering `null`, in place of
+  each adapter's list of exceptions.
+- Decided with Tophe: `CoverFetch.coverSource` stays, the adapter naming the
+  source it serves as `EditionLookup.source` does; one catch-all at the
+  source boundary rather than lists that miss the next unknown type. The
+  diary entry above on Open Library's catches is superseded.
+- Did, second ask: the lookup's Open Library candidate is built on the
+  covers setting too, the fetch's address, and the `COVERS` constant is
+  gone; *S5 Merged answer, from Open Library alone* and two
+  `OpenLibrarySourceTest` expectations now read the stub's address.
+- Did, third ask: `LibrisApplicationTest`'s *the sources are configured
+  with their defaults* deleted, a binding test from T013 that every new
+  source setting extended; the sources' defaults show at `bootRun` and
+  deploy, no test carries the public addresses any more.
+- Left over: the BnF and Open Library lookups keep their lists
+  (`agent/PROPOSED.md`).

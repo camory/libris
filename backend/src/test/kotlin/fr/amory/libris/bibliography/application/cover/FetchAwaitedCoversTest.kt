@@ -5,6 +5,7 @@ import fr.amory.libris.bibliography.domain.Kind.MANGA
 import fr.amory.libris.bibliography.domain.cover.AwaitedCover
 import fr.amory.libris.bibliography.domain.cover.CoverFetch
 import fr.amory.libris.bibliography.domain.cover.CoverSource
+import fr.amory.libris.bibliography.domain.cover.CoverSource.BNF
 import fr.amory.libris.bibliography.domain.cover.CoverSource.INVENTAIRE
 import fr.amory.libris.bibliography.domain.cover.CoverSource.OPEN_LIBRARY
 import fr.amory.libris.bibliography.domain.edition.Edition
@@ -68,7 +69,7 @@ class FetchAwaitedCoversTest {
       Triple(covers.stored.size, editions.findByIsbn(isbnOf(ONE_PIECE))?.coverName, awaitedCovers.findAll().size)
     }
     val fetchAwaitedCovers =
-      FetchAwaitedCovers(awaitedCovers, CoverFetchAnswering(cover), covers, editions, transactions)
+      FetchAwaitedCovers(awaitedCovers, listOf(CoverFetchAnswering(INVENTAIRE, cover)), covers, editions, transactions)
 
     // When
     fetchAwaitedCovers()
@@ -80,18 +81,38 @@ class FetchAwaitedCoversTest {
   }
 
   @Test
-  fun `an awaited cover of another source is passed by`() {
+  fun `an awaited Open Library cover is fetched from Open Library alone`() {
     // Given
     awaiting(OPEN_LIBRARY)
-    val coverFetch = CoverFetchAnswering(cover)
-    val fetchAwaitedCovers = fetchAwaitedCoversOver(coverFetch)
+    val jpeg = coverOf("image/jpeg", recordedBytes("covers/tall.jpg"))
+    val inventaire = CoverFetchAnswering(INVENTAIRE, cover)
+    val fetchAwaitedCovers = fetchAwaitedCoversOver(listOf(inventaire, CoverFetchAnswering(OPEN_LIBRARY, jpeg)))
 
     // When
     fetchAwaitedCovers()
 
     // Then
-    coverFetch.asked.shouldBeEmpty()
-    awaitedCovers.findAll() shouldBe listOf(AwaitedCover(isbnOf(ONE_PIECE), OPEN_LIBRARY))
+    covers.read(jpeg.name) shouldBe jpeg
+    editions.findByIsbn(isbnOf(ONE_PIECE)) shouldBe edition.copy(coverName = jpeg.name)
+    awaitedCovers.findAll().shouldBeEmpty()
+    inventaire.asked.shouldBeEmpty()
+  }
+
+  @Test
+  fun `an awaited cover of a source no fetch serves is passed by`() {
+    // Given
+    awaiting(BNF)
+    val inventaire = CoverFetchAnswering(INVENTAIRE, cover)
+    val openLibrary = CoverFetchAnswering(OPEN_LIBRARY, coverOf("image/jpeg", recordedBytes("covers/tall.jpg")))
+    val fetchAwaitedCovers = fetchAwaitedCoversOver(listOf(inventaire, openLibrary))
+
+    // When
+    fetchAwaitedCovers()
+
+    // Then
+    inventaire.asked.shouldBeEmpty()
+    openLibrary.asked.shouldBeEmpty()
+    awaitedCovers.findAll() shouldBe listOf(AwaitedCover(isbnOf(ONE_PIECE), BNF))
     editions.findByIsbn(isbnOf(ONE_PIECE)) shouldBe edition
   }
 
@@ -99,8 +120,8 @@ class FetchAwaitedCoversTest {
   fun `an awaited cover with no chosen source is passed by`() {
     // Given
     awaiting(null)
-    val coverFetch = CoverFetchAnswering(cover)
-    val fetchAwaitedCovers = fetchAwaitedCoversOver(coverFetch)
+    val coverFetch = CoverFetchAnswering(INVENTAIRE, cover)
+    val fetchAwaitedCovers = fetchAwaitedCoversOver(listOf(coverFetch))
 
     // When
     fetchAwaitedCovers()
@@ -115,7 +136,7 @@ class FetchAwaitedCoversTest {
   fun `a fetch that brings no picture keeps the wait`() {
     // Given
     awaiting(INVENTAIRE)
-    val fetchAwaitedCovers = fetchAwaitedCoversOver(CoverFetchAnswering(null))
+    val fetchAwaitedCovers = fetchAwaitedCoversOver(listOf(CoverFetchAnswering(INVENTAIRE, null)))
 
     // When
     fetchAwaitedCovers()
@@ -148,8 +169,9 @@ class FetchAwaitedCoversTest {
     awaitedCovers.insert(AwaitedCover(checkNotNull(awaited.isbn), chosenSource))
   }
 
-  private fun fetchAwaitedCoversOver(coverFetch: CoverFetch = CoverFetchAnswering(cover)): FetchAwaitedCovers =
-    FetchAwaitedCovers(awaitedCovers, coverFetch, covers, editions, withoutTransaction())
+  private fun fetchAwaitedCoversOver(
+    coverFetches: List<CoverFetch> = listOf(CoverFetchAnswering(INVENTAIRE, cover))): FetchAwaitedCovers =
+    FetchAwaitedCovers(awaitedCovers, coverFetches, covers, editions, withoutTransaction())
 
   private fun onePiece(isbn: String = ONE_PIECE): Edition =
     Edition(

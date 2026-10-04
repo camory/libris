@@ -12,8 +12,8 @@ class LookupConfig {
     BnfEditionLookup(sources.bnfUrl, sources.timeout)
 
   @Bean
-  fun openLibraryEditionLookup(sources: SourcesProperties) =
-    OpenLibraryEditionLookup(sources.openLibraryUrl, sources.timeout)
+  fun openLibrarySource(sources: SourcesProperties) =
+    OpenLibrarySource(sources.openLibraryUrl, sources.openLibraryCoversUrl, sources.timeout)
 
   @Bean
   fun inventaireSource(sources: SourcesProperties) =

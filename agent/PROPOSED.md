@@ -377,10 +377,9 @@
   2026-10-03 on T067).
 - Backend: a source adapter is named after its source, not one of its
   ports, since a chosen source implements `CoverFetch` beside its lookup
-  (`InventaireSource`); `OpenLibraryEditionLookup` becomes
-  `OpenLibrarySource` in T054, `BnfEditionLookup` becomes `BnfSource` in
-  the task giving the BnF its fetch (decided 2026-10-03 reviewing T066 with
-  Tophe).
+  (`InventaireSource`, `OpenLibrarySource`); `BnfEditionLookup` becomes
+  `BnfSource` in the task giving the BnF its fetch (decided 2026-10-03
+  reviewing T066 with Tophe).
 - Backend build: detekt 1.23.8's plugin calls `ReportingExtension.file(String)`
   (`DetektPlugin.apply`), deprecated in Gradle 9 and removed in Gradle 10, so
   every build warns "incompatible with Gradle 10" and the wrapper cannot move
@@ -388,3 +387,10 @@
   version, and whether it also lifts the cleared `jdkHome` on JDK 25 (found
   2026-10-04 measuring the configuration cache with Tophe, traced with
   `--warning-mode all -Dorg.gradle.deprecation.trace=true`).
+- Backend: the BnF and Open Library lookups catch `NotFound` for a miss and
+  a list of exceptions for a failure (`RestClientException`, `SAXException`,
+  `JsonNodeException`), so an answer with a malformed `Content-Type` throws
+  `InvalidMediaTypeException` out of `lookUp`, past what `Failed` means.
+  Their failure branch could go through `nullOnFailure`'s catch-all as the
+  fetches do, `NotFound` still first (found 2026-10-04 fixing up T054 with
+  Tophe, not measured on the lookups).

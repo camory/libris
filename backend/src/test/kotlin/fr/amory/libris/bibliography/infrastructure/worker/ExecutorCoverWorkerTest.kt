@@ -25,9 +25,9 @@ private const val ONE_PIECE = "9782723488525"
 class ExecutorCoverWorkerTest {
   private val editions = EditionsInMemory()
   private val awaitedCovers = AwaitedCoversInMemory()
-  private val coverFetch = CoverFetchAnswering(coverOf("image/webp", recordedBytes("covers/small.webp")))
+  private val coverFetch = CoverFetchAnswering(INVENTAIRE, coverOf("image/webp", recordedBytes("covers/small.webp")))
   private val fetchAwaitedCovers =
-    FetchAwaitedCovers(awaitedCovers, coverFetch, CoversInMemory(), editions, withoutTransaction())
+    FetchAwaitedCovers(awaitedCovers, listOf(coverFetch), CoversInMemory(), editions, withoutTransaction())
 
   @Test
   fun `a waking runs the fetch of the awaited covers`() {

@@ -219,8 +219,10 @@ Read whole by a run that changes `backend/`, after `every-run.md`.
   an `IllegalArgumentException`, not a `RestClientException`. `uri(String)`
   reads its address as a URI template, so an address built from a source's
   answer throws an `IllegalArgumentException` on `{x}` or `50%zz`.
-  `InventaireSource` catches both beside `RestClientException`; the
-  other source adapters do not. An empty body is read as no body, `null`,
+  A cover fetch and inventaire.io's lookup read through `nullOnFailure`, in
+  `SourceHttp.kt`, which answers `null` on any `Exception`; the BnF and Open
+  Library lookups tell a miss (`NotFound`) from a failure with catches of
+  their own, which leave both out. An empty body is read as no body, `null`,
   never as an empty array.
 - WireMock serves the most recently added matching stub, so
   `OpenLibraryStubs.answers("/search.json", body)` called after `knows(isbn)`
@@ -333,10 +335,18 @@ Read whole by a run that changes `backend/`, after `every-run.md`.
   the recorded entity under one.
 - An add answering a copy wakes the cover worker, which runs
   `FetchAwaitedCovers` on `applicationTaskExecutor`: a scenario add whose
-  chosen source is inventaire.io starts a run that may outlive its case
-  (S3's waits a second on a picture that never comes); an add with no
-  chosen source asks no source. `CoverWorkerObserving`, in
+  chosen source is inventaire.io or Open Library starts a run that may
+  outlive its case (S3's waits a second on a picture that never comes, and
+  *S10 …, not yet stored* starts an Open Library fetch that gives up on the
+  one-second timeout after its case); an add with no chosen source, or the
+  BnF's, asks no source. `CoverWorkerObserving`, in
   `bibliography.fixture`, records what its `observe` answers at each waking.
+- Open Library's fetch and its lookup's candidate both build on
+  `libris.sources.open-library-covers-url` (`LIBRIS_OPEN_LIBRARY_COVERS_URL`,
+  the stub's `/b/isbn` in the scenarios), so *S5 Merged answer, from Open
+  Library alone* expects the stub's address in `coverUrl`, never
+  `covers.openlibrary.org`. `?default=false` makes Open Library answer `404`
+  for a missing cover instead of a blank picture.
 - `LookupAnswering`, in `bibliography.fixture`, records the ISBNs it was asked
   and answers them as `asked`, so a case proves a source was never called with
   `source.asked shouldBe emptyList()`.

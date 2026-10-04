@@ -105,7 +105,6 @@ class CoversScenarios @Autowired constructor(
   }
 
   @Test
-  @Disabled("covers")
   fun `S5 Libris serves a stored cover`() {
     // Given
     val nina = reader("nina", "Nina")

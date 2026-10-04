@@ -5,6 +5,8 @@ import fr.amory.libris.bibliography.domain.ContributionRole.WRITER
 import fr.amory.libris.bibliography.domain.Contributions
 import fr.amory.libris.bibliography.domain.Isbn
 import fr.amory.libris.bibliography.domain.Kind.BOOK
+import fr.amory.libris.bibliography.domain.cover.Cover
+import fr.amory.libris.bibliography.domain.cover.CoverFetch
 import fr.amory.libris.bibliography.domain.cover.CoverSource
 import fr.amory.libris.bibliography.domain.lookup.CoverCandidate
 import fr.amory.libris.bibliography.domain.lookup.EditionLookup
@@ -16,17 +18,18 @@ import fr.amory.libris.bibliography.domain.lookup.EditionSourceAnswer.Known
 import fr.amory.libris.bibliography.domain.lookup.EditionSourceAnswer.NothingKnown
 import org.springframework.web.client.HttpClientErrorException.NotFound
 import org.springframework.web.client.RestClientException
+import org.springframework.web.client.toEntity
 import tools.jackson.databind.JsonNode
 import tools.jackson.databind.exc.JsonNodeException
 import tools.jackson.databind.node.MissingNode
 import java.time.Duration
 
-private const val COVERS = "https://covers.openlibrary.org/b/isbn"
 private const val SEARCH_FIELDS = "key,author_name,edition_key"
 private val YEAR = Regex("\\d{4}")
 
-class OpenLibraryEditionLookup(baseUrl: String, timeout: Duration) : EditionLookup {
+class OpenLibrarySource(baseUrl: String, private val coversUrl: String, timeout: Duration) : EditionLookup, CoverFetch {
   override val source = EditionSource.OPEN_LIBRARY
+  override val coverSource = CoverSource.OPEN_LIBRARY
   private val http = sourceRestClient(baseUrl, timeout)
 
   override fun lookUp(isbn: Isbn): EditionSourceAnswer =
@@ -40,10 +43,13 @@ class OpenLibraryEditionLookup(baseUrl: String, timeout: Duration) : EditionLook
       Failed
     }
 
+  override fun fetch(isbn: Isbn): Cover? =
+    nullOnFailure { coverOf(isbn) }
+
   private fun answerFor(isbn: Isbn): EditionSourceAnswer =
     Known(
       previewOf(isbn, document("/isbn/${isbn.digits}.json")),
-      CoverCandidate(CoverSource.OPEN_LIBRARY, "$COVERS/${isbn.digits}-L.jpg?default=false"),
+      CoverCandidate(CoverSource.OPEN_LIBRARY, "$coversUrl/${isbn.digits}-L.jpg?default=false"),
     )
 
   private fun previewOf(isbn: Isbn, edition: JsonNode): EditionPreview =
@@ -91,4 +97,13 @@ class OpenLibraryEditionLookup(baseUrl: String, timeout: Duration) : EditionLook
 
   private fun document(path: String): JsonNode =
     http.get().uri(path).retrieve().body(JsonNode::class.java) ?: MissingNode.getInstance()
+
+  private fun coverOf(isbn: Isbn): Cover? {
+    val answer = http
+      .get()
+      .uri("$coversUrl/${isbn.digits}-L.jpg?default=false")
+      .retrieve()
+      .toEntity<ByteArray>()
+    return answer.body?.let { bytes -> answer.headers.contentType?.let { Cover.of(it.toString(), bytes) } }
+  }
 }
