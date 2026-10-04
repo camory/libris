@@ -18,3 +18,10 @@ internal fun sourceRestClient(baseUrl: String, timeout: Duration): RestClient {
     .requestFactory(JdkClientHttpRequestFactory(client).apply { setReadTimeout(timeout) })
     .build()
 }
+
+internal fun <T> nullOnFailure(read: () -> T?): T? =
+  try {
+    read()
+  } catch (ignored: Exception) {
+    null
+  }

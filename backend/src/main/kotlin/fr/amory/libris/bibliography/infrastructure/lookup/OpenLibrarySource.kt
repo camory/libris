@@ -45,11 +45,7 @@ class OpenLibrarySource(baseUrl: String, private val coversUrl: String, timeout:
     }
 
   override fun fetch(isbn: Isbn): Cover? =
-    try {
-      coverOf(isbn)
-    } catch (ignored: RestClientException) {
-      null
-    }
+    nullOnFailure { coverOf(isbn) }
 
   private fun answerFor(isbn: Isbn): EditionSourceAnswer =
     Known(

@@ -227,6 +227,18 @@ class OpenLibrarySourceTest {
   }
 
   @Test
+  fun `a cover served with a malformed media type is no cover`() {
+    // Given
+    openLibrary.hasCover(SPACE_WARS, TALL_JPEG, "jpeg")
+
+    // When
+    val cover = source.fetch(isbnOf(SPACE_WARS))
+
+    // Then
+    cover.shouldBeNull()
+  }
+
+  @Test
   fun `a cover Open Library does not have is no cover`() {
     // Given
     openLibrary.hasNoCover(SPACE_WARS)

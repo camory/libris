@@ -50,10 +50,10 @@ class OpenLibraryStubs(private val server: WireMockServer) {
     server.stubFor(get(urlPathEqualTo("/isbn/$isbn.json")).willReturn(ok().withFixedDelay(LATE)))
   }
 
-  fun hasCover(isbn: String, picture: ByteArray) {
+  fun hasCover(isbn: String, picture: ByteArray, mediaType: String = "image/jpeg") {
     server.stubFor(
       get(urlPathEqualTo(cover(isbn)))
-        .willReturn(jpeg(picture)),
+        .willReturn(ok().withHeader("Content-Type", mediaType).withBody(picture)),
     )
   }
 
