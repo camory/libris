@@ -874,3 +874,18 @@ Format:
   merged into the branch, then steps 10–13.
 - Left over: the BnF candidate on the covers setting, in
   `agent/PROPOSED.md`; S8 (T058) and S9 (T059).
+
+## 2026-10-04 — T057 Backend: the cascade for an edition with no chosen source — reworked
+- Did: `publicationOf` and `nameOf` sit below `BnfSource`, before the record
+  types they read; the three cover fetches read their picture through one
+  `RestClient.pictureAt(address)` in `SourceHttp.kt`; `BnfStubs.hasCover`
+  takes a media type, and the BnF's fetch case serves `image/png`.
+- Decided: the reviewer's verdict of 2026-10-04 amended nothing; its
+  blocking file-order finding and its three suggestions are all applied.
+  `pictureAt` leaves `nullOnFailure` to each caller, since Open Library and
+  the BnF already wrap their whole fetch in it.
+- Deviations from the brief: `BnfStubs` changes (a media-type parameter,
+  `image/jpeg` by default, so the scenarios stay unedited), as the review
+  asked. `nameOf` and `publicationOf` stay out of the class: with `pictureOf`
+  gone it holds nine functions, and the two would bring it to eleven.
+- Left over: nothing new.
