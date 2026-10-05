@@ -8,8 +8,8 @@ import org.springframework.context.annotation.Configuration
 @EnableConfigurationProperties(SourcesProperties::class)
 class LookupConfig {
   @Bean
-  fun bnfEditionLookup(sources: SourcesProperties) =
-    BnfEditionLookup(sources.bnfUrl, sources.timeout)
+  fun bnfSource(sources: SourcesProperties) =
+    BnfSource(sources.bnfUrl, sources.bnfCoversUrl, sources.timeout)
 
   @Bean
   fun openLibrarySource(sources: SourcesProperties) =

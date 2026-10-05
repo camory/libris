@@ -133,19 +133,58 @@ class FetchAwaitedCoversTest {
   }
 
   @Test
-  fun `an awaited cover with no chosen source is passed by`() {
+  fun `with no chosen source, the first source in order that has a picture is fetched`() {
     // Given
     awaiting(null)
-    val coverFetch = CoverFetchAnswering(INVENTAIRE, cover)
-    val fetchAwaitedCovers = fetchAwaitedCoversOver(listOf(coverFetch))
+    val openLibrary = CoverFetchAnswering(OPEN_LIBRARY, coverOf("image/jpeg", recordedBytes("covers/tall.jpg")))
+    val fetchAwaitedCovers = fetchAwaitedCoversOver(listOf(openLibrary, CoverFetchAnswering(INVENTAIRE, cover)))
 
     // When
     fetchAwaitedCovers()
 
     // Then
-    coverFetch.asked.shouldBeEmpty()
-    awaitedCovers.findAll() shouldBe listOf(AwaitedCover(isbnOf(ONE_PIECE), null))
+    covers.read(cover.name) shouldBe cover
+    editions.findByIsbn(isbnOf(ONE_PIECE)) shouldBe edition.copy(coverName = cover.name)
+    awaitedCovers.findAll().shouldBeEmpty()
+    openLibrary.asked.shouldBeEmpty()
+  }
+
+  @Test
+  fun `the cascade goes on past a source with no picture`() {
+    // Given
+    awaiting(null)
+    val tall = coverOf("image/jpeg", recordedBytes("covers/tall.jpg"))
+    val inventaire = CoverFetchAnswering(INVENTAIRE, null)
+    val openLibrary = CoverFetchAnswering(OPEN_LIBRARY, null)
+    val bnf = CoverFetchAnswering(BNF, tall)
+    val fetchAwaitedCovers = fetchAwaitedCoversOver(listOf(bnf, openLibrary, inventaire))
+
+    // When
+    fetchAwaitedCovers()
+
+    // Then
+    covers.stored.single().name shouldBe tall.normalised().name
+    editions.findByIsbn(isbnOf(ONE_PIECE))?.coverName shouldBe tall.normalised().name
+    inventaire.asked shouldBe listOf(isbnOf(ONE_PIECE))
+    openLibrary.asked shouldBe listOf(isbnOf(ONE_PIECE))
+    bnf.asked shouldBe listOf(isbnOf(ONE_PIECE))
+  }
+
+  @Test
+  fun `no source with a picture keeps the wait`() {
+    // Given
+    awaiting(null)
+    val fetches = listOf(INVENTAIRE, OPEN_LIBRARY, BNF).map { CoverFetchAnswering(it, null) }
+    val fetchAwaitedCovers = fetchAwaitedCoversOver(fetches)
+
+    // When
+    fetchAwaitedCovers()
+
+    // Then
+    fetches.forEach { it.asked shouldBe listOf(isbnOf(ONE_PIECE)) }
+    covers.stored.shouldBeEmpty()
     editions.findByIsbn(isbnOf(ONE_PIECE)) shouldBe edition
+    awaitedCovers.findAll() shouldBe listOf(AwaitedCover(isbnOf(ONE_PIECE), null))
   }
 
   @Test

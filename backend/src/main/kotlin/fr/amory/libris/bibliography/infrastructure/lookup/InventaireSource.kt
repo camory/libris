@@ -7,7 +7,6 @@ import fr.amory.libris.bibliography.domain.cover.CoverSource.INVENTAIRE
 import fr.amory.libris.bibliography.domain.lookup.CoverCandidate
 import fr.amory.libris.bibliography.domain.lookup.CoverLookup
 import org.springframework.web.client.body
-import org.springframework.web.client.toEntity
 import tools.jackson.databind.JsonNode
 import tools.jackson.databind.node.MissingNode
 import java.time.Duration
@@ -22,7 +21,7 @@ class InventaireSource(private val baseUrl: String, timeout: Duration) : CoverLo
     }
 
   override fun fetch(isbn: Isbn): Cover? =
-    lookUp(isbn)?.let { pictureAt(it.url) }
+    lookUp(isbn)?.let { nullOnFailure { http.pictureAt(it.url) } }
 
   private fun pictureOf(answer: JsonNode): String? =
     answer
@@ -49,14 +48,4 @@ class InventaireSource(private val baseUrl: String, timeout: Duration) : CoverLo
       }
       .retrieve()
       .body<JsonNode>() ?: MissingNode.getInstance()
-
-  private fun pictureAt(address: String): Cover? =
-    nullOnFailure {
-      val answer = http
-        .get()
-        .uri(address)
-        .retrieve()
-        .toEntity<ByteArray>()
-      answer.body?.let { bytes -> answer.headers.contentType?.let { Cover.of(it.toString(), bytes) } }
-    }
 }

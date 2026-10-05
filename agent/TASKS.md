@@ -294,7 +294,7 @@ catalogue rows show a cover only once the worker has stored it (Tophe,
       Unit tests of the rule over generated pictures, one per case.
       Realises S6; un-skips the backend tests of S6, both cases.
 
-- [ ] T057 Backend: the cascade for an edition with no chosen source.
+- [x] T057 Backend: the cascade for an edition with no chosen source.
       The worker asks, for an awaited cover with no chosen source,
       inventaire.io, then Open Library, then the BnF, its picture read from
       the record's ark, stopping at the first picture and storing it as T066

@@ -20,6 +20,9 @@ import fr.amory.libris.bibliography.domain.lookup.EditionSourceAnswer.Known
 import fr.amory.libris.bibliography.domain.lookup.EditionSourceAnswer.NothingKnown
 import fr.amory.libris.bibliography.fixture.BnfStubs
 import fr.amory.libris.bibliography.fixture.isbnOf
+import fr.amory.libris.bibliography.fixture.recordedBytes
+import io.kotest.matchers.nulls.shouldBeNull
+import io.kotest.matchers.nulls.shouldNotBeNull
 import io.kotest.matchers.shouldBe
 import org.junit.jupiter.api.AfterAll
 import org.junit.jupiter.api.AfterEach
@@ -29,8 +32,8 @@ import java.time.Duration
 import java.time.Duration.ofMillis
 import java.time.Duration.ofSeconds
 
-class BnfEditionLookupTest {
-  private val source = BnfEditionLookup(server.baseUrl() + SRU, TIMEOUT)
+class BnfSourceTest {
+  private val source = BnfSource(server.baseUrl() + SRU, server.baseUrl() + COVERS, TIMEOUT)
 
   @AfterEach
   fun forgetTheStubs() {
@@ -345,6 +348,67 @@ class BnfEditionLookupTest {
     request.queryParameter("query").values() shouldBe listOf("""bib.isbn all "$WITHOUT_A_TEN"""")
   }
 
+  @Test
+  fun `a known ISBN's picture is fetched with the media type it was served with`() {
+    // Given
+    bnf.knows(NERONIA)
+    bnf.hasCover(TALL_JPEG, "image/png")
+
+    // When
+    val cover = source.fetch(isbnOf(NERONIA))
+
+    // Then
+    cover.shouldNotBeNull()
+    cover.mediaType shouldBe "image/png"
+    cover.bytes shouldBe TALL_JPEG
+  }
+
+  @Test
+  fun `fetching a picture sends one search, then asks the covers address once with the record's ark`() {
+    // Given
+    bnf.knows(NERONIA)
+    bnf.hasCover(TALL_JPEG)
+
+    // When
+    source.fetch(isbnOf(NERONIA))
+
+    // Then
+    server.allServeEvents.size shouldBe 2
+    val (search, picture) = server.allServeEvents.map { it.request }.sortedBy { it.loggedDate }
+    search.url.substringBefore("?") shouldBe SRU
+    picture.url.substringBefore("?") shouldBe COVERS
+    picture.queryParameter("appName").values() shouldBe listOf("NE")
+    picture.queryParameter("idArk").values() shouldBe listOf("ark:/12148/cb486302521")
+    picture.queryParameter("couverture").values() shouldBe listOf("1")
+  }
+
+  @Test
+  fun `a picture the BnF fails to serve is no cover`() {
+    // Given
+    bnf.knows(NERONIA)
+    bnf.hasNoCover()
+
+    // When
+    val cover = source.fetch(isbnOf(NERONIA))
+
+    // Then
+    cover.shouldBeNull()
+  }
+
+  @Test
+  fun `an ISBN the BnF does not know is no cover, the covers address never asked`() {
+    // Given
+    bnf.doesNotKnow(UNKNOWN)
+    bnf.hasCover(TALL_JPEG)
+
+    // When
+    val cover = source.fetch(isbnOf(UNKNOWN))
+
+    // Then
+    cover.shouldBeNull()
+    bnf.coverRequests() shouldBe 0
+  }
+
   private companion object {
     const val ONE_PIECE = "9782723488525"
     const val ONE_PIECE_TEN = "2723488527"
@@ -355,6 +419,7 @@ class BnfEditionLookupTest {
     const val UNKNOWN = "9782000000013"
     const val WITHOUT_A_TEN = "9791000000008"
     const val SRU = "/api/SRU"
+    const val COVERS = "/couverture"
     const val ONE_PIECE_COVER =
       "https://catalogue.bnf.fr/couverture?&appName=NE&idArk=ark:/12148/cb43636708p&couverture=1"
     const val NERONIA_COVER =
@@ -434,6 +499,7 @@ class BnfEditionLookupTest {
       pageCount = 203,
       summary = null,
     )
+    val TALL_JPEG = recordedBytes("covers/tall.jpg")
     val TIMEOUT: Duration = ofMillis(200)
     val WARM_UP_TIMEOUT: Duration = ofSeconds(20)
     val server = WireMockServer(options().dynamicPort())
@@ -444,7 +510,7 @@ class BnfEditionLookupTest {
     fun startWireMock() {
       server.start()
       bnf.knows(ONE_PIECE)
-      BnfEditionLookup(server.baseUrl() + SRU, WARM_UP_TIMEOUT).lookUp(isbnOf(ONE_PIECE))
+      BnfSource(server.baseUrl() + SRU, server.baseUrl() + COVERS, WARM_UP_TIMEOUT).lookUp(isbnOf(ONE_PIECE))
       server.resetAll()
     }
 

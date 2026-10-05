@@ -4,6 +4,7 @@ import fr.amory.libris.bibliography.domain.cover.AwaitedCover
 import fr.amory.libris.bibliography.domain.cover.AwaitedCoverRepository
 import fr.amory.libris.bibliography.domain.cover.Cover
 import fr.amory.libris.bibliography.domain.cover.CoverFetch
+import fr.amory.libris.bibliography.domain.cover.CoverFetches
 import fr.amory.libris.bibliography.domain.cover.CoverStore
 import fr.amory.libris.bibliography.domain.edition.EditionRepository
 import org.springframework.stereotype.Service
@@ -12,10 +13,12 @@ import org.springframework.transaction.support.TransactionOperations
 @Service
 class FetchAwaitedCovers(
   private val awaitedCovers: AwaitedCoverRepository,
-  private val coverFetches: List<CoverFetch>,
+  coverFetches: List<CoverFetch>,
   private val covers: CoverStore,
   private val editions: EditionRepository,
   private val transactions: TransactionOperations) {
+  private val coverFetches = CoverFetches.of(coverFetches)
+
   operator fun invoke() {
     awaitedCovers
       .findAll()
@@ -24,8 +27,8 @@ class FetchAwaitedCovers(
 
   private fun take(awaitedCover: AwaitedCover) {
     coverFetches
-      .firstOrNull { it.coverSource == awaitedCover.chosenSource }
-      ?.fetch(awaitedCover.isbn)
+      .askedFor(awaitedCover.chosenSource)
+      .firstNotNullOfOrNull { it.fetch(awaitedCover.isbn) }
       ?.let { store(awaitedCover, it.normalised()) }
   }
 

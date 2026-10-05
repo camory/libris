@@ -18,7 +18,6 @@ import fr.amory.libris.bibliography.domain.lookup.EditionSourceAnswer.Known
 import fr.amory.libris.bibliography.domain.lookup.EditionSourceAnswer.NothingKnown
 import org.springframework.web.client.HttpClientErrorException.NotFound
 import org.springframework.web.client.RestClientException
-import org.springframework.web.client.toEntity
 import tools.jackson.databind.JsonNode
 import tools.jackson.databind.exc.JsonNodeException
 import tools.jackson.databind.node.MissingNode
@@ -44,7 +43,7 @@ class OpenLibrarySource(baseUrl: String, private val coversUrl: String, timeout:
     }
 
   override fun fetch(isbn: Isbn): Cover? =
-    nullOnFailure { coverOf(isbn) }
+    nullOnFailure { http.pictureAt("$coversUrl/${isbn.digits}-L.jpg?default=false") }
 
   private fun answerFor(isbn: Isbn): EditionSourceAnswer =
     Known(
@@ -97,13 +96,4 @@ class OpenLibrarySource(baseUrl: String, private val coversUrl: String, timeout:
 
   private fun document(path: String): JsonNode =
     http.get().uri(path).retrieve().body(JsonNode::class.java) ?: MissingNode.getInstance()
-
-  private fun coverOf(isbn: Isbn): Cover? {
-    val answer = http
-      .get()
-      .uri("$coversUrl/${isbn.digits}-L.jpg?default=false")
-      .retrieve()
-      .toEntity<ByteArray>()
-    return answer.body?.let { bytes -> answer.headers.contentType?.let { Cover.of(it.toString(), bytes) } }
-  }
 }

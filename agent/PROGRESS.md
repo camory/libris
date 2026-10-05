@@ -853,3 +853,46 @@ Format:
   `SecurityConfigTest` alone. No connector setting of Tomcat or switch of
   Spring Security does it.
 - Left over: T057's branch resumes at step 10 once this is on `main`.
+
+## 2026-10-04 — T057 Backend: the cascade for an edition with no chosen source — done
+- Did: an awaited cover with no chosen source is asked of every fetch in
+  `CoverSource.order` until one brings a picture; the BnF fetches its
+  picture by the record's ark; `V008` gives the editions stored before
+  covers an awaited cover. S7's three cases are green.
+- Decided: the BnF's public candidate and its fetch share
+  `coverAddress(coversUrl, ark)` and `arkOf`; the candidate keeps
+  `https://catalogue.bnf.fr/couverture`.
+- Decided: `V008` checked by hand on four rows in a rolled-back transaction
+  (an edition stored before covers, one named, one already awaited, one
+  without an ISBN): only the first gains a wait.
+- Deviations from the brief: `nameOf` and `publicationOf` left `BnfSource`
+  for file-level private functions, since `fetch` and `pictureOf` would put
+  the class at detekt's `TooManyFunctions` threshold (11). Steps 10 and 11
+  were green on arrival and became guards.
+- Blocked once, after step 9: *S7 …, none has it* was refused `400` on
+  `Remote-Name: Ève` by `StrictHttpFirewall`; resolved by #196 with Tophe,
+  merged into the branch, then steps 10–13.
+- Left over: the BnF candidate on the covers setting, in
+  `agent/PROPOSED.md`; S8 (T058) and S9 (T059).
+
+## 2026-10-04 — T057 Backend: the cascade for an edition with no chosen source — reworked
+- Did: `publicationOf` and `nameOf` sit below `BnfSource`, before the record
+  types they read; the three cover fetches read their picture through one
+  `RestClient.pictureAt(address)` in `SourceHttp.kt`; `BnfStubs.hasCover`
+  takes a media type, and the BnF's fetch case serves `image/png`.
+- Decided: the reviewer's verdict of 2026-10-04 amended nothing; its
+  blocking file-order finding and its three suggestions are all applied.
+  `pictureAt` leaves `nullOnFailure` to each caller, since Open Library and
+  the BnF already wrap their whole fetch in it.
+- Deviations from the brief: `BnfStubs` changes (a media-type parameter,
+  `image/jpeg` by default, so the scenarios stay unedited), as the review
+  asked. `nameOf` and `publicationOf` stay out of the class: with `pictureOf`
+  gone it holds nine functions, and the two would bring it to eleven.
+- Left over: nothing new.
+- Reviewed by Tophe: choosing the fetches an awaited cover asks is a rule of
+  its own, so it leaves the use case for a domain type,
+  `CoverFetches.of(list)` sorted by `CoverSource.order`, whose
+  `askedFor(chosenSource)` answers the chosen source's fetch alone, or every
+  one in order when there is none. It only chooses: asking the sources stays
+  the use case's. Built in `FetchAwaitedCovers`' constructor, no bean;
+  `CoverFetchesTest` holds its two cases.

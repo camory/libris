@@ -172,7 +172,6 @@ class CoversScenarios @Autowired constructor(
   }
 
   @Test
-  @Disabled("covers")
   fun `S7 An edition without a chosen source gets the cascade, the first source has it`() {
     // Given
     val tom = reader("tom", "Tom")
@@ -192,7 +191,6 @@ class CoversScenarios @Autowired constructor(
   }
 
   @Test
-  @Disabled("covers")
   fun `S7 An edition without a chosen source gets the cascade, only the last has it`() {
     // Given
     val zoe = reader("zoe", "Zoé")
@@ -212,7 +210,6 @@ class CoversScenarios @Autowired constructor(
   }
 
   @Test
-  @Disabled("covers")
   fun `S7 An edition without a chosen source gets the cascade, none has it`() {
     // Given
     val eve = reader("eve", "Ève")
