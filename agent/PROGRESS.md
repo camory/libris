@@ -954,8 +954,7 @@ Format:
 - Did: an awaited cover is dated with the application's clock before its
   source is asked, and a run passes by one attempted within the day; a
   picture fetch reads at most five megabytes. S8's three cases run.
-- Decided: `update` writes `attempted_at` alone, the chosen source never
-  changing; the run reads the clock once, filters with `isDueAt(now)` and
+- Decided: the run reads the clock once, filters with `isDueAt(now)` and
   dates each awaited cover with that instant.
 - Decided: `pictureAt` reads through `exchange` and answers no cover on a
   non-2xx status and on an empty body, what `retrieve()` threw on and
@@ -969,3 +968,8 @@ Format:
   after step 14; steps 1–14 by the first run, step 15 by the second.
 - Left over: S9 (the worker at start and daily, runs never overlapping),
   T059.
+- Fixed up with Tophe: the awaited cover dates its own attempt
+  (`AwaitedCover.attempted(at)`, no `copy` in the use case), and
+  `JdbcAwaitedCoverRepository.update` writes the whole aggregate, its chosen
+  source too, as the in-memory fake and `JdbcEditionRepository.update` do.
+  The place of the `systemClock` bean stays as the brief put it.
