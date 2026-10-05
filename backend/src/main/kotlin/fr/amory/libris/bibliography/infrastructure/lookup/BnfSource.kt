@@ -22,24 +22,21 @@ class BnfSource(baseUrl: String, private val coversUrl: String, timeout: Duratio
   override val coverSource = CoverSource.BNF
   private val http = sourceRestClient(baseUrl, timeout)
 
-  override fun lookUpEdition(isbn: Isbn): EditionSourceAnswer =
+  override fun answerFor(isbn: Isbn): EditionSourceAnswer =
     try {
-      answerFor(isbn)
+      recordFor(isbn)?.let { read(isbn, it) } ?: NothingKnown
     } catch (ignored: RestClientException) {
       Failed
     } catch (ignored: SAXException) {
       Failed
     }
 
-  override fun fetchCover(isbn: Isbn): Cover? =
+  override fun coverFor(isbn: Isbn): Cover? =
     nullOnFailure {
       recordFor(isbn)?.ark?.let { http.pictureAt(coverAddress(coversUrl, it)) }
     }
 
-  private fun answerFor(isbn: Isbn): EditionSourceAnswer =
-    recordFor(isbn)?.let { answerFrom(isbn, it) } ?: NothingKnown
-
-  private fun answerFrom(isbn: Isbn, record: UnimarcRecord): EditionSourceAnswer =
+  private fun read(isbn: Isbn, record: UnimarcRecord): EditionSourceAnswer =
     record.previewFor(isbn)?.let { Known(it, record.ark?.let(::candidateOf)) } ?: Failed
 
   private fun recordFor(isbn: Isbn): UnimarcRecord? =

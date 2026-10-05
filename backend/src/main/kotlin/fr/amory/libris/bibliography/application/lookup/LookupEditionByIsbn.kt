@@ -34,9 +34,9 @@ class LookupEditionByIsbn(
 
   private fun askTheSources(isbn: Isbn): EditionLookupResult =
     newVirtualThreadPerTaskExecutor().use { executor ->
-      val coverCandidate = executor.submit(Callable { coverLookup.lookUpCover(isbn) })
+      val coverCandidate = executor.submit(Callable { coverLookup.candidateFor(isbn) })
       val sourceAnswers = executor
-        .invokeAll(editionLookups.map { lookup -> Callable { lookup.lookUpEdition(isbn) } })
+        .invokeAll(editionLookups.map { editionLookup -> Callable { editionLookup.answerFor(isbn) } })
         .map { it.get() }
       answerOf(sourceAnswers, coverCandidate.get())
     }

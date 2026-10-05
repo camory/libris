@@ -45,7 +45,7 @@ class BnfSourceTest {
     bnf.knows(ONE_PIECE)
 
     // When
-    val answer = source.lookUpEdition(isbnOf(ONE_PIECE))
+    val answer = source.answerFor(isbnOf(ONE_PIECE))
 
     // Then
     answer shouldBe Known(ONE_PIECE_EDITION, CoverCandidate(BNF, ONE_PIECE_COVER))
@@ -57,7 +57,7 @@ class BnfSourceTest {
     bnf.knows(NERONIA)
 
     // When
-    val answer = source.lookUpEdition(isbnOf(NERONIA))
+    val answer = source.answerFor(isbnOf(NERONIA))
 
     // Then
     answer shouldBe Known(
@@ -90,7 +90,7 @@ class BnfSourceTest {
     bnf.knows(LEMURIA)
 
     // When
-    val answer = source.lookUpEdition(isbnOf(LEMURIA))
+    val answer = source.answerFor(isbnOf(LEMURIA))
 
     // Then
     answer shouldBe Known(
@@ -124,7 +124,7 @@ class BnfSourceTest {
     bnf.knows(APOTHICAIRE)
 
     // When
-    val answer = source.lookUpEdition(isbnOf(APOTHICAIRE))
+    val answer = source.answerFor(isbnOf(APOTHICAIRE))
 
     // Then
     answer shouldBe Known(
@@ -152,7 +152,7 @@ class BnfSourceTest {
     bnf.answers(BLANK_NAMES, CONTRIBUTOR_AND_SERIES_WITHOUT_A_NAME)
 
     // When
-    val answer = source.lookUpEdition(isbnOf(BLANK_NAMES))
+    val answer = source.answerFor(isbnOf(BLANK_NAMES))
 
     // Then
     val preview = (answer as Known).preview
@@ -166,7 +166,7 @@ class BnfSourceTest {
     bnf.answers(BLANK_NAMES, ONE_PERSON_TWICE)
 
     // When
-    val answer = source.lookUpEdition(isbnOf(BLANK_NAMES))
+    val answer = source.answerFor(isbnOf(BLANK_NAMES))
 
     // Then
     (answer as Known).preview.contributions.toList() shouldBe listOf(Contribution("Eiichirō Oda", WRITER))
@@ -178,7 +178,7 @@ class BnfSourceTest {
     bnf.answers(PRINTER_FIRST, PRINTER_BEFORE_PUBLISHER)
 
     // When
-    val answer = source.lookUpEdition(isbnOf(PRINTER_FIRST))
+    val answer = source.answerFor(isbnOf(PRINTER_FIRST))
 
     // Then
     answer shouldBe Known(
@@ -206,7 +206,7 @@ class BnfSourceTest {
     bnf.partiallyKnows(ONE_PIECE)
 
     // When
-    val answer = source.lookUpEdition(isbnOf(ONE_PIECE))
+    val answer = source.answerFor(isbnOf(ONE_PIECE))
 
     // Then
     answer shouldBe Known(
@@ -221,7 +221,7 @@ class BnfSourceTest {
     bnf.doesNotKnow(UNKNOWN)
 
     // When
-    val answer = source.lookUpEdition(isbnOf(UNKNOWN))
+    val answer = source.answerFor(isbnOf(UNKNOWN))
 
     // Then
     answer shouldBe NothingKnown
@@ -233,7 +233,7 @@ class BnfSourceTest {
     bnf.fails()
 
     // When
-    val answer = source.lookUpEdition(isbnOf(ONE_PIECE))
+    val answer = source.answerFor(isbnOf(ONE_PIECE))
 
     // Then
     answer shouldBe Failed
@@ -245,7 +245,7 @@ class BnfSourceTest {
     bnf.answersUnreadably(ONE_PIECE)
 
     // When
-    val answer = source.lookUpEdition(isbnOf(ONE_PIECE))
+    val answer = source.answerFor(isbnOf(ONE_PIECE))
 
     // Then
     answer shouldBe Failed
@@ -257,7 +257,7 @@ class BnfSourceTest {
     bnf.answersTooLate(ONE_PIECE)
 
     // When
-    val answer = source.lookUpEdition(isbnOf(ONE_PIECE))
+    val answer = source.answerFor(isbnOf(ONE_PIECE))
 
     // Then
     answer shouldBe Failed
@@ -269,7 +269,7 @@ class BnfSourceTest {
     bnf.knows(ONE_PIECE)
 
     // When
-    source.lookUpEdition(isbnOf(ONE_PIECE))
+    source.answerFor(isbnOf(ONE_PIECE))
 
     // Then
     val request = server.allServeEvents.map { it.request }.single()
@@ -289,7 +289,7 @@ class BnfSourceTest {
     bnf.fails()
 
     // When
-    source.lookUpEdition(isbnOf(WITHOUT_A_TEN))
+    source.answerFor(isbnOf(WITHOUT_A_TEN))
 
     // Then
     val request = server.allServeEvents.map { it.request }.single()
@@ -303,7 +303,7 @@ class BnfSourceTest {
     bnf.hasCover(TALL_JPEG, "image/png")
 
     // When
-    val cover = source.fetchCover(isbnOf(NERONIA))
+    val cover = source.coverFor(isbnOf(NERONIA))
 
     // Then
     cover.shouldNotBeNull()
@@ -318,7 +318,7 @@ class BnfSourceTest {
     bnf.hasCover(TALL_JPEG)
 
     // When
-    source.fetchCover(isbnOf(NERONIA))
+    source.coverFor(isbnOf(NERONIA))
 
     // Then
     server.allServeEvents.size shouldBe 2
@@ -337,7 +337,7 @@ class BnfSourceTest {
     bnf.hasNoCover()
 
     // When
-    val cover = source.fetchCover(isbnOf(NERONIA))
+    val cover = source.coverFor(isbnOf(NERONIA))
 
     // Then
     cover.shouldBeNull()
@@ -350,7 +350,7 @@ class BnfSourceTest {
     bnf.hasCover(TALL_JPEG)
 
     // When
-    val cover = source.fetchCover(isbnOf(UNKNOWN))
+    val cover = source.coverFor(isbnOf(UNKNOWN))
 
     // Then
     cover.shouldBeNull()
@@ -458,7 +458,7 @@ class BnfSourceTest {
     fun startWireMock() {
       server.start()
       bnf.knows(ONE_PIECE)
-      BnfSource(server.baseUrl() + SRU, server.baseUrl() + COVERS, WARM_UP_TIMEOUT).lookUpEdition(isbnOf(ONE_PIECE))
+      BnfSource(server.baseUrl() + SRU, server.baseUrl() + COVERS, WARM_UP_TIMEOUT).answerFor(isbnOf(ONE_PIECE))
       server.resetAll()
     }
 

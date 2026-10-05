@@ -10,7 +10,7 @@ class CoverFetchAnswering(override val coverSource: CoverSource, private val cov
 
   val asked: List<Isbn> get() = isbns.toList()
 
-  override fun fetchCover(isbn: Isbn): Cover? {
+  override fun coverFor(isbn: Isbn): Cover? {
     isbns += isbn
     return cover
   }

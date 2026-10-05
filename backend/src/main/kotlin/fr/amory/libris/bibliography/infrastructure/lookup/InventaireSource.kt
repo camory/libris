@@ -15,13 +15,13 @@ class InventaireSource(private val baseUrl: String, timeout: Duration) : CoverLo
   override val coverSource = INVENTAIRE
   private val http = sourceRestClient(baseUrl, timeout)
 
-  override fun lookUpCover(isbn: Isbn): CoverCandidate? =
+  override fun candidateFor(isbn: Isbn): CoverCandidate? =
     nullOnFailure {
       pictureOf(entities(isbn))?.let { CoverCandidate(INVENTAIRE, "$baseUrl/img/entities/100x600/$it") }
     }
 
-  override fun fetchCover(isbn: Isbn): Cover? =
-    lookUpCover(isbn)?.let { nullOnFailure { http.pictureAt(it.url) } }
+  override fun coverFor(isbn: Isbn): Cover? =
+    candidateFor(isbn)?.let { nullOnFailure { http.pictureAt(it.url) } }
 
   private fun pictureOf(answer: JsonNode): String? =
     answer
