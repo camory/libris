@@ -232,11 +232,16 @@ Read whole by a run that changes `backend/`, after `every-run.md`.
   reads its picture through `RestClient.pictureAt(address)` beside it, the
   media type the answer's `Content-Type`; the BnF and Open
   Library lookups tell a miss (`NotFound`) from a failure with catches of
-  their own, which leave both out. An empty body is read as no body, `null`,
-  never as an empty array.
+  their own, which leave both out. `pictureAt` reads the body as a stream
+  through `exchange`, up to five megabytes (5 × 1024 × 1024 bytes): a longer
+  picture, an empty body or a non-2xx status is no cover. The source's
+  timeout closes a body still coming, so no code of its own bounds the time.
 - WireMock serves the most recently added matching stub, so
   `OpenLibraryStubs.answers("/search.json", body)` called after `knows(isbn)`
   replaces the recorded search of that lookup.
+- `OpenLibraryStubs.hasCoverDribbledOver(isbn, picture, millis)` sends the
+  headers at once and the body in ten chunks over the given millis, to
+  prove a timeout that falls while the body is read.
 - Open Library writes the edition's own `key` as a path (`/books/OL50534552M`)
   and the search's `edition_key` as bare keys (`OL50534552M`): matching one
   against the other needs the last segment.
@@ -340,6 +345,11 @@ Read whole by a run that changes `backend/`, after `every-run.md`.
   `update`, which replaces the edition of that id, and
   `JdbcEditionRepository.update` writes the whole aggregate, its
   contributions deleted and inserted again.
+- The application's `Clock` is the bean `systemClock` on
+  `LibrisApplication`, UTC; the scenario harness's `MutableClock` (bean
+  `clock` of `StubbedSources`) is `@Primary` over it. A use case takes
+  `Clock`, never `MutableClock`; its plain tests pass a `MutableClock` from
+  the root `fixture`.
 - `TransactionsObserving` and `Transaction` live in the root
   `fr.amory.libris.fixture`, shared by both contexts' use-case tests.
 - `InventaireStubs.picturePaths()` answers the URLs of the picture requests
@@ -354,7 +364,10 @@ Read whole by a run that changes `backend/`, after `every-run.md`.
   case (S3's waits a second on a picture that never comes, and *S10 …, not
   yet stored* starts an Open Library fetch that gives up on the one-second
   timeout after its case); an add of an edition the house already holds
-  inserts no wait, so its run asks nothing unless another wait exists.
+  inserts no wait, so its run asks nothing unless another wait exists. A
+  run dates each awaited cover it takes with the clock's instant before
+  asking its source, and passes by one attempted within the day of the
+  clock (`AwaitedCover.isDueAt`).
   With no chosen source the run asks inventaire.io, Open Library, then the
   BnF's SRU and covers address, so a scenario counting a source's requests
   resets them after its Given (`BookshelfScenarios`' S4, `aStoredCover`).

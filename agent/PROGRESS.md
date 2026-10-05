@@ -950,12 +950,22 @@ Format:
   failed attempt then reads "no cover" from one call.
 - Left over: T058 on his go.
 
-## 2026-10-05 — T058 A failed fetch waits a day — handoff
-- Done: steps 1–14 of the test plan, each its own commit; S8's three cases green; `./gradlew check` green at the handoff, 319 tests, 1 skipped (S9).
-- Start with: step 15 — tidy on green (nothing found yet in a first read of the diff), the gotchas of the brief, the task ticked, this entry rewritten as the diary entry, the PR.
-- Deviation: step 9's harness `@Primary` brought no red; the scenario contexts start with two `Clock` beans, Spring settling them by the use case's parameter name `clock`. Kept as the brief decides, declared in the commit body.
-- Decided: `update` writes `attempted_at` alone (the chosen source never changes); the run reads the clock once, filters with `isDueAt(now)` and dates each awaited cover with that instant before its fetch.
-- Decided: `pictureAt` reads through `exchange`, answers no cover on a non-2xx status (what `retrieve()` threw on) and on an empty body (what `toEntity<ByteArray>` answered `null` to), neither proven by a new case.
-- Guard step 13: `PICTURE_LIMIT` one byte lower reds *a cover of five megabytes is fetched* (`Expected value to not be null, but was null`), reverted.
-- Guard step 14: `setReadTimeout` dropped from `sourceRestClient` reds *a cover whose body is still coming past the timeout is no cover* (`Expected value to be null, but was …Cover@…`), reverted.
-- Learned: Kotlin's `exchange { _, response -> … }` may answer a nullable; `OpenLibraryStubs.hasCoverDribbledOver` serves the body in ten chunks over the given millis.
+## 2026-10-05 — T058 A failed fetch waits a day — done
+- Did: an awaited cover is dated with the application's clock before its
+  source is asked, and a run passes by one attempted within the day; a
+  picture fetch reads at most five megabytes. S8's three cases run.
+- Decided: `update` writes `attempted_at` alone, the chosen source never
+  changing; the run reads the clock once, filters with `isDueAt(now)` and
+  dates each awaited cover with that instant.
+- Decided: `pictureAt` reads through `exchange` and answers no cover on a
+  non-2xx status and on an empty body, what `retrieve()` threw on and
+  `toEntity<ByteArray>` answered `null` to; neither has a case of its own.
+- Decided: `OpenLibraryStubs.hasCoverDribbledOver` for step 14, the body in
+  ten chunks over the given millis.
+- Deviations from the brief: step 9's `@Primary` on the harness clock
+  brought no red: the scenario contexts started with two `Clock` beans,
+  Spring settling them by the use case's parameter name `clock`. Kept as
+  the brief decides, declared in the commit body. The run was handed off
+  after step 14; steps 1–14 by the first run, step 15 by the second.
+- Left over: S9 (the worker at start and daily, runs never overlapping),
+  T059.

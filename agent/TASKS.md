@@ -304,7 +304,7 @@ catalogue rows show a cover only once the worker has stored it (Tophe,
       gate proving it (D03, D07).
       Realises S7 and S12; un-skips the backend tests of S7, its three cases.
 
-- [ ] T058 Backend: a failed fetch waits a day.
+- [x] T058 Backend: a failed fetch waits a day.
       A fetch that gets no answer, an error, or what is not a picture, and a
       cascade that finds no picture, leaves the edition without one and
       dates the attempt on its awaited cover from the application's clock; a
