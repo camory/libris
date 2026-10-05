@@ -93,6 +93,9 @@ Read whole by a run that changes `backend/`, after `every-run.md`.
   assertions (`IsbnTest`, `CoverNameTest`), and `// Given` then
   `// When / Then` when a `val` sets up the case (`FileCoverStoreTest`).
   Older unmarked cases (`NewBookRequestTest`'s first five) are not a model.
+- Un-skipping the last `@Disabled` of a scenario class leaves
+  `import org.junit.jupiter.api.Disabled` unused, which detekt's
+  `NoUnusedImports` fails: the un-skip removes the import too.
 - The first HTTP request and the first XML parse of a JVM cost more than a
   second. A client test with a short timeout warms the client once in
   `@BeforeAll` under a long timeout, then resets the stubs. A delay stub
@@ -338,6 +341,10 @@ Read whole by a run that changes `backend/`, after `every-run.md`.
   `JdbcEditionRepository` in the `@Import` of `JdbcAwaitedCoverRepositoryTest`.
   The port reads with `findAll`, the chosen source back through
   `CoverSource.of`; that class still queries `JdbcClient` for the label stored.
+- An `UPDATE` moves a row to the end of a PostgreSQL scan, so a finder
+  without `ORDER BY` answers an updated row last. `awaited_cover.arrival`, an
+  identity column of `V010`, is the order of `JdbcAwaitedCoverRepository.findAll`;
+  the insert names no new column.
 - `EditionsInMemory.insert` appends without looking at the ISBN, so a use
   case that inserts a held edition a second time fails at
   `editions.stored.single()` ("List has more than one element") before any
@@ -358,16 +365,20 @@ Read whole by a run that changes `backend/`, after `every-run.md`.
   mediaType)` serves the picture under the given `Content-Type`,
   `image/webp` by default, and `knowsWithEntityServedAs(isbn, mediaType)`
   the recorded entity under one.
-- An add answering a copy wakes the cover worker, which runs
-  `FetchAwaitedCovers` on `applicationTaskExecutor`: every add of a new
-  edition with an ISBN starts a run that asks a source and may outlive its
-  case (S3's waits a second on a picture that never comes, and *S10 …, not
-  yet stored* starts an Open Library fetch that gives up on the one-second
-  timeout after its case); an add of an edition the house already holds
-  inserts no wait, so its run asks nothing unless another wait exists. A
-  run dates each awaited cover it takes with the clock's instant before
-  asking its source, and passes by one attempted within the day of the
-  clock (`AwaitedCover.isDueAt`).
+- The cover worker, `ExecutorCoverWorker` built by `WorkerConfig`, runs
+  `FetchAwaitedCovers` on one virtual thread of its own, at every context
+  start, every `libris.worker.every` (`LIBRIS_WORKER_PERIOD`, `P1D` by
+  default) and after each add answering a copy. Runs queue, never overlap:
+  a run that outlives its case (S3's waits a second on a picture that never
+  comes, *S10 …, not yet stored* gives up on Open Library's one-second
+  timeout) delays the next case's run by up to that second. An add of an
+  edition the house already holds inserts no wait, so its run asks nothing
+  unless another wait exists. A run dates each awaited cover it takes with
+  the clock's instant before asking its source, and passes by one attempted
+  within the day of the clock (`AwaitedCover.isDueAt`). Each run logs
+  `Fetching the awaited covers` at INFO. `LibrisApplicationTest` cleans the
+  schema before migrating, since its run at start would ask the real
+  sources for whatever a scenario left awaiting.
   With no chosen source the run asks inventaire.io, Open Library, then the
   BnF's SRU and covers address, so a scenario counting a source's requests
   resets them after its Given (`BookshelfScenarios`' S4, `aStoredCover`).
