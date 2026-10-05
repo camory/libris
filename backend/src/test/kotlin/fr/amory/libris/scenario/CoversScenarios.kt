@@ -17,7 +17,6 @@ import io.kotest.matchers.shouldBe
 import io.kotest.matchers.shouldNotBe
 import io.kotest.matchers.string.shouldContain
 import io.kotest.matchers.string.shouldStartWith
-import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Qualifier
@@ -274,7 +273,6 @@ class CoversScenarios @Autowired constructor(
   }
 
   @Test
-  @Disabled("covers")
   fun `S9 The worker runs on its own`() {
     // Given
     val ana = reader("ana", "Ana")
