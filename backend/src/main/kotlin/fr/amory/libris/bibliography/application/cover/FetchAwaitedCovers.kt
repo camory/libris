@@ -28,12 +28,10 @@ class FetchAwaitedCovers(
   }
 
   private fun take(awaitedCover: AwaitedCover) {
-    val cover = coverFetches.coverFor(awaitedCover.isbn, awaitedCover.chosenSource)
-    if (cover == null) {
-      awaitedCovers.update(awaitedCover.copy(attemptedAt = clock.instant()))
-    } else {
-      store(awaitedCover, cover.normalised())
-    }
+    awaitedCovers.update(awaitedCover.copy(attemptedAt = clock.instant()))
+    coverFetches
+      .coverFor(awaitedCover.isbn, awaitedCover.chosenSource)
+      ?.let { store(awaitedCover, it.normalised()) }
   }
 
   private fun store(awaitedCover: AwaitedCover, cover: Cover) {

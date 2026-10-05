@@ -12,6 +12,7 @@ import fr.amory.libris.bibliography.domain.edition.Edition
 import fr.amory.libris.bibliography.domain.edition.EditionId
 import fr.amory.libris.bibliography.fixture.AwaitedCoversInMemory
 import fr.amory.libris.bibliography.fixture.CoverFetchAnswering
+import fr.amory.libris.bibliography.fixture.CoverFetchObserving
 import fr.amory.libris.bibliography.fixture.CoversInMemory
 import fr.amory.libris.bibliography.fixture.EditionsInMemory
 import fr.amory.libris.bibliography.fixture.coverOf
@@ -209,6 +210,20 @@ class FetchAwaitedCoversTest {
     awaitedCovers.findAll() shouldBe listOf(AwaitedCover(isbnOf(ONE_PIECE), INVENTAIRE, clock.instant()))
     editions.findByIsbn(isbnOf(ONE_PIECE)) shouldBe edition
     covers.stored.shouldBeEmpty()
+  }
+
+  @Test
+  fun `the attempt is dated before its source is asked`() {
+    // Given
+    awaiting(INVENTAIRE)
+    val inventaire = CoverFetchObserving(INVENTAIRE) { awaitedCovers.findAll() }
+    val fetchAwaitedCovers = fetchAwaitedCoversOver(listOf(inventaire))
+
+    // When
+    fetchAwaitedCovers()
+
+    // Then
+    inventaire.asks shouldBe listOf(listOf(AwaitedCover(isbnOf(ONE_PIECE), INVENTAIRE, clock.instant())))
   }
 
   @Test
