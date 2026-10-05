@@ -949,3 +949,13 @@ Format:
   `CoverFetches` change in its own PR, before T058, whose dating of a
   failed attempt then reads "no cover" from one call.
 - Left over: T058 on his go.
+
+## 2026-10-05 — T058 A failed fetch waits a day — handoff
+- Done: steps 1–14 of the test plan, each its own commit; S8's three cases green; `./gradlew check` green at the handoff, 319 tests, 1 skipped (S9).
+- Start with: step 15 — tidy on green (nothing found yet in a first read of the diff), the gotchas of the brief, the task ticked, this entry rewritten as the diary entry, the PR.
+- Deviation: step 9's harness `@Primary` brought no red; the scenario contexts start with two `Clock` beans, Spring settling them by the use case's parameter name `clock`. Kept as the brief decides, declared in the commit body.
+- Decided: `update` writes `attempted_at` alone (the chosen source never changes); the run reads the clock once, filters with `isDueAt(now)` and dates each awaited cover with that instant before its fetch.
+- Decided: `pictureAt` reads through `exchange`, answers no cover on a non-2xx status (what `retrieve()` threw on) and on an empty body (what `toEntity<ByteArray>` answered `null` to), neither proven by a new case.
+- Guard step 13: `PICTURE_LIMIT` one byte lower reds *a cover of five megabytes is fetched* (`Expected value to not be null, but was null`), reverted.
+- Guard step 14: `setReadTimeout` dropped from `sourceRestClient` reds *a cover whose body is still coming past the timeout is no cover* (`Expected value to be null, but was …Cover@…`), reverted.
+- Learned: Kotlin's `exchange { _, response -> … }` may answer a nullable; `OpenLibraryStubs.hasCoverDribbledOver` serves the body in ten chunks over the given millis.
