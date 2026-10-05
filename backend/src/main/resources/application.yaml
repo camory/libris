@@ -13,6 +13,8 @@ libris:
     open-library-covers-url: ${LIBRIS_OPEN_LIBRARY_COVERS_URL:https://covers.openlibrary.org/b/isbn}
     inventaire-url: ${LIBRIS_INVENTAIRE_URL:https://inventaire.io}
     timeout: ${LIBRIS_SOURCE_TIMEOUT:5s}
+  worker:
+    every: ${LIBRIS_WORKER_PERIOD:P1D}
 management:
   endpoints:
     web:
