@@ -896,3 +896,25 @@ Format:
   one in order when there is none. It only chooses: asking the sources stays
   the use case's. Built in `FetchAwaitedCovers`' constructor, no bean;
   `CoverFetchesTest` holds its two cases.
+
+## 2026-10-05 — a source's methods name their port, the BnF source split, with Tophe
+- Did: `lookUp` and `fetch` read alike in a source that implements two
+  ports, and `lookUp` meant an edition in `BnfSource` but a cover address
+  in `InventaireSource`. The three port methods are now `lookUpEdition`
+  (`EditionLookup`), `lookUpCover` (`CoverLookup`) and `fetchCover`
+  (`CoverFetch`). `BnfSource.kt` held four concerns in a scattered order;
+  it is now three files: `UnimarcRecord.kt` (the XML parsing and the two
+  record classes, `UnimarcRecord.parse`), `BnfRecord.kt` (the BnF's reading
+  of a record: `previewFor(isbn)`, `ark`, the field readers) and
+  `BnfSource.kt` (the SRU search, the covers address, the two port
+  methods). The reader tests moved to `BnfRecordTest`; the `coverOf`
+  test became the `arkOf` test of the same three cases, the candidate's
+  address staying asserted by `BnfSourceTest`'s lookups.
+- Verified: `./gradlew check` green after each commit, 310 tests, 4
+  skipped, as on `main`.
+- Decided with Tophe: verb and object (`lookUpEdition`) rather than the
+  answer's noun (`editionOf`); three files; one PR. Left as it was:
+  `PUBLIC_COVERS` beside the injected covers URL, a change of behaviour
+  for later; the two error styles, `Failed` and no cover.
+- Left over: the domain types over a collection of ports
+  (`CoverFetches`, `EditionLookups`), still to discuss.
