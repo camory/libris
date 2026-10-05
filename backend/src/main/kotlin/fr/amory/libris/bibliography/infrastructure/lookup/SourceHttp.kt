@@ -24,7 +24,7 @@ internal fun sourceRestClient(baseUrl: String, timeout: Duration): RestClient {
 internal fun <T> nullOnFailure(read: () -> T?): T? =
   try {
     read()
-  } catch (ignored: Exception) {
+  } catch (_: Exception) {
     null
   }
 

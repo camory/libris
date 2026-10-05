@@ -41,7 +41,7 @@ class OpenLibrarySourceTest {
     openLibrary.knows(SPACE_WARS)
 
     // When
-    val answer = source.lookUp(isbnOf(SPACE_WARS))
+    val answer = source.answerFor(isbnOf(SPACE_WARS))
 
     // Then
     answer shouldBe Known(
@@ -75,7 +75,7 @@ class OpenLibrarySourceTest {
     openLibrary.knows(SPACE_WARS)
 
     // When
-    source.lookUp(isbnOf(SPACE_WARS))
+    source.answerFor(isbnOf(SPACE_WARS))
 
     // Then
     server.allServeEvents.map { it.request.url } shouldContainExactlyInAnyOrder listOf(
@@ -91,7 +91,7 @@ class OpenLibrarySourceTest {
     openLibrary.knows(MONTE_CRISTO)
 
     // When
-    val answer = source.lookUp(isbnOf(MONTE_CRISTO))
+    val answer = source.answerFor(isbnOf(MONTE_CRISTO))
 
     // Then
     answer shouldBe Known(MONTE_CRISTO_EDITION, MONTE_CRISTO_COVER)
@@ -104,7 +104,7 @@ class OpenLibrarySourceTest {
     openLibrary.answers("/search.json", ANOTHER_WORK)
 
     // When
-    val answer = source.lookUp(isbnOf(MONTE_CRISTO))
+    val answer = source.answerFor(isbnOf(MONTE_CRISTO))
 
     // Then
     answer shouldBe Known(
@@ -120,7 +120,7 @@ class OpenLibrarySourceTest {
     openLibrary.answers("/search.json", A_NAMELESS_AUTHOR)
 
     // When
-    val answer = source.lookUp(isbnOf(MONTE_CRISTO))
+    val answer = source.answerFor(isbnOf(MONTE_CRISTO))
 
     // Then
     val dumas = Contributions.of(listOf(Contribution("Alexandre Dumas", WRITER)))
@@ -133,7 +133,7 @@ class OpenLibrarySourceTest {
     openLibrary.doesNotKnow(UNKNOWN)
 
     // When
-    val answer = source.lookUp(isbnOf(UNKNOWN))
+    val answer = source.answerFor(isbnOf(UNKNOWN))
 
     // Then
     answer shouldBe NothingKnown
@@ -145,7 +145,7 @@ class OpenLibrarySourceTest {
     openLibrary.fails()
 
     // When
-    val answer = source.lookUp(isbnOf(SPACE_WARS))
+    val answer = source.answerFor(isbnOf(SPACE_WARS))
 
     // Then
     answer shouldBe Failed
@@ -158,7 +158,7 @@ class OpenLibrarySourceTest {
     openLibrary.failsOn("/search.json")
 
     // When
-    val answer = source.lookUp(isbnOf(SPACE_WARS))
+    val answer = source.answerFor(isbnOf(SPACE_WARS))
 
     // Then
     answer shouldBe Failed
@@ -170,7 +170,7 @@ class OpenLibrarySourceTest {
     openLibrary.answers("/isbn/$SPACE_WARS.json", "")
 
     // When
-    val answer = source.lookUp(isbnOf(SPACE_WARS))
+    val answer = source.answerFor(isbnOf(SPACE_WARS))
 
     // Then
     answer shouldBe Failed
@@ -182,7 +182,7 @@ class OpenLibrarySourceTest {
     openLibrary.answersTooLate(SPACE_WARS)
 
     // When
-    val answer = source.lookUp(isbnOf(SPACE_WARS))
+    val answer = source.answerFor(isbnOf(SPACE_WARS))
 
     // Then
     answer shouldBe Failed
@@ -194,7 +194,7 @@ class OpenLibrarySourceTest {
     openLibrary.hasCover(SPACE_WARS, TALL_JPEG)
 
     // When
-    val cover = source.fetch(isbnOf(SPACE_WARS))
+    val cover = source.coverFor(isbnOf(SPACE_WARS))
 
     // Then
     cover.shouldNotBeNull()
@@ -208,7 +208,7 @@ class OpenLibrarySourceTest {
     openLibrary.hasCover(SPACE_WARS, TALL_JPEG)
 
     // When
-    source.fetch(isbnOf(SPACE_WARS))
+    source.coverFor(isbnOf(SPACE_WARS))
 
     // Then
     server.allServeEvents.map { it.request.url } shouldBe listOf("/b/isbn/$SPACE_WARS-L.jpg?default=false")
@@ -220,7 +220,7 @@ class OpenLibrarySourceTest {
     openLibrary.coverFails(SPACE_WARS)
 
     // When
-    val cover = source.fetch(isbnOf(SPACE_WARS))
+    val cover = source.coverFor(isbnOf(SPACE_WARS))
 
     // Then
     cover.shouldBeNull()
@@ -232,7 +232,7 @@ class OpenLibrarySourceTest {
     openLibrary.hasCover(SPACE_WARS, TALL_JPEG, "jpeg")
 
     // When
-    val cover = source.fetch(isbnOf(SPACE_WARS))
+    val cover = source.coverFor(isbnOf(SPACE_WARS))
 
     // Then
     cover.shouldBeNull()
@@ -244,7 +244,7 @@ class OpenLibrarySourceTest {
     openLibrary.hasNoCover(SPACE_WARS)
 
     // When
-    val cover = source.fetch(isbnOf(SPACE_WARS))
+    val cover = source.coverFor(isbnOf(SPACE_WARS))
 
     // Then
     cover.shouldBeNull()
@@ -289,7 +289,7 @@ class OpenLibrarySourceTest {
     fun startWireMock() {
       server.start()
       openLibrary.knows(SPACE_WARS)
-      OpenLibrarySource(server.baseUrl(), "${server.baseUrl()}/b/isbn", WARM_UP_TIMEOUT).lookUp(isbnOf(SPACE_WARS))
+      OpenLibrarySource(server.baseUrl(), "${server.baseUrl()}/b/isbn", WARM_UP_TIMEOUT).answerFor(isbnOf(SPACE_WARS))
       server.resetAll()
     }
 

@@ -25,7 +25,7 @@ class Cover private constructor(val mediaType: String, val bytes: ByteArray) {
   private fun picture(): BufferedImage? =
     try {
       ImageIO.read(ByteArrayInputStream(bytes))
-    } catch (ignored: IIOException) {
+    } catch (_: IIOException) {
       null
     }
 

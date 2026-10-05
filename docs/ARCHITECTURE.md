@@ -432,7 +432,9 @@ deliberately lacks), no other service. A test that needs more blocks the task.
   A member is imported, not qualified, whenever its bare name is
   unambiguous: `OPEN_LIBRARY`, `Failed`, `RANDOM_PORT`, `ofSeconds(5)`;
   `MissingNode.getInstance()` stays qualified because `getInstance()` alone
-  says nothing.
+  says nothing. Kotlin's own forms over Java's, as IntelliJ's Kotlin
+  inspections suggest: `catch (_: X)` for an exception never read, a
+  reified extension over a `Class` argument (`body<JsonNode>()`).
 - Kotlin layout, in the Gradle scripts too. The indent is 2 spaces. The
   arrows of a `when` are aligned in a column, one column per `when`, and a
   branch whose body would span several lines calls a method. The body of a
@@ -468,12 +470,15 @@ deliberately lacks), no other service. A test that needs more blocks the task.
   (`useAddBookToBookshelf`), that takes its ports as arguments and exposes
   the state the view renders and one function, the verb of the sentence
   (`add(edition)`); the view injects the ports, calls the composable and
-  renders. A port keeps a verb of its own (`EditionLookup.lookUp`,
-  `CopyRepository.findByEditionId`): its name says what it is, not what it
-  does. A repository of D12 ends in `Repository` (`CopyRepository`); a
-  query port of D12 does not, and is named by what it answers
-  (`CatalogueEditions`): the suffix alone tells an aggregate's port from a
-  read's.
+  renders. A port is named by what it is, not what it does, and its method
+  so that the call reads with the receiver in front: a repository keeps its
+  verbs (`CopyRepository.findByEditionId`); a port named for one act names
+  its method after what it gives back (`editionLookup.answerFor(isbn)`,
+  `coverFetch.coverFor(isbn)`), never the act again
+  (`coverLookup.lookUpCover`). A repository of D12 ends in `Repository`
+  (`CopyRepository`); a query port of D12 does not, and is named by what it
+  answers (`CatalogueEditions`): the suffix alone tells an aggregate's port
+  from a read's.
 - A DTO of `web` maps itself, and the controller maps
   nothing. A response is built from the application's type by `from` on its
   companion (`BookResponse.from(held)`); a request turns itself into the

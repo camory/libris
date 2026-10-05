@@ -5,5 +5,5 @@ import fr.amory.libris.bibliography.domain.Isbn
 interface CoverFetch {
   val coverSource: CoverSource
 
-  fun fetch(isbn: Isbn): Cover?
+  fun coverFor(isbn: Isbn): Cover?
 }
