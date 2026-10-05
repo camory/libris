@@ -8,5 +8,5 @@ private val A_DAY = Duration.ofDays(1)
 
 data class AwaitedCover(val isbn: Isbn, val chosenSource: CoverSource?, val attemptedAt: Instant? = null) {
   fun isDueAt(now: Instant): Boolean =
-    attemptedAt?.plus(A_DAY)?.isBefore(now) ?: true
+    attemptedAt == null || attemptedAt.plus(A_DAY) <= now
 }

@@ -24,4 +24,13 @@ class AwaitedCoverTest {
     // When / Then
     AwaitedCover(isbnOf(ONE_PIECE), OPEN_LIBRARY, attemptedAt).isDueAt(NOW) shouldBe false
   }
+
+  @Test
+  fun `an awaited cover attempted a day ago is due again`() {
+    // Given
+    val attemptedAt = NOW.minus(Duration.ofHours(24))
+
+    // When / Then
+    AwaitedCover(isbnOf(ONE_PIECE), OPEN_LIBRARY, attemptedAt).isDueAt(NOW) shouldBe true
+  }
 }
