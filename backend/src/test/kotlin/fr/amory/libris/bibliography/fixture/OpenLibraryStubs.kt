@@ -64,6 +64,13 @@ class OpenLibraryStubs(private val server: WireMockServer) {
     )
   }
 
+  fun hasCoverDribbledOver(isbn: String, picture: ByteArray, durationMillis: Int) {
+    server.stubFor(
+      get(urlPathEqualTo(cover(isbn)))
+        .willReturn(jpeg(picture).withChunkedDribbleDelay(DRIBBLE_CHUNKS, durationMillis)),
+    )
+  }
+
   fun hasNoCover(isbn: String) {
     server.stubFor(get(urlPathEqualTo(cover(isbn))).willReturn(notFound()))
   }
@@ -100,5 +107,6 @@ class OpenLibraryStubs(private val server: WireMockServer) {
 
   private companion object {
     const val LATE = 2_000
+    const val DRIBBLE_CHUNKS = 10
   }
 }

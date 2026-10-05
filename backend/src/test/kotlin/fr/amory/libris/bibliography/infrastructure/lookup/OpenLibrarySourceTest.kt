@@ -278,11 +278,24 @@ class OpenLibrarySourceTest {
     cover.bytes shouldBe picture
   }
 
+  @Test
+  fun `a cover whose body is still coming past the timeout is no cover`() {
+    // Given
+    openLibrary.hasCoverDribbledOver(SPACE_WARS, TALL_JPEG, A_SECOND)
+
+    // When
+    val cover = source.coverFor(isbnOf(SPACE_WARS))
+
+    // Then
+    cover.shouldBeNull()
+  }
+
   private companion object {
     const val SPACE_WARS = "9782380751673"
     const val MONTE_CRISTO = "9782253098058"
     const val UNKNOWN = "9782000000013"
     const val FIVE_MEGABYTES = 5 * 1024 * 1024
+    const val A_SECOND = 1_000
     val TALL_JPEG = recordedBytes("covers/tall.jpg")
     val MONTE_CRISTO_EDITION = EditionPreview(
       isbn = isbnOf(MONTE_CRISTO),
