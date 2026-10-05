@@ -897,24 +897,35 @@ Format:
   the use case's. Built in `FetchAwaitedCovers`' constructor, no bean;
   `CoverFetchesTest` holds its two cases.
 
-## 2026-10-05 — a source's methods name their port, the BnF source split, with Tophe
+## 2026-10-05 — a source's methods name what they give back, the BnF source split, with Tophe
 - Did: `lookUp` and `fetch` read alike in a source that implements two
   ports, and `lookUp` meant an edition in `BnfSource` but a cover address
-  in `InventaireSource`. The three port methods are now `lookUpEdition`
-  (`EditionLookup`), `lookUpCover` (`CoverLookup`) and `fetchCover`
-  (`CoverFetch`). `BnfSource.kt` held four concerns in a scattered order;
+  in `InventaireSource`. A first rename to verb and object
+  (`lookUpEdition`, `lookUpCover`, `fetchCover`) cleared the source but
+  stuttered at the caller, `coverLookup.lookUpCover(isbn)`; the methods now
+  name what they give back and the receiver names the port:
+  `EditionLookup.answerFor`, `CoverLookup.candidateFor`,
+  `CoverFetch.coverFor`. `BnfSource`'s private `answerFor` folds into the
+  port method and `answerFrom` becomes `read`; `OpenLibrarySource`'s
+  becomes `knownFor`, typed `Known`; the use case's lambda is
+  `editionLookup`. `BnfSource.kt` held four concerns in a scattered order;
   it is now three files: `UnimarcRecord.kt` (the XML parsing and the two
   record classes, `UnimarcRecord.parse`), `BnfRecord.kt` (the BnF's reading
   of a record: `previewFor(isbn)`, `ark`, the field readers) and
   `BnfSource.kt` (the SRU search, the covers address, the two port
   methods). The reader tests moved to `BnfRecordTest`; the `coverOf`
   test became the `arkOf` test of the same three cases, the candidate's
-  address staying asserted by `BnfSourceTest`'s lookups.
+  address staying asserted by `BnfSourceTest`'s lookups. Kotlin's forms
+  where IntelliJ flagged Java's: `catch (_: X)` for an exception never
+  read, `body<T>()` for a typed answer.
 - Verified: `./gradlew check` green after each commit, 310 tests, 4
-  skipped, as on `main`.
-- Decided with Tophe: verb and object (`lookUpEdition`) rather than the
-  answer's noun (`editionOf`); three files; one PR. Left as it was:
-  `PUBLIC_COVERS` beside the injected covers URL, a change of behaviour
-  for later; the two error styles, `Failed` and no cover.
+  skipped, as on `main`; Kotlin 2.3.21 and detekt 1.23.8 accept
+  `catch (_: X)`.
+- Decided with Tophe: the answer's noun over verb and object, for the
+  caller's sake; three files; one PR; Kotlin style over Java style
+  everywhere. Left as it was: `PUBLIC_COVERS` beside the injected covers
+  URL, a change of behaviour for later; the two error styles, `Failed` and
+  no cover; `JdbcClient`'s `query(UUID::class.java)`, which has no Kotlin
+  extension.
 - Left over: the domain types over a collection of ports
   (`CoverFetches`, `EditionLookups`), still to discuss.
