@@ -4,6 +4,7 @@ import fr.amory.libris.bibliography.domain.Contributions
 import fr.amory.libris.bibliography.domain.Kind.MANGA
 import fr.amory.libris.bibliography.domain.cover.AwaitedCover
 import fr.amory.libris.bibliography.domain.cover.CoverSource.INVENTAIRE
+import fr.amory.libris.bibliography.domain.cover.CoverSource.OPEN_LIBRARY
 import fr.amory.libris.bibliography.domain.edition.Edition
 import fr.amory.libris.bibliography.domain.edition.EditionId
 import fr.amory.libris.bibliography.fixture.isbnOf
@@ -77,17 +78,17 @@ class JdbcAwaitedCoverRepositoryTest @Autowired constructor(
   }
 
   @Test
-  fun `an awaited cover is read back with the date of its last attempt`() {
+  fun `an updated awaited cover is read back whole, its chosen source and the date of its last attempt`() {
     // Given
     editions.insert(onePieceTomeOne())
     awaitedCovers.insert(AwaitedCover(isbnOf(ONE_PIECE), INVENTAIRE))
-    val attempted = AwaitedCover(isbnOf(ONE_PIECE), INVENTAIRE, Instant.parse("2026-10-05T08:00:00Z"))
+    val updated = AwaitedCover(isbnOf(ONE_PIECE), OPEN_LIBRARY, Instant.parse("2026-10-05T08:00:00Z"))
 
     // When
-    awaitedCovers.update(attempted)
+    awaitedCovers.update(updated)
 
     // Then
-    awaitedCovers.findAll() shouldBe listOf(attempted)
+    awaitedCovers.findAll() shouldBe listOf(updated)
   }
 
   @Test

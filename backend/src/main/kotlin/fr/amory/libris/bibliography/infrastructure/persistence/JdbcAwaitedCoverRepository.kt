@@ -17,7 +17,10 @@ private const val INSERT_AWAITED_COVER =
     """
 
 private const val UPDATE_AWAITED_COVER =
-  "UPDATE awaited_cover SET attempted_at = :attemptedAt WHERE awaited_cover.isbn13 = :isbn13"
+  """
+    UPDATE awaited_cover SET source = :source, attempted_at = :attemptedAt
+    WHERE awaited_cover.isbn13 = :isbn13
+    """
 
 private const val SELECT_AWAITED_COVERS =
   "SELECT awaited_cover.isbn13, awaited_cover.source, awaited_cover.attempted_at FROM awaited_cover"
@@ -39,6 +42,7 @@ class JdbcAwaitedCoverRepository(private val jdbcClient: JdbcClient) : AwaitedCo
     jdbcClient
       .sql(UPDATE_AWAITED_COVER)
       .param("isbn13", awaitedCover.isbn.digits)
+      .param("source", awaitedCover.chosenSource?.label)
       .param("attemptedAt", awaitedCover.attemptedAt?.atOffset(UTC))
       .update()
   }
