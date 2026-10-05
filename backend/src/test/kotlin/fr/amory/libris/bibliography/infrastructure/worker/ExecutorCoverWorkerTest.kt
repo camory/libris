@@ -14,6 +14,7 @@ import fr.amory.libris.bibliography.fixture.EditionsInMemory
 import fr.amory.libris.bibliography.fixture.coverOf
 import fr.amory.libris.bibliography.fixture.isbnOf
 import fr.amory.libris.bibliography.fixture.recordedBytes
+import fr.amory.libris.fixture.MutableClock
 import io.kotest.matchers.collections.shouldBeEmpty
 import io.kotest.matchers.shouldBe
 import org.junit.jupiter.api.Test
@@ -27,7 +28,14 @@ class ExecutorCoverWorkerTest {
   private val awaitedCovers = AwaitedCoversInMemory()
   private val coverFetch = CoverFetchAnswering(INVENTAIRE, coverOf("image/webp", recordedBytes("covers/small.webp")))
   private val fetchAwaitedCovers =
-    FetchAwaitedCovers(awaitedCovers, listOf(coverFetch), CoversInMemory(), editions, withoutTransaction())
+    FetchAwaitedCovers(
+      awaitedCovers,
+      listOf(coverFetch),
+      CoversInMemory(),
+      editions,
+      withoutTransaction(),
+      MutableClock(),
+    )
 
   @Test
   fun `a waking runs the fetch of the awaited covers`() {

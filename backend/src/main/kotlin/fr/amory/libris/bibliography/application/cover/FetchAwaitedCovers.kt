@@ -9,6 +9,7 @@ import fr.amory.libris.bibliography.domain.cover.CoverStore
 import fr.amory.libris.bibliography.domain.edition.EditionRepository
 import org.springframework.stereotype.Service
 import org.springframework.transaction.support.TransactionOperations
+import java.time.Clock
 
 @Service
 class FetchAwaitedCovers(
@@ -16,7 +17,8 @@ class FetchAwaitedCovers(
   coverFetches: List<CoverFetch>,
   private val covers: CoverStore,
   private val editions: EditionRepository,
-  private val transactions: TransactionOperations) {
+  private val transactions: TransactionOperations,
+  private val clock: Clock) {
   private val coverFetches = CoverFetches.of(coverFetches)
 
   operator fun invoke() {
@@ -26,9 +28,12 @@ class FetchAwaitedCovers(
   }
 
   private fun take(awaitedCover: AwaitedCover) {
-    coverFetches
-      .coverFor(awaitedCover.isbn, awaitedCover.chosenSource)
-      ?.let { store(awaitedCover, it.normalised()) }
+    val cover = coverFetches.coverFor(awaitedCover.isbn, awaitedCover.chosenSource)
+    if (cover == null) {
+      awaitedCovers.update(awaitedCover.copy(attemptedAt = clock.instant()))
+    } else {
+      store(awaitedCover, cover.normalised())
+    }
   }
 
   private fun store(awaitedCover: AwaitedCover, cover: Cover) {
