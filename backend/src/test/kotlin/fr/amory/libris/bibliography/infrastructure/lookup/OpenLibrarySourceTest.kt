@@ -263,6 +263,21 @@ class OpenLibrarySourceTest {
     cover.shouldBeNull()
   }
 
+  @Test
+  fun `a cover of five megabytes is fetched`() {
+    // Given
+    val picture = ByteArray(FIVE_MEGABYTES)
+    openLibrary.hasCover(SPACE_WARS, picture)
+    val source = OpenLibrarySource(server.baseUrl(), "${server.baseUrl()}/b/isbn", WARM_UP_TIMEOUT)
+
+    // When
+    val cover = source.coverFor(isbnOf(SPACE_WARS))
+
+    // Then
+    cover.shouldNotBeNull()
+    cover.bytes shouldBe picture
+  }
+
   private companion object {
     const val SPACE_WARS = "9782380751673"
     const val MONTE_CRISTO = "9782253098058"
