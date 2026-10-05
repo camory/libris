@@ -4,35 +4,47 @@ import fr.amory.libris.bibliography.domain.cover.CoverSource.BNF
 import fr.amory.libris.bibliography.domain.cover.CoverSource.INVENTAIRE
 import fr.amory.libris.bibliography.domain.cover.CoverSource.OPEN_LIBRARY
 import fr.amory.libris.bibliography.fixture.CoverFetchAnswering
+import fr.amory.libris.bibliography.fixture.coverOf
+import fr.amory.libris.bibliography.fixture.isbnOf
+import fr.amory.libris.bibliography.fixture.pictureOf
+import fr.amory.libris.bibliography.fixture.recordedBytes
+import io.kotest.matchers.collections.shouldBeEmpty
 import io.kotest.matchers.shouldBe
 import org.junit.jupiter.api.Test
 
+private const val ONE_PIECE = "9782723488525"
+
 class CoverFetchesTest {
-  private val inventaire = CoverFetchAnswering(INVENTAIRE, null)
-  private val openLibrary = CoverFetchAnswering(OPEN_LIBRARY, null)
-  private val bnf = CoverFetchAnswering(BNF, null)
+  private val webp = coverOf("image/webp", recordedBytes("covers/small.webp"))
+  private val jpeg = coverOf("image/jpeg", pictureOf("jpeg", 400, 600))
 
   @Test
-  fun `with a chosen source, its fetch alone is asked`() {
+  fun `with a chosen source, its cover alone is fetched`() {
     // Given
-    val coverFetches = CoverFetches.of(listOf(inventaire, openLibrary, bnf))
+    val inventaire = CoverFetchAnswering(INVENTAIRE, webp)
+    val coverFetches = CoverFetches.of(listOf(inventaire, CoverFetchAnswering(OPEN_LIBRARY, jpeg)))
 
     // When
-    val asked = coverFetches.askedFor(OPEN_LIBRARY)
+    val cover = coverFetches.coverFor(isbnOf(ONE_PIECE), OPEN_LIBRARY)
 
     // Then
-    asked shouldBe listOf(openLibrary)
+    cover shouldBe jpeg
+    inventaire.asked.shouldBeEmpty()
   }
 
   @Test
-  fun `with no chosen source, every fetch is asked, inventaire io, Open Library, then the BnF`() {
+  fun `with no chosen source, the first cover of inventaire io, Open Library, then the BnF is fetched`() {
     // Given
-    val coverFetches = CoverFetches.of(listOf(bnf, inventaire, openLibrary))
+    val inventaire = CoverFetchAnswering(INVENTAIRE, null)
+    val bnf = CoverFetchAnswering(BNF, jpeg)
+    val coverFetches = CoverFetches.of(listOf(bnf, inventaire, CoverFetchAnswering(OPEN_LIBRARY, webp)))
 
     // When
-    val asked = coverFetches.askedFor(null)
+    val cover = coverFetches.coverFor(isbnOf(ONE_PIECE), null)
 
     // Then
-    asked shouldBe listOf(inventaire, openLibrary, bnf)
+    cover shouldBe webp
+    inventaire.asked shouldBe listOf(isbnOf(ONE_PIECE))
+    bnf.asked.shouldBeEmpty()
   }
 }
