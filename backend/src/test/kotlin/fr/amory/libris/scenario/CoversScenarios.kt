@@ -241,7 +241,6 @@ class CoversScenarios @Autowired constructor(
   }
 
   @Test
-  @Disabled("covers")
   fun `S8 A failed fetch waits a day, the source answers what is not a picture`() {
     openLibrary.coverIsNotAPicture(ONE_PIECE_1)
     aFailedFetchWaitsADay()
