@@ -931,3 +931,21 @@ Format:
   extension.
 - Left over: the domain types over a collection of ports
   (`CoverFetches`, `EditionLookups`), still to discuss.
+
+## 2026-10-05 — the cover cascade is one call of `CoverFetches`, with Tophe
+- Did: the cascade's rule, the chosen source alone or every source in
+  order with the first picture winning, was split between
+  `CoverFetches.askedFor` and the use case's `firstNotNullOfOrNull`.
+  `CoverFetches.coverFor(isbn, chosenSource)` now holds it whole;
+  `askedFor` is private; `FetchAwaitedCovers.take` reads
+  `coverFetches.coverFor(…)?.let { store(…) }`. `CoverFetchesTest`'s two
+  cases ask for the cover instead of the list of fetches. The use case's
+  tests are unchanged: they check what is stored, named and still awaited.
+- Verified: the new case red (no `coverFor`), then green; the ordering
+  case red with the sort of `CoverFetches.of` removed, then reverted.
+  `./gradlew check` green, 310 tests, 4 skipped, as on `main`.
+- Decided with Tophe: no `EditionLookups`: the lookup use case's sort,
+  parallel ask and merge hold no rule a domain type would add to. The
+  `CoverFetches` change in its own PR, before T058, whose dating of a
+  failed attempt then reads "no cover" from one call.
+- Left over: T058 on his go.
