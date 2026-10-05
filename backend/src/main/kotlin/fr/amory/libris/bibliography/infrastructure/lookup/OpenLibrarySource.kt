@@ -18,6 +18,7 @@ import fr.amory.libris.bibliography.domain.lookup.EditionSourceAnswer.Known
 import fr.amory.libris.bibliography.domain.lookup.EditionSourceAnswer.NothingKnown
 import org.springframework.web.client.HttpClientErrorException.NotFound
 import org.springframework.web.client.RestClientException
+import org.springframework.web.client.body
 import tools.jackson.databind.JsonNode
 import tools.jackson.databind.exc.JsonNodeException
 import tools.jackson.databind.node.MissingNode
@@ -34,11 +35,11 @@ class OpenLibrarySource(baseUrl: String, private val coversUrl: String, timeout:
   override fun answerFor(isbn: Isbn): EditionSourceAnswer =
     try {
       knownFor(isbn)
-    } catch (ignored: NotFound) {
+    } catch (_: NotFound) {
       NothingKnown
-    } catch (ignored: RestClientException) {
+    } catch (_: RestClientException) {
       Failed
-    } catch (ignored: JsonNodeException) {
+    } catch (_: JsonNodeException) {
       Failed
     }
 
@@ -92,8 +93,8 @@ class OpenLibrarySource(baseUrl: String, private val coversUrl: String, timeout:
           .build()
       }
       .retrieve()
-      .body(JsonNode::class.java) ?: MissingNode.getInstance()
+      .body<JsonNode>() ?: MissingNode.getInstance()
 
   private fun document(path: String): JsonNode =
-    http.get().uri(path).retrieve().body(JsonNode::class.java) ?: MissingNode.getInstance()
+    http.get().uri(path).retrieve().body<JsonNode>() ?: MissingNode.getInstance()
 }

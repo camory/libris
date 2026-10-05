@@ -12,6 +12,7 @@ import fr.amory.libris.bibliography.domain.lookup.EditionSourceAnswer.Failed
 import fr.amory.libris.bibliography.domain.lookup.EditionSourceAnswer.Known
 import fr.amory.libris.bibliography.domain.lookup.EditionSourceAnswer.NothingKnown
 import org.springframework.web.client.RestClientException
+import org.springframework.web.client.body
 import org.xml.sax.SAXException
 import java.time.Duration
 
@@ -25,9 +26,9 @@ class BnfSource(baseUrl: String, private val coversUrl: String, timeout: Duratio
   override fun answerFor(isbn: Isbn): EditionSourceAnswer =
     try {
       recordFor(isbn)?.let { read(isbn, it) } ?: NothingKnown
-    } catch (ignored: RestClientException) {
+    } catch (_: RestClientException) {
       Failed
-    } catch (ignored: SAXException) {
+    } catch (_: SAXException) {
       Failed
     }
 
@@ -55,7 +56,7 @@ class BnfSource(baseUrl: String, private val coversUrl: String, timeout: Duratio
           .build()
       }
       .retrieve()
-      .body(String::class.java)
+      .body<String>()
       .orEmpty()
 
   private companion object {
