@@ -16,6 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.context.annotation.Import
 import org.springframework.dao.DataIntegrityViolationException
 import org.springframework.jdbc.core.simple.JdbcClient
+import java.time.Instant
 
 private const val ONE_PIECE = "9782723488525"
 private const val ONE_PIECE_TOME_TWO = "9782723489898"
@@ -73,6 +74,20 @@ class JdbcAwaitedCoverRepositoryTest @Autowired constructor(
       AwaitedCover(isbnOf(ONE_PIECE), INVENTAIRE),
       AwaitedCover(isbnOf(ONE_PIECE_TOME_TWO), null),
     )
+  }
+
+  @Test
+  fun `an awaited cover is read back with the date of its last attempt`() {
+    // Given
+    editions.insert(onePieceTomeOne())
+    awaitedCovers.insert(AwaitedCover(isbnOf(ONE_PIECE), INVENTAIRE))
+    val attempted = AwaitedCover(isbnOf(ONE_PIECE), INVENTAIRE, Instant.parse("2026-10-05T08:00:00Z"))
+
+    // When
+    awaitedCovers.update(attempted)
+
+    // Then
+    awaitedCovers.findAll() shouldBe listOf(attempted)
   }
 
   @Test
