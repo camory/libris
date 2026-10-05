@@ -26,6 +26,7 @@ import io.kotest.matchers.collections.shouldBeEmpty
 import io.kotest.matchers.shouldBe
 import org.junit.jupiter.api.Test
 import org.springframework.transaction.support.TransactionOperations.withoutTransaction
+import java.time.Duration
 
 private const val ONE_PIECE = "9782723488525"
 private const val ONE_PIECE_2 = "9782723489898"
@@ -224,6 +225,24 @@ class FetchAwaitedCoversTest {
 
     // Then
     inventaire.asks shouldBe listOf(listOf(AwaitedCover(isbnOf(ONE_PIECE), INVENTAIRE, clock.instant())))
+  }
+
+  @Test
+  fun `an awaited cover attempted within the day is passed by`() {
+    // Given
+    val attempted = AwaitedCover(isbnOf(ONE_PIECE), INVENTAIRE, clock.instant().minus(Duration.ofHours(1)))
+    editions.insert(edition)
+    awaitedCovers.insert(attempted)
+    val inventaire = CoverFetchAnswering(INVENTAIRE, cover)
+    val fetchAwaitedCovers = fetchAwaitedCoversOver(listOf(inventaire))
+
+    // When
+    fetchAwaitedCovers()
+
+    // Then
+    inventaire.asked.shouldBeEmpty()
+    covers.stored.shouldBeEmpty()
+    awaitedCovers.findAll() shouldBe listOf(attempted)
   }
 
   @Test
