@@ -23,7 +23,10 @@ private const val UPDATE_AWAITED_COVER =
     """
 
 private const val SELECT_AWAITED_COVERS =
-  "SELECT awaited_cover.isbn13, awaited_cover.source, awaited_cover.attempted_at FROM awaited_cover"
+  """
+    SELECT awaited_cover.isbn13, awaited_cover.source, awaited_cover.attempted_at FROM awaited_cover
+    ORDER BY awaited_cover.arrival
+    """
 
 private const val DELETE_AWAITED_COVER =
   "DELETE FROM awaited_cover WHERE awaited_cover.isbn13 = :isbn13"

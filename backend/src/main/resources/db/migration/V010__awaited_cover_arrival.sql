@@ -1,0 +1,1 @@
+ALTER TABLE awaited_cover ADD COLUMN arrival bigint GENERATED ALWAYS AS IDENTITY;
