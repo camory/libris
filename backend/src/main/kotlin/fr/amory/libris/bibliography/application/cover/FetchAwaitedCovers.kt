@@ -28,7 +28,7 @@ class FetchAwaitedCovers(
   private fun take(awaitedCover: AwaitedCover) {
     coverFetches
       .askedFor(awaitedCover.chosenSource)
-      .firstNotNullOfOrNull { it.fetch(awaitedCover.isbn) }
+      .firstNotNullOfOrNull { it.fetchCover(awaitedCover.isbn) }
       ?.let { store(awaitedCover, it.normalised()) }
   }
 

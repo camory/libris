@@ -5,5 +5,5 @@ import fr.amory.libris.bibliography.domain.Isbn
 interface EditionLookup {
   val source: EditionSource
 
-  fun lookUp(isbn: Isbn): EditionSourceAnswer
+  fun lookUpEdition(isbn: Isbn): EditionSourceAnswer
 }

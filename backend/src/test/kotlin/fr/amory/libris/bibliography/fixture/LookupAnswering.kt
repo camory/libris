@@ -19,7 +19,7 @@ class LookupAnswering(
 
   val asked: List<Isbn> get() = isbns.toList()
 
-  override fun lookUp(isbn: Isbn): EditionSourceAnswer {
+  override fun lookUpEdition(isbn: Isbn): EditionSourceAnswer {
     isbns += isbn
     return answer
   }
@@ -30,7 +30,7 @@ class CoverLookupAnswering(private val candidate: CoverCandidate?) : CoverLookup
 
   val asked: List<Isbn> get() = isbns.toList()
 
-  override fun lookUp(isbn: Isbn): CoverCandidate? {
+  override fun lookUpCover(isbn: Isbn): CoverCandidate? {
     isbns += isbn
     return candidate
   }
@@ -40,7 +40,7 @@ class LookupAnsweringAtRendezvous(
   private val rendezvous: CyclicBarrier,
   private val answer: EditionSourceAnswer,
   override val source: EditionSource = BNF) : EditionLookup {
-  override fun lookUp(isbn: Isbn): EditionSourceAnswer {
+  override fun lookUpEdition(isbn: Isbn): EditionSourceAnswer {
     rendezvous.await(WAIT_AT_MOST, MILLISECONDS)
     return answer
   }
@@ -49,7 +49,7 @@ class LookupAnsweringAtRendezvous(
 class CoverLookupAnsweringAtRendezvous(
   private val rendezvous: CyclicBarrier,
   private val candidate: CoverCandidate?) : CoverLookup {
-  override fun lookUp(isbn: Isbn): CoverCandidate? {
+  override fun lookUpCover(isbn: Isbn): CoverCandidate? {
     rendezvous.await(WAIT_AT_MOST, MILLISECONDS)
     return candidate
   }

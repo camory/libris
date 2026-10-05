@@ -32,7 +32,7 @@ class InventaireSourceTest {
     inventaire.knows(ONE_PIECE_1, SMALL_WEBP)
 
     // When
-    val candidate = source.lookUp(isbnOf(ONE_PIECE_1))
+    val candidate = source.lookUpCover(isbnOf(ONE_PIECE_1))
 
     // Then
     candidate shouldBe CoverCandidate(
@@ -47,7 +47,7 @@ class InventaireSourceTest {
     inventaire.knows(ONE_PIECE_1, SMALL_WEBP)
 
     // When
-    source.lookUp(isbnOf(ONE_PIECE_1))
+    source.lookUpCover(isbnOf(ONE_PIECE_1))
 
     // Then
     val request = server.allServeEvents.map { it.request }.single()
@@ -63,7 +63,7 @@ class InventaireSourceTest {
     inventaire.doesNotKnow(LES_NERONIA)
 
     // When
-    val candidate = source.lookUp(isbnOf(LES_NERONIA))
+    val candidate = source.lookUpCover(isbnOf(LES_NERONIA))
 
     // Then
     candidate.shouldBeNull()
@@ -75,7 +75,7 @@ class InventaireSourceTest {
     inventaire.knowsWithoutPicture(ONE_PIECE_1)
 
     // When
-    val candidate = source.lookUp(isbnOf(ONE_PIECE_1))
+    val candidate = source.lookUpCover(isbnOf(ONE_PIECE_1))
 
     // Then
     candidate.shouldBeNull()
@@ -87,7 +87,7 @@ class InventaireSourceTest {
     inventaire.knowsWithPictureClaim(ONE_PIECE_1, mapOf("v" to 1))
 
     // When
-    val candidate = source.lookUp(isbnOf(ONE_PIECE_1))
+    val candidate = source.lookUpCover(isbnOf(ONE_PIECE_1))
 
     // Then
     candidate.shouldBeNull()
@@ -99,7 +99,7 @@ class InventaireSourceTest {
     inventaire.knowsWithPictureClaim(ONE_PIECE_1, null)
 
     // When
-    val candidate = source.lookUp(isbnOf(ONE_PIECE_1))
+    val candidate = source.lookUpCover(isbnOf(ONE_PIECE_1))
 
     // Then
     candidate.shouldBeNull()
@@ -111,7 +111,7 @@ class InventaireSourceTest {
     inventaire.knowsWithPictureClaim(ONE_PIECE_1, "")
 
     // When
-    val candidate = source.lookUp(isbnOf(ONE_PIECE_1))
+    val candidate = source.lookUpCover(isbnOf(ONE_PIECE_1))
 
     // Then
     candidate.shouldBeNull()
@@ -123,7 +123,7 @@ class InventaireSourceTest {
     inventaire.fails()
 
     // When
-    val candidate = source.lookUp(isbnOf(ONE_PIECE_1))
+    val candidate = source.lookUpCover(isbnOf(ONE_PIECE_1))
 
     // Then
     candidate.shouldBeNull()
@@ -135,7 +135,7 @@ class InventaireSourceTest {
     inventaire.answersTooLate(ONE_PIECE_1)
 
     // When
-    val candidate = source.lookUp(isbnOf(ONE_PIECE_1))
+    val candidate = source.lookUpCover(isbnOf(ONE_PIECE_1))
 
     // Then
     candidate.shouldBeNull()
@@ -147,7 +147,7 @@ class InventaireSourceTest {
     inventaire.knowsWithEntityServedAs(ONE_PIECE_1, "json")
 
     // When
-    val candidate = source.lookUp(isbnOf(ONE_PIECE_1))
+    val candidate = source.lookUpCover(isbnOf(ONE_PIECE_1))
 
     // Then
     candidate.shouldBeNull()
@@ -159,7 +159,7 @@ class InventaireSourceTest {
     inventaire.knows(ONE_PIECE_1, SMALL_WEBP)
 
     // When
-    val cover = source.fetch(isbnOf(ONE_PIECE_1))
+    val cover = source.fetchCover(isbnOf(ONE_PIECE_1))
 
     // Then
     cover.shouldNotBeNull()
@@ -173,7 +173,7 @@ class InventaireSourceTest {
     inventaire.knows(ONE_PIECE_1, SMALL_WEBP, "image/jpeg")
 
     // When
-    val cover = source.fetch(isbnOf(ONE_PIECE_1))
+    val cover = source.fetchCover(isbnOf(ONE_PIECE_1))
 
     // Then
     cover.shouldNotBeNull()
@@ -186,7 +186,7 @@ class InventaireSourceTest {
     inventaire.knows(ONE_PIECE_1, SMALL_WEBP)
 
     // When
-    source.fetch(isbnOf(ONE_PIECE_1))
+    source.fetchCover(isbnOf(ONE_PIECE_1))
 
     // Then
     inventaire.picturePaths() shouldBe listOf("/img/entities/100x600/34d6e7d99cec5b0922b9eccfeb03748ab2b4db99")
@@ -198,7 +198,7 @@ class InventaireSourceTest {
     inventaire.knowsButThePictureFails(ONE_PIECE_1)
 
     // When
-    val cover = source.fetch(isbnOf(ONE_PIECE_1))
+    val cover = source.fetchCover(isbnOf(ONE_PIECE_1))
 
     // Then
     cover.shouldBeNull()
@@ -210,7 +210,7 @@ class InventaireSourceTest {
     inventaire.knows(ONE_PIECE_1, SMALL_WEBP, "webp")
 
     // When
-    val cover = source.fetch(isbnOf(ONE_PIECE_1))
+    val cover = source.fetchCover(isbnOf(ONE_PIECE_1))
 
     // Then
     cover.shouldBeNull()
@@ -222,7 +222,7 @@ class InventaireSourceTest {
     inventaire.knows(ONE_PIECE_1, ByteArray(0))
 
     // When
-    val cover = source.fetch(isbnOf(ONE_PIECE_1))
+    val cover = source.fetchCover(isbnOf(ONE_PIECE_1))
 
     // Then
     cover.shouldBeNull()
@@ -234,7 +234,7 @@ class InventaireSourceTest {
     inventaire.knowsWithPictureClaim(ONE_PIECE_1, "{x}")
 
     // When
-    val cover = source.fetch(isbnOf(ONE_PIECE_1))
+    val cover = source.fetchCover(isbnOf(ONE_PIECE_1))
 
     // Then
     cover.shouldBeNull()
@@ -246,7 +246,7 @@ class InventaireSourceTest {
     inventaire.knowsWithPictureClaim(ONE_PIECE_1, "50%zz")
 
     // When
-    val cover = source.fetch(isbnOf(ONE_PIECE_1))
+    val cover = source.fetchCover(isbnOf(ONE_PIECE_1))
 
     // Then
     cover.shouldBeNull()
@@ -266,7 +266,7 @@ class InventaireSourceTest {
     fun startWireMock() {
       server.start()
       inventaire.knows(ONE_PIECE_1, SMALL_WEBP)
-      InventaireSource(server.baseUrl(), WARM_UP_TIMEOUT).lookUp(isbnOf(ONE_PIECE_1))
+      InventaireSource(server.baseUrl(), WARM_UP_TIMEOUT).lookUpCover(isbnOf(ONE_PIECE_1))
       server.resetAll()
     }
 

@@ -85,7 +85,7 @@ class BnfSource(baseUrl: String, private val coversUrl: String, timeout: Duratio
   override val coverSource = CoverSource.BNF
   private val http = sourceRestClient(baseUrl, timeout)
 
-  override fun lookUp(isbn: Isbn): EditionSourceAnswer =
+  override fun lookUpEdition(isbn: Isbn): EditionSourceAnswer =
     try {
       answerFor(isbn)
     } catch (ignored: RestClientException) {
@@ -94,7 +94,7 @@ class BnfSource(baseUrl: String, private val coversUrl: String, timeout: Duratio
       Failed
     }
 
-  override fun fetch(isbn: Isbn): Cover? =
+  override fun fetchCover(isbn: Isbn): Cover? =
     nullOnFailure {
       recordIn(search(isbn))
         ?.let { arkOf(it.control("003")) }

@@ -31,7 +31,7 @@ class OpenLibrarySource(baseUrl: String, private val coversUrl: String, timeout:
   override val coverSource = CoverSource.OPEN_LIBRARY
   private val http = sourceRestClient(baseUrl, timeout)
 
-  override fun lookUp(isbn: Isbn): EditionSourceAnswer =
+  override fun lookUpEdition(isbn: Isbn): EditionSourceAnswer =
     try {
       answerFor(isbn)
     } catch (ignored: NotFound) {
@@ -42,7 +42,7 @@ class OpenLibrarySource(baseUrl: String, private val coversUrl: String, timeout:
       Failed
     }
 
-  override fun fetch(isbn: Isbn): Cover? =
+  override fun fetchCover(isbn: Isbn): Cover? =
     nullOnFailure { http.pictureAt("$coversUrl/${isbn.digits}-L.jpg?default=false") }
 
   private fun answerFor(isbn: Isbn): EditionSourceAnswer =
