@@ -262,6 +262,21 @@ class FetchAwaitedCoversTest {
     awaitedCovers.findAll().shouldBeEmpty()
   }
 
+  @Test
+  fun `the awaited covers are taken in the order they were awaited`() {
+    // Given
+    awaiting(INVENTAIRE, onePiece(ONE_PIECE_2))
+    awaiting(INVENTAIRE)
+    val inventaire = CoverFetchAnswering(INVENTAIRE, cover)
+    val fetchAwaitedCovers = fetchAwaitedCoversOver(listOf(inventaire))
+
+    // When
+    fetchAwaitedCovers()
+
+    // Then
+    inventaire.asked shouldBe listOf(isbnOf(ONE_PIECE_2), isbnOf(ONE_PIECE))
+  }
+
   private fun awaiting(chosenSource: CoverSource?, awaited: Edition = edition) {
     editions.insert(awaited)
     awaitedCovers.insert(AwaitedCover(checkNotNull(awaited.isbn), chosenSource))
