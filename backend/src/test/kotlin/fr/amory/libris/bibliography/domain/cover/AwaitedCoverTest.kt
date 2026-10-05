@@ -33,4 +33,16 @@ class AwaitedCoverTest {
     // When / Then
     AwaitedCover(isbnOf(ONE_PIECE), OPEN_LIBRARY, attemptedAt).isDueAt(NOW) shouldBe true
   }
+
+  @Test
+  fun `an attempt dates the awaited cover`() {
+    // Given
+    val awaitedCover = AwaitedCover(isbnOf(ONE_PIECE), OPEN_LIBRARY, NOW.minus(Duration.ofDays(2)))
+
+    // When
+    val attempted = awaitedCover.attempted(NOW)
+
+    // Then
+    attempted shouldBe AwaitedCover(isbnOf(ONE_PIECE), OPEN_LIBRARY, NOW)
+  }
 }
