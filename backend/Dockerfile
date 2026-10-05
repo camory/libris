@@ -10,7 +10,9 @@ LABEL org.opencontainers.image.version=$VERSION
 LABEL org.opencontainers.image.source=https://github.com/camory/libris
 RUN apt-get update && apt-get install -y --no-install-recommends curl \
     && rm -rf /var/lib/apt/lists/*
-RUN useradd --system --create-home libris
+RUN useradd --system --create-home libris \
+    && mkdir -p /var/lib/libris/covers \
+    && chown -R libris:libris /var/lib/libris
 COPY --from=build /workspace/build/libs/*.jar /app/app.jar
 USER libris
 EXPOSE 8080
