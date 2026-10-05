@@ -1,9 +1,12 @@
 package fr.amory.libris.bibliography.domain.cover
 
 import fr.amory.libris.bibliography.domain.Isbn
+import java.time.Duration
 import java.time.Instant
+
+private val A_DAY = Duration.ofDays(1)
 
 data class AwaitedCover(val isbn: Isbn, val chosenSource: CoverSource?, val attemptedAt: Instant? = null) {
   fun isDueAt(now: Instant): Boolean =
-    attemptedAt?.isBefore(now) ?: true
+    attemptedAt?.plus(A_DAY)?.isBefore(now) ?: true
 }
