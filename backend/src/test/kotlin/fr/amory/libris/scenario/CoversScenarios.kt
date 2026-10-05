@@ -235,7 +235,6 @@ class CoversScenarios @Autowired constructor(
   }
 
   @Test
-  @Disabled("covers")
   fun `S8 A failed fetch waits a day, the source answers an error`() {
     openLibrary.coverFails(ONE_PIECE_1)
     aFailedFetchWaitsADay()
