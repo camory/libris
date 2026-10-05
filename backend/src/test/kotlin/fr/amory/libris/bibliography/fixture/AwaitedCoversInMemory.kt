@@ -12,6 +12,10 @@ class AwaitedCoversInMemory : AwaitedCoverRepository {
     awaitedCovers += awaitedCover
   }
 
+  override fun update(awaitedCover: AwaitedCover) {
+    awaitedCovers.replaceAll { if (it.isbn == awaitedCover.isbn) awaitedCover else it }
+  }
+
   override fun findAll(): List<AwaitedCover> =
     awaitedCovers.toList()
 

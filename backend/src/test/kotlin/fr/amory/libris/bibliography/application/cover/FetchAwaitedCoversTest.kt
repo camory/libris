@@ -12,18 +12,21 @@ import fr.amory.libris.bibliography.domain.edition.Edition
 import fr.amory.libris.bibliography.domain.edition.EditionId
 import fr.amory.libris.bibliography.fixture.AwaitedCoversInMemory
 import fr.amory.libris.bibliography.fixture.CoverFetchAnswering
+import fr.amory.libris.bibliography.fixture.CoverFetchObserving
 import fr.amory.libris.bibliography.fixture.CoversInMemory
 import fr.amory.libris.bibliography.fixture.EditionsInMemory
 import fr.amory.libris.bibliography.fixture.coverOf
 import fr.amory.libris.bibliography.fixture.isbnOf
 import fr.amory.libris.bibliography.fixture.pictureOf
 import fr.amory.libris.bibliography.fixture.recordedBytes
+import fr.amory.libris.fixture.MutableClock
 import fr.amory.libris.fixture.Transaction
 import fr.amory.libris.fixture.TransactionsObserving
 import io.kotest.matchers.collections.shouldBeEmpty
 import io.kotest.matchers.shouldBe
 import org.junit.jupiter.api.Test
 import org.springframework.transaction.support.TransactionOperations.withoutTransaction
+import java.time.Duration
 
 private const val ONE_PIECE = "9782723488525"
 private const val ONE_PIECE_2 = "9782723489898"
@@ -34,6 +37,7 @@ class FetchAwaitedCoversTest {
   private val covers = CoversInMemory()
   private val cover = coverOf("image/webp", recordedBytes("covers/small.webp"))
   private val edition = onePiece()
+  private val clock = MutableClock()
 
   @Test
   fun `the fetched cover is stored and named on its edition`() {
@@ -85,7 +89,14 @@ class FetchAwaitedCoversTest {
       Triple(covers.stored.size, editions.findByIsbn(isbnOf(ONE_PIECE))?.coverName, awaitedCovers.findAll().size)
     }
     val fetchAwaitedCovers =
-      FetchAwaitedCovers(awaitedCovers, listOf(CoverFetchAnswering(INVENTAIRE, cover)), covers, editions, transactions)
+      FetchAwaitedCovers(
+        awaitedCovers,
+        listOf(CoverFetchAnswering(INVENTAIRE, cover)),
+        covers,
+        editions,
+        transactions,
+        clock,
+      )
 
     // When
     fetchAwaitedCovers()
@@ -128,7 +139,7 @@ class FetchAwaitedCoversTest {
     // Then
     inventaire.asked.shouldBeEmpty()
     openLibrary.asked.shouldBeEmpty()
-    awaitedCovers.findAll() shouldBe listOf(AwaitedCover(isbnOf(ONE_PIECE), BNF))
+    awaitedCovers.findAll() shouldBe listOf(AwaitedCover(isbnOf(ONE_PIECE), BNF, clock.instant()))
     editions.findByIsbn(isbnOf(ONE_PIECE)) shouldBe edition
   }
 
@@ -184,11 +195,11 @@ class FetchAwaitedCoversTest {
     fetches.forEach { it.asked shouldBe listOf(isbnOf(ONE_PIECE)) }
     covers.stored.shouldBeEmpty()
     editions.findByIsbn(isbnOf(ONE_PIECE)) shouldBe edition
-    awaitedCovers.findAll() shouldBe listOf(AwaitedCover(isbnOf(ONE_PIECE), null))
+    awaitedCovers.findAll() shouldBe listOf(AwaitedCover(isbnOf(ONE_PIECE), null, clock.instant()))
   }
 
   @Test
-  fun `a fetch that brings no picture keeps the wait`() {
+  fun `a fetch that brings no picture keeps the wait, dated`() {
     // Given
     awaiting(INVENTAIRE)
     val fetchAwaitedCovers = fetchAwaitedCoversOver(listOf(CoverFetchAnswering(INVENTAIRE, null)))
@@ -197,9 +208,41 @@ class FetchAwaitedCoversTest {
     fetchAwaitedCovers()
 
     // Then
-    awaitedCovers.findAll() shouldBe listOf(AwaitedCover(isbnOf(ONE_PIECE), INVENTAIRE))
+    awaitedCovers.findAll() shouldBe listOf(AwaitedCover(isbnOf(ONE_PIECE), INVENTAIRE, clock.instant()))
     editions.findByIsbn(isbnOf(ONE_PIECE)) shouldBe edition
     covers.stored.shouldBeEmpty()
+  }
+
+  @Test
+  fun `the attempt is dated before its source is asked`() {
+    // Given
+    awaiting(INVENTAIRE)
+    val inventaire = CoverFetchObserving(INVENTAIRE) { awaitedCovers.findAll() }
+    val fetchAwaitedCovers = fetchAwaitedCoversOver(listOf(inventaire))
+
+    // When
+    fetchAwaitedCovers()
+
+    // Then
+    inventaire.asks shouldBe listOf(listOf(AwaitedCover(isbnOf(ONE_PIECE), INVENTAIRE, clock.instant())))
+  }
+
+  @Test
+  fun `an awaited cover attempted within the day is passed by`() {
+    // Given
+    val attempted = AwaitedCover(isbnOf(ONE_PIECE), INVENTAIRE, clock.instant().minus(Duration.ofHours(1)))
+    editions.insert(edition)
+    awaitedCovers.insert(attempted)
+    val inventaire = CoverFetchAnswering(INVENTAIRE, cover)
+    val fetchAwaitedCovers = fetchAwaitedCoversOver(listOf(inventaire))
+
+    // When
+    fetchAwaitedCovers()
+
+    // Then
+    inventaire.asked.shouldBeEmpty()
+    covers.stored.shouldBeEmpty()
+    awaitedCovers.findAll() shouldBe listOf(attempted)
   }
 
   @Test
@@ -226,7 +269,7 @@ class FetchAwaitedCoversTest {
 
   private fun fetchAwaitedCoversOver(
     coverFetches: List<CoverFetch> = listOf(CoverFetchAnswering(INVENTAIRE, cover))): FetchAwaitedCovers =
-    FetchAwaitedCovers(awaitedCovers, coverFetches, covers, editions, withoutTransaction())
+    FetchAwaitedCovers(awaitedCovers, coverFetches, covers, editions, withoutTransaction(), clock)
 
   private fun onePiece(isbn: String = ONE_PIECE): Edition =
     Edition(

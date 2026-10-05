@@ -949,3 +949,27 @@ Format:
   `CoverFetches` change in its own PR, before T058, whose dating of a
   failed attempt then reads "no cover" from one call.
 - Left over: T058 on his go.
+
+## 2026-10-05 — T058 A failed fetch waits a day — done
+- Did: an awaited cover is dated with the application's clock before its
+  source is asked, and a run passes by one attempted within the day; a
+  picture fetch reads at most five megabytes. S8's three cases run.
+- Decided: the run reads the clock once, filters with `isDueAt(now)` and
+  dates each awaited cover with that instant.
+- Decided: `pictureAt` reads through `exchange` and answers no cover on a
+  non-2xx status and on an empty body, what `retrieve()` threw on and
+  `toEntity<ByteArray>` answered `null` to; neither has a case of its own.
+- Decided: `OpenLibraryStubs.hasCoverDribbledOver` for step 14, the body in
+  ten chunks over the given millis.
+- Deviations from the brief: step 9's `@Primary` on the harness clock
+  brought no red: the scenario contexts started with two `Clock` beans,
+  Spring settling them by the use case's parameter name `clock`. Kept as
+  the brief decides, declared in the commit body. The run was handed off
+  after step 14; steps 1–14 by the first run, step 15 by the second.
+- Left over: S9 (the worker at start and daily, runs never overlapping),
+  T059.
+- Fixed up with Tophe: the awaited cover dates its own attempt
+  (`AwaitedCover.attempted(at)`, no `copy` in the use case), and
+  `JdbcAwaitedCoverRepository.update` writes the whole aggregate, its chosen
+  source too, as the in-memory fake and `JdbcEditionRepository.update` do.
+  The place of the `systemClock` bean stays as the brief put it.

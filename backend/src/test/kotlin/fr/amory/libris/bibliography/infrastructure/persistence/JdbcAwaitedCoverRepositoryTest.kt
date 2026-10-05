@@ -4,6 +4,7 @@ import fr.amory.libris.bibliography.domain.Contributions
 import fr.amory.libris.bibliography.domain.Kind.MANGA
 import fr.amory.libris.bibliography.domain.cover.AwaitedCover
 import fr.amory.libris.bibliography.domain.cover.CoverSource.INVENTAIRE
+import fr.amory.libris.bibliography.domain.cover.CoverSource.OPEN_LIBRARY
 import fr.amory.libris.bibliography.domain.edition.Edition
 import fr.amory.libris.bibliography.domain.edition.EditionId
 import fr.amory.libris.bibliography.fixture.isbnOf
@@ -16,6 +17,7 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.context.annotation.Import
 import org.springframework.dao.DataIntegrityViolationException
 import org.springframework.jdbc.core.simple.JdbcClient
+import java.time.Instant
 
 private const val ONE_PIECE = "9782723488525"
 private const val ONE_PIECE_TOME_TWO = "9782723489898"
@@ -73,6 +75,20 @@ class JdbcAwaitedCoverRepositoryTest @Autowired constructor(
       AwaitedCover(isbnOf(ONE_PIECE), INVENTAIRE),
       AwaitedCover(isbnOf(ONE_PIECE_TOME_TWO), null),
     )
+  }
+
+  @Test
+  fun `an updated awaited cover is read back whole, its chosen source and the date of its last attempt`() {
+    // Given
+    editions.insert(onePieceTomeOne())
+    awaitedCovers.insert(AwaitedCover(isbnOf(ONE_PIECE), INVENTAIRE))
+    val updated = AwaitedCover(isbnOf(ONE_PIECE), OPEN_LIBRARY, Instant.parse("2026-10-05T08:00:00Z"))
+
+    // When
+    awaitedCovers.update(updated)
+
+    // Then
+    awaitedCovers.findAll() shouldBe listOf(updated)
   }
 
   @Test
