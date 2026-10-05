@@ -923,7 +923,9 @@ Format:
   `catch (_: X)`.
 - Decided with Tophe: the answer's noun over verb and object, for the
   caller's sake; three files; one PR; Kotlin style over Java style
-  everywhere. Left as it was: `PUBLIC_COVERS` beside the injected covers
+  everywhere; both written into D10 (a port's method named so the call
+  reads with the receiver in front, Kotlin's forms over Java's). Left as
+  it was: `PUBLIC_COVERS` beside the injected covers
   URL, a change of behaviour for later; the two error styles, `Failed` and
   no cover; `JdbcClient`'s `query(UUID::class.java)`, which has no Kotlin
   extension.
