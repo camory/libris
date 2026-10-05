@@ -250,10 +250,24 @@ class OpenLibrarySourceTest {
     cover.shouldBeNull()
   }
 
+  @Test
+  fun `a cover over five megabytes is no cover`() {
+    // Given
+    openLibrary.hasCover(SPACE_WARS, ByteArray(FIVE_MEGABYTES + 1))
+    val source = OpenLibrarySource(server.baseUrl(), "${server.baseUrl()}/b/isbn", WARM_UP_TIMEOUT)
+
+    // When
+    val cover = source.coverFor(isbnOf(SPACE_WARS))
+
+    // Then
+    cover.shouldBeNull()
+  }
+
   private companion object {
     const val SPACE_WARS = "9782380751673"
     const val MONTE_CRISTO = "9782253098058"
     const val UNKNOWN = "9782000000013"
+    const val FIVE_MEGABYTES = 5 * 1024 * 1024
     val TALL_JPEG = recordedBytes("covers/tall.jpg")
     val MONTE_CRISTO_EDITION = EditionPreview(
       isbn = isbnOf(MONTE_CRISTO),
