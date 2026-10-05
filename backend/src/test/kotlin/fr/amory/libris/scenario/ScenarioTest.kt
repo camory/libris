@@ -14,6 +14,7 @@ import org.springframework.boot.test.http.server.LocalTestWebServer
 import org.springframework.context.ApplicationContext
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Import
+import org.springframework.context.annotation.Primary
 import org.springframework.http.client.SimpleClientHttpRequestFactory
 import org.springframework.test.context.DynamicPropertyRegistrar
 import org.springframework.test.context.junit.jupiter.SpringExtension.getApplicationContext
@@ -57,6 +58,7 @@ class StubbedSources {
     Files.createTempDirectory("libris-covers")
 
   @Bean
+  @Primary
   fun clock(): MutableClock =
     MutableClock()
 
