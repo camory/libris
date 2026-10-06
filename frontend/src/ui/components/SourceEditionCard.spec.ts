@@ -70,6 +70,11 @@ const bnf: CoverCandidate = {
   url: "https://catalogue.bnf.fr/couverture?&appName=NE&idArk=ark:/12148/cb43636708p&couverture=1",
 };
 
+const libris: CoverCandidate = {
+  source: "Libris",
+  url: "/api/v1/covers/5b1c2a4f0e6d8a9b3c7e1f2d4a6b8c0e9f1a3b5c7d9e0f2a4b6c8d0e1f3a5b7c",
+};
+
 describe("SourceEditionCard", () => {
   it("shows the series and the volume, the title and the subtitle", () => {
     // When
@@ -525,6 +530,40 @@ describe("SourceEditionCard", () => {
     expect(card).not.toContain("BnF");
   });
 
+  it("draws no dot under the cover of an edition the house holds", () => {
+    // When
+    const card = screen(onePiece1, [], [libris], true);
+
+    // Then
+    expect(dots(card)).toEqual([]);
+  });
+
+  it("names no source under the cover of an edition the house holds", () => {
+    // When
+    const card = show(onePiece1, [], [libris], true);
+
+    // Then
+    expect(card).not.toContain("Libris");
+  });
+
+  it("shows the house's cover for an edition the house holds", () => {
+    // When
+    const covers = screen(onePiece1, [], [libris], true).getAllByRole("img");
+
+    // Then
+    expect(covers).toHaveLength(1);
+    expect(covers[0].getAttribute("src")).toBe(libris.url);
+    expect(covers[0].getAttribute("alt")).toBe("Couverture de Romance dawn");
+  });
+
+  it("offers a dot for a candidate named Libris when the house does not hold the edition", () => {
+    // When
+    const card = screen(onePiece1, [], [libris]);
+
+    // Then
+    expect(labels(card)).toEqual(["Couverture Libris"]);
+  });
+
   it("shows the série alone when the sources gave it no tome", () => {
     // Given
     const standalone: SourceEdition = {
@@ -680,25 +719,28 @@ describe("SourceEditionCard", () => {
     edition: SourceEdition,
     copies: Copy[] = [],
     covers: CoverCandidate[] = [],
+    held = false,
   ) {
-    return card(edition, copies, covers).text().replace(/\s+/g, " ");
+    return card(edition, copies, covers, held).text().replace(/\s+/g, " ");
   }
 
   function screen(
     edition: SourceEdition,
     copies: Copy[] = [],
     covers: CoverCandidate[] = [],
+    held = false,
   ) {
-    return within(card(edition, copies, covers).element as HTMLElement);
+    return within(card(edition, copies, covers, held).element as HTMLElement);
   }
 
   function card(
     edition: SourceEdition,
     copies: Copy[] = [],
     covers: CoverCandidate[] = [],
+    held = false,
   ) {
     return mount(SourceEditionCard, {
-      props: { edition, copies, covers },
+      props: { edition, copies, covers, held },
       global: { plugins: [createLibrisI18n()] },
     });
   }
