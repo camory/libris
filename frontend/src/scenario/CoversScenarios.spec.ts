@@ -196,7 +196,7 @@ describe("Covers", () => {
     expect(add.asked.map((call) => call.coverSource)).toEqual([null]);
   });
 
-  it.skip("S10 A held edition offers its own cover", async () => {
+  it("S10 A held edition offers its own cover", async () => {
     // Given
     const screen = open("/isbn", {
       isbn: theHouseHolds(onePiece1, [on(lea.defaultBookshelf)], [libris]),
