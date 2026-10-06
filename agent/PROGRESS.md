@@ -1204,3 +1204,16 @@ Format:
   red, the worker's `OutOfMemoryError` keeping the next edition's cover
   from coming within five seconds; skipped, `./gradlew check` is green.
 - Left over: T070, then T071.
+
+## 2026-10-07 — T070's line reads a WebP, with Tophe
+- Did: T070's line has Libris read a WebP through TwelveMonkeys
+  `imageio-webp`, and says what becomes of each `CoverTest` case.
+- Decided: T070's planner blocked: the JDK has no WebP reader, so S6's
+  picture rule made every inventaire.io WebP no cover, turning S4, S6's
+  case of 600 tall or less and S7's first-source case red. Of a reader
+  library, reading a WebP's header by hand, or keeping a WebP unread,
+  Tophe kept the library: S6 holds as written. Measured on JDK 25, version
+  3.15.3 registers itself with ImageIO, reads `small.webp`'s header as
+  322×500 and decodes it. No other TwelveMonkeys reader until a real cover
+  fails on the JDK's own: a four-channel JPEG we made, JDK 25 read.
+- Left over: T070, rerun; then T071.
