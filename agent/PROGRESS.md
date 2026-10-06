@@ -1217,3 +1217,23 @@ Format:
   322×500 and decodes it. No other TwelveMonkeys reader until a real cover
   fails on the JDK's own: a four-channel JPEG we made, JDK 25 read.
 - Left over: T070, rerun; then T071.
+
+## 2026-10-06 — T070 A picture over 5 000 pixels is not a picture — done
+- Did: `Cover.normalised()` answers `Cover?`, `null` for bytes no reader
+  reads, a reader's `IIOException` or a header side over 5 000 pixels, read
+  before any pixel; `CoverFetches` applies it to each source's answer, so
+  the cascade moves on; a WebP is read through `imageio-webp`, `runtimeOnly`.
+- Decided: the header is read through the first `ImageReader` ImageIO
+  offers for the stream, set up as `ImageIO.read` sets it (forward only,
+  metadata ignored), its `getWidth(0)` and `getHeight(0)` checked before
+  `read(0)`; the reader is disposed after.
+- Decided: step 2's green kept a broken JPEG as fetched (the `IIOException`
+  still answering the cover), so that step 3 stayed a red of its own.
+- Decided: `CoverTest`'s cases reading `normalised()` read it through `?.`,
+  the answer being nullable; their expected values are unchanged.
+- Deviations from the brief: step 6's mutation is `<` for `<=`, the rule
+  being written as the bound a side may reach; it is the brief's `>=` for
+  `>` read the other way round.
+- Left over: T071 (one edition never stops the run). WebP covers to be
+  checked on staging, the plugin being found in the boot jar unproved by
+  any test.
