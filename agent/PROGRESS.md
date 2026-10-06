@@ -1116,3 +1116,14 @@ Format:
   server on the LAN proxying `/api` to staging, and kept it; a 24-tall
   button would have been a second exception to U04.
 - Left over: none.
+
+## 2026-10-06 — U06: the card gives out its cover's source, with Tophe
+- Did: U06 now reads "props in, one thing out, the source of the cover it
+  shows, none for the stand-in".
+- Decided: T062's planner blocked: the add button lives in the lookup
+  view, outside the card, and since T061 only the card knows which cover
+  it shows, while U06 said "nothing out". Of the planner's three ways, the
+  card sends the source out (an event or a model), the view holds the
+  choice, or the add button drawn in the card through a slot, Tophe kept
+  the first: the card keeps its choice, and D05 already says "events out".
+- Left over: T062, rerun.

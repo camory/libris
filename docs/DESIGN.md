@@ -206,7 +206,8 @@ fails. When none is left, the stand-in shows, with neither dots nor name.
 The name says where the picture comes from; no other part of the card names
 a source.
 
-A card is presentational: props in, nothing out. It shows what it is given
+A card is presentational: props in, one thing out, the source of the cover
+it shows, none for the stand-in. It shows what it is given
 and decides nothing about it but which of its covers it shows: the one
 tapped, else the first not failed; the words it displays for a role or a
 language come from the `fr` catalogue, keyed by the code the API answers.
