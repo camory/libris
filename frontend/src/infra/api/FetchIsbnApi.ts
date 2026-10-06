@@ -23,6 +23,7 @@ interface ProblemResponse {
 }
 
 const problems = new Map([
+  [400, "/problems/validation"],
   [404, "/problems/not-found"],
   [503, "/problems/sources-unavailable"],
 ]);
