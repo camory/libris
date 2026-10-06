@@ -1184,4 +1184,4 @@ Format:
 - Decided: nothing; the brief's two steps ran as written, the pin's guard
   after step 2's green.
 - Deviations from the brief: none.
-- Left over: the frontend's pin, still on `v0.9.0`, for a task of its own.
+- Left over: nothing; the frontend keeps its pin on `v0.9.0`, as the brief says.
