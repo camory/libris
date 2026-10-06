@@ -65,6 +65,11 @@ const openLibrary: CoverCandidate = {
   url: "https://covers.openlibrary.org/b/isbn/9782723488525-L.jpg?default=false",
 };
 
+const bnf: CoverCandidate = {
+  source: "BnF",
+  url: "https://catalogue.bnf.fr/couverture?&appName=NE&idArk=ark:/12148/cb43636708p&couverture=1",
+};
+
 describe("SourceEditionCard", () => {
   it("shows the series and the volume, the title and the subtitle", () => {
     // When
@@ -362,12 +367,13 @@ describe("SourceEditionCard", () => {
 
   it("never says which source answered", () => {
     // When
-    const card = show(onePiece1);
+    const card = show(onePiece1, [], [inventaire, openLibrary, bnf]);
 
     // Then
     expect(card).not.toContain("Sources");
-    expect(card).not.toContain("BnF");
+    expect(card).not.toContain("inventaire.io");
     expect(card).not.toContain("Open Library");
+    expect(card).not.toContain("BnF");
   });
 
   it("shows the série alone when the sources gave it no tome", () => {
