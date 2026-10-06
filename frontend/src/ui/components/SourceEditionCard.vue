@@ -29,7 +29,7 @@ const shown = computed(
     offered.value[0],
 );
 
-onMounted(() => emit("coverSource", null));
+onMounted(() => emit("coverSource", shown.value?.cover.source ?? null));
 
 function isShown(index: number) {
   return index === shown.value?.index;

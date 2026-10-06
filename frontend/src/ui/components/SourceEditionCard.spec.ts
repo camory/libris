@@ -373,6 +373,14 @@ describe("SourceEditionCard", () => {
     expect(givenOut(wrapper)).toBeNull();
   });
 
+  it("gives out the source of the first cover it shows", () => {
+    // When
+    const wrapper = card(onePiece1, [], [inventaire, openLibrary, bnf]);
+
+    // Then
+    expect(givenOut(wrapper)).toBe("inventaire.io");
+  });
+
   it("offers one dot per candidate, named after its source", () => {
     // When
     const card = screen(onePiece1, [], [inventaire, openLibrary, bnf]);
