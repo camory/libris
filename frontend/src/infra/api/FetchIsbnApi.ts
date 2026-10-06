@@ -1,5 +1,6 @@
 import type { IsbnApi, IsbnAnswer } from "../../application/IsbnApi";
 import type { AuthorRole, Kind } from "../../domain/SourceEdition";
+import { problemOf } from "./problemOf";
 
 interface IsbnResponse {
   id: string | null;
@@ -17,10 +18,6 @@ interface IsbnResponse {
   summary: string | null;
   copies: { id: string; bookshelf: { id: string; name: string } }[];
   covers: { source: string; url: string }[];
-}
-
-interface ProblemResponse {
-  type: string;
 }
 
 const problems = new Map([
@@ -65,14 +62,6 @@ export class FetchIsbnApi implements IsbnApi {
         })),
       };
     }
-    const known = problems.get(response.status);
-    const isProblem = response.headers
-      .get("Content-Type")
-      ?.startsWith("application/problem+json");
-    if (known !== undefined && isProblem) {
-      return { outcome: "problem", type: known };
-    }
-    const problem = (await response.json()) as ProblemResponse;
-    return { outcome: "problem", type: problem.type };
+    return problemOf(response, problems);
   }
 }

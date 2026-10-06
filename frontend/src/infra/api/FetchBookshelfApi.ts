@@ -1,13 +1,10 @@
 import type { AddAnswer, BookshelfApi } from "../../application/BookshelfApi";
 import type { SourceEdition } from "../../domain/SourceEdition";
+import { problemOf } from "./problemOf";
 
 interface CopyResponse {
   id: string;
   bookshelf: { id: string; name: string };
-}
-
-interface ProblemResponse {
-  type: string;
 }
 
 const problems = new Map([
@@ -59,14 +56,6 @@ export class FetchBookshelfApi implements BookshelfApi {
         },
       };
     }
-    const known = problems.get(response.status);
-    const isProblem = response.headers
-      .get("Content-Type")
-      ?.startsWith("application/problem+json");
-    if (known !== undefined && isProblem) {
-      return { outcome: "problem", type: known };
-    }
-    const problem = (await response.json()) as ProblemResponse;
-    return { outcome: "problem", type: problem.type };
+    return problemOf(response, problems);
   }
 }
