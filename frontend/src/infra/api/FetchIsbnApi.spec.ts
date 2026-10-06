@@ -59,7 +59,7 @@ describe("FetchIsbnApi", () => {
     const api = new FetchIsbnApi(inject("mockBaseUrl"));
 
     // When
-    const answer = await api.lookUp("9782000000006");
+    const answer = await api.lookUp("9782000000013");
 
     // Then
     expect(answer).toEqual({ outcome: "problem", type: "/problems/not-found" });

@@ -22,6 +22,8 @@ interface ProblemResponse {
   type: string;
 }
 
+const problems = new Map([[404, "/problems/not-found"]]);
+
 export class FetchIsbnApi implements IsbnApi {
   constructor(private readonly baseUrl: string) {}
 
@@ -53,6 +55,10 @@ export class FetchIsbnApi implements IsbnApi {
           bookshelf: { id: copy.bookshelf.id, name: copy.bookshelf.name },
         })),
       };
+    }
+    const known = problems.get(response.status);
+    if (known !== undefined) {
+      return { outcome: "problem", type: known };
     }
     const problem = (await response.json()) as ProblemResponse;
     return { outcome: "problem", type: problem.type };
