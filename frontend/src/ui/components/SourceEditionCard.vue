@@ -27,6 +27,10 @@ const shown = computed(
     offered.value[0],
 );
 
+function isShown(index: number) {
+  return index === shown.value?.index;
+}
+
 const overline = computed(() => {
   const series = props.edition.series;
   if (series === null) {
@@ -113,9 +117,9 @@ const rows = computed(() => {
             :key="cover.url"
             :src="cover.url"
             :alt="t('isbn.card.cover', { title: edition.title })"
-            :aria-hidden="index !== shown?.index"
+            :aria-hidden="!isShown(index)"
             class="h-full w-full rounded-md object-contain"
-            :class="{ hidden: index !== shown?.index }"
+            :class="{ hidden: !isShown(index) }"
             @error="failed.push(index)"
           />
           <IconBook v-if="!shown" class="text-muted opacity-60" />
@@ -126,16 +130,14 @@ const rows = computed(() => {
             :key="cover.url"
             type="button"
             :aria-label="t('isbn.card.coverSource', { source: cover.source })"
-            :aria-pressed="index === shown?.index"
+            :aria-pressed="isShown(index)"
             class="flex h-11 w-8 items-center justify-center"
             @click="tapped = index"
           >
             <span
               class="size-2 rounded-full"
               :class="
-                index === shown?.index
-                  ? 'bg-accent'
-                  : 'border-[1.5px] border-muted'
+                isShown(index) ? 'bg-accent' : 'border-[1.5px] border-muted'
               "
             ></span>
           </button>
