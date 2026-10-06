@@ -1016,3 +1016,16 @@ Format:
 - Left over: `CoversScenarios.spec.ts` is off Prettier's layout on `main`
   (four `expect` lines), untouched here. Rerun `loop.sh next` for T060 on
   Tophe's go.
+
+## 2026-10-06 — the Covers scenarios stub `IntersectionObserver`, with Tophe
+- Did: T060's brief planner stopped `blocked` again: *S11 The catalogue
+  shows the covers* opens `/catalogue`, whose view builds an
+  `IntersectionObserver` that jsdom lacks, and `CoversScenarios`' `open()`
+  stubs none. `open()` now stubs it with a no-op class, as
+  `CatalogueScenarios` does, and `afterEach` unstubs the globals.
+- Verified: `npm test` green, 200 tests, 10 skipped, as on `main`. S11
+  un-skipped by hand, then skipped again: `ReferenceError:
+  IntersectionObserver is not defined` on `main`, green on this branch;
+  `CatalogueRow` already shows `Book.coverUrl`, so only S1 drives T060's
+  code.
+- Left over: rerun `loop.sh next` for T060 on Tophe's go.
