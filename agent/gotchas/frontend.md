@@ -49,9 +49,13 @@ Read whole by a run that changes `frontend/`, after `every-run.md`.
   `v0.8.0` none does, and the mock answers the right status and
   `application/problem+json` with a random `type`, `title` and `status` in
   the body, so an adapter spec asserts the outcome of the HTTP status,
-  never the body's `type`. `FetchIsbnApi` and `FetchBookshelfApi` map the
-  statuses the contract names (400, 404, and 503 for the lookup) to the
-  `/problems/…` slugs and read the body's `type` for any other.
+  never the body's `type`. `FetchIsbnApi` and `FetchBookshelfApi` hand a
+  non-2xx answer to `infra/api/problemOf`, which maps the statuses the
+  contract names (400, 404, and 503 for the lookup) to the `/problems/…`
+  slugs only when the `Content-Type` is `application/problem+json`, and
+  reads the body's `type` otherwise: a proxy's `text/plain` 404 or 503 then
+  rejects on `response.json()`, as it did before the mapping, and is never
+  taken for an answer of Libris.
 - A scenario file builds the application through `createLibrisApp` over the
   fakes of `src/fixture`; only `infra/api` specs and the smoke case *the
   application runs over the mock* use `inject("mockBaseUrl")`. A new port

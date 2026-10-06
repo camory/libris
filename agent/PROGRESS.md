@@ -1049,3 +1049,18 @@ Format:
   source and S3 (T062), the held edition's cover and S10 (T063).
   `CoversScenarios.spec.ts` and `IconBooks.vue` stay off Prettier's layout,
   as on `main`.
+
+## 2026-10-06 — T060 Covers on `v0.9.0`, the card shows the first candidate — reworked
+- Did: both clients map a status to its `/problems/…` slug only when the
+  answer is `application/problem+json`; a proxy's `text/plain` 404 rejects,
+  as on `main`, instead of reading *ISBN inconnu*. The rule is written once,
+  in `infra/api/problemOf`, which both clients call for a non-2xx answer.
+- Decided: the reviewer's verdict of 2026-10-06 amended nothing and settled
+  that the status is read only on a problem body (the problem body is how
+  the client tells Libris from the infrastructure), and asked for the
+  shared `problemOf(response, statuses)`. A non-problem answer keeps
+  `main`'s behaviour, a rejection, since no spec says what the screen shows
+  when Libris is unavailable; each client's new case asserts the rejection.
+- Deviations from the brief: none.
+- Left over: what the lookup screen shows on a rejected `lookUp` is
+  already a PROPOSED item; the view lets the rejection escape, as on `main`.
