@@ -111,11 +111,23 @@ describe("Bookshelf", () => {
   });
 
   function theHouseHolds(edition: SourceEdition, copies: Copy[]): IsbnApi {
-    return new FakeIsbnApi({ outcome: "found", edition, copies });
+    return new FakeIsbnApi({
+      outcome: "found",
+      id: "8b3f4e5d-6c7a-4b8c-9d0e-1f2a3b4c5d6e",
+      edition,
+      copies,
+      covers: [],
+    });
   }
 
   function aSourceKnows(edition: SourceEdition): IsbnApi {
-    return new FakeIsbnApi({ outcome: "found", edition, copies: [] });
+    return new FakeIsbnApi({
+      outcome: "found",
+      id: null,
+      edition,
+      copies: [],
+      covers: [],
+    });
   }
 
   function on(bookshelf: Bookshelf, copyId: string): Copy {

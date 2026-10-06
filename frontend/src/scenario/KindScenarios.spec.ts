@@ -46,7 +46,13 @@ describe("Kind", () => {
   });
 
   function aSourceKnows(edition: SourceEdition): IsbnApi {
-    return new FakeIsbnApi({ outcome: "found", edition, copies: [] });
+    return new FakeIsbnApi({
+      outcome: "found",
+      id: null,
+      edition,
+      copies: [],
+      covers: [],
+    });
   }
 
   function open(path: string, world: { isbn: IsbnApi }) {
