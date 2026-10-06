@@ -13,7 +13,11 @@ interface ProblemResponse {
 export class FetchBookshelfApi implements BookshelfApi {
   constructor(private readonly baseUrl: string) {}
 
-  async add(bookshelfId: string, edition: SourceEdition): Promise<AddAnswer> {
+  async add(
+    bookshelfId: string,
+    edition: SourceEdition,
+    coverSource?: string | null,
+  ): Promise<AddAnswer> {
     const response = await fetch(
       `${this.baseUrl}/api/v1/bookshelves/${bookshelfId}/books`,
       {
@@ -36,7 +40,7 @@ export class FetchBookshelfApi implements BookshelfApi {
           language: edition.language,
           pageCount: edition.pageCount,
           summary: edition.summary,
-          coverUrl: edition.coverUrl,
+          coverSource,
         }),
       },
     );

@@ -13,7 +13,11 @@ describe("FetchBookshelfApi", () => {
     const api = new FetchBookshelfApi(inject("mockBaseUrl"));
 
     // When
-    const answer = await api.add(lea.defaultBookshelf.id, onePiece1);
+    const answer = await api.add(
+      lea.defaultBookshelf.id,
+      onePiece1,
+      "inventaire.io",
+    );
 
     // Then
     assert(answer.outcome === "added", `the answer is a ${answer.outcome}`);
