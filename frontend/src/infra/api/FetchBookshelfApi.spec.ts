@@ -32,10 +32,11 @@ describe("FetchBookshelfApi", () => {
     const api = new FetchBookshelfApi(inject("mockBaseUrl"));
 
     // When
-    const answer = await api.add(lea.defaultBookshelf.id, {
-      ...onePiece1,
-      isbn13: "9782723488526",
-    });
+    const answer = await api.add(
+      lea.defaultBookshelf.id,
+      { ...onePiece1, isbn13: "9782723488526" },
+      "inventaire.io",
+    );
 
     // Then
     expect(answer).toEqual({

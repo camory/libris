@@ -10,6 +10,8 @@ interface ProblemResponse {
   type: string;
 }
 
+const problems = new Map([[400, "/problems/validation"]]);
+
 export class FetchBookshelfApi implements BookshelfApi {
   constructor(private readonly baseUrl: string) {}
 
@@ -53,6 +55,10 @@ export class FetchBookshelfApi implements BookshelfApi {
           bookshelf: { id: body.bookshelf.id, name: body.bookshelf.name },
         },
       };
+    }
+    const known = problems.get(response.status);
+    if (known !== undefined) {
+      return { outcome: "problem", type: known };
     }
     const problem = (await response.json()) as ProblemResponse;
     return { outcome: "problem", type: problem.type };
