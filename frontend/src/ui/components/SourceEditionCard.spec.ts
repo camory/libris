@@ -446,18 +446,25 @@ describe("SourceEditionCard", () => {
     ]);
   });
 
-  it("shows a book icon when the first candidate does not load", async () => {
+  it("shows the book icon, no dot and no name when no candidate loads", async () => {
     // Given
-    const wrapper = card(onePiece1, [], [inventaire]);
+    const wrapper = card(onePiece1, [], [inventaire, openLibrary, bnf]);
     const shown = within(wrapper.element as HTMLElement);
     expect(wrapper.findAllComponents(IconBook)).toHaveLength(1);
 
     // When
-    shown.getByRole("img").dispatchEvent(new Event("error"));
-    await nextTick();
+    for (const image of shown.getAllByRole("img", { hidden: true })) {
+      image.dispatchEvent(new Event("error"));
+      await nextTick();
+    }
 
     // Then
     expect(shown.queryAllByRole("img")).toEqual([]);
+    expect(dots(shown)).toEqual([]);
+    const text = wrapper.text();
+    for (const source of ["inventaire.io", "Open Library", "BnF"]) {
+      expect(text).not.toContain(source);
+    }
     expect(wrapper.findAllComponents(IconBook)).toHaveLength(2);
   });
 
