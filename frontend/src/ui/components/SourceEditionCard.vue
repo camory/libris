@@ -14,8 +14,10 @@ const props = defineProps<{
 
 const { t, te } = useI18n();
 
-const coverFailed = ref(false);
-const cover = computed(() => props.covers[0]);
+const failed = ref<number[]>([]);
+const shown = computed(() =>
+  props.covers.findIndex((_, index) => !failed.value.includes(index)),
+);
 
 const overline = computed(() => {
   const series = props.edition.series;
@@ -98,13 +100,16 @@ const rows = computed(() => {
         class="flex h-[149px] w-24 shrink-0 items-center justify-center rounded-md bg-border"
       >
         <img
-          v-if="cover && !coverFailed"
+          v-for="(cover, index) in covers"
+          :key="cover.url"
           :src="cover.url"
           :alt="t('isbn.card.cover', { title: edition.title })"
+          :aria-hidden="index !== shown"
           class="h-full w-full rounded-md object-contain"
-          @error="coverFailed = true"
+          :class="{ hidden: index !== shown }"
+          @error="failed.push(index)"
         />
-        <IconBook v-else class="text-muted opacity-60" />
+        <IconBook v-if="shown === -1" class="text-muted opacity-60" />
       </div>
 
       <div class="flex min-w-0 flex-col gap-1.5">

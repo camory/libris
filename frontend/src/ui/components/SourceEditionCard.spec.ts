@@ -350,6 +350,21 @@ describe("SourceEditionCard", () => {
     expect(wrapper.findAllComponents(IconBook)).toHaveLength(2);
   });
 
+  it("shows the next candidate when the first does not load", async () => {
+    // Given
+    const wrapper = card(onePiece1, [], [inventaire, openLibrary, bnf]);
+    const shown = within(wrapper.element as HTMLElement);
+
+    // When
+    shown.getByRole("img").dispatchEvent(new Event("error"));
+    await nextTick();
+
+    // Then
+    const cover = shown.getByRole("img");
+    expect(cover.getAttribute("src")).toBe(openLibrary.url);
+    expect(cover.getAttribute("alt")).toBe("Couverture de Romance dawn");
+  });
+
   it("shows a book icon when the first candidate does not load", async () => {
     // Given
     const wrapper = card(onePiece1, [], [inventaire]);
