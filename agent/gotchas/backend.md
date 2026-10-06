@@ -396,9 +396,10 @@ Read whole by a run that changes `backend/`, after `every-run.md`.
   `Content-Type`, `image/jpeg` by default.
 - Open Library's fetch and its lookup's candidate both build on
   `libris.sources.open-library-covers-url` (`LIBRIS_OPEN_LIBRARY_COVERS_URL`,
-  the stub's `/b/isbn` in the scenarios), so *S5 Merged answer, from Open
-  Library alone* expects the stub's address in `coverUrl`, never
-  `covers.openlibrary.org`. `?default=false` makes Open Library answer `404`
+  the stub's `/b/isbn` in the scenarios), so a test expecting the Open
+  Library candidate's address expects the stub's (`OpenLibrarySourceTest`
+  builds it on the server's base URL), never `covers.openlibrary.org`.
+  `?default=false` makes Open Library answer `404`
   for a missing cover instead of a blank picture.
 - `LookupAnswering`, in `bibliography.fixture`, records the ISBNs it was asked
   and answers them as `asked`, so a case proves a source was never called with

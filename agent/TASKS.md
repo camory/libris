@@ -361,7 +361,7 @@ catalogue rows show a cover only once the worker has stored it (Tophe,
       Realises S10 on the frontend; un-skips the frontend tests of S10, both
       cases.
 
-- [ ] T064 Backend: the lookup on `v0.10.0`, its deprecated cover gone.
+- [x] T064 Backend: the lookup on `v0.10.0`, its deprecated cover gone.
       Precondition (human): T063 deployed; `v0.10.0` released (D04).
       `ApiContractTest` pins `v0.10.0`, the only contract edit of the task
       (D04): the lookup no longer answers `coverUrl`, the candidates of
