@@ -214,7 +214,7 @@ describe("Covers", () => {
     expect(screen.queryByText("Libris")).toBeNull();
   });
 
-  it.skip("S10 A held edition offers its own cover, not yet stored", async () => {
+  it("S10 A held edition offers its own cover, not yet stored", async () => {
     // Given
     const screen = open("/isbn", {
       isbn: theHouseHolds(onePiece1, [on(lea.defaultBookshelf)], []),
