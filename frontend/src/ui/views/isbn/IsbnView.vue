@@ -16,6 +16,7 @@ import { isbnApiKey } from "../../../application/IsbnApi";
 import { meApiKey } from "../../../application/MeApi";
 import { useAddBookToBookshelf } from "../../../application/useAddBookToBookshelf";
 import type { Copy } from "../../../domain/Copy";
+import type { CoverCandidate } from "../../../domain/Cover";
 import { Isbn } from "../../../domain/Isbn";
 import type { SourceEdition } from "../../../domain/SourceEdition";
 import BusySpinner from "../../components/BusySpinner.vue";
@@ -40,6 +41,7 @@ const message = ref<string>();
 const refused = computed(() => refusals.includes(message.value ?? ""));
 const edition = ref<SourceEdition>();
 const copies = ref<Copy[]>([]);
+const covers = ref<CoverCandidate[]>([]);
 const searching = ref(false);
 const addBookToBookshelf = shallowRef(
   useAddBookToBookshelf(meApi, bookshelfApi),
@@ -97,6 +99,7 @@ async function search() {
   if (answer.outcome === "found") {
     edition.value = answer.edition;
     copies.value = answer.copies;
+    covers.value = answer.covers;
   } else {
     message.value = messages.get(answer.type) ?? "isbn.error";
   }
@@ -179,7 +182,11 @@ async function search() {
     <SourceEditionCardSkeleton v-if="searching" class="mt-5" />
 
     <div v-else-if="edition" class="mt-5 flex flex-col gap-2">
-      <SourceEditionCard :edition="edition" :copies="shownCopies" />
+      <SourceEditionCard
+        :edition="edition"
+        :copies="shownCopies"
+        :covers="covers"
+      />
       <button
         v-if="addState.status !== 'added'"
         type="button"
