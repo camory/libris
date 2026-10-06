@@ -17,7 +17,6 @@ import io.kotest.matchers.shouldBe
 import io.kotest.matchers.shouldNotBe
 import io.kotest.matchers.string.shouldContain
 import io.kotest.matchers.string.shouldStartWith
-import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Qualifier
@@ -246,7 +245,6 @@ class CoversScenarios @Autowired constructor(
   }
 
   @Test
-  @Disabled("covers")
   fun `S8 A failed fetch waits a day, the source answers a header claiming a side over 5 000 pixels`() {
     openLibrary.hasCover(ONE_PIECE_1, HUGE_HEADER_JPEG)
     aFailedFetchWaitsADay()
