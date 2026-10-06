@@ -15,9 +15,12 @@ const props = defineProps<{
 const { t, te } = useI18n();
 
 const failed = ref<number[]>([]);
-const shown = computed(() =>
-  props.covers.findIndex((_, index) => !failed.value.includes(index)),
+const offered = computed(() =>
+  props.covers
+    .map((cover, index) => ({ cover, index }))
+    .filter(({ index }) => !failed.value.includes(index)),
 );
+const shown = computed(() => offered.value[0]?.index ?? -1);
 
 const overline = computed(() => {
   const series = props.edition.series;
@@ -114,7 +117,7 @@ const rows = computed(() => {
         </div>
         <div>
           <button
-            v-for="cover in covers"
+            v-for="{ cover } in offered"
             :key="cover.url"
             type="button"
             :aria-label="t('isbn.card.coverSource', { source: cover.source })"

@@ -379,6 +379,23 @@ describe("SourceEditionCard", () => {
     ]);
   });
 
+  it("takes the dot away from a candidate that does not load", async () => {
+    // Given
+    const card = screen(onePiece1, [], [inventaire, openLibrary, bnf]);
+
+    // When
+    card
+      .getAllByRole("img", { hidden: true })[2]
+      .dispatchEvent(new Event("error"));
+    await nextTick();
+
+    // Then
+    expect(
+      dots(card).map((dot) => dot.getAttribute("aria-label")),
+    ).toEqual(["Couverture inventaire.io", "Couverture Open Library"]);
+    expect(card.getByRole("img").getAttribute("src")).toBe(inventaire.url);
+  });
+
   it("shows a book icon when the first candidate does not load", async () => {
     // Given
     const wrapper = card(onePiece1, [], [inventaire]);
