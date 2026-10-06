@@ -1127,3 +1127,23 @@ Format:
   choice, or the add button drawn in the card through a slot, Tophe kept
   the first: the card keeps its choice, and D05 already says "events out".
 - Left over: T062, rerun.
+
+## 2026-10-06 — T062 The add carries the cover's source — done
+- Did: `SourceEditionCard` gives out `coverSource`, the source of the cover
+  it shows or null for the stand-in, at setup and each time it changes;
+  `IsbnView` keeps the last one and passes it to `add(edition, coverSource)`.
+- Decided: the card gives the source out from one `watch` over the shown
+  cover's source with `immediate: true`, so the first value goes out while
+  the card is set up, before it mounts, and a failure, a tap or the last
+  failure each give out the new value from the one place that decides it.
+- Decided: the view's `coverSource` is not reset on a new lookup: the card
+  remounts behind the skeleton and gives out its first source again.
+- Deviations from the brief: the two S3 cases were un-skipped in the first
+  commit, their red (`[undefined]` for `["Open Library"]` and for `[null]`)
+  read before any unit test, as the implementer prompt orders; the brief
+  put them at steps 7 and 9. Step 9 stays a guard, its mutation run.
+- Deviations from the brief: step 1's green gives out from setup rather than
+  `onMounted`, the form step 3 needed anyway.
+- Left over: the held edition's source, T063 and S10.
+- Reviewed by Tophe: the reviewer's suggestion fixed up, the gotchas' call
+  of `add` now carries `coverSource`.

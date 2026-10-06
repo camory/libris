@@ -348,7 +348,7 @@ catalogue rows show a cover only once the worker has stored it (Tophe,
       the U06 rule and the U04 exception the spec names.
       Realises S2; un-skips the frontend tests of S2, its four cases.
 
-- [ ] T062 Frontend: the add carries the cover's source.
+- [x] T062 Frontend: the add carries the cover's source.
       The add sends as `coverSource` the source of the cover the card shows,
       null when it shows the stand-in; once added, the cover and its name
       stay as they were (D05). Realises S3 on the frontend; un-skips the

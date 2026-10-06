@@ -165,6 +165,10 @@ Read whole by a run that changes `frontend/`, after `every-run.md`.
   Toggle what a query must see with `aria-hidden`, which is read as an
   attribute, and hide it on screen with a class, which draws nothing in the
   specs (`SourceEditionCard`'s images).
+- A component's `emit` called during `setup`, as a `watch` with
+  `immediate: true` does, reaches the parent's `@event` listener and
+  Vue Test Utils' `wrapper.emitted()`: `SourceEditionCard` gives out its
+  first `coverSource` that way, with no `onMounted`.
 - jsdom loads no image: an `<img>` with a `src` fires neither `load` nor
   `error`, whatever the URL, so a test of what a broken cover shows dispatches
   `new Event("error")` on the element itself and awaits `nextTick()`. Vue Test
@@ -266,8 +270,8 @@ Read whole by a run that changes `frontend/`, after `every-run.md`.
   `addBookToBookshelf`, rebuilt on each lookup), exposes its `state` to the
   template as a ref still, and the view reads it through a `computed`
   (`addState`). Its function is called on the unwrapped object,
-  `@click="addBookToBookshelf.add(edition)"`, and `vue-tsc` narrows
-  `edition` there from the enclosing `v-else-if`.
+  `@click="addBookToBookshelf.add(edition, coverSource)"`, and `vue-tsc`
+  narrows `edition` there from the enclosing `v-else-if`.
 - `@typescript-eslint/no-unused-vars` has no `argsIgnorePattern`: an
   `_`-prefixed parameter is still an error, so a cycle whose signature is
   fixed before its body uses the argument leaves `eslint .`, and the gate,

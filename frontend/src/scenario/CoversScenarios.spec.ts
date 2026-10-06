@@ -155,7 +155,7 @@ describe("Covers", () => {
     expect(sourceName(screen)).toBeNull();
   });
 
-  it.skip("S3 The add carries the cover's source", async () => {
+  it("S3 The add carries the cover's source", async () => {
     // Given
     const add = librisAdds(on(lea.defaultBookshelf));
     const screen = open("/isbn", {
@@ -177,7 +177,7 @@ describe("Covers", () => {
     expect(sourceName(screen)).toBe("Open Library");
   });
 
-  it.skip("S3 The add carries the cover's source, the stand-in", async () => {
+  it("S3 The add carries the cover's source, the stand-in", async () => {
     // Given
     const add = librisAdds(on(lea.defaultBookshelf));
     const screen = open("/isbn", {

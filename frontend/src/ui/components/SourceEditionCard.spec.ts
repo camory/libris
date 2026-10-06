@@ -365,6 +365,63 @@ describe("SourceEditionCard", () => {
     expect(cover.getAttribute("alt")).toBe("Couverture de Romance dawn");
   });
 
+  it("gives out no source when it shows the stand-in", () => {
+    // When
+    const wrapper = card(onePiece1, [], []);
+
+    // Then
+    expect(givenOut(wrapper)).toBeNull();
+  });
+
+  it("gives out the source of the first cover it shows", () => {
+    // When
+    const wrapper = card(onePiece1, [], [inventaire, openLibrary, bnf]);
+
+    // Then
+    expect(givenOut(wrapper)).toBe("inventaire.io");
+  });
+
+  it("gives out the next source when the shown cover does not load", async () => {
+    // Given
+    const wrapper = card(onePiece1, [], [inventaire, openLibrary, bnf]);
+    const shown = within(wrapper.element as HTMLElement);
+
+    // When
+    shown.getByRole("img").dispatchEvent(new Event("error"));
+    await nextTick();
+
+    // Then
+    expect(givenOut(wrapper)).toBe("Open Library");
+  });
+
+  it("gives out the source of the dot tapped", async () => {
+    // Given
+    const wrapper = card(onePiece1, [], [inventaire, openLibrary, bnf]);
+    const shown = within(wrapper.element as HTMLElement);
+
+    // When
+    shown.getByRole("button", { name: "Couverture BnF" }).click();
+    await nextTick();
+
+    // Then
+    expect(givenOut(wrapper)).toBe("BnF");
+  });
+
+  it("gives out no source once no candidate loads", async () => {
+    // Given
+    const wrapper = card(onePiece1, [], [inventaire, openLibrary, bnf]);
+    const shown = within(wrapper.element as HTMLElement);
+
+    // When
+    for (const image of shown.getAllByRole("img", { hidden: true })) {
+      image.dispatchEvent(new Event("error"));
+      await nextTick();
+    }
+
+    // Then
+    expect(givenOut(wrapper)).toBeNull();
+  });
+
   it("offers one dot per candidate, named after its source", () => {
     // When
     const card = screen(onePiece1, [], [inventaire, openLibrary, bnf]);
@@ -613,6 +670,10 @@ describe("SourceEditionCard", () => {
 
   function pressed(card: ReturnType<typeof screen>) {
     return dots(card).map((dot) => dot.getAttribute("aria-pressed"));
+  }
+
+  function givenOut(wrapper: ReturnType<typeof card>) {
+    return wrapper.emitted<[string | null]>("coverSource")?.at(-1)?.[0];
   }
 
   function show(

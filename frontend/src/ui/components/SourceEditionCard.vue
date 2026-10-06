@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, ref } from "vue";
+import { computed, ref, watch } from "vue";
 import { useI18n } from "vue-i18n";
 import type { Copy } from "../../domain/Copy";
 import type { CoverCandidate } from "../../domain/Cover";
@@ -11,6 +11,8 @@ const props = defineProps<{
   copies: Copy[];
   covers: CoverCandidate[];
 }>();
+
+const emit = defineEmits<{ coverSource: [source: string | null] }>();
 
 const { t, te } = useI18n();
 
@@ -25,6 +27,12 @@ const shown = computed(
   () =>
     offered.value.find(({ index }) => index === tapped.value) ??
     offered.value[0],
+);
+
+watch(
+  () => shown.value?.cover.source ?? null,
+  (source) => emit("coverSource", source),
+  { immediate: true },
 );
 
 function isShown(index: number) {

@@ -42,6 +42,7 @@ const refused = computed(() => refusals.includes(message.value ?? ""));
 const edition = ref<SourceEdition>();
 const copies = ref<Copy[]>([]);
 const covers = ref<CoverCandidate[]>([]);
+const coverSource = ref<string | null>(null);
 const searching = ref(false);
 const addBookToBookshelf = shallowRef(
   useAddBookToBookshelf(meApi, bookshelfApi),
@@ -186,13 +187,14 @@ async function search() {
         :edition="edition"
         :copies="shownCopies"
         :covers="covers"
+        @cover-source="coverSource = $event"
       />
       <button
         v-if="addState.status !== 'added'"
         type="button"
         :disabled="addState.status === 'adding'"
         class="flex h-[50px] items-center justify-center gap-2 rounded-xl bg-accent text-button text-white active:bg-accent-pressed disabled:opacity-70"
-        @click="addBookToBookshelf.add(edition)"
+        @click="addBookToBookshelf.add(edition, coverSource)"
       >
         <BusySpinner v-if="addState.status === 'adding'" class="size-4" />
         {{ addState.status === "adding" ? t("isbn.adding") : t("isbn.add") }}

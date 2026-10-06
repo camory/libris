@@ -36,24 +36,28 @@ describe("useAddBookToBookshelf", () => {
     );
 
     // When
-    void add(onePiece1);
+    void add(onePiece1, null);
     await flushPromises();
 
     // Then
     expect(state.value).toEqual({ status: "adding" });
   });
 
-  it("adds the edition to the reader's default bookshelf", async () => {
+  it("adds the edition, with the source of its cover, to the reader's default bookshelf", async () => {
     // Given
     const bookshelfApi = new FakeBookshelfApi(added);
     const { add } = useAddBookToBookshelf(new FakeMeApi(lea), bookshelfApi);
 
     // When
-    await add(onePiece1);
+    await add(onePiece1, "Open Library");
 
     // Then
     expect(bookshelfApi.asked).toEqual([
-      { bookshelfId: lea.defaultBookshelf.id, edition: onePiece1 },
+      {
+        bookshelfId: lea.defaultBookshelf.id,
+        edition: onePiece1,
+        coverSource: "Open Library",
+      },
     ]);
   });
 
@@ -65,7 +69,7 @@ describe("useAddBookToBookshelf", () => {
     );
 
     // When
-    await add(onePiece1);
+    await add(onePiece1, null);
 
     // Then
     expect(state.value).toEqual({ status: "added", copy });
@@ -82,7 +86,7 @@ describe("useAddBookToBookshelf", () => {
     );
 
     // When
-    await add(onePiece1);
+    await add(onePiece1, null);
 
     // Then
     expect(state.value).toEqual({ status: "notAdded" });
@@ -96,7 +100,7 @@ describe("useAddBookToBookshelf", () => {
     );
 
     // When
-    await add(onePiece1);
+    await add(onePiece1, null);
 
     // Then
     expect(state.value).toEqual({ status: "notAdded" });
@@ -111,7 +115,7 @@ describe("useAddBookToBookshelf", () => {
     const { state, add } = useAddBookToBookshelf(noReader, bookshelfApi);
 
     // When
-    await add(onePiece1);
+    await add(onePiece1, null);
 
     // Then
     expect(state.value).toEqual({ status: "notAdded" });
