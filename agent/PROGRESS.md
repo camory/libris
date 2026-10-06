@@ -1147,3 +1147,18 @@ Format:
 - Left over: the held edition's source, T063 and S10.
 - Reviewed by Tophe: the reviewer's suggestion fixed up, the gotchas' call
   of `add` now carries `coverSource`.
+
+## 2026-10-06 — T063 A held edition offers its own cover — done
+- Did: `SourceEditionCard` takes a required `id: string | null` and draws
+  the dots' row and the source's name only when it is null; `IsbnView`
+  keeps the found answer's `id` and passes it. S10, both cases, green.
+- Decided: the view's `id` is set on each found answer beside `edition`,
+  `copies` and `covers`, and not reset on a new lookup: the card is not
+  drawn until the next answer sets all four.
+- Decided: the card spec's `libris` candidate takes a 64-hex cover URL of
+  its own, and the held id is a constant `held` beside it.
+- Deviations from the brief: none. Step 2's guard was un-skipped and
+  committed at step 2, its mutation run once step 4 was green, as the brief
+  orders.
+- Left over: the U06 sentence for *Covers* is proposed in the PR body;
+  the lookup losing `coverUrl` on `v0.10.0`, T064.

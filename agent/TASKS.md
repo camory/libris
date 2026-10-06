@@ -354,7 +354,7 @@ catalogue rows show a cover only once the worker has stored it (Tophe,
       stay as they were (D05). Realises S3 on the frontend; un-skips the
       frontend tests of S3, both cases.
 
-- [ ] T063 Frontend: a held edition offers its own cover.
+- [x] T063 Frontend: a held edition offers its own cover.
       When the lookup answers an `id`, the choice is over: the card shows the
       candidate's picture with no dot and no name under it, and the stand-in
       when there is no candidate; no side reads the candidate's source name.

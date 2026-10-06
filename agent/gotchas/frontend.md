@@ -154,9 +154,11 @@ Read whole by a run that changes `frontend/`, after `every-run.md`.
   conversion, no throw.
 - `SourceEditionCard` keeps one `img` per candidate of the lookup's
   `covers`, the shown one alone accessible, and the stand-in `IconBook`
-  when none is left: its spec's `card()`, `show()` and `screen()` default
-  to no candidate, so a case counting the rows' `IconBook`s passes a
-  candidate, or the stand-in adds one. `getAllByRole("img", { hidden: true
+  when none is left; its props are `edition`, `copies`, `covers` and `id`,
+  required, the dots' row and the name drawn only when `id` is null. Its
+  spec's `card()`, `show()` and `screen()` default to no candidate and a null
+  `id`, so a case counting the rows' `IconBook`s passes a candidate, or the
+  stand-in adds one. `getAllByRole("img", { hidden: true
   })` reaches every candidate's image, in the answer's order.
 - jsdom clears its computed-style cache only when the tree is attached to
   the document, and every component spec and scenario mounts detached: an
