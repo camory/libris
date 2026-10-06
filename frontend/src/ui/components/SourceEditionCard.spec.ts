@@ -394,6 +394,19 @@ describe("SourceEditionCard", () => {
     expect(givenOut(wrapper)).toBe("Open Library");
   });
 
+  it("gives out the source of the dot tapped", async () => {
+    // Given
+    const wrapper = card(onePiece1, [], [inventaire, openLibrary, bnf]);
+    const shown = within(wrapper.element as HTMLElement);
+
+    // When
+    shown.getByRole("button", { name: "Couverture BnF" }).click();
+    await nextTick();
+
+    // Then
+    expect(givenOut(wrapper)).toBe("BnF");
+  });
+
   it("offers one dot per candidate, named after its source", () => {
     // When
     const card = screen(onePiece1, [], [inventaire, openLibrary, bnf]);
