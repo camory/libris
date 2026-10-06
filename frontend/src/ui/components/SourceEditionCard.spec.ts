@@ -75,8 +75,6 @@ const libris: CoverCandidate = {
   url: "/api/v1/covers/5b1c2a4f0e6d8a9b3c7e1f2d4a6b8c0e9f1a3b5c7d9e0f2a4b6c8d0e1f3a5b7c",
 };
 
-const held = "3c4d5e6f-7a8b-4c9d-8e0f-1a2b3c4d5e6f";
-
 describe("SourceEditionCard", () => {
   it("shows the series and the volume, the title and the subtitle", () => {
     // When
@@ -534,7 +532,7 @@ describe("SourceEditionCard", () => {
 
   it("draws no dot under the cover of an edition the house holds", () => {
     // When
-    const card = screen(onePiece1, [], [libris], held);
+    const card = screen(onePiece1, [], [libris], true);
 
     // Then
     expect(dots(card)).toEqual([]);
@@ -542,7 +540,7 @@ describe("SourceEditionCard", () => {
 
   it("names no source under the cover of an edition the house holds", () => {
     // When
-    const card = show(onePiece1, [], [libris], held);
+    const card = show(onePiece1, [], [libris], true);
 
     // Then
     expect(card).not.toContain("Libris");
@@ -550,7 +548,7 @@ describe("SourceEditionCard", () => {
 
   it("shows the house's cover for an edition the house holds", () => {
     // When
-    const covers = screen(onePiece1, [], [libris], held).getAllByRole("img");
+    const covers = screen(onePiece1, [], [libris], true).getAllByRole("img");
 
     // Then
     expect(covers).toHaveLength(1);
@@ -721,28 +719,28 @@ describe("SourceEditionCard", () => {
     edition: SourceEdition,
     copies: Copy[] = [],
     covers: CoverCandidate[] = [],
-    id: string | null = null,
+    held = false,
   ) {
-    return card(edition, copies, covers, id).text().replace(/\s+/g, " ");
+    return card(edition, copies, covers, held).text().replace(/\s+/g, " ");
   }
 
   function screen(
     edition: SourceEdition,
     copies: Copy[] = [],
     covers: CoverCandidate[] = [],
-    id: string | null = null,
+    held = false,
   ) {
-    return within(card(edition, copies, covers, id).element as HTMLElement);
+    return within(card(edition, copies, covers, held).element as HTMLElement);
   }
 
   function card(
     edition: SourceEdition,
     copies: Copy[] = [],
     covers: CoverCandidate[] = [],
-    id: string | null = null,
+    held = false,
   ) {
     return mount(SourceEditionCard, {
-      props: { edition, copies, covers, id },
+      props: { edition, copies, covers, held },
       global: { plugins: [createLibrisI18n()] },
     });
   }

@@ -1162,3 +1162,5 @@ Format:
   orders.
 - Left over: the U06 sentence for *Covers* is proposed in the PR body;
   the lookup losing `coverUrl` on `v0.10.0`, T064.
+- Reviewed by Tophe: the card takes `held: boolean` instead of the `id` it
+  only compared to null; the view keeps `held`, set from the answer's `id`.

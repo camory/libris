@@ -10,7 +10,7 @@ const props = defineProps<{
   edition: SourceEdition;
   copies: Copy[];
   covers: CoverCandidate[];
-  id: string | null;
+  held: boolean;
 }>();
 
 const emit = defineEmits<{ coverSource: [source: string | null] }>();
@@ -133,7 +133,7 @@ const rows = computed(() => {
           />
           <IconBook v-if="!shown" class="text-muted opacity-60" />
         </div>
-        <div v-if="id === null" class="flex justify-center">
+        <div v-if="!held" class="flex justify-center">
           <button
             v-for="{ cover, index } in offered"
             :key="cover.url"
@@ -151,7 +151,7 @@ const rows = computed(() => {
             ></span>
           </button>
         </div>
-        <p v-if="id === null && shown" class="text-center text-body text-muted">
+        <p v-if="!held && shown" class="text-center text-body text-muted">
           {{ shown.cover.source }}
         </p>
       </div>
