@@ -147,10 +147,12 @@ Read whole by a run that changes `backend/`, after `every-run.md`.
   of an image with an alpha channel as `jpeg` answers `false` and writes
   nothing, so a JPEG is written from an image without alpha
   (`TYPE_INT_RGB`); the fixture's `pictureOf` checks what `write` answers.
+  A cut-short WebP (the first 200 bytes of `covers/small.webp`) or BMP
+  throws a plain `EOFException`, not an `IIOException`.
   `Cover.normalised()` answers `null` for what is no picture: no reader,
-  a reader's `IIOException`, or a header side over 5 000 pixels, read
+  a reader's `IOException`, or a header side over 5 000 pixels, read
   before any pixel. `CoverFetches` applies it to each source's answer.
-  Measured on JDK 25 with 3.15.3, 2026-10-06.
+  Measured on JDK 25 with 3.15.3, 2026-10-07.
 - The binder keeps an unresolved `${VAR}` as its literal text: a setting
   bound from `${VAR}` alone starts without the variable (T051 found
   the covers directory bound to the path `${LIBRIS_COVERS_DIR}`). An empty

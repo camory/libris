@@ -19,6 +19,9 @@ true; the diary keeps the date it was found.
   run dev`, `contracteer mock`). Start it as a background task, wait with
   `curl --retry 30 --retry-connrefused`, stop it by task id. A foreground
   `sleep` is refused.
+- A headless run that ends its turn to wait for a background task gets no
+  wake-up: the run is asked for its final report at once. Run the gate in
+  the foreground.
 - `pkill -f` or `pgrep -af` with a pattern that appears in the tool call's
   own command line kills or matches the call itself (exit 144). Match on
   something else, or stop the process from what started it.
