@@ -47,4 +47,19 @@ class CoverFetchesTest {
     inventaire.asked shouldBe listOf(isbnOf(ONE_PIECE))
     bnf.asked.shouldBeEmpty()
   }
+
+  @Test
+  fun `with no chosen source, a cover that is no picture is passed for the next source's`() {
+    // Given
+    val openLibrary = CoverFetchAnswering(OPEN_LIBRARY, jpeg)
+    val coverFetches =
+      CoverFetches.of(listOf(CoverFetchAnswering(INVENTAIRE, coverOf("image/png", byteArrayOf(1, 2, 3))), openLibrary))
+
+    // When
+    val cover = coverFetches.coverFor(isbnOf(ONE_PIECE), null)
+
+    // Then
+    cover shouldBe jpeg
+    openLibrary.asked shouldBe listOf(isbnOf(ONE_PIECE))
+  }
 }
