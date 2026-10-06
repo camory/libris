@@ -372,6 +372,24 @@ catalogue rows show a cover only once the worker has stored it (Tophe,
       no scenario, the spec's contract section asks for it, and every
       scenario test stays green throughout.
 
+- [ ] T070 Backend: a picture over 5 000 pixels is not a picture.
+      Precondition (human): the backend test of S8's fourth case, a header
+      claiming a side over 5 000 pixels, written and skipped.
+      A cover is only what Libris can read as a picture, no side over 5 000
+      pixels as its header says, read before any pixel is decoded; anything
+      else is not a picture, as S8 says: the cascade moves on to the next
+      source, and a chosen source leaves the edition awaiting with its
+      attempt dated. The two `CoverTest` cases that keep unreadable bytes
+      as fetched become cases of no cover. Realises S6's picture rule;
+      un-skips the backend test of S8's fourth case.
+
+- [ ] T071 Backend: one edition never stops the run.
+      Whatever one edition's fetch, normalisation or storing throws, its
+      attempt stays dated and the worker goes on to the next edition. Test
+      of the worker with its ports faked, the storing of the first of two
+      editions throwing, the second stored. Realises S8's last paragraph;
+      un-skips nothing, the property having no scenario test.
+
 *Done (Tophe, on the Pixel, from the installed app on staging): scan an
 ouvrage the house lacks; the card shows a cover with its source under it; tap
 a dot, the cover changes; add it; open the catalogue, the row shows that

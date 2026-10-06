@@ -17,6 +17,7 @@ import io.kotest.matchers.shouldBe
 import io.kotest.matchers.shouldNotBe
 import io.kotest.matchers.string.shouldContain
 import io.kotest.matchers.string.shouldStartWith
+import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Qualifier
@@ -244,6 +245,13 @@ class CoversScenarios @Autowired constructor(
     aFailedFetchWaitsADay()
   }
 
+  @Test
+  @Disabled("covers")
+  fun `S8 A failed fetch waits a day, the source answers a header claiming a side over 5 000 pixels`() {
+    openLibrary.hasCover(ONE_PIECE_1, HUGE_HEADER_JPEG)
+    aFailedFetchWaitsADay()
+  }
+
   private fun aFailedFetchWaitsADay() {
     // Given
     val luc = reader("luc", "Luc")
@@ -439,6 +447,7 @@ class CoversScenarios @Autowired constructor(
     val WEBP: MediaType = parseMediaType("image/webp")
     val TALL_JPEG = recordedBytes("covers/tall.jpg")
     val SMALL_WEBP = recordedBytes("covers/small.webp")
+    val HUGE_HEADER_JPEG = recordedBytes("covers/huge-header.jpg")
 
     fun onePiece1(coverSource: String?) =
       onePiece(ONE_PIECE_1, "Romance dawn", 1, coverSource)

@@ -1185,3 +1185,22 @@ Format:
   after step 2's green.
 - Deviations from the brief: none.
 - Left over: nothing; the frontend keeps its pin on `v0.9.0`, as the brief says.
+
+## 2026-10-06 — The covers spec bounds a picture's pixels, with Tophe
+- Did: `specs/covers.md` says what a picture is (S6: one Libris can read,
+  no side over 5 000 pixels as its header says, never decoded otherwise),
+  gives S8 a fourth case, a header claiming a side over 5 000 pixels, and
+  states that one edition never stops the worker's run; T070 and T071 take
+  them, and the proposed item they came from leaves `PROPOSED.md`.
+- Decided: 5 000 pixels a side, about 100 MB decoded at worst, twice any
+  cover measured (Open Library 288×500 and 322×500, the BnF 400×583); a
+  picture over it, or bytes no reader knows under an image's media type,
+  stored as fetched until now, is not a picture, as S8 says; the run going
+  on is proved by a test of the worker with its ports faked, not by a
+  scenario.
+- Did, on his ask: the skipped backend test of S8's fourth case, T070's
+  precondition, over `covers/huge-header.jpg`, the recorded tall JPEG
+  with its header claiming 20 000 × 20 000. Un-skipped on `main` it is
+  red, the worker's `OutOfMemoryError` keeping the next edition's cover
+  from coming within five seconds; skipped, `./gradlew check` is green.
+- Left over: T070, then T071.
