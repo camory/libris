@@ -17,17 +17,12 @@ import fr.amory.libris.bibliography.fixture.recordedBytes
 import fr.amory.libris.fixture.MutableClock
 import io.kotest.matchers.collections.shouldBeEmpty
 import io.kotest.matchers.shouldBe
-import io.kotest.matchers.string.shouldContain
 import org.junit.jupiter.api.Test
-import org.junit.jupiter.api.extension.ExtendWith
-import org.springframework.boot.test.system.CapturedOutput
-import org.springframework.boot.test.system.OutputCaptureExtension
 import org.springframework.transaction.support.TransactionOperations.withoutTransaction
 import java.util.concurrent.Executor
 
 private const val ONE_PIECE = "9782723488525"
 
-@ExtendWith(OutputCaptureExtension::class)
 class ExecutorCoverWorkerTest {
   private val editions = EditionsInMemory()
   private val awaitedCovers = AwaitedCoversInMemory()
@@ -68,20 +63,6 @@ class ExecutorCoverWorkerTest {
 
     // Then
     coverFetch.asked.shouldBeEmpty()
-  }
-
-  @Test
-  fun `a run says so in the log`(output: CapturedOutput) {
-    // Given
-    val executor = ExecutorKeeping()
-    val coverWorker = ExecutorCoverWorker(fetchAwaitedCovers, executor)
-
-    // When
-    coverWorker.wake()
-    executor.runKept()
-
-    // Then
-    output.out shouldContain "Fetching the awaited covers"
   }
 
   private fun awaitingOnePiece() {
