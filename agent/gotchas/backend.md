@@ -366,9 +366,11 @@ Read whole by a run that changes `backend/`, after `every-run.md`.
   `image/webp` by default, and `knowsWithEntityServedAs(isbn, mediaType)`
   the recorded entity under one.
 - The cover worker, `ExecutorCoverWorker` built by `WorkerConfig`, runs
-  `FetchAwaitedCovers` on one virtual thread of its own, at every context
-  start, every `libris.worker.every` (`LIBRIS_WORKER_PERIOD`, `P1D` by
-  default) and after each add answering a copy. Runs queue, never overlap:
+  `FetchAwaitedCovers` on one virtual thread of its own, at every start of
+  a context of the whole application (the scenario classes,
+  `LibrisApplicationTest`; never a web or JDBC slice), every
+  `libris.worker.every` (`LIBRIS_WORKER_PERIOD`, `P1D` by default) and
+  after each add answering a copy. Runs queue, never overlap:
   a run that outlives its case (S3's waits a second on a picture that never
   comes, *S10 …, not yet stored* gives up on Open Library's one-second
   timeout) delays the next case's run by up to that second. An add of an
