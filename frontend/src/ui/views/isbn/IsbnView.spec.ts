@@ -462,7 +462,11 @@ describe("IsbnView", () => {
 
     // Then
     expect(bookshelfApi.asked).toEqual([
-      { bookshelfId: lea.defaultBookshelf.id, edition: onePiece1 },
+      {
+        bookshelfId: lea.defaultBookshelf.id,
+        edition: onePiece1,
+        coverSource: null,
+      },
     ]);
   });
 
