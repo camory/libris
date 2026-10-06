@@ -1,7 +1,9 @@
 import type { IsbnApi, IsbnAnswer } from "../../application/IsbnApi";
 import type { AuthorRole, Kind } from "../../domain/SourceEdition";
+import { problemOf } from "./problemOf";
 
 interface IsbnResponse {
+  id: string | null;
   isbn13: string;
   kind: Kind;
   title: string;
@@ -14,13 +16,15 @@ interface IsbnResponse {
   language: string | null;
   pageCount: number | null;
   summary: string | null;
-  coverUrl: string | null;
   copies: { id: string; bookshelf: { id: string; name: string } }[];
+  covers: { source: string; url: string }[];
 }
 
-interface ProblemResponse {
-  type: string;
-}
+const problems = new Map([
+  [400, "/problems/validation"],
+  [404, "/problems/not-found"],
+  [503, "/problems/sources-unavailable"],
+]);
 
 export class FetchIsbnApi implements IsbnApi {
   constructor(private readonly baseUrl: string) {}
@@ -33,6 +37,7 @@ export class FetchIsbnApi implements IsbnApi {
       const body = (await response.json()) as IsbnResponse;
       return {
         outcome: "found",
+        id: body.id,
         edition: {
           isbn13: body.isbn13,
           kind: body.kind,
@@ -46,15 +51,17 @@ export class FetchIsbnApi implements IsbnApi {
           language: body.language,
           pageCount: body.pageCount,
           summary: body.summary,
-          coverUrl: body.coverUrl,
         },
         copies: body.copies.map((copy) => ({
           id: copy.id,
           bookshelf: { id: copy.bookshelf.id, name: copy.bookshelf.name },
         })),
+        covers: body.covers.map((cover) => ({
+          source: cover.source,
+          url: cover.url,
+        })),
       };
     }
-    const problem = (await response.json()) as ProblemResponse;
-    return { outcome: "problem", type: problem.type };
+    return problemOf(response, problems);
   }
 }

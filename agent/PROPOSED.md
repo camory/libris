@@ -405,3 +405,11 @@
   covers setting (decided with Tophe after T054); building the BnF's on
   `libris.sources.bnf-covers-url` needs *FastEntryScenarios* to read the
   stub's address, a scenario edit that is Tophe's (found 2026-10-04 on T057).
+- Contract and spec: `Problem.type` in `camory/libris-api` is described as
+  "A slug under /problems/ the client switches on", and
+  `specs/fast-entry.md:185` says "the screen picks its text from `type`";
+  since T060 both clients read the HTTP status of a problem body and fall
+  back on `type` for a status the contract does not name. No byte changes:
+  reword the description at the next release of the contract, and the spec
+  line at the next spec session, with Tophe (found 2026-10-06 reviewing
+  T060 with Tophe).

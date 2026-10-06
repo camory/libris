@@ -5,6 +5,7 @@ import {
   aSeriesOrNull,
   aStringOrNull,
   authorsWithNameAndRole,
+  candidatesWithSourceAndUrl,
 } from "../../fixture/EditionShapes";
 import { FetchIsbnApi } from "./FetchIsbnApi";
 
@@ -22,6 +23,8 @@ describe("FetchIsbnApi", () => {
 
     // Then
     assert(answer.outcome === "found", `the answer is a ${answer.outcome}`);
+    expect(answer.id).toEqual(aStringOrNull);
+    expect(answer.covers).toEqual(candidatesWithSourceAndUrl);
     expect(answer.edition).toEqual({
       isbn13: expect.any(String),
       kind: aKind,
@@ -35,7 +38,6 @@ describe("FetchIsbnApi", () => {
       language: aStringOrNull,
       pageCount: aNumberOrNull,
       summary: aStringOrNull,
-      coverUrl: aStringOrNull,
     });
   });
 
@@ -59,7 +61,7 @@ describe("FetchIsbnApi", () => {
     const api = new FetchIsbnApi(inject("mockBaseUrl"));
 
     // When
-    const answer = await api.lookUp("9782000000006");
+    const answer = await api.lookUp("9782000000013");
 
     // Then
     expect(answer).toEqual({ outcome: "problem", type: "/problems/not-found" });
@@ -93,6 +95,25 @@ describe("FetchIsbnApi", () => {
     });
   });
 
+  it("answers no problem for a 404 without a problem body", async () => {
+    // Given
+    const api = new FetchIsbnApi("http://libris.invalid");
+    vi.stubGlobal("fetch", () =>
+      Promise.resolve(
+        new Response("404 page not found", {
+          status: 404,
+          headers: { "Content-Type": "text/plain" },
+        }),
+      ),
+    );
+
+    // When
+    const answer = api.lookUp("9782723488525");
+
+    // Then
+    await expect(answer).rejects.toThrow();
+  });
+
   it("reads the fields it knows when the answer carries one it does not", async () => {
     // Given
     const api = new FetchIsbnApi("http://an-older-backend");
@@ -114,6 +135,8 @@ describe("FetchIsbnApi", () => {
       summary: null,
       coverUrl: "https://covers.openlibrary.org/b/isbn/9782723488525-L.jpg",
       copies: [],
+      id: null,
+      covers: [],
       sources: ["BNF", "OPEN_LIBRARY"],
     };
     vi.stubGlobal("fetch", () =>
@@ -132,7 +155,6 @@ describe("FetchIsbnApi", () => {
         { name: "Eiichirō Oda", role: "WRITER" },
         { name: "Eiichirō Oda", role: "ARTIST" },
       ],
-      coverUrl: "https://covers.openlibrary.org/b/isbn/9782723488525-L.jpg",
     });
   });
 });

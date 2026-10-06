@@ -22,7 +22,7 @@ Read whole by a run that changes `frontend/`, after `every-run.md`.
   an `afterEach`, or the contract case passes only by running first.
 - `vitest.global-setup.ts` starts `contracteer mock` on port 9099 over the
   contract the frontend pins, a `raw.githubusercontent.com` URL of
-  `camory/libris-api` (`v0.7.0` until T060); it starts in about four seconds
+  `camory/libris-api` (`v0.9.0` since T060); it starts in about four seconds
   and logs `Contracteer mock server started on port 9099` last, and the
   setup resolves on that line and kills the process in its teardown. The
   mock generates values, so an `infra/api` spec asserts shape and types,
@@ -34,19 +34,28 @@ Read whole by a run that changes `frontend/`, after `every-run.md`.
   makes the three problem cases of `FetchIsbnApi.spec.ts` possible.
 - The mock picks its response from the request's path parameter: a value the
   document gives as a named example of that parameter gets that example's
-  response, so `9782723488525` answers 200 and `9782000000006` answers 404
-  (`9782000000013` from `v0.9.0`).
+  response, so `9782723488525` answers 200 and `9782000000013` answers 404
+  (`9782000000006` before `v0.9.0`, a generated 200 since).
   A value that matches no example gets a generated 200. A `POST` is matched
   on the path parameter and the body together, so one bookshelf id answers
   201 to the body `NewOnePiece1` and 400 to `NewOnePiece1WrongDigit`, and
-  the 404 id answers 404 to `NewOnePiece1`. A scenario whose key sits on
+  the 404 id answers 404 to `NewOnePiece1`. On `v0.9.0` those bodies carry
+  `coverSource: "inventaire.io"`: the same body with `coverSource: null`
+  matches no example and gets a generated 201 on either id, and a body
+  without the field is refused. A scenario whose key sits on
   the request alone got its status from the mock with no body and no
   `Content-Type` until Contracteer 4.1.1, which generates the body from the
   schema. The error responses of `v0.7.0` still hold examples; from
   `v0.8.0` none does, and the mock answers the right status and
   `application/problem+json` with a random `type`, `title` and `status` in
   the body, so an adapter spec asserts the outcome of the HTTP status,
-  never the body's `type`.
+  never the body's `type`. `FetchIsbnApi` and `FetchBookshelfApi` hand a
+  non-2xx answer to `infra/api/problemOf`, which maps the statuses the
+  contract names (400, 404, and 503 for the lookup) to the `/problems/…`
+  slugs only when the `Content-Type` is `application/problem+json`, and
+  reads the body's `type` otherwise: a proxy's `text/plain` 404 or 503 then
+  rejects on `response.json()`, as it did before the mapping, and is never
+  taken for an answer of Libris.
 - A scenario file builds the application through `createLibrisApp` over the
   fakes of `src/fixture`; only `infra/api` specs and the smoke case *the
   application runs over the mock* use `inject("mockBaseUrl")`. A new port
@@ -143,6 +152,10 @@ Read whole by a run that changes `frontend/`, after `every-run.md`.
   `srcObject` is implemented nowhere in jsdom, so assigning a plain object
   with `getTracks()` to it is an ordinary property assignment: no IDL
   conversion, no throw.
+- `SourceEditionCard` takes the lookup's `covers` and draws `covers[0]`, the
+  stand-in `IconBook` when the list is empty: its spec's `card()`,
+  `show()` and `screen()` default to no candidate, so a case counting the
+  rows' `IconBook`s passes a candidate, or the stand-in adds one.
 - jsdom loads no image: an `<img>` with a `src` fires neither `load` nor
   `error`, whatever the URL, so a test of what a broken cover shows dispatches
   `new Event("error")` on the element itself and awaits `nextTick()`. Vue Test

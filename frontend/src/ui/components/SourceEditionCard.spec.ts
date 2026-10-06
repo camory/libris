@@ -3,6 +3,7 @@ import { mount } from "@vue/test-utils";
 import { describe, expect, it } from "vitest";
 import { nextTick } from "vue";
 import type { Copy } from "../../domain/Copy";
+import type { CoverCandidate } from "../../domain/Cover";
 import type { SourceAuthor, SourceEdition } from "../../domain/SourceEdition";
 import { onePiece1 } from "../../fixture/SourceEditions";
 import { createLibrisI18n } from "../i18n";
@@ -20,7 +21,6 @@ const barelyKnown: SourceEdition = {
   language: null,
   pageCount: null,
   summary: null,
-  coverUrl: null,
 };
 
 const asterix1: SourceEdition = {
@@ -53,6 +53,21 @@ const onLea: Copy = {
     id: "0b1e2d3c-4f5a-4b6c-8d7e-9f0a1b2c3d4e",
     name: "Bibliothèque de Léa",
   },
+};
+
+const inventaire: CoverCandidate = {
+  source: "inventaire.io",
+  url: "https://inventaire.io/img/entities/480x600/34d6e7d99cec5b0922b9eccfeb03748ab2b4db99",
+};
+
+const openLibrary: CoverCandidate = {
+  source: "Open Library",
+  url: "https://covers.openlibrary.org/b/isbn/9782723488525-L.jpg?default=false",
+};
+
+const bnf: CoverCandidate = {
+  source: "BnF",
+  url: "https://catalogue.bnf.fr/couverture?&appName=NE&idArk=ark:/12148/cb43636708p&couverture=1",
 };
 
 describe("SourceEditionCard", () => {
@@ -310,25 +325,23 @@ describe("SourceEditionCard", () => {
     expect(show(onePiece1)).not.toContain(summary);
   });
 
-  it("shows the cover the sources gave, named after the ouvrage", () => {
+  it("shows the first cover the sources offer, named after the ouvrage", () => {
     // When
-    const covers = screen(onePiece1).getAllByRole("img");
+    const covers = screen(
+      onePiece1,
+      [],
+      [inventaire, openLibrary],
+    ).getAllByRole("img");
 
     // Then
     expect(covers).toHaveLength(1);
-    expect(covers[0].getAttribute("src")).toBe(
-      "https://covers.openlibrary.org/b/isbn/9782723488525-L.jpg",
-    );
-    expect(covers[0].getAttribute("alt")).toContain("Romance dawn");
-    expect(
-      screen({ ...onePiece1, coverUrl: null }).queryAllByRole("img"),
-    ).toEqual([]);
-    expect(card(onePiece1).findAllComponents(IconBook)).toHaveLength(1);
+    expect(covers[0].getAttribute("src")).toBe(inventaire.url);
+    expect(covers[0].getAttribute("alt")).toBe("Couverture de Romance dawn");
   });
 
-  it("shows a book icon when the sources gave no cover", () => {
+  it("shows a book icon when the sources offer no candidate", () => {
     // When
-    const wrapper = card({ ...onePiece1, coverUrl: null });
+    const wrapper = card(onePiece1, [], []);
 
     // Then
     expect(
@@ -337,9 +350,9 @@ describe("SourceEditionCard", () => {
     expect(wrapper.findAllComponents(IconBook)).toHaveLength(2);
   });
 
-  it("shows a book icon when the cover does not load", async () => {
+  it("shows a book icon when the first candidate does not load", async () => {
     // Given
-    const wrapper = card(onePiece1);
+    const wrapper = card(onePiece1, [], [inventaire]);
     const shown = within(wrapper.element as HTMLElement);
     expect(wrapper.findAllComponents(IconBook)).toHaveLength(1);
 
@@ -354,12 +367,13 @@ describe("SourceEditionCard", () => {
 
   it("never says which source answered", () => {
     // When
-    const card = show(onePiece1);
+    const card = show(onePiece1, [], [inventaire, openLibrary, bnf]);
 
     // Then
     expect(card).not.toContain("Sources");
-    expect(card).not.toContain("BnF");
+    expect(card).not.toContain("inventaire.io");
     expect(card).not.toContain("Open Library");
+    expect(card).not.toContain("BnF");
   });
 
   it("shows the série alone when the sources gave it no tome", () => {
@@ -438,7 +452,7 @@ describe("SourceEditionCard", () => {
 
   it("shows the book icon before the bookshelf's words", () => {
     // When
-    const wrapper = card(onePiece1, [onLea]);
+    const wrapper = card(onePiece1, [onLea], [inventaire]);
 
     // Then
     const icons = wrapper.findAllComponents(IconBook);
@@ -451,7 +465,7 @@ describe("SourceEditionCard", () => {
 
   it("shows the book icon before the absence's words", () => {
     // When
-    const wrapper = card(onePiece1, []);
+    const wrapper = card(onePiece1, [], [inventaire]);
 
     // Then
     const icons = wrapper.findAllComponents(IconBook);
@@ -470,7 +484,7 @@ describe("SourceEditionCard", () => {
     };
 
     // When
-    const wrapper = card(onePiece1, [onSalon, onLea]);
+    const wrapper = card(onePiece1, [onSalon, onLea], [inventaire]);
 
     // Then
     expect(wrapper.findAllComponents(IconBook)).toHaveLength(2);
@@ -497,17 +511,29 @@ describe("SourceEditionCard", () => {
     );
   }
 
-  function show(edition: SourceEdition, copies: Copy[] = []) {
-    return card(edition, copies).text().replace(/\s+/g, " ");
+  function show(
+    edition: SourceEdition,
+    copies: Copy[] = [],
+    covers: CoverCandidate[] = [],
+  ) {
+    return card(edition, copies, covers).text().replace(/\s+/g, " ");
   }
 
-  function screen(edition: SourceEdition, copies: Copy[] = []) {
-    return within(card(edition, copies).element as HTMLElement);
+  function screen(
+    edition: SourceEdition,
+    copies: Copy[] = [],
+    covers: CoverCandidate[] = [],
+  ) {
+    return within(card(edition, copies, covers).element as HTMLElement);
   }
 
-  function card(edition: SourceEdition, copies: Copy[] = []) {
+  function card(
+    edition: SourceEdition,
+    copies: Copy[] = [],
+    covers: CoverCandidate[] = [],
+  ) {
     return mount(SourceEditionCard, {
-      props: { edition, copies },
+      props: { edition, copies, covers },
       global: { plugins: [createLibrisI18n()] },
     });
   }

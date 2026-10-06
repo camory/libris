@@ -56,7 +56,7 @@ describe("Covers", () => {
     vi.unstubAllGlobals();
   });
 
-  it.skip("S1 The lookup offers the sources' covers", async () => {
+  it("S1 The lookup offers the sources' covers", async () => {
     // Given
     const screen = open("/isbn", {
       isbn: theSourcesOffer(onePiece1, [inventaire, openLibrary, bnf]),
@@ -230,7 +230,7 @@ describe("Covers", () => {
     expect(dots(screen)).toEqual([]);
   });
 
-  it.skip("S11 The catalogue shows the covers", async () => {
+  it("S11 The catalogue shows the covers", async () => {
     // Given
     const withCover: Book = { ...asterixLeGaulois, coverUrl: libris.url };
     const withoutCover: Book = {

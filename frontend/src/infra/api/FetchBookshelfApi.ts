@@ -1,19 +1,25 @@
 import type { AddAnswer, BookshelfApi } from "../../application/BookshelfApi";
 import type { SourceEdition } from "../../domain/SourceEdition";
+import { problemOf } from "./problemOf";
 
 interface CopyResponse {
   id: string;
   bookshelf: { id: string; name: string };
 }
 
-interface ProblemResponse {
-  type: string;
-}
+const problems = new Map([
+  [400, "/problems/validation"],
+  [404, "/problems/not-found"],
+]);
 
 export class FetchBookshelfApi implements BookshelfApi {
   constructor(private readonly baseUrl: string) {}
 
-  async add(bookshelfId: string, edition: SourceEdition): Promise<AddAnswer> {
+  async add(
+    bookshelfId: string,
+    edition: SourceEdition,
+    coverSource?: string | null,
+  ): Promise<AddAnswer> {
     const response = await fetch(
       `${this.baseUrl}/api/v1/bookshelves/${bookshelfId}/books`,
       {
@@ -36,7 +42,7 @@ export class FetchBookshelfApi implements BookshelfApi {
           language: edition.language,
           pageCount: edition.pageCount,
           summary: edition.summary,
-          coverUrl: edition.coverUrl,
+          coverSource: coverSource ?? null,
         }),
       },
     );
@@ -50,7 +56,6 @@ export class FetchBookshelfApi implements BookshelfApi {
         },
       };
     }
-    const problem = (await response.json()) as ProblemResponse;
-    return { outcome: "problem", type: problem.type };
+    return problemOf(response, problems);
   }
 }

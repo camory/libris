@@ -2,14 +2,20 @@
 import { computed, ref } from "vue";
 import { useI18n } from "vue-i18n";
 import type { Copy } from "../../domain/Copy";
+import type { CoverCandidate } from "../../domain/Cover";
 import type { AuthorRole, SourceEdition } from "../../domain/SourceEdition";
 import IconBook from "./icons/IconBook.vue";
 
-const props = defineProps<{ edition: SourceEdition; copies: Copy[] }>();
+const props = defineProps<{
+  edition: SourceEdition;
+  copies: Copy[];
+  covers: CoverCandidate[];
+}>();
 
 const { t, te } = useI18n();
 
 const coverFailed = ref(false);
+const cover = computed(() => props.covers[0]);
 
 const overline = computed(() => {
   const series = props.edition.series;
@@ -92,8 +98,8 @@ const rows = computed(() => {
         class="flex h-[149px] w-24 shrink-0 items-center justify-center rounded-md bg-border"
       >
         <img
-          v-if="edition.coverUrl && !coverFailed"
-          :src="edition.coverUrl"
+          v-if="cover && !coverFailed"
+          :src="cover.url"
           :alt="t('isbn.card.cover', { title: edition.title })"
           class="h-full w-full rounded-md object-contain"
           @error="coverFailed = true"

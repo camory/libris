@@ -1029,3 +1029,42 @@ Format:
   `CatalogueRow` already shows `Book.coverUrl`, so only S1 drives T060's
   code.
 - Left over: rerun `loop.sh next` for T060 on Tophe's go.
+
+## 2026-10-06 — T060 Covers on `v0.9.0`, the card shows the first candidate — done
+- Did: the frontend pins `v0.9.0`; the lookup's found answer holds `id` and
+  `covers`, its edition no `coverUrl`; the card shows the first candidate or
+  the stand-in; the add sends `coverSource`, `null` when none is given; both
+  clients read the problems the contract names from the HTTP status.
+- Decided: the status-to-slug table is a module constant `problems` in each
+  client, read before the body; any other status still reads the body's
+  `type`, as the brief wanted (those two lines stay uncovered: the mock
+  answers no status outside the contract's).
+- Decided: the card's spec helpers default `covers` to `[]`, as the brief
+  said; the three icon-counting cases of the bookshelf rows
+  (*shows the book icon before…*, *gives each bookshelf's row…*) now pass one
+  candidate, since they counted on `onePiece1.coverUrl` hiding the stand-in.
+- Deviations from the brief: the three icon-counting cases above are edited
+  beyond the brief's list of card cases; their claims are unchanged.
+- Left over: S2 and the dots (T061), the add carrying the shown cover's
+  source and S3 (T062), the held edition's cover and S10 (T063).
+  `CoversScenarios.spec.ts` and `IconBooks.vue` stay off Prettier's layout,
+  as on `main`.
+
+## 2026-10-06 — T060 Covers on `v0.9.0`, the card shows the first candidate — reworked
+- Did: both clients map a status to its `/problems/…` slug only when the
+  answer is `application/problem+json`; a proxy's `text/plain` 404 rejects,
+  as on `main`, instead of reading *ISBN inconnu*. The rule is written once,
+  in `infra/api/problemOf`, which both clients call for a non-2xx answer.
+- Decided: the reviewer's verdict of 2026-10-06 amended nothing and settled
+  that the status is read only on a problem body (the problem body is how
+  the client tells Libris from the infrastructure), and asked for the
+  shared `problemOf(response, statuses)`. A non-problem answer keeps
+  `main`'s behaviour, a rejection, since no spec says what the screen shows
+  when Libris is unavailable; each client's new case asserts the rejection.
+- Deviations from the brief: none.
+- Left over: what the lookup screen shows on a rejected `lookUp` is
+  already a PROPOSED item; the view lets the rejection escape, as on `main`.
+- Reviewed by Tophe: kept as reworked; the stale wording of `Problem.type`
+  in the contract and of `specs/fast-entry.md:185` goes to PROPOSED, and
+  `problemOf`'s fallback on the body's `type` stays, `main`'s reading of a
+  problem with a status the contract does not name.

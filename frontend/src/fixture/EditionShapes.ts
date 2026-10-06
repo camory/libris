@@ -26,6 +26,17 @@ export const authorsWithNameAndRole = expect.toSatisfy(
   "authors with a name and a role",
 );
 
+export const candidatesWithSourceAndUrl = expect.toSatisfy(
+  (value: unknown) =>
+    Array.isArray(value) &&
+    value.every(
+      (candidate) =>
+        typeof candidate.source === "string" &&
+        typeof candidate.url === "string",
+    ),
+  "cover candidates with a source and a url",
+);
+
 export const aSeriesOrNull = expect.toSatisfy((value: unknown) => {
   if (value === null) {
     return true;

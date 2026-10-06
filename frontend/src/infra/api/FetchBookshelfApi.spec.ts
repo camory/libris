@@ -13,7 +13,11 @@ describe("FetchBookshelfApi", () => {
     const api = new FetchBookshelfApi(inject("mockBaseUrl"));
 
     // When
-    const answer = await api.add(lea.defaultBookshelf.id, onePiece1);
+    const answer = await api.add(
+      lea.defaultBookshelf.id,
+      onePiece1,
+      "inventaire.io",
+    );
 
     // Then
     assert(answer.outcome === "added", `the answer is a ${answer.outcome}`);
@@ -28,10 +32,11 @@ describe("FetchBookshelfApi", () => {
     const api = new FetchBookshelfApi(inject("mockBaseUrl"));
 
     // When
-    const answer = await api.add(lea.defaultBookshelf.id, {
-      ...onePiece1,
-      isbn13: "9782723488526",
-    });
+    const answer = await api.add(
+      lea.defaultBookshelf.id,
+      { ...onePiece1, isbn13: "9782723488526" },
+      "inventaire.io",
+    );
 
     // Then
     expect(answer).toEqual({
@@ -48,10 +53,30 @@ describe("FetchBookshelfApi", () => {
     const answer = await api.add(
       "9e8d7c6b-5a4f-4e3d-8c2b-1a0f9e8d7c6b",
       onePiece1,
+      "inventaire.io",
     );
 
     // Then
     expect(answer).toEqual({ outcome: "problem", type: "/problems/not-found" });
+  });
+
+  it("answers no problem for a 404 without a problem body", async () => {
+    // Given
+    const api = new FetchBookshelfApi("http://libris.invalid");
+    vi.stubGlobal("fetch", () =>
+      Promise.resolve(
+        new Response("404 page not found", {
+          status: 404,
+          headers: { "Content-Type": "text/plain" },
+        }),
+      ),
+    );
+
+    // When
+    const answer = api.add(lea.defaultBookshelf.id, onePiece1);
+
+    // Then
+    await expect(answer).rejects.toThrow();
   });
 
   it("says the add comes from the application", async () => {
@@ -77,6 +102,32 @@ describe("FetchBookshelfApi", () => {
     // Then
     expect(sent[0]?.headers).toMatchObject({
       "X-Requested-With": "XMLHttpRequest",
+    });
+  });
+
+  it("sends no cover source when none is given", async () => {
+    // Given
+    const api = new FetchBookshelfApi("http://libris.invalid");
+    const sent: RequestInit[] = [];
+    vi.stubGlobal("fetch", (_url: string, init: RequestInit) => {
+      sent.push(init);
+      return Promise.resolve(
+        new Response(
+          JSON.stringify({
+            id: "5e0c1b2a-3948-4d5e-8a6f-0b1c2d3e4f50",
+            bookshelf: lea.defaultBookshelf,
+          }),
+          { status: 201 },
+        ),
+      );
+    });
+
+    // When
+    await api.add(lea.defaultBookshelf.id, onePiece1);
+
+    // Then
+    expect(JSON.parse(sent[0]?.body as string)).toMatchObject({
+      coverSource: null,
     });
   });
 });
