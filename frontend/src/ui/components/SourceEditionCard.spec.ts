@@ -70,6 +70,13 @@ const bnf: CoverCandidate = {
   url: "https://catalogue.bnf.fr/couverture?&appName=NE&idArk=ark:/12148/cb43636708p&couverture=1",
 };
 
+const libris: CoverCandidate = {
+  source: "Libris",
+  url: "/api/v1/covers/5b1c2a4f0e6d8a9b3c7e1f2d4a6b8c0e9f1a3b5c7d9e0f2a4b6c8d0e1f3a5b7c",
+};
+
+const held = "3c4d5e6f-7a8b-4c9d-8e0f-1a2b3c4d5e6f";
+
 describe("SourceEditionCard", () => {
   it("shows the series and the volume, the title and the subtitle", () => {
     // When
@@ -525,6 +532,14 @@ describe("SourceEditionCard", () => {
     expect(card).not.toContain("BnF");
   });
 
+  it("draws no dot under the cover of an edition the house holds", () => {
+    // When
+    const card = screen(onePiece1, [], [libris], held);
+
+    // Then
+    expect(dots(card)).toEqual([]);
+  });
+
   it("shows the série alone when the sources gave it no tome", () => {
     // Given
     const standalone: SourceEdition = {
@@ -680,25 +695,28 @@ describe("SourceEditionCard", () => {
     edition: SourceEdition,
     copies: Copy[] = [],
     covers: CoverCandidate[] = [],
+    id: string | null = null,
   ) {
-    return card(edition, copies, covers).text().replace(/\s+/g, " ");
+    return card(edition, copies, covers, id).text().replace(/\s+/g, " ");
   }
 
   function screen(
     edition: SourceEdition,
     copies: Copy[] = [],
     covers: CoverCandidate[] = [],
+    id: string | null = null,
   ) {
-    return within(card(edition, copies, covers).element as HTMLElement);
+    return within(card(edition, copies, covers, id).element as HTMLElement);
   }
 
   function card(
     edition: SourceEdition,
     copies: Copy[] = [],
     covers: CoverCandidate[] = [],
+    id: string | null = null,
   ) {
     return mount(SourceEditionCard, {
-      props: { edition, copies, covers },
+      props: { edition, copies, covers, id },
       global: { plugins: [createLibrisI18n()] },
     });
   }

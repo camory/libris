@@ -40,6 +40,7 @@ const typed = ref("");
 const message = ref<string>();
 const refused = computed(() => refusals.includes(message.value ?? ""));
 const edition = ref<SourceEdition>();
+const id = ref<string | null>(null);
 const copies = ref<Copy[]>([]);
 const covers = ref<CoverCandidate[]>([]);
 const coverSource = ref<string | null>(null);
@@ -99,6 +100,7 @@ async function search() {
   searching.value = false;
   if (answer.outcome === "found") {
     edition.value = answer.edition;
+    id.value = answer.id;
     copies.value = answer.copies;
     covers.value = answer.covers;
   } else {
@@ -185,6 +187,7 @@ async function search() {
     <div v-else-if="edition" class="mt-5 flex flex-col gap-2">
       <SourceEditionCard
         :edition="edition"
+        :id="id"
         :copies="shownCopies"
         :covers="covers"
         @cover-source="coverSource = $event"
