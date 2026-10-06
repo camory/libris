@@ -14,8 +14,22 @@ const props = defineProps<{
 
 const { t, te } = useI18n();
 
-const coverFailed = ref(false);
-const cover = computed(() => props.covers[0]);
+const failed = ref<number[]>([]);
+const offered = computed(() =>
+  props.covers
+    .map((cover, index) => ({ cover, index }))
+    .filter(({ index }) => !failed.value.includes(index)),
+);
+const tapped = ref<number | null>(null);
+const shown = computed(
+  () =>
+    offered.value.find(({ index }) => index === tapped.value) ??
+    offered.value[0],
+);
+
+function isShown(index: number) {
+  return index === shown.value?.index;
+}
 
 const overline = computed(() => {
   const series = props.edition.series;
@@ -94,17 +108,43 @@ const rows = computed(() => {
     class="flex flex-col gap-3.5 rounded-[14px] border border-border bg-surface p-4"
   >
     <div class="flex gap-3.5">
-      <div
-        class="flex h-[149px] w-24 shrink-0 items-center justify-center rounded-md bg-border"
-      >
-        <img
-          v-if="cover && !coverFailed"
-          :src="cover.url"
-          :alt="t('isbn.card.cover', { title: edition.title })"
-          class="h-full w-full rounded-md object-contain"
-          @error="coverFailed = true"
-        />
-        <IconBook v-else class="text-muted opacity-60" />
+      <div class="flex w-24 shrink-0 flex-col">
+        <div
+          class="flex h-[149px] w-24 shrink-0 items-center justify-center rounded-md bg-border"
+        >
+          <img
+            v-for="(cover, index) in covers"
+            :key="cover.url"
+            :src="cover.url"
+            :alt="t('isbn.card.cover', { title: edition.title })"
+            :aria-hidden="!isShown(index)"
+            class="h-full w-full rounded-md object-contain"
+            :class="{ hidden: !isShown(index) }"
+            @error="failed.push(index)"
+          />
+          <IconBook v-if="!shown" class="text-muted opacity-60" />
+        </div>
+        <div class="flex justify-center">
+          <button
+            v-for="{ cover, index } in offered"
+            :key="cover.url"
+            type="button"
+            :aria-label="t('isbn.card.coverSource', { source: cover.source })"
+            :aria-pressed="isShown(index)"
+            class="flex h-11 w-8 items-center justify-center"
+            @click="tapped = index"
+          >
+            <span
+              class="size-2 rounded-full"
+              :class="
+                isShown(index) ? 'bg-accent' : 'border-[1.5px] border-muted'
+              "
+            ></span>
+          </button>
+        </div>
+        <p v-if="shown" class="text-center text-body text-muted">
+          {{ shown.cover.source }}
+        </p>
       </div>
 
       <div class="flex min-w-0 flex-col gap-1.5">

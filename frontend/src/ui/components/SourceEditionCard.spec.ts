@@ -350,28 +350,120 @@ describe("SourceEditionCard", () => {
     expect(wrapper.findAllComponents(IconBook)).toHaveLength(2);
   });
 
-  it("shows a book icon when the first candidate does not load", async () => {
+  it("shows the next candidate when the first does not load", async () => {
     // Given
-    const wrapper = card(onePiece1, [], [inventaire]);
+    const wrapper = card(onePiece1, [], [inventaire, openLibrary, bnf]);
     const shown = within(wrapper.element as HTMLElement);
-    expect(wrapper.findAllComponents(IconBook)).toHaveLength(1);
 
     // When
     shown.getByRole("img").dispatchEvent(new Event("error"));
     await nextTick();
 
     // Then
+    const cover = shown.getByRole("img");
+    expect(cover.getAttribute("src")).toBe(openLibrary.url);
+    expect(cover.getAttribute("alt")).toBe("Couverture de Romance dawn");
+  });
+
+  it("offers one dot per candidate, named after its source", () => {
+    // When
+    const card = screen(onePiece1, [], [inventaire, openLibrary, bnf]);
+
+    // Then
+    expect(labels(card)).toEqual([
+      "Couverture inventaire.io",
+      "Couverture Open Library",
+      "Couverture BnF",
+    ]);
+  });
+
+  it("takes the dot away from a candidate that does not load", async () => {
+    // Given
+    const card = screen(onePiece1, [], [inventaire, openLibrary, bnf]);
+
+    // When
+    card
+      .getAllByRole("img", { hidden: true })[2]
+      .dispatchEvent(new Event("error"));
+    await nextTick();
+
+    // Then
+    expect(labels(card)).toEqual([
+      "Couverture inventaire.io",
+      "Couverture Open Library",
+    ]);
+    expect(card.getByRole("img").getAttribute("src")).toBe(inventaire.url);
+  });
+
+  it("presses the dot of the shown cover", () => {
+    // When
+    const card = screen(onePiece1, [], [inventaire, openLibrary, bnf]);
+
+    // Then
+    expect(pressed(card)).toEqual(["true", "false", "false"]);
+  });
+
+  it("shows the cover of the dot tapped, with its name", async () => {
+    // Given
+    const wrapper = card(onePiece1, [], [inventaire, openLibrary, bnf]);
+    const shown = within(wrapper.element as HTMLElement);
+
+    // When
+    shown.getByRole("button", { name: "Couverture Open Library" }).click();
+    await nextTick();
+
+    // Then
+    expect(shown.getByRole("img").getAttribute("src")).toBe(openLibrary.url);
+    const text = wrapper.text();
+    expect(text).toContain("Open Library");
+    expect(text).not.toContain("inventaire.io");
+    expect(pressed(shown)).toEqual(["false", "true", "false"]);
+  });
+
+  it("shows the first cover still loading when the tapped one does not load", async () => {
+    // Given
+    const card = screen(onePiece1, [], [inventaire, openLibrary, bnf]);
+    card.getByRole("button", { name: "Couverture BnF" }).click();
+    await nextTick();
+
+    // When
+    card.getByRole("img").dispatchEvent(new Event("error"));
+    await nextTick();
+
+    // Then
+    expect(card.getByRole("img").getAttribute("src")).toBe(inventaire.url);
+    expect(pressed(card)).toEqual(["true", "false"]);
+  });
+
+  it("shows the book icon, no dot and no name when no candidate loads", async () => {
+    // Given
+    const wrapper = card(onePiece1, [], [inventaire, openLibrary, bnf]);
+    const shown = within(wrapper.element as HTMLElement);
+    expect(wrapper.findAllComponents(IconBook)).toHaveLength(1);
+
+    // When
+    for (const image of shown.getAllByRole("img", { hidden: true })) {
+      image.dispatchEvent(new Event("error"));
+      await nextTick();
+    }
+
+    // Then
     expect(shown.queryAllByRole("img")).toEqual([]);
+    expect(dots(shown)).toEqual([]);
+    const text = wrapper.text();
+    for (const source of ["inventaire.io", "Open Library", "BnF"]) {
+      expect(text).not.toContain(source);
+    }
     expect(wrapper.findAllComponents(IconBook)).toHaveLength(2);
   });
 
-  it("never says which source answered", () => {
+  it("names the source of the shown cover, and no other", () => {
     // When
     const card = show(onePiece1, [], [inventaire, openLibrary, bnf]);
 
     // Then
+    expect(card.match(/inventaire\.io/g)).toHaveLength(1);
     expect(card).not.toContain("Sources");
-    expect(card).not.toContain("inventaire.io");
     expect(card).not.toContain("Open Library");
     expect(card).not.toContain("BnF");
   });
@@ -509,6 +601,18 @@ describe("SourceEditionCard", () => {
     return Boolean(
       first.compareDocumentPosition(second) & Node.DOCUMENT_POSITION_FOLLOWING,
     );
+  }
+
+  function dots(card: ReturnType<typeof screen>) {
+    return card.queryAllByRole("button", { name: /^Couverture / });
+  }
+
+  function labels(card: ReturnType<typeof screen>) {
+    return dots(card).map((dot) => dot.getAttribute("aria-label"));
+  }
+
+  function pressed(card: ReturnType<typeof screen>) {
+    return dots(card).map((dot) => dot.getAttribute("aria-pressed"));
   }
 
   function show(

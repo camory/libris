@@ -126,9 +126,14 @@ with it.
 border, no background, 44 tall, 12 of side padding. It lives in a banner
 (U09) and nowhere else: on a screen the action is the primary button.
 
-Every control is at least 44 tall and wide, reachable one-handed at the
-bottom half of the screen: the field, its button and the tab bar are the
-lowest things on the page, the title is the highest.
+**Dot.** A choice among a few pictures, under the picture (U06): a button 44
+tall and 32 wide, no border, no background, the dot drawn 8 across in its
+centre, so that three fill a cover's 96 of width.
+
+Every control is at least 44 tall and wide, the dot alone 32 wide;
+reachable one-handed at the bottom half of the screen: the field, its
+button and the tab bar are the lowest things on the page, the title is the
+highest.
 
 ### U05 — Feedback: message, skeleton, empty state
 A screen answers under the control that asked, in the place the answer will
@@ -188,8 +193,20 @@ no row; a card never says *inconnu*. Then the summary, when there is one,
 as a paragraph in `body`, `text`, line-height 1.4, as long as it is. The
 summary is the card's last part.
 
+**Covers.** When the card is given candidate covers, a row of dots sits
+under the cover block, centred, in the order of the answer. There is one dot
+per candidate not failed: the shown one is a disc in `accent`, the others a
+1.5 ring in `muted`. Each dot is a button named after its source,
+*Couverture inventaire.io*, pressed when its cover is shown; a tap shows that
+cover. Under the row, centred, the shown cover's source name is in `body`,
+`muted`. A candidate keeps its dot while it loads and loses it when it
+fails. When none is left, the stand-in shows, with neither dots nor name.
+The name says where the picture comes from; no other part of the card names
+a source.
+
 A card is presentational: props in, nothing out. It shows what it is given
-and decides nothing about it; the words it displays for a role or a
+and decides nothing about it but which of its covers it shows: the one
+tapped, else the first not failed; the words it displays for a role or a
 language come from the `fr` catalogue, keyed by the code the API answers.
 When another field of the answer chooses the word, the kind naming a role
 or a volume, the choice lives in the key (`role.MANGA.WRITER`,

@@ -338,7 +338,7 @@ catalogue rows show a cover only once the worker has stored it (Tophe,
       body's `type` (Tophe, 2026-09-30). Realises S1, S11; un-skips the
       frontend tests of S1 and S11.
 
-- [ ] T061 Frontend: the card shows the first cover that loads.
+- [x] T061 Frontend: the card shows the first cover that loads.
       Under the card's cover block, one dot per candidate that loaded, the
       shown one filled, each a button *Couverture <source>* with its pressed
       state, then the shown cover's source name in `muted`; a tap on a dot

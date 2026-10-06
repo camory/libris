@@ -70,7 +70,7 @@ describe("Covers", () => {
     expect(coverImage(screen).getAttribute("src")).toBe(inventaire.url);
   });
 
-  it.skip("S2 The card shows the first cover that loads", async () => {
+  it("S2 The card shows the first cover that loads", async () => {
     // Given
     const screen = open("/isbn", {
       isbn: theSourcesOffer(onePiece1, [inventaire, openLibrary, bnf]),
@@ -92,7 +92,7 @@ describe("Covers", () => {
     expect(dots(screen).map(isFilled)).toEqual([true, false, false]);
   });
 
-  it.skip("S2 The card shows the first cover that loads, the reader switches", async () => {
+  it("S2 The card shows the first cover that loads, the reader switches", async () => {
     // Given
     const screen = open("/isbn", {
       isbn: theSourcesOffer(onePiece1, [inventaire, openLibrary, bnf]),
@@ -114,7 +114,7 @@ describe("Covers", () => {
     expect(dots(screen).map(isFilled)).toEqual([false, true, false]);
   });
 
-  it.skip("S2 The card shows the first cover that loads, a candidate does not load", async () => {
+  it("S2 The card shows the first cover that loads, a candidate does not load", async () => {
     // Given
     const screen = open("/isbn", {
       isbn: theSourcesOffer(onePiece1, [inventaire, openLibrary, bnf]),
@@ -135,7 +135,7 @@ describe("Covers", () => {
     );
   });
 
-  it.skip("S2 The card shows the first cover that loads, none loads", async () => {
+  it("S2 The card shows the first cover that loads, none loads", async () => {
     // Given
     const screen = open("/isbn", {
       isbn: theSourcesOffer(onePiece1, [inventaire, openLibrary, bnf]),
