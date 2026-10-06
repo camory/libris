@@ -998,3 +998,21 @@ Format:
   the gotchas item says the worker runs at the start of the whole
   application, never in a slice. `LibrisApplicationTest` keeps its clean
   before migrate.
+
+## 2026-10-06 — the found answer's Givens hold `id` and `covers`, with Tophe
+- Did: T060's brief planner stopped `blocked`: the line makes the found
+  answer's `id` and `covers` required and takes `coverUrl` off its edition,
+  and six scenario Givens no longer type-check then. The Covers Givens
+  `theSourcesOffer` and `theHouseHolds` drop `coverUrl: null`; FastEntry's
+  `aSourceKnows` answers `id: null` and one Open Library candidate at the
+  address its card check expects; Bookshelf's `aSourceKnows` and Kind's
+  answer `id: null` and no candidate; Bookshelf's `theHouseHolds` answers
+  an id, an edition the house holds having one.
+- Verified: `npm test` green, 200 tests, 10 skipped, as on `main`. With
+  T060's types put in by hand (`id` and `covers` required, no `coverUrl` on
+  `SourceEdition` nor its fixtures), then reverted: `vue-tsc` flags six
+  scenario lines on `main`, none on this branch; what it still flags is the
+  run's own (the clients, the card, the ISBN view and their specs).
+- Left over: `CoversScenarios.spec.ts` is off Prettier's layout on `main`
+  (four `expect` lines), untouched here. Rerun `loop.sh next` for T060 on
+  Tophe's go.
