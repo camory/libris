@@ -108,16 +108,11 @@ class CoverTest {
   }
 
   @Test
-  fun `a picture the JDK fails to read is kept as fetched`() {
+  fun `a broken JPEG is no cover`() {
     // Given
-    val bytes = recordedBytes("covers/tall.jpg").copyOf(200)
-    val cover = coverOf("image/jpeg", bytes)
+    val cover = coverOf("image/jpeg", recordedBytes("covers/tall.jpg").copyOf(200))
 
-    // When
-    val normalised = cover.normalised()
-
-    // Then
-    normalised?.mediaType shouldBe "image/jpeg"
-    normalised?.bytes shouldBe bytes
+    // When / Then
+    cover.normalised() shouldBe null
   }
 }

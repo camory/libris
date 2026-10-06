@@ -20,7 +20,7 @@ class Cover private constructor(val mediaType: String, val bytes: ByteArray) {
     try {
       ImageIO.read(ByteArrayInputStream(bytes))?.let { normalisedFrom(it) }
     } catch (_: IIOException) {
-      this
+      null
     }
 
   private fun normalisedFrom(picture: BufferedImage): Cover =
