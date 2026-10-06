@@ -1029,3 +1029,23 @@ Format:
   `CatalogueRow` already shows `Book.coverUrl`, so only S1 drives T060's
   code.
 - Left over: rerun `loop.sh next` for T060 on Tophe's go.
+
+## 2026-10-06 — T060 Covers on `v0.9.0`, the card shows the first candidate — done
+- Did: the frontend pins `v0.9.0`; the lookup's found answer holds `id` and
+  `covers`, its edition no `coverUrl`; the card shows the first candidate or
+  the stand-in; the add sends `coverSource`, `null` when none is given; both
+  clients read the problems the contract names from the HTTP status.
+- Decided: the status-to-slug table is a module constant `problems` in each
+  client, read before the body; any other status still reads the body's
+  `type`, as the brief wanted (those two lines stay uncovered: the mock
+  answers no status outside the contract's).
+- Decided: the card's spec helpers default `covers` to `[]`, as the brief
+  said; the three icon-counting cases of the bookshelf rows
+  (*shows the book icon before…*, *gives each bookshelf's row…*) now pass one
+  candidate, since they counted on `onePiece1.coverUrl` hiding the stand-in.
+- Deviations from the brief: the three icon-counting cases above are edited
+  beyond the brief's list of card cases; their claims are unchanged.
+- Left over: S2 and the dots (T061), the add carrying the shown cover's
+  source and S3 (T062), the held edition's cover and S10 (T063).
+  `CoversScenarios.spec.ts` and `IconBooks.vue` stay off Prettier's layout,
+  as on `main`.

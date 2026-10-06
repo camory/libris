@@ -324,7 +324,7 @@ catalogue rows show a cover only once the worker has stored it (Tophe,
       `libris` user, so the `covers` volume mounted there is writable; the
       first stored cover on staging is checked by hand.
 
-- [ ] T060 Frontend: covers on `v0.9.0`, the card shows the first candidate.
+- [x] T060 Frontend: covers on `v0.9.0`, the card shows the first candidate.
       Precondition (human): T059 deployed (D04).
       `vitest.global-setup.ts` pins `v0.9.0` (D04); the mock's unknown ISBN
       is `9782000000013`. The lookup's found answer
