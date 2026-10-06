@@ -21,6 +21,7 @@ const offered = computed(() =>
     .filter(({ index }) => !failed.value.includes(index)),
 );
 const shown = computed(() => offered.value[0]?.index ?? -1);
+const shownCover = computed(() => props.covers[shown.value]);
 
 const overline = computed(() => {
   const series = props.edition.series;
@@ -124,6 +125,7 @@ const rows = computed(() => {
             :aria-label="t('isbn.card.coverSource', { source: cover.source })"
           ></button>
         </div>
+        <p v-if="shownCover">{{ shownCover.source }}</p>
       </div>
 
       <div class="flex min-w-0 flex-col gap-1.5">

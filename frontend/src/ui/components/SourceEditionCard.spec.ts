@@ -421,13 +421,13 @@ describe("SourceEditionCard", () => {
     expect(wrapper.findAllComponents(IconBook)).toHaveLength(2);
   });
 
-  it("never says which source answered", () => {
+  it("names the source of the shown cover, and no other", () => {
     // When
     const card = show(onePiece1, [], [inventaire, openLibrary, bnf]);
 
     // Then
+    expect(card.match(/inventaire\.io/g)).toHaveLength(1);
     expect(card).not.toContain("Sources");
-    expect(card).not.toContain("inventaire.io");
     expect(card).not.toContain("Open Library");
     expect(card).not.toContain("BnF");
   });
