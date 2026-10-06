@@ -1,6 +1,7 @@
 package fr.amory.libris.bibliography.domain.cover
 
 import fr.amory.libris.bibliography.fixture.coverOf
+import fr.amory.libris.bibliography.fixture.jpegClaiming
 import fr.amory.libris.bibliography.fixture.pictureOf
 import fr.amory.libris.bibliography.fixture.recordedBytes
 import io.kotest.matchers.shouldBe
@@ -114,5 +115,10 @@ class CoverTest {
 
     // When / Then
     cover.normalised() shouldBe null
+  }
+
+  @Test
+  fun `a header claiming 20 000 by 20 000 is no cover`() {
+    coverOf("image/jpeg", jpegClaiming(20_000, 20_000)).normalised() shouldBe null
   }
 }

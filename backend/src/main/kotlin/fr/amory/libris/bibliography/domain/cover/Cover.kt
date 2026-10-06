@@ -10,6 +10,8 @@ import java.security.MessageDigest
 import java.util.HexFormat
 import javax.imageio.IIOException
 import javax.imageio.ImageIO
+import javax.imageio.ImageReader
+import javax.imageio.stream.ImageInputStream
 
 class Cover private constructor(val mediaType: String, val bytes: ByteArray) {
   val name: CoverName
@@ -18,9 +20,28 @@ class Cover private constructor(val mediaType: String, val bytes: ByteArray) {
 
   fun normalised(): Cover? =
     try {
-      ImageIO.read(ByteArrayInputStream(bytes))?.let { normalisedFrom(it) }
+      pictureWithinBounds()?.let { normalisedFrom(it) }
     } catch (_: IIOException) {
       null
+    }
+
+  private fun pictureWithinBounds(): BufferedImage? =
+    ImageIO.createImageInputStream(ByteArrayInputStream(bytes)).use { input ->
+      ImageIO
+        .getImageReaders(input)
+        .asSequence()
+        .firstOrNull()
+        ?.let { read(it, input) }
+    }
+
+  private fun read(reader: ImageReader, input: ImageInputStream): BufferedImage? =
+    try {
+      reader.setInput(input, true, true)
+      reader
+        .takeIf { it.getWidth(0) <= MAX_SIDE && it.getHeight(0) <= MAX_SIDE }
+        ?.read(0)
+    } finally {
+      reader.dispose()
     }
 
   private fun normalisedFrom(picture: BufferedImage): Cover =
@@ -47,6 +68,7 @@ class Cover private constructor(val mediaType: String, val bytes: ByteArray) {
 
   companion object {
     private const val MAX_HEIGHT = 600
+    private const val MAX_SIDE = 5_000
     private const val JPEG = "image/jpeg"
 
     fun of(mediaType: String, bytes: ByteArray): Cover? =
