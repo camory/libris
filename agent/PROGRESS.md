@@ -1101,3 +1101,8 @@ Format:
   body; a fourth source's dots would overflow the 96 of the cover
   (PROPOSED); the add carrying the shown cover's source and S3 (T062), the
   held edition's cover and S10 (T063).
+- Reviewed by Tophe: the reviewer's two duplications fixed up, one
+  `isShown` in the card and `labels`/`pressed` beside `dots` in its spec;
+  the U06 rule (*Covers*, and the card's one choice, which cover it shows)
+  and the U04 exception (*Dot*) written into `docs/DESIGN.md`; the skeleton
+  not reserving the dots' and the name's height waits for the Pixel.
