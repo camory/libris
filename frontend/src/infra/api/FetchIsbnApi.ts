@@ -15,7 +15,6 @@ interface IsbnResponse {
   language: string | null;
   pageCount: number | null;
   summary: string | null;
-  coverUrl: string | null;
   copies: { id: string; bookshelf: { id: string; name: string } }[];
   covers: { source: string; url: string }[];
 }
@@ -55,7 +54,6 @@ export class FetchIsbnApi implements IsbnApi {
           language: body.language,
           pageCount: body.pageCount,
           summary: body.summary,
-          coverUrl: body.coverUrl,
         },
         copies: body.copies.map((copy) => ({
           id: copy.id,

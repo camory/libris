@@ -16,7 +16,6 @@ export const onePiece1: SourceEdition = {
   language: "fr",
   pageCount: 203,
   summary: null,
-  coverUrl: "https://covers.openlibrary.org/b/isbn/9782723488525-L.jpg",
 };
 
 export const onePiece2: SourceEdition = {
@@ -35,5 +34,4 @@ export const onePiece2: SourceEdition = {
   language: "fr",
   pageCount: 208,
   summary: null,
-  coverUrl: "https://covers.openlibrary.org/b/isbn/9782723489898-L.jpg",
 };

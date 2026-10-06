@@ -21,7 +21,6 @@ const barelyKnown: SourceEdition = {
   language: null,
   pageCount: null,
   summary: null,
-  coverUrl: null,
 };
 
 const asterix1: SourceEdition = {

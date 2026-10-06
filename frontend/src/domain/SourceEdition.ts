@@ -25,5 +25,4 @@ export interface SourceEdition {
   language: string | null;
   pageCount: number | null;
   summary: string | null;
-  coverUrl: string | null;
 }

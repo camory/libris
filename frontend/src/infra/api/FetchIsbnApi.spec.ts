@@ -38,7 +38,6 @@ describe("FetchIsbnApi", () => {
       language: aStringOrNull,
       pageCount: aNumberOrNull,
       summary: aStringOrNull,
-      coverUrl: aStringOrNull,
     });
   });
 
@@ -137,7 +136,6 @@ describe("FetchIsbnApi", () => {
         { name: "Eiichirō Oda", role: "WRITER" },
         { name: "Eiichirō Oda", role: "ARTIST" },
       ],
-      coverUrl: "https://covers.openlibrary.org/b/isbn/9782723488525-L.jpg",
     });
   });
 });
