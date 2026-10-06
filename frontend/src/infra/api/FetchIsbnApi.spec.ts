@@ -95,6 +95,25 @@ describe("FetchIsbnApi", () => {
     });
   });
 
+  it("answers no problem for a 404 without a problem body", async () => {
+    // Given
+    const api = new FetchIsbnApi("http://libris.invalid");
+    vi.stubGlobal("fetch", () =>
+      Promise.resolve(
+        new Response("404 page not found", {
+          status: 404,
+          headers: { "Content-Type": "text/plain" },
+        }),
+      ),
+    );
+
+    // When
+    const answer = api.lookUp("9782723488525");
+
+    // Then
+    await expect(answer).rejects.toThrow();
+  });
+
   it("reads the fields it knows when the answer carries one it does not", async () => {
     // Given
     const api = new FetchIsbnApi("http://an-older-backend");

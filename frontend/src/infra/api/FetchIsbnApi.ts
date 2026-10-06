@@ -66,7 +66,10 @@ export class FetchIsbnApi implements IsbnApi {
       };
     }
     const known = problems.get(response.status);
-    if (known !== undefined) {
+    const isProblem = response.headers
+      .get("Content-Type")
+      ?.startsWith("application/problem+json");
+    if (known !== undefined && isProblem) {
       return { outcome: "problem", type: known };
     }
     const problem = (await response.json()) as ProblemResponse;
