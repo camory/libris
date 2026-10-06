@@ -60,6 +60,25 @@ describe("FetchBookshelfApi", () => {
     expect(answer).toEqual({ outcome: "problem", type: "/problems/not-found" });
   });
 
+  it("answers no problem for a 404 without a problem body", async () => {
+    // Given
+    const api = new FetchBookshelfApi("http://libris.invalid");
+    vi.stubGlobal("fetch", () =>
+      Promise.resolve(
+        new Response("404 page not found", {
+          status: 404,
+          headers: { "Content-Type": "text/plain" },
+        }),
+      ),
+    );
+
+    // When
+    const answer = api.add(lea.defaultBookshelf.id, onePiece1);
+
+    // Then
+    await expect(answer).rejects.toThrow();
+  });
+
   it("says the add comes from the application", async () => {
     // Given
     const api = new FetchBookshelfApi("http://libris.invalid");
