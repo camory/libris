@@ -1106,3 +1106,13 @@ Format:
   the U06 rule (*Covers*, and the card's one choice, which cover it shows)
   and the U04 exception (*Dot*) written into `docs/DESIGN.md`; the skeleton
   not reserving the dots' and the name's height waits for the Pixel.
+
+## 2026-10-06 — The dots closer to the cover and the name, with Tophe
+- Did: each dot button keeps its 44 of height and overlaps 12 above and 12
+  below (`relative -my-3`), so the dot sits 6 under the cover and the name
+  follows closer; U04's *Dot* says so.
+- Decided: on the Pixel, T061's dots stood 18 under the cover and 18 above
+  the name. Tophe checked the overlap live on the Pixel, on a Vite dev
+  server on the LAN proxying `/api` to staging, and kept it; a 24-tall
+  button would have been a second exception to U04.
+- Left over: none.
