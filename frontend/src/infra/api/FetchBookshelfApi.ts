@@ -45,7 +45,7 @@ export class FetchBookshelfApi implements BookshelfApi {
           language: edition.language,
           pageCount: edition.pageCount,
           summary: edition.summary,
-          coverSource,
+          coverSource: coverSource ?? null,
         }),
       },
     );

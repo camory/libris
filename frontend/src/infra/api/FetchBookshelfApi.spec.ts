@@ -85,4 +85,30 @@ describe("FetchBookshelfApi", () => {
       "X-Requested-With": "XMLHttpRequest",
     });
   });
+
+  it("sends no cover source when none is given", async () => {
+    // Given
+    const api = new FetchBookshelfApi("http://libris.invalid");
+    const sent: RequestInit[] = [];
+    vi.stubGlobal("fetch", (_url: string, init: RequestInit) => {
+      sent.push(init);
+      return Promise.resolve(
+        new Response(
+          JSON.stringify({
+            id: "5e0c1b2a-3948-4d5e-8a6f-0b1c2d3e4f50",
+            bookshelf: lea.defaultBookshelf,
+          }),
+          { status: 201 },
+        ),
+      );
+    });
+
+    // When
+    await api.add(lea.defaultBookshelf.id, onePiece1);
+
+    // Then
+    expect(JSON.parse(sent[0]?.body as string)).toMatchObject({
+      coverSource: null,
+    });
+  });
 });
