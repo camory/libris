@@ -74,6 +74,9 @@ one HTTP adapter of both.
 - `bibliography.infrastructure.lookup` — the BnF and Open Library clients,
   which answer an edition, and the inventaire.io client, which answers a
   picture's address alone; Google Books later.
+- `bibliography.infrastructure.worker` — the cover worker: it runs
+  `FetchAwaitedCovers` on one thread of its own, at start, every
+  `libris.worker.every` and after each add, so two runs never overlap.
 
 `web` holds the controllers and their request and response DTOs, for both
 contexts: the API is one contract (D04), and its answers join the two (an
@@ -389,7 +392,8 @@ deliberately lacks), no other service. A test that needs more blocks the task.
 
 ### D09 — Runtime packaging and deployment
 - Backend: multi-stage Dockerfile, JRE 25 image running the boot jar as a
-  non-root user. Configuration by environment variables only.
+  non-root user, who owns `/var/lib/libris/covers`, where the covers volume
+  is mounted. Configuration by environment variables only.
 - Frontend: multi-stage Dockerfile, static assets served by nginx as a
   non-root user with SPA fallback; `index.html` and the service worker
   uncached, hashed assets immutable.
@@ -409,8 +413,8 @@ deliberately lacks), no other service. A test that needs more blocks the task.
   `deploy/.env`.
 - `deploy/` holds the production compose: PostgreSQL 18, backend and frontend
   pulled by `LIBRIS_TAG` from an uncommitted `.env`, joined to the existing
-  Traefik network, no published ports, no labels, one named volume for the
-  data. Traefik routing (`libris.amory.fr` to the frontend, `/api` to the
+  Traefik network, no published ports, no labels, two named volumes, the
+  database's and the covers'. Traefik routing (`libris.amory.fr` to the frontend, `/api` to the
   backend, the Authelia forward-auth middleware on both routers) and the
   Authelia access rule are declared by hand in the server's Traefik dynamic
   configuration files and Authelia configuration, outside this repository.
