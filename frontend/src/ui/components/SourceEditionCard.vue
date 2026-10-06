@@ -131,7 +131,7 @@ const rows = computed(() => {
             type="button"
             :aria-label="t('isbn.card.coverSource', { source: cover.source })"
             :aria-pressed="isShown(index)"
-            class="flex h-11 w-8 items-center justify-center"
+            class="relative -my-3 flex h-11 w-8 items-center justify-center"
             @click="tapped = index"
           >
             <span
