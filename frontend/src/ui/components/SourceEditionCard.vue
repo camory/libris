@@ -20,7 +20,8 @@ const offered = computed(() =>
     .map((cover, index) => ({ cover, index }))
     .filter(({ index }) => !failed.value.includes(index)),
 );
-const shown = computed(() => offered.value[0]?.index ?? -1);
+const tapped = ref<number | null>(null);
+const shown = computed(() => tapped.value ?? offered.value[0]?.index ?? -1);
 const shownCover = computed(() => props.covers[shown.value]);
 
 const overline = computed(() => {
@@ -122,6 +123,7 @@ const rows = computed(() => {
             :key="cover.url"
             type="button"
             :aria-pressed="index === shown"
+            @click="tapped = index"
             :aria-label="t('isbn.card.coverSource', { source: cover.source })"
           ></button>
         </div>

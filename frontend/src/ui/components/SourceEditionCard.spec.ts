@@ -406,6 +406,25 @@ describe("SourceEditionCard", () => {
     );
   });
 
+  it("shows the cover of the dot tapped, with its name", async () => {
+    // Given
+    const wrapper = card(onePiece1, [], [inventaire, openLibrary, bnf]);
+    const shown = within(wrapper.element as HTMLElement);
+
+    // When
+    shown.getByRole("button", { name: "Couverture Open Library" }).click();
+    await nextTick();
+
+    // Then
+    expect(shown.getByRole("img").getAttribute("src")).toBe(openLibrary.url);
+    const text = wrapper.text();
+    expect(text).toContain("Open Library");
+    expect(text).not.toContain("inventaire.io");
+    expect(dots(shown).map((dot) => dot.getAttribute("aria-pressed"))).toEqual(
+      ["false", "true", "false"],
+    );
+  });
+
   it("shows a book icon when the first candidate does not load", async () => {
     // Given
     const wrapper = card(onePiece1, [], [inventaire]);
