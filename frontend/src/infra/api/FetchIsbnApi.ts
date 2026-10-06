@@ -22,7 +22,10 @@ interface ProblemResponse {
   type: string;
 }
 
-const problems = new Map([[404, "/problems/not-found"]]);
+const problems = new Map([
+  [404, "/problems/not-found"],
+  [503, "/problems/sources-unavailable"],
+]);
 
 export class FetchIsbnApi implements IsbnApi {
   constructor(private readonly baseUrl: string) {}
