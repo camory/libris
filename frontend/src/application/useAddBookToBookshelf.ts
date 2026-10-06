@@ -15,17 +15,18 @@ export function useAddBookToBookshelf(
   bookshelfApi: BookshelfApi,
 ): {
   state: Ref<AddState>;
-  add: (edition: SourceEdition) => Promise<void>;
+  add: (edition: SourceEdition, coverSource: string | null) => Promise<void>;
 } {
   const state = ref<AddState>({ status: "ready" });
 
-  async function add(edition: SourceEdition) {
+  async function add(edition: SourceEdition, coverSource: string | null) {
     state.value = { status: "adding" };
     try {
       const reader = await meApi.currentReader();
       const answer = await bookshelfApi.add(
         reader.defaultBookshelf.id,
         edition,
+        coverSource,
       );
       state.value =
         answer.outcome === "added"
