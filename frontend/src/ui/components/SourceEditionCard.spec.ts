@@ -365,6 +365,20 @@ describe("SourceEditionCard", () => {
     expect(cover.getAttribute("alt")).toBe("Couverture de Romance dawn");
   });
 
+  it("offers one dot per candidate, named after its source", () => {
+    // When
+    const card = screen(onePiece1, [], [inventaire, openLibrary, bnf]);
+
+    // Then
+    expect(
+      dots(card).map((dot) => dot.getAttribute("aria-label")),
+    ).toEqual([
+      "Couverture inventaire.io",
+      "Couverture Open Library",
+      "Couverture BnF",
+    ]);
+  });
+
   it("shows a book icon when the first candidate does not load", async () => {
     // Given
     const wrapper = card(onePiece1, [], [inventaire]);
@@ -524,6 +538,10 @@ describe("SourceEditionCard", () => {
     return Boolean(
       first.compareDocumentPosition(second) & Node.DOCUMENT_POSITION_FOLLOWING,
     );
+  }
+
+  function dots(card: ReturnType<typeof screen>) {
+    return card.queryAllByRole("button", { name: /^Couverture / });
   }
 
   function show(

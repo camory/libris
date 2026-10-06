@@ -96,20 +96,30 @@ const rows = computed(() => {
     class="flex flex-col gap-3.5 rounded-[14px] border border-border bg-surface p-4"
   >
     <div class="flex gap-3.5">
-      <div
-        class="flex h-[149px] w-24 shrink-0 items-center justify-center rounded-md bg-border"
-      >
-        <img
-          v-for="(cover, index) in covers"
-          :key="cover.url"
-          :src="cover.url"
-          :alt="t('isbn.card.cover', { title: edition.title })"
-          :aria-hidden="index !== shown"
-          class="h-full w-full rounded-md object-contain"
-          :class="{ hidden: index !== shown }"
-          @error="failed.push(index)"
-        />
-        <IconBook v-if="shown === -1" class="text-muted opacity-60" />
+      <div class="flex w-24 shrink-0 flex-col">
+        <div
+          class="flex h-[149px] w-24 shrink-0 items-center justify-center rounded-md bg-border"
+        >
+          <img
+            v-for="(cover, index) in covers"
+            :key="cover.url"
+            :src="cover.url"
+            :alt="t('isbn.card.cover', { title: edition.title })"
+            :aria-hidden="index !== shown"
+            class="h-full w-full rounded-md object-contain"
+            :class="{ hidden: index !== shown }"
+            @error="failed.push(index)"
+          />
+          <IconBook v-if="shown === -1" class="text-muted opacity-60" />
+        </div>
+        <div>
+          <button
+            v-for="cover in covers"
+            :key="cover.url"
+            type="button"
+            :aria-label="t('isbn.card.coverSource', { source: cover.source })"
+          ></button>
+        </div>
       </div>
 
       <div class="flex min-w-0 flex-col gap-1.5">
