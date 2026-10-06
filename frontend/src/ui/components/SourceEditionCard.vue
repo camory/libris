@@ -21,7 +21,12 @@ const offered = computed(() =>
     .filter(({ index }) => !failed.value.includes(index)),
 );
 const tapped = ref<number | null>(null);
-const shown = computed(() => tapped.value ?? offered.value[0]?.index ?? -1);
+const shown = computed(
+  () =>
+    offered.value.find(({ index }) => index === tapped.value)?.index ??
+    offered.value[0]?.index ??
+    -1,
+);
 const shownCover = computed(() => props.covers[shown.value]);
 
 const overline = computed(() => {

@@ -370,9 +370,7 @@ describe("SourceEditionCard", () => {
     const card = screen(onePiece1, [], [inventaire, openLibrary, bnf]);
 
     // Then
-    expect(
-      dots(card).map((dot) => dot.getAttribute("aria-label")),
-    ).toEqual([
+    expect(dots(card).map((dot) => dot.getAttribute("aria-label"))).toEqual([
       "Couverture inventaire.io",
       "Couverture Open Library",
       "Couverture BnF",
@@ -390,9 +388,10 @@ describe("SourceEditionCard", () => {
     await nextTick();
 
     // Then
-    expect(
-      dots(card).map((dot) => dot.getAttribute("aria-label")),
-    ).toEqual(["Couverture inventaire.io", "Couverture Open Library"]);
+    expect(dots(card).map((dot) => dot.getAttribute("aria-label"))).toEqual([
+      "Couverture inventaire.io",
+      "Couverture Open Library",
+    ]);
     expect(card.getByRole("img").getAttribute("src")).toBe(inventaire.url);
   });
 
@@ -401,9 +400,11 @@ describe("SourceEditionCard", () => {
     const card = screen(onePiece1, [], [inventaire, openLibrary, bnf]);
 
     // Then
-    expect(dots(card).map((dot) => dot.getAttribute("aria-pressed"))).toEqual(
-      ["true", "false", "false"],
-    );
+    expect(dots(card).map((dot) => dot.getAttribute("aria-pressed"))).toEqual([
+      "true",
+      "false",
+      "false",
+    ]);
   });
 
   it("shows the cover of the dot tapped, with its name", async () => {
@@ -420,9 +421,29 @@ describe("SourceEditionCard", () => {
     const text = wrapper.text();
     expect(text).toContain("Open Library");
     expect(text).not.toContain("inventaire.io");
-    expect(dots(shown).map((dot) => dot.getAttribute("aria-pressed"))).toEqual(
-      ["false", "true", "false"],
-    );
+    expect(dots(shown).map((dot) => dot.getAttribute("aria-pressed"))).toEqual([
+      "false",
+      "true",
+      "false",
+    ]);
+  });
+
+  it("shows the first cover still loading when the tapped one does not load", async () => {
+    // Given
+    const card = screen(onePiece1, [], [inventaire, openLibrary, bnf]);
+    card.getByRole("button", { name: "Couverture BnF" }).click();
+    await nextTick();
+
+    // When
+    card.getByRole("img").dispatchEvent(new Event("error"));
+    await nextTick();
+
+    // Then
+    expect(card.getByRole("img").getAttribute("src")).toBe(inventaire.url);
+    expect(dots(card).map((dot) => dot.getAttribute("aria-pressed"))).toEqual([
+      "true",
+      "false",
+    ]);
   });
 
   it("shows a book icon when the first candidate does not load", async () => {
