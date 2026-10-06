@@ -365,6 +365,14 @@ describe("SourceEditionCard", () => {
     expect(cover.getAttribute("alt")).toBe("Couverture de Romance dawn");
   });
 
+  it("gives out no source when it shows the stand-in", () => {
+    // When
+    const wrapper = card(onePiece1, [], []);
+
+    // Then
+    expect(givenOut(wrapper)).toBeNull();
+  });
+
   it("offers one dot per candidate, named after its source", () => {
     // When
     const card = screen(onePiece1, [], [inventaire, openLibrary, bnf]);
@@ -613,6 +621,10 @@ describe("SourceEditionCard", () => {
 
   function pressed(card: ReturnType<typeof screen>) {
     return dots(card).map((dot) => dot.getAttribute("aria-pressed"));
+  }
+
+  function givenOut(wrapper: ReturnType<typeof card>) {
+    return wrapper.emitted<[string | null]>("coverSource")?.at(-1)?.[0];
   }
 
   function show(
