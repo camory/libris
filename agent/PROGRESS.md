@@ -994,3 +994,7 @@ Format:
   the brief's order after it.
 - Left over: the first stored cover on staging (Tophe, after deploy); the
   `images` job of the pull request proves the `Dockerfile`.
+- Fixed up with Tophe: the log line of a run has no test, it has no value;
+  the gotchas item says the worker runs at the start of the whole
+  application, never in a slice. `LibrisApplicationTest` keeps its clean
+  before migrate.
