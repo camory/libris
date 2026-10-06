@@ -396,6 +396,16 @@ describe("SourceEditionCard", () => {
     expect(card.getByRole("img").getAttribute("src")).toBe(inventaire.url);
   });
 
+  it("presses the dot of the shown cover", () => {
+    // When
+    const card = screen(onePiece1, [], [inventaire, openLibrary, bnf]);
+
+    // Then
+    expect(dots(card).map((dot) => dot.getAttribute("aria-pressed"))).toEqual(
+      ["true", "false", "false"],
+    );
+  });
+
   it("shows a book icon when the first candidate does not load", async () => {
     // Given
     const wrapper = card(onePiece1, [], [inventaire]);

@@ -117,9 +117,10 @@ const rows = computed(() => {
         </div>
         <div>
           <button
-            v-for="{ cover } in offered"
+            v-for="{ cover, index } in offered"
             :key="cover.url"
             type="button"
+            :aria-pressed="index === shown"
             :aria-label="t('isbn.card.coverSource', { source: cover.source })"
           ></button>
         </div>
