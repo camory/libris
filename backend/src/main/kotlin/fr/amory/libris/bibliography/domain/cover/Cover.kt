@@ -6,9 +6,9 @@ import java.awt.image.BufferedImage
 import java.awt.image.BufferedImage.TYPE_INT_RGB
 import java.io.ByteArrayInputStream
 import java.io.ByteArrayOutputStream
+import java.io.IOException
 import java.security.MessageDigest
 import java.util.HexFormat
-import javax.imageio.IIOException
 import javax.imageio.ImageIO
 import javax.imageio.ImageReader
 import javax.imageio.stream.ImageInputStream
@@ -21,7 +21,7 @@ class Cover private constructor(val mediaType: String, val bytes: ByteArray) {
   fun normalised(): Cover? =
     try {
       pictureWithinBounds()?.let { normalisedFrom(it) }
-    } catch (_: IIOException) {
+    } catch (_: IOException) {
       null
     }
 

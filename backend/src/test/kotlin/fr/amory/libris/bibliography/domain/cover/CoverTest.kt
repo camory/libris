@@ -118,6 +118,15 @@ class CoverTest {
   }
 
   @Test
+  fun `a cut-short WebP is no cover`() {
+    // Given
+    val cover = coverOf("image/webp", recordedBytes("covers/small.webp").copyOf(200))
+
+    // When / Then
+    cover.normalised() shouldBe null
+  }
+
+  @Test
   fun `a header claiming 20 000 by 20 000 is no cover`() {
     coverOf("image/jpeg", jpegClaiming(20_000, 20_000)).normalised() shouldBe null
   }
