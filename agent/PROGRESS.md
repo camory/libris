@@ -1176,3 +1176,12 @@ Format:
   candidate's address, and `OpenLibrarySourceTest` builds it.
 - Left over: T064, rerun; its implementer rewrites the backend gotcha that
   says this scenario expects the stub's address in `coverUrl`.
+
+## 2026-10-06 — T064 The lookup on `v0.10.0`, its deprecated cover gone — done
+- Did: `ApiContractTest` pins `v0.10.0`; `IsbnResponse` no longer declares
+  or maps `coverUrl`, the lookup's cover being its `covers` alone. S1's
+  whole body and S5 each lost their `coverUrl` line.
+- Decided: nothing; the brief's two steps ran as written, the pin's guard
+  after step 2's green.
+- Deviations from the brief: none.
+- Left over: nothing; the frontend keeps its pin on `v0.9.0`, as the brief says.

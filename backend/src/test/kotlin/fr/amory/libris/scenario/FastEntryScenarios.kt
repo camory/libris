@@ -55,7 +55,6 @@ class FastEntryScenarios @Autowired constructor(
                   "language": "fr",
                   "pageCount": 203,
                   "summary": null,
-                  "coverUrl": "$ONE_PIECE_COVER",
                   "covers": [{"source": "BnF", "url": "$ONE_PIECE_COVER"}],
                   "copies": []
                 }
@@ -107,7 +106,6 @@ class FastEntryScenarios @Autowired constructor(
       .jsonPath("$.title").isEqualTo("Space Wars - Chapitre 1")
       .jsonPath("$.authors[*].name").isEqualTo(listOf("Baba", "Stéphane Lapuss'", "Tartuff"))
       .jsonPath("$.publisher").isEqualTo("KENNES EDITIONS")
-      .jsonPath("$.coverUrl").isEqualTo("${openLibrary.baseUrl}/b/isbn/9782380751673-L.jpg?default=false")
   }
 
   @Test

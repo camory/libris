@@ -66,7 +66,6 @@ data class IsbnResponse(
   val language: String?,
   val pageCount: Int?,
   val summary: String?,
-  val coverUrl: String?,
   val covers: List<CoverCandidateResponse>,
   val copies: List<CopyResponse>) {
   companion object {
@@ -95,7 +94,6 @@ data class IsbnResponse(
         language = preview.language,
         pageCount = preview.pageCount,
         summary = preview.summary,
-        coverUrl = covers.firstOrNull()?.url,
         covers = covers,
         copies = copies.map { CopyResponse.from(it) },
       )
