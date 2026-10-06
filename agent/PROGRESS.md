@@ -1237,3 +1237,7 @@ Format:
 - Left over: T071 (one edition never stops the run). WebP covers to be
   checked on staging, the plugin being found in the boot jar unproved by
   any test.
+- Reviewed by Tophe: a cut-short WebP threw `EOFException` out of the
+  cascade; `normalised()` now catches `IOException`, and `CoverTest` holds
+  the case. The reviewer reported before its background gate ended:
+  every-run gotcha added.
