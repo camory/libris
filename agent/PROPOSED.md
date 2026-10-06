@@ -413,3 +413,7 @@
   reword the description at the next release of the contract, and the spec
   line at the next spec session, with Tophe (found 2026-10-06 reviewing
   T060 with Tophe).
+- 2026-10-06: the card's dots are 32 wide, so three fill the cover's 96; a
+  fourth candidate (Google Books, D02's "later") overflows the column. Decide
+  with Tophe whether the row wraps, shrinks or caps the dots before a fourth
+  cover source lands (found implementing T061).

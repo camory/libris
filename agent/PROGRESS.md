@@ -1079,3 +1079,25 @@ Format:
   the card keeps one image per candidate, the others hidden but loading,
   and a candidate not yet failed keeps its dot.
 - Left over: T061, rerun.
+
+## 2026-10-06 — T061 The card shows the first cover that loads — done
+- Did: the card keeps one `img` per candidate, all loading, the shown one
+  alone accessible; a dot per candidate not failed, the shown one pressed,
+  a tap shows that cover; the shown source's name under the dots.
+- Decided: the shown cover is the tapped candidate while it has not
+  failed, else the first not failed in the answer's order; the state is
+  two refs of the card, the failed indices and the tapped index, reset by
+  the remount the skeleton causes between two lookups.
+- Decided: the dot is a 32 by 44 button holding an 8-across span, `accent`
+  when pressed, a 1.5 `muted` ring otherwise; the name is `text-body
+  text-muted`, centred, under a centred row, in a 96-wide column.
+- Deviations from the brief: the hidden images carry `aria-hidden="true"`
+  and the class `hidden`, not the `hidden` attribute nor `v-show`. Both
+  mount detached, and jsdom clears its computed-style cache only for an
+  attached tree, so an image unhidden after a failure kept a stale
+  `display: none` and no accessible `img` was found. The class draws
+  nothing in the specs, so no computed style ever changes there.
+- Left over: the U06 rule and the U04 exception are proposed in the PR
+  body; a fourth source's dots would overflow the 96 of the cover
+  (PROPOSED); the add carrying the shown cover's source and S3 (T062), the
+  held edition's cover and S10 (T063).

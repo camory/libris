@@ -152,10 +152,19 @@ Read whole by a run that changes `frontend/`, after `every-run.md`.
   `srcObject` is implemented nowhere in jsdom, so assigning a plain object
   with `getTracks()` to it is an ordinary property assignment: no IDL
   conversion, no throw.
-- `SourceEditionCard` takes the lookup's `covers` and draws `covers[0]`, the
-  stand-in `IconBook` when the list is empty: its spec's `card()`,
-  `show()` and `screen()` default to no candidate, so a case counting the
-  rows' `IconBook`s passes a candidate, or the stand-in adds one.
+- `SourceEditionCard` keeps one `img` per candidate of the lookup's
+  `covers`, the shown one alone accessible, and the stand-in `IconBook`
+  when none is left: its spec's `card()`, `show()` and `screen()` default
+  to no candidate, so a case counting the rows' `IconBook`s passes a
+  candidate, or the stand-in adds one. `getAllByRole("img", { hidden: true
+  })` reaches every candidate's image, in the answer's order.
+- jsdom clears its computed-style cache only when the tree is attached to
+  the document, and every component spec and scenario mounts detached: an
+  element whose `hidden` attribute or `v-show` style changes keeps the
+  `display` read first, so Testing Library keeps it hidden or visible.
+  Toggle what a query must see with `aria-hidden`, which is read as an
+  attribute, and hide it on screen with a class, which draws nothing in the
+  specs (`SourceEditionCard`'s images).
 - jsdom loads no image: an `<img>` with a `src` fires neither `load` nor
   `error`, whatever the URL, so a test of what a broken cover shows dispatches
   `new Event("error")` on the element itself and awaits `nextTick()`. Vue Test
