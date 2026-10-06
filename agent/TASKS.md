@@ -365,10 +365,12 @@ catalogue rows show a cover only once the worker has stored it (Tophe,
       Precondition (human): T063 deployed; `v0.10.0` released (D04).
       `ApiContractTest` pins `v0.10.0`, the only contract edit of the task
       (D04): the lookup no longer answers `coverUrl`, the candidates of
-      `covers` saying it all; nothing else changes, and the fast entry's
-      whole-body case loses the field (D07). Un-skips nothing: a field
-      removed has no scenario, the spec's contract section asks for it, and
-      every scenario test stays green throughout.
+      `covers` saying it all; nothing else changes, the fast entry's
+      whole-body case loses the field (D07), and *S5 Merged answer, from
+      Open Library alone* loses its `coverUrl` check, the spec's S5 leaving
+      the cover to the covers spec. Un-skips nothing: a field removed has
+      no scenario, the spec's contract section asks for it, and every
+      scenario test stays green throughout.
 
 *Done (Tophe, on the Pixel, from the installed app on staging): scan an
 ouvrage the house lacks; the card shows a cover with its source under it; tap

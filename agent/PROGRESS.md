@@ -1164,3 +1164,15 @@ Format:
   the lookup losing `coverUrl` on `v0.10.0`, T064.
 - Reviewed by Tophe: the card takes `held: boolean` instead of the `id` it
   only compared to null; the view keeps `held`, set from the answer's `id`.
+
+## 2026-10-06 — T064's line names the S5 cover check, with Tophe
+- Did: T064's line lets *S5 Merged answer, from Open Library alone* lose
+  its `coverUrl` check, beside the whole-body case of S1.
+- Decided: T064's planner blocked: that check goes red once the lookup
+  stops answering `coverUrl`, and D07 lets a task touch another spec's
+  scenario only to add a field. Of deleting the check or moving it onto
+  the Open Library candidate, Tophe kept deleting it: the fast entry's S5
+  leaves the cover to the covers spec, whose S1 already checks the
+  candidate's address, and `OpenLibrarySourceTest` builds it.
+- Left over: T064, rerun; its implementer rewrites the backend gotcha that
+  says this scenario expects the stub's address in `coverUrl`.
