@@ -548,6 +548,16 @@ describe("SourceEditionCard", () => {
     expect(card).not.toContain("Libris");
   });
 
+  it("shows the house's cover for an edition the house holds", () => {
+    // When
+    const covers = screen(onePiece1, [], [libris], held).getAllByRole("img");
+
+    // Then
+    expect(covers).toHaveLength(1);
+    expect(covers[0].getAttribute("src")).toBe(libris.url);
+    expect(covers[0].getAttribute("alt")).toBe("Couverture de Romance dawn");
+  });
+
   it("shows the série alone when the sources gave it no tome", () => {
     // Given
     const standalone: SourceEdition = {
