@@ -4,7 +4,7 @@ import {
   within,
   type BoundFunctions,
 } from "@testing-library/dom";
-import { afterEach, describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 import type { App } from "vue";
 import type { BookshelfApi } from "../application/BookshelfApi";
 import type { CatalogueApi } from "../application/CatalogueApi";
@@ -53,6 +53,7 @@ describe("Covers", () => {
   afterEach(() => {
     app.unmount();
     window.history.replaceState(null, "", "/");
+    vi.unstubAllGlobals();
   });
 
   it.skip("S1 The lookup offers the sources' covers", async () => {
@@ -300,6 +301,14 @@ describe("Covers", () => {
     path: string,
     world: { isbn: IsbnApi; add?: BookshelfApi; catalogue?: CatalogueApi },
   ) {
+    vi.stubGlobal(
+      "IntersectionObserver",
+      class {
+        observe() {}
+        unobserve() {}
+        disconnect() {}
+      },
+    );
     window.history.replaceState(null, "", path);
     app = createLibrisApp(
       {
