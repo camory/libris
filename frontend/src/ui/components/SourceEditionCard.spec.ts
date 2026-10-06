@@ -381,6 +381,19 @@ describe("SourceEditionCard", () => {
     expect(givenOut(wrapper)).toBe("inventaire.io");
   });
 
+  it("gives out the next source when the shown cover does not load", async () => {
+    // Given
+    const wrapper = card(onePiece1, [], [inventaire, openLibrary, bnf]);
+    const shown = within(wrapper.element as HTMLElement);
+
+    // When
+    shown.getByRole("img").dispatchEvent(new Event("error"));
+    await nextTick();
+
+    // Then
+    expect(givenOut(wrapper)).toBe("Open Library");
+  });
+
   it("offers one dot per candidate, named after its source", () => {
     // When
     const card = screen(onePiece1, [], [inventaire, openLibrary, bnf]);

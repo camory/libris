@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, onMounted, ref } from "vue";
+import { computed, ref, watch } from "vue";
 import { useI18n } from "vue-i18n";
 import type { Copy } from "../../domain/Copy";
 import type { CoverCandidate } from "../../domain/Cover";
@@ -29,7 +29,11 @@ const shown = computed(
     offered.value[0],
 );
 
-onMounted(() => emit("coverSource", shown.value?.cover.source ?? null));
+watch(
+  () => shown.value?.cover.source ?? null,
+  (source) => emit("coverSource", source),
+  { immediate: true },
+);
 
 function isShown(index: number) {
   return index === shown.value?.index;
