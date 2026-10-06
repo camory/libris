@@ -44,8 +44,9 @@ Then the card shows the first that loads, with the name of its source
 ```
 
 Three cases: the reader taps another dot, and the card shows that cover with
-its name; a candidate that does not load is not offered, so its dot never
-appears; none loads, and the card shows the stand-in, no name, no dot. Proof:
+its name; a candidate that does not load is not offered: it keeps its dot
+while it loads and loses it when it fails; none loads, and the card shows
+the stand-in, no name, no dot. Proof:
 frontend scenario test over the fakes, one per case.
 
 **S3 The add carries the cover's source** · frontend, backend
@@ -218,7 +219,8 @@ from Libris instead of a source.
 
 In the card's top part, under the cover block: the dots, one per candidate
 that loaded, the shown one filled, each a button named after its source,
-*Couverture inventaire.io*; then the name of the shown cover's source in
+*Couverture inventaire.io*, 44 tall and 32 wide, the dot drawn 8 across in
+its centre, so that three fill the cover's width; then the name of the shown cover's source in
 `muted`, *inventaire.io*, *Open Library*, *BnF*. The cover of an edition
 the house holds draws neither dots nor name, the choice being over; the
 stand-in draws neither. The fields above keep their silence about the
@@ -296,7 +298,8 @@ named volume of the production compose, registered with the server's backup
 by the runbook, which amends D09; the sentence of `specs/fast-entry.md`
 that says the card never names a source is amended for the cover alone; the
 dots and the name under the cover are a rule for U06 of `docs/DESIGN.md`,
-proposed with the mockups. The worker is one piece of the backend's
+proposed with the mockups, and the dots' 32 of width an exception to U04's
+44. The worker is one piece of the backend's
 infrastructure behind a port of the application, which the add and the
 tests call the same way; the tests give it a temporary directory and stubbed
 sources serving real bytes, a small JPEG and a small WebP.

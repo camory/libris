@@ -1068,3 +1068,14 @@ Format:
   in the contract and of `specs/fast-entry.md:185` goes to PROPOSED, and
   `problemOf`'s fallback on the body's `type` stays, `main`'s reading of a
   problem with a status the contract does not name.
+
+## 2026-10-06 — T061 blocked, the dots settled with Tophe
+- Did: `specs/covers.md` and the T061 line say the dots' size, 44 tall and
+  32 wide with the dot drawn 8 across in its centre, and that a candidate
+  keeps its dot while it loads and loses it when it fails.
+- Decided: three 44-wide buttons do not fit under a 96-wide cover, so the
+  dots are an exception to U04's 44, proposed in T061's PR body beside the
+  U06 rule. S2's tests fire every image event on the one shown image, so
+  the card keeps one image per candidate, the others hidden but loading,
+  and a candidate not yet failed keeps its dot.
+- Left over: T061, rerun.
