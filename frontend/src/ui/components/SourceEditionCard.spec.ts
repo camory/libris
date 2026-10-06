@@ -407,6 +407,21 @@ describe("SourceEditionCard", () => {
     expect(givenOut(wrapper)).toBe("BnF");
   });
 
+  it("gives out no source once no candidate loads", async () => {
+    // Given
+    const wrapper = card(onePiece1, [], [inventaire, openLibrary, bnf]);
+    const shown = within(wrapper.element as HTMLElement);
+
+    // When
+    for (const image of shown.getAllByRole("img", { hidden: true })) {
+      image.dispatchEvent(new Event("error"));
+      await nextTick();
+    }
+
+    // Then
+    expect(givenOut(wrapper)).toBeNull();
+  });
+
   it("offers one dot per candidate, named after its source", () => {
     // When
     const card = screen(onePiece1, [], [inventaire, openLibrary, bnf]);
