@@ -370,7 +370,7 @@ describe("SourceEditionCard", () => {
     const card = screen(onePiece1, [], [inventaire, openLibrary, bnf]);
 
     // Then
-    expect(dots(card).map((dot) => dot.getAttribute("aria-label"))).toEqual([
+    expect(labels(card)).toEqual([
       "Couverture inventaire.io",
       "Couverture Open Library",
       "Couverture BnF",
@@ -388,7 +388,7 @@ describe("SourceEditionCard", () => {
     await nextTick();
 
     // Then
-    expect(dots(card).map((dot) => dot.getAttribute("aria-label"))).toEqual([
+    expect(labels(card)).toEqual([
       "Couverture inventaire.io",
       "Couverture Open Library",
     ]);
@@ -400,11 +400,7 @@ describe("SourceEditionCard", () => {
     const card = screen(onePiece1, [], [inventaire, openLibrary, bnf]);
 
     // Then
-    expect(dots(card).map((dot) => dot.getAttribute("aria-pressed"))).toEqual([
-      "true",
-      "false",
-      "false",
-    ]);
+    expect(pressed(card)).toEqual(["true", "false", "false"]);
   });
 
   it("shows the cover of the dot tapped, with its name", async () => {
@@ -421,11 +417,7 @@ describe("SourceEditionCard", () => {
     const text = wrapper.text();
     expect(text).toContain("Open Library");
     expect(text).not.toContain("inventaire.io");
-    expect(dots(shown).map((dot) => dot.getAttribute("aria-pressed"))).toEqual([
-      "false",
-      "true",
-      "false",
-    ]);
+    expect(pressed(shown)).toEqual(["false", "true", "false"]);
   });
 
   it("shows the first cover still loading when the tapped one does not load", async () => {
@@ -440,10 +432,7 @@ describe("SourceEditionCard", () => {
 
     // Then
     expect(card.getByRole("img").getAttribute("src")).toBe(inventaire.url);
-    expect(dots(card).map((dot) => dot.getAttribute("aria-pressed"))).toEqual([
-      "true",
-      "false",
-    ]);
+    expect(pressed(card)).toEqual(["true", "false"]);
   });
 
   it("shows the book icon, no dot and no name when no candidate loads", async () => {
@@ -616,6 +605,14 @@ describe("SourceEditionCard", () => {
 
   function dots(card: ReturnType<typeof screen>) {
     return card.queryAllByRole("button", { name: /^Couverture / });
+  }
+
+  function labels(card: ReturnType<typeof screen>) {
+    return dots(card).map((dot) => dot.getAttribute("aria-label"));
+  }
+
+  function pressed(card: ReturnType<typeof screen>) {
+    return dots(card).map((dot) => dot.getAttribute("aria-pressed"));
   }
 
   function show(
