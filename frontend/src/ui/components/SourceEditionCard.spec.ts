@@ -558,6 +558,14 @@ describe("SourceEditionCard", () => {
     expect(covers[0].getAttribute("alt")).toBe("Couverture de Romance dawn");
   });
 
+  it("offers a dot for a candidate named Libris when the house does not hold the edition", () => {
+    // When
+    const card = screen(onePiece1, [], [libris]);
+
+    // Then
+    expect(labels(card)).toEqual(["Couverture Libris"]);
+  });
+
   it("shows the série alone when the sources gave it no tome", () => {
     // Given
     const standalone: SourceEdition = {
