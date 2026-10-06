@@ -126,4 +126,18 @@ class CoverTest {
   fun `a header claiming 20 000 wide and 1 tall is no cover`() {
     coverOf("image/jpeg", jpegClaiming(20_000, 1)).normalised() shouldBe null
   }
+
+  @Test
+  fun `a header claiming 5 000 wide and 1 tall is a picture, kept as fetched`() {
+    // Given
+    val bytes = jpegClaiming(5_000, 1)
+    val cover = coverOf("image/jpeg", bytes)
+
+    // When
+    val normalised = cover.normalised()
+
+    // Then
+    normalised?.mediaType shouldBe "image/jpeg"
+    normalised?.bytes shouldBe bytes
+  }
 }
