@@ -10,7 +10,10 @@ interface ProblemResponse {
   type: string;
 }
 
-const problems = new Map([[400, "/problems/validation"]]);
+const problems = new Map([
+  [400, "/problems/validation"],
+  [404, "/problems/not-found"],
+]);
 
 export class FetchBookshelfApi implements BookshelfApi {
   constructor(private readonly baseUrl: string) {}
