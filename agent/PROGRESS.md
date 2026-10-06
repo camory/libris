@@ -1145,3 +1145,5 @@ Format:
 - Deviations from the brief: step 1's green gives out from setup rather than
   `onMounted`, the form step 3 needed anyway.
 - Left over: the held edition's source, T063 and S10.
+- Reviewed by Tophe: the reviewer's suggestion fixed up, the gotchas' call
+  of `add` now carries `coverSource`.

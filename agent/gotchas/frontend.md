@@ -270,8 +270,8 @@ Read whole by a run that changes `frontend/`, after `every-run.md`.
   `addBookToBookshelf`, rebuilt on each lookup), exposes its `state` to the
   template as a ref still, and the view reads it through a `computed`
   (`addState`). Its function is called on the unwrapped object,
-  `@click="addBookToBookshelf.add(edition)"`, and `vue-tsc` narrows
-  `edition` there from the enclosing `v-else-if`.
+  `@click="addBookToBookshelf.add(edition, coverSource)"`, and `vue-tsc`
+  narrows `edition` there from the enclosing `v-else-if`.
 - `@typescript-eslint/no-unused-vars` has no `argsIgnorePattern`: an
   `_`-prefixed parameter is still an error, so a cycle whose signature is
   fixed before its body uses the argument leaves `eslint .`, and the gate,
