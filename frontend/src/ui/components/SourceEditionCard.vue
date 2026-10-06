@@ -23,11 +23,9 @@ const offered = computed(() =>
 const tapped = ref<number | null>(null);
 const shown = computed(
   () =>
-    offered.value.find(({ index }) => index === tapped.value)?.index ??
-    offered.value[0]?.index ??
-    -1,
+    offered.value.find(({ index }) => index === tapped.value) ??
+    offered.value[0],
 );
-const shownCover = computed(() => props.covers[shown.value]);
 
 const overline = computed(() => {
   const series = props.edition.series;
@@ -115,24 +113,36 @@ const rows = computed(() => {
             :key="cover.url"
             :src="cover.url"
             :alt="t('isbn.card.cover', { title: edition.title })"
-            :aria-hidden="index !== shown"
+            :aria-hidden="index !== shown?.index"
             class="h-full w-full rounded-md object-contain"
-            :class="{ hidden: index !== shown }"
+            :class="{ hidden: index !== shown?.index }"
             @error="failed.push(index)"
           />
-          <IconBook v-if="shown === -1" class="text-muted opacity-60" />
+          <IconBook v-if="!shown" class="text-muted opacity-60" />
         </div>
-        <div>
+        <div class="flex justify-center">
           <button
             v-for="{ cover, index } in offered"
             :key="cover.url"
             type="button"
-            :aria-pressed="index === shown"
-            @click="tapped = index"
             :aria-label="t('isbn.card.coverSource', { source: cover.source })"
-          ></button>
+            :aria-pressed="index === shown?.index"
+            class="flex h-11 w-8 items-center justify-center"
+            @click="tapped = index"
+          >
+            <span
+              class="size-2 rounded-full"
+              :class="
+                index === shown?.index
+                  ? 'bg-accent'
+                  : 'border-[1.5px] border-muted'
+              "
+            ></span>
+          </button>
         </div>
-        <p v-if="shownCover">{{ shownCover.source }}</p>
+        <p v-if="shown" class="text-center text-body text-muted">
+          {{ shown.cover.source }}
+        </p>
       </div>
 
       <div class="flex min-w-0 flex-col gap-1.5">
