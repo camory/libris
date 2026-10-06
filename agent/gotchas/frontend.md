@@ -165,6 +165,10 @@ Read whole by a run that changes `frontend/`, after `every-run.md`.
   Toggle what a query must see with `aria-hidden`, which is read as an
   attribute, and hide it on screen with a class, which draws nothing in the
   specs (`SourceEditionCard`'s images).
+- A component's `emit` called during `setup`, as a `watch` with
+  `immediate: true` does, reaches the parent's `@event` listener and
+  Vue Test Utils' `wrapper.emitted()`: `SourceEditionCard` gives out its
+  first `coverSource` that way, with no `onMounted`.
 - jsdom loads no image: an `<img>` with a `src` fires neither `load` nor
   `error`, whatever the URL, so a test of what a broken cover shows dispatches
   `new Event("error")` on the element itself and awaits `nextTick()`. Vue Test
