@@ -151,7 +151,7 @@ const rows = computed(() => {
             ></span>
           </button>
         </div>
-        <p v-if="shown" class="text-center text-body text-muted">
+        <p v-if="id === null && shown" class="text-center text-body text-muted">
           {{ shown.cover.source }}
         </p>
       </div>

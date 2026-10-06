@@ -540,6 +540,14 @@ describe("SourceEditionCard", () => {
     expect(dots(card)).toEqual([]);
   });
 
+  it("names no source under the cover of an edition the house holds", () => {
+    // When
+    const card = show(onePiece1, [], [libris], held);
+
+    // Then
+    expect(card).not.toContain("Libris");
+  });
+
   it("shows the série alone when the sources gave it no tome", () => {
     // Given
     const standalone: SourceEdition = {
