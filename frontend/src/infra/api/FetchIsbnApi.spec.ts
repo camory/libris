@@ -5,6 +5,7 @@ import {
   aSeriesOrNull,
   aStringOrNull,
   authorsWithNameAndRole,
+  candidatesWithSourceAndUrl,
 } from "../../fixture/EditionShapes";
 import { FetchIsbnApi } from "./FetchIsbnApi";
 
@@ -22,6 +23,8 @@ describe("FetchIsbnApi", () => {
 
     // Then
     assert(answer.outcome === "found", `the answer is a ${answer.outcome}`);
+    expect(answer.id).toEqual(aStringOrNull);
+    expect(answer.covers).toEqual(candidatesWithSourceAndUrl);
     expect(answer.edition).toEqual({
       isbn13: expect.any(String),
       kind: aKind,
@@ -114,6 +117,8 @@ describe("FetchIsbnApi", () => {
       summary: null,
       coverUrl: "https://covers.openlibrary.org/b/isbn/9782723488525-L.jpg",
       copies: [],
+      id: null,
+      covers: [],
       sources: ["BNF", "OPEN_LIBRARY"],
     };
     vi.stubGlobal("fetch", () =>

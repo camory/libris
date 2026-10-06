@@ -6,10 +6,10 @@ import type { SourceEdition } from "../domain/SourceEdition";
 export type IsbnAnswer =
   | {
       outcome: "found";
-      id?: string | null;
+      id: string | null;
       edition: SourceEdition;
       copies: Copy[];
-      covers?: CoverCandidate[];
+      covers: CoverCandidate[];
     }
   | { outcome: "problem"; type: string };
 

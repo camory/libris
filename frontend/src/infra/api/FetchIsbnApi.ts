@@ -2,6 +2,7 @@ import type { IsbnApi, IsbnAnswer } from "../../application/IsbnApi";
 import type { AuthorRole, Kind } from "../../domain/SourceEdition";
 
 interface IsbnResponse {
+  id: string | null;
   isbn13: string;
   kind: Kind;
   title: string;
@@ -16,6 +17,7 @@ interface IsbnResponse {
   summary: string | null;
   coverUrl: string | null;
   copies: { id: string; bookshelf: { id: string; name: string } }[];
+  covers: { source: string; url: string }[];
 }
 
 interface ProblemResponse {
@@ -39,6 +41,7 @@ export class FetchIsbnApi implements IsbnApi {
       const body = (await response.json()) as IsbnResponse;
       return {
         outcome: "found",
+        id: body.id,
         edition: {
           isbn13: body.isbn13,
           kind: body.kind,
@@ -57,6 +60,10 @@ export class FetchIsbnApi implements IsbnApi {
         copies: body.copies.map((copy) => ({
           id: copy.id,
           bookshelf: { id: copy.bookshelf.id, name: copy.bookshelf.name },
+        })),
+        covers: body.covers.map((cover) => ({
+          source: cover.source,
+          url: cover.url,
         })),
       };
     }

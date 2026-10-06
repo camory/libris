@@ -28,12 +28,15 @@ type Screen = BoundFunctions<typeof queries>;
 
 const found: IsbnAnswer = {
   outcome: "found",
+  id: null,
   edition: onePiece1,
   copies: [],
+  covers: [],
 };
 
 const onLeasBookshelf: IsbnAnswer = {
   outcome: "found",
+  id: null,
   edition: onePiece1,
   copies: [
     {
@@ -41,6 +44,7 @@ const onLeasBookshelf: IsbnAnswer = {
       bookshelf: lea.defaultBookshelf,
     },
   ],
+  covers: [],
 };
 
 const unknownIsbn: IsbnAnswer = {
@@ -105,6 +109,7 @@ describe("IsbnView", () => {
     // Given
     const shelved: IsbnAnswer = {
       outcome: "found",
+      id: null,
       edition: onePiece1,
       copies: [
         {
@@ -115,6 +120,7 @@ describe("IsbnView", () => {
           },
         },
       ],
+      covers: [],
     };
     const screen = open(new FakeIsbnApi(shelved));
 
