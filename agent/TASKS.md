@@ -379,9 +379,13 @@ catalogue rows show a cover only once the worker has stored it (Tophe,
       pixels as its header says, read before any pixel is decoded; anything
       else is not a picture, as S8 says: the cascade moves on to the next
       source, and a chosen source leaves the edition awaiting with its
-      attempt dated. The two `CoverTest` cases that keep unreadable bytes
-      as fetched become cases of no cover. Realises S6's picture rule;
-      un-skips the backend test of S8's fourth case.
+      attempt dated. Libris reads a WebP through TwelveMonkeys
+      `imageio-webp`, the JDK having no WebP reader: the `CoverTest` case
+      of `covers/small.webp` stays kept as fetched, now as a picture 600
+      tall or less; the case of the truncated JPEG becomes a case of no
+      cover; a new case, bytes no reader knows under an image's media
+      type, is no cover. Realises S6's picture rule; un-skips the backend
+      test of S8's fourth case.
 
 - [ ] T071 Backend: one edition never stops the run.
       Whatever one edition's fetch, normalisation or storing throws, its
