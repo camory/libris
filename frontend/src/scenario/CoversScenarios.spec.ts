@@ -264,7 +264,7 @@ describe("Covers", () => {
     return new FakeIsbnApi({
       outcome: "found",
       id: null,
-      edition: { ...edition, coverUrl: null },
+      edition,
       copies: [],
       covers,
     });
@@ -278,7 +278,7 @@ describe("Covers", () => {
     return new FakeIsbnApi({
       outcome: "found",
       id: "3c4d5e6f-7a8b-4c9d-8e0f-1a2b3c4d5e6f",
-      edition: { ...edition, coverUrl: null },
+      edition,
       copies,
       covers,
     });

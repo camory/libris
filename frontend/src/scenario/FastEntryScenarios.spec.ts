@@ -156,7 +156,18 @@ describe("Fast entry", () => {
   }
 
   function aSourceKnows(edition: SourceEdition): IsbnApi {
-    return new FakeIsbnApi({ outcome: "found", edition, copies: [] });
+    return new FakeIsbnApi({
+      outcome: "found",
+      id: null,
+      edition,
+      copies: [],
+      covers: [
+        {
+          source: "Open Library",
+          url: "https://covers.openlibrary.org/b/isbn/9782723488525-L.jpg",
+        },
+      ],
+    });
   }
 
   function noSourceKnows(): IsbnApi {
