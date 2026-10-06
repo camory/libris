@@ -16,18 +16,18 @@ class Cover private constructor(val mediaType: String, val bytes: ByteArray) {
     get() =
       CoverName(HexFormat.of().formatHex(MessageDigest.getInstance("SHA-256").digest(bytes)))
 
-  fun normalised(): Cover =
-    picture()
-      ?.takeIf { it.height > MAX_HEIGHT }
+  fun normalised(): Cover? =
+    try {
+      ImageIO.read(ByteArrayInputStream(bytes))?.let { normalisedFrom(it) }
+    } catch (_: IIOException) {
+      this
+    }
+
+  private fun normalisedFrom(picture: BufferedImage): Cover =
+    picture
+      .takeIf { it.height > MAX_HEIGHT }
       ?.let { Cover(JPEG, jpegOf(scaled(it))) }
       ?: this
-
-  private fun picture(): BufferedImage? =
-    try {
-      ImageIO.read(ByteArrayInputStream(bytes))
-    } catch (_: IIOException) {
-      null
-    }
 
   private fun scaled(picture: BufferedImage): BufferedImage {
     val width = (picture.width * MAX_HEIGHT / picture.height).coerceAtLeast(1)

@@ -64,8 +64,8 @@ class FetchAwaitedCoversTest {
     fetchAwaitedCovers()
 
     // Then
-    covers.stored.single().name shouldBe tall.normalised().name
-    editions.findByIsbn(isbnOf(ONE_PIECE))?.coverName shouldBe tall.normalised().name
+    covers.stored.single().name shouldBe tall.normalised()?.name
+    editions.findByIsbn(isbnOf(ONE_PIECE))?.coverName shouldBe tall.normalised()?.name
   }
 
   @Test
@@ -174,8 +174,8 @@ class FetchAwaitedCoversTest {
     fetchAwaitedCovers()
 
     // Then
-    covers.stored.single().name shouldBe tall.normalised().name
-    editions.findByIsbn(isbnOf(ONE_PIECE))?.coverName shouldBe tall.normalised().name
+    covers.stored.single().name shouldBe tall.normalised()?.name
+    editions.findByIsbn(isbnOf(ONE_PIECE))?.coverName shouldBe tall.normalised()?.name
     inventaire.asked shouldBe listOf(isbnOf(ONE_PIECE))
     openLibrary.asked shouldBe listOf(isbnOf(ONE_PIECE))
     bnf.asked shouldBe listOf(isbnOf(ONE_PIECE))

@@ -7,6 +7,7 @@ contracteer = "4.1.1"
 archunit = "1.5.0"
 java-uuid-generator = "5.1.0"
 wiremock = "3.13.2"
+twelvemonkeys = "3.15.3"
 
 [libraries]
 detekt-formatting = { module = "io.gitlab.arturbosch.detekt:detekt-formatting", version.ref = "detekt" }
@@ -15,6 +16,7 @@ contracteer-verifier-junit = { module = "dev.contracteer:contracteer-verifier-ju
 archunit-junit5 = { module = "com.tngtech.archunit:archunit-junit5", version.ref = "archunit" }
 java-uuid-generator = { module = "com.fasterxml.uuid:java-uuid-generator", version.ref = "java-uuid-generator" }
 wiremock-standalone = { module = "org.wiremock:wiremock-standalone", version.ref = "wiremock" }
+imageio-webp = { module = "com.twelvemonkeys.imageio:imageio-webp", version.ref = "twelvemonkeys" }
 
 [plugins]
 kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
