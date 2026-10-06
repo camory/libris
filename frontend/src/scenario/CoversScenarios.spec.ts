@@ -230,7 +230,7 @@ describe("Covers", () => {
     expect(dots(screen)).toEqual([]);
   });
 
-  it.skip("S11 The catalogue shows the covers", async () => {
+  it("S11 The catalogue shows the covers", async () => {
     // Given
     const withCover: Book = { ...asterixLeGaulois, coverUrl: libris.url };
     const withoutCover: Book = {
