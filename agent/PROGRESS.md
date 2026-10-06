@@ -1064,7 +1064,7 @@ Format:
 - Deviations from the brief: none.
 - Left over: what the lookup screen shows on a rejected `lookUp` is
   already a PROPOSED item; the view lets the rejection escape, as on `main`.
-- Reviewed by Tophe: merged as reworked; the stale wording of `Problem.type`
+- Reviewed by Tophe: kept as reworked; the stale wording of `Problem.type`
   in the contract and of `specs/fast-entry.md:185` goes to PROPOSED, and
   `problemOf`'s fallback on the body's `type` stays, `main`'s reading of a
   problem with a status the contract does not name.
