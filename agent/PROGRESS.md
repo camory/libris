@@ -1198,5 +1198,9 @@ Format:
   stored as fetched until now, is not a picture, as S8 says; the run going
   on is proved by a test of the worker with its ports faked, not by a
   scenario.
-- Left over: Tophe's skipped backend test of S8's fourth case, T070's
-  precondition; T070, then T071.
+- Did, on his ask: the skipped backend test of S8's fourth case, T070's
+  precondition, over `covers/huge-header.jpg`, the recorded tall JPEG
+  with its header claiming 20 000 × 20 000. Un-skipped on `main` it is
+  red, the worker's `OutOfMemoryError` keeping the next edition's cover
+  from coming within five seconds; skipped, `./gradlew check` is green.
+- Left over: T070, then T071.
