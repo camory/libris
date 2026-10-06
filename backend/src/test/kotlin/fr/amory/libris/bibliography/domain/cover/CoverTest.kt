@@ -121,4 +121,9 @@ class CoverTest {
   fun `a header claiming 20 000 by 20 000 is no cover`() {
     coverOf("image/jpeg", jpegClaiming(20_000, 20_000)).normalised() shouldBe null
   }
+
+  @Test
+  fun `a header claiming 20 000 wide and 1 tall is no cover`() {
+    coverOf("image/jpeg", jpegClaiming(20_000, 1)).normalised() shouldBe null
+  }
 }
