@@ -342,9 +342,10 @@ catalogue rows show a cover only once the worker has stored it (Tophe,
       Under the card's cover block, one dot per candidate that loaded, the
       shown one filled, each a button *Couverture <source>* with its pressed
       state, then the shown cover's source name in `muted`; a tap on a dot
-      shows that cover and its name; a candidate that does not load gets no
-      dot; none loading shows the stand-in, no name, no dot (U06, U08; the
-      mockups of the spec). The PR body proposes the U06 rule the spec names.
+      shows that cover and its name; a candidate keeps its dot while it
+      loads and loses it when it fails; none loading shows the stand-in, no
+      name, no dot (U06, U08; the mockups of the spec). The PR body proposes
+      the U06 rule and the U04 exception the spec names.
       Realises S2; un-skips the frontend tests of S2, its four cases.
 
 - [ ] T062 Frontend: the add carries the cover's source.
