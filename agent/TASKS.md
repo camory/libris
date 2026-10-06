@@ -314,7 +314,7 @@ catalogue rows show a cover only once the worker has stored it (Tophe,
       the clock. Realises S8; un-skips the backend tests of S8, its three
       cases.
 
-- [ ] T059 Backend: the worker runs on its own.
+- [x] T059 Backend: the worker runs on its own.
       Besides each add, the worker runs when Libris starts and once a day, its
       schedule a configuration property, and takes the editions awaiting a
       picture one at a time, in the order they were added; two wakings never

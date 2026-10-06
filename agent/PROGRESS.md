@@ -973,3 +973,28 @@ Format:
   `JdbcAwaitedCoverRepository.update` writes the whole aggregate, its chosen
   source too, as the in-memory fake and `JdbcEditionRepository.update` do.
   The place of the `systemClock` bean stays as the brief put it.
+
+## 2026-10-05 — T059 The worker runs on its own — done
+- Did: the cover worker runs on one virtual thread of its own, built by
+  `WorkerConfig`, at start, every `libris.worker.every` and after each add,
+  so runs queue; `findAll` answers the awaited covers in their order of
+  arrival (`V010`); each run logs one INFO line; the image owns its covers
+  directory. S9 runs; no scenario is skipped any more.
+- Decided: the executor is `newSingleThreadExecutor(ofVirtual().factory())`,
+  a virtual thread, so it never keeps the JVM alive.
+- Decided: the logger is a private companion `val log`, read through an
+  imported `getLogger`.
+- Decided: the `Dockerfile` chowns `/var/lib/libris` whole, in the same
+  `RUN` as `useradd`.
+- Deviations from the brief: the scenario file loses two lines, not one:
+  S9 was the last `@Disabled` of `CoversScenarios`, and detekt's
+  `NoUnusedImports` fails the import left behind.
+- Deviations from the brief: the un-skip of S9 is the first commit, its red
+  read before step 1, as the implementer's rules want; the steps follow in
+  the brief's order after it.
+- Left over: the first stored cover on staging (Tophe, after deploy); the
+  `images` job of the pull request proves the `Dockerfile`.
+- Fixed up with Tophe: the log line of a run has no test, it has no value;
+  the gotchas item says the worker runs at the start of the whole
+  application, never in a slice. `LibrisApplicationTest` keeps its clean
+  before migrate.

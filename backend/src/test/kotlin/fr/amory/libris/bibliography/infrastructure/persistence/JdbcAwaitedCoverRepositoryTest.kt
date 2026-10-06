@@ -92,6 +92,23 @@ class JdbcAwaitedCoverRepositoryTest @Autowired constructor(
   }
 
   @Test
+  fun `the awaited covers are read back in the order they were awaited, an attempted one keeping its place`() {
+    // Given
+    editions.insert(onePieceTomeOne())
+    editions.insert(onePieceTomeOne().copy(id = EditionId.new(), isbn = isbnOf(ONE_PIECE_TOME_TWO)))
+    awaitedCovers.insert(AwaitedCover(isbnOf(ONE_PIECE_TOME_TWO), INVENTAIRE))
+    awaitedCovers.insert(AwaitedCover(isbnOf(ONE_PIECE), INVENTAIRE))
+    val attempted = AwaitedCover(isbnOf(ONE_PIECE_TOME_TWO), INVENTAIRE, Instant.parse("2026-10-05T08:00:00Z"))
+    awaitedCovers.update(attempted)
+
+    // When
+    val found = awaitedCovers.findAll()
+
+    // Then
+    found shouldBe listOf(attempted, AwaitedCover(isbnOf(ONE_PIECE), INVENTAIRE))
+  }
+
+  @Test
   fun `a deleted awaited cover is awaited no more`() {
     // Given
     editions.insert(onePieceTomeOne())
