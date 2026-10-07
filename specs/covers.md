@@ -7,7 +7,7 @@ Libris. Now, because the catalogue's rows load the sources' pictures from the
 phone, the BnF refuses its whole catalogue after about seventy pictures in two
 minutes, one page and a lookup, and a book the BnF has no picture for hides
 the picture Open Library has.
-**Status:** draft
+**Status:** done 2026-10-07
 
 ## Scenarios
 
@@ -325,6 +325,8 @@ changes; add it; open the catalogue, the row shows that cover, after a
 second visit if the first came too soon; scan it again, the card shows that
 cover with nothing under it. The editions from before the deploy
 show their covers, save those no source has a picture for.
+
+Checked by Tophe on 2026-10-07, on the Pixel, from the installed app on staging.
 
 ## Tasks
 

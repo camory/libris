@@ -4,7 +4,7 @@
 every edition with a copy on a bookshelf they belong to, and where each copy
 sits. Now, because the bookshelf spec put the first copies on shelves and
 nothing shows them but the card of their own ISBN.
-**Status:** draft
+**Status:** done 2026-10-07
 
 ## Scenarios
 
@@ -165,6 +165,8 @@ with *Bibliothèque de Christophe · 2 exemplaires*, and the rows read as a
 shelf; on the second account of the family, open *Catalogue* and read the
 empty sentence. The pages are the tests' to show: the house has fewer than
 fifty ouvrages.
+
+Checked by Tophe on the Pixel, recorded on 2026-10-07.
 
 ## Tasks
 
