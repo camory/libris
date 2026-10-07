@@ -1254,3 +1254,10 @@ Format:
   `UseCheckOrError` refusing a hand-written `throw IllegalStateException`.
 - Deviations from the brief: none.
 - Left over: nothing; no log of the swallowed exception, as the brief says.
+- Reviewed by Tophe: a swallowed failure must leave a trace, logging
+  strategy or not. `FetchAwaitedCovers` logs it at WARN with the exception,
+  through kotlin-logging 8.0.4 (Tophe's pick, as in Contracteer);
+  `ExecutorCoverWorker` moves to it from SLF4J's `getLogger`. D02 rule 2 and
+  `ArchitectureTest` let `application` see `KotlinLogging`; the named catch
+  takes a `@Suppress("TooGenericExceptionCaught")` on `take`. No test of
+  the line; seen by hand in the test output.
