@@ -372,7 +372,7 @@ catalogue rows show a cover only once the worker has stored it (Tophe,
       no scenario, the spec's contract section asks for it, and every
       scenario test stays green throughout.
 
-- [ ] T070 Backend: a picture over 5 000 pixels is not a picture.
+- [x] T070 Backend: a picture over 5 000 pixels is not a picture.
       Precondition (human): the backend test of S8's fourth case, a header
       claiming a side over 5 000 pixels, written and skipped.
       A cover is only what Libris can read as a picture, no side over 5 000

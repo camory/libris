@@ -34,7 +34,7 @@ class FetchAwaitedCovers(
     awaitedCovers.update(awaitedCover.attempted(now))
     coverFetches
       .coverFor(awaitedCover.isbn, awaitedCover.chosenSource)
-      ?.let { store(awaitedCover, it.normalised()) }
+      ?.let { store(awaitedCover, it) }
   }
 
   private fun store(awaitedCover: AwaitedCover, cover: Cover) {

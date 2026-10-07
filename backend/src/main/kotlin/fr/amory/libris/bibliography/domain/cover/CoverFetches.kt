@@ -4,7 +4,7 @@ import fr.amory.libris.bibliography.domain.Isbn
 
 class CoverFetches private constructor(private val all: List<CoverFetch>) {
   fun coverFor(isbn: Isbn, chosenSource: CoverSource?): Cover? =
-    askedFor(chosenSource).firstNotNullOfOrNull { it.coverFor(isbn) }
+    askedFor(chosenSource).firstNotNullOfOrNull { it.coverFor(isbn)?.normalised() }
 
   private fun askedFor(chosenSource: CoverSource?): List<CoverFetch> =
     chosenSource

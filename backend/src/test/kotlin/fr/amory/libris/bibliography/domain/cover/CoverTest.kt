@@ -1,6 +1,7 @@
 package fr.amory.libris.bibliography.domain.cover
 
 import fr.amory.libris.bibliography.fixture.coverOf
+import fr.amory.libris.bibliography.fixture.jpegClaiming
 import fr.amory.libris.bibliography.fixture.pictureOf
 import fr.amory.libris.bibliography.fixture.recordedBytes
 import io.kotest.matchers.shouldBe
@@ -53,8 +54,8 @@ class CoverTest {
     val normalised = cover.normalised()
 
     // Then
-    normalised.mediaType shouldBe "image/jpeg"
-    val picture = ImageIO.read(ByteArrayInputStream(normalised.bytes))
+    normalised?.mediaType shouldBe "image/jpeg"
+    val picture = ImageIO.read(ByteArrayInputStream(normalised?.bytes))
     picture.width shouldBe 240
     picture.height shouldBe 600
   }
@@ -68,8 +69,8 @@ class CoverTest {
     val normalised = cover.normalised()
 
     // Then
-    normalised.mediaType shouldBe "image/jpeg"
-    val picture = ImageIO.read(ByteArrayInputStream(normalised.bytes))
+    normalised?.mediaType shouldBe "image/jpeg"
+    val picture = ImageIO.read(ByteArrayInputStream(normalised?.bytes))
     picture.width shouldBe 1
     picture.height shouldBe 600
   }
@@ -84,12 +85,17 @@ class CoverTest {
     val normalised = cover.normalised()
 
     // Then
-    normalised.mediaType shouldBe "image/png"
-    normalised.bytes shouldBe bytes
+    normalised?.mediaType shouldBe "image/png"
+    normalised?.bytes shouldBe bytes
   }
 
   @Test
-  fun `a picture the JDK reads no image from is kept as fetched`() {
+  fun `bytes no reader knows, under an image's media type, are no cover`() {
+    coverOf("image/png", byteArrayOf(1, 2, 3)).normalised() shouldBe null
+  }
+
+  @Test
+  fun `a WebP 600 tall or less is kept as fetched`() {
     // Given
     val bytes = recordedBytes("covers/small.webp")
     val cover = coverOf("image/webp", bytes)
@@ -98,21 +104,49 @@ class CoverTest {
     val normalised = cover.normalised()
 
     // Then
-    normalised.mediaType shouldBe "image/webp"
-    normalised.bytes shouldBe bytes
+    normalised?.mediaType shouldBe "image/webp"
+    normalised?.bytes shouldBe bytes
   }
 
   @Test
-  fun `a picture the JDK fails to read is kept as fetched`() {
+  fun `a broken JPEG is no cover`() {
     // Given
-    val bytes = recordedBytes("covers/tall.jpg").copyOf(200)
+    val cover = coverOf("image/jpeg", recordedBytes("covers/tall.jpg").copyOf(200))
+
+    // When / Then
+    cover.normalised() shouldBe null
+  }
+
+  @Test
+  fun `a cut-short WebP is no cover`() {
+    // Given
+    val cover = coverOf("image/webp", recordedBytes("covers/small.webp").copyOf(200))
+
+    // When / Then
+    cover.normalised() shouldBe null
+  }
+
+  @Test
+  fun `a header claiming 20 000 by 20 000 is no cover`() {
+    coverOf("image/jpeg", jpegClaiming(20_000, 20_000)).normalised() shouldBe null
+  }
+
+  @Test
+  fun `a header claiming 20 000 wide and 1 tall is no cover`() {
+    coverOf("image/jpeg", jpegClaiming(20_000, 1)).normalised() shouldBe null
+  }
+
+  @Test
+  fun `a header claiming 5 000 wide and 1 tall is a picture, kept as fetched`() {
+    // Given
+    val bytes = jpegClaiming(5_000, 1)
     val cover = coverOf("image/jpeg", bytes)
 
     // When
     val normalised = cover.normalised()
 
     // Then
-    normalised.mediaType shouldBe "image/jpeg"
-    normalised.bytes shouldBe bytes
+    normalised?.mediaType shouldBe "image/jpeg"
+    normalised?.bytes shouldBe bytes
   }
 }

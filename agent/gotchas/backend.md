@@ -93,6 +93,10 @@ Read whole by a run that changes `backend/`, after `every-run.md`.
   assertions (`IsbnTest`, `CoverNameTest`), and `// Given` then
   `// When / Then` when a `val` sets up the case (`FileCoverStoreTest`).
   Older unmarked cases (`NewBookRequestTest`'s first five) are not a model.
+- A test written as an expression body, `fun \`case\`() = x shouldBe y`,
+  returns what `shouldBe` answers, not `Unit`, and JUnit silently skips a
+  non-`void` test method: the run is green with the case never run. A
+  one-statement case keeps a block body.
 - Un-skipping the last `@Disabled` of a scenario class leaves
   `import org.junit.jupiter.api.Disabled` unused, which detekt's
   `NoUnusedImports` fails: the un-skip removes the import too.
@@ -133,13 +137,22 @@ Read whole by a run that changes `backend/`, after `every-run.md`.
   `LibrisApplicationTest` its own property. A Mockito matcher on a
   `CoverName` argument takes a valid fallback, since the
   constructor checks it: `findCover(CoverName(any() ?: NO_COVER))`.
-- The JDK reads no WebP: `ImageIO.read` answers `null` for one. It throws
-  `IIOException` on a broken JPEG (the first 200 bytes of
-  `covers/tall.jpg`: *missing SOS marker*). `ImageIO.write` of an image
-  with an alpha channel as `jpeg` answers `false` and writes nothing, so a
-  JPEG is written from an image without alpha (`TYPE_INT_RGB`); the
-  fixture's `pictureOf` checks what `write` answers. Measured on JDK 25,
-  2026-10-04. `Cover.normalised()` keeps a picture it cannot read.
+- Libris reads a WebP through TwelveMonkeys `imageio-webp`, a `runtimeOnly`
+  dependency no code names: ImageIO's service loader finds its reader on the
+  class path. The JDK's JPEG reader throws `IIOException` on a broken JPEG
+  (the first 200 bytes of `covers/tall.jpg`: *missing SOS marker*) and
+  decodes at whatever sides its header claims, so a 20 000 × 20 000 header
+  takes the test JVM's 512 MB heap down; `bibliography.fixture.jpegClaiming`
+  patches the SOF0 frame of a 1×1 JPEG to claim any sides. `ImageIO.write`
+  of an image with an alpha channel as `jpeg` answers `false` and writes
+  nothing, so a JPEG is written from an image without alpha
+  (`TYPE_INT_RGB`); the fixture's `pictureOf` checks what `write` answers.
+  A cut-short WebP (the first 200 bytes of `covers/small.webp`) or BMP
+  throws a plain `EOFException`, not an `IIOException`.
+  `Cover.normalised()` answers `null` for what is no picture: no reader,
+  a reader's `IOException`, or a header side over 5 000 pixels, read
+  before any pixel. `CoverFetches` applies it to each source's answer.
+  Measured on JDK 25 with 3.15.3, 2026-10-07.
 - The binder keeps an unresolved `${VAR}` as its literal text: a setting
   bound from `${VAR}` alone starts without the variable (T051 found
   the covers directory bound to the path `${LIBRIS_COVERS_DIR}`). An empty

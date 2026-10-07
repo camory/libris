@@ -40,6 +40,7 @@ dependencies {
   implementation(libs.java.uuid.generator)
   runtimeOnly("org.flywaydb:flyway-database-postgresql")
   runtimeOnly("org.postgresql:postgresql")
+  runtimeOnly(libs.imageio.webp)
 
   detektPlugins(libs.detekt.formatting)
 
