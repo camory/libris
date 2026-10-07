@@ -1,6 +1,7 @@
 package fr.amory.libris.bibliography.application.cover
 
 import fr.amory.libris.bibliography.domain.Contributions
+import fr.amory.libris.bibliography.domain.Isbn
 import fr.amory.libris.bibliography.domain.Kind.MANGA
 import fr.amory.libris.bibliography.domain.cover.AwaitedCover
 import fr.amory.libris.bibliography.domain.cover.Cover
@@ -326,6 +327,21 @@ class FetchAwaitedCoversTest {
     awaitedCovers.findAll() shouldBe listOf(AwaitedCover(isbnOf(ONE_PIECE), INVENTAIRE, clock.instant()))
   }
 
+  @Test
+  fun `the fetch of the first of two editions throwing, the second is stored`() {
+    // Given
+    val second = onePiece(ONE_PIECE_2)
+    awaiting(INVENTAIRE)
+    awaiting(INVENTAIRE, second)
+    val fetchAwaitedCovers = fetchAwaitedCoversOver(listOf(CoverFetchFailingFirst(INVENTAIRE, cover)))
+
+    // When
+    fetchAwaitedCovers()
+
+    // Then
+    editions.findByIsbn(isbnOf(ONE_PIECE_2)) shouldBe second.copy(coverName = cover.name)
+  }
+
   private fun awaiting(chosenSource: CoverSource?, awaited: Edition = edition) {
     editions.insert(awaited)
     awaitedCovers.insert(AwaitedCover(checkNotNull(awaited.isbn), chosenSource))
@@ -367,5 +383,17 @@ private class CoversFailingFirstWrite : CoverStore {
       throw IOException("No space left on device")
     }
     covers.write(cover)
+  }
+}
+
+private class CoverFetchFailingFirst(override val coverSource: CoverSource, private val cover: Cover) : CoverFetch {
+  private var asked = false
+
+  override fun coverFor(isbn: Isbn): Cover? {
+    if (!asked) {
+      asked = true
+      error("The source broke")
+    }
+    return cover
   }
 }
