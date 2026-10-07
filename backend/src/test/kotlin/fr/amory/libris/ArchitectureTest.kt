@@ -46,6 +46,7 @@ class ArchitectureTest {
           "org.jetbrains.annotations..",
           "org.springframework.stereotype..",
           "org.springframework.transaction.support..",
+          "io.github.oshai.kotlinlogging..",
           "..domain..",
           "..application..",
         ).or(type(TransactionStatus::class.java)),

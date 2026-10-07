@@ -97,8 +97,9 @@ lands in the use case, not at the edge.
 Enforced by ArchUnit rules in the test suite (see D07):
 1. `domain` depends only on the Kotlin/Java standard libraries and the uuid
    generator of D11.
-2. `application` depends only on `domain` (plus `@Service` and Spring's
-   `TransactionOperations`, never `@Transactional`).
+2. `application` depends only on `domain` (plus `@Service`, Spring's
+   `TransactionOperations`, never `@Transactional`, and kotlin-logging's
+   `KotlinLogging`).
 3. The `infrastructure.*` packages of the contexts depend on `domain` and
    `application`, never on each other.
 4. No cycles between the packages under `fr.amory.libris`, and

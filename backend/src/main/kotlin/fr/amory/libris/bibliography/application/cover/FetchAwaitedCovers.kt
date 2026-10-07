@@ -7,6 +7,7 @@ import fr.amory.libris.bibliography.domain.cover.CoverFetch
 import fr.amory.libris.bibliography.domain.cover.CoverFetches
 import fr.amory.libris.bibliography.domain.cover.CoverStore
 import fr.amory.libris.bibliography.domain.edition.EditionRepository
+import io.github.oshai.kotlinlogging.KotlinLogging
 import org.springframework.stereotype.Service
 import org.springframework.transaction.support.TransactionOperations
 import java.time.Clock
@@ -21,6 +22,7 @@ class FetchAwaitedCovers(
   private val transactions: TransactionOperations,
   private val clock: Clock) {
   private val coverFetches = CoverFetches.of(coverFetches)
+  private val logger = KotlinLogging.logger {}
 
   operator fun invoke() {
     val now = clock.instant()
@@ -30,11 +32,16 @@ class FetchAwaitedCovers(
       .forEach { take(it, now) }
   }
 
+  @Suppress("TooGenericExceptionCaught")
   private fun take(awaitedCover: AwaitedCover, now: Instant) {
     awaitedCovers.update(awaitedCover.attempted(now))
-    coverFetches
-      .coverFor(awaitedCover.isbn, awaitedCover.chosenSource)
-      ?.let { store(awaitedCover, it) }
+    try {
+      coverFetches
+        .coverFor(awaitedCover.isbn, awaitedCover.chosenSource)
+        ?.let { store(awaitedCover, it) }
+    } catch (e: Exception) {
+      logger.warn(e) { "Fetching the awaited cover of ${awaitedCover.isbn.digits} failed" }
+    }
   }
 
   private fun store(awaitedCover: AwaitedCover, cover: Cover) {

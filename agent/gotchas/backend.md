@@ -390,8 +390,13 @@ Read whole by a run that changes `backend/`, after `every-run.md`.
   edition the house already holds inserts no wait, so its run asks nothing
   unless another wait exists. A run dates each awaited cover it takes with
   the clock's instant before asking its source, and passes by one attempted
-  within the day of the clock (`AwaitedCover.isDueAt`). Each run logs
-  `Fetching the awaited covers` at INFO. `LibrisApplicationTest` cleans the
+  within the day of the clock (`AwaitedCover.isDueAt`). A throw in one
+  edition's fetch, normalisation or storing ends that edition's take, its
+  attempt dated, and the run goes on to the next; it logs `Fetching the
+  awaited cover of <isbn> failed` at WARN with the exception. Each run logs
+  `Fetching the awaited covers` at INFO. A class logs through kotlin-logging,
+  `private val logger = KotlinLogging.logger {}` and `logger.warn(e) { … }`,
+  never SLF4J's `getLogger`. `LibrisApplicationTest` cleans the
   schema before migrating, since its run at start would ask the real
   sources for whatever a scenario left awaiting.
   With no chosen source the run asks inventaire.io, Open Library, then the
