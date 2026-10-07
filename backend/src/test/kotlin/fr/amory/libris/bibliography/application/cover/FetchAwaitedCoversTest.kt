@@ -3,11 +3,14 @@ package fr.amory.libris.bibliography.application.cover
 import fr.amory.libris.bibliography.domain.Contributions
 import fr.amory.libris.bibliography.domain.Kind.MANGA
 import fr.amory.libris.bibliography.domain.cover.AwaitedCover
+import fr.amory.libris.bibliography.domain.cover.Cover
 import fr.amory.libris.bibliography.domain.cover.CoverFetch
+import fr.amory.libris.bibliography.domain.cover.CoverName
 import fr.amory.libris.bibliography.domain.cover.CoverSource
 import fr.amory.libris.bibliography.domain.cover.CoverSource.BNF
 import fr.amory.libris.bibliography.domain.cover.CoverSource.INVENTAIRE
 import fr.amory.libris.bibliography.domain.cover.CoverSource.OPEN_LIBRARY
+import fr.amory.libris.bibliography.domain.cover.CoverStore
 import fr.amory.libris.bibliography.domain.edition.Edition
 import fr.amory.libris.bibliography.domain.edition.EditionId
 import fr.amory.libris.bibliography.fixture.AwaitedCoversInMemory
@@ -26,6 +29,7 @@ import io.kotest.matchers.collections.shouldBeEmpty
 import io.kotest.matchers.shouldBe
 import org.junit.jupiter.api.Test
 import org.springframework.transaction.support.TransactionOperations.withoutTransaction
+import java.io.IOException
 import java.time.Duration
 
 private const val ONE_PIECE = "9782723488525"
@@ -277,6 +281,29 @@ class FetchAwaitedCoversTest {
     inventaire.asked shouldBe listOf(isbnOf(ONE_PIECE_2), isbnOf(ONE_PIECE))
   }
 
+  @Test
+  fun `the storing of the first of two editions throwing, the second is stored`() {
+    // Given
+    val second = onePiece(ONE_PIECE_2)
+    awaiting(INVENTAIRE)
+    awaiting(INVENTAIRE, second)
+    val fetchAwaitedCovers =
+      FetchAwaitedCovers(
+        awaitedCovers,
+        listOf(CoverFetchAnswering(INVENTAIRE, cover)),
+        CoversFailingFirstWrite(),
+        editions,
+        withoutTransaction(),
+        clock,
+      )
+
+    // When
+    fetchAwaitedCovers()
+
+    // Then
+    editions.findByIsbn(isbnOf(ONE_PIECE_2)) shouldBe second.copy(coverName = cover.name)
+  }
+
   private fun awaiting(chosenSource: CoverSource?, awaited: Edition = edition) {
     editions.insert(awaited)
     awaitedCovers.insert(AwaitedCover(checkNotNull(awaited.isbn), chosenSource))
@@ -303,4 +330,20 @@ class FetchAwaitedCoversTest {
       summary = null,
       coverName = null,
     )
+}
+
+private class CoversFailingFirstWrite : CoverStore {
+  private val covers = CoversInMemory()
+  private var written = false
+
+  override fun read(name: CoverName): Cover? =
+    covers.read(name)
+
+  override fun write(cover: Cover) {
+    if (!written) {
+      written = true
+      throw IOException("No space left on device")
+    }
+    covers.write(cover)
+  }
 }

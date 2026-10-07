@@ -32,9 +32,12 @@ class FetchAwaitedCovers(
 
   private fun take(awaitedCover: AwaitedCover, now: Instant) {
     awaitedCovers.update(awaitedCover.attempted(now))
-    coverFetches
-      .coverFor(awaitedCover.isbn, awaitedCover.chosenSource)
-      ?.let { store(awaitedCover, it) }
+    try {
+      coverFetches
+        .coverFor(awaitedCover.isbn, awaitedCover.chosenSource)
+        ?.let { store(awaitedCover, it) }
+    } catch (_: Exception) {
+    }
   }
 
   private fun store(awaitedCover: AwaitedCover, cover: Cover) {
