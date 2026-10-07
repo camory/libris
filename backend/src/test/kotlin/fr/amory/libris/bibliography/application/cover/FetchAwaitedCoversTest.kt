@@ -288,15 +288,7 @@ class FetchAwaitedCoversTest {
     val second = onePiece(ONE_PIECE_2)
     awaiting(INVENTAIRE)
     awaiting(INVENTAIRE, second)
-    val fetchAwaitedCovers =
-      FetchAwaitedCovers(
-        awaitedCovers,
-        listOf(CoverFetchAnswering(INVENTAIRE, cover)),
-        CoversFailingFirstWrite(),
-        editions,
-        withoutTransaction(),
-        clock,
-      )
+    val fetchAwaitedCovers = fetchAwaitedCoversOver(covers = CoversFailingFirstWrite())
 
     // When
     fetchAwaitedCovers()
@@ -310,15 +302,7 @@ class FetchAwaitedCoversTest {
     // Given
     awaiting(INVENTAIRE)
     awaiting(INVENTAIRE, onePiece(ONE_PIECE_2))
-    val fetchAwaitedCovers =
-      FetchAwaitedCovers(
-        awaitedCovers,
-        listOf(CoverFetchAnswering(INVENTAIRE, cover)),
-        CoversFailingFirstWrite(),
-        editions,
-        withoutTransaction(),
-        clock,
-      )
+    val fetchAwaitedCovers = fetchAwaitedCoversOver(covers = CoversFailingFirstWrite())
 
     // When
     fetchAwaitedCovers()
@@ -348,7 +332,8 @@ class FetchAwaitedCoversTest {
   }
 
   private fun fetchAwaitedCoversOver(
-    coverFetches: List<CoverFetch> = listOf(CoverFetchAnswering(INVENTAIRE, cover))): FetchAwaitedCovers =
+    coverFetches: List<CoverFetch> = listOf(CoverFetchAnswering(INVENTAIRE, cover)),
+    covers: CoverStore = this.covers): FetchAwaitedCovers =
     FetchAwaitedCovers(awaitedCovers, coverFetches, covers, editions, withoutTransaction(), clock)
 
   private fun onePiece(isbn: String = ONE_PIECE): Edition =
