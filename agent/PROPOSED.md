@@ -406,3 +406,11 @@
   fourth candidate (Google Books, D02's "later") overflows the column. Decide
   with Tophe whether the row wraps, shrinks or caps the dots before a fourth
   cover source lands (found implementing T061).
+- Backend: an ISBN lookup the house lacks takes 0.55–0.9 s on staging, set
+  by Open Library, the slowest of the sources asked at once. Measured from
+  bestheda (p50): Open Library `/isbn/….json` 751 ms with its redirect,
+  `search.json` 521 ms, cover 507 ms (p90 2.2 s), its TCP + TLS ~170 ms;
+  inventaire.io lookup 116 ms, cover 146 ms; BnF SRU 111 ms, cover 398 ms.
+  Levers to weigh with Tophe: ask the redirect's target directly, one Open
+  Library request instead of two, a shorter Open Library timeout, or answer
+  without it past a delay (found 2026-10-07 by Tophe on the lookup page).
