@@ -38,6 +38,7 @@ dependencies {
   implementation("org.springframework.boot:spring-boot-flyway")
   implementation("org.jetbrains.kotlin:kotlin-reflect")
   implementation(libs.java.uuid.generator)
+  implementation(libs.kotlin.logging)
   runtimeOnly("org.flywaydb:flyway-database-postgresql")
   runtimeOnly("org.postgresql:postgresql")
   runtimeOnly(libs.imageio.webp)
