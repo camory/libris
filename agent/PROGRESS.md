@@ -1241,3 +1241,16 @@ Format:
   cascade; `normalised()` now catches `IOException`, and `CoverTest` holds
   the case. The reviewer reported before its background gate ended:
   every-run gotcha added.
+
+## 2026-10-07 — T071 One edition never stops the run — done
+- Did: `FetchAwaitedCovers` takes each awaited cover's fetch, normalisation
+  and storing inside a `try` whose `catch (_: Exception)` ends that edition's
+  take alone; the attempt is dated before it, so it stays dated, and the run
+  goes on to the next edition.
+- Decided: `FetchAwaitedCoversTest`'s helper `fetchAwaitedCoversOver` takes
+  the store as a second parameter, defaulting to the field, since two of the
+  three new cases ran over `CoversFailingFirstWrite`.
+- Decided: `CoverFetchFailingFirst` throws through `error(…)`, detekt's
+  `UseCheckOrError` refusing a hand-written `throw IllegalStateException`.
+- Deviations from the brief: none.
+- Left over: nothing; no log of the swallowed exception, as the brief says.

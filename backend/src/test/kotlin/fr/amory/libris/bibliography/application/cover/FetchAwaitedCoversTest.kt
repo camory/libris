@@ -288,12 +288,14 @@ class FetchAwaitedCoversTest {
     val second = onePiece(ONE_PIECE_2)
     awaiting(INVENTAIRE)
     awaiting(INVENTAIRE, second)
-    val fetchAwaitedCovers = fetchAwaitedCoversOver(covers = CoversFailingFirstWrite())
+    val failingFirstWrite = CoversFailingFirstWrite()
+    val fetchAwaitedCovers = fetchAwaitedCoversOver(covers = failingFirstWrite)
 
     // When
     fetchAwaitedCovers()
 
     // Then
+    failingFirstWrite.read(cover.name) shouldBe cover
     editions.findByIsbn(isbnOf(ONE_PIECE_2)) shouldBe second.copy(coverName = cover.name)
   }
 
@@ -323,6 +325,7 @@ class FetchAwaitedCoversTest {
     fetchAwaitedCovers()
 
     // Then
+    covers.read(cover.name) shouldBe cover
     editions.findByIsbn(isbnOf(ONE_PIECE_2)) shouldBe second.copy(coverName = cover.name)
   }
 

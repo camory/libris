@@ -387,7 +387,7 @@ catalogue rows show a cover only once the worker has stored it (Tophe,
       type, is no cover. Realises S6's picture rule; un-skips the backend
       test of S8's fourth case.
 
-- [ ] T071 Backend: one edition never stops the run.
+- [x] T071 Backend: one edition never stops the run.
       Whatever one edition's fetch, normalisation or storing throws, its
       attempt stays dated and the worker goes on to the next edition. Test
       of the worker with its ports faked, the storing of the first of two
