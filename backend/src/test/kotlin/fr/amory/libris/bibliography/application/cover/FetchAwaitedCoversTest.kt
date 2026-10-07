@@ -304,6 +304,28 @@ class FetchAwaitedCoversTest {
     editions.findByIsbn(isbnOf(ONE_PIECE_2)) shouldBe second.copy(coverName = cover.name)
   }
 
+  @Test
+  fun `the edition whose storing threw keeps its wait, dated`() {
+    // Given
+    awaiting(INVENTAIRE)
+    awaiting(INVENTAIRE, onePiece(ONE_PIECE_2))
+    val fetchAwaitedCovers =
+      FetchAwaitedCovers(
+        awaitedCovers,
+        listOf(CoverFetchAnswering(INVENTAIRE, cover)),
+        CoversFailingFirstWrite(),
+        editions,
+        withoutTransaction(),
+        clock,
+      )
+
+    // When
+    fetchAwaitedCovers()
+
+    // Then
+    awaitedCovers.findAll() shouldBe listOf(AwaitedCover(isbnOf(ONE_PIECE), INVENTAIRE, clock.instant()))
+  }
+
   private fun awaiting(chosenSource: CoverSource?, awaited: Edition = edition) {
     editions.insert(awaited)
     awaitedCovers.insert(AwaitedCover(checkNotNull(awaited.isbn), chosenSource))
