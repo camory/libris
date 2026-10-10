@@ -60,7 +60,7 @@ Then Libris answers that the name is refused, and why
 Two cases: a blank name, which the screen never sends, its check absent
 until a name is typed; a name taken by a bookshelf the reader belongs to, whatever
 their role on it, compared ignoring case and accents. Proof: contract
-examples `400_BLANK_NAME` and `400_TAKEN_NAME` verified by Contracteer on
+examples `400_BLANK_NAME` and `409_TAKEN_NAME` verified by Contracteer on
 both sides; backend scenario test over HTTP, one per case; frontend
 scenario test over the fakes, the taken name.
 
@@ -116,10 +116,12 @@ When a reader adds a member to it and Libris refuses
 Then the bookshelf's members stay as they were
 ```
 
-Three cases: a viewer of the bookshelf adds a reader, answered that there is
+Four cases: a viewer of the bookshelf adds a reader, answered that there is
 no such bookshelf; a reader who does not belong to it does the same, with
-the same answer; an owner adds a reader who is already a member, answered
-that the reader is refused. Proof: contract example `404_NOT_MY_BOOKSHELF`
+the same answer; an owner adds a reader Libris does not know, answered that
+the request is invalid; an owner adds a reader who is already a member,
+answered that the reader is already a member. Proof: contract examples
+`400_UNKNOWN_READER`, `404_NOT_MY_BOOKSHELF` and `409_ALREADY_A_MEMBER`
 verified by Contracteer on both sides; backend scenario test over HTTP, one
 per case.
 
@@ -278,33 +280,43 @@ States:
 ## Contract
 
 Release `v0.11.0` of `camory/libris-api`, after `v0.10.0`. Nothing changes
-in an existing answer: five operations and their schemas are added.
-`MembershipRole` is an enumeration, `OWNER` and `VIEWER`, since the screen
-switches on it; `Bookshelf` is the existing `{id, name}`.
+in an existing answer: six operations and their schemas are added, and no
+schema says `additionalProperties: false` any more, so the verifier no
+longer refuses a field the document does not name. `MembershipRole` is an
+enumeration, `OWNER` and `VIEWER`, since the screen switches on it;
+`Bookshelf` is the existing `{id, name}`. `Problem` stays generic: no
+operation enumerates its codes, and the screen tells one refusal from
+another by its status.
 
 - `GET /api/v1/bookshelves`, the bookshelves the reader belongs to → `200`
-  an array of `Membership` `{bookshelf: Bookshelf, role: MembershipRole}`,
-  in the order of S1.
+  an array of `ReaderBookshelf`, a `Bookshelf` with the reader's `role` on
+  it, in the order of S1. No field marks the default: the screen reads it
+  from `defaultBookshelf` of `GET /api/v1/me`.
 - `POST /api/v1/bookshelves`, body `NewBookshelf` `{name}` → `201`
   `Bookshelf`, the reader its one owner; `400` `Problem`
-  `/problems/validation` on `name`, its codes `blank` and `taken`
-  enumerated, the screen telling the two apart. Keys `400_BLANK_NAME`,
-  `400_TAKEN_NAME`.
+  `/problems/validation` on `name` for a blank name, its code not
+  enumerated; `409` `Problem` `/problems/conflict` for a name taken. Keys
+  `400_BLANK_NAME`, `409_TAKEN_NAME`.
 - `GET /api/v1/bookshelves/{id}` → `200` `BookshelfWithMembers`, a
-  `Bookshelf` and `members`, an array of `Member` `{reader: Reader, role:
-  MembershipRole}` in the order of S4, `Reader` being `{id, displayName}`;
-  `404` `Problem` `/problems/not-found` when the reader is not a member.
-  Key `404_NOT_A_MEMBER`.
-- `GET /api/v1/readers`, the readers Libris knows → `200` an array of
-  `Reader`, by display name.
+  `Bookshelf` with `members`, an array of `Member` in the order of S4, a
+  `Reader` `{id, displayName}` with their `role` on the bookshelf; `400`
+  `Problem` `/problems/validation` for an id that is not one, the screen
+  showing it as *Not found*; `404` `Problem` `/problems/not-found` when the
+  reader is not a member. Key `404_NOT_A_MEMBER`.
+- `GET /api/v1/readers` → `200` an array of `Reader`, every reader Libris
+  knows, the reader asking among them, in no promised order: the screen
+  sorts them (S5).
 - `POST /api/v1/bookshelves/{id}/members`, body `NewMember` `{readerId,
   role: MembershipRole}` → `201` `Member`; `400` `Problem`
-  `/problems/validation` on `readerId` when it names no reader or a
-  member, its code not enumerated; `404` `Problem` `/problems/not-found`
-  when the reader does not own the bookshelf. Key `404_NOT_MY_BOOKSHELF`.
-- `PUT /api/v1/me/default-bookshelf`, body `{id}` → `204`; `404` `Problem`
-  `/problems/not-found` when the reader does not own that bookshelf. Key
-  `404_NOT_MY_BOOKSHELF`.
+  `/problems/validation` on `readerId` when it names no reader, its code
+  not enumerated; `404` `Problem` `/problems/not-found` when the reader
+  asking does not own the bookshelf; `409` `Problem` `/problems/conflict`
+  when the reader added is already a member. Keys `400_UNKNOWN_READER`,
+  `404_NOT_MY_BOOKSHELF`, `409_ALREADY_A_MEMBER`.
+- `PUT /api/v1/me/default-bookshelf`, body `{id}` inline, no named schema
+  → `204`; `400` `Problem` `/problems/validation` for a body that is not
+  one, no key; `404` `Problem` `/problems/not-found` when the reader does
+  not own that bookshelf. Key `404_NOT_MY_BOOKSHELF`.
 
 ## Done
 
