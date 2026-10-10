@@ -414,3 +414,9 @@
   Levers to weigh with Tophe: ask the redirect's target directly, one Open
   Library request instead of two, a shorter Open Library timeout, or answer
   without it past a delay (found 2026-10-07 by Tophe on the lookup page).
+- Frontend: move today's hand-drawn icons (`IconHome`, `IconBarcode`,
+  `IconBooks`, `IconBook`, `IconAlert`, `IconClose`, `IconMagnifier`,
+  `IconRefresh`) to their Lucide counterparts at stroke 1.8, once the
+  bookshelves feature has brought Lucide in; *library* has the leaning
+  third spine of `IconBooks` (found 2026-10-10 by Tophe while reviewing
+  the bookshelves mockups).

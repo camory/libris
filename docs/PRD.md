@@ -95,7 +95,8 @@ _Avoid_: user, account, member (as the entity), profile.
 **Bookshelf**:
 A named place where copies sit, with members. *Chambre de Léa*, *salon*,
 *cave*. A reader's first one is created with them, named after them
-(*Bibliothèque de Léa*), and is their default.
+(*Bibliothèque de Léa*), and is their default until they choose another
+they own.
 *On screen*: bibliothèque.
 _Avoid_: library, shelf, location, collection.
 
@@ -142,9 +143,10 @@ notes),
 - A Bookshelf has at least one owner at all times and is visible only to its
   members. Owners add, edit and remove its copies and manage its members;
   viewers see them.
-- A Reader has one default bookshelf, which they own: the one created with
-  them on their first visit, named after them. Adding an ouvrage in one step
-  puts the copy there.
+- A Reader has one default bookshelf, which they own: at first the one
+  created with them on their first visit, named after them, then whichever
+  bookshelf they own they choose. Adding an ouvrage in one step puts the
+  copy there.
 - A reader sees and searches the copies of every bookshelf they belong to:
   that is their catalogue.
 - Adding an ouvrage from a scan creates the edition when its ISBN is unknown,
@@ -184,7 +186,8 @@ Priorities: **P1** = needed before the family uses it, **P2** = soon after,
 ### 4.3 Bookshelves and copies (P1)
 - A reader's first bookshelf is created on their first visit, named after
   them, and is their default. A reader creates other bookshelves and is their
-  owner; an owner invites other readers as owner or viewer, and removes them.
+  owner; an owner adds other readers as owner or viewer, and removes them.
+  A reader chooses their default among the bookshelves they own.
   A bookshelf is visible only to its members and keeps at least one owner.
 - A copy sits on one bookshelf and may be moved to another the reader owns.
   It has a condition and an acquisition date.
