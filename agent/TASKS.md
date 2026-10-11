@@ -16,6 +16,31 @@
 >
 > Follow-ups and ideas go to `agent/PROPOSED.md`, never here.
 
+## Order on the screen — docs/ARCHITECTURE.md
+
+No contract release: no OpenAPI document promises these orders (D11).
+A promise leaves, so the frontend goes first: T086 sorts what the screens
+show today in the backend's order, and T087 drops that order once T086 is
+deployed.
+
+- [ ] T086 Frontend: the card and a catalogue row sort their authors and
+      bookshelves.
+      The card sorts its authors by their first role, scénario, dessin,
+      couleurs, traduction, then by name, and its rows *Dans …* by name; a
+      catalogue row sorts its authors in the card's order and its
+      bookshelves by name; each name ignoring case and accents, compared in
+      the reader's language, the comparison the bookshelves' screens sort
+      with (U06, D11). Unit tests of both orders, over names
+      that differ only in case or accents, given in another order than the
+      screen's.
+
+- [ ] T087 Backend: authors and a card's bookshelves in no promised order.
+      Precondition (human): T086 deployed (D04).
+      `Contributions.of` keeps one contribution per author and role and
+      orders nothing, and `LookupIsbnForReader` sorts nothing (D11, D12);
+      their tests of the order leave, and `ContributionRole.order` with
+      them, which nothing else reads.
+
 ## Bookshelves — specs/bookshelves.md
 
 Contract: release `v0.11.0` of `camory/libris-api`, after `v0.10.0`: six
@@ -119,7 +144,7 @@ longer says.
       *propriétaire* or *invité*, *· par défaut* on the reader's
       default; skeleton rows while they come, S9's loading sentence when
       Libris does not answer; the link *Ajouter un ouvrage* leaves (U03, U05,
-      U08). Unit test of the order, its comparison in the reader's language
+      U08). Unit test of the order, sorted with the comparison of T086
       (D11), the one T082 and T083 sort with. Its client tested against
       `contracteer mock` (D07); the PR body proposes the spec's U08 title. Realises S1 and S9's home page case;
       un-skips the frontend tests of S1 and of S9, the home page.
@@ -192,30 +217,6 @@ make it the default, scan an ouvrage and add it; on yours, the card of that
 ISBN reads Dans Bibliothèque familiale. Then create Salon and add the second
 account as invité: on that account, the row of Salon has no star, and its
 copies are in the catalogue.*
-
-## Order on the screen — docs/ARCHITECTURE.md
-
-No contract release: no OpenAPI document promises these orders (D11).
-A promise leaves, so the frontend goes first: T086 sorts what the screens
-show today in the backend's order, and T087 drops that order once T086 is
-deployed.
-
-- [ ] T086 Frontend: the card and a catalogue row sort their authors and
-      bookshelves.
-      The card sorts its authors by their first role, scénario, dessin,
-      couleurs, traduction, then by name, and its rows *Dans …* by name; a
-      catalogue row sorts its authors in the card's order and its
-      bookshelves by name; each name ignoring case and accents, with the
-      comparison of T079 (U06, D11). Unit tests of both orders, over names
-      that differ only in case or accents, given in another order than the
-      screen's.
-
-- [ ] T087 Backend: authors and a card's bookshelves in no promised order.
-      Precondition (human): T086 deployed (D04).
-      `Contributions.of` keeps one contribution per author and role and
-      orders nothing, and `LookupIsbnForReader` sorts nothing (D11, D12);
-      their tests of the order leave, and `ContributionRole.order` with
-      them, which nothing else reads.
 
 ## Done
 
