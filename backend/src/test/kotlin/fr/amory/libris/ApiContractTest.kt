@@ -35,6 +35,9 @@ import fr.amory.libris.library.application.AddMemberResult.AlreadyAMember
 import fr.amory.libris.library.application.AddMemberResult.UnknownReader
 import fr.amory.libris.library.application.AddMemberToBookshelf
 import fr.amory.libris.library.application.BookshelfMember
+import fr.amory.libris.library.application.ChooseDefaultBookshelf
+import fr.amory.libris.library.application.ChooseDefaultResult
+import fr.amory.libris.library.application.ChooseDefaultResult.Chosen
 import fr.amory.libris.library.application.CreateBookshelf
 import fr.amory.libris.library.application.CreateBookshelfResult.BlankName
 import fr.amory.libris.library.application.CreateBookshelfResult.Created
@@ -95,6 +98,7 @@ import java.util.UUID
     OpenBookshelf::class,
     ListReaders::class,
     AddMemberToBookshelf::class,
+    ChooseDefaultBookshelf::class,
   ],
 )
 @Suppress("LongParameterList")
@@ -110,7 +114,8 @@ class ApiContractTest @Autowired constructor(
   private val createBookshelf: CreateBookshelf,
   private val openBookshelf: OpenBookshelf,
   private val listReaders: ListReaders,
-  private val addMemberToBookshelf: AddMemberToBookshelf) {
+  private val addMemberToBookshelf: AddMemberToBookshelf,
+  private val chooseDefaultBookshelf: ChooseDefaultBookshelf) {
   @ContracteerTest(openApiDoc = "https://raw.githubusercontent.com/camory/libris-api/v0.11.0/openapi.yaml")
   fun `the API matches the contract`() {
     contracteerIsWelcomed()
@@ -123,6 +128,7 @@ class ApiContractTest @Autowired constructor(
     openingABookshelfAnswers()
     readersAnswer()
     addingAMemberAnswers()
+    choosingTheDefaultAnswers()
   }
 
   private fun contracteerIsWelcomed() {
@@ -187,6 +193,12 @@ class ApiContractTest @Autowired constructor(
     given(addMemberToBookshelf(CONTRACTEER.id, CONTRACTEER_BOOKSHELF.id, UNKNOWN_AS_VIEWER)).willReturn(UnknownReader)
     given(addMemberToBookshelf(CONTRACTEER.id, NOT_MINE, EVE_AS_VIEWER)).willReturn(AddMemberResult.NoSuchBookshelf)
     given(addMemberToBookshelf(CONTRACTEER.id, CONTRACTEER_BOOKSHELF.id, TOPHE_AS_OWNER)).willReturn(AlreadyAMember)
+  }
+
+  private fun choosingTheDefaultAnswers() {
+    given(chooseDefaultBookshelf(eq(CONTRACTEER) ?: CONTRACTEER, BookshelfId(any() ?: NOT_MINE.value)))
+      .willReturn(Chosen)
+    given(chooseDefaultBookshelf(CONTRACTEER, NOT_MINE)).willReturn(ChooseDefaultResult.NoSuchBookshelf)
   }
 
   private fun noCopy(answer: EditionLookupResult) =
