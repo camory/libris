@@ -16,6 +16,172 @@
 >
 > Follow-ups and ideas go to `agent/PROPOSED.md`, never here.
 
+## Bookshelves — specs/bookshelves.md
+
+Contract: release `v0.11.0` of `camory/libris-api`, after `v0.10.0`: six
+operations added, no existing answer changed, and no schema says
+`additionalProperties: false` any more. Operations are added, so the backend
+goes first. Its pin moves once, in T072, which serves all six in their
+thinnest answer, since the verifier reads the whole document; T073 to T078
+complete that answer, each red on its own scenario. The frontend pin moves
+from `v0.9.0` in T079, once T078 is deployed; the `v0.10.0` it crosses only
+takes the lookup's `coverUrl` away, which the screen no longer reads. No
+other task touches the contract (D04). The first side to pin `v0.11.0`
+rewrites the gotcha on `additionalProperties: false`, which the contract no
+longer says.
+
+- [ ] T072 Backend: bookshelves on `v0.11.0`, the thinnest answer.
+      Precondition (human): the backend tests of the bookshelves scenarios,
+      skipped, one per scenario or case, bearing its exact title (D07).
+      `ApiContractTest` pins `v0.11.0`, the backend's one bump (D04). The
+      library answers the bookshelves a reader belongs to with their role on
+      each, in no order yet, and creates one with the name asked, the reader
+      its one owner, not their default (D12). Until their own tasks, opening
+      a bookshelf, adding a member and choosing the default answer that
+      there is no such bookshelf, and the readers Libris knows answer none.
+      Each `400`, `404` and `409` declared comes from a use case's outcome,
+      `/problems/conflict` the new type (D11); Contracteer verifies every
+      case of the six operations (D07).
+      Realises S2; un-skips the backend test of S2.
+
+- [ ] T073 Backend: the reader's bookshelves in order.
+      The bookshelves of T072 come in the order of S1: the reader's default
+      first, then the others by name, ignoring case and accents; one the
+      reader does not belong to is never answered, whatever its members
+      (PRD §3, D12). Unit test of the order over names that differ only in
+      case or accents, the default's name the last of them.
+      Realises S1; un-skips the backend test of S1.
+
+- [ ] T074 Backend: a name Libris refuses.
+      Creating a bookshelf with a blank name is answered `400`
+      `/problems/validation` on `name`; with the name of a bookshelf the
+      reader belongs to, whatever their role on it, compared ignoring case
+      and accents, `409` `/problems/conflict`; neither creates a bookshelf.
+      The blank name is refused where the name is built, the taken one by
+      the creation, which spans the reader's bookshelves (D11, D12).
+      Realises S3; un-skips the backend tests of S3, both cases.
+
+- [ ] T075 Backend: a member opens a bookshelf.
+      Opening a bookshelf answers its members alone its name and its
+      members, each a reader's id and display name with their role, the
+      owners first, then the viewers, each by display name ignoring case and
+      accents; a reader who does not belong to it is answered, as for an id
+      naming no bookshelf, that there is no such bookshelf. A read across
+      the bookshelf and its readers, each through its own repository (D12).
+      Unit test of the order.
+      Realises S4; un-skips the backend tests of S4, both cases.
+
+- [ ] T076 Backend: an owner adds a member.
+      The readers Libris knows are answered, every one, the asker among
+      them, in no promised order. An owner adds to their bookshelf a reader
+      who does not belong to it, as owner or as viewer: the answer is the
+      new member, and the bookshelf is among that reader's bookshelves, its
+      copies in their catalogue and on the card of their ISBN. A viewer of
+      the bookshelf, or a reader who does not belong to it, is answered that
+      there is no such bookshelf, its members unchanged (PRD §3, D12).
+      Realises S5 and S6's first two cases; un-skips the backend tests of
+      S5, both cases, and of S6, the viewer and the reader not a member.
+
+- [ ] T077 Backend: an add Libris refuses.
+      An owner adding a reader Libris does not know is answered `400`
+      `/problems/validation` on `readerId`; adding a reader already a
+      member, whatever their role, `409` `/problems/conflict`; in both the
+      bookshelf's members stay as they were (D11, D12).
+      Realises S6's last two cases; un-skips the backend tests of S6, the
+      reader Libris does not know and the reader already a member.
+
+- [ ] T078 Backend: a reader chooses their default.
+      A reader makes a bookshelf they own their default: the answer is
+      `204`, and the reader's answer names it as their default from then on,
+      the bookshelves of T073 putting it first. A bookshelf they are a
+      viewer of, or do not belong to, is answered that there is no such
+      bookshelf, their default unchanged. The default being one they own
+      spans the reader and the bookshelf: the use case keeps it in one
+      transaction (D12).
+      Realises S7, S8; un-skips the backend tests of S7 and of S8, both cases.
+
+- [ ] T079 Frontend: the home page lists the reader's bookshelves, on
+      `v0.11.0`.
+      Precondition (human): T078 deployed (D04); the frontend piece of the
+      spec, its skipped scenario tests over the fakes with the ports, fakes
+      and domain types they name (D07).
+      `vitest.global-setup.ts` pins `v0.11.0`, the frontend's one bump
+      (D04). The home page reads *Libris*, the greeting, then the block *Mes
+      bibliothèques*: a row per bookshelf in the order of the answer, its
+      name over *propriétaire* or *invité*, *· par défaut* on the reader's
+      default; skeleton rows while they come, S9's loading sentence when
+      Libris does not answer; the link *Ajouter un ouvrage* leaves (U03, U05,
+      U08). Its client tested against `contracteer mock` (D07); the PR body
+      proposes the spec's U08 title. Realises S1 and S9's home page case;
+      un-skips the frontend tests of S1 and of S9, the home page.
+
+- [ ] T080 Frontend: a reader creates a bookshelf.
+      Once the rows are there, the plus *Nouvelle bibliothèque* right of
+      *Mes bibliothèques* adds a last row, the field *Nom de la
+      bibliothèque* and the check *Créer*, absent while the name is blank,
+      the plus gone meanwhile; *Création en cours…* while it runs, then the
+      new bookshelf among the rows, the field's row gone, the plus back
+      (U03, U04, U05, U08). Lucide arrives with its first icons,
+      `circle-plus` and `check`; the PR body proposes the spec's U03, U04
+      and U07 amendments. Its client tested against `contracteer mock`
+      (D07). Realises S2; un-skips the frontend test of S2.
+
+- [ ] T081 Frontend: a name Libris refuses, or no answer.
+      A name taken reads *Vous avez déjà une bibliothèque de ce nom.* under
+      the field, in its row, the field keeping what was typed; no answer
+      reads S9's creating sentence in the same place; in both the row stays
+      and no bookshelf is added. Another refusal, which the screen never
+      provokes, reads as no answer (U05, U08).
+      Realises S3 on the frontend and S9's creating case; un-skips the
+      frontend tests of S3 and of S9, creating a bookshelf.
+
+- [ ] T082 Frontend: a member opens a bookshelf.
+      A home page row gains its chevron and leads to `/bibliotheques/{id}`,
+      the *Accueil* tab shown: the bookshelf's name as the title, no hint,
+      then *Membres*, a row per member in the order of the answer, *Léa ·
+      propriétaire*, the reader's own reading *Vous*; skeletons while it
+      comes; *Bibliothèque introuvable.* alone for no such bookshelf or an
+      id that is not one; S9's loading sentence when Libris does not answer
+      (U03, U05, U07, U08). Its client tested against `contracteer mock`
+      (D07); the PR body proposes the spec's U03 header with no hint.
+      Realises S4 and S9's opening case; un-skips the frontend tests of S4,
+      both cases, and of S9, opening a bookshelf.
+
+- [ ] T083 Frontend: an owner adds a member.
+      For an owner, the readers Libris knows asked with the bookshelf, the
+      plus *Ajouter un membre* right of *Membres* adds a last row: *Choisir
+      un lecteur* among the readers not members, by display name ignoring
+      case and accents, the crown toggle *Propriétaire*, off at first, and
+      *Ajouter*, absent until a reader is chosen; *Ajout en cours…*, then
+      the new member, *invité* or with the crown *propriétaire*. Every
+      reader a member, no plus and *Tous les lecteurs sont déjà membres.*;
+      no answer, S9's adding sentence in the row, reader and crown kept; a
+      refusal reads as no answer (U04, U05, U07, U08). Unit test of the
+      readers' order; both clients tested against `contracteer mock` (D07).
+      Realises S5 and S9's adding case; un-skips the frontend tests of S5
+      and of S9, adding a member.
+
+- [ ] T084 Frontend: a reader chooses their default.
+      Left of the chevron of a row the reader owns, a star in `accent`,
+      filled on the default as a mark, outlined elsewhere as the button
+      *Choisir comme bibliothèque par défaut*; none on a viewer's row. A tap
+      shows *Changement en cours…*, the stars accepting nothing; on the
+      answer the stars and *· par défaut* move, the row goes first, and the
+      card's next add puts the copy there. No answer reads S9's sentence in
+      the tapped row, the stars as they were; a refusal reads as no answer
+      (U03, U04, U05, U07, U08). Its client tested against `contracteer
+      mock` (D07); the PR body proposes the spec's U03 row with an icon
+      button. Realises S7, S8 and S9's default case; un-skips the frontend
+      tests of S7, S8 and of S9, choosing the default.
+
+*Done (Tophe, on the Pixel, from the installed app on staging): create
+Bibliothèque familiale, make it your default, add the second account of the
+family as propriétaire; on that account, the bookshelf is on the home page,
+make it the default, scan an ouvrage and add it; on yours, the card of that
+ISBN reads Dans Bibliothèque familiale. Then create Salon and add the second
+account as invité: on that account, the row of Salon has no star, and its
+copies are in the catalogue.*
+
 ## Done
 
 - Phase 0 — Foundations, T001 to T012, done 2026-09-10 with `v0.1.3` on the
@@ -58,18 +224,26 @@
 
 ## Questions for the human
 
-- **Staging.** The *Done* of `specs/catalogue.md`, and now that of
-  `specs/covers.md` and its S9, which checks the worker's schedule in
-  staging's log, ask for staging, as the update and bookshelf specs did,
-  while D09 knows one environment, the Kimsufi box. No task depends on the
-  answer; the hand check is Tophe's step either way.
+- **Staging.** The *Done* of `specs/bookshelves.md`, like those of the
+  catalogue and covers specs before it, asks for the installed app on
+  staging, while D09 knows one environment, the Kimsufi box. No task depends
+  on the answer; the hand check is Tophe's step either way.
 - **No spec yet**, so nothing is planned for them: PRD §4.1 beyond the add
   and the listing — viewing and editing an edition, removing a copy, the
   filters and sorts of the list, the edition page — §4.2 search, §4.3
-  bookshelves and copies beyond the default bookshelf — other bookshelves,
-  members, the `VIEWER` role, moving and lending a copy — §4.4 reading, §4.5
-  series tracking, §4.6 wishlist, §4.9 import and export, §4.10
-  administration, and the offline browsing of §4.8.
+  beyond creating a bookshelf, adding a member and choosing the default —
+  removing a member, changing a member's role, adding to a bookshelf other
+  than the default, moving and lending a copy, its condition and
+  acquisition date — §4.4 reading, §4.5 series tracking, §4.6 wishlist,
+  §4.9 import and export, §4.10 administration, and the offline browsing of
+  §4.8.
+- **A refusal the bookshelves screens never provoke.** The spec says what
+  each form shows when Libris does not answer (S9), and the taken name
+  (S3), not what it shows when Libris refuses otherwise: a blank name the
+  screen never sends, an add of a member answered `400`, `404` or `409`, a
+  default answered `400` or `404`, all reachable only by a race with
+  another reader. T081, T083 and T084 read such a refusal as no answer and
+  show their S9 sentence; say if one should read otherwise.
 - **A refused add on the card.** The spec's screen says what the card shows
   when Libris does not answer the add (S5), not when it answers `400` or
   `404`, which the card's own ouvrage and the reader's default bookshelf

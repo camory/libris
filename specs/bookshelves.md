@@ -329,3 +329,17 @@ second account as *invité*: on that account, the row of *Salon* has no
 star, and its copies are in the catalogue.
 
 ## Tasks
+
+- T072 — S2, the backend on `v0.11.0` — backend
+- T073 — S1 — backend
+- T074 — S3 — backend
+- T075 — S4 — backend
+- T076 — S5, S6 a viewer and a reader not a member — backend
+- T077 — S6 an unknown reader and a reader already a member — backend
+- T078 — S7, S8 — backend
+- T079 — S1, S9 the home page, the frontend on `v0.11.0` — frontend
+- T080 — S2 — frontend
+- T081 — S3, S9 creating a bookshelf — frontend
+- T082 — S4, S9 opening a bookshelf — frontend
+- T083 — S5, S9 adding a member — frontend
+- T084 — S7, S8, S9 choosing the default — frontend
