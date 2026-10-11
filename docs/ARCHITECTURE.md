@@ -574,6 +574,13 @@ API shapes
   naming no next; one that is not an id is a validation problem. Sorting:
   `sort=<field>&order=asc|desc`, accepted fields listed per operation in the
   contract.
+- Order: Libris orders an answer only when the order must exist before the
+  client holds the data: a page (the keyset order above), a limit, a pick
+  by position, or an order a later step follows (the cover candidates,
+  tried in turn). A complete list shown to a reader comes in no promised
+  order and the screen sorts it, in the reader's language
+  (`Intl.Collator`). The backend folds case and accents only to apply a
+  rule (a name already taken), never to sort an answer.
 - Filters are query parameters named after the field, repeated for multiple
   values.
 - Absent optional values are serialised as `null`, never omitted.
