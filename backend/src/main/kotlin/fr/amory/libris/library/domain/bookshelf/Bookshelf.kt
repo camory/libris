@@ -20,8 +20,8 @@ data class Bookshelf(
   fun roleOf(readerId: ReaderId): MembershipRole? =
     memberships.firstOrNull { it.readerId == readerId }?.role
 
-  fun withMember(membership: Membership): Bookshelf =
-    copy(memberships = memberships + membership)
+  fun withMember(membership: Membership): Bookshelf? =
+    if (hasMember(membership.readerId)) null else copy(memberships = memberships + membership)
 
   companion object {
     fun ownedBy(owner: ReaderId, ownerName: String, id: BookshelfId): Bookshelf =

@@ -29,7 +29,7 @@ class AddMemberToBookshelf(
   }
 
   private fun added(bookshelf: Bookshelf, reader: Reader, membership: Membership): AddMemberResult {
-    transactions.executeWithoutResult { bookshelves.update(bookshelf.withMember(membership)) }
+    transactions.executeWithoutResult { bookshelf.withMember(membership)?.let { bookshelves.update(it) } }
     return Added(BookshelfMember(reader.id, reader.displayName, membership.role))
   }
 }
