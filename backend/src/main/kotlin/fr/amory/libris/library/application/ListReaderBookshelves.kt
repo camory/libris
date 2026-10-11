@@ -1,7 +1,6 @@
 package fr.amory.libris.library.application
 
 import fr.amory.libris.library.domain.bookshelf.Bookshelf
-import fr.amory.libris.library.domain.bookshelf.BookshelfName.Companion.ignoringCaseAndAccents
 import fr.amory.libris.library.domain.bookshelf.BookshelfRepository
 import fr.amory.libris.library.domain.reader.Reader
 import fr.amory.libris.library.domain.reader.ReaderId
@@ -12,10 +11,6 @@ class ListReaderBookshelves(private val bookshelves: BookshelfRepository) {
   operator fun invoke(reader: Reader): List<ReaderBookshelf> =
     bookshelves
       .findByMember(reader.id)
-      .sortedWith(
-        compareBy<Bookshelf> { it.id != reader.defaultBookshelfId }
-          .thenBy(ignoringCaseAndAccents) { it.name },
-      )
       .mapNotNull { readerBookshelf(it, reader.id) }
 
   private fun readerBookshelf(bookshelf: Bookshelf, readerId: ReaderId): ReaderBookshelf? =

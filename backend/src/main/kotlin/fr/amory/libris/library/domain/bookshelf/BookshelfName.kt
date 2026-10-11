@@ -12,8 +12,6 @@ value class BookshelfName(val value: String) {
     IgnoringCaseAndAccents.compare(value, other.value) == 0
 
   companion object {
-    val ignoringCaseAndAccents: Comparator<BookshelfName> = compareBy(IgnoringCaseAndAccents) { it.value }
-
     fun of(text: String): BookshelfName? =
       text.takeIf { it.isNotBlank() }?.let { BookshelfName(it) }
   }
