@@ -46,6 +46,27 @@ class JdbcBookshelfRepositoryTest @Autowired constructor(
   }
 
   @Test
+  fun `an updated bookshelf is read back whole, as updated`() {
+    // Given
+    val lea = readerNamed("lea", "Léa").also { readers.insert(it) }
+    val juliette = readerNamed("juliette", "Juliette").also { readers.insert(it) }
+    val bookshelf = bookshelfOwnedBy(lea).also { bookshelves.insert(it) }
+    val updated = Bookshelf(
+      id = bookshelf.id,
+      name = "Salon",
+      memberships = listOf(Membership(lea.id, OWNER), Membership(juliette.id, VIEWER)),
+    )
+
+    // When
+    bookshelves.update(updated)
+
+    // Then
+    val read = requireNotNull(bookshelves.findById(bookshelf.id))
+    read.memberships.toSet() shouldBe updated.memberships.toSet()
+    read.copy(memberships = updated.memberships) shouldBe updated
+  }
+
+  @Test
   fun `a membership of a reader Libris does not know is refused`() {
     val nobody = readerNamed("nobody", "Nobody")
 

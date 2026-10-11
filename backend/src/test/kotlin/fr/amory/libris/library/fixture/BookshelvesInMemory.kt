@@ -14,6 +14,10 @@ class BookshelvesInMemory : BookshelfRepository {
     bookshelves += bookshelf
   }
 
+  override fun update(bookshelf: Bookshelf) {
+    bookshelves.replaceAll { if (it.id == bookshelf.id) bookshelf else it }
+  }
+
   override fun findById(id: BookshelfId): Bookshelf? =
     bookshelves.find { it.id == id }
 
