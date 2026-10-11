@@ -28,4 +28,10 @@ class BookshelfNameTest {
     // Given / When / Then
     BookshelfName("Bibliothèque familiale").isSameAs(BookshelfName("bibliotheque FAMILIALE")) shouldBe true
   }
+
+  @Test
+  fun `two different names are not the same`() {
+    // Given / When / Then
+    BookshelfName("Salon").isSameAs(BookshelfName("Bibliothèque familiale")) shouldBe false
+  }
 }
