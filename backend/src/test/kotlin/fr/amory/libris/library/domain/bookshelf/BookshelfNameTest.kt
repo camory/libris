@@ -40,4 +40,10 @@ class BookshelfNameTest {
     // Given / When / Then
     BookshelfName("Œuvres").isSameAs(BookshelfName("oeuvres")) shouldBe true
   }
+
+  @Test
+  fun `a name written with æ is the same as one written with ae`() {
+    // Given / When / Then
+    BookshelfName("Æsop").isSameAs(BookshelfName("aesop")) shouldBe true
+  }
 }
