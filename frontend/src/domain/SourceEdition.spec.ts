@@ -23,4 +23,22 @@ describe("authorsInOrder", () => {
       { name, roles: ["WRITER", "ARTIST", "COLOURIST", "TRANSLATOR"] },
     ]);
   });
+
+  it("sorts the authors by their first role", () => {
+    // When
+    const authors = authorsInOrder(
+      [
+        { name: "Boichi", role: "ARTIST" },
+        { name: "Eiichirō Oda", role: "ARTIST" },
+        { name: "Eiichirō Oda", role: "WRITER" },
+      ],
+      "fr",
+    );
+
+    // Then
+    expect(authors).toEqual([
+      { name: "Eiichirō Oda", roles: ["WRITER", "ARTIST"] },
+      { name: "Boichi", roles: ["ARTIST"] },
+    ]);
+  });
 });

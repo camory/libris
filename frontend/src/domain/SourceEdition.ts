@@ -44,10 +44,13 @@ export function authorsInOrder(
     }
     played.set(name, roles);
   }
-  return [...played].map(([name, roles]) => ({
-    name,
-    roles: roles.sort((a, b) => ROLES.indexOf(a) - ROLES.indexOf(b)),
-  }));
+  return [...played]
+    .map(([name, roles]) => ({ name, roles: roles.sort(byRole) }))
+    .sort((a, b) => byRole(a.roles[0], b.roles[0]));
+}
+
+function byRole(a: AuthorRole, b: AuthorRole) {
+  return ROLES.indexOf(a) - ROLES.indexOf(b);
 }
 
 const ROLES: AuthorRole[] = ["WRITER", "ARTIST", "COLOURIST", "TRANSLATOR"];
