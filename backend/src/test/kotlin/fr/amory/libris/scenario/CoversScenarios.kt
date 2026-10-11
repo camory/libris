@@ -14,6 +14,7 @@ import fr.amory.libris.scenario.dsl.NOT_FOUND
 import fr.amory.libris.scenario.dsl.NewBook
 import fr.amory.libris.scenario.dsl.Reader
 import fr.amory.libris.scenario.dsl.Series
+import fr.amory.libris.scenario.dsl.Size
 import fr.amory.libris.scenario.dsl.Sources
 import fr.amory.libris.scenario.dsl.adds
 import fr.amory.libris.scenario.dsl.asks
@@ -35,10 +36,8 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.MediaType
 import org.springframework.http.MediaType.IMAGE_JPEG
 import org.springframework.http.MediaType.parseMediaType
-import java.io.ByteArrayInputStream
-import java.time.Duration
-import javax.imageio.ImageIO
 import kotlin.time.Duration.Companion.days
+import kotlin.time.Duration.Companion.hours
 import kotlin.time.Duration.Companion.seconds
 import kotlin.time.measureTime
 
@@ -153,9 +152,7 @@ class CoversScenarios @Autowired constructor(
     // Then
     val picture = rose.views(cover).value
     picture.format shouldBe IMAGE_JPEG
-    val stored = ImageIO.read(ByteArrayInputStream(picture.bytes))
-    stored.height shouldBe NORMALISED_HEIGHT
-    stored.width shouldBe NORMALISED_HEIGHT * TALL_JPEG_WIDTH / TALL_JPEG_HEIGHT
+    picture.size shouldBe Size(400, 600)
   }
 
   @Test
@@ -273,7 +270,7 @@ class CoversScenarios @Autowired constructor(
     luc.seesCoverOf(ONE_PIECE_1).shouldBeNull()
 
     // When a run a day later
-    clock.advance(Duration.ofHours(A_DAY_AND_MORE))
+    clock.advance(1.days + 1.hours)
     luc.hasAdded(onePiece(ONE_PIECE_3, "Piège", 3, "Open Library"), to = bookshelf)
     luc.awaitsCoverOf(ONE_PIECE_3)
 
@@ -353,11 +350,7 @@ class CoversScenarios @Autowired constructor(
     const val ONE_PIECE_1_ARK = "cb43636708p"
     const val ONE_PIECE_1_INVENTAIRE_HASH = "34d6e7d99cec5b0922b9eccfeb03748ab2b4db99"
     const val HASH_LENGTH = 64
-    const val NORMALISED_HEIGHT = 600
-    const val TALL_JPEG_WIDTH = 800
-    const val TALL_JPEG_HEIGHT = 1200
     const val SLOWLY = 500
-    const val A_DAY_AND_MORE = 25L
     val WEBP: MediaType = parseMediaType("image/webp")
     val TALL_JPEG = recordedBytes("covers/tall.jpg")
     val SMALL_WEBP = recordedBytes("covers/small.webp")
