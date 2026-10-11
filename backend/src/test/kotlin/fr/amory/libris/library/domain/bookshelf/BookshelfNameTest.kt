@@ -46,4 +46,10 @@ class BookshelfNameTest {
     // Given / When / Then
     BookshelfName("Æsop").isSameAs(BookshelfName("aesop")) shouldBe true
   }
+
+  @Test
+  fun `two names apart by a space are not the same`() {
+    // Given / When / Then
+    BookshelfName("À lire").isSameAs(BookshelfName("Alire")) shouldBe false
+  }
 }
