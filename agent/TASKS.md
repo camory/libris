@@ -44,7 +44,7 @@ longer says.
       case of the six operations (D07).
       Realises S2; un-skips the backend test of S2.
 
-- [ ] T073 Backend: an owner adds a member.
+- [x] T073 Backend: an owner adds a member.
       The readers Libris knows are answered, every one, the asker among
       them, in no promised order. An owner adds to their bookshelf a reader
       who does not belong to it, as owner or as viewer: the answer is the

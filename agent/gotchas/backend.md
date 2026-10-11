@@ -369,6 +369,9 @@ Read whole by a run that changes `backend/`, after `every-run.md`.
   `clock` of `StubbedSources`) is `@Primary` over it. A use case takes
   `Clock`, never `MutableClock`; its plain tests pass a `MutableClock` from
   the root `fixture`.
+- `ReaderRepository` has a second test double besides `ReadersInMemory`:
+  `ReadersLosingTheRace`, private to `WelcomeReaderTest`. A method the port
+  gains fails `compileTestKotlin` there until that double implements it.
 - `TransactionsObserving` and `Transaction` live in the root
   `fr.amory.libris.fixture`, shared by both contexts' use-case tests.
 - `InventaireStubs.picturePaths()` answers the URLs of the picture requests
