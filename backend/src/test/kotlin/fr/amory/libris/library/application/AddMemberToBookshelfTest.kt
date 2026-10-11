@@ -85,4 +85,15 @@ class AddMemberToBookshelfTest {
     bookshelves.stored shouldBe listOf(withLea)
     transactions.recorded shouldBe emptyList()
   }
+
+  @Test
+  fun `a reader who does not belong to the bookshelf adding a reader answers no such bookshelf, nothing stored`() {
+    // When
+    val answer = addMemberToBookshelf(lea.id, familiale.id, Membership(sam.id, VIEWER))
+
+    // Then
+    answer shouldBe NoSuchBookshelf
+    bookshelves.stored shouldBe listOf(familiale)
+    transactions.recorded shouldBe emptyList()
+  }
 }
