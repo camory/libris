@@ -34,4 +34,10 @@ class BookshelfNameTest {
     // Given / When / Then
     BookshelfName("Salon").isSameAs(BookshelfName("Bibliothèque familiale")) shouldBe false
   }
+
+  @Test
+  fun `a name written with œ is the same as one written with oe`() {
+    // Given / When / Then
+    BookshelfName("Œuvres").isSameAs(BookshelfName("oeuvres")) shouldBe true
+  }
 }
