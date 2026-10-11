@@ -9,6 +9,7 @@ data class Bookshelf(
   val memberships: List<Membership>) {
   init {
     require(memberships.any { it.role == OWNER }) { "a bookshelf needs an owner" }
+    require(memberships.distinctBy { it.readerId } == memberships) { "a reader is a member of a bookshelf once" }
   }
 
   fun hasMember(readerId: ReaderId): Boolean =
@@ -20,8 +21,8 @@ data class Bookshelf(
   fun roleOf(readerId: ReaderId): MembershipRole? =
     memberships.firstOrNull { it.readerId == readerId }?.role
 
-  fun withMember(membership: Membership): Bookshelf? =
-    if (hasMember(membership.readerId)) null else copy(memberships = memberships + membership)
+  fun withMember(membership: Membership): Bookshelf =
+    copy(memberships = memberships + membership)
 
   companion object {
     fun ownedBy(owner: ReaderId, ownerName: String, id: BookshelfId): Bookshelf =

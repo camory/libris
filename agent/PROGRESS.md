@@ -206,13 +206,13 @@ Format:
 ## 2026-10-11 — T077 An add Libris refuses — done
 - Did: `AddMemberToBookshelf` answers a viewer and a stranger
   `NoSuchBookshelf` through `isOwnedBy`, and a reader already a member
-  `AlreadyAMember`; `Bookshelf.withMember` answers `null` for that reader.
-- Decided: the use case asks `withMember` once, before the transaction,
-  and hands the bookshelf it answered to `added`, so every refusal is
-  decided from the reads and writes nothing. The checks run owner, then
-  known reader, then member, all in one `when`.
-- Deviations from the brief: `JdbcBookshelfRepositoryTest`'s update case
-  calls `withMember` and wraps it in `requireNotNull` since it answers
-  `Bookshelf?`; a file the brief did not list, its case unchanged otherwise.
+  `AlreadyAMember` through `hasMember`; `Bookshelf` refuses a reader twice.
+- Decided: every refusal is decided from the reads, before the
+  transaction, and writes nothing. The checks run owner, then known
+  reader, then member, all in one `when`.
+- Fix-up on Tophe's ask: `withMember` answered `Bookshelf?`, `null` for a
+  reader already a member; it answers a `Bookshelf` again, the `init`
+  requires one membership per reader, and the use case asks `hasMember`
+  before it.
 - Left over: S6's two ordered comparisons, proposed in `agent/PROPOSED.md`
   for Tophe; the frontend's add and its refusals (T083).

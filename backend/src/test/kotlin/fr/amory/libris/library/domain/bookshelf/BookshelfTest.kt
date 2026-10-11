@@ -87,30 +87,24 @@ class BookshelfTest {
   }
 
   @Test
-  fun `a reader already a member is not added again, whatever the role given`() {
-    // Given
-    val marc = ReaderId.new()
-    val lea = ReaderId.new()
-    val bookshelf = Bookshelf(
-      BookshelfId.new(),
-      BookshelfName("Bibliothèque familiale"),
-      listOf(Membership(marc, OWNER), Membership(lea, VIEWER)),
-    )
-
-    // When
-    val added = bookshelf.withMember(Membership(lea, OWNER))
-
-    // Then
-    added shouldBe null
-  }
-
-  @Test
   fun `a bookshelf without an owner is refused`() {
     shouldThrow<IllegalArgumentException> {
       Bookshelf(
         BookshelfId.new(),
         BookshelfName("Bibliothèque de personne"),
         listOf(Membership(ReaderId.new(), VIEWER)),
+      )
+    }
+  }
+
+  @Test
+  fun `a bookshelf with a reader twice is refused, whatever the roles`() {
+    val lea = ReaderId.new()
+    shouldThrow<IllegalArgumentException> {
+      Bookshelf(
+        BookshelfId.new(),
+        BookshelfName("Bibliothèque familiale"),
+        listOf(Membership(lea, OWNER), Membership(lea, VIEWER)),
       )
     }
   }

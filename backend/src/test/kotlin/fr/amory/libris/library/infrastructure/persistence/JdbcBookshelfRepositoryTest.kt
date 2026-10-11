@@ -76,7 +76,7 @@ class JdbcBookshelfRepositoryTest @Autowired constructor(
     val tomsBookshelf = bookshelfOwnedBy(tom).also { bookshelves.insert(it) }
 
     // When
-    bookshelves.update(requireNotNull(leasBookshelf.withMember(Membership(tom.id, VIEWER))))
+    bookshelves.update(leasBookshelf.withMember(Membership(tom.id, VIEWER)))
 
     // Then
     bookshelves.findById(tomsBookshelf.id) shouldBe tomsBookshelf

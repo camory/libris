@@ -22,17 +22,16 @@ class AddMemberToBookshelf(
   operator fun invoke(readerId: ReaderId, bookshelfId: BookshelfId, membership: Membership): AddMemberResult {
     val bookshelf = bookshelves.findById(bookshelfId)?.takeIf { it.isOwnedBy(readerId) }
     val reader = readers.findById(membership.readerId)
-    val withMember = bookshelf?.withMember(membership)
     return when {
-      bookshelf == null  -> NoSuchBookshelf
-      reader == null     -> UnknownReader
-      withMember == null -> AlreadyAMember
-      else               -> added(withMember, reader, membership)
+      bookshelf == null                        -> NoSuchBookshelf
+      reader == null                           -> UnknownReader
+      bookshelf.hasMember(membership.readerId) -> AlreadyAMember
+      else                                     -> added(bookshelf, reader, membership)
     }
   }
 
-  private fun added(withMember: Bookshelf, reader: Reader, membership: Membership): AddMemberResult {
-    transactions.executeWithoutResult { bookshelves.update(withMember) }
+  private fun added(bookshelf: Bookshelf, reader: Reader, membership: Membership): AddMemberResult {
+    transactions.executeWithoutResult { bookshelves.update(bookshelf.withMember(membership)) }
     return Added(BookshelfMember(reader.id, reader.displayName, membership.role))
   }
 }
