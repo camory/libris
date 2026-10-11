@@ -147,3 +147,20 @@ Format:
   step 9; the next run did step 10 alone.
 - Left over: T076 decides whether a reader's display name shares
   `BookshelfName`'s comparison; T081 shows both refusals on the screen.
+
+## 2026-10-11 — T076 A member opens a bookshelf — done
+- Did: `FindBookshelf` answers a member the bookshelf and its members, the
+  owners first, then the viewers, each by display name ignoring case and
+  accents, and anyone else `NoSuchBookshelf`; both S4 cases green.
+- Decided: the members are the readers `ReaderRepository.findByIds` answers
+  for the bookshelf's memberships, each with `Bookshelf.roleOf`; the order
+  is `MembershipRole.order` then `IgnoringCaseAndAccents` over the display
+  name, applied in the use case. `ReadersLosingTheRace.findByIds` answers
+  the winner once the race is lost and only for its id, as its other
+  finders do.
+- Deviations from the brief: step 9's green copied the folding into
+  `FindBookshelf.kt`; the refactor commit that follows removed the copy
+  when it moved the folding to `IgnoringCaseAndAccents`, so no commit
+  widens a visibility. Otherwise none.
+- Left over: the refusals of an add, which read the members back (T077);
+  the screen of a bookshelf (T082).
