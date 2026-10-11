@@ -5,6 +5,10 @@ import fr.amory.libris.library.application.AddBookResult.Added
 import fr.amory.libris.library.application.AddBookResult.NoSuchBookshelf
 import fr.amory.libris.library.application.AddBookResult.NotAnOwner
 import fr.amory.libris.library.application.AddBookToBookshelf
+import fr.amory.libris.library.application.AddMemberResult
+import fr.amory.libris.library.application.AddMemberResult.AlreadyAMember
+import fr.amory.libris.library.application.AddMemberResult.UnknownReader
+import fr.amory.libris.library.application.AddMemberToBookshelf
 import fr.amory.libris.library.application.BookshelfMember
 import fr.amory.libris.library.application.CreateBookshelf
 import fr.amory.libris.library.application.CreateBookshelfResult.BlankName
@@ -48,7 +52,8 @@ class BookshelfController(
   private val listReaderBookshelves: ListReaderBookshelves,
   private val createBookshelf: CreateBookshelf,
   private val openBookshelf: OpenBookshelf,
-  private val addBookToBookshelf: AddBookToBookshelf) {
+  private val addBookToBookshelf: AddBookToBookshelf,
+  private val addMemberToBookshelf: AddMemberToBookshelf) {
   @GetMapping("/api/v1/bookshelves")
   fun list(@AuthenticationPrincipal reader: Reader): List<ReaderBookshelfResponse> =
     listReaderBookshelves(reader).map { ReaderBookshelfResponse.from(it) }
@@ -76,6 +81,18 @@ class BookshelfController(
     when (val validation = request.validate()) {
       is Refused  -> invalid(validation.errors).asResponse()
       is Accepted -> responseOf(addBookToBookshelf(reader.id, BookshelfId(id), validation.book))
+    }
+
+  @PostMapping("/api/v1/bookshelves/{id}/members")
+  fun addMember(
+    @AuthenticationPrincipal reader: Reader,
+    @PathVariable("id") id: UUID,
+    @RequestBody request: NewMemberRequest): ResponseEntity<Any> =
+    when (val result = addMemberToBookshelf(reader.id, BookshelfId(id), request.toMembership())) {
+      is AddMemberResult.Added        -> ResponseEntity.status(CREATED).body(MemberResponse.from(result.member))
+      AddMemberResult.NoSuchBookshelf -> notFound()
+      UnknownReader                   -> invalid(listOf(ValidationErrorResponse("readerId", "unknown"))).asResponse()
+      AlreadyAMember                  -> problem(CONFLICT, CONFLICT_PROBLEM).asResponse()
     }
 
   private fun invalid(errors: List<ValidationErrorResponse>): ProblemDetail =
