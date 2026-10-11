@@ -2,6 +2,7 @@
 import { computed, ref } from "vue";
 import { useI18n } from "vue-i18n";
 import type { Book } from "../../domain/Book";
+import { bookshelvesHolding } from "../../domain/Copy";
 import { authorsInOrder } from "../../domain/SourceEdition";
 import IconBook from "./icons/IconBook.vue";
 
@@ -31,22 +32,13 @@ const authors = computed(() =>
     .join(", "),
 );
 
-const bookshelves = computed(() => {
-  const held = new Map<string, { name: string; count: number }>();
-  for (const copy of props.book.copies) {
-    const bookshelf = held.get(copy.bookshelf.id) ?? {
-      name: copy.bookshelf.name,
-      count: 0,
-    };
-    bookshelf.count += 1;
-    held.set(copy.bookshelf.id, bookshelf);
-  }
-  return [...held.values()]
-    .map(({ name, count }) =>
-      t("catalogue.copies", { bookshelf: name, count }, count),
+const bookshelves = computed(() =>
+  bookshelvesHolding(props.book.copies, locale.value)
+    .map(({ bookshelf, count }) =>
+      t("catalogue.copies", { bookshelf: bookshelf.name, count }, count),
     )
-    .join(", ");
-});
+    .join(", "),
+);
 </script>
 
 <template>

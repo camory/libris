@@ -105,6 +105,23 @@ describe("CatalogueRow", () => {
     expect(screen.getByText("Bibliothèque de Léa, Salon")).toBeDefined();
   });
 
+  it("lists its bookshelves by name", () => {
+    // Given
+    const onSalonFirst: Book = {
+      ...asterixLeGaulois,
+      copies: [
+        { id: "f2a0bf1e-d34c-4bf8-94a9-afb0c1d2e3fa", bookshelf: salon },
+        ...asterixLeGaulois.copies,
+      ],
+    };
+
+    // When
+    const { screen } = show(onSalonFirst);
+
+    // Then
+    expect(screen.getByText("Bibliothèque de Léa, Salon")).toBeDefined();
+  });
+
   it("counts the copies of a bookshelf holding more than one", () => {
     // When
     const { screen } = show(romanceDawn);
