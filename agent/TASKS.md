@@ -34,7 +34,7 @@ deployed.
       that differ only in case or accents, given in another order than the
       screen's.
 
-- [ ] T087 Backend: authors and a card's bookshelves in no promised order.
+- [x] T087 Backend: authors and a card's bookshelves in no promised order.
       Precondition (human): T086 deployed (D04).
       `Contributions.of` keeps one contribution per author and role and
       orders nothing, and `LookupIsbnForReader` sorts nothing (D11, D12);

@@ -1,7 +1,7 @@
 package fr.amory.libris.bibliography.domain
 
 @JvmInline
-value class Contributions private constructor(private val all: List<Contribution>) : Iterable<Contribution> {
+value class Contributions private constructor(private val all: Set<Contribution>) : Iterable<Contribution> {
   override fun iterator(): Iterator<Contribution> =
     all.iterator()
 
@@ -13,7 +13,7 @@ value class Contributions private constructor(private val all: List<Contribution
       Contributions(
         contributions
           .distinctBy { it.name.lowercase() to it.role }
-          .sortedWith(compareBy({ it.role.order }, { it.name.lowercase() })),
+          .toSet(),
       )
   }
 }
