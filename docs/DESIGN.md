@@ -180,13 +180,14 @@ grouped by their whole set of roles: the names alone on one line, separated
 by commas, when every author shares one set (*Eiichirō Oda*, *Erckmann,
 Chatrian*), otherwise one line per author, the name in `text` and its roles
 after a middle dot in `muted` (*René Goscinny · scénario*, *Albert Uderzo ·
-dessin*); the authors keep the order of the answer, the house's, by role then
-by name, and the card sorts nothing. Between the top part and the field rows,
-one row per bookshelf holding a copy, `body` semibold, `text`,
-the book icon at 22 before the words: *Dans* and the name, then the count
-after a middle dot when it holds more than one (*Dans Bibliothèque de Léa ·
-2 exemplaires*), in the order of the answer; when no bookshelf of the reader
-holds a copy, one row of the same shape, *Dans aucune de vos bibliothèques*.
+dessin*); the card sorts the authors by their first role, scénario, dessin,
+couleurs, traduction, then by name, ignoring case and accents. Between the
+top part and the field rows, one row per bookshelf holding a copy, `body`
+semibold, `text`, the book icon at 22 before the words: *Dans* and the
+name, then the count after a middle dot when it holds more than one (*Dans
+Bibliothèque de Léa · 2 exemplaires*), by name, ignoring case and accents;
+when no bookshelf of the reader holds a copy, one row of the same shape,
+*Dans aucune de vos bibliothèques*.
 Middle part: one row per field, `body`, the label at the left in
 `muted` and the value at the right in `text`, right-aligned, 7 of vertical
 padding, a `border` hairline above each row: *Collection*, *Éditeur*,

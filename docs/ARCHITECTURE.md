@@ -574,6 +574,13 @@ API shapes
   naming no next; one that is not an id is a validation problem. Sorting:
   `sort=<field>&order=asc|desc`, accepted fields listed per operation in the
   contract.
+- Order: Libris orders an answer only when the order must exist before the
+  client holds the data: a page (the keyset order above), a limit, a pick
+  by position, or an order a later step follows (the cover candidates,
+  tried in turn). A complete list shown to a reader comes in no promised
+  order and the screen sorts it, in the reader's language
+  (`Intl.Collator`). The backend folds case and accents only to apply a
+  rule (a name already taken), never to sort an answer.
 - Filters are query parameters named after the field, repeated for multiple
   values.
 - Absent optional values are serialised as `null`, never omitted.
@@ -653,12 +660,10 @@ Contract
   use case or adapter catches the constructor's exception.
 - A collection with a rule of its own is a type of its own, built through
   `of(...)` and never by hand, and held by the aggregate, so that no lookup,
-  persistence or use case carries the rule and the order stored or answered
-  is the house's, not a source's: `Contributions.of(list)` keeps one
-  contribution per author and role, the names matched as PRD §3 matches
-  them, ordered by role then by name. An enumeration whose order carries
-  meaning declares it as a field (`ContributionRole.order`), never through
-  its declaration order.
+  persistence or use case carries the rule: `Contributions.of(list)` keeps
+  one contribution per author and role, the names matched as PRD §3 matches
+  them. An enumeration whose order carries meaning declares it as a field
+  (`CoverSource.order`), never through its declaration order.
 - A read that spans aggregates or contexts is the use case's first: it
   reads each aggregate through its own repository, applies the aggregates'
   rules and answers a data class of its `application` sub-package shaped
