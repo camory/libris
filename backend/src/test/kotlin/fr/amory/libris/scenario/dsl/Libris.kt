@@ -45,7 +45,8 @@ class Libris(private val http: RestTestClient) {
         .headers { it.putAll(reader.headers) }
         .accept(parseMediaType("image/*"), APPLICATION_PROBLEM_JSON)
         .exchange(),
-    ) { pictureOf(it) }
+      Picture::of,
+    )
 
   fun put(reader: Reader, path: String, body: Any): Answer<Unit> =
     Answer(
