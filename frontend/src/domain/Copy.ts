@@ -6,11 +6,16 @@ export interface Copy {
   bookshelf: Bookshelf;
 }
 
+export interface Holding {
+  bookshelf: Bookshelf;
+  count: number;
+}
+
 export function bookshelvesHolding(
   copies: Copy[],
   locale: string,
-): { bookshelf: Bookshelf; count: number }[] {
-  const held = new Map<string, { bookshelf: Bookshelf; count: number }>();
+): Holding[] {
+  const held = new Map<string, Holding>();
   for (const { bookshelf } of copies) {
     const holding = held.get(bookshelf.id) ?? { bookshelf, count: 0 };
     holding.count += 1;
