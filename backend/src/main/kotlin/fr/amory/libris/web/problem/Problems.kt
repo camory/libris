@@ -7,6 +7,7 @@ import java.net.URI
 
 const val VALIDATION_PROBLEM = "/problems/validation"
 const val NOT_FOUND_PROBLEM = "/problems/not-found"
+const val CONFLICT_PROBLEM = "/problems/conflict"
 
 data class ValidationErrorResponse(
   val field: String,

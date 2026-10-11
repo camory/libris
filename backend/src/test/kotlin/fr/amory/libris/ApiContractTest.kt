@@ -30,6 +30,10 @@ import fr.amory.libris.fixture.WebSliceTest
 import fr.amory.libris.library.application.AddBookResult.Added
 import fr.amory.libris.library.application.AddBookResult.NotAnOwner
 import fr.amory.libris.library.application.AddBookToBookshelf
+import fr.amory.libris.library.application.CreateBookshelf
+import fr.amory.libris.library.application.CreateBookshelfResult.BlankName
+import fr.amory.libris.library.application.CreateBookshelfResult.Created
+import fr.amory.libris.library.application.CreateBookshelfResult.NameTaken
 import fr.amory.libris.library.application.FindDefaultBookshelf
 import fr.amory.libris.library.application.ListReaderBookshelves
 import fr.amory.libris.library.application.NewBook
@@ -41,7 +45,9 @@ import fr.amory.libris.library.application.catalogue.HeldEdition
 import fr.amory.libris.library.application.lookup.CopyOnBookshelf
 import fr.amory.libris.library.application.lookup.IsbnLookup
 import fr.amory.libris.library.application.lookup.LookupIsbnForReader
+import fr.amory.libris.library.domain.bookshelf.Bookshelf
 import fr.amory.libris.library.domain.bookshelf.BookshelfId
+import fr.amory.libris.library.domain.bookshelf.Membership
 import fr.amory.libris.library.domain.bookshelf.MembershipRole.OWNER
 import fr.amory.libris.library.domain.copy.Copy
 import fr.amory.libris.library.domain.copy.CopyId
@@ -75,6 +81,7 @@ import java.util.UUID
     BrowseCatalogue::class,
     FindCover::class,
     ListReaderBookshelves::class,
+    CreateBookshelf::class,
   ],
 )
 @Suppress("LongParameterList")
@@ -86,7 +93,8 @@ class ApiContractTest @Autowired constructor(
   private val addBookToBookshelf: AddBookToBookshelf,
   private val browseCatalogue: BrowseCatalogue,
   private val findCover: FindCover,
-  private val listReaderBookshelves: ListReaderBookshelves) {
+  private val listReaderBookshelves: ListReaderBookshelves,
+  private val createBookshelf: CreateBookshelf) {
   @ContracteerTest(openApiDoc = "https://raw.githubusercontent.com/camory/libris-api/v0.11.0/openapi.yaml")
   fun `the API matches the contract`() {
     contracteerIsWelcomed()
@@ -95,6 +103,7 @@ class ApiContractTest @Autowired constructor(
     catalogueAnswers()
     coversAnswer()
     bookshelvesAnswer()
+    creatingABookshelfAnswers()
   }
 
   private fun contracteerIsWelcomed() {
@@ -132,6 +141,13 @@ class ApiContractTest @Autowired constructor(
   private fun bookshelvesAnswer() {
     given(listReaderBookshelves(CONTRACTEER))
       .willReturn(listOf(ReaderBookshelf(CONTRACTEER_BOOKSHELF.id, CONTRACTEER_BOOKSHELF.name, OWNER)))
+  }
+
+  private fun creatingABookshelfAnswers() {
+    given(createBookshelf(ReaderId(eq(CONTRACTEER.id.value) ?: CONTRACTEER.id.value), any() ?: ""))
+      .willReturn(Created(FAMILIALE))
+    given(createBookshelf(CONTRACTEER.id, "   ")).willReturn(BlankName)
+    given(createBookshelf(CONTRACTEER.id, "Salon")).willReturn(NameTaken)
   }
 
   private fun noCopy(answer: EditionLookupResult) =
@@ -174,6 +190,12 @@ private val CONTRACTEER = readerNamed(
 )
 
 private val CONTRACTEER_BOOKSHELF = bookshelfOwnedBy(CONTRACTEER)
+
+private val FAMILIALE = Bookshelf(
+  BookshelfId.new(),
+  "Bibliothèque familiale",
+  listOf(Membership(CONTRACTEER.id, OWNER)),
+)
 
 private val ASTERIX_1 = EditionPreview(
   isbn = isbnOf("9782012101333"),
