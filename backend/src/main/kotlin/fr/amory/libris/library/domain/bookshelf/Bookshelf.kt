@@ -17,6 +17,9 @@ data class Bookshelf(
   fun isOwnedBy(readerId: ReaderId): Boolean =
     memberships.any { it.readerId == readerId && it.role == OWNER }
 
+  fun roleOf(readerId: ReaderId): MembershipRole? =
+    memberships.firstOrNull { it.readerId == readerId }?.role
+
   companion object {
     fun ownedBy(owner: ReaderId, ownerName: String, id: BookshelfId): Bookshelf =
       Bookshelf(id, "Bibliothèque de $ownerName", listOf(Membership(owner, OWNER)))
