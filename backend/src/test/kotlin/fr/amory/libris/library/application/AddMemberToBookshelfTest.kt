@@ -3,11 +3,13 @@ package fr.amory.libris.library.application
 import fr.amory.libris.fixture.Transaction
 import fr.amory.libris.fixture.TransactionsObserving
 import fr.amory.libris.library.application.AddMemberResult.Added
+import fr.amory.libris.library.application.AddMemberResult.NoSuchBookshelf
 import fr.amory.libris.library.domain.bookshelf.Bookshelf
 import fr.amory.libris.library.domain.bookshelf.BookshelfId
 import fr.amory.libris.library.domain.bookshelf.Membership
 import fr.amory.libris.library.domain.bookshelf.MembershipRole.OWNER
 import fr.amory.libris.library.domain.bookshelf.MembershipRole.VIEWER
+import fr.amory.libris.library.domain.reader.ReaderId
 import fr.amory.libris.library.fixture.BookshelvesInMemory
 import fr.amory.libris.library.fixture.ReadersInMemory
 import fr.amory.libris.library.fixture.readerNamed
@@ -40,5 +42,16 @@ class AddMemberToBookshelfTest {
     answer shouldBe Added(BookshelfMember(lea.id, "Léa", VIEWER))
     bookshelves.stored shouldBe listOf(withLea)
     transactions.recorded shouldBe listOf(Transaction(before = listOf(familiale), after = listOf(withLea)))
+  }
+
+  @Test
+  fun `an id naming no bookshelf answers no such bookshelf, nothing stored`() {
+    // When
+    val answer = addMemberToBookshelf(marc.id, BookshelfId.new(), Membership(lea.id, VIEWER))
+
+    // Then
+    answer shouldBe NoSuchBookshelf
+    bookshelves.stored shouldBe listOf(familiale)
+    transactions.recorded shouldBe emptyList()
   }
 }
