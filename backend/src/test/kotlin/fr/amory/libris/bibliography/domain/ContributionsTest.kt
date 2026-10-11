@@ -30,6 +30,16 @@ class ContributionsTest {
   }
 
   @Test
+  fun `contributions given in another order are the same contributions`() {
+    // Given
+    val jean = Contribution("Jean Dufaux", WRITER)
+    val sylvain = Contribution("Sylvain Chollet", TRANSLATOR)
+
+    // When / Then
+    Contributions.of(listOf(sylvain, jean)) shouldBe Contributions.of(listOf(jean, sylvain))
+  }
+
+  @Test
   fun `no contribution is empty, one is not`() {
     Contributions.of(emptyList()).isEmpty() shouldBe true
     Contributions.of(listOf(Contribution("Théo", WRITER))).isEmpty() shouldBe false
