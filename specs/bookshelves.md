@@ -174,8 +174,9 @@ Then the screen says to try again later
 ```
 
 Five cases: the home page's bookshelves; opening a bookshelf; creating a
-bookshelf; adding a member; choosing the default. Proof: frontend scenario
-test with the API failing, one per case.
+bookshelf; adding a member; choosing the default. A refusal the screen never
+provokes (a race with another reader) reads the same way. Proof: frontend
+scenario test with the API failing, one per case.
 
 ## Screen
 
