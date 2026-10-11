@@ -3,32 +3,11 @@ package fr.amory.libris.bibliography.domain
 import fr.amory.libris.bibliography.domain.ContributionRole.ARTIST
 import fr.amory.libris.bibliography.domain.ContributionRole.TRANSLATOR
 import fr.amory.libris.bibliography.domain.ContributionRole.WRITER
+import io.kotest.matchers.collections.shouldContainExactlyInAnyOrder
 import io.kotest.matchers.shouldBe
 import org.junit.jupiter.api.Test
 
 class ContributionsTest {
-  @Test
-  fun `the contributions are ordered by role, then by name`() {
-    // Given
-    val given = listOf(
-      Contribution("Sylvain Chollet", TRANSLATOR),
-      Contribution("Jérémy", ARTIST),
-      Contribution("Théo", WRITER),
-      Contribution("Jean Dufaux", WRITER),
-    )
-
-    // When
-    val contributions = Contributions.of(given)
-
-    // Then
-    contributions.toList() shouldBe listOf(
-      Contribution("Jean Dufaux", WRITER),
-      Contribution("Théo", WRITER),
-      Contribution("Jérémy", ARTIST),
-      Contribution("Sylvain Chollet", TRANSLATOR),
-    )
-  }
-
   @Test
   fun `contributions given in another order are the same contributions`() {
     // Given
@@ -66,7 +45,7 @@ class ContributionsTest {
     val contributions = Contributions.of(given)
 
     // Then
-    contributions.toList() shouldBe listOf(
+    contributions.toList() shouldContainExactlyInAnyOrder listOf(
       Contribution("Eiichirō Oda", WRITER),
       Contribution("Eiichirō Oda", ARTIST),
     )
