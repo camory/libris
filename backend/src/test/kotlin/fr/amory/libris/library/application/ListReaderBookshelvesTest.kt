@@ -100,4 +100,33 @@ class ListReaderBookshelvesTest {
       ReaderBookshelf(albums.id, "Albums", OWNER),
     )
   }
+
+  @Test
+  fun `the others follow by name, reading œ as oe and æ as ae`() {
+    // Given
+    val lea = readerNamed("lea", "Léa")
+    val ogres = Bookshelf(BookshelfId.new(), "Ogres", listOf(Membership(lea.id, OWNER)))
+    val oeuvres = Bookshelf(BookshelfId.new(), "Œuvres", listOf(Membership(lea.id, OWNER)))
+    val albums = Bookshelf(BookshelfId.new(), "Albums", listOf(Membership(lea.id, OWNER)))
+    val aesop = Bookshelf(BookshelfId.new(), "Æsop", listOf(Membership(lea.id, OWNER)))
+    val bookshelves = BookshelvesInMemory()
+    bookshelves.insert(bookshelfOwnedBy(lea))
+    bookshelves.insert(ogres)
+    bookshelves.insert(oeuvres)
+    bookshelves.insert(albums)
+    bookshelves.insert(aesop)
+    val listReaderBookshelves = ListReaderBookshelves(bookshelves)
+
+    // When
+    val answer = listReaderBookshelves(lea)
+
+    // Then
+    answer shouldBe listOf(
+      ReaderBookshelf(lea.defaultBookshelfId, "Bibliothèque de Léa", OWNER),
+      ReaderBookshelf(aesop.id, "Æsop", OWNER),
+      ReaderBookshelf(albums.id, "Albums", OWNER),
+      ReaderBookshelf(oeuvres.id, "Œuvres", OWNER),
+      ReaderBookshelf(ogres.id, "Ogres", OWNER),
+    )
+  }
 }

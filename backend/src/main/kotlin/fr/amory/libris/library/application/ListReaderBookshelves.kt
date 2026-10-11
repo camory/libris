@@ -26,6 +26,8 @@ class ListReaderBookshelves(private val bookshelves: BookshelfRepository) {
       .normalize(name, NFD)
       .replace(COMBINING_MARKS, "")
       .lowercase()
+      .replace("œ", "oe")
+      .replace("æ", "ae")
 }
 
 private val COMBINING_MARKS = Regex("\\p{Mn}")
