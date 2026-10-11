@@ -89,4 +89,40 @@ class FindBookshelfTest {
       BookshelfMember(lea.id, "Léa", VIEWER),
     )
   }
+
+  @Test
+  fun `within a role, the display names sort ignoring case and accents`() {
+    // Given
+    val elise = readerNamed("elise", "Élise")
+    val zoe = readerNamed("zoe", "Zoé")
+    val lowerLea = readerNamed("lea", "léa")
+    val readers = ReadersInMemory().apply {
+      insert(marc)
+      insert(elise)
+      insert(zoe)
+      insert(lowerLea)
+    }
+    val salon = Bookshelf(
+      BookshelfId.new(),
+      BookshelfName("Salon"),
+      listOf(
+        Membership(marc.id, OWNER),
+        Membership(elise.id, OWNER),
+        Membership(zoe.id, VIEWER),
+        Membership(lowerLea.id, VIEWER),
+      ),
+    )
+    val findBookshelf = FindBookshelf(BookshelvesInMemory().apply { insert(salon) }, readers)
+
+    // When
+    val answer = findBookshelf(marc.id, salon.id)
+
+    // Then
+    answer.shouldBeInstanceOf<Found>().members shouldBe listOf(
+      BookshelfMember(elise.id, "Élise", OWNER),
+      BookshelfMember(marc.id, "Marc", OWNER),
+      BookshelfMember(lowerLea.id, "léa", VIEWER),
+      BookshelfMember(zoe.id, "Zoé", VIEWER),
+    )
+  }
 }

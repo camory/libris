@@ -9,6 +9,8 @@ import fr.amory.libris.library.domain.reader.Reader
 import fr.amory.libris.library.domain.reader.ReaderId
 import fr.amory.libris.library.domain.reader.ReaderRepository
 import org.springframework.stereotype.Service
+import java.text.Normalizer
+import java.text.Normalizer.Form.NFD
 
 @Service
 class FindBookshelf(
@@ -25,10 +27,23 @@ class FindBookshelf(
     readers
       .findByIds(bookshelf.memberships.map { it.readerId })
       .mapNotNull { memberOf(bookshelf, it) }
-      .sortedBy { it.role.order }
+      .sortedWith(
+        compareBy<BookshelfMember> { it.role.order }
+          .thenBy { folded(it.displayName) },
+      )
 
   private fun memberOf(bookshelf: Bookshelf, reader: Reader): BookshelfMember? =
     bookshelf
       .roleOf(reader.id)
       ?.let { BookshelfMember(reader.id, reader.displayName, it) }
 }
+
+private fun folded(name: String): String =
+  Normalizer
+    .normalize(name, NFD)
+    .replace(COMBINING_MARKS, "")
+    .lowercase()
+    .replace("œ", "oe")
+    .replace("æ", "ae")
+
+private val COMBINING_MARKS = Regex("\\p{Mn}")
