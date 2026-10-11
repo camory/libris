@@ -99,7 +99,8 @@ left, 48 by 74, or its stand-in; at its right, stacked 6 apart, the overline
 série · tome when it has a series, or série · album for a BD, as
 `specs/kind.md` words it (*Astérix · album 1*, *One piece · tome 1*), the
 title in the row title step, the authors as names alone on one line
-separated by commas, whatever their roles, in the order of the answer, then
+separated by commas, whatever their roles, in the order of the card (DESIGN
+U06), then
 in `muted` the bookshelves of the reader holding a copy, separated by
 commas, each followed by *· 2 exemplaires* when it holds more than one
 (*Bibliothèque de Christophe · 2 exemplaires, Salon*). The rows are in the
