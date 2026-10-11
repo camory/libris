@@ -57,4 +57,9 @@ class FindBookshelfTest {
     // Then
     answer shouldBe NoSuchBookshelf
   }
+
+  @Test
+  fun `an id naming no bookshelf is answered no such bookshelf`() {
+    findBookshelf(lea.id, BookshelfId.new()) shouldBe NoSuchBookshelf
+  }
 }
