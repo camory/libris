@@ -202,3 +202,17 @@ Format:
 - Left over: the scenario comparisons of `authors` in order, proposed in
   `agent/PROPOSED.md` for Tophe; merging is not deploying, the backend
   drops the order once Tophe deploys it.
+
+## 2026-10-11 — T077 An add Libris refuses — done
+- Did: `AddMemberToBookshelf` answers a viewer and a stranger
+  `NoSuchBookshelf` through `isOwnedBy`, and a reader already a member
+  `AlreadyAMember`; `Bookshelf.withMember` answers `null` for that reader.
+- Decided: the use case asks `withMember` once, before the transaction,
+  and hands the bookshelf it answered to `added`, so every refusal is
+  decided from the reads and writes nothing. The checks run owner, then
+  known reader, then member, all in one `when`.
+- Deviations from the brief: `JdbcBookshelfRepositoryTest`'s update case
+  calls `withMember` and wraps it in `requireNotNull` since it answers
+  `Bookshelf?`; a file the brief did not list, its case unchanged otherwise.
+- Left over: S6's two ordered comparisons, proposed in `agent/PROPOSED.md`
+  for Tophe; the frontend's add and its refusals (T083).
