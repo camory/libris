@@ -120,6 +120,36 @@
   language at a time, with the recordings that exercise it; a whole ISO
   639-2 to 639-1 table would be code no test asks for. To revisit if the
   library turns out to hold much beyond French (found on 2026-09-13).
+- Backend: a bare number in the BnF's `200 $h` is not read as a tome. The
+  title-statement fallback of `BnfRecord.kt` only matches `tome (\d+)`, so a
+  record with no `461` and `$h 14` gets no series. Seen on the Tonkam
+  *Dragon Quest, la quête de Daï*: 9782845808461 (tome 14,
+  `ark:/12148/cb434739456`) and 9782845808485 (tome 16,
+  `ark:/12148/cb43474820t`) are the BnF's only records for those ISBNs,
+  minimal 2009 ones (`200 $a Dragon Quest $b Texte imprimé $e la quête de
+  Daï $h 14`, no `461`), while every other tome of the series has the full
+  record (`461 $t Dragon quest $v 15`, tome 15 is `cb42035928f`). Open
+  Library knows neither ISBN. Accepting a `$h` made of digits only as the
+  tome, beside `tome N`, would put both in the series (matched on
+  `LOWER(name)`, so *Dragon Quest* joins *Dragon quest*), with a recording
+  of one of the two records. The two editions added in production on
+  2026-10-11 are corrected there by hand (found on 2026-10-11).
+- Backend: the same two minimal records read as a livre. Their `105 $a` is
+  `a   z   00|y|`, with no `t` at positions 4–7, and their `101` has no
+  `$c jpn`, where the full records of the series have `||||t   00|a|` and
+  `101 $a fre $c jpn`. Nothing in these records says manga, so the parser
+  cannot recover the kind; the correction is changing a kind after the
+  lookup, the not-yet-planned edit-fields feature (found on 2026-10-11).
+- Backend: an unknown BnF function code reads as writer. `contributionRoleOf`
+  maps only `070`, `440` and `730` and defaults the rest to `WRITER`, so on
+  the full *Dragon Quest, la quête de Daï* records from tome 15 on Yūji
+  Horii, `702 … $4 651` (project director), shows as a writer beside Riku
+  Sanjō. Those records also code Kōji Inada `701 … $4 070` (writer) where
+  the minimal ones of tomes 14 and 16 code him `702 … $4 440` (artist), so
+  the tomes of one series disagree on his role; that one is the BnF's data
+  (see the colourist item above). Dropping an unknown code's person, or
+  mapping `651` to a role, is a product call for Tophe (found on
+  2026-10-11).
 - Frontend: `FetchIsbnApi` has no `onUnauthenticated` callback. D06 gives the
   API client one and T012 wired it for `/me` only, so a reader whose Authelia
   session expires while on the lookup screen sees the promise reject instead
