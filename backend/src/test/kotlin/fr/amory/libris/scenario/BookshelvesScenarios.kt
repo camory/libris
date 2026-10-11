@@ -55,7 +55,6 @@ class BookshelvesScenarios @Autowired constructor(private val libris: Libris) {
   }
 
   @Test
-  @Disabled("bookshelves")
   fun `S2 A reader creates a bookshelf`() {
     // Given
     val lea = libris.reader("lea", "Léa")
