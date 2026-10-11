@@ -2,7 +2,6 @@ package fr.amory.libris.library.application
 
 import fr.amory.libris.library.application.FindBookshelfResult.Found
 import fr.amory.libris.library.application.FindBookshelfResult.NoSuchBookshelf
-import fr.amory.libris.library.domain.IgnoringCaseAndAccents
 import fr.amory.libris.library.domain.bookshelf.Bookshelf
 import fr.amory.libris.library.domain.bookshelf.BookshelfId
 import fr.amory.libris.library.domain.bookshelf.BookshelfRepository
@@ -26,10 +25,6 @@ class FindBookshelf(
     readers
       .findByIds(bookshelf.memberships.map { it.readerId })
       .mapNotNull { memberOf(bookshelf, it) }
-      .sortedWith(
-        compareBy<BookshelfMember> { it.role.order }
-          .thenBy(IgnoringCaseAndAccents) { it.displayName },
-      )
 
   private fun memberOf(bookshelf: Bookshelf, reader: Reader): BookshelfMember? =
     bookshelf
