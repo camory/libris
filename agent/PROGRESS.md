@@ -190,3 +190,15 @@ Format:
 - Left over: T087 drops the backend's order once this is deployed; the
   examples *Erckmann, Chatrian* of U06 and `specs/kind.md` are proposed in
   the PR to read *Chatrian, Erckmann*, for Tophe to settle.
+
+## 2026-10-11 — T087 Authors and a card's bookshelves in no promised order — done
+- Did: `Contributions.of` keeps one contribution per author and role and
+  orders nothing; `ContributionRole` is four bare entries; `LookupIsbnForReader`
+  answers a card's copies in the repositories' order.
+- Decided: `Contributions` holds a `Set` built from the distinct list, so it
+  stays equal whatever the order given, as the brief's *Risks* measured;
+  the guard on that equality came first, committed before its mutation ran.
+- Deviations from the brief: none.
+- Left over: the scenario comparisons of `authors` in order, proposed in
+  `agent/PROPOSED.md` for Tophe; merging is not deploying, the backend
+  drops the order once Tophe deploys it.

@@ -442,10 +442,8 @@ Read whole by a run that changes `backend/`, after `every-run.md`.
 - In Kotlin, a bookshelf name's sameness ignoring case and accents is
   `BookshelfName.isSameAs`, over a private `folded` in `BookshelfName.kt`,
   the only folding of the backend's Kotlin; `BookshelfName` is not
-  `Comparable` and its `equals` stays exact. `ListReaderBookshelves` and
-  `FindBookshelf` sort nothing and answer in the repositories' order;
-  `Contributions.of` (a card's authors) and `LookupIsbnForReader` (a card's
-  bookshelves) still sort, until T087. The folding: `Normalizer` NFD, the `\p{Mn}`
+  `Comparable` and its `equals` stays exact. No Kotlin code sorts a list
+  the screen shows. The folding: `Normalizer` NFD, the `\p{Mn}`
   marks dropped, `lowercase()`, then `œ` and `æ` spelt `oe` and `ae`,
   compared as a plain `String`, so spaces and hyphens still count (`À lire`
   is not `Alire`). It is not the catalogue's collation: NFD leaves letters
@@ -454,6 +452,12 @@ Read whole by a run that changes `backend/`, after `every-run.md`.
   `java.text.Collator` at `PRIMARY` (French or root locale) ignores spaces:
   it answers `0` for `One piece` against `Onepiece` (measured on JDK 25,
   2026-10-11), which is why it was set aside.
+- `Contributions` holds a `Set`: it is equal whatever the order it was
+  given, and iterates in no promised order. A kotest collection matcher
+  takes `contributions.toList()`, since `Contributions` is an `Iterable`,
+  not a `Collection`. The scenario DSL's `Card` and a catalogue row compare
+  `authors` as a list, in order, which today is the source's order for a
+  found edition and the join's for a held one.
 - A row comparison `(a, b) > (c, d)` with a nullable member answers `NULL`
   when it meets one: the keyset of `JdbcCatalogueEditions` spells the
   nullable tome out (`IS NULL`, `IS NOT DISTINCT FROM`) instead.

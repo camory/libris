@@ -450,3 +450,8 @@
   bookshelves feature has brought Lucide in; *library* has the leaning
   third spine of `IconBooks` (found 2026-10-10 by Tophe while reviewing
   the bookshelves mockups).
+- 2026-10-11: the scenario DSL's `Card` and catalogue rows (`BookshelfScenarios`,
+  `CatalogueScenarios`, `CoversScenarios`) and *S5 Merged answer, from Open
+  Library alone* of `FastEntryScenarios` compare `authors` as a list, in
+  order, an order the backend no longer promises since T087; they pass on
+  the sources' and the join's order. For Tophe: compare them in any order.
