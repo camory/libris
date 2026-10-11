@@ -30,7 +30,7 @@ other task touches the contract (D04). The first side to pin `v0.11.0`
 rewrites the gotcha on `additionalProperties: false`, which the contract no
 longer says.
 
-- [ ] T072 Backend: bookshelves on `v0.11.0`, the thinnest answer.
+- [x] T072 Backend: bookshelves on `v0.11.0`, the thinnest answer.
       Precondition (human): the backend tests of the bookshelves scenarios,
       skipped, one per scenario or case, bearing its exact title (D07).
       `ApiContractTest` pins `v0.11.0`, the backend's one bump (D04). The

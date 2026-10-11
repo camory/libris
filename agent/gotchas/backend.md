@@ -123,7 +123,10 @@ Read whole by a run that changes `backend/`, after `every-run.md`.
   `403` in `ApiContractTest`), and Kotlin's null check on the matcher's
   `null` throws `eq(...) must not be null`. The form that works:
   `browseCatalogue(ReaderId(eq(id.value) ?: id.value), any())`; `any()` is
-  fine for a nullable value-class parameter.
+  fine for a nullable value-class parameter. Mockito pairs matchers with
+  arguments in the order they were recorded: a matcher put in a `val` to
+  shorten a stub line must come from the first arguments, or it lands on
+  the wrong one and the stub answers `null`.
 - A cover is the file named by its `CoverName` alone, no extension, in
   `LIBRIS_COVERS_DIR` (`libris.covers.directory: ${LIBRIS_COVERS_DIR:}`);
   its media type is the text of the file `<name>.type` beside it, and a
@@ -296,7 +299,8 @@ Read whole by a run that changes `backend/`, after `every-run.md`.
   dispatch only, so the error dispatch to `/error` arrives without the
   reader headers and the security chain refuses it. A `403` there is a stub
   that answered `null` (an argument no stub names, a matcher that missed)
-  or a framework failure no handler turned into a problem.
+  or a framework failure no handler turned into a problem, or a path no
+  controller maps yet, its `auto:` cases included.
 - The JDK `HttpClient` writes header values as US-ASCII (`Léa` leaves as
   `L?a`) and Tomcat reads them as ISO-8859-1. The scenario client and the
   web slice's client are built on `SimpleClientHttpRequestFactory`, which
@@ -313,11 +317,6 @@ Read whole by a run that changes `backend/`, after `every-run.md`.
   counts only the case's own requests.
 - `/actuator/health` answers `{"groups":["liveness","readiness"],
   "status":"UP"}`, not the bare status.
-- `FastEntryScenarios > S1 Typed ISBN, found` compares the whole `200` body
-  with `JsonCompareMode.STRICT`, so a field added to `IsbnResponse` reds it
-  with `AssertionError: Unexpected: <field>` wherever else the task is green.
-  A task that adds a response field names the field in that JSON too; only the
-  full gate sees it, never the class the task is working in.
 - UNIMARC field 105 `$a` is fixed-length coded data whose form-of-contents
   codes sit at positions 4 to 7, `t` marking a comic strip; a record without
   the field names no form. The language an ouvrage was translated from is

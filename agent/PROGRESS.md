@@ -65,13 +65,19 @@ Format:
 - Deviations from the brief: none; no brief.
 - Left over: T072.
 
-## 2026-10-11 — T072 Bookshelves on v0.11.0, the thinnest answer — handoff
-- Done: steps 1 to 8 of the test plan, one commit each; start at step 9 (`GET /api/v1/bookshelves/{id}`).
-- Gate red, branch not pushed: `ApiContractTest` 34 cases, 13 red, all of `GET /bookshelves/{id}`,
-  `POST /bookshelves/{id}/members`, `PUT /me/default-bookshelf`, `GET /readers` (steps 9 to 12); all else green, S2 too.
-- Guard of step 4: mutation `memberships.first { it.readerId == readerId }.role` in `Bookshelf.roleOf` read
-  red, `NoSuchElementException: Collection contains no element matching the predicate.`, reverted.
-- Decided: `CreateBookshelfResult`'s `BlankName` and `NameTaken` added at step 8, the cycle that maps them,
-  not step 6; the created bookshelf the contract stub answers is `FAMILIALE`, a private val of the test file.
-- Learned: the `auto: path 'id' type mismatch` cases of an unmapped path answer `403`, like any case
-  without a controller; a long stub argument trips detekt's `ArgumentListWrapping`, hence a named val.
+## 2026-10-11 — T072 Bookshelves on v0.11.0, the thinnest answer — done
+- Did: the backend pins `v0.11.0` and serves its six bookshelf operations;
+  listing and creating are real, S2 green; opening, the readers, adding a
+  member and choosing the default answer through use cases of a constant.
+- Decided: the shared not-found answer of `BookshelfController` is one private
+  `notFound()`; `NewMemberRequest.toMembership()` turns the request into
+  the application type; the add-a-member stubs reuse the contract's ids,
+  the default bookshelf's as `CONTRACTEER_BOOKSHELF.id`.
+- Deviations from the brief: `CreateBookshelfResult`'s `BlankName` and
+  `NameTaken` came in the cycle that maps them (step 8), not with the use
+  case (step 6), since no case of step 6 motivates them.
+- Left over: the order (T074), the readers and the add (T073), refusals
+  (T075, T077), opening (T076) and choosing the default (T078), as the
+  backlog has them; D02's wording on web sub-packages is proposed in the
+  pull request.
+- Ran in two runs: the first handed off after step 8.
