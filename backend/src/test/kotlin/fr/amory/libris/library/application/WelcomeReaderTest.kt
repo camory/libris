@@ -3,6 +3,7 @@ package fr.amory.libris.library.application
 import fr.amory.libris.fixture.Transaction
 import fr.amory.libris.fixture.TransactionsObserving
 import fr.amory.libris.library.domain.bookshelf.Bookshelf
+import fr.amory.libris.library.domain.bookshelf.BookshelfName
 import fr.amory.libris.library.domain.bookshelf.Membership
 import fr.amory.libris.library.domain.bookshelf.MembershipRole.OWNER
 import fr.amory.libris.library.domain.reader.DuplicateUsernameException
@@ -45,7 +46,7 @@ class WelcomeReaderTest {
 
     // Then
     bookshelves.stored shouldBe listOf(
-      Bookshelf(lea.defaultBookshelfId, "Bibliothèque de Léa", listOf(Membership(lea.id, OWNER))),
+      Bookshelf(lea.defaultBookshelfId, BookshelfName("Bibliothèque de Léa"), listOf(Membership(lea.id, OWNER))),
     )
   }
 

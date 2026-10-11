@@ -10,6 +10,7 @@ import fr.amory.libris.bibliography.fixture.EditionsInMemory
 import fr.amory.libris.library.application.lookup.CopyOnBookshelf
 import fr.amory.libris.library.domain.bookshelf.Bookshelf
 import fr.amory.libris.library.domain.bookshelf.BookshelfId
+import fr.amory.libris.library.domain.bookshelf.BookshelfName
 import fr.amory.libris.library.domain.bookshelf.Membership
 import fr.amory.libris.library.domain.bookshelf.MembershipRole.OWNER
 import fr.amory.libris.library.domain.bookshelf.MembershipRole.VIEWER
@@ -132,7 +133,7 @@ class BrowseCatalogueTest {
     BrowseCatalogue(CatalogueEditionsAnswering(answer), bookshelves, copies, editions)
 
   private fun bookshelfOf(name: String, vararg memberships: Membership): Bookshelf =
-    Bookshelf(BookshelfId.new(), name, memberships.toList()).also { bookshelves.insert(it) }
+    Bookshelf(BookshelfId.new(), BookshelfName(name), memberships.toList()).also { bookshelves.insert(it) }
 
   private fun copyOf(edition: Edition, bookshelf: Bookshelf): Copy =
     Copy(CopyId.new(), edition.id, bookshelf.id).also { copies.insert(it) }

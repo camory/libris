@@ -30,11 +30,11 @@ class LookupIsbnForReader(
       .distinct()
       .mapNotNull { bookshelves.findById(it) }
       .filter { it.hasMember(readerId) }
-      .sortedBy { it.name }
+      .sortedBy { it.name.value }
       .flatMap { bookshelf ->
         copiesOfEdition
           .filter { it.bookshelfId == bookshelf.id }
-          .map { CopyOnBookshelf(it.id, bookshelf.id, bookshelf.name) }
+          .map { CopyOnBookshelf(it.id, bookshelf.id, bookshelf.name.value) }
       }
   }
 }

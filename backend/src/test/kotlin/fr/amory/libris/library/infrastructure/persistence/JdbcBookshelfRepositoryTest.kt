@@ -3,6 +3,7 @@ package fr.amory.libris.library.infrastructure.persistence
 import fr.amory.libris.fixture.JdbcSliceTest
 import fr.amory.libris.library.domain.bookshelf.Bookshelf
 import fr.amory.libris.library.domain.bookshelf.BookshelfId
+import fr.amory.libris.library.domain.bookshelf.BookshelfName
 import fr.amory.libris.library.domain.bookshelf.Membership
 import fr.amory.libris.library.domain.bookshelf.MembershipRole.OWNER
 import fr.amory.libris.library.domain.bookshelf.MembershipRole.VIEWER
@@ -28,7 +29,7 @@ class JdbcBookshelfRepositoryTest @Autowired constructor(
     val juliette = readerNamed("juliette", "Juliette")
     val bookshelf = Bookshelf(
       id = lea.defaultBookshelfId,
-      name = "Bibliothèque de Léa",
+      name = BookshelfName("Bibliothèque de Léa"),
       memberships = listOf(Membership(lea.id, OWNER), Membership(juliette.id, VIEWER)),
     )
 
@@ -53,7 +54,7 @@ class JdbcBookshelfRepositoryTest @Autowired constructor(
     val bookshelf = bookshelfOwnedBy(lea).also { bookshelves.insert(it) }
     val updated = Bookshelf(
       id = bookshelf.id,
-      name = "Salon",
+      name = BookshelfName("Salon"),
       memberships = listOf(Membership(lea.id, OWNER), Membership(juliette.id, VIEWER)),
     )
 
@@ -95,16 +96,19 @@ class JdbcBookshelfRepositoryTest @Autowired constructor(
     val tom = readerNamed("tom", "Tom").also { readers.insert(it) }
     val leasBookshelf = bookshelfOwnedBy(lea).also { bookshelves.insert(it) }
     bookshelfOwnedBy(tom).also { bookshelves.insert(it) }
-    val salon = Bookshelf(BookshelfId.new(), "Salon", listOf(Membership(tom.id, OWNER), Membership(lea.id, VIEWER)))
-      .also { bookshelves.insert(it) }
+    val salon = Bookshelf(
+      BookshelfId.new(),
+      BookshelfName("Salon"),
+      listOf(Membership(tom.id, OWNER), Membership(lea.id, VIEWER)),
+    ).also { bookshelves.insert(it) }
 
     // When
     val found = bookshelves.findByMember(lea.id)
 
     // Then
     found.map { Triple(it.id, it.name, it.memberships.toSet()) } shouldContainExactlyInAnyOrder listOf(
-      Triple(leasBookshelf.id, "Bibliothèque de Léa", setOf(Membership(lea.id, OWNER))),
-      Triple(salon.id, "Salon", setOf(Membership(tom.id, OWNER), Membership(lea.id, VIEWER))),
+      Triple(leasBookshelf.id, BookshelfName("Bibliothèque de Léa"), setOf(Membership(lea.id, OWNER))),
+      Triple(salon.id, BookshelfName("Salon"), setOf(Membership(tom.id, OWNER), Membership(lea.id, VIEWER))),
     )
   }
 

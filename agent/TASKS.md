@@ -60,7 +60,7 @@ longer says.
       case or accents, the default's name the last of them.
       Realises S1; un-skips the backend test of S1.
 
-- [ ] T075 Backend: a name Libris refuses.
+- [x] T075 Backend: a name Libris refuses.
       Creating a bookshelf with a blank name is answered `400`
       `/problems/validation` on `name`; with the name of a bookshelf the
       reader belongs to, whatever their role on it, compared ignoring case

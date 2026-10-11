@@ -30,7 +30,7 @@ class BrowseCatalogue(
         HeldEdition(
           editionsById.getValue(editionId),
           copiesByEdition.getValue(editionId).map { copy ->
-            CopyOnBookshelf(copy.id, copy.bookshelfId, readersBookshelves.getValue(copy.bookshelfId).name)
+            CopyOnBookshelf(copy.id, copy.bookshelfId, readersBookshelves.getValue(copy.bookshelfId).name.value)
           },
         )
       },

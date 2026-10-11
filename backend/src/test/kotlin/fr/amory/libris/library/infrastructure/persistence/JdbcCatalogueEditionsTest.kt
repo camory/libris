@@ -9,6 +9,7 @@ import fr.amory.libris.bibliography.infrastructure.persistence.JdbcEditionReposi
 import fr.amory.libris.fixture.JdbcSliceTest
 import fr.amory.libris.library.domain.bookshelf.Bookshelf
 import fr.amory.libris.library.domain.bookshelf.BookshelfId
+import fr.amory.libris.library.domain.bookshelf.BookshelfName
 import fr.amory.libris.library.domain.bookshelf.Membership
 import fr.amory.libris.library.domain.bookshelf.MembershipRole.OWNER
 import fr.amory.libris.library.domain.copy.Copy
@@ -278,7 +279,7 @@ class JdbcCatalogueEditionsTest @Autowired constructor(
   @Test
   fun `an edition on two of the reader's bookshelves comes once`() {
     // Given
-    val salon = Bookshelf(BookshelfId.new(), "Salon", listOf(Membership(lea.id, OWNER)))
+    val salon = Bookshelf(BookshelfId.new(), BookshelfName("Salon"), listOf(Membership(lea.id, OWNER)))
     bookshelves.insert(salon)
     val edition = heldOn(leasBookshelf, heldOn(salon, roman(1)))
 

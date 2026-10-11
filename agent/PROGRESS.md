@@ -129,3 +129,21 @@ Format:
 - Deviations from the brief: none.
 - Left over: T076 may extract the comparison, as before; whether it should
   also break up ligatures is for its brief, since no spec names such a name.
+
+## 2026-10-11 — T075 A name Libris refuses — done
+- Did: a bookshelf's name is a `BookshelfName`, never blank, refused at the
+  edge through `BookshelfName.of`; `CreateBookshelf` answers `NameTaken` for
+  a name the reader already has; both S3 scenarios green, un-skipped.
+- Decided: the name is kept as typed, not trimmed, as the brief says. The
+  comparison moved whole from `ListReaderBookshelves` into `BookshelfName.kt`,
+  its `œ`/`æ` spelling included; `BookshelfName` orders through it and
+  `isSameAs` is that order answering `0`, so S1's order and S3's sameness
+  cannot part. `LookupIsbnForReader` keeps sorting by `name.value`, exactly,
+  as before: its order is no rule of this task.
+- Deviations from the brief: none. Step 6's smallest green, `isSameAs`
+  answering `true`, fails detekt on that commit alone
+  (`FunctionOnlyReturningConstant`, `UnusedParameter`); step 7 makes it
+  whole, history not rewritten, as in T073. The run handed off once, after
+  step 9; the next run did step 10 alone.
+- Left over: T076 decides whether a reader's display name shares
+  `BookshelfName`'s comparison; T081 shows both refusals on the screen.

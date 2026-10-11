@@ -7,6 +7,7 @@ import fr.amory.libris.library.application.AddMemberResult.NoSuchBookshelf
 import fr.amory.libris.library.application.AddMemberResult.UnknownReader
 import fr.amory.libris.library.domain.bookshelf.Bookshelf
 import fr.amory.libris.library.domain.bookshelf.BookshelfId
+import fr.amory.libris.library.domain.bookshelf.BookshelfName
 import fr.amory.libris.library.domain.bookshelf.Membership
 import fr.amory.libris.library.domain.bookshelf.MembershipRole.OWNER
 import fr.amory.libris.library.domain.bookshelf.MembershipRole.VIEWER
@@ -20,7 +21,8 @@ import org.junit.jupiter.api.Test
 class AddMemberToBookshelfTest {
   private val marc = readerNamed("marc", "Marc")
   private val lea = readerNamed("lea", "Léa")
-  private val familiale = Bookshelf(BookshelfId.new(), "Bibliothèque familiale", listOf(Membership(marc.id, OWNER)))
+  private val familiale =
+    Bookshelf(BookshelfId.new(), BookshelfName("Bibliothèque familiale"), listOf(Membership(marc.id, OWNER)))
   private val bookshelves = BookshelvesInMemory().apply { insert(familiale) }
   private val readers = ReadersInMemory().apply {
     insert(marc)
@@ -37,7 +39,7 @@ class AddMemberToBookshelfTest {
     // Then
     val withLea = Bookshelf(
       familiale.id,
-      "Bibliothèque familiale",
+      BookshelfName("Bibliothèque familiale"),
       listOf(Membership(marc.id, OWNER), Membership(lea.id, VIEWER)),
     )
     answer shouldBe Added(BookshelfMember(lea.id, "Léa", VIEWER))

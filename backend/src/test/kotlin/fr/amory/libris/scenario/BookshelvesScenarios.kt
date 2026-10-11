@@ -70,7 +70,6 @@ class BookshelvesScenarios @Autowired constructor(private val libris: Libris) {
   }
 
   @Test
-  @Disabled("bookshelves")
   fun `S3 A name Libris refuses, a blank name`() {
     // Given
     val lea = libris.reader("lea", "Léa")
@@ -85,7 +84,6 @@ class BookshelvesScenarios @Autowired constructor(private val libris: Libris) {
   }
 
   @Test
-  @Disabled("bookshelves")
   fun `S3 A name Libris refuses, a name taken`() {
     // Given
     val lea = libris.reader("lea", "Léa")
