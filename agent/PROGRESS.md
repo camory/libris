@@ -67,7 +67,8 @@ Format:
 
 ## 2026-10-11 — T072 Bookshelves on v0.11.0, the thinnest answer — handoff
 - Done: steps 1 to 8 of the test plan, one commit each; start at step 9 (`GET /api/v1/bookshelves/{id}`).
-- After step 8, `ApiContractTest` is 34 cases, 13 red: those of steps 9 to 12, by design; S2 green.
+- Gate red, branch not pushed: `ApiContractTest` 34 cases, 13 red, all of `GET /bookshelves/{id}`,
+  `POST /bookshelves/{id}/members`, `PUT /me/default-bookshelf`, `GET /readers` (steps 9 to 12); all else green, S2 too.
 - Guard of step 4: mutation `memberships.first { it.readerId == readerId }.role` in `Bookshelf.roleOf` read
   red, `NoSuchElementException: Collection contains no element matching the predicate.`, reverted.
 - Decided: `CreateBookshelfResult`'s `BlankName` and `NameTaken` added at step 8, the cycle that maps them,
