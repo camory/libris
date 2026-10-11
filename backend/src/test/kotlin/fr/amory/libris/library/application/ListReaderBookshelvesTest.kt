@@ -77,4 +77,27 @@ class ListReaderBookshelvesTest {
       ReaderBookshelf(bandesDessinees.id, "Bandes dessinées", OWNER),
     )
   }
+
+  @Test
+  fun `the others follow by name, ignoring accents but not spaces`() {
+    // Given
+    val lea = readerNamed("lea", "Léa")
+    val albums = Bookshelf(BookshelfId.new(), "Albums", listOf(Membership(lea.id, OWNER)))
+    val aLire = Bookshelf(BookshelfId.new(), "À lire", listOf(Membership(lea.id, OWNER)))
+    val bookshelves = BookshelvesInMemory()
+    bookshelves.insert(bookshelfOwnedBy(lea))
+    bookshelves.insert(albums)
+    bookshelves.insert(aLire)
+    val listReaderBookshelves = ListReaderBookshelves(bookshelves)
+
+    // When
+    val answer = listReaderBookshelves(lea)
+
+    // Then
+    answer shouldBe listOf(
+      ReaderBookshelf(lea.defaultBookshelfId, "Bibliothèque de Léa", OWNER),
+      ReaderBookshelf(aLire.id, "À lire", OWNER),
+      ReaderBookshelf(albums.id, "Albums", OWNER),
+    )
+  }
 }
