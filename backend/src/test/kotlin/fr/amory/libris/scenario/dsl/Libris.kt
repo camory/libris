@@ -98,8 +98,11 @@ class Reader(val libris: Libris, username: String, val displayName: String, priv
   val defaultBookshelf: Bookshelf
     get() = me().defaultBookshelf
 
+  fun visits(): Answer<Me> =
+    libris.get(this, "/api/v1/me") { read<Me>(it) }
+
   private fun me(): Me =
-    libris.get(this, "/api/v1/me") { read<Me>(it) }.value
+    visits().value
 }
 
 data class Me(val id: String, val defaultBookshelf: Bookshelf)

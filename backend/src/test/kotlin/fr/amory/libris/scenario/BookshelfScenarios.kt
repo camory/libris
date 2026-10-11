@@ -3,18 +3,26 @@ package fr.amory.libris.scenario
 import com.github.tomakehurst.wiremock.WireMockServer
 import com.github.tomakehurst.wiremock.client.WireMock.anyRequestedFor
 import com.github.tomakehurst.wiremock.client.WireMock.anyUrl
-import com.jayway.jsonpath.JsonPath
 import fr.amory.libris.bibliography.fixture.BnfStubs
 import fr.amory.libris.bibliography.fixture.OpenLibraryStubs
 import fr.amory.libris.bibliography.fixture.recordedBytes
+import fr.amory.libris.scenario.dsl.Author
+import fr.amory.libris.scenario.dsl.Bookshelf
+import fr.amory.libris.scenario.dsl.Copy
 import fr.amory.libris.scenario.dsl.Libris
+import fr.amory.libris.scenario.dsl.NewBook
 import fr.amory.libris.scenario.dsl.Reader
-import fr.amory.libris.scenario.dsl.bodyOf
+import fr.amory.libris.scenario.dsl.Series
+import fr.amory.libris.scenario.dsl.adds
+import fr.amory.libris.scenario.dsl.asks
+import fr.amory.libris.scenario.dsl.catalogue
+import fr.amory.libris.scenario.dsl.hasAdded
+import io.kotest.matchers.shouldBe
 import io.kotest.matchers.shouldNotBe
+import io.kotest.matchers.string.shouldNotBeEmpty
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Qualifier
-import org.springframework.http.MediaType.APPLICATION_JSON
 import org.springframework.test.web.servlet.client.RestTestClient
 import kotlin.time.Duration.Companion.seconds
 
@@ -32,13 +40,13 @@ class BookshelfScenarios @Autowired constructor(
   fun `S1 The first visit creates the bookshelf`() {
     // Given
     val lea = libris.reader("lea", "Léa")
+
     // When
-    val response = libris.me(lea)
+    val answer = lea.visits()
+
     // Then
-    response.expectStatus().isOk()
-      .expectBody()
-      .jsonPath("$.defaultBookshelf.id").isNotEmpty()
-      .jsonPath("$.defaultBookshelf.name").isEqualTo("Bibliothèque de Léa")
+    answer.value.defaultBookshelf.id.shouldNotBeEmpty()
+    answer.value.defaultBookshelf.name shouldBe "Bibliothèque de Léa"
   }
 
   @Test
@@ -46,23 +54,18 @@ class BookshelfScenarios @Autowired constructor(
     // Given
     val juliette = libris.reader("juliette", "Juliette")
     bnf.knows("9782723488525")
-    libris.ask(juliette, "9782723488525").expectStatus().isOk()
-      .expectBody().jsonPath("$.copies").isEmpty()
-    val bookshelf = libris.defaultBookshelfOf(juliette)
+    juliette.asks("9782723488525").value.copies shouldBe emptyList()
+    val bookshelf = juliette.defaultBookshelf
+
     // When
-    val response = libris.add(juliette, bookshelf, NEW_ONE_PIECE_1)
+    val answer = juliette.adds(NEW_ONE_PIECE_1, to = bookshelf)
+
     // Then
-    response.expectStatus().isCreated()
-      .expectHeader().contentType(APPLICATION_JSON)
-      .expectBody()
-      .jsonPath("$.id").isNotEmpty()
-      .jsonPath("$.bookshelf.id").isEqualTo(bookshelf)
-      .jsonPath("$.bookshelf.name").isEqualTo("Bibliothèque de Juliette")
-    libris.ask(juliette, "9782723488525").expectStatus().isOk()
-      .expectBody()
-      .jsonPath("$.kind").isEqualTo("MANGA")
-      .jsonPath("$.copies.length()").isEqualTo(1)
-      .jsonPath("$.copies[0].bookshelf.name").isEqualTo("Bibliothèque de Juliette")
+    val copy = answer.value
+    copy.bookshelf shouldBe Bookshelf(bookshelf.id, "Bibliothèque de Juliette")
+    val card = juliette.asks("9782723488525").value
+    card.kind shouldBe "MANGA"
+    card.copies shouldBe listOf(copy)
   }
 
   @Test
@@ -70,34 +73,33 @@ class BookshelfScenarios @Autowired constructor(
     // Given
     val marc = libris.reader("marc", "Marc")
     val nina = libris.reader("nina", "Nina")
-    libris.add(marc, libris.defaultBookshelfOf(marc), NEW_ONE_PIECE_2).expectStatus().isCreated()
+    marc.hasAdded(NEW_ONE_PIECE_2, to = marc.defaultBookshelf)
+
     // When
-    val response = libris.add(nina, libris.defaultBookshelfOf(nina), NEW_ONE_PIECE_2)
+    val answer = nina.adds(NEW_ONE_PIECE_2, to = nina.defaultBookshelf)
+
     // Then
-    response.expectStatus().isCreated()
-      .expectBody().jsonPath("$.bookshelf.name").isEqualTo("Bibliothèque de Nina")
-    libris.ask(nina, "9782723489898").expectStatus().isOk()
-      .expectBody()
-      .jsonPath("$.title").isEqualTo("Aux prises avec Baggy et ses hommes")
-      .jsonPath("$.copies.length()").isEqualTo(1)
-      .jsonPath("$.copies[0].bookshelf.name").isEqualTo("Bibliothèque de Nina")
+    val copy = answer.value
+    copy.bookshelf.name shouldBe "Bibliothèque de Nina"
+    val card = nina.asks("9782723489898").value
+    card.title shouldBe "Aux prises avec Baggy et ses hommes"
+    card.copies shouldBe listOf(copy)
   }
 
   @Test
   fun `S3 A known ISBN reaches the existing edition, the same reader again`() {
     // Given
     val paul = libris.reader("paul", "Paul")
-    val bookshelf = libris.defaultBookshelfOf(paul)
-    val first = idOf(libris.add(paul, bookshelf, NEW_ONE_PIECE_2).expectStatus().isCreated())
+    val bookshelf = paul.defaultBookshelf
+    val first = paul.hasAdded(NEW_ONE_PIECE_2, to = bookshelf)
+
     // When
-    val response = libris.add(paul, bookshelf, NEW_ONE_PIECE_2)
+    val answer = paul.adds(NEW_ONE_PIECE_2, to = bookshelf)
+
     // Then
-    val second = idOf(response.expectStatus().isCreated())
-    second shouldNotBe first
-    libris.ask(paul, "9782723489898").expectStatus().isOk()
-      .expectBody()
-      .jsonPath("$.copies.length()").isEqualTo(2)
-      .jsonPath("$.copies[*].bookshelf.name").isEqualTo(listOf("Bibliothèque de Paul", "Bibliothèque de Paul"))
+    answer.value.id shouldNotBe first.id
+    paul.asks("9782723489898").value.copies.map { it.bookshelf.name } shouldBe
+      listOf("Bibliothèque de Paul", "Bibliothèque de Paul")
   }
 
   @Test
@@ -105,19 +107,18 @@ class BookshelfScenarios @Autowired constructor(
     // Given
     val rose = libris.reader("rose", "Rose")
     val sam = libris.reader("sam", "Sam")
-    val rosesCopy = addedWithItsCover(rose, NEW_ONE_PIECE_3, ONE_PIECE_3)
-    libris.add(sam, libris.defaultBookshelfOf(sam), NEW_ONE_PIECE_3).expectStatus().isCreated()
+    val rosesCopy = addedWithItsCover(rose, NEW_ONE_PIECE_3)
+    sam.hasAdded(NEW_ONE_PIECE_3, to = sam.defaultBookshelf)
+
     // When
-    val response = libris.ask(rose, ONE_PIECE_3)
+    val answer = rose.asks(ONE_PIECE_3)
+
     // Then
-    response.expectStatus().isOk()
-      .expectHeader().contentType(APPLICATION_JSON)
-      .expectBody()
-      .jsonPath("$.title").isEqualTo("Piège")
-      .jsonPath("$.kind").isEqualTo("MANGA")
-      .jsonPath("$.copies.length()").isEqualTo(1)
-      .jsonPath("$.copies[0].id").isEqualTo(rosesCopy)
-      .jsonPath("$.copies[0].bookshelf.name").isEqualTo("Bibliothèque de Rose")
+    val card = answer.value
+    card.title shouldBe "Piège"
+    card.kind shouldBe "MANGA"
+    card.copies shouldBe listOf(rosesCopy)
+    rosesCopy.bookshelf.name shouldBe "Bibliothèque de Rose"
     noSourceWasAsked()
   }
 
@@ -126,30 +127,28 @@ class BookshelfScenarios @Autowired constructor(
     // Given
     val tom = libris.reader("tom", "Tom")
     val zoe = libris.reader("zoe", "Zoé")
-    addedWithItsCover(tom, NEW_ONE_PIECE_3, ONE_PIECE_3)
+    addedWithItsCover(tom, NEW_ONE_PIECE_3)
+
     // When
-    val response = libris.ask(zoe, ONE_PIECE_3)
+    val answer = zoe.asks(ONE_PIECE_3)
+
     // Then
-    response.expectStatus().isOk()
-      .expectBody()
-      .jsonPath("$.title").isEqualTo("Piège")
-      .jsonPath("$.copies").isEmpty()
+    val card = answer.value
+    card.title shouldBe "Piège"
+    card.copies shouldBe emptyList()
     noSourceWasAsked()
   }
 
-  private fun addedWithItsCover(reader: Reader, book: String, isbn: String): String {
-    openLibrary.hasCover(isbn, TALL_JPEG)
-    val copy = idOf(libris.add(reader, libris.defaultBookshelfOf(reader), book).expectStatus().isCreated())
-    await { coverOf(reader, isbn) != null }
+  private fun addedWithItsCover(reader: Reader, book: NewBook): Copy {
+    openLibrary.hasCover(book.isbn13, TALL_JPEG)
+    val copy = reader.hasAdded(book, to = reader.defaultBookshelf)
+    await { coverOf(reader, book.isbn13) != null }
     sources.forEach { it.resetRequests() }
     return copy
   }
 
   private fun coverOf(reader: Reader, isbn: String): String? =
-    JsonPath.read<List<String?>>(
-      bodyOf(libris.catalogue(reader).expectStatus().isOk()),
-      "$.books[?(@.isbn13 == '$isbn')].coverUrl",
-    ).single()
+    reader.catalogue().books.single { it.isbn13 == isbn }.coverUrl
 
   private fun await(condition: () -> Boolean) {
     val deadline = System.nanoTime() + PATIENCE.inWholeNanoseconds
@@ -158,9 +157,6 @@ class BookshelfScenarios @Autowired constructor(
       Thread.sleep(POLL_MILLIS)
     }
   }
-
-  private fun idOf(response: RestTestClient.ResponseSpec): String =
-    JsonPath.read(bodyOf(response), "$.id")
 
   private fun noSourceWasAsked() {
     sources.forEach { it.verify(0, anyRequestedFor(anyUrl())) }
@@ -174,43 +170,36 @@ class BookshelfScenarios @Autowired constructor(
     val NEW_ONE_PIECE_1 = onePiece(
       isbn = "9782723488525",
       title = "Romance dawn",
-      subtitle = "\"à l'aube d'une grande aventure\"",
+      subtitle = "à l'aube d'une grande aventure",
       volume = 1,
     )
     val NEW_ONE_PIECE_2 = onePiece(
       isbn = "9782723489898",
       title = "Aux prises avec Baggy et ses hommes",
-      subtitle = "null",
+      subtitle = null,
       volume = 2,
     )
     val NEW_ONE_PIECE_3 = onePiece(
       isbn = ONE_PIECE_3,
       title = "Piège",
-      subtitle = "null",
+      subtitle = null,
       volume = 3,
       coverSource = "Open Library",
     )
 
-    fun onePiece(isbn: String, title: String, subtitle: String, volume: Int, coverSource: String? = null) =
-      """
-            {
-              "isbn13": "$isbn",
-              "kind": "MANGA",
-              "title": "$title",
-              "subtitle": $subtitle,
-              "authors": [
-                { "name": "Eiichirō Oda", "role": "WRITER" },
-                { "name": "Eiichirō Oda", "role": "ARTIST" }
-              ],
-              "series": { "name": "One piece", "volumeNumber": $volume },
-              "collection": "Shonen manga",
-              "publisher": "Glénat",
-              "publicationYear": 2013,
-              "language": "fr",
-              "pageCount": null,
-              "summary": null,
-              "coverSource": ${coverSource?.let { "\"$it\"" } ?: "null"}
-            }
-      """.trimIndent()
+    fun onePiece(isbn: String, title: String, subtitle: String?, volume: Int, coverSource: String? = null) =
+      NewBook(
+        isbn13 = isbn,
+        kind = "MANGA",
+        title = title,
+        subtitle = subtitle,
+        authors = listOf(Author("Eiichirō Oda", "WRITER"), Author("Eiichirō Oda", "ARTIST")),
+        series = Series("One piece", volume),
+        collection = "Shonen manga",
+        publisher = "Glénat",
+        publicationYear = 2013,
+        language = "fr",
+        coverSource = coverSource,
+      )
   }
 }
