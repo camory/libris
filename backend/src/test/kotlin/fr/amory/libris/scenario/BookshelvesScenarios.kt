@@ -174,7 +174,7 @@ class BookshelvesScenarios @Autowired constructor(private val libris: Libris) {
 
     // Then
     answer.refusal shouldBe NOT_FOUND
-    marc.opens(familiale).value.members shouldBe listOf(marc.member(OWNER), lea.member(VIEWER))
+    marc.opens(familiale).value.members shouldContainExactlyInAnyOrder listOf(marc.member(OWNER), lea.member(VIEWER))
   }
 
   @Test
@@ -221,7 +221,7 @@ class BookshelvesScenarios @Autowired constructor(private val libris: Libris) {
 
     // Then
     answer.refusal shouldBe CONFLICT
-    marc.opens(familiale).value.members shouldBe listOf(marc.member(OWNER), lea.member(VIEWER))
+    marc.opens(familiale).value.members shouldContainExactlyInAnyOrder listOf(marc.member(OWNER), lea.member(VIEWER))
   }
 
   @Test

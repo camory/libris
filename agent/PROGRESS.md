@@ -214,5 +214,6 @@ Format:
   reader already a member; it answers a `Bookshelf` again, the `init`
   requires one membership per reader, and the use case asks `hasMember`
   before it.
-- Left over: S6's two ordered comparisons, proposed in `agent/PROPOSED.md`
-  for Tophe; the frontend's add and its refusals (T083).
+- Fix-up on Tophe's ask: S6's two ordered comparisons of the members
+  compare in any order, as S1 and S4 do; the PROPOSED item goes.
+- Left over: the frontend's add and its refusals (T083).

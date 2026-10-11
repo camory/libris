@@ -450,11 +450,3 @@
   bookshelves feature has brought Lucide in; *library* has the leaning
   third spine of `IconBooks` (found 2026-10-10 by Tophe while reviewing
   the bookshelves mockups).
-- 2026-10-11: S6's cases *a viewer of the bookshelf adds a reader* and *an
-  owner adds a reader already a member* in `BookshelvesScenarios` compare
-  the members with `shouldBe listOf(marc.member(OWNER), lea.member(VIEWER))`,
-  an order the backend has not promised since T085, while S1 and S4 compare
-  in any order. They pass on the reader rows' order, which
-  `JdbcReaderRepository.findByIds` answers without `ORDER BY`. Propose to
-  Tophe `shouldContainExactlyInAnyOrder`, as T087 did for the authors
-  (found implementing T077).
