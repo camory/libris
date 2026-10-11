@@ -8,8 +8,6 @@ import org.springframework.stereotype.Service
 import java.text.Normalizer
 import java.text.Normalizer.Form.NFD
 
-private val COMBINING_MARKS = Regex("\\p{Mn}")
-
 @Service
 class ListReaderBookshelves(private val bookshelves: BookshelfRepository) {
   operator fun invoke(reader: Reader): List<ReaderBookshelf> =
@@ -29,3 +27,5 @@ class ListReaderBookshelves(private val bookshelves: BookshelfRepository) {
       .replace(COMBINING_MARKS, "")
       .lowercase()
 }
+
+private val COMBINING_MARKS = Regex("\\p{Mn}")
