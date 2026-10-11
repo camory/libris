@@ -19,7 +19,9 @@ import fr.amory.libris.scenario.dsl.Reader
 import fr.amory.libris.scenario.dsl.Series
 import fr.amory.libris.scenario.dsl.adds
 import fr.amory.libris.scenario.dsl.asks
-import fr.amory.libris.scenario.dsl.catalogue
+import fr.amory.libris.scenario.dsl.await
+import fr.amory.libris.scenario.dsl.awaitsCoverOf
+import fr.amory.libris.scenario.dsl.coverOf
 import fr.amory.libris.scenario.dsl.hasAdded
 import fr.amory.libris.scenario.dsl.views
 import io.kotest.matchers.collections.shouldHaveSize
@@ -92,7 +94,7 @@ class CoversScenarios @Autowired constructor(
     // Then
     answer.refusal shouldBe null
     elapsed shouldBeLessThan 2.seconds
-    coverOf(juliette, ONE_PIECE_1).shouldBeNull()
+    juliette.coverOf(ONE_PIECE_1).shouldBeNull()
   }
 
   @Test
@@ -106,7 +108,7 @@ class CoversScenarios @Autowired constructor(
     marc.hasAdded(onePiece1(coverSource = "inventaire.io"), to = marc.defaultBookshelf)
 
     // When
-    val cover = awaitCover(marc, ONE_PIECE_1)
+    val cover = marc.awaitsCoverOf(ONE_PIECE_1)
 
     // Then
     cover shouldStartWith "/api/v1/covers/"
@@ -122,7 +124,7 @@ class CoversScenarios @Autowired constructor(
     val nina = libris.reader("nina", "Nina")
     openLibrary.hasCover(ONE_PIECE_1, TALL_JPEG)
     nina.hasAdded(onePiece1(coverSource = "Open Library"), to = nina.defaultBookshelf)
-    val cover = awaitCover(nina, ONE_PIECE_1)
+    val cover = nina.awaitsCoverOf(ONE_PIECE_1)
 
     // When
     val answer = nina.views(cover)
@@ -154,7 +156,7 @@ class CoversScenarios @Autowired constructor(
     rose.hasAdded(onePiece1(coverSource = "Open Library"), to = rose.defaultBookshelf)
 
     // When
-    val cover = awaitCover(rose, ONE_PIECE_1)
+    val cover = rose.awaitsCoverOf(ONE_PIECE_1)
 
     // Then
     val picture = rose.views(cover).value
@@ -172,7 +174,7 @@ class CoversScenarios @Autowired constructor(
     sam.hasAdded(onePiece1(coverSource = "inventaire.io"), to = sam.defaultBookshelf)
 
     // When
-    val cover = awaitCover(sam, ONE_PIECE_1)
+    val cover = sam.awaitsCoverOf(ONE_PIECE_1)
 
     // Then
     val picture = sam.views(cover).value
@@ -191,7 +193,7 @@ class CoversScenarios @Autowired constructor(
     tom.hasAdded(onePiece1(coverSource = null), to = tom.defaultBookshelf)
 
     // When
-    val cover = awaitCover(tom, ONE_PIECE_1)
+    val cover = tom.awaitsCoverOf(ONE_PIECE_1)
 
     // Then
     tom.views(cover).value.format shouldBe WEBP
@@ -210,7 +212,7 @@ class CoversScenarios @Autowired constructor(
     zoe.hasAdded(lesNeronia(coverSource = null), to = zoe.defaultBookshelf)
 
     // When
-    val cover = awaitCover(zoe, LES_NERONIA)
+    val cover = zoe.awaitsCoverOf(LES_NERONIA)
 
     // Then
     zoe.views(cover).value.format shouldBe IMAGE_JPEG
@@ -233,7 +235,7 @@ class CoversScenarios @Autowired constructor(
 
     // Then
     openLibrary.coverRequests(LES_NERONIA) shouldBe 1
-    coverOf(eve, LES_NERONIA).shouldBeNull()
+    eve.coverOf(LES_NERONIA).shouldBeNull()
   }
 
   @Test
@@ -268,20 +270,20 @@ class CoversScenarios @Autowired constructor(
     openLibrary.hasCover(ONE_PIECE_3, TALL_JPEG)
     luc.hasAdded(onePiece1(coverSource = "Open Library"), to = bookshelf)
     await { openLibrary.coverRequests(ONE_PIECE_1) == 1 }
-    coverOf(luc, ONE_PIECE_1).shouldBeNull()
+    luc.coverOf(ONE_PIECE_1).shouldBeNull()
 
     // When a run within the day, woken by another add
     luc.hasAdded(onePiece(ONE_PIECE_2, "Aux prises avec Baggy et ses hommes", 2, "Open Library"), to = bookshelf)
-    awaitCover(luc, ONE_PIECE_2)
+    luc.awaitsCoverOf(ONE_PIECE_2)
 
     // Then
     openLibrary.coverRequests(ONE_PIECE_1) shouldBe 1
-    coverOf(luc, ONE_PIECE_1).shouldBeNull()
+    luc.coverOf(ONE_PIECE_1).shouldBeNull()
 
     // When a run a day later
     clock.advance(Duration.ofHours(A_DAY_AND_MORE))
     luc.hasAdded(onePiece(ONE_PIECE_3, "Piège", 3, "Open Library"), to = bookshelf)
-    awaitCover(luc, ONE_PIECE_3)
+    luc.awaitsCoverOf(ONE_PIECE_3)
 
     // Then
     await { openLibrary.coverRequests(ONE_PIECE_1) == 2 }
@@ -298,8 +300,8 @@ class CoversScenarios @Autowired constructor(
     // When
     ana.hasAdded(onePiece1(coverSource = "Open Library"), to = bookshelf)
     ana.hasAdded(onePiece(ONE_PIECE_2, "Aux prises avec Baggy et ses hommes", 2, "Open Library"), to = bookshelf)
-    awaitCover(ana, ONE_PIECE_1)
-    awaitCover(ana, ONE_PIECE_2)
+    ana.awaitsCoverOf(ONE_PIECE_1)
+    ana.awaitsCoverOf(ONE_PIECE_2)
 
     // Then
     val first = openLibrary.coverRequestTimes(ONE_PIECE_1).shouldHaveSize(1).single()
@@ -337,28 +339,12 @@ class CoversScenarios @Autowired constructor(
     answer.value.covers shouldBe emptyList()
   }
 
-  private fun coverOf(reader: Reader, isbn: String): String? =
-    reader.catalogue().books.single { it.isbn13 == isbn }.coverUrl
-
   private fun aStoredCover(reader: Reader, isbn: String): String {
     openLibrary.hasCover(isbn, TALL_JPEG)
     reader.hasAdded(onePiece(isbn, "Romance dawn", 1, "Open Library"), to = reader.defaultBookshelf)
-    val cover = awaitCover(reader, isbn)
+    val cover = reader.awaitsCoverOf(isbn)
     sources.forEach { it.resetRequests() }
     return cover
-  }
-
-  private fun awaitCover(reader: Reader, isbn: String): String {
-    await { coverOf(reader, isbn) != null }
-    return checkNotNull(coverOf(reader, isbn))
-  }
-
-  private fun await(condition: () -> Boolean) {
-    val deadline = System.nanoTime() + PATIENCE.inWholeNanoseconds
-    while (!condition()) {
-      check(System.nanoTime() < deadline) { "still not true after $PATIENCE" }
-      Thread.sleep(POLL_MILLIS)
-    }
   }
 
   private fun noPictureWasFetched() {
@@ -383,9 +369,7 @@ class CoversScenarios @Autowired constructor(
     const val TALL_JPEG_WIDTH = 800
     const val TALL_JPEG_HEIGHT = 1200
     const val SLOWLY = 500
-    const val POLL_MILLIS = 100L
     const val A_DAY_AND_MORE = 25L
-    val PATIENCE = 5.seconds
     val WEBP: MediaType = parseMediaType("image/webp")
     val TALL_JPEG = recordedBytes("covers/tall.jpg")
     val SMALL_WEBP = recordedBytes("covers/small.webp")

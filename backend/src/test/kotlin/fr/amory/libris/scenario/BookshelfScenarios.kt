@@ -15,7 +15,7 @@ import fr.amory.libris.scenario.dsl.Reader
 import fr.amory.libris.scenario.dsl.Series
 import fr.amory.libris.scenario.dsl.adds
 import fr.amory.libris.scenario.dsl.asks
-import fr.amory.libris.scenario.dsl.catalogue
+import fr.amory.libris.scenario.dsl.awaitsCoverOf
 import fr.amory.libris.scenario.dsl.hasAdded
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.shouldNotBe
@@ -24,7 +24,6 @@ import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.test.web.servlet.client.RestTestClient
-import kotlin.time.Duration.Companion.seconds
 
 @ScenarioTest
 class BookshelfScenarios @Autowired constructor(
@@ -142,20 +141,9 @@ class BookshelfScenarios @Autowired constructor(
   private fun addedWithItsCover(reader: Reader, book: NewBook): Copy {
     openLibrary.hasCover(book.isbn13, TALL_JPEG)
     val copy = reader.hasAdded(book, to = reader.defaultBookshelf)
-    await { coverOf(reader, book.isbn13) != null }
+    reader.awaitsCoverOf(book.isbn13)
     sources.forEach { it.resetRequests() }
     return copy
-  }
-
-  private fun coverOf(reader: Reader, isbn: String): String? =
-    reader.catalogue().books.single { it.isbn13 == isbn }.coverUrl
-
-  private fun await(condition: () -> Boolean) {
-    val deadline = System.nanoTime() + PATIENCE.inWholeNanoseconds
-    while (!condition()) {
-      check(System.nanoTime() < deadline) { "still not true after $PATIENCE" }
-      Thread.sleep(POLL_MILLIS)
-    }
   }
 
   private fun noSourceWasAsked() {
@@ -164,8 +152,6 @@ class BookshelfScenarios @Autowired constructor(
 
   private companion object {
     const val ONE_PIECE_3 = "9782723489904"
-    const val POLL_MILLIS = 100L
-    val PATIENCE = 5.seconds
     val TALL_JPEG = recordedBytes("covers/tall.jpg")
     val NEW_ONE_PIECE_1 = onePiece(
       isbn = "9782723488525",
