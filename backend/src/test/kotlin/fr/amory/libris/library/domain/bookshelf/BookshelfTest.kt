@@ -68,6 +68,21 @@ class BookshelfTest {
   }
 
   @Test
+  fun `a member added joins the members a bookshelf had, its id and name kept`() {
+    // Given
+    val marc = ReaderId.new()
+    val lea = ReaderId.new()
+    val id = BookshelfId.new()
+    val bookshelf = Bookshelf(id, "Bibliothèque familiale", listOf(Membership(marc, OWNER)))
+
+    // When
+    val added = bookshelf.withMember(Membership(lea, VIEWER))
+
+    // Then
+    added shouldBe Bookshelf(id, "Bibliothèque familiale", listOf(Membership(marc, OWNER), Membership(lea, VIEWER)))
+  }
+
+  @Test
   fun `a bookshelf without an owner is refused`() {
     shouldThrow<IllegalArgumentException> {
       Bookshelf(BookshelfId.new(), "Bibliothèque de personne", listOf(Membership(ReaderId.new(), VIEWER)))
