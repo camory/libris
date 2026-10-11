@@ -1,3 +1,5 @@
+import { nameOrder } from "./nameOrder";
+
 export type AuthorRole = "WRITER" | "ARTIST" | "COLOURIST" | "TRANSLATOR";
 
 export type Kind = "BOOK" | "BD" | "MANGA";
@@ -44,9 +46,10 @@ export function authorsInOrder(
     }
     played.set(name, roles);
   }
+  const byName = nameOrder(locale);
   return [...played]
     .map(([name, roles]) => ({ name, roles: roles.sort(byRole) }))
-    .sort((a, b) => byRole(a.roles[0], b.roles[0]));
+    .sort((a, b) => byRole(a.roles[0], b.roles[0]) || byName(a.name, b.name));
 }
 
 function byRole(a: AuthorRole, b: AuthorRole) {

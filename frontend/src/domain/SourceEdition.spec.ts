@@ -41,4 +41,23 @@ describe("authorsInOrder", () => {
       { name: "Boichi", roles: ["ARTIST"] },
     ]);
   });
+
+  it("then sorts them by name, ignoring case and accents", () => {
+    // When
+    const authors = authorsInOrder(
+      [
+        { name: "Fabien Vehlmann", role: "WRITER" },
+        { name: "emmanuel Guibert", role: "WRITER" },
+        { name: "Émile Bravo", role: "WRITER" },
+      ],
+      "fr",
+    );
+
+    // Then
+    expect(authors).toEqual([
+      { name: "Émile Bravo", roles: ["WRITER"] },
+      { name: "emmanuel Guibert", roles: ["WRITER"] },
+      { name: "Fabien Vehlmann", roles: ["WRITER"] },
+    ]);
+  });
 });
