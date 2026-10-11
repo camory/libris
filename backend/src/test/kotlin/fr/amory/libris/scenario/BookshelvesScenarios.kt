@@ -31,11 +31,9 @@ import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.Arguments.argumentSet
 import org.junit.jupiter.params.provider.FieldSource
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.test.web.servlet.client.RestTestClient
 
 @ScenarioTest
-class BookshelvesScenarios @Autowired constructor(http: RestTestClient) {
-  private val libris = Libris(http)
+class BookshelvesScenarios @Autowired constructor(private val libris: Libris) {
 
   @Test
   @Disabled("bookshelves")

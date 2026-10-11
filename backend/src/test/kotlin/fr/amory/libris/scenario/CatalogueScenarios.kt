@@ -10,12 +10,9 @@ import io.kotest.matchers.nulls.shouldNotBeNull
 import io.kotest.matchers.shouldBe
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.test.web.servlet.client.RestTestClient
 
 @ScenarioTest
-class CatalogueScenarios @Autowired constructor(
-  http: RestTestClient) {
-  private val libris = Libris(http)
+class CatalogueScenarios @Autowired constructor(private val libris: Libris) {
 
   @Test
   fun `S1 The catalogue lists the house's editions`() {

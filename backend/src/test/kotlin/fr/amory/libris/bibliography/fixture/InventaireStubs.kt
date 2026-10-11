@@ -12,8 +12,6 @@ import com.github.tomakehurst.wiremock.client.WireMock.urlPathMatching
 import com.jayway.jsonpath.JsonPath
 
 class InventaireStubs(private val server: WireMockServer) {
-  val baseUrl: String get() = server.baseUrl()
-
   fun knows(isbn: String, picture: ByteArray, mediaType: String = WEBP) {
     val entity = recorded("inventaire/$isbn.json")
     entityAnswers(isbn, entity)

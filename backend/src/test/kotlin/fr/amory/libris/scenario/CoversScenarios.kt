@@ -1,8 +1,5 @@
 package fr.amory.libris.scenario
 
-import com.github.tomakehurst.wiremock.WireMockServer
-import com.github.tomakehurst.wiremock.client.WireMock.anyRequestedFor
-import com.github.tomakehurst.wiremock.client.WireMock.anyUrl
 import fr.amory.libris.bibliography.fixture.BnfStubs
 import fr.amory.libris.bibliography.fixture.InventaireStubs
 import fr.amory.libris.bibliography.fixture.OpenLibraryStubs
@@ -17,6 +14,7 @@ import fr.amory.libris.scenario.dsl.NOT_FOUND
 import fr.amory.libris.scenario.dsl.NewBook
 import fr.amory.libris.scenario.dsl.Reader
 import fr.amory.libris.scenario.dsl.Series
+import fr.amory.libris.scenario.dsl.Sources
 import fr.amory.libris.scenario.dsl.adds
 import fr.amory.libris.scenario.dsl.asks
 import fr.amory.libris.scenario.dsl.await
@@ -34,11 +32,9 @@ import io.kotest.matchers.string.shouldContain
 import io.kotest.matchers.string.shouldStartWith
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.http.MediaType
 import org.springframework.http.MediaType.IMAGE_JPEG
 import org.springframework.http.MediaType.parseMediaType
-import org.springframework.test.web.servlet.client.RestTestClient
 import java.io.ByteArrayInputStream
 import java.time.Duration
 import javax.imageio.ImageIO
@@ -48,16 +44,12 @@ import kotlin.time.measureTime
 
 @ScenarioTest
 class CoversScenarios @Autowired constructor(
-  http: RestTestClient,
+  private val libris: Libris,
   private val clock: MutableClock,
-  @Qualifier("bnf") bnfServer: WireMockServer,
-  @Qualifier("openLibrary") openLibraryServer: WireMockServer,
-  @Qualifier("inventaire") inventaireServer: WireMockServer) {
-  private val libris = Libris(http)
-  private val bnf = BnfStubs(bnfServer)
-  private val openLibrary = OpenLibraryStubs(openLibraryServer)
-  private val inventaire = InventaireStubs(inventaireServer)
-  private val sources = listOf(bnfServer, openLibraryServer, inventaireServer)
+  private val bnf: BnfStubs,
+  private val openLibrary: OpenLibraryStubs,
+  private val inventaire: InventaireStubs,
+  private val sources: Sources) {
 
   @Test
   fun `S1 The lookup offers the sources' covers`() {
@@ -322,7 +314,7 @@ class CoversScenarios @Autowired constructor(
     val card = answer.value
     card.covers shouldBe listOf(Cover("Libris", cover))
     card.id shouldNotBe null
-    noSourceWasAsked()
+    sources.wereNotAsked()
   }
 
   @Test
@@ -343,7 +335,7 @@ class CoversScenarios @Autowired constructor(
     openLibrary.hasCover(isbn, TALL_JPEG)
     reader.hasAdded(onePiece(isbn, "Romance dawn", 1, "Open Library"), to = reader.defaultBookshelf)
     val cover = reader.awaitsCoverOf(isbn)
-    sources.forEach { it.resetRequests() }
+    sources.forgetRequests()
     return cover
   }
 
@@ -351,10 +343,6 @@ class CoversScenarios @Autowired constructor(
     inventaire.pictureRequests() shouldBe 0
     openLibrary.coverRequests(ONE_PIECE_1) shouldBe 0
     bnf.coverRequests() shouldBe 0
-  }
-
-  private fun noSourceWasAsked() {
-    sources.forEach { it.verify(0, anyRequestedFor(anyUrl())) }
   }
 
   private companion object {

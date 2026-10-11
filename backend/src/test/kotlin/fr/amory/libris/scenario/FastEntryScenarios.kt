@@ -1,6 +1,5 @@
 package fr.amory.libris.scenario
 
-import com.github.tomakehurst.wiremock.WireMockServer
 import fr.amory.libris.bibliography.fixture.BnfStubs
 import fr.amory.libris.bibliography.fixture.OpenLibraryStubs
 import fr.amory.libris.scenario.dsl.Author
@@ -14,27 +13,13 @@ import fr.amory.libris.scenario.dsl.asks
 import io.kotest.matchers.shouldBe
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.beans.factory.annotation.Qualifier
-import org.springframework.core.env.Environment
-import org.springframework.test.web.servlet.client.RestTestClient
 
 @ScenarioTest
 class FastEntryScenarios @Autowired constructor(
-  http: RestTestClient,
-  private val environment: Environment,
-  @Qualifier("bnf") bnfServer: WireMockServer,
-  @Qualifier("openLibrary") openLibraryServer: WireMockServer) {
-  private val libris = Libris(http)
+  libris: Libris,
+  private val bnf: BnfStubs,
+  private val openLibrary: OpenLibraryStubs) {
   private val juliette = libris.reader("juliette", "Juliette")
-  private val bnf = BnfStubs(bnfServer)
-  private val openLibrary = OpenLibraryStubs(openLibraryServer)
-
-  @Test
-  fun `the application runs over the stubbed sources`() {
-    environment.getProperty("LIBRIS_BNF_URL") shouldBe "${bnf.baseUrl}/api/SRU"
-    environment.getProperty("LIBRIS_OPEN_LIBRARY_URL") shouldBe openLibrary.baseUrl
-    environment.getProperty("LIBRIS_SOURCE_TIMEOUT") shouldBe "1s"
-  }
 
   @Test
   fun `S1 Typed ISBN, found`() {

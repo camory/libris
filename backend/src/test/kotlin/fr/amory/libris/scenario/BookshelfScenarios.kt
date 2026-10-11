@@ -1,8 +1,5 @@
 package fr.amory.libris.scenario
 
-import com.github.tomakehurst.wiremock.WireMockServer
-import com.github.tomakehurst.wiremock.client.WireMock.anyRequestedFor
-import com.github.tomakehurst.wiremock.client.WireMock.anyUrl
 import fr.amory.libris.bibliography.fixture.BnfStubs
 import fr.amory.libris.bibliography.fixture.OpenLibraryStubs
 import fr.amory.libris.bibliography.fixture.recordedBytes
@@ -13,6 +10,7 @@ import fr.amory.libris.scenario.dsl.Libris
 import fr.amory.libris.scenario.dsl.NewBook
 import fr.amory.libris.scenario.dsl.Reader
 import fr.amory.libris.scenario.dsl.Series
+import fr.amory.libris.scenario.dsl.Sources
 import fr.amory.libris.scenario.dsl.adds
 import fr.amory.libris.scenario.dsl.asks
 import fr.amory.libris.scenario.dsl.awaitsCoverOf
@@ -22,18 +20,13 @@ import io.kotest.matchers.shouldNotBe
 import io.kotest.matchers.string.shouldNotBeEmpty
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.beans.factory.annotation.Qualifier
-import org.springframework.test.web.servlet.client.RestTestClient
 
 @ScenarioTest
 class BookshelfScenarios @Autowired constructor(
-  http: RestTestClient,
-  @Qualifier("bnf") bnfServer: WireMockServer,
-  @Qualifier("openLibrary") openLibraryServer: WireMockServer) {
-  private val libris = Libris(http)
-  private val bnf = BnfStubs(bnfServer)
-  private val openLibrary = OpenLibraryStubs(openLibraryServer)
-  private val sources = listOf(bnfServer, openLibraryServer)
+  private val libris: Libris,
+  private val bnf: BnfStubs,
+  private val openLibrary: OpenLibraryStubs,
+  private val sources: Sources) {
 
   @Test
   fun `S1 The first visit creates the bookshelf`() {
@@ -118,7 +111,7 @@ class BookshelfScenarios @Autowired constructor(
     card.kind shouldBe "MANGA"
     card.copies shouldBe listOf(rosesCopy)
     rosesCopy.bookshelf.name shouldBe "Bibliothèque de Rose"
-    noSourceWasAsked()
+    sources.wereNotAsked()
   }
 
   @Test
@@ -135,19 +128,15 @@ class BookshelfScenarios @Autowired constructor(
     val card = answer.value
     card.title shouldBe "Piège"
     card.copies shouldBe emptyList()
-    noSourceWasAsked()
+    sources.wereNotAsked()
   }
 
   private fun addedWithItsCover(reader: Reader, book: NewBook): Copy {
     openLibrary.hasCover(book.isbn13, TALL_JPEG)
     val copy = reader.hasAdded(book, to = reader.defaultBookshelf)
     reader.awaitsCoverOf(book.isbn13)
-    sources.forEach { it.resetRequests() }
+    sources.forgetRequests()
     return copy
-  }
-
-  private fun noSourceWasAsked() {
-    sources.forEach { it.verify(0, anyRequestedFor(anyUrl())) }
   }
 
   private companion object {
