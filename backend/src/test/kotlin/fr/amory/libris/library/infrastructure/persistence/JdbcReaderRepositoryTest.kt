@@ -64,6 +64,28 @@ class JdbcReaderRepositoryTest @Autowired constructor(
   }
 
   @Test
+  fun `the readers of the ids given are found, and no other`() {
+    // Given
+    val juliette = readerNamed("juliette", "Juliette")
+    val lea = readerNamed("lea", "Léa")
+    val tom = readerNamed("tom", "Tom")
+    readers.insert(juliette)
+    readers.insert(lea)
+    readers.insert(tom)
+
+    // When
+    val found = readers.findByIds(listOf(juliette.id, tom.id))
+
+    // Then
+    found shouldContainExactlyInAnyOrder listOf(juliette, tom)
+  }
+
+  @Test
+  fun `no id finds no reader`() {
+    readers.findByIds(emptyList()) shouldBe emptyList()
+  }
+
+  @Test
   fun `an unknown username finds no reader`() {
     readers.findByUsername("nobody") shouldBe null
   }

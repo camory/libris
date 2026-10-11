@@ -439,10 +439,13 @@ Read whole by a run that changes `backend/`, after `every-run.md`.
   in its select list (`for SELECT DISTINCT, ORDER BY expressions must
   appear in select list`), collation or not; a semi-join (`EXISTS`) keeps
   an edition once without widening the answer.
-- In Kotlin, "ignoring case and accents" is `BookshelfName.isSameAs` and
-  the comparator `BookshelfName.ignoringCaseAndAccents` (`BookshelfName` is
-  not `Comparable`; its `equals` stays exact), both over a private `folded`
-  in `BookshelfName.kt`: `Normalizer` NFD, the `\p{Mn}` marks
+- In Kotlin, "ignoring case and accents" is the `Comparator<String>`
+  `IgnoringCaseAndAccents`, at the root of `library.domain`, with two users:
+  `BookshelfName` (`isSameAs`, and the comparator
+  `BookshelfName.ignoringCaseAndAccents`; `BookshelfName` is not
+  `Comparable` and its `equals` stays exact) and `FindBookshelf`, which
+  sorts the members' display names through it. It compares a private
+  `folded` of each text: `Normalizer` NFD, the `\p{Mn}` marks
   dropped, `lowercase()`, then `œ` and `æ` spelt `oe` and `ae`, compared
   as a plain `String`, so spaces and hyphens still count (`À lire` before
   `Albums`), as in the catalogue's collation. It is not that collation:

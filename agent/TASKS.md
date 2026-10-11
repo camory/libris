@@ -69,7 +69,7 @@ longer says.
       the creation, which spans the reader's bookshelves (D11, D12).
       Realises S3; un-skips the backend tests of S3, both cases.
 
-- [ ] T076 Backend: a member opens a bookshelf.
+- [x] T076 Backend: a member opens a bookshelf.
       Opening a bookshelf answers its members alone its name and its
       members, each a reader's id and display name with their role, the
       owners first, then the viewers, each by display name ignoring case and

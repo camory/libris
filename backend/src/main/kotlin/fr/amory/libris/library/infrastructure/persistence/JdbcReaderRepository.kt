@@ -21,6 +21,9 @@ private const val FIND_READER_BY_USERNAME =
 private const val FIND_READER_BY_ID =
   "SELECT id, username, email, display_name, default_bookshelf_id FROM reader WHERE id = :id"
 
+private const val FIND_READERS_BY_IDS =
+  "SELECT id, username, email, display_name, default_bookshelf_id FROM reader WHERE id IN (:ids)"
+
 private const val FIND_ALL_READERS =
   "SELECT id, username, email, display_name, default_bookshelf_id FROM reader"
 
@@ -56,6 +59,17 @@ class JdbcReaderRepository(private val jdbcClient: JdbcClient) : ReaderRepositor
       .query { rs, _ -> readerOf(rs) }
       .optional()
       .orElse(null)
+
+  override fun findByIds(ids: List<ReaderId>): List<Reader> =
+    if (ids.isEmpty()) {
+      emptyList()
+    } else {
+      jdbcClient
+        .sql(FIND_READERS_BY_IDS)
+        .param("ids", ids.map { it.value })
+        .query { rs, _ -> readerOf(rs) }
+        .list()
+    }
 
   override fun findAll(): List<Reader> =
     jdbcClient

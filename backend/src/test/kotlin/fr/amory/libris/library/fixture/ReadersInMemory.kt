@@ -21,6 +21,9 @@ class ReadersInMemory : ReaderRepository {
   override fun findById(id: ReaderId): Reader? =
     readers.values.find { it.id == id }
 
+  override fun findByIds(ids: List<ReaderId>): List<Reader> =
+    readers.values.filter { it.id in ids }
+
   override fun findAll(): List<Reader> =
     stored
 
