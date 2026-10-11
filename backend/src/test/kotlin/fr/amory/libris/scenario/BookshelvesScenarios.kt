@@ -178,7 +178,6 @@ class BookshelvesScenarios @Autowired constructor(private val libris: Libris) {
   }
 
   @Test
-  @Disabled("bookshelves")
   fun `S6 An add Libris refuses, a reader who does not belong to it adds a reader`() {
     // Given
     val marc = libris.reader("marc", "Marc")
