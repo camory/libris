@@ -9,4 +9,10 @@ describe("nameOrder", () => {
       "Fables",
     ]);
   });
+
+  it("finds names that differ only in case or accents equal", () => {
+    expect(nameOrder("fr")("Bibliothèque de Léa", "bibliotheque de lea")).toBe(
+      0,
+    );
+  });
 });
