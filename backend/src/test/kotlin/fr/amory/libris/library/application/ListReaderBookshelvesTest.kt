@@ -54,4 +54,27 @@ class ListReaderBookshelvesTest {
       ReaderBookshelf(albums.id, "Albums", OWNER),
     )
   }
+
+  @Test
+  fun `the others follow by name, ignoring case`() {
+    // Given
+    val lea = readerNamed("lea", "Léa")
+    val bandesDessinees = Bookshelf(BookshelfId.new(), "Bandes dessinées", listOf(Membership(lea.id, OWNER)))
+    val albums = Bookshelf(BookshelfId.new(), "albums", listOf(Membership(lea.id, OWNER)))
+    val bookshelves = BookshelvesInMemory()
+    bookshelves.insert(bookshelfOwnedBy(lea))
+    bookshelves.insert(bandesDessinees)
+    bookshelves.insert(albums)
+    val listReaderBookshelves = ListReaderBookshelves(bookshelves)
+
+    // When
+    val answer = listReaderBookshelves(lea)
+
+    // Then
+    answer shouldBe listOf(
+      ReaderBookshelf(lea.defaultBookshelfId, "Bibliothèque de Léa", OWNER),
+      ReaderBookshelf(albums.id, "albums", OWNER),
+      ReaderBookshelf(bandesDessinees.id, "Bandes dessinées", OWNER),
+    )
+  }
 }
