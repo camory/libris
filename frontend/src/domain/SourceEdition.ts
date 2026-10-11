@@ -26,3 +26,28 @@ export interface SourceEdition {
   pageCount: number | null;
   summary: string | null;
 }
+
+export interface Author {
+  name: string;
+  roles: AuthorRole[];
+}
+
+export function authorsInOrder(
+  authors: SourceAuthor[],
+  locale: string,
+): Author[] {
+  const played = new Map<string, AuthorRole[]>();
+  for (const { name, role } of authors) {
+    const roles = played.get(name) ?? [];
+    if (!roles.includes(role)) {
+      roles.push(role);
+    }
+    played.set(name, roles);
+  }
+  return [...played].map(([name, roles]) => ({
+    name,
+    roles: roles.sort((a, b) => ROLES.indexOf(a) - ROLES.indexOf(b)),
+  }));
+}
+
+const ROLES: AuthorRole[] = ["WRITER", "ARTIST", "COLOURIST", "TRANSLATOR"];
