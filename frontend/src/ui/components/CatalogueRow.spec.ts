@@ -63,6 +63,23 @@ describe("CatalogueRow", () => {
     expect(screen.getByText("René Goscinny, Albert Uderzo")).toBeDefined();
   });
 
+  it("names its authors in the order of the card", () => {
+    // Given
+    const drawnFirst: Book = {
+      ...asterixLeGaulois,
+      authors: [
+        { name: "Albert Uderzo", role: "ARTIST" },
+        { name: "René Goscinny", role: "WRITER" },
+      ],
+    };
+
+    // When
+    const { screen } = show(drawnFirst);
+
+    // Then
+    expect(screen.getByText("René Goscinny, Albert Uderzo")).toBeDefined();
+  });
+
   it("names an author of two roles once", () => {
     // When
     const { screen } = show(romanceDawn);
@@ -83,6 +100,23 @@ describe("CatalogueRow", () => {
 
     // When
     const { screen } = show(onTwoBookshelves);
+
+    // Then
+    expect(screen.getByText("Bibliothèque de Léa, Salon")).toBeDefined();
+  });
+
+  it("lists its bookshelves by name", () => {
+    // Given
+    const onSalonFirst: Book = {
+      ...asterixLeGaulois,
+      copies: [
+        { id: "f2a0bf1e-d34c-4bf8-94a9-afb0c1d2e3fa", bookshelf: salon },
+        ...asterixLeGaulois.copies,
+      ],
+    };
+
+    // When
+    const { screen } = show(onSalonFirst);
 
     // Then
     expect(screen.getByText("Bibliothèque de Léa, Salon")).toBeDefined();

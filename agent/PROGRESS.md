@@ -177,3 +177,16 @@ Format:
 - Left over: the authors and a card's bookshelves (T087, after T086);
   narrowing `ListReaderBookshelves` to a `ReaderId`, as the brief's
   *Risks* note, is not proposed: nothing asks for it yet.
+
+## 2026-10-11 — T086 The card and a catalogue row sort their authors and bookshelves — done
+- Did: `nameOrder(locale)` in `domain`, an `Intl.Collator` ignoring case and
+  accents; `authorsInOrder` and `bookshelvesHolding` group and sort through
+  it; the card and a catalogue row take both lists from them.
+- Decided: the card's one-line test compares `roles.join()` alone, the roles
+  arriving in role order from `authorsInOrder`, so the card's own sort of a
+  set's codes left. The card's rows iterate `{ bookshelf, count }`, the
+  shape the domain answers, keyed on the bookshelf's id as before.
+- Deviations from the brief: none.
+- Left over: T087 drops the backend's order once this is deployed; the
+  examples *Erckmann, Chatrian* of U06 and `specs/kind.md` are proposed in
+  the PR to read *Chatrian, Erckmann*, for Tophe to settle.

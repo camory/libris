@@ -120,7 +120,7 @@ describe("SourceEditionCard", () => {
     const card = show(lAmiFritz);
 
     // Then
-    expect(card).toContain("Erckmann, Chatrian");
+    expect(card).toContain("Chatrian, Erckmann");
     expect(card).not.toContain("texte");
   });
 
@@ -149,6 +149,26 @@ describe("SourceEditionCard", () => {
     // Then
     expect(card).toContain("René Goscinny · scénario");
     expect(card).toContain("Albert Uderzo · dessin");
+  });
+
+  it("sorts its authors by their first role", () => {
+    // Given
+    const drawnFirst: SourceEdition = {
+      ...asterix1,
+      authors: [
+        { name: "Albert Uderzo", role: "ARTIST" },
+        { name: "René Goscinny", role: "WRITER" },
+      ],
+    };
+
+    // When
+    const card = show(drawnFirst);
+
+    // Then
+    const goscinny = card.indexOf("René Goscinny · scénario");
+    const uderzo = card.indexOf("Albert Uderzo · dessin");
+    expect(goscinny).not.toBe(-1);
+    expect(uderzo).toBeGreaterThan(goscinny);
   });
 
   it("says texte and illustration under a livre", () => {
@@ -187,7 +207,7 @@ describe("SourceEditionCard", () => {
     const card = show(inAnyOrder);
 
     // Then
-    expect(card).toContain("Eiichirō Oda, Boichi");
+    expect(card).toContain("Boichi, Eiichirō Oda");
     expect(card).not.toContain("scénario");
   });
 
@@ -206,7 +226,7 @@ describe("SourceEditionCard", () => {
     const card = show(listedTwice);
 
     // Then
-    expect(card).toContain("Eiichirō Oda, Boichi");
+    expect(card).toContain("Boichi, Eiichirō Oda");
     expect(card).not.toContain("scénario");
   });
 
@@ -620,7 +640,7 @@ describe("SourceEditionCard", () => {
     expect(card.match(/Dans/g)).toHaveLength(1);
   });
 
-  it("gives each bookshelf its row, in the order of the answer, with no count", () => {
+  it("gives each bookshelf its row, by name, with no count", () => {
     // Given
     const onSalon: Copy = {
       id: "7a2e3d4c-5b6a-4f70-9c81-2d3e4f5a6b72",
@@ -631,10 +651,10 @@ describe("SourceEditionCard", () => {
     const card = show(onePiece1, [onSalon, onLea]);
 
     // Then
-    const salon = card.indexOf("Dans Salon");
     const lea = card.indexOf("Dans Bibliothèque de Léa");
-    expect(salon).not.toBe(-1);
-    expect(lea).toBeGreaterThan(salon);
+    const salon = card.indexOf("Dans Salon");
+    expect(lea).not.toBe(-1);
+    expect(salon).toBeGreaterThan(lea);
     expect(card).not.toContain("exemplaires");
   });
 
