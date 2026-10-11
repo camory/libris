@@ -114,3 +114,18 @@ Format:
   brief's test plan orders it, since it is a guard green on un-skip.
 - Left over: T076 may extract the comparison for the order of a bookshelf's
   members, as the brief's *Out of scope* says.
+
+## 2026-10-11 — T074 The reader's bookshelves in order — reworked
+- Did: `ListReaderBookshelves` imports `NFD` by its bare name and keeps
+  `COMBINING_MARKS` at the foot of the file, below its one user; the
+  comparison's gotcha item says where it parts from the catalogue's
+  collation (ligatures and letters with a stroke).
+- Decided: the reviewer's verdict of 2026-10-11 amended nothing. Its
+  blocking finding was D10's import rule, unmet. Of its suggestions, the
+  constant's place follows D10's stepdown rule, as `CoverController.kt` and
+  `IsbnController.kt` do, and Tophe may still settle it at the next review.
+  The ligature limit was measured before it was written down, on the JDK
+  and on the database collation.
+- Deviations from the brief: none.
+- Left over: T076 may extract the comparison, as before; whether it should
+  also break up ligatures is for its brief, since no spec names such a name.

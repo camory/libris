@@ -441,7 +441,11 @@ Read whole by a run that changes `backend/`, after `every-run.md`.
   private `ignoringCaseAndAccents`: `Normalizer` NFD, the `\p{Mn}` marks
   dropped, then `lowercase()`, compared as a plain `String`, so spaces and
   hyphens still count (`À lire` before `Albums`), as in the catalogue's
-  collation. `java.text.Collator` at `PRIMARY` (French or root locale)
+  collation. It is not that collation: NFD leaves ligatures and letters
+  with a stroke whole (`Œ`, `Æ`, `Ø`, `Ł`), so `Œuvres`, `Æsop`, `Øre` and
+  `Łódź` sort after `Zola`, where `ignoring_case_and_accents` puts them
+  among the O, A and L (measured both, 2026-10-11).
+  `java.text.Collator` at `PRIMARY` (French or root locale)
   ignores spaces: it answers `0` for `One piece` against `Onepiece` and puts
   `Albums` before `À lire` (measured on JDK 25, 2026-10-11).
 - A row comparison `(a, b) > (c, d)` with a nullable member answers `NULL`
