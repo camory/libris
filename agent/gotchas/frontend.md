@@ -299,3 +299,9 @@ Read whole by a run that changes `frontend/`, after `every-run.md`.
   `flush: "post"` runs in the same flush as the render, before
   `findByText` resolves, which is what lets a scenario call back on the
   last row right after finding it.
+- The screens sort names with `nameOrder(locale)` (`src/domain/nameOrder.ts`,
+  `Intl.Collator` at `sensitivity: "base"`), the component passing
+  `useI18n().locale.value` (`authorsInOrder`, `bookshelvesHolding`). Spaces
+  count, so *À lire* sorts before *Albums*, and *Øre* equals *Ore*, unlike
+  the backend's `BookshelfName` folding. The sandbox's default locale is
+  `en-US`: a collator built with no locale is not the screen's.

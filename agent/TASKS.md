@@ -23,7 +23,7 @@ A promise leaves, so the frontend goes first: T086 sorts what the screens
 show today in the backend's order, and T087 drops that order once T086 is
 deployed.
 
-- [ ] T086 Frontend: the card and a catalogue row sort their authors and
+- [x] T086 Frontend: the card and a catalogue row sort their authors and
       bookshelves.
       The card sorts its authors by their first role, scénario, dessin,
       couleurs, traduction, then by name, and its rows *Dans …* by name; a
