@@ -455,9 +455,9 @@ Read whole by a run that changes `backend/`, after `every-run.md`.
 - `Contributions` holds a `Set`: it is equal whatever the order it was
   given, and iterates in no promised order. A kotest collection matcher
   takes `contributions.toList()`, since `Contributions` is an `Iterable`,
-  not a `Collection`. The scenario DSL's `Card` and a catalogue row compare
-  `authors` as a list, in order, which today is the source's order for a
-  found edition and the join's for a held one.
+  not a `Collection`. The scenario DSL's `Card.authors` is a `List` in the
+  answer's order: a scenario with more than one author compares it with
+  `shouldContainExactlyInAnyOrder`.
 - A row comparison `(a, b) > (c, d)` with a nullable member answers `NULL`
   when it meets one: the keyset of `JdbcCatalogueEditions` spells the
   nullable tome out (`IS NULL`, `IS NOT DISTINCT FROM`) instead.

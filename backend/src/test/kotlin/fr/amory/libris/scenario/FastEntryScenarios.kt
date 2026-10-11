@@ -10,6 +10,7 @@ import fr.amory.libris.scenario.dsl.NOT_FOUND
 import fr.amory.libris.scenario.dsl.SOURCES_UNAVAILABLE
 import fr.amory.libris.scenario.dsl.Series
 import fr.amory.libris.scenario.dsl.asks
+import io.kotest.matchers.collections.shouldContainExactlyInAnyOrder
 import io.kotest.matchers.shouldBe
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
@@ -91,7 +92,7 @@ class FastEntryScenarios @Autowired constructor(
     // Then
     val card = answer.value
     card.title shouldBe "Space Wars - Chapitre 1"
-    card.authors.map { it.name } shouldBe listOf("Baba", "Stéphane Lapuss'", "Tartuff")
+    card.authors.map { it.name } shouldContainExactlyInAnyOrder listOf("Baba", "Stéphane Lapuss'", "Tartuff")
     card.publisher shouldBe "KENNES EDITIONS"
   }
 
