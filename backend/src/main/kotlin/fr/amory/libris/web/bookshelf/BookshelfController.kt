@@ -5,11 +5,15 @@ import fr.amory.libris.library.application.AddBookResult.Added
 import fr.amory.libris.library.application.AddBookResult.NoSuchBookshelf
 import fr.amory.libris.library.application.AddBookResult.NotAnOwner
 import fr.amory.libris.library.application.AddBookToBookshelf
+import fr.amory.libris.library.application.BookshelfMember
 import fr.amory.libris.library.application.CreateBookshelf
 import fr.amory.libris.library.application.CreateBookshelfResult.BlankName
 import fr.amory.libris.library.application.CreateBookshelfResult.Created
 import fr.amory.libris.library.application.CreateBookshelfResult.NameTaken
 import fr.amory.libris.library.application.ListReaderBookshelves
+import fr.amory.libris.library.application.OpenBookshelf
+import fr.amory.libris.library.application.OpenBookshelfResult
+import fr.amory.libris.library.application.OpenBookshelfResult.Opened
 import fr.amory.libris.library.application.ReaderBookshelf
 import fr.amory.libris.library.application.lookup.CopyOnBookshelf
 import fr.amory.libris.library.domain.bookshelf.Bookshelf
@@ -28,6 +32,7 @@ import org.springframework.http.HttpStatus.BAD_REQUEST
 import org.springframework.http.HttpStatus.CONFLICT
 import org.springframework.http.HttpStatus.CREATED
 import org.springframework.http.HttpStatus.NOT_FOUND
+import org.springframework.http.HttpStatus.OK
 import org.springframework.http.ProblemDetail
 import org.springframework.http.ResponseEntity
 import org.springframework.security.core.annotation.AuthenticationPrincipal
@@ -42,6 +47,7 @@ import java.util.UUID
 class BookshelfController(
   private val listReaderBookshelves: ListReaderBookshelves,
   private val createBookshelf: CreateBookshelf,
+  private val openBookshelf: OpenBookshelf,
   private val addBookToBookshelf: AddBookToBookshelf) {
   @GetMapping("/api/v1/bookshelves")
   fun list(@AuthenticationPrincipal reader: Reader): List<ReaderBookshelfResponse> =
@@ -53,6 +59,13 @@ class BookshelfController(
       is Created -> ResponseEntity.status(CREATED).body(BookshelfResponse.from(result.bookshelf))
       BlankName  -> invalid(listOf(ValidationErrorResponse("name", "blank"))).asResponse()
       NameTaken  -> problem(CONFLICT, CONFLICT_PROBLEM).asResponse()
+    }
+
+  @GetMapping("/api/v1/bookshelves/{id}")
+  fun open(@AuthenticationPrincipal reader: Reader, @PathVariable("id") id: UUID): ResponseEntity<Any> =
+    when (val result = openBookshelf(reader.id, BookshelfId(id))) {
+      is Opened                           -> ResponseEntity.status(OK).body(BookshelfWithMembersResponse.from(result))
+      OpenBookshelfResult.NoSuchBookshelf -> notFound()
     }
 
   @PostMapping("/api/v1/bookshelves/{id}/books")
@@ -68,10 +81,13 @@ class BookshelfController(
   private fun invalid(errors: List<ValidationErrorResponse>): ProblemDetail =
     problem(BAD_REQUEST, VALIDATION_PROBLEM).apply { setProperty("errors", errors) }
 
+  private fun notFound(): ResponseEntity<Any> =
+    problem(NOT_FOUND, NOT_FOUND_PROBLEM).asResponse()
+
   private fun responseOf(result: AddBookResult): ResponseEntity<Any> =
     when (result) {
       is Added                    -> ResponseEntity.status(CREATED).body(CopyResponse.from(result))
-      NoSuchBookshelf, NotAnOwner -> problem(NOT_FOUND, NOT_FOUND_PROBLEM).asResponse()
+      NoSuchBookshelf, NotAnOwner -> notFound()
     }
 }
 
@@ -82,6 +98,30 @@ data class ReaderBookshelfResponse(
   companion object {
     fun from(bookshelf: ReaderBookshelf): ReaderBookshelfResponse =
       ReaderBookshelfResponse(bookshelf.id.value.toString(), bookshelf.name, bookshelf.role)
+  }
+}
+
+data class BookshelfWithMembersResponse(
+  val id: String,
+  val name: String,
+  val members: List<MemberResponse>) {
+  companion object {
+    fun from(opened: Opened): BookshelfWithMembersResponse =
+      BookshelfWithMembersResponse(
+        opened.bookshelf.id.value.toString(),
+        opened.bookshelf.name,
+        opened.members.map { MemberResponse.from(it) },
+      )
+  }
+}
+
+data class MemberResponse(
+  val id: String,
+  val displayName: String,
+  val role: MembershipRole) {
+  companion object {
+    fun from(member: BookshelfMember): MemberResponse =
+      MemberResponse(member.readerId.value.toString(), member.displayName, member.role)
   }
 }
 
