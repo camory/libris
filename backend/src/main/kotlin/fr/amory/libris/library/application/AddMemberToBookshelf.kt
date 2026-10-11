@@ -18,9 +18,8 @@ class AddMemberToBookshelf(
   private val bookshelves: BookshelfRepository,
   private val readers: ReaderRepository,
   private val transactions: TransactionOperations) {
-  @Suppress("UnusedParameter")
   operator fun invoke(readerId: ReaderId, bookshelfId: BookshelfId, membership: Membership): AddMemberResult {
-    val bookshelf = bookshelves.findById(bookshelfId)
+    val bookshelf = bookshelves.findById(bookshelfId)?.takeIf { it.isOwnedBy(readerId) }
     val reader = readers.findById(membership.readerId)
     return when {
       bookshelf == null -> NoSuchBookshelf
