@@ -216,6 +216,7 @@ deployed.
       orders nothing, and `LookupIsbnForReader` sorts nothing (D11, D12);
       their tests of the order leave, and `ContributionRole.order` with
       them, which nothing else reads.
+
 ## Done
 
 - Phase 0 — Foundations, T001 to T012, done 2026-09-10 with `v0.1.3` on the
