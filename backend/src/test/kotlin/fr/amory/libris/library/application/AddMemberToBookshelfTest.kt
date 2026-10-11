@@ -3,6 +3,7 @@ package fr.amory.libris.library.application
 import fr.amory.libris.fixture.Transaction
 import fr.amory.libris.fixture.TransactionsObserving
 import fr.amory.libris.library.application.AddMemberResult.Added
+import fr.amory.libris.library.application.AddMemberResult.AlreadyAMember
 import fr.amory.libris.library.application.AddMemberResult.NoSuchBookshelf
 import fr.amory.libris.library.application.AddMemberResult.UnknownReader
 import fr.amory.libris.library.domain.bookshelf.Bookshelf
@@ -94,6 +95,21 @@ class AddMemberToBookshelfTest {
     // Then
     answer shouldBe NoSuchBookshelf
     bookshelves.stored shouldBe listOf(familiale)
+    transactions.recorded shouldBe emptyList()
+  }
+
+  @Test
+  fun `an owner adding a reader already a member answers already a member, the bookshelf as it was`() {
+    // Given
+    val withLea = familiale.copy(memberships = listOf(Membership(marc.id, OWNER), Membership(lea.id, VIEWER)))
+    bookshelves.update(withLea)
+
+    // When
+    val answer = addMemberToBookshelf(marc.id, familiale.id, Membership(lea.id, OWNER))
+
+    // Then
+    answer shouldBe AlreadyAMember
+    bookshelves.stored shouldBe listOf(withLea)
     transactions.recorded shouldBe emptyList()
   }
 }

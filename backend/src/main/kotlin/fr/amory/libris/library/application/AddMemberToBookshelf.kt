@@ -1,6 +1,7 @@
 package fr.amory.libris.library.application
 
 import fr.amory.libris.library.application.AddMemberResult.Added
+import fr.amory.libris.library.application.AddMemberResult.AlreadyAMember
 import fr.amory.libris.library.application.AddMemberResult.NoSuchBookshelf
 import fr.amory.libris.library.application.AddMemberResult.UnknownReader
 import fr.amory.libris.library.domain.bookshelf.Bookshelf
@@ -21,15 +22,17 @@ class AddMemberToBookshelf(
   operator fun invoke(readerId: ReaderId, bookshelfId: BookshelfId, membership: Membership): AddMemberResult {
     val bookshelf = bookshelves.findById(bookshelfId)?.takeIf { it.isOwnedBy(readerId) }
     val reader = readers.findById(membership.readerId)
+    val withMember = bookshelf?.withMember(membership)
     return when {
-      bookshelf == null -> NoSuchBookshelf
-      reader == null    -> UnknownReader
-      else              -> added(bookshelf, reader, membership)
+      bookshelf == null  -> NoSuchBookshelf
+      reader == null     -> UnknownReader
+      withMember == null -> AlreadyAMember
+      else               -> added(withMember, reader, membership)
     }
   }
 
-  private fun added(bookshelf: Bookshelf, reader: Reader, membership: Membership): AddMemberResult {
-    transactions.executeWithoutResult { bookshelf.withMember(membership)?.let { bookshelves.update(it) } }
+  private fun added(withMember: Bookshelf, reader: Reader, membership: Membership): AddMemberResult {
+    transactions.executeWithoutResult { bookshelves.update(withMember) }
     return Added(BookshelfMember(reader.id, reader.displayName, membership.role))
   }
 }
