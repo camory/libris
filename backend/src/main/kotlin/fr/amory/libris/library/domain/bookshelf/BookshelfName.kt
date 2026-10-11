@@ -4,6 +4,6 @@ package fr.amory.libris.library.domain.bookshelf
 value class BookshelfName(val value: String) {
   companion object {
     fun of(text: String): BookshelfName? =
-      BookshelfName(text)
+      text.takeIf { it.isNotBlank() }?.let { BookshelfName(it) }
   }
 }

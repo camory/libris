@@ -9,4 +9,10 @@ class BookshelfNameTest {
     // Given / When / Then
     BookshelfName.of("Bibliothèque familiale") shouldBe BookshelfName("Bibliothèque familiale")
   }
+
+  @Test
+  fun `a blank text names no bookshelf`() {
+    // Given / When / Then
+    BookshelfName.of("   ") shouldBe null
+  }
 }
