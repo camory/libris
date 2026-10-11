@@ -4,24 +4,24 @@ import com.jayway.jsonpath.JsonPath
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.MediaType.APPLICATION_JSON
-import org.springframework.http.MediaType.APPLICATION_PROBLEM_JSON
 import org.springframework.test.web.servlet.client.RestTestClient
-import java.util.Optional
 
 @ScenarioTest
 class CatalogueScenarios @Autowired constructor(
-  private val http: RestTestClient) {
+  http: RestTestClient) {
+  private val libris = Libris(http)
+
   @Test
   fun `S1 The catalogue lists the house's editions`() {
     // Given
-    val lea = reader("lea", "Léa")
-    val sam = reader("sam", "Sam")
-    val leasBookshelf = defaultBookshelfOf(lea)
+    val lea = Reader("lea", "Léa")
+    val sam = Reader("sam", "Sam")
+    val leasBookshelf = libris.defaultBookshelfOf(lea)
     listOf(ONE_PIECE_2, EMILE, ASTERIX_ET_SES_AMIS, ONE_PIECE_1, ONE_PIECE_1, LA_SERPE_D_OR, ASTERIX_LE_GAULOIS)
-      .forEach { add(lea, leasBookshelf, it).expectStatus().isCreated() }
-    add(sam, defaultBookshelfOf(sam), ONE_PIECE_3).expectStatus().isCreated()
+      .forEach { libris.add(lea, leasBookshelf, it).expectStatus().isCreated() }
+    libris.add(sam, libris.defaultBookshelfOf(sam), ONE_PIECE_3).expectStatus().isCreated()
     // When
-    val response = catalogue(lea)
+    val response = libris.catalogue(lea)
     // Then
     response.expectStatus().isOk()
       .expectHeader().contentType(APPLICATION_JSON)
@@ -50,11 +50,11 @@ class CatalogueScenarios @Autowired constructor(
   @Test
   fun `S2 The catalogue comes in pages`() {
     // Given
-    val marc = reader("marc", "Marc")
-    val bookshelf = defaultBookshelfOf(marc)
-    (1..51).forEach { add(marc, bookshelf, roman(it)).expectStatus().isCreated() }
+    val marc = Reader("marc", "Marc")
+    val bookshelf = libris.defaultBookshelfOf(marc)
+    (1..51).forEach { libris.add(marc, bookshelf, roman(it)).expectStatus().isCreated() }
     // When
-    val firstPage = catalogue(marc)
+    val firstPage = libris.catalogue(marc)
     // Then
     firstPage.expectStatus().isOk()
       .expectBody()
@@ -63,7 +63,7 @@ class CatalogueScenarios @Autowired constructor(
       .jsonPath("$.books[49].title").isEqualTo("Roman 50")
       .jsonPath("$.next").isNotEmpty()
     val next: String = JsonPath.read(bodyOf(firstPage), "$.next")
-    catalogue(marc, after = next).expectStatus().isOk()
+    libris.catalogue(marc, after = next).expectStatus().isOk()
       .expectBody()
       .jsonPath("$.books[*].title").isEqualTo(listOf("Roman 51"))
       .jsonPath("$.next").isEqualTo(null)
@@ -72,9 +72,9 @@ class CatalogueScenarios @Autowired constructor(
   @Test
   fun `S3 The catalogue is empty`() {
     // Given
-    val nina = reader("nina", "Nina")
+    val nina = Reader("nina", "Nina")
     // When
-    val response = catalogue(nina)
+    val response = libris.catalogue(nina)
     // Then
     response.expectStatus().isOk()
       .expectHeader().contentType(APPLICATION_JSON)
@@ -82,43 +82,6 @@ class CatalogueScenarios @Autowired constructor(
       .jsonPath("$.books").isEmpty()
       .jsonPath("$.next").isEqualTo(null)
   }
-
-  private fun catalogue(reader: Map<String, List<String>>, after: String? = null): RestTestClient.ResponseSpec =
-    http.get()
-      .uri { it.path("/api/v1/books").queryParamIfPresent("after", Optional.ofNullable(after)).build() }
-      .headers { it.putAll(reader) }
-      .accept(APPLICATION_JSON, APPLICATION_PROBLEM_JSON)
-      .exchange()
-
-  private fun me(reader: Map<String, List<String>>): RestTestClient.ResponseSpec =
-    http.get()
-      .uri("/api/v1/me")
-      .headers { it.putAll(reader) }
-      .accept(APPLICATION_JSON)
-      .exchange()
-
-  private fun add(reader: Map<String, List<String>>, bookshelf: String, book: String): RestTestClient.ResponseSpec =
-    http.post()
-      .uri("/api/v1/bookshelves/$bookshelf/books")
-      .headers { it.putAll(reader) }
-      .contentType(APPLICATION_JSON)
-      .accept(APPLICATION_JSON, APPLICATION_PROBLEM_JSON)
-      .body(book)
-      .exchange()
-
-  private fun defaultBookshelfOf(reader: Map<String, List<String>>): String =
-    JsonPath.read(bodyOf(me(reader).expectStatus().isOk()), "$.defaultBookshelf.id")
-
-  private fun bodyOf(response: RestTestClient.ResponseSpec): String =
-    requireNotNull(response.expectBody(String::class.java).returnResult().responseBody)
-
-  private fun reader(username: String, name: String) =
-    mapOf(
-      "Remote-User" to listOf(username),
-      "Remote-Name" to listOf(name),
-      "Remote-Email" to listOf("$username@amory.fr"),
-      "Remote-Groups" to listOf("family"),
-    )
 
   private companion object {
     val ONE_PIECE_1 = manga("9782723488525", "Romance dawn", "One piece", 1)

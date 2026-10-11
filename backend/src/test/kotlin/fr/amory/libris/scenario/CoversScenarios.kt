@@ -21,7 +21,6 @@ import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.http.MediaType
-import org.springframework.http.MediaType.APPLICATION_JSON
 import org.springframework.http.MediaType.APPLICATION_PROBLEM_JSON
 import org.springframework.http.MediaType.IMAGE_JPEG
 import org.springframework.http.MediaType.parseMediaType
@@ -39,6 +38,7 @@ class CoversScenarios @Autowired constructor(
   @Qualifier("bnf") bnfServer: WireMockServer,
   @Qualifier("openLibrary") openLibraryServer: WireMockServer,
   @Qualifier("inventaire") inventaireServer: WireMockServer) {
+  private val libris = Libris(http)
   private val bnf = BnfStubs(bnfServer)
   private val openLibrary = OpenLibraryStubs(openLibraryServer)
   private val inventaire = InventaireStubs(inventaireServer)
@@ -47,13 +47,13 @@ class CoversScenarios @Autowired constructor(
   @Test
   fun `S1 The lookup offers the sources' covers`() {
     // Given
-    val lea = reader("lea", "Léa")
+    val lea = Reader("lea", "Léa")
     bnf.knows(ONE_PIECE_1)
     openLibrary.knows(ONE_PIECE_1)
     inventaire.knows(ONE_PIECE_1, SMALL_WEBP)
 
     // When
-    val response = ask(lea, ONE_PIECE_1)
+    val response = libris.ask(lea, ONE_PIECE_1)
 
     // Then
     val body = bodyOf(response.expectStatus().isOk())
@@ -68,13 +68,13 @@ class CoversScenarios @Autowired constructor(
   @Test
   fun `S3 The add carries the cover's source`() {
     // Given
-    val juliette = reader("juliette", "Juliette")
-    val bookshelf = defaultBookshelfOf(juliette)
+    val juliette = Reader("juliette", "Juliette")
+    val bookshelf = libris.defaultBookshelfOf(juliette)
     inventaire.knowsButThePictureNeverComes(ONE_PIECE_1)
 
     // When
     val response: RestTestClient.ResponseSpec
-    val elapsed = measureTime { response = add(juliette, bookshelf, onePiece1(coverSource = "inventaire.io")) }
+    val elapsed = measureTime { response = libris.add(juliette, bookshelf, onePiece1(coverSource = "inventaire.io")) }
 
     // Then
     response.expectStatus().isCreated()
@@ -85,12 +85,16 @@ class CoversScenarios @Autowired constructor(
   @Test
   fun `S4 The worker fetches the chosen cover`() {
     // Given
-    val marc = reader("marc", "Marc")
+    val marc = Reader("marc", "Marc")
     inventaire.knows(ONE_PIECE_1, SMALL_WEBP)
     openLibrary.hasCover(ONE_PIECE_1, TALL_JPEG)
     bnf.knows(ONE_PIECE_1)
     bnf.hasCover(TALL_JPEG)
-    add(marc, defaultBookshelfOf(marc), onePiece1(coverSource = "inventaire.io")).expectStatus().isCreated()
+    libris.add(
+      marc,
+      libris.defaultBookshelfOf(marc),
+      onePiece1(coverSource = "inventaire.io")
+    ).expectStatus().isCreated()
 
     // When
     val cover = awaitCover(marc, ONE_PIECE_1)
@@ -106,9 +110,13 @@ class CoversScenarios @Autowired constructor(
   @Test
   fun `S5 Libris serves a stored cover`() {
     // Given
-    val nina = reader("nina", "Nina")
+    val nina = Reader("nina", "Nina")
     openLibrary.hasCover(ONE_PIECE_1, TALL_JPEG)
-    add(nina, defaultBookshelfOf(nina), onePiece1(coverSource = "Open Library")).expectStatus().isCreated()
+    libris.add(
+      nina,
+      libris.defaultBookshelfOf(nina),
+      onePiece1(coverSource = "Open Library")
+    ).expectStatus().isCreated()
     val cover = awaitCover(nina, ONE_PIECE_1)
 
     // When
@@ -126,7 +134,7 @@ class CoversScenarios @Autowired constructor(
   @Test
   fun `S5 Libris serves a stored cover, an address naming no cover`() {
     // Given
-    val paul = reader("paul", "Paul")
+    val paul = Reader("paul", "Paul")
 
     // When
     val response = picture(paul, "/api/v1/covers/${"0".repeat(HASH_LENGTH)}")
@@ -140,9 +148,13 @@ class CoversScenarios @Autowired constructor(
   @Test
   fun `S6 The picture is normalised, taller than 600`() {
     // Given
-    val rose = reader("rose", "Rose")
+    val rose = Reader("rose", "Rose")
     openLibrary.hasCover(ONE_PIECE_1, TALL_JPEG)
-    add(rose, defaultBookshelfOf(rose), onePiece1(coverSource = "Open Library")).expectStatus().isCreated()
+    libris.add(
+      rose,
+      libris.defaultBookshelfOf(rose),
+      onePiece1(coverSource = "Open Library")
+    ).expectStatus().isCreated()
 
     // When
     val cover = awaitCover(rose, ONE_PIECE_1)
@@ -157,9 +169,9 @@ class CoversScenarios @Autowired constructor(
   @Test
   fun `S6 The picture is normalised, 600 tall or less`() {
     // Given
-    val sam = reader("sam", "Sam")
+    val sam = Reader("sam", "Sam")
     inventaire.knows(ONE_PIECE_1, SMALL_WEBP)
-    add(sam, defaultBookshelfOf(sam), onePiece1(coverSource = "inventaire.io")).expectStatus().isCreated()
+    libris.add(sam, libris.defaultBookshelfOf(sam), onePiece1(coverSource = "inventaire.io")).expectStatus().isCreated()
 
     // When
     val cover = awaitCover(sam, ONE_PIECE_1)
@@ -173,12 +185,12 @@ class CoversScenarios @Autowired constructor(
   @Test
   fun `S7 An edition without a chosen source gets the cascade, the first source has it`() {
     // Given
-    val tom = reader("tom", "Tom")
+    val tom = Reader("tom", "Tom")
     inventaire.knows(ONE_PIECE_1, SMALL_WEBP)
     openLibrary.hasCover(ONE_PIECE_1, TALL_JPEG)
     bnf.knows(ONE_PIECE_1)
     bnf.hasCover(TALL_JPEG)
-    add(tom, defaultBookshelfOf(tom), onePiece1(coverSource = null)).expectStatus().isCreated()
+    libris.add(tom, libris.defaultBookshelfOf(tom), onePiece1(coverSource = null)).expectStatus().isCreated()
 
     // When
     val cover = awaitCover(tom, ONE_PIECE_1)
@@ -192,12 +204,12 @@ class CoversScenarios @Autowired constructor(
   @Test
   fun `S7 An edition without a chosen source gets the cascade, only the last has it`() {
     // Given
-    val zoe = reader("zoe", "Zoé")
+    val zoe = Reader("zoe", "Zoé")
     inventaire.doesNotKnow(LES_NERONIA)
     openLibrary.hasNoCover(LES_NERONIA)
     bnf.knows(LES_NERONIA)
     bnf.hasCover(TALL_JPEG)
-    add(zoe, defaultBookshelfOf(zoe), lesNeronia(coverSource = null)).expectStatus().isCreated()
+    libris.add(zoe, libris.defaultBookshelfOf(zoe), lesNeronia(coverSource = null)).expectStatus().isCreated()
 
     // When
     val cover = awaitCover(zoe, LES_NERONIA)
@@ -211,12 +223,12 @@ class CoversScenarios @Autowired constructor(
   @Test
   fun `S7 An edition without a chosen source gets the cascade, none has it`() {
     // Given
-    val eve = reader("eve", "Ève")
+    val eve = Reader("eve", "Ève")
     inventaire.doesNotKnow(LES_NERONIA)
     openLibrary.hasNoCover(LES_NERONIA)
     bnf.knows(LES_NERONIA)
     bnf.hasNoCover()
-    add(eve, defaultBookshelfOf(eve), lesNeronia(coverSource = null)).expectStatus().isCreated()
+    libris.add(eve, libris.defaultBookshelfOf(eve), lesNeronia(coverSource = null)).expectStatus().isCreated()
 
     // When
     await { bnf.coverRequests() == 1 }
@@ -252,16 +264,16 @@ class CoversScenarios @Autowired constructor(
 
   private fun aFailedFetchWaitsADay() {
     // Given
-    val luc = reader("luc", "Luc")
-    val bookshelf = defaultBookshelfOf(luc)
+    val luc = Reader("luc", "Luc")
+    val bookshelf = libris.defaultBookshelfOf(luc)
     openLibrary.hasCover(ONE_PIECE_2, TALL_JPEG)
     openLibrary.hasCover(ONE_PIECE_3, TALL_JPEG)
-    add(luc, bookshelf, onePiece1(coverSource = "Open Library")).expectStatus().isCreated()
+    libris.add(luc, bookshelf, onePiece1(coverSource = "Open Library")).expectStatus().isCreated()
     await { openLibrary.coverRequests(ONE_PIECE_1) == 1 }
     coverOf(luc, ONE_PIECE_1).shouldBeNull()
 
     // When a run within the day, woken by another add
-    add(luc, bookshelf, onePiece(ONE_PIECE_2, "Aux prises avec Baggy et ses hommes", 2, "Open Library"))
+    libris.add(luc, bookshelf, onePiece(ONE_PIECE_2, "Aux prises avec Baggy et ses hommes", 2, "Open Library"))
       .expectStatus().isCreated()
     awaitCover(luc, ONE_PIECE_2)
 
@@ -271,7 +283,7 @@ class CoversScenarios @Autowired constructor(
 
     // When a run a day later
     clock.advance(Duration.ofHours(A_DAY_AND_MORE))
-    add(luc, bookshelf, onePiece(ONE_PIECE_3, "Piège", 3, "Open Library")).expectStatus().isCreated()
+    libris.add(luc, bookshelf, onePiece(ONE_PIECE_3, "Piège", 3, "Open Library")).expectStatus().isCreated()
     awaitCover(luc, ONE_PIECE_3)
 
     // Then
@@ -281,14 +293,14 @@ class CoversScenarios @Autowired constructor(
   @Test
   fun `S9 The worker runs on its own`() {
     // Given
-    val ana = reader("ana", "Ana")
-    val bookshelf = defaultBookshelfOf(ana)
+    val ana = Reader("ana", "Ana")
+    val bookshelf = libris.defaultBookshelfOf(ana)
     openLibrary.hasCoverAfter(ONE_PIECE_1, TALL_JPEG, SLOWLY)
     openLibrary.hasCover(ONE_PIECE_2, TALL_JPEG)
 
     // When
-    add(ana, bookshelf, onePiece1(coverSource = "Open Library")).expectStatus().isCreated()
-    add(ana, bookshelf, onePiece(ONE_PIECE_2, "Aux prises avec Baggy et ses hommes", 2, "Open Library"))
+    libris.add(ana, bookshelf, onePiece1(coverSource = "Open Library")).expectStatus().isCreated()
+    libris.add(ana, bookshelf, onePiece(ONE_PIECE_2, "Aux prises avec Baggy et ses hommes", 2, "Open Library"))
       .expectStatus().isCreated()
     awaitCover(ana, ONE_PIECE_1)
     awaitCover(ana, ONE_PIECE_2)
@@ -302,11 +314,11 @@ class CoversScenarios @Autowired constructor(
   @Test
   fun `S10 A held edition offers its own cover`() {
     // Given
-    val iris = reader("iris", "Iris")
+    val iris = Reader("iris", "Iris")
     val cover = aStoredCover(iris, ONE_PIECE_1)
 
     // When
-    val response = ask(iris, ONE_PIECE_1)
+    val response = libris.ask(iris, ONE_PIECE_1)
 
     // Then
     val body = bodyOf(response.expectStatus().isOk())
@@ -319,78 +331,49 @@ class CoversScenarios @Autowired constructor(
   @Test
   fun `S10 A held edition offers its own cover, not yet stored`() {
     // Given
-    val hugo = reader("hugo", "Hugo")
+    val hugo = Reader("hugo", "Hugo")
     openLibrary.coverAnswersTooLate(ONE_PIECE_1)
-    add(hugo, defaultBookshelfOf(hugo), onePiece1(coverSource = "Open Library")).expectStatus().isCreated()
+    libris.add(
+      hugo,
+      libris.defaultBookshelfOf(hugo),
+      onePiece1(coverSource = "Open Library")
+    ).expectStatus().isCreated()
 
     // When
-    val response = ask(hugo, ONE_PIECE_1)
+    val response = libris.ask(hugo, ONE_PIECE_1)
 
     // Then
     val body = bodyOf(response.expectStatus().isOk())
     JsonPath.read<List<String>>(body, "$.covers[*].source") shouldBe emptyList()
   }
 
-  private fun ask(reader: Map<String, List<String>>, isbn: String): RestTestClient.ResponseSpec =
-    http.get()
-      .uri("/api/v1/isbn/$isbn")
-      .headers { it.putAll(reader) }
-      .accept(APPLICATION_JSON, APPLICATION_PROBLEM_JSON)
-      .exchange()
-
-  private fun add(reader: Map<String, List<String>>, bookshelf: String, book: String): RestTestClient.ResponseSpec =
-    http.post()
-      .uri("/api/v1/bookshelves/$bookshelf/books")
-      .headers { it.putAll(reader) }
-      .contentType(APPLICATION_JSON)
-      .accept(APPLICATION_JSON, APPLICATION_PROBLEM_JSON)
-      .body(book)
-      .exchange()
-
-  private fun catalogue(reader: Map<String, List<String>>): RestTestClient.ResponseSpec =
-    http.get()
-      .uri("/api/v1/books")
-      .headers { it.putAll(reader) }
-      .accept(APPLICATION_JSON, APPLICATION_PROBLEM_JSON)
-      .exchange()
-
-  private fun picture(reader: Map<String, List<String>>, path: String): RestTestClient.ResponseSpec =
+  private fun picture(reader: Reader, path: String): RestTestClient.ResponseSpec =
     http.get()
       .uri(path)
-      .headers { it.putAll(reader) }
+      .headers { it.putAll(reader.headers) }
       .accept(parseMediaType("image/*"), APPLICATION_PROBLEM_JSON)
       .exchange()
 
-  private fun servedAs(reader: Map<String, List<String>>, cover: String, type: MediaType) {
+  private fun servedAs(reader: Reader, cover: String, type: MediaType) {
     picture(reader, cover).expectStatus().isOk().expectHeader().contentType(type)
   }
 
-  private fun me(reader: Map<String, List<String>>): RestTestClient.ResponseSpec =
-    http.get()
-      .uri("/api/v1/me")
-      .headers { it.putAll(reader) }
-      .accept(APPLICATION_JSON)
-      .exchange()
-
-  private fun defaultBookshelfOf(reader: Map<String, List<String>>): String =
-    JsonPath.read(bodyOf(me(reader).expectStatus().isOk()), "$.defaultBookshelf.id")
-
-  private fun coverOf(reader: Map<String, List<String>>, isbn: String): String? =
+  private fun coverOf(reader: Reader, isbn: String): String? =
     JsonPath.read<List<String?>>(
-      bodyOf(catalogue(reader).expectStatus().isOk()),
+      bodyOf(libris.catalogue(reader).expectStatus().isOk()),
       "$.books[?(@.isbn13 == '$isbn')].coverUrl",
     ).single()
 
-  private fun aStoredCover(reader: Map<String, List<String>>, isbn: String): String {
+  private fun aStoredCover(reader: Reader, isbn: String): String {
     openLibrary.hasCover(isbn, TALL_JPEG)
-    add(reader, defaultBookshelfOf(reader), onePiece(isbn, "Romance dawn", 1, "Open Library"))
+    libris.add(reader, libris.defaultBookshelfOf(reader), onePiece(isbn, "Romance dawn", 1, "Open Library"))
       .expectStatus().isCreated()
     val cover = awaitCover(reader, isbn)
     sources.forEach { it.resetRequests() }
     return cover
   }
 
-  private fun awaitCover(reader: Map<String, List<String>>, isbn: String): String {
+  private fun awaitCover(reader: Reader, isbn: String): String {
     await { coverOf(reader, isbn) != null }
     return checkNotNull(coverOf(reader, isbn))
   }
@@ -402,9 +385,6 @@ class CoversScenarios @Autowired constructor(
       Thread.sleep(POLL_MILLIS)
     }
   }
-
-  private fun bodyOf(response: RestTestClient.ResponseSpec): String =
-    requireNotNull(response.expectBody(String::class.java).returnResult().responseBody)
 
   private fun bytesOf(response: RestTestClient.ResponseSpec): ByteArray =
     requireNotNull(response.expectBody(ByteArray::class.java).returnResult().responseBody)
@@ -418,14 +398,6 @@ class CoversScenarios @Autowired constructor(
   private fun noSourceWasAsked() {
     sources.forEach { it.verify(0, anyRequestedFor(anyUrl())) }
   }
-
-  private fun reader(username: String, name: String) =
-    mapOf(
-      "Remote-User" to listOf(username),
-      "Remote-Name" to listOf(name),
-      "Remote-Email" to listOf("$username@amory.fr"),
-      "Remote-Groups" to listOf("family"),
-    )
 
   private companion object {
     const val ONE_PIECE_1 = "9782723488525"
