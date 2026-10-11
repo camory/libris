@@ -59,6 +59,15 @@ class BookshelfTest {
   }
 
   @Test
+  fun `a bookshelf answers no role for a reader who is no member`() {
+    // Given
+    val bookshelf = Bookshelf.ownedBy(ReaderId.new(), "Léa", BookshelfId.new())
+
+    // When / Then
+    bookshelf.roleOf(ReaderId.new()) shouldBe null
+  }
+
+  @Test
   fun `a bookshelf without an owner is refused`() {
     shouldThrow<IllegalArgumentException> {
       Bookshelf(BookshelfId.new(), "Bibliothèque de personne", listOf(Membership(ReaderId.new(), VIEWER)))
