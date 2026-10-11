@@ -139,7 +139,9 @@ Read whole by a run that changes `backend/`, after `every-run.md`.
   `V007`. `ScenarioTest` gives the variable a temporary directory,
   `LibrisApplicationTest` its own property. A Mockito matcher on a
   `CoverName` argument takes a valid fallback, since the
-  constructor checks it: `findCover(CoverName(any() ?: NO_COVER))`.
+  constructor checks it: `findCover(CoverName(any() ?: NO_COVER))`; so
+  does a `BookshelfName` argument, whose fallback must not be blank:
+  `createBookshelf(…, BookshelfName(any() ?: "Salon"))`.
 - Libris reads a WebP through TwelveMonkeys `imageio-webp`, a `runtimeOnly`
   dependency no code names: ImageIO's service loader finds its reader on the
   class path. The JDK's JPEG reader throws `IIOException` on a broken JPEG
@@ -437,8 +439,10 @@ Read whole by a run that changes `backend/`, after `every-run.md`.
   in its select list (`for SELECT DISTINCT, ORDER BY expressions must
   appear in select list`), collation or not; a semi-join (`EXISTS`) keeps
   an edition once without widening the answer.
-- In Kotlin, "ignoring case and accents" is `ListReaderBookshelves`'
-  private `ignoringCaseAndAccents`: `Normalizer` NFD, the `\p{Mn}` marks
+- In Kotlin, "ignoring case and accents" is `BookshelfName`'s order
+  (`compareTo`, and `isSameAs` when it answers `0`; its `equals` stays
+  exact), over a private `ignoringCaseAndAccents` in `BookshelfName.kt`:
+  `Normalizer` NFD, the `\p{Mn}` marks
   dropped, `lowercase()`, then `œ` and `æ` spelt `oe` and `ae`, compared
   as a plain `String`, so spaces and hyphens still count (`À lire` before
   `Albums`), as in the catalogue's collation. It is not that collation:
