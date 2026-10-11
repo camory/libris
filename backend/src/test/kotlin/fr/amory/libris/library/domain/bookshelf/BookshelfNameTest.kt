@@ -22,4 +22,10 @@ class BookshelfNameTest {
     // Given / When / Then
     shouldThrow<IllegalArgumentException> { BookshelfName("   ") }
   }
+
+  @Test
+  fun `two names differing only in case and accents are the same`() {
+    // Given / When / Then
+    BookshelfName("Bibliothèque familiale").isSameAs(BookshelfName("bibliotheque FAMILIALE")) shouldBe true
+  }
 }
