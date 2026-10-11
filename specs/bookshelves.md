@@ -20,14 +20,13 @@ When the reader opens the home page
 
 Then Libris answers the three bookshelves they belong to, each with its
      name and the reader's role on it, and not the fourth
-	And the default first, then the others by name, ignoring case and
-	    accents
-	And the screen lists them in that order, the default marked
+	And the screen lists them the default first, then the others by name,
+	    ignoring case and accents, the default marked
 ```
 
 Proof: the shape of the answer verified by Contracteer on both sides;
-backend scenario test over HTTP; unit test of the order; frontend scenario
-test over the fakes.
+backend scenario test over HTTP; frontend unit test of the order; frontend
+scenario test over the fakes.
 
 **S2 A reader creates a bookshelf** · frontend, backend
 
@@ -72,17 +71,16 @@ Given a bookshelf with two owners and a viewer
 When one of its members opens it
 
 Then Libris answers its name and its members, each with their role
-	And the owners first, then the viewers, each by display name, ignoring
-	    case and accents
-	And the screen shows them in that order
+	And the screen shows them the owners first, then the viewers, each by
+	    display name, ignoring case and accents
 ```
 
 A reader who does not belong to the bookshelf is answered that there is no
 such bookshelf, as for an id that names none, and the screen says so.
 Proof: the shape of the answer and contract example `404_NOT_A_MEMBER`
 verified by Contracteer on both sides; backend scenario test over HTTP, one
-per case; unit test of the order; frontend scenario test over the fakes,
-one per case.
+per case; frontend unit test of the order; frontend scenario test over the
+fakes, one per case.
 
 **S5 An owner adds a member** · frontend, backend
 
@@ -209,7 +207,7 @@ the title of its screen, a proper name in place of an infinitive.
 title *Libris*, the application's name, then the greeting, as today; the link
 *Ajouter un ouvrage* leaves the page, the tab bar's *Ajouter* being the way
 to the lookup; then the block *Mes bibliothèques*: one row per bookshelf of
-the reader, in the order of the answer, the name in the row title step and
+the reader, in the order of S1, the name in the row title step and
 under it, in `muted`, the reader's role on it, *propriétaire* or *invité*,
 followed by *· par défaut* on the default, a chevron at the right; a row
 leads to the bookshelf's screen. On the row of a bookshelf the reader
@@ -226,7 +224,7 @@ today.
 **Bookshelf**, route `/bibliotheques/{id}`, reached from a row of the home
 page, the *Accueil* tab shown. Top to bottom: the bookshelf's name as the
 title, no hint under it; the block *Membres*: one row
-per member, in the order of the answer, the display name and after a
+per member, in the order of S4, the display name and after a
 middle dot, in `muted`, the role (*Léa · propriétaire*), the reader's own
 row reading *Vous* in place of their name (*Vous · invité*): the screen
 says the reader's role there and nowhere else. For an owner, at the
@@ -291,16 +289,17 @@ another by its status.
 
 - `GET /api/v1/bookshelves`, the bookshelves the reader belongs to → `200`
   an array of `ReaderBookshelf`, a `Bookshelf` with the reader's `role` on
-  it, in the order of S1. No field marks the default: the screen reads it
-  from `defaultBookshelf` of `GET /api/v1/me`.
+  it, in no promised order: the screen sorts them (S1). No field marks the
+  default: the screen reads it from `defaultBookshelf` of `GET /api/v1/me`.
 - `POST /api/v1/bookshelves`, body `NewBookshelf` `{name}` → `201`
   `Bookshelf`, the reader its one owner; `400` `Problem`
   `/problems/validation` on `name` for a blank name, its code not
   enumerated; `409` `Problem` `/problems/conflict` for a name taken. Keys
   `400_BLANK_NAME`, `409_TAKEN_NAME`.
 - `GET /api/v1/bookshelves/{id}` → `200` `BookshelfWithMembers`, a
-  `Bookshelf` with `members`, an array of `Member` in the order of S4, a
-  `Reader` `{id, displayName}` with their `role` on the bookshelf; `400`
+  `Bookshelf` with `members`, an array of `Member` in no promised order,
+  the screen sorting them (S4), a `Reader` `{id, displayName}` with their
+  `role` on the bookshelf; `400`
   `Problem` `/problems/validation` for an id that is not one, the screen
   showing it as *Not found*; `404` `Problem` `/problems/not-found` when the
   reader is not a member. Key `404_NOT_A_MEMBER`.

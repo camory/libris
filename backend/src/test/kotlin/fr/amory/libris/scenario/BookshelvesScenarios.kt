@@ -49,7 +49,11 @@ class BookshelvesScenarios @Autowired constructor(private val libris: Libris) {
     val bookshelves = lea.bookshelves()
 
     // Then
-    bookshelves shouldBe listOf(default.withRole(OWNER), aLire.withRole(OWNER), bandesDessinees.withRole(VIEWER))
+    bookshelves shouldContainExactlyInAnyOrder listOf(
+      default.withRole(OWNER),
+      aLire.withRole(OWNER),
+      bandesDessinees.withRole(VIEWER),
+    )
     default.name shouldBe "Bibliothèque de Léa"
   }
 
@@ -115,7 +119,11 @@ class BookshelvesScenarios @Autowired constructor(private val libris: Libris) {
 
     // Then
     answer.value.name shouldBe "Bibliothèque familiale"
-    answer.value.members shouldBe listOf(elise.member(OWNER), marc.member(OWNER), lea.member(VIEWER))
+    answer.value.members shouldContainExactlyInAnyOrder listOf(
+      elise.member(OWNER),
+      marc.member(OWNER),
+      lea.member(VIEWER),
+    )
   }
 
   @Test
