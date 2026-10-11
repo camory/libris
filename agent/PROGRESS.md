@@ -130,13 +130,20 @@ Format:
 - Left over: T076 may extract the comparison, as before; whether it should
   also break up ligatures is for its brief, since no spec names such a name.
 
-## 2026-10-11 — T075 A name Libris refuses — handoff
-- Steps 1 to 9 done and committed; self-review of the diff done, it changed nothing. Start at step 10: the gotchas of the
-  criteria are written (committed with this entry); left: gate, tick, diary entry, PR.
-- Before step 1, both S3 scenarios were un-skipped uncommitted and read red (each answered no refusal: a bookshelf created), then restored.
-- Step 6's smallest green, `isSameAs` answering `true`, fails detekt on that commit alone
-  (`FunctionOnlyReturningConstant`, `UnusedParameter`); step 7 makes it whole. Same as T073; history is not rewritten.
-  Step 6's case also read red under exact equality, case alone and accents alone (each `expected:<true> but was:<false>`).
-- Guard step 5: `of` answering `BookshelfName(text)` → S3 blank reads `not a problem: 500` (the constructor's `require`), reverted.
-- Guard step 9: `isSameAs` as `value == other.value` → S3 taken reads `Expected Refusal(409, /problems/conflict) but actual was null`, reverted.
-- `ApiContractTest` tests="34", as on `main`. `LookupIsbnForReader` keeps sorting by `name.value`, exactly, as before.
+## 2026-10-11 — T075 A name Libris refuses — done
+- Did: a bookshelf's name is a `BookshelfName`, never blank, refused at the
+  edge through `BookshelfName.of`; `CreateBookshelf` answers `NameTaken` for
+  a name the reader already has; both S3 scenarios green, un-skipped.
+- Decided: the name is kept as typed, not trimmed, as the brief says. The
+  comparison moved whole from `ListReaderBookshelves` into `BookshelfName.kt`,
+  its `œ`/`æ` spelling included; `BookshelfName` orders through it and
+  `isSameAs` is that order answering `0`, so S1's order and S3's sameness
+  cannot part. `LookupIsbnForReader` keeps sorting by `name.value`, exactly,
+  as before: its order is no rule of this task.
+- Deviations from the brief: none. Step 6's smallest green, `isSameAs`
+  answering `true`, fails detekt on that commit alone
+  (`FunctionOnlyReturningConstant`, `UnusedParameter`); step 7 makes it
+  whole, history not rewritten, as in T073. The run handed off once, after
+  step 9; the next run did step 10 alone.
+- Left over: T076 decides whether a reader's display name shares
+  `BookshelfName`'s comparison; T081 shows both refusals on the screen.
