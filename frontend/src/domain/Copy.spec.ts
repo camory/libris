@@ -22,4 +22,37 @@ describe("bookshelvesHolding", () => {
     // Then
     expect(bookshelves).toEqual([{ bookshelf: lea, count: 2 }]);
   });
+
+  it("sorts the bookshelves by name, ignoring case and accents", () => {
+    // Given
+    const salon: Bookshelf = {
+      id: "3c4d5e6f-7a8b-4c9d-8e0f-1a2b3c4d5e6f",
+      name: "Salon",
+    };
+    const chambre: Bookshelf = {
+      id: "4d5e6f7a-8b9c-4d0e-9f1a-2b3c4d5e6f7a",
+      name: "chambre",
+    };
+    const etagere: Bookshelf = {
+      id: "5e6f7a8b-9c0d-4e1f-8a2b-3c4d5e6f7a8b",
+      name: "Étagère",
+    };
+
+    // When
+    const bookshelves = bookshelvesHolding(
+      [
+        { id: "6f7a8b9c-0d1e-4f2a-9b3c-4d5e6f7a8b9c", bookshelf: salon },
+        { id: "7a8b9c0d-1e2f-4a3b-8c4d-5e6f7a8b9c0d", bookshelf: chambre },
+        { id: "8b9c0d1e-2f3a-4b4c-9d5e-6f7a8b9c0d1e", bookshelf: etagere },
+      ],
+      "fr",
+    );
+
+    // Then
+    expect(bookshelves).toEqual([
+      { bookshelf: chambre, count: 1 },
+      { bookshelf: etagere, count: 1 },
+      { bookshelf: salon, count: 1 },
+    ]);
+  });
 });

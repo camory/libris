@@ -1,4 +1,5 @@
 import type { Bookshelf } from "./Bookshelf";
+import { nameOrder } from "./nameOrder";
 
 export interface Copy {
   id: string;
@@ -15,5 +16,8 @@ export function bookshelvesHolding(
     holding.count += 1;
     held.set(bookshelf.id, holding);
   }
-  return [...held.values()];
+  const byName = nameOrder(locale);
+  return [...held.values()].sort((a, b) =>
+    byName(a.bookshelf.name, b.bookshelf.name),
+  );
 }
