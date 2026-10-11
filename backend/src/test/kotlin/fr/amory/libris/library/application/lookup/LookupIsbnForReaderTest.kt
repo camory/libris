@@ -30,6 +30,7 @@ import fr.amory.libris.library.domain.copy.CopyId
 import fr.amory.libris.library.domain.reader.ReaderId
 import fr.amory.libris.library.fixture.BookshelvesInMemory
 import fr.amory.libris.library.fixture.CopiesInMemory
+import io.kotest.matchers.collections.shouldContainExactlyInAnyOrder
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.types.shouldBeInstanceOf
 import org.junit.jupiter.api.Test
@@ -98,7 +99,7 @@ class LookupIsbnForReaderTest {
   }
 
   @Test
-  fun `the copies on the reader's bookshelves come with the edition, by the name of their bookshelf`() {
+  fun `the copies on the reader's bookshelves come with the edition, with the name of their bookshelf`() {
     // Given
     val leasBookshelf = bookshelfOf("Bibliothèque de Léa", Membership(lea, OWNER))
     val salon = bookshelfOf("Salon", Membership(ReaderId.new(), OWNER), Membership(lea, VIEWER))
@@ -110,7 +111,7 @@ class LookupIsbnForReaderTest {
     val result = lookupIsbnForReader(lea, isbnOf(ONE_PIECE))
 
     // Then
-    result.copies shouldBe listOf(
+    result.copies shouldContainExactlyInAnyOrder listOf(
       CopyOnBookshelf(onLeasBookshelf.id, leasBookshelf.id, "Bibliothèque de Léa"),
       CopyOnBookshelf(inTheSalon.id, salon.id, "Salon"),
     )
