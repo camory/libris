@@ -39,7 +39,6 @@ import fr.amory.libris.library.application.ChooseDefaultBookshelf
 import fr.amory.libris.library.application.ChooseDefaultResult
 import fr.amory.libris.library.application.ChooseDefaultResult.Chosen
 import fr.amory.libris.library.application.CreateBookshelf
-import fr.amory.libris.library.application.CreateBookshelfResult.BlankName
 import fr.amory.libris.library.application.CreateBookshelfResult.Created
 import fr.amory.libris.library.application.CreateBookshelfResult.NameTaken
 import fr.amory.libris.library.application.FindBookshelf
@@ -170,7 +169,6 @@ class ApiContractTest @Autowired constructor(
   private fun creatingABookshelfAnswers() {
     given(createBookshelf(ReaderId(eq(CONTRACTEER.id.value) ?: CONTRACTEER.id.value), any() ?: ""))
       .willReturn(Created(FAMILIALE))
-    given(createBookshelf(CONTRACTEER.id, "   ")).willReturn(BlankName)
     given(createBookshelf(CONTRACTEER.id, "Salon")).willReturn(NameTaken)
   }
 

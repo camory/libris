@@ -59,12 +59,14 @@ class BookshelfController(
     listReaderBookshelves(reader).map { ReaderBookshelfResponse.from(it) }
 
   @PostMapping("/api/v1/bookshelves")
-  fun create(@AuthenticationPrincipal reader: Reader, @RequestBody request: NewBookshelfRequest): ResponseEntity<Any> =
-    when (val result = createBookshelf(reader.id, request.name)) {
+  fun create(@AuthenticationPrincipal reader: Reader, @RequestBody request: NewBookshelfRequest): ResponseEntity<Any> {
+    val name = request.validate() ?: return invalid(listOf(ValidationErrorResponse("name", "blank"))).asResponse()
+    return when (val result = createBookshelf(reader.id, name.value)) {
       is Created -> ResponseEntity.status(CREATED).body(BookshelfResponse.from(result.bookshelf))
       BlankName  -> invalid(listOf(ValidationErrorResponse("name", "blank"))).asResponse()
       NameTaken  -> problem(CONFLICT, CONFLICT_PROBLEM).asResponse()
     }
+  }
 
   @GetMapping("/api/v1/bookshelves/{id}")
   fun find(@AuthenticationPrincipal reader: Reader, @PathVariable("id") id: UUID): ResponseEntity<Any> =
