@@ -32,3 +32,19 @@ Format:
 - Deviations from the brief: none; no brief.
 - Left over: the backlog is empty; the next feature waits for its spec,
   written with Tophe.
+
+## 2026-10-11 — Bookshelves backend scenario tests, with Tophe
+- Did: the skipped backend tests of `specs/bookshelves.md`, T072's
+  precondition, in `BookshelvesScenarios`, over a scenario DSL in
+  `fr.amory.libris.scenario.dsl` that keeps HTTP out of the tests: the
+  reader is the subject, a Given step expects success, a When step
+  answers a typed value or a refusal (`NOT_FOUND`, `CONFLICT`,
+  `invalid(field)`). Skipped, `./gradlew check` is green; S2 and S5,
+  un-skipped once, are red at their first bookshelves call.
+- Decided: Givens over HTTP only, so adding a member (T073) now comes
+  before the order (T074), a name refused (T075) and opening (T076), and
+  the four refusals of an add are all T077's, after opening; S5's two
+  cases are one parameterized method, which D07 now allows.
+- Deviations from the brief: none; no brief.
+- Left over: the older scenario classes move onto the DSL in their own
+  PR; then T072.
