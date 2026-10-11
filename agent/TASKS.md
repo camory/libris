@@ -193,6 +193,29 @@ ISBN reads Dans Bibliothèque familiale. Then create Salon and add the second
 account as invité: on that account, the row of Salon has no star, and its
 copies are in the catalogue.*
 
+## Order on the screen — docs/ARCHITECTURE.md
+
+No contract release: no OpenAPI document promises these orders (D11).
+A promise leaves, so the frontend goes first: T086 sorts what the screens
+show today in the backend's order, and T087 drops that order once T086 is
+deployed.
+
+- [ ] T086 Frontend: the card and a catalogue row sort their authors and
+      bookshelves.
+      The card sorts its authors by their first role, scénario, dessin,
+      couleurs, traduction, then by name, and its rows *Dans …* by name; a
+      catalogue row sorts its authors in the card's order and its
+      bookshelves by name; each name ignoring case and accents, with the
+      comparison of T079 (U06, D11). Unit tests of both orders, over names
+      that differ only in case or accents, given in another order than the
+      screen's.
+
+- [ ] T087 Backend: authors and a card's bookshelves in no promised order.
+      Precondition (human): T086 deployed (D04).
+      `Contributions.of` keeps one contribution per author and role and
+      orders nothing, and `LookupIsbnForReader` sorts nothing (D11, D12);
+      their tests of the order leave, and `ContributionRole.order` with
+      them, which nothing else reads.
 ## Done
 
 - Phase 0 — Foundations, T001 to T012, done 2026-09-10 with `v0.1.3` on the

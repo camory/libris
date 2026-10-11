@@ -450,9 +450,3 @@
   bookshelves feature has brought Lucide in; *library* has the leaning
   third spine of `IconBooks` (found 2026-10-10 by Tophe while reviewing
   the bookshelves mockups).
-- Product: the ISBN lookup lists the reader's bookshelves holding the edition
-  by exact name (`LookupIsbnForReader`, `sortedBy { it.name.value }`), while
-  the bookshelves list (S1) puts the default first, then the others by name
-  ignoring case and accents. Whether the lookup follows S1's order is a spec
-  call; if so, it reuses `BookshelfName.ignoringCaseAndAccents` (found
-  2026-10-11 by the T075 reviewer).
