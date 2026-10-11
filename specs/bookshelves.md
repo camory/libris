@@ -331,11 +331,11 @@ star, and its copies are in the catalogue.
 ## Tasks
 
 - T072 — S2, the backend on `v0.11.0` — backend
-- T073 — S1 — backend
-- T074 — S3 — backend
-- T075 — S4 — backend
-- T076 — S5, S6 a viewer and a reader not a member — backend
-- T077 — S6 an unknown reader and a reader already a member — backend
+- T073 — S5 — backend
+- T074 — S1 — backend
+- T075 — S3 — backend
+- T076 — S4 — backend
+- T077 — S6 — backend
 - T078 — S7, S8 — backend
 - T079 — S1, S9 the home page, the frontend on `v0.11.0` — frontend
 - T080 — S2 — frontend
