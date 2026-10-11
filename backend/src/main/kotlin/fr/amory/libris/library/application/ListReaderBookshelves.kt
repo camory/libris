@@ -6,6 +6,7 @@ import fr.amory.libris.library.domain.reader.Reader
 import fr.amory.libris.library.domain.reader.ReaderId
 import org.springframework.stereotype.Service
 import java.text.Normalizer
+import java.text.Normalizer.Form.NFD
 
 private val COMBINING_MARKS = Regex("\\p{Mn}")
 
@@ -24,7 +25,7 @@ class ListReaderBookshelves(private val bookshelves: BookshelfRepository) {
 
   private fun ignoringCaseAndAccents(name: String): String =
     Normalizer
-      .normalize(name, Normalizer.Form.NFD)
+      .normalize(name, NFD)
       .replace(COMBINING_MARKS, "")
       .lowercase()
 }
