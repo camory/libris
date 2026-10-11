@@ -4,6 +4,8 @@ import com.github.tomakehurst.wiremock.WireMockServer
 import fr.amory.libris.bibliography.fixture.BnfStubs
 import fr.amory.libris.bibliography.fixture.OpenLibraryStubs
 import fr.amory.libris.scenario.dsl.Libris
+import fr.amory.libris.scenario.dsl.asks
+import io.kotest.matchers.shouldBe
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Qualifier
@@ -24,11 +26,12 @@ class KindScenarios @Autowired constructor(
     // Given
     bnf.knows("9782723488525")
     openLibrary.doesNotKnow("9782723488525")
+
     // When
-    val response = libris.ask(juliette, "9782723488525")
+    val answer = juliette.asks("9782723488525")
+
     // Then
-    response.expectStatus().isOk()
-      .expectBody().jsonPath("$.kind").isEqualTo("MANGA")
+    answer.value.kind shouldBe "MANGA"
   }
 
   @Test
@@ -36,11 +39,12 @@ class KindScenarios @Autowired constructor(
     // Given
     bnf.knows("9782505083399")
     openLibrary.doesNotKnow("9782505083399")
+
     // When
-    val response = libris.ask(juliette, "9782505083399")
+    val answer = juliette.asks("9782505083399")
+
     // Then
-    response.expectStatus().isOk()
-      .expectBody().jsonPath("$.kind").isEqualTo("BD")
+    answer.value.kind shouldBe "BD"
   }
 
   @Test
@@ -48,11 +52,12 @@ class KindScenarios @Autowired constructor(
     // Given
     bnf.knows("9782371025219")
     openLibrary.doesNotKnow("9782371025219")
+
     // When
-    val response = libris.ask(juliette, "9782371025219")
+    val answer = juliette.asks("9782371025219")
+
     // Then
-    response.expectStatus().isOk()
-      .expectBody().jsonPath("$.kind").isEqualTo("BOOK")
+    answer.value.kind shouldBe "BOOK"
   }
 
   @Test
@@ -60,10 +65,11 @@ class KindScenarios @Autowired constructor(
     // Given
     bnf.doesNotKnow("9782380751673")
     openLibrary.knows("9782380751673")
+
     // When
-    val response = libris.ask(juliette, "9782380751673")
+    val answer = juliette.asks("9782380751673")
+
     // Then
-    response.expectStatus().isOk()
-      .expectBody().jsonPath("$.kind").isEqualTo("BOOK")
+    answer.value.kind shouldBe "BOOK"
   }
 }

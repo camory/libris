@@ -5,8 +5,8 @@ data class NewBook(
   val kind: String,
   val title: String,
   val subtitle: String? = null,
-  val authors: List<NewAuthor> = emptyList(),
-  val series: NewSeries? = null,
+  val authors: List<Author> = emptyList(),
+  val series: Series? = null,
   val collection: String? = null,
   val publisher: String? = null,
   val publicationYear: Int? = null,
@@ -14,10 +14,6 @@ data class NewBook(
   val pageCount: Int? = null,
   val summary: String? = null,
   val coverSource: String? = null)
-
-data class NewAuthor(val name: String, val role: String)
-
-data class NewSeries(val name: String, val volumeNumber: Int?)
 
 data class Copy(val id: String, val bookshelf: Bookshelf)
 

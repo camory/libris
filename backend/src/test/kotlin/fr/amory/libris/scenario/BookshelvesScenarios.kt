@@ -1,14 +1,14 @@
 package fr.amory.libris.scenario
 
+import fr.amory.libris.scenario.dsl.Author
 import fr.amory.libris.scenario.dsl.CONFLICT
 import fr.amory.libris.scenario.dsl.Libris
 import fr.amory.libris.scenario.dsl.NOT_FOUND
-import fr.amory.libris.scenario.dsl.NewAuthor
 import fr.amory.libris.scenario.dsl.NewBook
-import fr.amory.libris.scenario.dsl.NewSeries
 import fr.amory.libris.scenario.dsl.Role
 import fr.amory.libris.scenario.dsl.Role.OWNER
 import fr.amory.libris.scenario.dsl.Role.VIEWER
+import fr.amory.libris.scenario.dsl.Series
 import fr.amory.libris.scenario.dsl.adds
 import fr.amory.libris.scenario.dsl.asks
 import fr.amory.libris.scenario.dsl.bookshelves
@@ -289,8 +289,8 @@ class BookshelvesScenarios @Autowired constructor(http: RestTestClient) {
       isbn13 = "9782723488525",
       kind = "MANGA",
       title = "Romance dawn",
-      authors = listOf(NewAuthor("Eiichirō Oda", "WRITER")),
-      series = NewSeries("One piece", 1),
+      authors = listOf(Author("Eiichirō Oda", "WRITER")),
+      series = Series("One piece", 1),
       publisher = "Glénat",
     )
   }

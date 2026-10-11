@@ -26,8 +26,7 @@ class Libris(private val http: RestTestClient) {
         .headers { it.putAll(reader.headers) }
         .accept(APPLICATION_JSON, APPLICATION_PROBLEM_JSON)
         .exchange(),
-      read,
-    )
+    ) { read(textOf(it)) }
 
   fun <T> post(reader: Reader, path: String, body: Any, read: (String) -> T): Answer<T> =
     Answer(
@@ -38,8 +37,7 @@ class Libris(private val http: RestTestClient) {
         .accept(APPLICATION_JSON, APPLICATION_PROBLEM_JSON)
         .body(JSON.writeValueAsString(body))
         .exchange(),
-      read,
-    )
+    ) { read(textOf(it)) }
 
   fun put(reader: Reader, path: String, body: Any): Answer<Unit> =
     Answer(
