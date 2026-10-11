@@ -4,13 +4,16 @@ import java.text.Normalizer
 import java.text.Normalizer.Form.NFD
 
 @JvmInline
-value class BookshelfName(val value: String) {
+value class BookshelfName(val value: String) : Comparable<BookshelfName> {
   init {
     require(value.isNotBlank()) { "a bookshelf name is not blank" }
   }
 
   fun isSameAs(other: BookshelfName): Boolean =
-    ignoringCaseAndAccents(value) == ignoringCaseAndAccents(other.value)
+    compareTo(other) == 0
+
+  override fun compareTo(other: BookshelfName): Int =
+    ignoringCaseAndAccents(value).compareTo(ignoringCaseAndAccents(other.value))
 
   companion object {
     fun of(text: String): BookshelfName? =
