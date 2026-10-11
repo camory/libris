@@ -16,6 +16,10 @@ private const val INSERT_BOOKSHELF = "INSERT INTO bookshelf (id, name) VALUES (:
 private const val INSERT_MEMBERSHIP =
   "INSERT INTO membership (bookshelf_id, reader_id, role) VALUES (:bookshelfId, :readerId, :role)"
 
+private const val UPDATE_BOOKSHELF = "UPDATE bookshelf SET name = :name WHERE id = :id"
+
+private const val DELETE_MEMBERSHIPS = "DELETE FROM membership WHERE bookshelf_id = :bookshelfId"
+
 private const val FIND_BOOKSHELF_BY_ID =
   """
     SELECT bookshelf.id, bookshelf.name, membership.reader_id, membership.role
@@ -47,6 +51,23 @@ class JdbcBookshelfRepository(private val jdbcClient: JdbcClient) : BookshelfRep
       .param("id", bookshelf.id.value)
       .param("name", bookshelf.name)
       .update()
+    insertMemberships(bookshelf)
+  }
+
+  override fun update(bookshelf: Bookshelf) {
+    jdbcClient
+      .sql(UPDATE_BOOKSHELF)
+      .param("id", bookshelf.id.value)
+      .param("name", bookshelf.name)
+      .update()
+    jdbcClient
+      .sql(DELETE_MEMBERSHIPS)
+      .param("bookshelfId", bookshelf.id.value)
+      .update()
+    insertMemberships(bookshelf)
+  }
+
+  private fun insertMemberships(bookshelf: Bookshelf) {
     bookshelf.memberships.forEach { membership ->
       jdbcClient
         .sql(INSERT_MEMBERSHIP)

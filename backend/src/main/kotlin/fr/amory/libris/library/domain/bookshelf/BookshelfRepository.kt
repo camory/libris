@@ -5,6 +5,8 @@ import fr.amory.libris.library.domain.reader.ReaderId
 interface BookshelfRepository {
   fun insert(bookshelf: Bookshelf)
 
+  fun update(bookshelf: Bookshelf)
+
   fun findById(id: BookshelfId): Bookshelf?
 
   fun findByMember(readerId: ReaderId): List<Bookshelf>

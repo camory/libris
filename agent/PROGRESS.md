@@ -81,3 +81,20 @@ Format:
   backlog has them; D02's wording on web sub-packages is proposed in the
   pull request.
 - Ran in two runs: the first handed off after step 8.
+
+## 2026-10-11 — T073 An owner adds a member — done
+- Did: `ListReaders` answers every reader stored and `AddMemberToBookshelf`
+  stores the new membership through `Bookshelf.withMember` and a whole-
+  aggregate `BookshelfRepository.update`; S5 green, both runs.
+- Decided: the add reads the bookshelf and the added reader outside the
+  transaction, which holds the update alone; `JdbcReaderRepository`'s three
+  finders share one private `readerOf`, `JdbcBookshelfRepository`'s insert
+  and update one private `insertMemberships`; `ReadersLosingTheRace`, the
+  private double of `WelcomeReaderTest`, answers the two new finders from
+  the winner it stores once the race is lost.
+- Deviations from the brief: none. The commit of step 10 carries an import
+  unused until step 11's case, which detekt reports on that commit alone;
+  the next commit uses it, and history is not rewritten.
+- Left over: the asker's role, an add of a member already there and the
+  unknown reader's scenario (T077); no release should be tagged between
+  T073 and T077, since any reader knowing a bookshelf's id can add to it.

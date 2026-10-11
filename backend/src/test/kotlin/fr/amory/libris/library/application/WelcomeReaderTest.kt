@@ -7,6 +7,7 @@ import fr.amory.libris.library.domain.bookshelf.Membership
 import fr.amory.libris.library.domain.bookshelf.MembershipRole.OWNER
 import fr.amory.libris.library.domain.reader.DuplicateUsernameException
 import fr.amory.libris.library.domain.reader.Reader
+import fr.amory.libris.library.domain.reader.ReaderId
 import fr.amory.libris.library.domain.reader.ReaderRepository
 import fr.amory.libris.library.fixture.BookshelvesInMemory
 import fr.amory.libris.library.fixture.ReadersInMemory
@@ -121,4 +122,10 @@ private class ReadersLosingTheRace(private val winner: Reader) : ReaderRepositor
 
   override fun findByUsername(username: String): Reader? =
     winner.takeIf { raceLost }
+
+  override fun findById(id: ReaderId): Reader? =
+    winner.takeIf { raceLost && it.id == id }
+
+  override fun findAll(): List<Reader> =
+    listOfNotNull(winner.takeIf { raceLost })
 }

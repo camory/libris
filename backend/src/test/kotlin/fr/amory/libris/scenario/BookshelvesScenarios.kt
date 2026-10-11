@@ -139,7 +139,6 @@ class BookshelvesScenarios @Autowired constructor(private val libris: Libris) {
 
   @ParameterizedTest(name = "S5 An owner adds a member, {argumentSetName}")
   @FieldSource("ADDED_AS")
-  @Disabled("bookshelves")
   fun `S5 An owner adds a member`(role: Role) {
     // Given
     val marc = libris.reader("marc", "Marc")
