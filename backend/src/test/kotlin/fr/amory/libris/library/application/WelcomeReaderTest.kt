@@ -121,4 +121,7 @@ private class ReadersLosingTheRace(private val winner: Reader) : ReaderRepositor
 
   override fun findByUsername(username: String): Reader? =
     winner.takeIf { raceLost }
+
+  override fun findAll(): List<Reader> =
+    listOfNotNull(winner.takeIf { raceLost })
 }

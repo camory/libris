@@ -17,6 +17,9 @@ class ReadersInMemory : ReaderRepository {
   override fun findByUsername(username: String): Reader? =
     readers[username]
 
+  override fun findAll(): List<Reader> =
+    stored
+
   fun clear() =
     readers.clear()
 }
