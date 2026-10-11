@@ -337,8 +337,10 @@ session, no BCrypt.
   `createLibrisApp` over fake ports and checks the home view renders.
 - Each feature spec has one scenario test class per side,
   `fr.amory.libris.scenario` on the backend and `src/scenario` on the
-  frontend, one method per scenario or case, bearing its exact title. The
-  backend boots the whole application over WireMock stubs of the sources;
+  frontend, one test per scenario or case, bearing its exact title: a
+  method, or one run of a parameterized method whose display name carries
+  the case, when the cases run the same steps and one task un-skips them
+  all. The backend boots the whole application over WireMock stubs of the sources;
   the frontend creates it through `createLibrisApp` over the fakes of its
   ports, its Given naming the reader, what each port answers and what it
   fails on, in the words of the spec. A fake answers what it was built with,

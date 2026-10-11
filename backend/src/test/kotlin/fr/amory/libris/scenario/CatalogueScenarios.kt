@@ -1,6 +1,8 @@
 package fr.amory.libris.scenario
 
 import com.jayway.jsonpath.JsonPath
+import fr.amory.libris.scenario.dsl.Libris
+import fr.amory.libris.scenario.dsl.bodyOf
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.MediaType.APPLICATION_JSON
@@ -14,8 +16,8 @@ class CatalogueScenarios @Autowired constructor(
   @Test
   fun `S1 The catalogue lists the house's editions`() {
     // Given
-    val lea = Reader("lea", "Léa")
-    val sam = Reader("sam", "Sam")
+    val lea = libris.reader("lea", "Léa")
+    val sam = libris.reader("sam", "Sam")
     val leasBookshelf = libris.defaultBookshelfOf(lea)
     listOf(ONE_PIECE_2, EMILE, ASTERIX_ET_SES_AMIS, ONE_PIECE_1, ONE_PIECE_1, LA_SERPE_D_OR, ASTERIX_LE_GAULOIS)
       .forEach { libris.add(lea, leasBookshelf, it).expectStatus().isCreated() }
@@ -50,7 +52,7 @@ class CatalogueScenarios @Autowired constructor(
   @Test
   fun `S2 The catalogue comes in pages`() {
     // Given
-    val marc = Reader("marc", "Marc")
+    val marc = libris.reader("marc", "Marc")
     val bookshelf = libris.defaultBookshelfOf(marc)
     (1..51).forEach { libris.add(marc, bookshelf, roman(it)).expectStatus().isCreated() }
     // When
@@ -72,7 +74,7 @@ class CatalogueScenarios @Autowired constructor(
   @Test
   fun `S3 The catalogue is empty`() {
     // Given
-    val nina = Reader("nina", "Nina")
+    val nina = libris.reader("nina", "Nina")
     // When
     val response = libris.catalogue(nina)
     // Then

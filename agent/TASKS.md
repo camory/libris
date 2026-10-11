@@ -44,7 +44,15 @@ longer says.
       case of the six operations (D07).
       Realises S2; un-skips the backend test of S2.
 
-- [ ] T073 Backend: the reader's bookshelves in order.
+- [ ] T073 Backend: an owner adds a member.
+      The readers Libris knows are answered, every one, the asker among
+      them, in no promised order. An owner adds to their bookshelf a reader
+      who does not belong to it, as owner or as viewer: the answer is the
+      new member, and the bookshelf is among that reader's bookshelves, its
+      copies in their catalogue and on the card of their ISBN (PRD §3, D12).
+      Realises S5; un-skips the backend test of S5, both cases.
+
+- [ ] T074 Backend: the reader's bookshelves in order.
       The bookshelves of T072 come in the order of S1: the reader's default
       first, then the others by name, ignoring case and accents; one the
       reader does not belong to is never answered, whatever its members
@@ -52,7 +60,7 @@ longer says.
       case or accents, the default's name the last of them.
       Realises S1; un-skips the backend test of S1.
 
-- [ ] T074 Backend: a name Libris refuses.
+- [ ] T075 Backend: a name Libris refuses.
       Creating a bookshelf with a blank name is answered `400`
       `/problems/validation` on `name`; with the name of a bookshelf the
       reader belongs to, whatever their role on it, compared ignoring case
@@ -61,7 +69,7 @@ longer says.
       the creation, which spans the reader's bookshelves (D11, D12).
       Realises S3; un-skips the backend tests of S3, both cases.
 
-- [ ] T075 Backend: a member opens a bookshelf.
+- [ ] T076 Backend: a member opens a bookshelf.
       Opening a bookshelf answers its members alone its name and its
       members, each a reader's id and display name with their role, the
       owners first, then the viewers, each by display name ignoring case and
@@ -71,29 +79,19 @@ longer says.
       Unit test of the order.
       Realises S4; un-skips the backend tests of S4, both cases.
 
-- [ ] T076 Backend: an owner adds a member.
-      The readers Libris knows are answered, every one, the asker among
-      them, in no promised order. An owner adds to their bookshelf a reader
-      who does not belong to it, as owner or as viewer: the answer is the
-      new member, and the bookshelf is among that reader's bookshelves, its
-      copies in their catalogue and on the card of their ISBN. A viewer of
-      the bookshelf, or a reader who does not belong to it, is answered that
-      there is no such bookshelf, its members unchanged (PRD §3, D12).
-      Realises S5 and S6's first two cases; un-skips the backend tests of
-      S5, both cases, and of S6, the viewer and the reader not a member.
-
 - [ ] T077 Backend: an add Libris refuses.
-      An owner adding a reader Libris does not know is answered `400`
+      A viewer of the bookshelf, or a reader who does not belong to it,
+      adding a member is answered that there is no such bookshelf; an owner
+      adding a reader Libris does not know is answered `400`
       `/problems/validation` on `readerId`; adding a reader already a
-      member, whatever their role, `409` `/problems/conflict`; in both the
-      bookshelf's members stay as they were (D11, D12).
-      Realises S6's last two cases; un-skips the backend tests of S6, the
-      reader Libris does not know and the reader already a member.
+      member, whatever their role, `409` `/problems/conflict`; in all four
+      the bookshelf's members stay as they were (D11, D12).
+      Realises S6; un-skips the backend tests of S6, all four cases.
 
 - [ ] T078 Backend: a reader chooses their default.
       A reader makes a bookshelf they own their default: the answer is
       `204`, and the reader's answer names it as their default from then on,
-      the bookshelves of T073 putting it first. A bookshelf they are a
+      the bookshelves of T074 putting it first. A bookshelf they are a
       viewer of, or do not belong to, is answered that there is no such
       bookshelf, their default unchanged. The default being one they own
       spans the reader and the bookshelf: the use case keeps it in one

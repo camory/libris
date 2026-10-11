@@ -3,6 +3,7 @@ package fr.amory.libris.scenario
 import com.github.tomakehurst.wiremock.WireMockServer
 import fr.amory.libris.bibliography.fixture.BnfStubs
 import fr.amory.libris.bibliography.fixture.OpenLibraryStubs
+import fr.amory.libris.scenario.dsl.Libris
 import io.kotest.matchers.shouldBe
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
@@ -21,6 +22,7 @@ class FastEntryScenarios @Autowired constructor(
   @Qualifier("bnf") bnfServer: WireMockServer,
   @Qualifier("openLibrary") openLibraryServer: WireMockServer) {
   private val libris = Libris(http)
+  private val juliette = libris.reader("juliette", "Juliette")
   private val bnf = BnfStubs(bnfServer)
   private val openLibrary = OpenLibraryStubs(openLibraryServer)
 
@@ -36,7 +38,7 @@ class FastEntryScenarios @Autowired constructor(
     // Given
     bnf.knows("9782723488525")
     // When
-    val response = libris.ask(JULIETTE, "9782723488525")
+    val response = libris.ask(juliette, "9782723488525")
     // Then
     response.expectStatus().isOk()
       .expectHeader().contentType(APPLICATION_JSON)
@@ -70,7 +72,7 @@ class FastEntryScenarios @Autowired constructor(
     bnf.doesNotKnow("9782000000013")
     openLibrary.doesNotKnow("9782000000013")
     // When
-    val response = libris.ask(JULIETTE, "9782000000013")
+    val response = libris.ask(juliette, "9782000000013")
     // Then
     response.expectStatus().isNotFound()
       .expectHeader().contentType(APPLICATION_PROBLEM_JSON)
@@ -83,7 +85,7 @@ class FastEntryScenarios @Autowired constructor(
     bnf.partiallyKnows("9782723488525")
     openLibrary.knows("9782723488525")
     // When
-    val response = libris.ask(JULIETTE, "9782723488525")
+    val response = libris.ask(juliette, "9782723488525")
     // Then
     response.expectStatus().isOk()
       .expectBody()
@@ -99,7 +101,7 @@ class FastEntryScenarios @Autowired constructor(
     bnf.doesNotKnow("9782380751673")
     openLibrary.knows("9782380751673")
     // When
-    val response = libris.ask(JULIETTE, "9782380751673")
+    val response = libris.ask(juliette, "9782380751673")
     // Then
     response.expectStatus().isOk()
       .expectHeader().contentType(APPLICATION_JSON)
@@ -115,7 +117,7 @@ class FastEntryScenarios @Autowired constructor(
     bnf.fails()
     openLibrary.knows("9782380751673")
     // When
-    val response = libris.ask(JULIETTE, "9782380751673")
+    val response = libris.ask(juliette, "9782380751673")
     // Then
     response.expectStatus().isOk()
       .expectBody()
@@ -128,7 +130,7 @@ class FastEntryScenarios @Autowired constructor(
     bnf.knows("9782723488525")
     openLibrary.answersTooLate("9782723488525")
     // When
-    val response = libris.ask(JULIETTE, "9782723488525")
+    val response = libris.ask(juliette, "9782723488525")
     // Then
     response.expectStatus().isOk()
       .expectBody()
@@ -141,7 +143,7 @@ class FastEntryScenarios @Autowired constructor(
     bnf.fails()
     openLibrary.fails()
     // When
-    val response = libris.ask(JULIETTE, "9782723488525")
+    val response = libris.ask(juliette, "9782723488525")
     // Then
     response.expectStatus().isEqualTo(SERVICE_UNAVAILABLE)
       .expectHeader().contentType(APPLICATION_PROBLEM_JSON)
@@ -154,7 +156,7 @@ class FastEntryScenarios @Autowired constructor(
     bnf.answersTooLate("9782723488525")
     openLibrary.fails()
     // When
-    val response = libris.ask(JULIETTE, "9782723488525")
+    val response = libris.ask(juliette, "9782723488525")
     // Then
     response.expectStatus().isEqualTo(SERVICE_UNAVAILABLE)
       .expectHeader().contentType(APPLICATION_PROBLEM_JSON)
@@ -164,6 +166,5 @@ class FastEntryScenarios @Autowired constructor(
   private companion object {
     const val ONE_PIECE_COVER =
       "https://catalogue.bnf.fr/couverture?&appName=NE&idArk=ark:/12148/cb43636708p&couverture=1"
-    val JULIETTE = Reader("juliette", "Juliette")
   }
 }
