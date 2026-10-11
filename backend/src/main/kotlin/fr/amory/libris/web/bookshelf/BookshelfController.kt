@@ -5,9 +5,12 @@ import fr.amory.libris.library.application.AddBookResult.Added
 import fr.amory.libris.library.application.AddBookResult.NoSuchBookshelf
 import fr.amory.libris.library.application.AddBookResult.NotAnOwner
 import fr.amory.libris.library.application.AddBookToBookshelf
+import fr.amory.libris.library.application.ListReaderBookshelves
+import fr.amory.libris.library.application.ReaderBookshelf
 import fr.amory.libris.library.application.lookup.CopyOnBookshelf
 import fr.amory.libris.library.domain.bookshelf.Bookshelf
 import fr.amory.libris.library.domain.bookshelf.BookshelfId
+import fr.amory.libris.library.domain.bookshelf.MembershipRole
 import fr.amory.libris.library.domain.reader.Reader
 import fr.amory.libris.web.bookshelf.NewBookValidation.Accepted
 import fr.amory.libris.web.bookshelf.NewBookValidation.Refused
@@ -22,6 +25,7 @@ import org.springframework.http.HttpStatus.NOT_FOUND
 import org.springframework.http.ProblemDetail
 import org.springframework.http.ResponseEntity
 import org.springframework.security.core.annotation.AuthenticationPrincipal
+import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
@@ -29,7 +33,13 @@ import org.springframework.web.bind.annotation.RestController
 import java.util.UUID
 
 @RestController
-class BookshelfController(private val addBookToBookshelf: AddBookToBookshelf) {
+class BookshelfController(
+  private val listReaderBookshelves: ListReaderBookshelves,
+  private val addBookToBookshelf: AddBookToBookshelf) {
+  @GetMapping("/api/v1/bookshelves")
+  fun list(@AuthenticationPrincipal reader: Reader): List<ReaderBookshelfResponse> =
+    listReaderBookshelves(reader).map { ReaderBookshelfResponse.from(it) }
+
   @PostMapping("/api/v1/bookshelves/{id}/books")
   fun add(
     @AuthenticationPrincipal reader: Reader,
@@ -48,6 +58,16 @@ class BookshelfController(private val addBookToBookshelf: AddBookToBookshelf) {
       is Added                    -> ResponseEntity.status(CREATED).body(CopyResponse.from(result))
       NoSuchBookshelf, NotAnOwner -> problem(NOT_FOUND, NOT_FOUND_PROBLEM).asResponse()
     }
+}
+
+data class ReaderBookshelfResponse(
+  val id: String,
+  val name: String,
+  val role: MembershipRole) {
+  companion object {
+    fun from(bookshelf: ReaderBookshelf): ReaderBookshelfResponse =
+      ReaderBookshelfResponse(bookshelf.id.value.toString(), bookshelf.name, bookshelf.role)
+  }
 }
 
 data class CopyResponse(

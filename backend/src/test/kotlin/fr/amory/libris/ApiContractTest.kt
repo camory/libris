@@ -31,7 +31,9 @@ import fr.amory.libris.library.application.AddBookResult.Added
 import fr.amory.libris.library.application.AddBookResult.NotAnOwner
 import fr.amory.libris.library.application.AddBookToBookshelf
 import fr.amory.libris.library.application.FindDefaultBookshelf
+import fr.amory.libris.library.application.ListReaderBookshelves
 import fr.amory.libris.library.application.NewBook
+import fr.amory.libris.library.application.ReaderBookshelf
 import fr.amory.libris.library.application.WelcomeReader
 import fr.amory.libris.library.application.catalogue.BrowseCatalogue
 import fr.amory.libris.library.application.catalogue.CataloguePage
@@ -40,6 +42,7 @@ import fr.amory.libris.library.application.lookup.CopyOnBookshelf
 import fr.amory.libris.library.application.lookup.IsbnLookup
 import fr.amory.libris.library.application.lookup.LookupIsbnForReader
 import fr.amory.libris.library.domain.bookshelf.BookshelfId
+import fr.amory.libris.library.domain.bookshelf.MembershipRole.OWNER
 import fr.amory.libris.library.domain.copy.Copy
 import fr.amory.libris.library.domain.copy.CopyId
 import fr.amory.libris.library.domain.reader.ReaderId
@@ -71,6 +74,7 @@ import java.util.UUID
     AddBookToBookshelf::class,
     BrowseCatalogue::class,
     FindCover::class,
+    ListReaderBookshelves::class,
   ],
 )
 @Suppress("LongParameterList")
@@ -81,7 +85,8 @@ class ApiContractTest @Autowired constructor(
   private val findDefaultBookshelf: FindDefaultBookshelf,
   private val addBookToBookshelf: AddBookToBookshelf,
   private val browseCatalogue: BrowseCatalogue,
-  private val findCover: FindCover) {
+  private val findCover: FindCover,
+  private val listReaderBookshelves: ListReaderBookshelves) {
   @ContracteerTest(openApiDoc = "https://raw.githubusercontent.com/camory/libris-api/v0.11.0/openapi.yaml")
   fun `the API matches the contract`() {
     contracteerIsWelcomed()
@@ -89,6 +94,7 @@ class ApiContractTest @Autowired constructor(
     addingABookAnswers()
     catalogueAnswers()
     coversAnswer()
+    bookshelvesAnswer()
   }
 
   private fun contracteerIsWelcomed() {
@@ -121,6 +127,11 @@ class ApiContractTest @Autowired constructor(
     given(findCover(CoverName(any() ?: NO_COVER)))
       .willReturn(coverOf("image/jpeg", recordedBytes("covers/tall.jpg")))
     given(findCover(CoverName(eq(NO_COVER) ?: NO_COVER))).willReturn(null)
+  }
+
+  private fun bookshelvesAnswer() {
+    given(listReaderBookshelves(CONTRACTEER))
+      .willReturn(listOf(ReaderBookshelf(CONTRACTEER_BOOKSHELF.id, CONTRACTEER_BOOKSHELF.name, OWNER)))
   }
 
   private fun noCopy(answer: EditionLookupResult) =
