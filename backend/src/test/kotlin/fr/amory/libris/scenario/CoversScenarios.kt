@@ -21,8 +21,8 @@ import fr.amory.libris.scenario.dsl.adds
 import fr.amory.libris.scenario.dsl.asks
 import fr.amory.libris.scenario.dsl.await
 import fr.amory.libris.scenario.dsl.awaitsCoverOf
-import fr.amory.libris.scenario.dsl.coverOf
 import fr.amory.libris.scenario.dsl.hasAdded
+import fr.amory.libris.scenario.dsl.seesCoverOf
 import fr.amory.libris.scenario.dsl.views
 import io.kotest.matchers.collections.shouldHaveSize
 import io.kotest.matchers.comparables.shouldBeGreaterThanOrEqualTo
@@ -94,7 +94,7 @@ class CoversScenarios @Autowired constructor(
     // Then
     answer.refusal shouldBe null
     elapsed shouldBeLessThan 2.seconds
-    juliette.coverOf(ONE_PIECE_1).shouldBeNull()
+    juliette.seesCoverOf(ONE_PIECE_1).shouldBeNull()
   }
 
   @Test
@@ -235,7 +235,7 @@ class CoversScenarios @Autowired constructor(
 
     // Then
     openLibrary.coverRequests(LES_NERONIA) shouldBe 1
-    eve.coverOf(LES_NERONIA).shouldBeNull()
+    eve.seesCoverOf(LES_NERONIA).shouldBeNull()
   }
 
   @Test
@@ -270,7 +270,7 @@ class CoversScenarios @Autowired constructor(
     openLibrary.hasCover(ONE_PIECE_3, TALL_JPEG)
     luc.hasAdded(onePiece1(coverSource = "Open Library"), to = bookshelf)
     await { openLibrary.coverRequests(ONE_PIECE_1) == 1 }
-    luc.coverOf(ONE_PIECE_1).shouldBeNull()
+    luc.seesCoverOf(ONE_PIECE_1).shouldBeNull()
 
     // When a run within the day, woken by another add
     luc.hasAdded(onePiece(ONE_PIECE_2, "Aux prises avec Baggy et ses hommes", 2, "Open Library"), to = bookshelf)
@@ -278,7 +278,7 @@ class CoversScenarios @Autowired constructor(
 
     // Then
     openLibrary.coverRequests(ONE_PIECE_1) shouldBe 1
-    luc.coverOf(ONE_PIECE_1).shouldBeNull()
+    luc.seesCoverOf(ONE_PIECE_1).shouldBeNull()
 
     // When a run a day later
     clock.advance(Duration.ofHours(A_DAY_AND_MORE))
