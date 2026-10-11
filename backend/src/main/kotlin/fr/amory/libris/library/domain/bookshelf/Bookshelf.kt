@@ -5,7 +5,7 @@ import fr.amory.libris.library.domain.reader.ReaderId
 
 data class Bookshelf(
   val id: BookshelfId,
-  val name: String,
+  val name: BookshelfName,
   val memberships: List<Membership>) {
   init {
     require(memberships.any { it.role == OWNER }) { "a bookshelf needs an owner" }
@@ -25,6 +25,6 @@ data class Bookshelf(
 
   companion object {
     fun ownedBy(owner: ReaderId, ownerName: String, id: BookshelfId): Bookshelf =
-      Bookshelf(id, "Bibliothèque de $ownerName", listOf(Membership(owner, OWNER)))
+      Bookshelf(id, BookshelfName("Bibliothèque de $ownerName"), listOf(Membership(owner, OWNER)))
   }
 }

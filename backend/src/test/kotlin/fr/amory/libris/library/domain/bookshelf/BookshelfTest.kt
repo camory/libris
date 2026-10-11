@@ -18,7 +18,7 @@ class BookshelfTest {
     val bookshelf = Bookshelf.ownedBy(lea, "Léa", id)
 
     // Then
-    bookshelf shouldBe Bookshelf(id, "Bibliothèque de Léa", listOf(Membership(lea, OWNER)))
+    bookshelf shouldBe Bookshelf(id, BookshelfName("Bibliothèque de Léa"), listOf(Membership(lea, OWNER)))
   }
 
   @Test
@@ -29,7 +29,7 @@ class BookshelfTest {
     val stranger = ReaderId.new()
     val bookshelf = Bookshelf(
       BookshelfId.new(),
-      "Salon",
+      BookshelfName("Salon"),
       listOf(Membership(lea, OWNER), Membership(juliette, VIEWER)),
     )
 
@@ -49,7 +49,7 @@ class BookshelfTest {
     val juliette = ReaderId.new()
     val bookshelf = Bookshelf(
       BookshelfId.new(),
-      "Salon",
+      BookshelfName("Salon"),
       listOf(Membership(lea, OWNER), Membership(juliette, VIEWER)),
     )
 
@@ -73,19 +73,27 @@ class BookshelfTest {
     val marc = ReaderId.new()
     val lea = ReaderId.new()
     val id = BookshelfId.new()
-    val bookshelf = Bookshelf(id, "Bibliothèque familiale", listOf(Membership(marc, OWNER)))
+    val bookshelf = Bookshelf(id, BookshelfName("Bibliothèque familiale"), listOf(Membership(marc, OWNER)))
 
     // When
     val added = bookshelf.withMember(Membership(lea, VIEWER))
 
     // Then
-    added shouldBe Bookshelf(id, "Bibliothèque familiale", listOf(Membership(marc, OWNER), Membership(lea, VIEWER)))
+    added shouldBe Bookshelf(
+      id,
+      BookshelfName("Bibliothèque familiale"),
+      listOf(Membership(marc, OWNER), Membership(lea, VIEWER)),
+    )
   }
 
   @Test
   fun `a bookshelf without an owner is refused`() {
     shouldThrow<IllegalArgumentException> {
-      Bookshelf(BookshelfId.new(), "Bibliothèque de personne", listOf(Membership(ReaderId.new(), VIEWER)))
+      Bookshelf(
+        BookshelfId.new(),
+        BookshelfName("Bibliothèque de personne"),
+        listOf(Membership(ReaderId.new(), VIEWER)),
+      )
     }
   }
 }

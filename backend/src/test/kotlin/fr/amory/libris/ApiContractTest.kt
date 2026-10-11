@@ -57,6 +57,7 @@ import fr.amory.libris.library.application.lookup.IsbnLookup
 import fr.amory.libris.library.application.lookup.LookupIsbnForReader
 import fr.amory.libris.library.domain.bookshelf.Bookshelf
 import fr.amory.libris.library.domain.bookshelf.BookshelfId
+import fr.amory.libris.library.domain.bookshelf.BookshelfName
 import fr.amory.libris.library.domain.bookshelf.Membership
 import fr.amory.libris.library.domain.bookshelf.MembershipRole.OWNER
 import fr.amory.libris.library.domain.bookshelf.MembershipRole.VIEWER
@@ -163,13 +164,13 @@ class ApiContractTest @Autowired constructor(
 
   private fun bookshelvesAnswer() {
     given(listReaderBookshelves(CONTRACTEER))
-      .willReturn(listOf(ReaderBookshelf(CONTRACTEER_BOOKSHELF.id, CONTRACTEER_BOOKSHELF.name, OWNER)))
+      .willReturn(listOf(ReaderBookshelf(CONTRACTEER_BOOKSHELF.id, CONTRACTEER_BOOKSHELF.name.value, OWNER)))
   }
 
   private fun creatingABookshelfAnswers() {
-    given(createBookshelf(ReaderId(eq(CONTRACTEER.id.value) ?: CONTRACTEER.id.value), any() ?: ""))
+    given(createBookshelf(ReaderId(eq(CONTRACTEER.id.value) ?: CONTRACTEER.id.value), BookshelfName(any() ?: "Salon")))
       .willReturn(Created(FAMILIALE))
-    given(createBookshelf(CONTRACTEER.id, "Salon")).willReturn(NameTaken)
+    given(createBookshelf(CONTRACTEER.id, BookshelfName("Salon"))).willReturn(NameTaken)
   }
 
   private fun findingABookshelfAnswers() {
@@ -313,7 +314,7 @@ private val NO_COVER = "0".repeat(64)
 
 private val FAMILIALE = Bookshelf(
   BookshelfId.new(),
-  "Bibliothèque familiale",
+  BookshelfName("Bibliothèque familiale"),
   listOf(Membership(CONTRACTEER.id, OWNER)),
 )
 

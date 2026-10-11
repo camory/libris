@@ -11,7 +11,6 @@ import fr.amory.libris.library.application.AddMemberResult.UnknownReader
 import fr.amory.libris.library.application.AddMemberToBookshelf
 import fr.amory.libris.library.application.BookshelfMember
 import fr.amory.libris.library.application.CreateBookshelf
-import fr.amory.libris.library.application.CreateBookshelfResult.BlankName
 import fr.amory.libris.library.application.CreateBookshelfResult.Created
 import fr.amory.libris.library.application.CreateBookshelfResult.NameTaken
 import fr.amory.libris.library.application.FindBookshelf
@@ -61,9 +60,8 @@ class BookshelfController(
   @PostMapping("/api/v1/bookshelves")
   fun create(@AuthenticationPrincipal reader: Reader, @RequestBody request: NewBookshelfRequest): ResponseEntity<Any> {
     val name = request.validate() ?: return invalid(listOf(ValidationErrorResponse("name", "blank"))).asResponse()
-    return when (val result = createBookshelf(reader.id, name.value)) {
+    return when (val result = createBookshelf(reader.id, name)) {
       is Created -> ResponseEntity.status(CREATED).body(BookshelfResponse.from(result.bookshelf))
-      BlankName  -> invalid(listOf(ValidationErrorResponse("name", "blank"))).asResponse()
       NameTaken  -> problem(CONFLICT, CONFLICT_PROBLEM).asResponse()
     }
   }
@@ -125,7 +123,7 @@ data class BookshelfResponse(
   val name: String) {
   companion object {
     fun from(bookshelf: Bookshelf): BookshelfResponse =
-      BookshelfResponse(bookshelf.id.value.toString(), bookshelf.name)
+      BookshelfResponse(bookshelf.id.value.toString(), bookshelf.name.value)
 
     fun from(copy: CopyOnBookshelf): BookshelfResponse =
       BookshelfResponse(copy.bookshelfId.value.toString(), copy.bookshelfName)
@@ -140,7 +138,7 @@ data class BookshelfWithMembersResponse(
     fun from(found: Found): BookshelfWithMembersResponse =
       BookshelfWithMembersResponse(
         found.bookshelf.id.value.toString(),
-        found.bookshelf.name,
+        found.bookshelf.name.value,
         found.members.map { MemberResponse.from(it) },
       )
   }

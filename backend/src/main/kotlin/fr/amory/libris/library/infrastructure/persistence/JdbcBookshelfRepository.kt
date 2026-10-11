@@ -2,6 +2,7 @@ package fr.amory.libris.library.infrastructure.persistence
 
 import fr.amory.libris.library.domain.bookshelf.Bookshelf
 import fr.amory.libris.library.domain.bookshelf.BookshelfId
+import fr.amory.libris.library.domain.bookshelf.BookshelfName
 import fr.amory.libris.library.domain.bookshelf.BookshelfRepository
 import fr.amory.libris.library.domain.bookshelf.Membership
 import fr.amory.libris.library.domain.bookshelf.MembershipRole
@@ -40,7 +41,7 @@ private const val FIND_BOOKSHELVES_BY_MEMBER =
 
 private class BookshelfRow(
   val id: BookshelfId,
-  val name: String,
+  val name: BookshelfName,
   val membership: Membership)
 
 @Repository
@@ -49,7 +50,7 @@ class JdbcBookshelfRepository(private val jdbcClient: JdbcClient) : BookshelfRep
     jdbcClient
       .sql(INSERT_BOOKSHELF)
       .param("id", bookshelf.id.value)
-      .param("name", bookshelf.name)
+      .param("name", bookshelf.name.value)
       .update()
     insertMemberships(bookshelf)
   }
@@ -58,7 +59,7 @@ class JdbcBookshelfRepository(private val jdbcClient: JdbcClient) : BookshelfRep
     jdbcClient
       .sql(UPDATE_BOOKSHELF)
       .param("id", bookshelf.id.value)
-      .param("name", bookshelf.name)
+      .param("name", bookshelf.name.value)
       .update()
     jdbcClient
       .sql(DELETE_MEMBERSHIPS)
@@ -100,7 +101,7 @@ class JdbcBookshelfRepository(private val jdbcClient: JdbcClient) : BookshelfRep
   private fun rowOf(rs: ResultSet): BookshelfRow =
     BookshelfRow(
       id = BookshelfId(rs.getObject("id", UUID::class.java)),
-      name = rs.getString("name"),
+      name = BookshelfName(rs.getString("name")),
       membership = Membership(
         ReaderId(rs.getObject("reader_id", UUID::class.java)),
         MembershipRole.valueOf(rs.getString("role")),

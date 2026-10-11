@@ -1,5 +1,6 @@
 package fr.amory.libris.library.application
 
+import fr.amory.libris.library.domain.bookshelf.BookshelfName
 import fr.amory.libris.library.fixture.BookshelvesInMemory
 import fr.amory.libris.library.fixture.bookshelfOwnedBy
 import fr.amory.libris.library.fixture.readerNamed
@@ -21,6 +22,6 @@ class FindDefaultBookshelfTest {
 
     // Then
     bookshelf.id shouldBe lea.defaultBookshelfId
-    bookshelf.name shouldBe "Bibliothèque de Léa"
+    bookshelf.name shouldBe BookshelfName("Bibliothèque de Léa")
   }
 }

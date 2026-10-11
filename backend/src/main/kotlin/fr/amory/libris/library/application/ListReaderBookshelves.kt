@@ -19,7 +19,7 @@ class ListReaderBookshelves(private val bookshelves: BookshelfRepository) {
   private fun readerBookshelf(bookshelf: Bookshelf, readerId: ReaderId): ReaderBookshelf? =
     bookshelf
       .roleOf(readerId)
-      ?.let { ReaderBookshelf(bookshelf.id, bookshelf.name, it) }
+      ?.let { ReaderBookshelf(bookshelf.id, bookshelf.name.value, it) }
 
   private fun ignoringCaseAndAccents(name: String): String =
     Normalizer
