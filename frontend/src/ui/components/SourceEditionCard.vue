@@ -3,7 +3,7 @@ import { computed, ref, watch } from "vue";
 import { useI18n } from "vue-i18n";
 import type { Copy } from "../../domain/Copy";
 import type { CoverCandidate } from "../../domain/Cover";
-import type { AuthorRole, SourceEdition } from "../../domain/SourceEdition";
+import { authorsInOrder, type SourceEdition } from "../../domain/SourceEdition";
 import IconBook from "./icons/IconBook.vue";
 
 const props = defineProps<{
@@ -15,7 +15,7 @@ const props = defineProps<{
 
 const emit = defineEmits<{ coverSource: [source: string | null] }>();
 
-const { t, te } = useI18n();
+const { t, te, locale } = useI18n();
 
 const failed = ref<number[]>([]);
 const offered = computed(() =>
@@ -55,16 +55,8 @@ const overline = computed(() => {
 });
 
 const authorLines = computed(() => {
-  const played = new Map<string, AuthorRole[]>();
-  for (const author of props.edition.authors) {
-    const roles = played.get(author.name) ?? [];
-    if (!roles.includes(author.role)) {
-      roles.push(author.role);
-    }
-    played.set(author.name, roles);
-  }
-  const authors = [...played].map(([name, roles]) => ({ name, roles }));
-  const sets = new Set(authors.map(({ roles }) => [...roles].sort().join()));
+  const authors = authorsInOrder(props.edition.authors, locale.value);
+  const sets = new Set(authors.map(({ roles }) => roles.join()));
   if (sets.size === 1) {
     return [{ name: authors.map(({ name }) => name).join(", "), roles: null }];
   }

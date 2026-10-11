@@ -120,7 +120,7 @@ describe("SourceEditionCard", () => {
     const card = show(lAmiFritz);
 
     // Then
-    expect(card).toContain("Erckmann, Chatrian");
+    expect(card).toContain("Chatrian, Erckmann");
     expect(card).not.toContain("texte");
   });
 
@@ -149,6 +149,26 @@ describe("SourceEditionCard", () => {
     // Then
     expect(card).toContain("René Goscinny · scénario");
     expect(card).toContain("Albert Uderzo · dessin");
+  });
+
+  it("sorts its authors by their first role", () => {
+    // Given
+    const drawnFirst: SourceEdition = {
+      ...asterix1,
+      authors: [
+        { name: "Albert Uderzo", role: "ARTIST" },
+        { name: "René Goscinny", role: "WRITER" },
+      ],
+    };
+
+    // When
+    const card = show(drawnFirst);
+
+    // Then
+    const goscinny = card.indexOf("René Goscinny · scénario");
+    const uderzo = card.indexOf("Albert Uderzo · dessin");
+    expect(goscinny).not.toBe(-1);
+    expect(uderzo).toBeGreaterThan(goscinny);
   });
 
   it("says texte and illustration under a livre", () => {
@@ -187,7 +207,7 @@ describe("SourceEditionCard", () => {
     const card = show(inAnyOrder);
 
     // Then
-    expect(card).toContain("Eiichirō Oda, Boichi");
+    expect(card).toContain("Boichi, Eiichirō Oda");
     expect(card).not.toContain("scénario");
   });
 
@@ -206,7 +226,7 @@ describe("SourceEditionCard", () => {
     const card = show(listedTwice);
 
     // Then
-    expect(card).toContain("Eiichirō Oda, Boichi");
+    expect(card).toContain("Boichi, Eiichirō Oda");
     expect(card).not.toContain("scénario");
   });
 
