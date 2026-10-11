@@ -3,6 +3,7 @@ package fr.amory.libris.scenario.dsl
 import com.jayway.jsonpath.JsonPath
 import org.springframework.http.MediaType.APPLICATION_JSON
 import org.springframework.http.MediaType.APPLICATION_PROBLEM_JSON
+import org.springframework.http.MediaType.parseMediaType
 import org.springframework.test.web.servlet.client.RestTestClient
 import tools.jackson.core.type.TypeReference
 import tools.jackson.databind.json.JsonMapper
@@ -38,6 +39,15 @@ class Libris(private val http: RestTestClient) {
         .body(JSON.writeValueAsString(body))
         .exchange(),
     ) { read(textOf(it)) }
+
+  fun view(reader: Reader, path: String): Answer<Picture> =
+    Answer(
+      http.get()
+        .uri(path)
+        .headers { it.putAll(reader.headers) }
+        .accept(parseMediaType("image/*"), APPLICATION_PROBLEM_JSON)
+        .exchange(),
+    ) { pictureOf(it) }
 
   fun put(reader: Reader, path: String, body: Any): Answer<Unit> =
     Answer(
