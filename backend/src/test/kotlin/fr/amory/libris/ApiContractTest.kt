@@ -242,22 +242,6 @@ private val CONTRACTEER = readerNamed(
 
 private val CONTRACTEER_BOOKSHELF = bookshelfOwnedBy(CONTRACTEER)
 
-private val CONTRACTEER_AS_OWNER = BookshelfMember(CONTRACTEER.id, "Contracteer", OWNER)
-
-private val NOT_MINE = bookshelfId("9e8d7c6b-5a4f-4e3d-8c2b-1a0f9e8d7c6b")
-
-private val UNKNOWN_AS_VIEWER = Membership(readerId("00000000-0000-4000-8000-000000000000"), VIEWER)
-
-private val EVE_AS_VIEWER = Membership(readerId("7f8091a2-b3c4-4d5e-8f6a-7b8c9d0e1f2a"), VIEWER)
-
-private val TOPHE_AS_OWNER = Membership(readerId("6e7f8091-a2b3-4c4d-9e5f-6a7b8c9d0e1f"), OWNER)
-
-private val FAMILIALE = Bookshelf(
-  BookshelfId.new(),
-  "Bibliothèque familiale",
-  listOf(Membership(CONTRACTEER.id, OWNER)),
-)
-
 private val ASTERIX_1 = EditionPreview(
   isbn = isbnOf("9782012101333"),
   kind = BD,
@@ -276,6 +260,8 @@ private val ASTERIX_1 = EditionPreview(
 private val ASTERIX_1_COVERS = CoverCandidates.of(
   listOf(CoverCandidate(OPEN_LIBRARY, "https://covers.example.org/asterix-1.jpg")),
 )
+
+private val ASTERIX_1_COVER = CoverName("9c56cc51b374c3ba189210d5b6d4bf57790d351c96c47c02190ecf1e430635ab")
 
 private val COPY_OF_ASTERIX_1 = CopyOnBookshelf(
   CopyId.new(),
@@ -304,7 +290,7 @@ private val NEW_ONE_PIECE_1 = NewBook(
   coverSource = INVENTAIRE,
 )
 
-private val ASTERIX_1_COVER = CoverName("9c56cc51b374c3ba189210d5b6d4bf57790d351c96c47c02190ecf1e430635ab")
+private val NOT_MINE = bookshelfId("9e8d7c6b-5a4f-4e3d-8c2b-1a0f9e8d7c6b")
 
 private val ASTERIX_1_HELD = HeldEdition(
   edition = Edition(
@@ -327,6 +313,20 @@ private val ASTERIX_1_HELD = HeldEdition(
 )
 
 private val NO_COVER = "0".repeat(64)
+
+private val FAMILIALE = Bookshelf(
+  BookshelfId.new(),
+  "Bibliothèque familiale",
+  listOf(Membership(CONTRACTEER.id, OWNER)),
+)
+
+private val CONTRACTEER_AS_OWNER = BookshelfMember(CONTRACTEER.id, "Contracteer", OWNER)
+
+private val EVE_AS_VIEWER = Membership(readerId("7f8091a2-b3c4-4d5e-8f6a-7b8c9d0e1f2a"), VIEWER)
+
+private val UNKNOWN_AS_VIEWER = Membership(readerId("00000000-0000-4000-8000-000000000000"), VIEWER)
+
+private val TOPHE_AS_OWNER = Membership(readerId("6e7f8091-a2b3-4c4d-9e5f-6a7b8c9d0e1f"), OWNER)
 
 private fun bookshelfId(id: String) =
   BookshelfId(UUID.fromString(id))
