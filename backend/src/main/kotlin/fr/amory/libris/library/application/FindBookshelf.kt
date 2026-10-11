@@ -25,6 +25,7 @@ class FindBookshelf(
     readers
       .findByIds(bookshelf.memberships.map { it.readerId })
       .mapNotNull { memberOf(bookshelf, it) }
+      .sortedBy { it.role.order }
 
   private fun memberOf(bookshelf: Bookshelf, reader: Reader): BookshelfMember? =
     bookshelf

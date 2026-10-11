@@ -62,4 +62,31 @@ class FindBookshelfTest {
   fun `an id naming no bookshelf is answered no such bookshelf`() {
     findBookshelf(lea.id, BookshelfId.new()) shouldBe NoSuchBookshelf
   }
+
+  @Test
+  fun `the owners come before the viewers`() {
+    // Given
+    val tom = readerNamed("tom", "Tom")
+    val readers = ReadersInMemory().apply {
+      insert(lea)
+      insert(marc)
+      insert(tom)
+    }
+    val salon = Bookshelf(
+      BookshelfId.new(),
+      BookshelfName("Salon"),
+      listOf(Membership(marc.id, OWNER), Membership(lea.id, VIEWER), Membership(tom.id, OWNER)),
+    )
+    val findBookshelf = FindBookshelf(BookshelvesInMemory().apply { insert(salon) }, readers)
+
+    // When
+    val answer = findBookshelf(marc.id, salon.id)
+
+    // Then
+    answer.shouldBeInstanceOf<Found>().members shouldBe listOf(
+      BookshelfMember(marc.id, "Marc", OWNER),
+      BookshelfMember(tom.id, "Tom", OWNER),
+      BookshelfMember(lea.id, "Léa", VIEWER),
+    )
+  }
 }
