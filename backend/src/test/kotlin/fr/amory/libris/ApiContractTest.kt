@@ -37,6 +37,7 @@ import fr.amory.libris.library.application.CreateBookshelfResult.Created
 import fr.amory.libris.library.application.CreateBookshelfResult.NameTaken
 import fr.amory.libris.library.application.FindDefaultBookshelf
 import fr.amory.libris.library.application.ListReaderBookshelves
+import fr.amory.libris.library.application.ListReaders
 import fr.amory.libris.library.application.NewBook
 import fr.amory.libris.library.application.OpenBookshelf
 import fr.amory.libris.library.application.OpenBookshelfResult
@@ -87,6 +88,7 @@ import java.util.UUID
     ListReaderBookshelves::class,
     CreateBookshelf::class,
     OpenBookshelf::class,
+    ListReaders::class,
   ],
 )
 @Suppress("LongParameterList")
@@ -100,7 +102,8 @@ class ApiContractTest @Autowired constructor(
   private val findCover: FindCover,
   private val listReaderBookshelves: ListReaderBookshelves,
   private val createBookshelf: CreateBookshelf,
-  private val openBookshelf: OpenBookshelf) {
+  private val openBookshelf: OpenBookshelf,
+  private val listReaders: ListReaders) {
   @ContracteerTest(openApiDoc = "https://raw.githubusercontent.com/camory/libris-api/v0.11.0/openapi.yaml")
   fun `the API matches the contract`() {
     contracteerIsWelcomed()
@@ -111,6 +114,7 @@ class ApiContractTest @Autowired constructor(
     bookshelvesAnswer()
     creatingABookshelfAnswers()
     openingABookshelfAnswers()
+    readersAnswer()
   }
 
   private fun contracteerIsWelcomed() {
@@ -162,6 +166,10 @@ class ApiContractTest @Autowired constructor(
     given(openBookshelf(contracteer, BookshelfId(any() ?: NOT_MINE.value)))
       .willReturn(Opened(CONTRACTEER_BOOKSHELF, listOf(CONTRACTEER_AS_OWNER)))
     given(openBookshelf(CONTRACTEER.id, NOT_MINE)).willReturn(OpenBookshelfResult.NoSuchBookshelf)
+  }
+
+  private fun readersAnswer() {
+    given(listReaders()).willReturn(listOf(CONTRACTEER))
   }
 
   private fun noCopy(answer: EditionLookupResult) =
