@@ -14,7 +14,7 @@ import com.github.tomakehurst.wiremock.client.WireMock.urlPathMatching
 import com.jayway.jsonpath.JsonPath
 
 class OpenLibraryStubs(private val server: WireMockServer) {
-  val baseUrl: String get() = server.baseUrl()
+  private val baseUrl: String get() = server.baseUrl()
 
   fun knows(isbn: String) {
     val edition = recorded("open-library/books/$isbn.json")

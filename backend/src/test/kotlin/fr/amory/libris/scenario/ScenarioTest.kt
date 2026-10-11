@@ -2,8 +2,13 @@ package fr.amory.libris.scenario
 
 import com.github.tomakehurst.wiremock.WireMockServer
 import com.github.tomakehurst.wiremock.core.WireMockConfiguration.options
+import fr.amory.libris.bibliography.fixture.BnfStubs
+import fr.amory.libris.bibliography.fixture.InventaireStubs
+import fr.amory.libris.bibliography.fixture.OpenLibraryStubs
 import fr.amory.libris.fixture.FreshSchema
 import fr.amory.libris.fixture.MutableClock
+import fr.amory.libris.scenario.dsl.Libris
+import fr.amory.libris.scenario.dsl.Sources
 import org.junit.jupiter.api.extension.BeforeEachCallback
 import org.junit.jupiter.api.extension.ExtendWith
 import org.junit.jupiter.api.extension.ExtensionContext
@@ -54,6 +59,22 @@ class StubbedSources {
     WireMockServer(options().dynamicPort())
 
   @Bean
+  fun bnfStubs(bnf: WireMockServer): BnfStubs =
+    BnfStubs(bnf)
+
+  @Bean
+  fun openLibraryStubs(openLibrary: WireMockServer): OpenLibraryStubs =
+    OpenLibraryStubs(openLibrary)
+
+  @Bean
+  fun inventaireStubs(inventaire: WireMockServer): InventaireStubs =
+    InventaireStubs(inventaire)
+
+  @Bean
+  fun sources(bnf: WireMockServer, openLibrary: WireMockServer, inventaire: WireMockServer): Sources =
+    Sources(listOf(bnf, openLibrary, inventaire))
+
+  @Bean
   fun coversDir(): Path =
     Files.createTempDirectory("libris-covers")
 
@@ -80,4 +101,8 @@ class StubbedSources {
       .uriBuilderFactory(LocalTestWebServer.obtain(context).uriBuilderFactory())
       .defaultHeader("X-Requested-With", "XMLHttpRequest")
       .build()
+
+  @Bean
+  fun libris(restTestClient: RestTestClient): Libris =
+    Libris(restTestClient)
 }

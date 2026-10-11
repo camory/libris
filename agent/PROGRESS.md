@@ -48,3 +48,19 @@ Format:
 - Deviations from the brief: none; no brief.
 - Left over: the older scenario classes move onto the DSL in their own
   PR; then T072.
+
+## 2026-10-11 — The older scenario classes on the DSL, with Tophe
+- Did: Kind, FastEntry, Catalogue, Bookshelf and Covers scenarios read
+  Libris through the scenario DSL, with no HTTP left in a test; `Libris`
+  keeps only the DSL's calls; the scenario wiring gives `Libris`, the
+  source stubs and `Sources` (forget the requests, no source asked) as
+  beans. Same tests, titles, Givens and values, the gate green with the
+  same counts as before, save FastEntry's wiring test, dropped.
+- Decided: FastEntry S1's strict JSON comparison is one equality over a
+  typed card naming every field the contract names, a field it does not
+  name no longer failing it; a served cover reads as a `Picture`, its
+  format, bytes, how long it may be kept and whether it is immutable; a
+  scenario asserts no status code nor content type, the contract's; the
+  source stubs are used as they are, already in the sources' words.
+- Deviations from the brief: none; no brief.
+- Left over: T072.

@@ -10,8 +10,6 @@ import com.github.tomakehurst.wiremock.client.WireMock.serverError
 import com.github.tomakehurst.wiremock.client.WireMock.urlPathEqualTo
 
 class BnfStubs(private val server: WireMockServer) {
-  val baseUrl: String get() = server.baseUrl()
-
   fun knows(isbn: String) =
     answers(isbn, recorded("bnf/$isbn.xml"))
 

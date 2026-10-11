@@ -1,10 +1,11 @@
 package fr.amory.libris.fixture
 
 import java.time.Clock
-import java.time.Duration
 import java.time.Instant
 import java.time.ZoneId
 import java.time.ZoneOffset.UTC
+import kotlin.time.Duration
+import kotlin.time.toJavaDuration
 
 class MutableClock(
   private var now: Instant = Instant.parse("2026-09-30T08:00:00Z"),
@@ -19,6 +20,6 @@ class MutableClock(
     now
 
   fun advance(by: Duration) {
-    now = now.plus(by)
+    now = now.plus(by.toJavaDuration())
   }
 }
