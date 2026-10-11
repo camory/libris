@@ -6,10 +6,10 @@ import fr.amory.libris.library.application.AddBookToBookshelf
 import fr.amory.libris.library.application.AddMemberToBookshelf
 import fr.amory.libris.library.application.ChooseDefaultBookshelf
 import fr.amory.libris.library.application.CreateBookshelf
+import fr.amory.libris.library.application.FindBookshelf
 import fr.amory.libris.library.application.FindDefaultBookshelf
 import fr.amory.libris.library.application.ListReaderBookshelves
 import fr.amory.libris.library.application.ListReaders
-import fr.amory.libris.library.application.OpenBookshelf
 import fr.amory.libris.library.application.WelcomeReader
 import fr.amory.libris.library.application.catalogue.BrowseCatalogue
 import fr.amory.libris.library.application.lookup.LookupIsbnForReader
@@ -46,7 +46,7 @@ private val TOPHE = readerNamed(
     FindCover::class,
     ListReaderBookshelves::class,
     CreateBookshelf::class,
-    OpenBookshelf::class,
+    FindBookshelf::class,
     ListReaders::class,
     AddMemberToBookshelf::class,
     ChooseDefaultBookshelf::class,

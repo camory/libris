@@ -14,10 +14,10 @@ import fr.amory.libris.library.application.CreateBookshelf
 import fr.amory.libris.library.application.CreateBookshelfResult.BlankName
 import fr.amory.libris.library.application.CreateBookshelfResult.Created
 import fr.amory.libris.library.application.CreateBookshelfResult.NameTaken
+import fr.amory.libris.library.application.FindBookshelf
+import fr.amory.libris.library.application.FindBookshelfResult
+import fr.amory.libris.library.application.FindBookshelfResult.Found
 import fr.amory.libris.library.application.ListReaderBookshelves
-import fr.amory.libris.library.application.OpenBookshelf
-import fr.amory.libris.library.application.OpenBookshelfResult
-import fr.amory.libris.library.application.OpenBookshelfResult.Opened
 import fr.amory.libris.library.application.ReaderBookshelf
 import fr.amory.libris.library.application.lookup.CopyOnBookshelf
 import fr.amory.libris.library.domain.bookshelf.Bookshelf
@@ -51,7 +51,7 @@ import java.util.UUID
 class BookshelfController(
   private val listReaderBookshelves: ListReaderBookshelves,
   private val createBookshelf: CreateBookshelf,
-  private val openBookshelf: OpenBookshelf,
+  private val findBookshelf: FindBookshelf,
   private val addBookToBookshelf: AddBookToBookshelf,
   private val addMemberToBookshelf: AddMemberToBookshelf) {
   @GetMapping("/api/v1/bookshelves")
@@ -67,10 +67,10 @@ class BookshelfController(
     }
 
   @GetMapping("/api/v1/bookshelves/{id}")
-  fun open(@AuthenticationPrincipal reader: Reader, @PathVariable("id") id: UUID): ResponseEntity<Any> =
-    when (val result = openBookshelf(reader.id, BookshelfId(id))) {
-      is Opened                           -> ResponseEntity.status(OK).body(BookshelfWithMembersResponse.from(result))
-      OpenBookshelfResult.NoSuchBookshelf -> notFound()
+  fun find(@AuthenticationPrincipal reader: Reader, @PathVariable("id") id: UUID): ResponseEntity<Any> =
+    when (val result = findBookshelf(reader.id, BookshelfId(id))) {
+      is Found                            -> ResponseEntity.status(OK).body(BookshelfWithMembersResponse.from(result))
+      FindBookshelfResult.NoSuchBookshelf -> notFound()
     }
 
   @PostMapping("/api/v1/bookshelves/{id}/books")
@@ -135,11 +135,11 @@ data class BookshelfWithMembersResponse(
   val name: String,
   val members: List<MemberResponse>) {
   companion object {
-    fun from(opened: Opened): BookshelfWithMembersResponse =
+    fun from(found: Found): BookshelfWithMembersResponse =
       BookshelfWithMembersResponse(
-        opened.bookshelf.id.value.toString(),
-        opened.bookshelf.name,
-        opened.members.map { MemberResponse.from(it) },
+        found.bookshelf.id.value.toString(),
+        found.bookshelf.name,
+        found.members.map { MemberResponse.from(it) },
       )
   }
 }

@@ -42,13 +42,12 @@ import fr.amory.libris.library.application.CreateBookshelf
 import fr.amory.libris.library.application.CreateBookshelfResult.BlankName
 import fr.amory.libris.library.application.CreateBookshelfResult.Created
 import fr.amory.libris.library.application.CreateBookshelfResult.NameTaken
+import fr.amory.libris.library.application.FindBookshelf
+import fr.amory.libris.library.application.FindBookshelfResult
 import fr.amory.libris.library.application.FindDefaultBookshelf
 import fr.amory.libris.library.application.ListReaderBookshelves
 import fr.amory.libris.library.application.ListReaders
 import fr.amory.libris.library.application.NewBook
-import fr.amory.libris.library.application.OpenBookshelf
-import fr.amory.libris.library.application.OpenBookshelfResult
-import fr.amory.libris.library.application.OpenBookshelfResult.Opened
 import fr.amory.libris.library.application.ReaderBookshelf
 import fr.amory.libris.library.application.WelcomeReader
 import fr.amory.libris.library.application.catalogue.BrowseCatalogue
@@ -95,7 +94,7 @@ import java.util.UUID
     FindCover::class,
     ListReaderBookshelves::class,
     CreateBookshelf::class,
-    OpenBookshelf::class,
+    FindBookshelf::class,
     ListReaders::class,
     AddMemberToBookshelf::class,
     ChooseDefaultBookshelf::class,
@@ -112,7 +111,7 @@ class ApiContractTest @Autowired constructor(
   private val findCover: FindCover,
   private val listReaderBookshelves: ListReaderBookshelves,
   private val createBookshelf: CreateBookshelf,
-  private val openBookshelf: OpenBookshelf,
+  private val findBookshelf: FindBookshelf,
   private val listReaders: ListReaders,
   private val addMemberToBookshelf: AddMemberToBookshelf,
   private val chooseDefaultBookshelf: ChooseDefaultBookshelf) {
@@ -125,7 +124,7 @@ class ApiContractTest @Autowired constructor(
     coversAnswer()
     bookshelvesAnswer()
     creatingABookshelfAnswers()
-    openingABookshelfAnswers()
+    findingABookshelfAnswers()
     readersAnswer()
     addingAMemberAnswers()
     choosingTheDefaultAnswers()
@@ -175,11 +174,11 @@ class ApiContractTest @Autowired constructor(
     given(createBookshelf(CONTRACTEER.id, "Salon")).willReturn(NameTaken)
   }
 
-  private fun openingABookshelfAnswers() {
+  private fun findingABookshelfAnswers() {
     val contracteer = ReaderId(eq(CONTRACTEER.id.value) ?: CONTRACTEER.id.value)
-    given(openBookshelf(contracteer, BookshelfId(any() ?: NOT_MINE.value)))
-      .willReturn(Opened(CONTRACTEER_BOOKSHELF, listOf(CONTRACTEER_AS_OWNER)))
-    given(openBookshelf(CONTRACTEER.id, NOT_MINE)).willReturn(OpenBookshelfResult.NoSuchBookshelf)
+    given(findBookshelf(contracteer, BookshelfId(any() ?: NOT_MINE.value)))
+      .willReturn(FindBookshelfResult.Found(CONTRACTEER_BOOKSHELF, listOf(CONTRACTEER_AS_OWNER)))
+    given(findBookshelf(CONTRACTEER.id, NOT_MINE)).willReturn(FindBookshelfResult.NoSuchBookshelf)
   }
 
   private fun readersAnswer() {
