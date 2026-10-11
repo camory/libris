@@ -2,6 +2,7 @@ package fr.amory.libris.library.infrastructure.persistence
 
 import fr.amory.libris.fixture.JdbcSliceTest
 import fr.amory.libris.library.domain.reader.DuplicateUsernameException
+import fr.amory.libris.library.domain.reader.ReaderId
 import fr.amory.libris.library.fixture.bookshelfOwnedBy
 import fr.amory.libris.library.fixture.readerNamed
 import io.kotest.assertions.throwables.shouldThrow
@@ -40,6 +41,11 @@ class JdbcReaderRepositoryTest @Autowired constructor(
 
     // Then
     found shouldBe juliette
+  }
+
+  @Test
+  fun `an unknown id finds no reader`() {
+    readers.findById(ReaderId.new()) shouldBe null
   }
 
   @Test
