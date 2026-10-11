@@ -14,10 +14,10 @@ import org.springframework.stereotype.Service
 class FindBookshelf(
   private val bookshelves: BookshelfRepository,
   private val readers: ReaderRepository) {
-  @Suppress("UnusedParameter")
   operator fun invoke(readerId: ReaderId, bookshelfId: BookshelfId): FindBookshelfResult =
     bookshelves
       .findById(bookshelfId)
+      ?.takeIf { it.hasMember(readerId) }
       ?.let { Found(it, membersOf(it)) }
       ?: NoSuchBookshelf
 

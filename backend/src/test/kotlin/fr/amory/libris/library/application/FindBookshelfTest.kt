@@ -1,6 +1,7 @@
 package fr.amory.libris.library.application
 
 import fr.amory.libris.library.application.FindBookshelfResult.Found
+import fr.amory.libris.library.application.FindBookshelfResult.NoSuchBookshelf
 import fr.amory.libris.library.domain.bookshelf.Bookshelf
 import fr.amory.libris.library.domain.bookshelf.BookshelfId
 import fr.amory.libris.library.domain.bookshelf.BookshelfName
@@ -42,5 +43,18 @@ class FindBookshelfTest {
       BookshelfMember(marc.id, "Marc", OWNER),
       BookshelfMember(lea.id, "Léa", VIEWER),
     )
+  }
+
+  @Test
+  fun `a reader who does not belong to the bookshelf is answered no such bookshelf`() {
+    // Given
+    val tom = readerNamed("tom", "Tom")
+    readers.insert(tom)
+
+    // When
+    val answer = findBookshelf(tom.id, familiale.id)
+
+    // Then
+    answer shouldBe NoSuchBookshelf
   }
 }
