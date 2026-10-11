@@ -426,6 +426,12 @@ deliberately lacks), no other service. A test that needs more blocks the task.
   never in this public repository. Spring Actuator's
   endpoints sit outside `/api`, are never routed by Traefik, and serve the
   container healthcheck.
+- Two environments run the same images. Staging takes any `sha-<short sha>`
+  tag of `main`, or an image built from a branch, and is where a spec's
+  *Done* is checked on the phone; production takes only a release tag. Each
+  has its own database and covers volume, behind a proxy that authenticates
+  and sets the `Remote-*` headers. Where staging runs and how it is deployed
+  live beside it, outside this repository.
 - Deploy is manual: set `LIBRIS_TAG`, then `docker compose pull && docker
   compose up -d` on the Kimsufi box. Rollback is the previous tag.
 - Backups are not the app's job: the server's Gordien (hourly `pg_dump` +
