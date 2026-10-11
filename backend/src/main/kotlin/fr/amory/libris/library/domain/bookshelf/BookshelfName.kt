@@ -4,24 +4,23 @@ import java.text.Normalizer
 import java.text.Normalizer.Form.NFD
 
 @JvmInline
-value class BookshelfName(val value: String) : Comparable<BookshelfName> {
+value class BookshelfName(val value: String) {
   init {
     require(value.isNotBlank()) { "a bookshelf name is not blank" }
   }
 
   fun isSameAs(other: BookshelfName): Boolean =
-    compareTo(other) == 0
-
-  override fun compareTo(other: BookshelfName): Int =
-    ignoringCaseAndAccents(value).compareTo(ignoringCaseAndAccents(other.value))
+    folded(value) == folded(other.value)
 
   companion object {
+    val ignoringCaseAndAccents: Comparator<BookshelfName> = compareBy { folded(it.value) }
+
     fun of(text: String): BookshelfName? =
       text.takeIf { it.isNotBlank() }?.let { BookshelfName(it) }
   }
 }
 
-private fun ignoringCaseAndAccents(name: String): String =
+private fun folded(name: String): String =
   Normalizer
     .normalize(name, NFD)
     .replace(COMBINING_MARKS, "")
