@@ -98,3 +98,19 @@ Format:
 - Left over: the asker's role, an add of a member already there and the
   unknown reader's scenario (T077); no release should be tagged between
   T073 and T077, since any reader knowing a bookshelf's id can add to it.
+
+## 2026-10-11 — T074 The reader's bookshelves in order — done
+- Did: `ListReaderBookshelves` answers the reader's default first, then the
+  others by name ignoring case and accents; S1 green, un-skipped.
+- Decided: the comparison is a private `ignoringCaseAndAccents` of the use
+  case, `Normalizer` NFD with the combining marks dropped, then
+  `lowercase()`, compared as a plain `String`, so spaces still count as in
+  the catalogue's collation; `Collator` at `PRIMARY` was set aside since it
+  ignores spaces (measured, item in `gotchas/backend.md`). The default
+  leads through the first key of `compareBy`, `id != defaultBookshelfId`;
+  the sort is stable, so names equal under the comparison keep the
+  repository's order, as the brief asked.
+- Deviations from the brief: none. S1's un-skip came at step 4, as the
+  brief's test plan orders it, since it is a guard green on un-skip.
+- Left over: T076 may extract the comparison for the order of a bookshelf's
+  members, as the brief's *Out of scope* says.

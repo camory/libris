@@ -52,7 +52,7 @@ longer says.
       copies in their catalogue and on the card of their ISBN (PRD §3, D12).
       Realises S5; un-skips the backend test of S5, both cases.
 
-- [ ] T074 Backend: the reader's bookshelves in order.
+- [x] T074 Backend: the reader's bookshelves in order.
       The bookshelves of T072 come in the order of S1: the reader's default
       first, then the others by name, ignoring case and accents; one the
       reader does not belong to is never answered, whatever its members
