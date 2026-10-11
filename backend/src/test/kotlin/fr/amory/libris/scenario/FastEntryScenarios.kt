@@ -3,16 +3,19 @@ package fr.amory.libris.scenario
 import com.github.tomakehurst.wiremock.WireMockServer
 import fr.amory.libris.bibliography.fixture.BnfStubs
 import fr.amory.libris.bibliography.fixture.OpenLibraryStubs
+import fr.amory.libris.scenario.dsl.Author
+import fr.amory.libris.scenario.dsl.Card
+import fr.amory.libris.scenario.dsl.Cover
 import fr.amory.libris.scenario.dsl.Libris
+import fr.amory.libris.scenario.dsl.NOT_FOUND
+import fr.amory.libris.scenario.dsl.SOURCES_UNAVAILABLE
+import fr.amory.libris.scenario.dsl.Series
+import fr.amory.libris.scenario.dsl.asks
 import io.kotest.matchers.shouldBe
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.core.env.Environment
-import org.springframework.http.HttpStatus.SERVICE_UNAVAILABLE
-import org.springframework.http.MediaType.APPLICATION_JSON
-import org.springframework.http.MediaType.APPLICATION_PROBLEM_JSON
-import org.springframework.test.json.JsonCompareMode
 import org.springframework.test.web.servlet.client.RestTestClient
 
 @ScenarioTest
@@ -37,33 +40,28 @@ class FastEntryScenarios @Autowired constructor(
   fun `S1 Typed ISBN, found`() {
     // Given
     bnf.knows("9782723488525")
+
     // When
-    val response = libris.ask(juliette, "9782723488525")
+    val answer = juliette.asks("9782723488525")
+
     // Then
-    response.expectStatus().isOk()
-      .expectHeader().contentType(APPLICATION_JSON)
-      .expectBody().json(
-        """
-                {
-                  "id": null,
-                  "isbn13": "9782723488525",
-                  "kind": "MANGA",
-                  "title": "Romance dawn",
-                  "subtitle": "à l'aube d'une grande aventure",
-                  "authors": [{ "name": "Eiichirō Oda", "role": "WRITER" }],
-                  "series": { "name": "One piece", "volumeNumber": 1 },
-                  "collection": "Shonen manga",
-                  "publisher": "Glénat",
-                  "publicationYear": 2013,
-                  "language": "fr",
-                  "pageCount": 203,
-                  "summary": null,
-                  "covers": [{"source": "BnF", "url": "$ONE_PIECE_COVER"}],
-                  "copies": []
-                }
-                """,
-        JsonCompareMode.STRICT,
-      )
+    answer.value shouldBe Card(
+      id = null,
+      isbn13 = "9782723488525",
+      kind = "MANGA",
+      title = "Romance dawn",
+      subtitle = "à l'aube d'une grande aventure",
+      authors = listOf(Author("Eiichirō Oda", "WRITER")),
+      series = Series("One piece", 1),
+      collection = "Shonen manga",
+      publisher = "Glénat",
+      publicationYear = 2013,
+      language = "fr",
+      pageCount = 203,
+      summary = null,
+      covers = listOf(Cover("BnF", ONE_PIECE_COVER)),
+      copies = emptyList(),
+    )
   }
 
   @Test
@@ -71,12 +69,12 @@ class FastEntryScenarios @Autowired constructor(
     // Given
     bnf.doesNotKnow("9782000000013")
     openLibrary.doesNotKnow("9782000000013")
+
     // When
-    val response = libris.ask(juliette, "9782000000013")
+    val answer = juliette.asks("9782000000013")
+
     // Then
-    response.expectStatus().isNotFound()
-      .expectHeader().contentType(APPLICATION_PROBLEM_JSON)
-      .expectBody().jsonPath("$.type").isEqualTo("/problems/not-found")
+    answer.refusal shouldBe NOT_FOUND
   }
 
   @Test
@@ -84,15 +82,16 @@ class FastEntryScenarios @Autowired constructor(
     // Given
     bnf.partiallyKnows("9782723488525")
     openLibrary.knows("9782723488525")
+
     // When
-    val response = libris.ask(juliette, "9782723488525")
+    val answer = juliette.asks("9782723488525")
+
     // Then
-    response.expectStatus().isOk()
-      .expectBody()
-      .jsonPath("$.title").isEqualTo("Romance dawn")
-      .jsonPath("$.authors[0].name").isEqualTo("Eiichirō Oda")
-      .jsonPath("$.pageCount").isEqualTo(207)
-      .jsonPath("$.publicationYear").isEqualTo(2013)
+    val card = answer.value
+    card.title shouldBe "Romance dawn"
+    card.authors.first().name shouldBe "Eiichirō Oda"
+    card.pageCount shouldBe 207
+    card.publicationYear shouldBe 2013
   }
 
   @Test
@@ -100,15 +99,15 @@ class FastEntryScenarios @Autowired constructor(
     // Given
     bnf.doesNotKnow("9782380751673")
     openLibrary.knows("9782380751673")
+
     // When
-    val response = libris.ask(juliette, "9782380751673")
+    val answer = juliette.asks("9782380751673")
+
     // Then
-    response.expectStatus().isOk()
-      .expectHeader().contentType(APPLICATION_JSON)
-      .expectBody()
-      .jsonPath("$.title").isEqualTo("Space Wars - Chapitre 1")
-      .jsonPath("$.authors[*].name").isEqualTo(listOf("Baba", "Stéphane Lapuss'", "Tartuff"))
-      .jsonPath("$.publisher").isEqualTo("KENNES EDITIONS")
+    val card = answer.value
+    card.title shouldBe "Space Wars - Chapitre 1"
+    card.authors.map { it.name } shouldBe listOf("Baba", "Stéphane Lapuss'", "Tartuff")
+    card.publisher shouldBe "KENNES EDITIONS"
   }
 
   @Test
@@ -116,12 +115,12 @@ class FastEntryScenarios @Autowired constructor(
     // Given
     bnf.fails()
     openLibrary.knows("9782380751673")
+
     // When
-    val response = libris.ask(juliette, "9782380751673")
+    val answer = juliette.asks("9782380751673")
+
     // Then
-    response.expectStatus().isOk()
-      .expectBody()
-      .jsonPath("$.title").isEqualTo("Space Wars - Chapitre 1")
+    answer.value.title shouldBe "Space Wars - Chapitre 1"
   }
 
   @Test
@@ -129,12 +128,12 @@ class FastEntryScenarios @Autowired constructor(
     // Given
     bnf.knows("9782723488525")
     openLibrary.answersTooLate("9782723488525")
+
     // When
-    val response = libris.ask(juliette, "9782723488525")
+    val answer = juliette.asks("9782723488525")
+
     // Then
-    response.expectStatus().isOk()
-      .expectBody()
-      .jsonPath("$.title").isEqualTo("Romance dawn")
+    answer.value.title shouldBe "Romance dawn"
   }
 
   @Test
@@ -142,12 +141,12 @@ class FastEntryScenarios @Autowired constructor(
     // Given
     bnf.fails()
     openLibrary.fails()
+
     // When
-    val response = libris.ask(juliette, "9782723488525")
+    val answer = juliette.asks("9782723488525")
+
     // Then
-    response.expectStatus().isEqualTo(SERVICE_UNAVAILABLE)
-      .expectHeader().contentType(APPLICATION_PROBLEM_JSON)
-      .expectBody().jsonPath("$.type").isEqualTo("/problems/sources-unavailable")
+    answer.refusal shouldBe SOURCES_UNAVAILABLE
   }
 
   @Test
@@ -155,12 +154,12 @@ class FastEntryScenarios @Autowired constructor(
     // Given
     bnf.answersTooLate("9782723488525")
     openLibrary.fails()
+
     // When
-    val response = libris.ask(juliette, "9782723488525")
+    val answer = juliette.asks("9782723488525")
+
     // Then
-    response.expectStatus().isEqualTo(SERVICE_UNAVAILABLE)
-      .expectHeader().contentType(APPLICATION_PROBLEM_JSON)
-      .expectBody().jsonPath("$.type").isEqualTo("/problems/sources-unavailable")
+    answer.refusal shouldBe SOURCES_UNAVAILABLE
   }
 
   private companion object {
