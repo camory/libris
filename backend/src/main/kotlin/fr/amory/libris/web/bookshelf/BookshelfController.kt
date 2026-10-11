@@ -118,6 +118,18 @@ data class ReaderBookshelfResponse(
   }
 }
 
+data class BookshelfResponse(
+  val id: String,
+  val name: String) {
+  companion object {
+    fun from(bookshelf: Bookshelf): BookshelfResponse =
+      BookshelfResponse(bookshelf.id.value.toString(), bookshelf.name)
+
+    fun from(copy: CopyOnBookshelf): BookshelfResponse =
+      BookshelfResponse(copy.bookshelfId.value.toString(), copy.bookshelfName)
+  }
+}
+
 data class BookshelfWithMembersResponse(
   val id: String,
   val name: String,
@@ -151,17 +163,5 @@ data class CopyResponse(
 
     fun from(added: Added): CopyResponse =
       CopyResponse(added.copy.id.value.toString(), BookshelfResponse.from(added.bookshelf))
-  }
-}
-
-data class BookshelfResponse(
-  val id: String,
-  val name: String) {
-  companion object {
-    fun from(bookshelf: Bookshelf): BookshelfResponse =
-      BookshelfResponse(bookshelf.id.value.toString(), bookshelf.name)
-
-    fun from(copy: CopyOnBookshelf): BookshelfResponse =
-      BookshelfResponse(copy.bookshelfId.value.toString(), copy.bookshelfName)
   }
 }
