@@ -79,7 +79,7 @@ longer says.
       Unit test of the order.
       Realises S4; un-skips the backend tests of S4, both cases.
 
-- [ ] T085 Backend: bookshelves and members in no promised order.
+- [x] T085 Backend: bookshelves and members in no promised order.
       The reader's bookshelves (S1) and a bookshelf's members (S4) come in
       no promised order, the screen sorting them (D11):
       `ListReaderBookshelves` and `FindBookshelf` sort nothing, their unit

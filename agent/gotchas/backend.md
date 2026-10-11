@@ -439,22 +439,21 @@ Read whole by a run that changes `backend/`, after `every-run.md`.
   in its select list (`for SELECT DISTINCT, ORDER BY expressions must
   appear in select list`), collation or not; a semi-join (`EXISTS`) keeps
   an edition once without widening the answer.
-- In Kotlin, "ignoring case and accents" is the `Comparator<String>`
-  `IgnoringCaseAndAccents`, at the root of `library.domain`, with two users:
-  `BookshelfName` (`isSameAs`, and the comparator
-  `BookshelfName.ignoringCaseAndAccents`; `BookshelfName` is not
-  `Comparable` and its `equals` stays exact) and `FindBookshelf`, which
-  sorts the members' display names through it. It compares a private
-  `folded` of each text: `Normalizer` NFD, the `\p{Mn}` marks
-  dropped, `lowercase()`, then `œ` and `æ` spelt `oe` and `ae`, compared
-  as a plain `String`, so spaces and hyphens still count (`À lire` before
-  `Albums`), as in the catalogue's collation. It is not that collation:
-  NFD leaves letters with a stroke whole (`Ø`, `Ł`), so `Øre` and `Łódź`
-  sort after `Zola`, where `ignoring_case_and_accents` puts them among the
-  O and L (measured both, 2026-10-11).
-  `java.text.Collator` at `PRIMARY` (French or root locale)
-  ignores spaces: it answers `0` for `One piece` against `Onepiece` and puts
-  `Albums` before `À lire` (measured on JDK 25, 2026-10-11).
+- In Kotlin, a bookshelf name's sameness ignoring case and accents is
+  `BookshelfName.isSameAs`, over a private `folded` in `BookshelfName.kt`,
+  the only folding of the backend's Kotlin; `BookshelfName` is not
+  `Comparable` and its `equals` stays exact. `ListReaderBookshelves` and
+  `FindBookshelf` sort nothing and answer in the repositories' order;
+  `Contributions.of` (a card's authors) and `LookupIsbnForReader` (a card's
+  bookshelves) still sort, until T087. The folding: `Normalizer` NFD, the `\p{Mn}`
+  marks dropped, `lowercase()`, then `œ` and `æ` spelt `oe` and `ae`,
+  compared as a plain `String`, so spaces and hyphens still count (`À lire`
+  is not `Alire`). It is not the catalogue's collation: NFD leaves letters
+  with a stroke whole (`Ø`, `Ł`), so `Øre` is not `Ore`, where
+  `ignoring_case_and_accents` would match them (measured both, 2026-10-11).
+  `java.text.Collator` at `PRIMARY` (French or root locale) ignores spaces:
+  it answers `0` for `One piece` against `Onepiece` (measured on JDK 25,
+  2026-10-11), which is why it was set aside.
 - A row comparison `(a, b) > (c, d)` with a nullable member answers `NULL`
   when it meets one: the keyset of `JdbcCatalogueEditions` spells the
   nullable tome out (`IS NULL`, `IS NOT DISTINCT FROM`) instead.

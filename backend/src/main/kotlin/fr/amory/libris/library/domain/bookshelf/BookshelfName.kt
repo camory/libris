@@ -1,6 +1,7 @@
 package fr.amory.libris.library.domain.bookshelf
 
-import fr.amory.libris.library.domain.IgnoringCaseAndAccents
+import java.text.Normalizer
+import java.text.Normalizer.Form.NFD
 
 @JvmInline
 value class BookshelfName(val value: String) {
@@ -9,12 +10,20 @@ value class BookshelfName(val value: String) {
   }
 
   fun isSameAs(other: BookshelfName): Boolean =
-    IgnoringCaseAndAccents.compare(value, other.value) == 0
+    folded(value) == folded(other.value)
 
   companion object {
-    val ignoringCaseAndAccents: Comparator<BookshelfName> = compareBy(IgnoringCaseAndAccents) { it.value }
-
     fun of(text: String): BookshelfName? =
       text.takeIf { it.isNotBlank() }?.let { BookshelfName(it) }
   }
 }
+
+private fun folded(name: String): String =
+  Normalizer
+    .normalize(name, NFD)
+    .replace(COMBINING_MARKS, "")
+    .lowercase()
+    .replace("œ", "oe")
+    .replace("æ", "ae")
+
+private val COMBINING_MARKS = Regex("\\p{Mn}")

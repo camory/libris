@@ -164,3 +164,16 @@ Format:
   widens a visibility. Otherwise none.
 - Left over: the refusals of an add, which read the members back (T077);
   the screen of a bookshelf (T082).
+
+## 2026-10-11 — T085 Bookshelves and members in no promised order — done
+- Did: `ListReaderBookshelves` and `FindBookshelf` sort nothing and answer
+  in the repositories' order; `MembershipRole` is `OWNER` and `VIEWER` bare;
+  the folding is private to `BookshelfName.kt` again, `IgnoringCaseAndAccents.kt` gone.
+- Decided: the three guards on `BookshelfName.isSameAs` (`œ`, `æ`, a space
+  that counts) came first, each committed before its mutation was run, so
+  the folding was never left unproven while the order cases left. The
+  folding's shape is T075's, without the companion's comparator.
+- Deviations from the brief: none.
+- Left over: the authors and a card's bookshelves (T087, after T086);
+  narrowing `ListReaderBookshelves` to a `ReaderId`, as the brief's
+  *Risks* note, is not proposed: nothing asks for it yet.

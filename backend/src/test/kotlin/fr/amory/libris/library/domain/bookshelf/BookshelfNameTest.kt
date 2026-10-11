@@ -34,4 +34,22 @@ class BookshelfNameTest {
     // Given / When / Then
     BookshelfName("Salon").isSameAs(BookshelfName("Bibliothèque familiale")) shouldBe false
   }
+
+  @Test
+  fun `a name written with œ is the same as one written with oe`() {
+    // Given / When / Then
+    BookshelfName("Œuvres").isSameAs(BookshelfName("oeuvres")) shouldBe true
+  }
+
+  @Test
+  fun `a name written with æ is the same as one written with ae`() {
+    // Given / When / Then
+    BookshelfName("Æsop").isSameAs(BookshelfName("aesop")) shouldBe true
+  }
+
+  @Test
+  fun `two names apart by a space are not the same`() {
+    // Given / When / Then
+    BookshelfName("À lire").isSameAs(BookshelfName("Alire")) shouldBe false
+  }
 }
