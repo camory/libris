@@ -81,11 +81,12 @@ one HTTP adapter of both.
 `web` holds the controllers and their request and response DTOs, for both
 contexts: the API is one contract (D04), and its answers join the two (an
 ISBN's answer is the bibliography's edition and the library's copies). It
-has one sub-package per path of the contract, named after it (`web.isbn`
-for `/api/v1/isbn/{isbn}`, `web.cover` for `/api/v1/covers/{name}`),
-holding that operation's controller with its requests and responses. A
-response another operation answers too is imported from the operation that
-declares it. Two sub-packages hold what every operation uses: `web.problem`,
+has one sub-package per resource of the contract, named after the product
+word for it (`web.isbn` for `/api/v1/isbn/{isbn}`, `web.bookshelf` for
+`/api/v1/bookshelves` and the paths below it, `web.catalogue` for
+`/api/v1/books`), holding the one controller that serves it with its
+requests and responses. A response another sub-package answers too is
+imported from the sub-package that declares it. Two sub-packages hold what every operation uses: `web.problem`,
 the problem details of the API and the advice that answers them, and
 `web.security`, the security filter chain with the filter that reads the
 `Remote-*` headers and asks `WelcomeReader` for the reader they name: the
