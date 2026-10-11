@@ -4,6 +4,7 @@ import fr.amory.libris.fixture.Transaction
 import fr.amory.libris.fixture.TransactionsObserving
 import fr.amory.libris.library.application.AddMemberResult.Added
 import fr.amory.libris.library.application.AddMemberResult.NoSuchBookshelf
+import fr.amory.libris.library.application.AddMemberResult.UnknownReader
 import fr.amory.libris.library.domain.bookshelf.Bookshelf
 import fr.amory.libris.library.domain.bookshelf.BookshelfId
 import fr.amory.libris.library.domain.bookshelf.Membership
@@ -51,6 +52,17 @@ class AddMemberToBookshelfTest {
 
     // Then
     answer shouldBe NoSuchBookshelf
+    bookshelves.stored shouldBe listOf(familiale)
+    transactions.recorded shouldBe emptyList()
+  }
+
+  @Test
+  fun `a reader id naming no reader answers unknown reader, the bookshelf as it was`() {
+    // When
+    val answer = addMemberToBookshelf(marc.id, familiale.id, Membership(ReaderId.new(), VIEWER))
+
+    // Then
+    answer shouldBe UnknownReader
     bookshelves.stored shouldBe listOf(familiale)
     transactions.recorded shouldBe emptyList()
   }
