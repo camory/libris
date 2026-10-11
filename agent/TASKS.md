@@ -79,6 +79,15 @@ longer says.
       Unit test of the order.
       Realises S4; un-skips the backend tests of S4, both cases.
 
+- [ ] T085 Backend: bookshelves and members in no promised order.
+      The reader's bookshelves (S1) and a bookshelf's members (S4) come in
+      no promised order, the screen sorting them (D11):
+      `ListReaderBookshelves` and `FindBookshelf` sort nothing, their unit
+      tests of the order leave, and `MembershipRole.order` with them.
+      `IgnoringCaseAndAccents`, left with `BookshelfName` as its one user,
+      goes back to a private folding beside it. The backend tests of S1 and
+      S4 pass unedited.
+
 - [ ] T077 Backend: an add Libris refuses.
       A viewer of the bookshelf, or a reader who does not belong to it,
       adding a member is answered that there is no such bookshelf; an owner
@@ -90,8 +99,8 @@ longer says.
 
 - [ ] T078 Backend: a reader chooses their default.
       A reader makes a bookshelf they own their default: the answer is
-      `204`, and the reader's answer names it as their default from then on,
-      the bookshelves of T074 putting it first. A bookshelf they are a
+      `204`, and the reader's answer names it as their default from then
+      on. A bookshelf they are a
       viewer of, or do not belong to, is answered that there is no such
       bookshelf, their default unchanged. The default being one they own
       spans the reader and the bookshelf: the use case keeps it in one
@@ -105,12 +114,14 @@ longer says.
       and domain types they name (D07).
       `vitest.global-setup.ts` pins `v0.11.0`, the frontend's one bump
       (D04). The home page reads *Libris*, the greeting, then the block *Mes
-      bibliothèques*: a row per bookshelf in the order of the answer, its
-      name over *propriétaire* or *invité*, *· par défaut* on the reader's
+      bibliothèques*: a row per bookshelf, the default first, then the
+      others by name ignoring case and accents, its name over
+      *propriétaire* or *invité*, *· par défaut* on the reader's
       default; skeleton rows while they come, S9's loading sentence when
       Libris does not answer; the link *Ajouter un ouvrage* leaves (U03, U05,
-      U08). Its client tested against `contracteer mock` (D07); the PR body
-      proposes the spec's U08 title. Realises S1 and S9's home page case;
+      U08). Unit test of the order, its comparison in the reader's language
+      (D11), the one T082 and T083 sort with. Its client tested against
+      `contracteer mock` (D07); the PR body proposes the spec's U08 title. Realises S1 and S9's home page case;
       un-skips the frontend tests of S1 and of S9, the home page.
 
 - [ ] T080 Frontend: a reader creates a bookshelf.
@@ -136,12 +147,14 @@ longer says.
 - [ ] T082 Frontend: a member opens a bookshelf.
       A home page row gains its chevron and leads to `/bibliotheques/{id}`,
       the *Accueil* tab shown: the bookshelf's name as the title, no hint,
-      then *Membres*, a row per member in the order of the answer, *Léa ·
+      then *Membres*, a row per member, the owners first, then the viewers,
+      each by display name ignoring case and accents, *Léa ·
       propriétaire*, the reader's own reading *Vous*; skeletons while it
       comes; *Bibliothèque introuvable.* alone for no such bookshelf or an
       id that is not one; S9's loading sentence when Libris does not answer
-      (U03, U05, U07, U08). Its client tested against `contracteer mock`
-      (D07); the PR body proposes the spec's U03 header with no hint.
+      (U03, U05, U07, U08). Unit test of the order. Its client tested
+      against `contracteer mock` (D07); the PR body proposes the spec's U03
+      header with no hint.
       Realises S4 and S9's opening case; un-skips the frontend tests of S4,
       both cases, and of S9, opening a bookshelf.
 
@@ -179,6 +192,30 @@ make it the default, scan an ouvrage and add it; on yours, the card of that
 ISBN reads Dans Bibliothèque familiale. Then create Salon and add the second
 account as invité: on that account, the row of Salon has no star, and its
 copies are in the catalogue.*
+
+## Order on the screen — docs/ARCHITECTURE.md
+
+No contract release: no OpenAPI document promises these orders (D11).
+A promise leaves, so the frontend goes first: T086 sorts what the screens
+show today in the backend's order, and T087 drops that order once T086 is
+deployed.
+
+- [ ] T086 Frontend: the card and a catalogue row sort their authors and
+      bookshelves.
+      The card sorts its authors by their first role, scénario, dessin,
+      couleurs, traduction, then by name, and its rows *Dans …* by name; a
+      catalogue row sorts its authors in the card's order and its
+      bookshelves by name; each name ignoring case and accents, with the
+      comparison of T079 (U06, D11). Unit tests of both orders, over names
+      that differ only in case or accents, given in another order than the
+      screen's.
+
+- [ ] T087 Backend: authors and a card's bookshelves in no promised order.
+      Precondition (human): T086 deployed (D04).
+      `Contributions.of` keeps one contribution per author and role and
+      orders nothing, and `LookupIsbnForReader` sorts nothing (D11, D12);
+      their tests of the order leave, and `ContributionRole.order` with
+      them, which nothing else reads.
 
 ## Done
 
