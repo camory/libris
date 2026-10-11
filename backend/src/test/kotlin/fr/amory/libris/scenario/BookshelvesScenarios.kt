@@ -36,7 +36,6 @@ import org.springframework.beans.factory.annotation.Autowired
 class BookshelvesScenarios @Autowired constructor(private val libris: Libris) {
 
   @Test
-  @Disabled("bookshelves")
   fun `S1 The reader's bookshelves`() {
     // Given
     val lea = libris.reader("lea", "Léa")
