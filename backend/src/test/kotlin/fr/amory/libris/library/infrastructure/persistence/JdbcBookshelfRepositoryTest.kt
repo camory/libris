@@ -67,6 +67,21 @@ class JdbcBookshelfRepositoryTest @Autowired constructor(
   }
 
   @Test
+  fun `an update leaves another bookshelf's members as they were`() {
+    // Given
+    val lea = readerNamed("lea", "Léa").also { readers.insert(it) }
+    val tom = readerNamed("tom", "Tom").also { readers.insert(it) }
+    val leasBookshelf = bookshelfOwnedBy(lea).also { bookshelves.insert(it) }
+    val tomsBookshelf = bookshelfOwnedBy(tom).also { bookshelves.insert(it) }
+
+    // When
+    bookshelves.update(leasBookshelf.withMember(Membership(tom.id, VIEWER)))
+
+    // Then
+    bookshelves.findById(tomsBookshelf.id) shouldBe tomsBookshelf
+  }
+
+  @Test
   fun `a membership of a reader Libris does not know is refused`() {
     val nobody = readerNamed("nobody", "Nobody")
 
