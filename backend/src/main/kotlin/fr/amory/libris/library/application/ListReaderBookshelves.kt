@@ -12,6 +12,7 @@ class ListReaderBookshelves(private val bookshelves: BookshelfRepository) {
     bookshelves
       .findByMember(reader.id)
       .mapNotNull { readerBookshelf(it, reader.id) }
+      .sortedByDescending { it.id == reader.defaultBookshelfId }
 
   private fun readerBookshelf(bookshelf: Bookshelf, readerId: ReaderId): ReaderBookshelf? =
     bookshelf
