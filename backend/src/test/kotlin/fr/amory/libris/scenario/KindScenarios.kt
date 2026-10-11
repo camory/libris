@@ -6,15 +6,14 @@ import fr.amory.libris.bibliography.fixture.OpenLibraryStubs
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Qualifier
-import org.springframework.http.MediaType.APPLICATION_JSON
-import org.springframework.http.MediaType.APPLICATION_PROBLEM_JSON
 import org.springframework.test.web.servlet.client.RestTestClient
 
 @ScenarioTest
 class KindScenarios @Autowired constructor(
-  private val http: RestTestClient,
+  http: RestTestClient,
   @Qualifier("bnf") bnfServer: WireMockServer,
   @Qualifier("openLibrary") openLibraryServer: WireMockServer) {
+  private val libris = Libris(http)
   private val bnf = BnfStubs(bnfServer)
   private val openLibrary = OpenLibraryStubs(openLibraryServer)
 
@@ -24,7 +23,7 @@ class KindScenarios @Autowired constructor(
     bnf.knows("9782723488525")
     openLibrary.doesNotKnow("9782723488525")
     // When
-    val response = ask("9782723488525")
+    val response = libris.ask(JULIETTE, "9782723488525")
     // Then
     response.expectStatus().isOk()
       .expectBody().jsonPath("$.kind").isEqualTo("MANGA")
@@ -36,7 +35,7 @@ class KindScenarios @Autowired constructor(
     bnf.knows("9782505083399")
     openLibrary.doesNotKnow("9782505083399")
     // When
-    val response = ask("9782505083399")
+    val response = libris.ask(JULIETTE, "9782505083399")
     // Then
     response.expectStatus().isOk()
       .expectBody().jsonPath("$.kind").isEqualTo("BD")
@@ -48,7 +47,7 @@ class KindScenarios @Autowired constructor(
     bnf.knows("9782371025219")
     openLibrary.doesNotKnow("9782371025219")
     // When
-    val response = ask("9782371025219")
+    val response = libris.ask(JULIETTE, "9782371025219")
     // Then
     response.expectStatus().isOk()
       .expectBody().jsonPath("$.kind").isEqualTo("BOOK")
@@ -60,25 +59,13 @@ class KindScenarios @Autowired constructor(
     bnf.doesNotKnow("9782380751673")
     openLibrary.knows("9782380751673")
     // When
-    val response = ask("9782380751673")
+    val response = libris.ask(JULIETTE, "9782380751673")
     // Then
     response.expectStatus().isOk()
       .expectBody().jsonPath("$.kind").isEqualTo("BOOK")
   }
 
-  private fun ask(isbn: String): RestTestClient.ResponseSpec =
-    http.get()
-      .uri("/api/v1/isbn/$isbn")
-      .headers { it.putAll(READER) }
-      .accept(APPLICATION_JSON, APPLICATION_PROBLEM_JSON)
-      .exchange()
-
   private companion object {
-    val READER = mapOf(
-      "Remote-User" to listOf("juliette"),
-      "Remote-Name" to listOf("Juliette"),
-      "Remote-Email" to listOf("juliette@amory.fr"),
-      "Remote-Groups" to listOf("family"),
-    )
+    val JULIETTE = Reader("juliette", "Juliette")
   }
 }
