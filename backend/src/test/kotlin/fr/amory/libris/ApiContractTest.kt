@@ -30,8 +30,25 @@ import fr.amory.libris.fixture.WebSliceTest
 import fr.amory.libris.library.application.AddBookResult.Added
 import fr.amory.libris.library.application.AddBookResult.NotAnOwner
 import fr.amory.libris.library.application.AddBookToBookshelf
+import fr.amory.libris.library.application.AddMemberResult
+import fr.amory.libris.library.application.AddMemberResult.AlreadyAMember
+import fr.amory.libris.library.application.AddMemberResult.UnknownReader
+import fr.amory.libris.library.application.AddMemberToBookshelf
+import fr.amory.libris.library.application.BookshelfMember
+import fr.amory.libris.library.application.ChooseDefaultBookshelf
+import fr.amory.libris.library.application.ChooseDefaultResult
+import fr.amory.libris.library.application.ChooseDefaultResult.Chosen
+import fr.amory.libris.library.application.CreateBookshelf
+import fr.amory.libris.library.application.CreateBookshelfResult.BlankName
+import fr.amory.libris.library.application.CreateBookshelfResult.Created
+import fr.amory.libris.library.application.CreateBookshelfResult.NameTaken
+import fr.amory.libris.library.application.FindBookshelf
+import fr.amory.libris.library.application.FindBookshelfResult
 import fr.amory.libris.library.application.FindDefaultBookshelf
+import fr.amory.libris.library.application.ListReaderBookshelves
+import fr.amory.libris.library.application.ListReaders
 import fr.amory.libris.library.application.NewBook
+import fr.amory.libris.library.application.ReaderBookshelf
 import fr.amory.libris.library.application.WelcomeReader
 import fr.amory.libris.library.application.catalogue.BrowseCatalogue
 import fr.amory.libris.library.application.catalogue.CataloguePage
@@ -39,7 +56,11 @@ import fr.amory.libris.library.application.catalogue.HeldEdition
 import fr.amory.libris.library.application.lookup.CopyOnBookshelf
 import fr.amory.libris.library.application.lookup.IsbnLookup
 import fr.amory.libris.library.application.lookup.LookupIsbnForReader
+import fr.amory.libris.library.domain.bookshelf.Bookshelf
 import fr.amory.libris.library.domain.bookshelf.BookshelfId
+import fr.amory.libris.library.domain.bookshelf.Membership
+import fr.amory.libris.library.domain.bookshelf.MembershipRole.OWNER
+import fr.amory.libris.library.domain.bookshelf.MembershipRole.VIEWER
 import fr.amory.libris.library.domain.copy.Copy
 import fr.amory.libris.library.domain.copy.CopyId
 import fr.amory.libris.library.domain.reader.ReaderId
@@ -71,6 +92,12 @@ import java.util.UUID
     AddBookToBookshelf::class,
     BrowseCatalogue::class,
     FindCover::class,
+    ListReaderBookshelves::class,
+    CreateBookshelf::class,
+    FindBookshelf::class,
+    ListReaders::class,
+    AddMemberToBookshelf::class,
+    ChooseDefaultBookshelf::class,
   ],
 )
 @Suppress("LongParameterList")
@@ -81,14 +108,26 @@ class ApiContractTest @Autowired constructor(
   private val findDefaultBookshelf: FindDefaultBookshelf,
   private val addBookToBookshelf: AddBookToBookshelf,
   private val browseCatalogue: BrowseCatalogue,
-  private val findCover: FindCover) {
-  @ContracteerTest(openApiDoc = "https://raw.githubusercontent.com/camory/libris-api/v0.10.0/openapi.yaml")
+  private val findCover: FindCover,
+  private val listReaderBookshelves: ListReaderBookshelves,
+  private val createBookshelf: CreateBookshelf,
+  private val findBookshelf: FindBookshelf,
+  private val listReaders: ListReaders,
+  private val addMemberToBookshelf: AddMemberToBookshelf,
+  private val chooseDefaultBookshelf: ChooseDefaultBookshelf) {
+  @ContracteerTest(openApiDoc = "https://raw.githubusercontent.com/camory/libris-api/v0.11.0/openapi.yaml")
   fun `the API matches the contract`() {
     contracteerIsWelcomed()
     isbnLookupsAnswer()
     addingABookAnswers()
     catalogueAnswers()
     coversAnswer()
+    bookshelvesAnswer()
+    creatingABookshelfAnswers()
+    findingABookshelfAnswers()
+    readersAnswer()
+    addingAMemberAnswers()
+    choosingTheDefaultAnswers()
   }
 
   private fun contracteerIsWelcomed() {
@@ -108,7 +147,7 @@ class ApiContractTest @Autowired constructor(
   private fun addingABookAnswers() {
     given(addBookToBookshelf(CONTRACTEER.id, CONTRACTEER_BOOKSHELF.id, NEW_ONE_PIECE_1))
       .willReturn(Added(Copy(CopyId.new(), EditionId.new(), CONTRACTEER_BOOKSHELF.id), CONTRACTEER_BOOKSHELF))
-    given(addBookToBookshelf(CONTRACTEER.id, bookshelfId("9e8d7c6b-5a4f-4e3d-8c2b-1a0f9e8d7c6b"), NEW_ONE_PIECE_1))
+    given(addBookToBookshelf(CONTRACTEER.id, NOT_MINE, NEW_ONE_PIECE_1))
       .willReturn(NotAnOwner)
   }
 
@@ -121,6 +160,44 @@ class ApiContractTest @Autowired constructor(
     given(findCover(CoverName(any() ?: NO_COVER)))
       .willReturn(coverOf("image/jpeg", recordedBytes("covers/tall.jpg")))
     given(findCover(CoverName(eq(NO_COVER) ?: NO_COVER))).willReturn(null)
+  }
+
+  private fun bookshelvesAnswer() {
+    given(listReaderBookshelves(CONTRACTEER))
+      .willReturn(listOf(ReaderBookshelf(CONTRACTEER_BOOKSHELF.id, CONTRACTEER_BOOKSHELF.name, OWNER)))
+  }
+
+  private fun creatingABookshelfAnswers() {
+    given(createBookshelf(ReaderId(eq(CONTRACTEER.id.value) ?: CONTRACTEER.id.value), any() ?: ""))
+      .willReturn(Created(FAMILIALE))
+    given(createBookshelf(CONTRACTEER.id, "   ")).willReturn(BlankName)
+    given(createBookshelf(CONTRACTEER.id, "Salon")).willReturn(NameTaken)
+  }
+
+  private fun findingABookshelfAnswers() {
+    val contracteer = ReaderId(eq(CONTRACTEER.id.value) ?: CONTRACTEER.id.value)
+    given(findBookshelf(contracteer, BookshelfId(any() ?: NOT_MINE.value)))
+      .willReturn(FindBookshelfResult.Found(CONTRACTEER_BOOKSHELF, listOf(CONTRACTEER_AS_OWNER)))
+    given(findBookshelf(CONTRACTEER.id, NOT_MINE)).willReturn(FindBookshelfResult.NoSuchBookshelf)
+  }
+
+  private fun readersAnswer() {
+    given(listReaders()).willReturn(listOf(CONTRACTEER))
+  }
+
+  private fun addingAMemberAnswers() {
+    val contracteer = ReaderId(eq(CONTRACTEER.id.value) ?: CONTRACTEER.id.value)
+    given(addMemberToBookshelf(contracteer, BookshelfId(any() ?: NOT_MINE.value), any() ?: EVE_AS_VIEWER))
+      .willReturn(AddMemberResult.Added(BookshelfMember(EVE_AS_VIEWER.readerId, "Eve", VIEWER)))
+    given(addMemberToBookshelf(CONTRACTEER.id, CONTRACTEER_BOOKSHELF.id, UNKNOWN_AS_VIEWER)).willReturn(UnknownReader)
+    given(addMemberToBookshelf(CONTRACTEER.id, NOT_MINE, EVE_AS_VIEWER)).willReturn(AddMemberResult.NoSuchBookshelf)
+    given(addMemberToBookshelf(CONTRACTEER.id, CONTRACTEER_BOOKSHELF.id, TOPHE_AS_OWNER)).willReturn(AlreadyAMember)
+  }
+
+  private fun choosingTheDefaultAnswers() {
+    given(chooseDefaultBookshelf(eq(CONTRACTEER) ?: CONTRACTEER, BookshelfId(any() ?: NOT_MINE.value)))
+      .willReturn(Chosen)
+    given(chooseDefaultBookshelf(CONTRACTEER, NOT_MINE)).willReturn(ChooseDefaultResult.NoSuchBookshelf)
   }
 
   private fun noCopy(answer: EditionLookupResult) =
@@ -183,6 +260,8 @@ private val ASTERIX_1_COVERS = CoverCandidates.of(
   listOf(CoverCandidate(OPEN_LIBRARY, "https://covers.example.org/asterix-1.jpg")),
 )
 
+private val ASTERIX_1_COVER = CoverName("9c56cc51b374c3ba189210d5b6d4bf57790d351c96c47c02190ecf1e430635ab")
+
 private val COPY_OF_ASTERIX_1 = CopyOnBookshelf(
   CopyId.new(),
   BookshelfId(UUID.randomUUID()),
@@ -210,7 +289,7 @@ private val NEW_ONE_PIECE_1 = NewBook(
   coverSource = INVENTAIRE,
 )
 
-private val ASTERIX_1_COVER = CoverName("9c56cc51b374c3ba189210d5b6d4bf57790d351c96c47c02190ecf1e430635ab")
+private val NOT_MINE = bookshelfId("9e8d7c6b-5a4f-4e3d-8c2b-1a0f9e8d7c6b")
 
 private val ASTERIX_1_HELD = HeldEdition(
   edition = Edition(
@@ -234,5 +313,22 @@ private val ASTERIX_1_HELD = HeldEdition(
 
 private val NO_COVER = "0".repeat(64)
 
+private val FAMILIALE = Bookshelf(
+  BookshelfId.new(),
+  "Bibliothèque familiale",
+  listOf(Membership(CONTRACTEER.id, OWNER)),
+)
+
+private val CONTRACTEER_AS_OWNER = BookshelfMember(CONTRACTEER.id, "Contracteer", OWNER)
+
+private val EVE_AS_VIEWER = Membership(readerId("7f8091a2-b3c4-4d5e-8f6a-7b8c9d0e1f2a"), VIEWER)
+
+private val UNKNOWN_AS_VIEWER = Membership(readerId("00000000-0000-4000-8000-000000000000"), VIEWER)
+
+private val TOPHE_AS_OWNER = Membership(readerId("6e7f8091-a2b3-4c4d-9e5f-6a7b8c9d0e1f"), OWNER)
+
 private fun bookshelfId(id: String) =
   BookshelfId(UUID.fromString(id))
+
+private fun readerId(id: String) =
+  ReaderId(UUID.fromString(id))

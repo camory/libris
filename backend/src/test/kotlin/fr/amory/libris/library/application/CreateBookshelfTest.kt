@@ -1,0 +1,34 @@
+package fr.amory.libris.library.application
+
+import fr.amory.libris.fixture.Transaction
+import fr.amory.libris.fixture.TransactionsObserving
+import fr.amory.libris.library.application.CreateBookshelfResult.Created
+import fr.amory.libris.library.domain.bookshelf.Bookshelf
+import fr.amory.libris.library.domain.bookshelf.Membership
+import fr.amory.libris.library.domain.bookshelf.MembershipRole.OWNER
+import fr.amory.libris.library.domain.reader.ReaderId
+import fr.amory.libris.library.fixture.BookshelvesInMemory
+import io.kotest.matchers.shouldBe
+import io.kotest.matchers.types.shouldBeInstanceOf
+import org.junit.jupiter.api.Test
+
+class CreateBookshelfTest {
+  @Test
+  fun `a created bookshelf bears the name asked, the reader its one owner, stored in one transaction`() {
+    // Given
+    val lea = ReaderId.new()
+    val bookshelves = BookshelvesInMemory()
+    val transactions = TransactionsObserving { bookshelves.stored }
+    val createBookshelf = CreateBookshelf(bookshelves, transactions)
+
+    // When
+    val answer = createBookshelf(lea, "Bibliothèque familiale")
+
+    // Then
+    val created = answer.shouldBeInstanceOf<Created>().bookshelf
+    created.name shouldBe "Bibliothèque familiale"
+    created.memberships shouldBe listOf(Membership(lea, OWNER))
+    bookshelves.stored shouldBe listOf(created)
+    transactions.recorded shouldBe listOf(Transaction(before = emptyList<Bookshelf>(), after = listOf(created)))
+  }
+}

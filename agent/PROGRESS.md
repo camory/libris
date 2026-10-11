@@ -64,3 +64,20 @@ Format:
   source stubs are used as they are, already in the sources' words.
 - Deviations from the brief: none; no brief.
 - Left over: T072.
+
+## 2026-10-11 — T072 Bookshelves on v0.11.0, the thinnest answer — done
+- Did: the backend pins `v0.11.0` and serves its six bookshelf operations;
+  listing and creating are real, S2 green; opening, the readers, adding a
+  member and choosing the default answer through use cases of a constant.
+- Decided: the shared not-found answer of `BookshelfController` is one private
+  `notFound()`; `NewMemberRequest.toMembership()` turns the request into
+  the application type; the add-a-member stubs reuse the contract's ids,
+  the default bookshelf's as `CONTRACTEER_BOOKSHELF.id`.
+- Deviations from the brief: `CreateBookshelfResult`'s `BlankName` and
+  `NameTaken` came in the cycle that maps them (step 8), not with the use
+  case (step 6), since no case of step 6 motivates them.
+- Left over: the order (T074), the readers and the add (T073), refusals
+  (T075, T077), opening (T076) and choosing the default (T078), as the
+  backlog has them; D02's wording on web sub-packages is proposed in the
+  pull request.
+- Ran in two runs: the first handed off after step 8.
