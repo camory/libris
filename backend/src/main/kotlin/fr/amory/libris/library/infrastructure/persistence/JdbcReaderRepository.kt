@@ -18,6 +18,9 @@ private const val INSERT_READER =
 private const val FIND_READER_BY_USERNAME =
   "SELECT id, username, email, display_name, default_bookshelf_id FROM reader WHERE username = :username"
 
+private const val FIND_READER_BY_ID =
+  "SELECT id, username, email, display_name, default_bookshelf_id FROM reader WHERE id = :id"
+
 private const val FIND_ALL_READERS =
   "SELECT id, username, email, display_name, default_bookshelf_id FROM reader"
 
@@ -42,6 +45,14 @@ class JdbcReaderRepository(private val jdbcClient: JdbcClient) : ReaderRepositor
     jdbcClient
       .sql(FIND_READER_BY_USERNAME)
       .param("username", username)
+      .query { rs, _ -> readerOf(rs) }
+      .optional()
+      .orElse(null)
+
+  override fun findById(id: ReaderId): Reader? =
+    jdbcClient
+      .sql(FIND_READER_BY_ID)
+      .param("id", id.value)
       .query { rs, _ -> readerOf(rs) }
       .optional()
       .orElse(null)

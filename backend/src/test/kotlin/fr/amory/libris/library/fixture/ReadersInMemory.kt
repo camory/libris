@@ -2,6 +2,7 @@ package fr.amory.libris.library.fixture
 
 import fr.amory.libris.library.domain.reader.DuplicateUsernameException
 import fr.amory.libris.library.domain.reader.Reader
+import fr.amory.libris.library.domain.reader.ReaderId
 import fr.amory.libris.library.domain.reader.ReaderRepository
 
 class ReadersInMemory : ReaderRepository {
@@ -16,6 +17,9 @@ class ReadersInMemory : ReaderRepository {
 
   override fun findByUsername(username: String): Reader? =
     readers[username]
+
+  override fun findById(id: ReaderId): Reader? =
+    readers.values.find { it.id == id }
 
   override fun findAll(): List<Reader> =
     stored

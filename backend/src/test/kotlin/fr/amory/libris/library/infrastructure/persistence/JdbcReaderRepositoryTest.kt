@@ -30,6 +30,19 @@ class JdbcReaderRepositoryTest @Autowired constructor(
   }
 
   @Test
+  fun `a reader is found whole by their id`() {
+    // Given
+    val juliette = readerNamed("juliette", "Juliette")
+    readers.insert(juliette)
+
+    // When
+    val found = readers.findById(juliette.id)
+
+    // Then
+    found shouldBe juliette
+  }
+
+  @Test
   fun `every reader stored is found`() {
     // Given
     val juliette = readerNamed("juliette", "Juliette")
