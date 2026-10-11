@@ -81,6 +81,11 @@ class JdbcReaderRepositoryTest @Autowired constructor(
   }
 
   @Test
+  fun `no id finds no reader`() {
+    readers.findByIds(emptyList()) shouldBe emptyList()
+  }
+
+  @Test
   fun `an unknown username finds no reader`() {
     readers.findByUsername("nobody") shouldBe null
   }

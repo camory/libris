@@ -61,11 +61,15 @@ class JdbcReaderRepository(private val jdbcClient: JdbcClient) : ReaderRepositor
       .orElse(null)
 
   override fun findByIds(ids: List<ReaderId>): List<Reader> =
-    jdbcClient
-      .sql(FIND_READERS_BY_IDS)
-      .param("ids", ids.map { it.value })
-      .query { rs, _ -> readerOf(rs) }
-      .list()
+    if (ids.isEmpty()) {
+      emptyList()
+    } else {
+      jdbcClient
+        .sql(FIND_READERS_BY_IDS)
+        .param("ids", ids.map { it.value })
+        .query { rs, _ -> readerOf(rs) }
+        .list()
+    }
 
   override fun findAll(): List<Reader> =
     jdbcClient
