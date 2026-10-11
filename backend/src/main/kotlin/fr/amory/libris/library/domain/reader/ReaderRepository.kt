@@ -7,5 +7,7 @@ interface ReaderRepository {
 
   fun findById(id: ReaderId): Reader?
 
+  fun findByIds(ids: List<ReaderId>): List<Reader>
+
   fun findAll(): List<Reader>
 }
