@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed, ref, watch } from "vue";
 import { useI18n } from "vue-i18n";
-import type { Copy } from "../../domain/Copy";
+import { bookshelvesHolding, type Copy } from "../../domain/Copy";
 import type { CoverCandidate } from "../../domain/Cover";
 import { authorsInOrder, type SourceEdition } from "../../domain/SourceEdition";
 import IconBook from "./icons/IconBook.vue";
@@ -68,18 +68,9 @@ const authorLines = computed(() => {
   }));
 });
 
-const bookshelves = computed(() => {
-  const held = new Map<string, { name: string; count: number }>();
-  for (const copy of props.copies) {
-    const bookshelf = held.get(copy.bookshelf.id) ?? {
-      name: copy.bookshelf.name,
-      count: 0,
-    };
-    bookshelf.count += 1;
-    held.set(copy.bookshelf.id, bookshelf);
-  }
-  return [...held].map(([id, { name, count }]) => ({ id, name, count }));
-});
+const bookshelves = computed(() =>
+  bookshelvesHolding(props.copies, locale.value),
+);
 
 const languageWord = computed(() => {
   const language = props.edition.language;
@@ -177,14 +168,14 @@ const rows = computed(() => {
 
     <div class="text-body font-semibold">
       <div
-        v-for="bookshelf in bookshelves"
+        v-for="{ bookshelf, count } in bookshelves"
         :key="bookshelf.id"
         class="flex items-center gap-2"
       >
         <IconBook class="size-5.5" />
-        <i18n-t keypath="isbn.card.copies" :plural="bookshelf.count" tag="p">
+        <i18n-t keypath="isbn.card.copies" :plural="count" tag="p">
           <template #bookshelf>{{ bookshelf.name }}</template>
-          <template #count>{{ bookshelf.count }}</template>
+          <template #count>{{ count }}</template>
         </i18n-t>
       </div>
       <div v-if="bookshelves.length === 0" class="flex items-center gap-2">

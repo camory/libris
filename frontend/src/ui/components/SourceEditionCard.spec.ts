@@ -640,7 +640,7 @@ describe("SourceEditionCard", () => {
     expect(card.match(/Dans/g)).toHaveLength(1);
   });
 
-  it("gives each bookshelf its row, in the order of the answer, with no count", () => {
+  it("gives each bookshelf its row, by name, with no count", () => {
     // Given
     const onSalon: Copy = {
       id: "7a2e3d4c-5b6a-4f70-9c81-2d3e4f5a6b72",
@@ -651,10 +651,10 @@ describe("SourceEditionCard", () => {
     const card = show(onePiece1, [onSalon, onLea]);
 
     // Then
-    const salon = card.indexOf("Dans Salon");
     const lea = card.indexOf("Dans Bibliothèque de Léa");
-    expect(salon).not.toBe(-1);
-    expect(lea).toBeGreaterThan(salon);
+    const salon = card.indexOf("Dans Salon");
+    expect(lea).not.toBe(-1);
+    expect(salon).toBeGreaterThan(lea);
     expect(card).not.toContain("exemplaires");
   });
 
