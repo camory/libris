@@ -442,9 +442,10 @@ Read whole by a run that changes `backend/`, after `every-run.md`.
 - In Kotlin, a bookshelf name's sameness ignoring case and accents is
   `BookshelfName.isSameAs`, over a private `folded` in `BookshelfName.kt`,
   the only folding of the backend's Kotlin; `BookshelfName` is not
-  `Comparable` and its `equals` stays exact, and no Kotlin code sorts a
-  list the screen shows (`ListReaderBookshelves` and `FindBookshelf` answer
-  in the repositories' order). The folding: `Normalizer` NFD, the `\p{Mn}`
+  `Comparable` and its `equals` stays exact. `ListReaderBookshelves` and
+  `FindBookshelf` sort nothing and answer in the repositories' order;
+  `Contributions.of` (a card's authors) and `LookupIsbnForReader` (a card's
+  bookshelves) still sort, until T087. The folding: `Normalizer` NFD, the `\p{Mn}`
   marks dropped, `lowercase()`, then `œ` and `æ` spelt `oe` and `ae`,
   compared as a plain `String`, so spaces and hyphens still count (`À lire`
   is not `Alire`). It is not the catalogue's collation: NFD leaves letters
