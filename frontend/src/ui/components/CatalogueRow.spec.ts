@@ -63,6 +63,23 @@ describe("CatalogueRow", () => {
     expect(screen.getByText("René Goscinny, Albert Uderzo")).toBeDefined();
   });
 
+  it("names its authors in the order of the card", () => {
+    // Given
+    const drawnFirst: Book = {
+      ...asterixLeGaulois,
+      authors: [
+        { name: "Albert Uderzo", role: "ARTIST" },
+        { name: "René Goscinny", role: "WRITER" },
+      ],
+    };
+
+    // When
+    const { screen } = show(drawnFirst);
+
+    // Then
+    expect(screen.getByText("René Goscinny, Albert Uderzo")).toBeDefined();
+  });
+
   it("names an author of two roles once", () => {
     // When
     const { screen } = show(romanceDawn);

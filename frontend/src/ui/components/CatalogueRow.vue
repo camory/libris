@@ -2,11 +2,12 @@
 import { computed, ref } from "vue";
 import { useI18n } from "vue-i18n";
 import type { Book } from "../../domain/Book";
+import { authorsInOrder } from "../../domain/SourceEdition";
 import IconBook from "./icons/IconBook.vue";
 
 const props = defineProps<{ book: Book }>();
 
-const { t } = useI18n();
+const { t, locale } = useI18n();
 
 const coverFailed = ref(false);
 
@@ -25,7 +26,9 @@ const overline = computed(() => {
 });
 
 const authors = computed(() =>
-  [...new Set(props.book.authors.map((author) => author.name))].join(", "),
+  authorsInOrder(props.book.authors, locale.value)
+    .map(({ name }) => name)
+    .join(", "),
 );
 
 const bookshelves = computed(() => {
