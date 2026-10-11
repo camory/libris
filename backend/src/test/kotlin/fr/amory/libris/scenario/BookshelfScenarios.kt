@@ -7,6 +7,9 @@ import com.jayway.jsonpath.JsonPath
 import fr.amory.libris.bibliography.fixture.BnfStubs
 import fr.amory.libris.bibliography.fixture.OpenLibraryStubs
 import fr.amory.libris.bibliography.fixture.recordedBytes
+import fr.amory.libris.scenario.dsl.Libris
+import fr.amory.libris.scenario.dsl.Reader
+import fr.amory.libris.scenario.dsl.bodyOf
 import io.kotest.matchers.shouldNotBe
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
@@ -28,7 +31,7 @@ class BookshelfScenarios @Autowired constructor(
   @Test
   fun `S1 The first visit creates the bookshelf`() {
     // Given
-    val lea = Reader("lea", "Léa")
+    val lea = libris.reader("lea", "Léa")
     // When
     val response = libris.me(lea)
     // Then
@@ -41,7 +44,7 @@ class BookshelfScenarios @Autowired constructor(
   @Test
   fun `S2 The ouvrage is added`() {
     // Given
-    val juliette = Reader("juliette", "Juliette")
+    val juliette = libris.reader("juliette", "Juliette")
     bnf.knows("9782723488525")
     libris.ask(juliette, "9782723488525").expectStatus().isOk()
       .expectBody().jsonPath("$.copies").isEmpty()
@@ -65,8 +68,8 @@ class BookshelfScenarios @Autowired constructor(
   @Test
   fun `S3 A known ISBN reaches the existing edition, another reader`() {
     // Given
-    val marc = Reader("marc", "Marc")
-    val nina = Reader("nina", "Nina")
+    val marc = libris.reader("marc", "Marc")
+    val nina = libris.reader("nina", "Nina")
     libris.add(marc, libris.defaultBookshelfOf(marc), NEW_ONE_PIECE_2).expectStatus().isCreated()
     // When
     val response = libris.add(nina, libris.defaultBookshelfOf(nina), NEW_ONE_PIECE_2)
@@ -83,7 +86,7 @@ class BookshelfScenarios @Autowired constructor(
   @Test
   fun `S3 A known ISBN reaches the existing edition, the same reader again`() {
     // Given
-    val paul = Reader("paul", "Paul")
+    val paul = libris.reader("paul", "Paul")
     val bookshelf = libris.defaultBookshelfOf(paul)
     val first = idOf(libris.add(paul, bookshelf, NEW_ONE_PIECE_2).expectStatus().isCreated())
     // When
@@ -100,8 +103,8 @@ class BookshelfScenarios @Autowired constructor(
   @Test
   fun `S4 The ouvrage is already in a bookshelf`() {
     // Given
-    val rose = Reader("rose", "Rose")
-    val sam = Reader("sam", "Sam")
+    val rose = libris.reader("rose", "Rose")
+    val sam = libris.reader("sam", "Sam")
     val rosesCopy = addedWithItsCover(rose, NEW_ONE_PIECE_3, ONE_PIECE_3)
     libris.add(sam, libris.defaultBookshelfOf(sam), NEW_ONE_PIECE_3).expectStatus().isCreated()
     // When
@@ -121,8 +124,8 @@ class BookshelfScenarios @Autowired constructor(
   @Test
   fun `S4 The ouvrage is already in a bookshelf, none of the reader's`() {
     // Given
-    val tom = Reader("tom", "Tom")
-    val zoe = Reader("zoe", "Zoé")
+    val tom = libris.reader("tom", "Tom")
+    val zoe = libris.reader("zoe", "Zoé")
     addedWithItsCover(tom, NEW_ONE_PIECE_3, ONE_PIECE_3)
     // When
     val response = libris.ask(zoe, ONE_PIECE_3)

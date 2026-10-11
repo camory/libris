@@ -9,6 +9,9 @@ import fr.amory.libris.bibliography.fixture.InventaireStubs
 import fr.amory.libris.bibliography.fixture.OpenLibraryStubs
 import fr.amory.libris.bibliography.fixture.recordedBytes
 import fr.amory.libris.fixture.MutableClock
+import fr.amory.libris.scenario.dsl.Libris
+import fr.amory.libris.scenario.dsl.Reader
+import fr.amory.libris.scenario.dsl.bodyOf
 import io.kotest.matchers.collections.shouldHaveSize
 import io.kotest.matchers.comparables.shouldBeGreaterThanOrEqualTo
 import io.kotest.matchers.comparables.shouldBeLessThan
@@ -47,7 +50,7 @@ class CoversScenarios @Autowired constructor(
   @Test
   fun `S1 The lookup offers the sources' covers`() {
     // Given
-    val lea = Reader("lea", "Léa")
+    val lea = libris.reader("lea", "Léa")
     bnf.knows(ONE_PIECE_1)
     openLibrary.knows(ONE_PIECE_1)
     inventaire.knows(ONE_PIECE_1, SMALL_WEBP)
@@ -68,7 +71,7 @@ class CoversScenarios @Autowired constructor(
   @Test
   fun `S3 The add carries the cover's source`() {
     // Given
-    val juliette = Reader("juliette", "Juliette")
+    val juliette = libris.reader("juliette", "Juliette")
     val bookshelf = libris.defaultBookshelfOf(juliette)
     inventaire.knowsButThePictureNeverComes(ONE_PIECE_1)
 
@@ -85,7 +88,7 @@ class CoversScenarios @Autowired constructor(
   @Test
   fun `S4 The worker fetches the chosen cover`() {
     // Given
-    val marc = Reader("marc", "Marc")
+    val marc = libris.reader("marc", "Marc")
     inventaire.knows(ONE_PIECE_1, SMALL_WEBP)
     openLibrary.hasCover(ONE_PIECE_1, TALL_JPEG)
     bnf.knows(ONE_PIECE_1)
@@ -110,7 +113,7 @@ class CoversScenarios @Autowired constructor(
   @Test
   fun `S5 Libris serves a stored cover`() {
     // Given
-    val nina = Reader("nina", "Nina")
+    val nina = libris.reader("nina", "Nina")
     openLibrary.hasCover(ONE_PIECE_1, TALL_JPEG)
     libris.add(
       nina,
@@ -134,7 +137,7 @@ class CoversScenarios @Autowired constructor(
   @Test
   fun `S5 Libris serves a stored cover, an address naming no cover`() {
     // Given
-    val paul = Reader("paul", "Paul")
+    val paul = libris.reader("paul", "Paul")
 
     // When
     val response = picture(paul, "/api/v1/covers/${"0".repeat(HASH_LENGTH)}")
@@ -148,7 +151,7 @@ class CoversScenarios @Autowired constructor(
   @Test
   fun `S6 The picture is normalised, taller than 600`() {
     // Given
-    val rose = Reader("rose", "Rose")
+    val rose = libris.reader("rose", "Rose")
     openLibrary.hasCover(ONE_PIECE_1, TALL_JPEG)
     libris.add(
       rose,
@@ -169,7 +172,7 @@ class CoversScenarios @Autowired constructor(
   @Test
   fun `S6 The picture is normalised, 600 tall or less`() {
     // Given
-    val sam = Reader("sam", "Sam")
+    val sam = libris.reader("sam", "Sam")
     inventaire.knows(ONE_PIECE_1, SMALL_WEBP)
     libris.add(sam, libris.defaultBookshelfOf(sam), onePiece1(coverSource = "inventaire.io")).expectStatus().isCreated()
 
@@ -185,7 +188,7 @@ class CoversScenarios @Autowired constructor(
   @Test
   fun `S7 An edition without a chosen source gets the cascade, the first source has it`() {
     // Given
-    val tom = Reader("tom", "Tom")
+    val tom = libris.reader("tom", "Tom")
     inventaire.knows(ONE_PIECE_1, SMALL_WEBP)
     openLibrary.hasCover(ONE_PIECE_1, TALL_JPEG)
     bnf.knows(ONE_PIECE_1)
@@ -204,7 +207,7 @@ class CoversScenarios @Autowired constructor(
   @Test
   fun `S7 An edition without a chosen source gets the cascade, only the last has it`() {
     // Given
-    val zoe = Reader("zoe", "Zoé")
+    val zoe = libris.reader("zoe", "Zoé")
     inventaire.doesNotKnow(LES_NERONIA)
     openLibrary.hasNoCover(LES_NERONIA)
     bnf.knows(LES_NERONIA)
@@ -223,7 +226,7 @@ class CoversScenarios @Autowired constructor(
   @Test
   fun `S7 An edition without a chosen source gets the cascade, none has it`() {
     // Given
-    val eve = Reader("eve", "Ève")
+    val eve = libris.reader("eve", "Ève")
     inventaire.doesNotKnow(LES_NERONIA)
     openLibrary.hasNoCover(LES_NERONIA)
     bnf.knows(LES_NERONIA)
@@ -264,7 +267,7 @@ class CoversScenarios @Autowired constructor(
 
   private fun aFailedFetchWaitsADay() {
     // Given
-    val luc = Reader("luc", "Luc")
+    val luc = libris.reader("luc", "Luc")
     val bookshelf = libris.defaultBookshelfOf(luc)
     openLibrary.hasCover(ONE_PIECE_2, TALL_JPEG)
     openLibrary.hasCover(ONE_PIECE_3, TALL_JPEG)
@@ -293,7 +296,7 @@ class CoversScenarios @Autowired constructor(
   @Test
   fun `S9 The worker runs on its own`() {
     // Given
-    val ana = Reader("ana", "Ana")
+    val ana = libris.reader("ana", "Ana")
     val bookshelf = libris.defaultBookshelfOf(ana)
     openLibrary.hasCoverAfter(ONE_PIECE_1, TALL_JPEG, SLOWLY)
     openLibrary.hasCover(ONE_PIECE_2, TALL_JPEG)
@@ -314,7 +317,7 @@ class CoversScenarios @Autowired constructor(
   @Test
   fun `S10 A held edition offers its own cover`() {
     // Given
-    val iris = Reader("iris", "Iris")
+    val iris = libris.reader("iris", "Iris")
     val cover = aStoredCover(iris, ONE_PIECE_1)
 
     // When
@@ -331,7 +334,7 @@ class CoversScenarios @Autowired constructor(
   @Test
   fun `S10 A held edition offers its own cover, not yet stored`() {
     // Given
-    val hugo = Reader("hugo", "Hugo")
+    val hugo = libris.reader("hugo", "Hugo")
     openLibrary.coverAnswersTooLate(ONE_PIECE_1)
     libris.add(
       hugo,
