@@ -64,3 +64,13 @@ Format:
   source stubs are used as they are, already in the sources' words.
 - Deviations from the brief: none; no brief.
 - Left over: T072.
+
+## 2026-10-11 — T072 Bookshelves on v0.11.0, the thinnest answer — handoff
+- Done: steps 1 to 8 of the test plan, one commit each; start at step 9 (`GET /api/v1/bookshelves/{id}`).
+- After step 8, `ApiContractTest` is 34 cases, 13 red: those of steps 9 to 12, by design; S2 green.
+- Guard of step 4: mutation `memberships.first { it.readerId == readerId }.role` in `Bookshelf.roleOf` read
+  red, `NoSuchElementException: Collection contains no element matching the predicate.`, reverted.
+- Decided: `CreateBookshelfResult`'s `BlankName` and `NameTaken` added at step 8, the cycle that maps them,
+  not step 6; the created bookshelf the contract stub answers is `FAMILIALE`, a private val of the test file.
+- Learned: the `auto: path 'id' type mismatch` cases of an unmapped path answer `403`, like any case
+  without a controller; a long stub argument trips detekt's `ArgumentListWrapping`, hence a named val.
