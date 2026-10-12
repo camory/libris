@@ -113,7 +113,7 @@ longer says.
       goes back to a private folding beside it. The backend tests of S1 and
       S4 pass unedited.
 
-- [ ] T077 Backend: an add Libris refuses.
+- [x] T077 Backend: an add Libris refuses.
       A viewer of the bookshelf, or a reader who does not belong to it,
       adding a member is answered that there is no such bookshelf; an owner
       adding a reader Libris does not know is answered `400`

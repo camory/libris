@@ -96,4 +96,16 @@ class BookshelfTest {
       )
     }
   }
+
+  @Test
+  fun `a bookshelf with a reader twice is refused, whatever the roles`() {
+    val lea = ReaderId.new()
+    shouldThrow<IllegalArgumentException> {
+      Bookshelf(
+        BookshelfId.new(),
+        BookshelfName("Bibliothèque familiale"),
+        listOf(Membership(lea, OWNER), Membership(lea, VIEWER)),
+      )
+    }
+  }
 }

@@ -161,7 +161,6 @@ class BookshelvesScenarios @Autowired constructor(private val libris: Libris) {
   }
 
   @Test
-  @Disabled("bookshelves")
   fun `S6 An add Libris refuses, a viewer of the bookshelf adds a reader`() {
     // Given
     val marc = libris.reader("marc", "Marc")
@@ -175,11 +174,10 @@ class BookshelvesScenarios @Autowired constructor(private val libris: Libris) {
 
     // Then
     answer.refusal shouldBe NOT_FOUND
-    marc.opens(familiale).value.members shouldBe listOf(marc.member(OWNER), lea.member(VIEWER))
+    marc.opens(familiale).value.members shouldContainExactlyInAnyOrder listOf(marc.member(OWNER), lea.member(VIEWER))
   }
 
   @Test
-  @Disabled("bookshelves")
   fun `S6 An add Libris refuses, a reader who does not belong to it adds a reader`() {
     // Given
     val marc = libris.reader("marc", "Marc")
@@ -196,7 +194,6 @@ class BookshelvesScenarios @Autowired constructor(private val libris: Libris) {
   }
 
   @Test
-  @Disabled("bookshelves")
   fun `S6 An add Libris refuses, an owner adds a reader Libris does not know`() {
     // Given
     val marc = libris.reader("marc", "Marc")
@@ -212,7 +209,6 @@ class BookshelvesScenarios @Autowired constructor(private val libris: Libris) {
   }
 
   @Test
-  @Disabled("bookshelves")
   fun `S6 An add Libris refuses, an owner adds a reader already a member`() {
     // Given
     val marc = libris.reader("marc", "Marc")
@@ -225,7 +221,7 @@ class BookshelvesScenarios @Autowired constructor(private val libris: Libris) {
 
     // Then
     answer.refusal shouldBe CONFLICT
-    marc.opens(familiale).value.members shouldBe listOf(marc.member(OWNER), lea.member(VIEWER))
+    marc.opens(familiale).value.members shouldContainExactlyInAnyOrder listOf(marc.member(OWNER), lea.member(VIEWER))
   }
 
   @Test

@@ -1,6 +1,7 @@
 package fr.amory.libris.library.application
 
 import fr.amory.libris.library.application.AddMemberResult.Added
+import fr.amory.libris.library.application.AddMemberResult.AlreadyAMember
 import fr.amory.libris.library.application.AddMemberResult.NoSuchBookshelf
 import fr.amory.libris.library.application.AddMemberResult.UnknownReader
 import fr.amory.libris.library.domain.bookshelf.Bookshelf
@@ -18,14 +19,14 @@ class AddMemberToBookshelf(
   private val bookshelves: BookshelfRepository,
   private val readers: ReaderRepository,
   private val transactions: TransactionOperations) {
-  @Suppress("UnusedParameter")
   operator fun invoke(readerId: ReaderId, bookshelfId: BookshelfId, membership: Membership): AddMemberResult {
-    val bookshelf = bookshelves.findById(bookshelfId)
+    val bookshelf = bookshelves.findById(bookshelfId)?.takeIf { it.isOwnedBy(readerId) }
     val reader = readers.findById(membership.readerId)
     return when {
-      bookshelf == null -> NoSuchBookshelf
-      reader == null    -> UnknownReader
-      else              -> added(bookshelf, reader, membership)
+      bookshelf == null                        -> NoSuchBookshelf
+      reader == null                           -> UnknownReader
+      bookshelf.hasMember(membership.readerId) -> AlreadyAMember
+      else                                     -> added(bookshelf, reader, membership)
     }
   }
 

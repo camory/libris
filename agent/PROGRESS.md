@@ -202,3 +202,18 @@ Format:
 - Left over: the scenario comparisons of `authors` in order, proposed in
   `agent/PROPOSED.md` for Tophe; merging is not deploying, the backend
   drops the order once Tophe deploys it.
+
+## 2026-10-11 — T077 An add Libris refuses — done
+- Did: `AddMemberToBookshelf` answers a viewer and a stranger
+  `NoSuchBookshelf` through `isOwnedBy`, and a reader already a member
+  `AlreadyAMember` through `hasMember`; `Bookshelf` refuses a reader twice.
+- Decided: every refusal is decided from the reads, before the
+  transaction, and writes nothing. The checks run owner, then known
+  reader, then member, all in one `when`.
+- Fix-up on Tophe's ask: `withMember` answered `Bookshelf?`, `null` for a
+  reader already a member; it answers a `Bookshelf` again, the `init`
+  requires one membership per reader, and the use case asks `hasMember`
+  before it.
+- Fix-up on Tophe's ask: S6's two ordered comparisons of the members
+  compare in any order, as S1 and S4 do; the PROPOSED item goes.
+- Left over: the frontend's add and its refusals (T083).

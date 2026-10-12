@@ -9,6 +9,7 @@ data class Bookshelf(
   val memberships: List<Membership>) {
   init {
     require(memberships.any { it.role == OWNER }) { "a bookshelf needs an owner" }
+    require(memberships.distinctBy { it.readerId } == memberships) { "a reader is a member of a bookshelf once" }
   }
 
   fun hasMember(readerId: ReaderId): Boolean =
