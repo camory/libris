@@ -122,7 +122,7 @@ longer says.
       the bookshelf's members stay as they were (D11, D12).
       Realises S6; un-skips the backend tests of S6, all four cases.
 
-- [ ] T078 Backend: a reader chooses their default.
+- [x] T078 Backend: a reader chooses their default.
       A reader makes a bookshelf they own their default: the answer is
       `204`, and the reader's answer names it as their default from then
       on. A bookshelf they are a

@@ -1,6 +1,7 @@
 package fr.amory.libris.library.infrastructure.persistence
 
 import fr.amory.libris.fixture.JdbcSliceTest
+import fr.amory.libris.library.domain.bookshelf.BookshelfId
 import fr.amory.libris.library.domain.reader.DuplicateUsernameException
 import fr.amory.libris.library.domain.reader.ReaderId
 import fr.amory.libris.library.fixture.bookshelfOwnedBy
@@ -41,6 +42,40 @@ class JdbcReaderRepositoryTest @Autowired constructor(
 
     // Then
     found shouldBe juliette
+  }
+
+  @Test
+  fun `an updated reader is read back whole, as updated`() {
+    // Given
+    val juliette = readerNamed("juliette", "Juliette")
+    readers.insert(juliette)
+    val updated = juliette.copy(
+      username = "juju",
+      email = "juju@amory.fr",
+      displayName = "Juju",
+      defaultBookshelfId = BookshelfId.new(),
+    )
+
+    // When
+    readers.update(updated)
+
+    // Then
+    readers.findById(juliette.id) shouldBe updated
+  }
+
+  @Test
+  fun `an update leaves another reader as they were`() {
+    // Given
+    val juliette = readerNamed("juliette", "Juliette")
+    val lea = readerNamed("lea", "Léa")
+    readers.insert(juliette)
+    readers.insert(lea)
+
+    // When
+    readers.update(juliette.copy(defaultBookshelfId = BookshelfId.new()))
+
+    // Then
+    readers.findById(lea.id) shouldBe lea
   }
 
   @Test
