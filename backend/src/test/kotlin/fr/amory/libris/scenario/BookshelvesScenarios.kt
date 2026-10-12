@@ -241,7 +241,6 @@ class BookshelvesScenarios @Autowired constructor(private val libris: Libris) {
   }
 
   @Test
-  @Disabled("bookshelves")
   fun `S8 A bookshelf the reader cannot make their default, a bookshelf they are a viewer of`() {
     // Given
     val lea = libris.reader("lea", "Léa")
