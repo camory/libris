@@ -629,6 +629,16 @@ Contract
   constructor, so the database never holds what the domain refuses. A use
   case that checks a rule an aggregate could check itself has the rule in
   the wrong place.
+- A change an aggregate may refuse is asked of the aggregate first: the
+  aggregate answers the question (`Bookshelf.hasMember`, `isOwnedBy`), the
+  use case maps the answer to an outcome (D11) before it calls the change,
+  and the change answers the changed aggregate, never `null` and never an
+  outcome of its own. The rule stays the aggregate's twice over: its
+  question decides it, and its `init` refuses what breaks it, the last
+  defence against a caller that changes without asking (`Bookshelf`
+  refuses a reader twice; `AddMemberToBookshelf` asks `hasMember` and
+  answers `AlreadyAMember`). `null` is the answer of a value's `of`, below,
+  never of an aggregate's change.
 - A rule that spans two aggregates is the use case's, kept by one
   transaction: the reader's default bookshelf is one they own, which neither
   `Reader` nor `Bookshelf` can check alone, so `WelcomeReader` builds both
