@@ -217,3 +217,20 @@ Format:
 - Fix-up on Tophe's ask: S6's two ordered comparisons of the members
   compare in any order, as S1 and S4 do; the PROPOSED item goes.
 - Left over: the frontend's add and its refusals (T083).
+
+## 2026-10-12 — T078 A reader chooses their default — done
+- Did: `ChooseDefaultBookshelf` makes a bookshelf the reader owns their
+  default, the reader written through the new `ReaderRepository.update` in
+  one transaction; a viewer, a stranger and an unknown id answer `NoSuchBookshelf`.
+- Decided: the use case reads like `AddMemberToBookshelf`, the bookshelf
+  read through `isOwnedBy` and its outcomes in one `when`; the update in a
+  private `chosen`. `ReadersLosingTheRace.update` throws
+  `UnsupportedOperationException`, since `WelcomeReader` never calls it.
+- Deviations from the brief: `ChooseDefaultBookshelfTest` stores Léa alone
+  in `ReadersInMemory`; Marc owns *Salon* in `BookshelvesInMemory` without
+  being a stored reader, since `ReadersInMemory.update` moves the reader it
+  writes to the end and the use case reads no other reader. Steps 4 and 6
+  each first gave the use case the constructor its test calls, the old body
+  kept, so the red read was the assertion's, not a compile error; that
+  intermediate state was never committed.
+- Left over: the frontend's pin and home page (T079), the star (T084).
