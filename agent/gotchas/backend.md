@@ -374,10 +374,6 @@ Read whole by a run that changes `backend/`, after `every-run.md`.
 - `ReaderRepository` has a second test double besides `ReadersInMemory`:
   `ReadersLosingTheRace`, private to `WelcomeReaderTest`. A method the port
   gains fails `compileTestKotlin` there until that double implements it.
-- `ReadersInMemory` is keyed by username: its `update` removes the reader of
-  that id and puts them back, so the updated reader comes last in `stored`.
-  A case comparing `stored` with several readers after an update compares
-  in any order.
 - `TransactionsObserving` and `Transaction` live in the root
   `fr.amory.libris.fixture`, shared by both contexts' use-case tests.
 - `InventaireStubs.picturePaths()` answers the URLs of the picture requests

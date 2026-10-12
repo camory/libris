@@ -226,11 +226,11 @@ Format:
   read through `isOwnedBy` and its outcomes in one `when`; the update in a
   private `chosen`. `ReadersLosingTheRace.update` throws
   `UnsupportedOperationException`, since `WelcomeReader` never calls it.
-- Deviations from the brief: `ChooseDefaultBookshelfTest` stores Léa alone
-  in `ReadersInMemory`; Marc owns *Salon* in `BookshelvesInMemory` without
-  being a stored reader, since `ReadersInMemory.update` moves the reader it
-  writes to the end and the use case reads no other reader. Steps 4 and 6
-  each first gave the use case the constructor its test calls, the old body
-  kept, so the red read was the assertion's, not a compile error; that
-  intermediate state was never committed.
+- Deviations from the brief: steps 4 and 6 each first gave the use case the
+  constructor its test calls, the old body kept, so the red read was the
+  assertion's, not a compile error; that intermediate state was never
+  committed.
+- Fix-up on Tophe's ask: `ReadersInMemory` keyed by id, so an update keeps
+  the reader in its place; `ChooseDefaultBookshelfTest` stores Marc too; the
+  gotcha on the fake's order goes.
 - Left over: the frontend's pin and home page (T079), the star (T084).

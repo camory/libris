@@ -20,7 +20,10 @@ import org.junit.jupiter.api.Test
 class ChooseDefaultBookshelfTest {
   private val lea = readerNamed("lea", "Léa")
   private val marc = readerNamed("marc", "Marc")
-  private val readers = ReadersInMemory().apply { insert(lea) }
+  private val readers = ReadersInMemory().apply {
+    insert(lea)
+    insert(marc)
+  }
   private val bookshelves = BookshelvesInMemory().apply {
     insert(bookshelfOwnedBy(lea))
     insert(bookshelfOwnedBy(marc))
@@ -40,8 +43,8 @@ class ChooseDefaultBookshelfTest {
     // Then
     val withSalon = lea.copy(defaultBookshelfId = salon.id)
     answer shouldBe Chosen
-    readers.stored shouldBe listOf(withSalon)
-    transactions.recorded shouldBe listOf(Transaction(before = listOf(lea), after = listOf(withSalon)))
+    readers.stored shouldBe listOf(withSalon, marc)
+    transactions.recorded shouldBe listOf(Transaction(before = listOf(lea, marc), after = listOf(withSalon, marc)))
   }
 
   @Test
@@ -59,7 +62,7 @@ class ChooseDefaultBookshelfTest {
 
     // Then
     answer shouldBe NoSuchBookshelf
-    readers.stored shouldBe listOf(lea)
+    readers.stored shouldBe listOf(lea, marc)
     transactions.recorded shouldBe emptyList()
   }
 
@@ -74,7 +77,7 @@ class ChooseDefaultBookshelfTest {
 
     // Then
     answer shouldBe NoSuchBookshelf
-    readers.stored shouldBe listOf(lea)
+    readers.stored shouldBe listOf(lea, marc)
     transactions.recorded shouldBe emptyList()
   }
 
@@ -85,7 +88,7 @@ class ChooseDefaultBookshelfTest {
 
     // Then
     answer shouldBe NoSuchBookshelf
-    readers.stored shouldBe listOf(lea)
+    readers.stored shouldBe listOf(lea, marc)
     transactions.recorded shouldBe emptyList()
   }
 }
