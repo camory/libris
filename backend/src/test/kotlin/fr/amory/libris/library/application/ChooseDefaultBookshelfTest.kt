@@ -77,4 +77,15 @@ class ChooseDefaultBookshelfTest {
     readers.stored shouldBe listOf(lea)
     transactions.recorded shouldBe emptyList()
   }
+
+  @Test
+  fun `an id naming no bookshelf answers no such bookshelf, the reader as stored`() {
+    // When
+    val answer = chooseDefaultBookshelf(lea, BookshelfId.new())
+
+    // Then
+    answer shouldBe NoSuchBookshelf
+    readers.stored shouldBe listOf(lea)
+    transactions.recorded shouldBe emptyList()
+  }
 }
