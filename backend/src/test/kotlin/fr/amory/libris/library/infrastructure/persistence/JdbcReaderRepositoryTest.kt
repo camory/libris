@@ -64,6 +64,21 @@ class JdbcReaderRepositoryTest @Autowired constructor(
   }
 
   @Test
+  fun `an update leaves another reader as they were`() {
+    // Given
+    val juliette = readerNamed("juliette", "Juliette")
+    val lea = readerNamed("lea", "Léa")
+    readers.insert(juliette)
+    readers.insert(lea)
+
+    // When
+    readers.update(juliette.copy(defaultBookshelfId = BookshelfId.new()))
+
+    // Then
+    readers.findById(lea.id) shouldBe lea
+  }
+
+  @Test
   fun `an unknown id finds no reader`() {
     readers.findById(ReaderId.new()) shouldBe null
   }
