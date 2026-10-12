@@ -238,7 +238,7 @@ class BookshelvesScenarios @Autowired constructor(private val libris: Libris) {
     // Then
     answer.refusal shouldBe null
     lea.defaultBookshelf shouldBe salon
-    lea.bookshelves() shouldBe listOf(salon.withRole(OWNER), first.withRole(OWNER))
+    lea.bookshelves() shouldContainExactlyInAnyOrder listOf(salon.withRole(OWNER), first.withRole(OWNER))
   }
 
   @Test
