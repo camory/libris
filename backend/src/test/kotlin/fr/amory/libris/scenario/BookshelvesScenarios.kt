@@ -25,7 +25,6 @@ import fr.amory.libris.scenario.dsl.withRole
 import io.kotest.matchers.collections.shouldContain
 import io.kotest.matchers.collections.shouldContainExactlyInAnyOrder
 import io.kotest.matchers.shouldBe
-import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.Arguments.argumentSet
@@ -258,7 +257,6 @@ class BookshelvesScenarios @Autowired constructor(private val libris: Libris) {
   }
 
   @Test
-  @Disabled("bookshelves")
   fun `S8 A bookshelf the reader cannot make their default, one they do not belong to`() {
     // Given
     val lea = libris.reader("lea", "Léa")
