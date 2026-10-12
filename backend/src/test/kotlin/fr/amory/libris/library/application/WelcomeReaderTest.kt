@@ -121,6 +121,9 @@ private class ReadersLosingTheRace(private val winner: Reader) : ReaderRepositor
     throw DuplicateUsernameException(reader.username)
   }
 
+  override fun update(reader: Reader) =
+    throw UnsupportedOperationException()
+
   override fun findByUsername(username: String): Reader? =
     winner.takeIf { raceLost }
 

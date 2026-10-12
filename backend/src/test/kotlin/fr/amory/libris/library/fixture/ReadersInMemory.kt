@@ -15,6 +15,11 @@ class ReadersInMemory : ReaderRepository {
     readers[reader.username] = reader
   }
 
+  override fun update(reader: Reader) {
+    readers.values.removeIf { it.id == reader.id }
+    readers[reader.username] = reader
+  }
+
   override fun findByUsername(username: String): Reader? =
     readers[username]
 

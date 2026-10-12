@@ -15,6 +15,10 @@ private const val INSERT_READER =
   "INSERT INTO reader (id, username, email, display_name, default_bookshelf_id) " +
     "VALUES (:id, :username, :email, :displayName, :defaultBookshelfId)"
 
+private const val UPDATE_READER =
+  "UPDATE reader SET username = :username, email = :email, display_name = :displayName, " +
+    "default_bookshelf_id = :defaultBookshelfId WHERE id = :id"
+
 private const val FIND_READER_BY_USERNAME =
   "SELECT id, username, email, display_name, default_bookshelf_id FROM reader WHERE username = :username"
 
@@ -42,6 +46,17 @@ class JdbcReaderRepository(private val jdbcClient: JdbcClient) : ReaderRepositor
     } catch (duplicate: DuplicateKeyException) {
       throw DuplicateUsernameException(reader.username, duplicate)
     }
+  }
+
+  override fun update(reader: Reader) {
+    jdbcClient
+      .sql(UPDATE_READER)
+      .param("id", reader.id.value)
+      .param("username", reader.username)
+      .param("email", reader.email)
+      .param("displayName", reader.displayName)
+      .param("defaultBookshelfId", reader.defaultBookshelfId.value)
+      .update()
   }
 
   override fun findByUsername(username: String): Reader? =
