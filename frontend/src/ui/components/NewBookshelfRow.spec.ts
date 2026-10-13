@@ -1,6 +1,6 @@
 import { fireEvent, within } from "@testing-library/dom";
 import { mount } from "@vue/test-utils";
-import { describe, it } from "vitest";
+import { describe, expect, it } from "vitest";
 import { createLibrisI18n } from "../i18n";
 import NewBookshelfRow from "./NewBookshelfRow.vue";
 
@@ -14,6 +14,17 @@ describe("NewBookshelfRow", () => {
 
     // Then
     screen.getByRole("button", { name: "Créer" });
+  });
+
+  it("offers no Créer while the name is blank", async () => {
+    // Given
+    const { screen } = open();
+
+    // When
+    await type(screen, "   ");
+
+    // Then
+    expect(screen.queryByRole("button", { name: "Créer" })).toBeNull();
   });
 
   function open() {

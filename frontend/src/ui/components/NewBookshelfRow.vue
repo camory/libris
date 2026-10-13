@@ -2,6 +2,7 @@
 import { Check } from "@lucide/vue";
 import { ref } from "vue";
 import { useI18n } from "vue-i18n";
+import { isBookshelfName } from "../../domain/Bookshelf";
 
 const { t } = useI18n();
 const name = ref("");
@@ -18,7 +19,7 @@ const name = ref("");
     />
     <div class="size-11 shrink-0">
       <button
-        v-if="name"
+        v-if="isBookshelfName(name)"
         type="button"
         :aria-label="t('home.bookshelves.create')"
         class="flex size-11 items-center justify-center rounded-[10px] text-accent"
