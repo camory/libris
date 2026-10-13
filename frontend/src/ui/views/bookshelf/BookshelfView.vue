@@ -26,6 +26,17 @@ const members = computed(() =>
     : null,
 );
 
+const failure = computed(() => {
+  switch (state.value.status) {
+    case "notFound":
+      return t("bookshelf.notFound");
+    case "unavailable":
+      return t("bookshelf.error");
+    default:
+      return undefined;
+  }
+});
+
 meApi.currentReader().then((current) => {
   reader.value = current;
 });
@@ -34,12 +45,9 @@ void find(props.id);
 
 <template>
   <main class="mx-auto w-full max-w-120 px-5 pb-5">
-    <p
-      v-if="state.status === 'notFound'"
-      class="flex items-start gap-2 pt-5 text-body text-danger"
-    >
+    <p v-if="failure" class="flex items-start gap-2 pt-5 text-body text-danger">
       <IconAlert />
-      <span>{{ t("bookshelf.notFound") }}</span>
+      <span>{{ failure }}</span>
     </p>
     <template v-else>
       <header class="pt-5 pb-3">

@@ -25,6 +25,7 @@ const fr = {
   },
   bookshelf: {
     notFound: "Bibliothèque introuvable.",
+    error: "Erreur lors du chargement, veuillez réessayer plus tard.",
     members: {
       label: "Membres",
       member: "{name} · {role}",

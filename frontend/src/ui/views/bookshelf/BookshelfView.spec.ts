@@ -99,6 +99,19 @@ describe("BookshelfView", () => {
     expect(normalised(wrapper.element)).toBe("Bibliothèque introuvable.");
   });
 
+  it("says to try again later when Libris does not answer, alone", async () => {
+    // Given
+    const wrapper = mountBookshelfView(new TypeError("Failed to fetch"));
+
+    // When
+    await flushPromises();
+
+    // Then
+    expect(normalised(wrapper.element)).toBe(
+      "Erreur lors du chargement, veuillez réessayer plus tard.",
+    );
+  });
+
   function seen(wrapper: ReturnType<typeof mountBookshelfView>) {
     const screen = within(wrapper.element as HTMLElement);
     return {
