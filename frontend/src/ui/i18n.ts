@@ -14,6 +14,7 @@ const fr = {
       error: "Erreur lors du chargement, veuillez réessayer plus tard.",
       name: "Nom de la bibliothèque",
       create: "Créer",
+      creating: "Création en cours…",
     },
   },
   isbn: {

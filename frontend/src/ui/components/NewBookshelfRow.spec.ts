@@ -39,9 +39,24 @@ describe("NewBookshelfRow", () => {
     expect(wrapper.emitted("create")).toEqual([["Bibliothèque familiale"]]);
   });
 
-  function open() {
+  it("is busy while the bookshelf is created", async () => {
+    // Given
+    const { screen } = open(true);
+
+    // When
+    await type(screen, "Bibliothèque familiale");
+
+    // Then
+    const busy = screen.getByRole<HTMLButtonElement>("button", {
+      name: "Création en cours…",
+    });
+    expect(busy.disabled).toBe(true);
+    expect(screen.queryByRole("button", { name: "Créer" })).toBeNull();
+  });
+
+  function open(creating = false) {
     const wrapper = mount(NewBookshelfRow, {
-      props: { creating: false },
+      props: { creating },
       global: { plugins: [createLibrisI18n()] },
     });
     return { wrapper, screen: within(wrapper.element as HTMLElement) };

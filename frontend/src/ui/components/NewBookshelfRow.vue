@@ -3,6 +3,9 @@ import { Check } from "@lucide/vue";
 import { ref } from "vue";
 import { useI18n } from "vue-i18n";
 import { isBookshelfName } from "../../domain/Bookshelf";
+import BusySpinner from "./BusySpinner.vue";
+
+defineProps<{ creating: boolean }>();
 
 const emit = defineEmits<{ create: [name: string] }>();
 
@@ -21,13 +24,19 @@ const name = ref("");
     />
     <div class="size-11 shrink-0">
       <button
-        v-if="isBookshelfName(name)"
+        v-if="creating || isBookshelfName(name)"
         type="button"
-        :aria-label="t('home.bookshelves.create')"
+        :disabled="creating"
+        :aria-label="
+          creating
+            ? t('home.bookshelves.creating')
+            : t('home.bookshelves.create')
+        "
         class="flex size-11 items-center justify-center rounded-[10px] text-accent"
         @click="emit('create', name)"
       >
-        <Check :stroke-width="3" />
+        <BusySpinner v-if="creating" class="size-5.5" />
+        <Check v-else :stroke-width="3" />
       </button>
     </div>
   </div>
