@@ -53,7 +53,8 @@ Read whole by a run that changes `frontend/`, after `every-run.md`.
   /bookshelves/{id}` held one or two members in 20 tries, never none
   (T082). `FetchIsbnApi`, `FetchBookshelfApi` and `FetchBookshelvesApi` hand a
   non-2xx answer to `infra/api/problemOf`, which maps the statuses the
-  contract names (400, 404, and 503 for the lookup) to the `/problems/…`
+  contract names (400, 404, 409 for the creation, and 503 for the lookup)
+  to the `/problems/…`
   slugs only when the `Content-Type` is `application/problem+json`, and
   reads the body's `type` otherwise: a proxy's `text/plain` 404 or 503 then
   rejects on `response.json()`, as it did before the mapping, and is never
@@ -258,6 +259,13 @@ Read whole by a run that changes `frontend/`, after `every-run.md`.
   Pixel 2026-09-19). A view that fills the screen writes `min-h-full` on its
   `<main>`, never `h-full`, or content longer than the viewport is clipped
   instead of scrolling.
+- vue-router decodes a route parameter (`/bibliotheques/a%2Fb` gives `id`
+  `"a/b"`), so a client that puts an id read from the address into a path
+  writes `encodeURIComponent(id)`, or `/`, `?` and `#` reach a path the
+  contract does not declare, where the mock answers an empty `404` and
+  `problemOf` rejects. No encoding sends `.` or `..` as a segment: `fetch`
+  normalises them, `%2E` and `%2e%2e` included; the browser does the same
+  to the address before the router reads it, so neither reaches a view.
 - Mounting a component that holds a `RouterLink` needs the route settled first:
   `await router.push(path)` and `await router.isReady()` before `mount`, then
   `window.history.replaceState(null, "", "/")` in an `afterEach`, since

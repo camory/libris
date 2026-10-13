@@ -329,3 +329,15 @@ Format:
 - Handoff: the first run did steps 1 to 18, the three scenarios read red
   first and put back skipped; this run did steps 19 to 23.
 - Left over: adding a member (T083), the star (T084), the other S9 cases.
+
+## 2026-10-13 — T082 A member opens a bookshelf — reworked
+- Did: `FetchBookshelvesApi.find` encodes the id into its path, so an id
+  the router decoded into `/`, `?` or `#` reaches the operation and reads
+  *Bibliothèque introuvable.*; a client case for an id holding a slash.
+- Decided: the reviewer's verdict of 2026-10-13 (blocking: the encoding;
+  suggestion: the `409` in the `problemOf` gotcha); it amended nothing.
+  Neither `.` nor `..` gets a case: `fetch` normalises them whatever the
+  encoding, and the browser normalises them in the address before the
+  router, so they never reach the view (written in the gotchas).
+- Deviations from the brief: none.
+- Left over: nothing.
