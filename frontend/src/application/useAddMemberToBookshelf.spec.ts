@@ -29,6 +29,18 @@ describe("useAddMemberToBookshelf", () => {
     // Then
     expect(state.value).toEqual({ status: "adding", added: [] });
   });
+
+  it("keeps every member it added", async () => {
+    // Given
+    const { state, add } = useAddMemberToBookshelf(addingHugoToSalon());
+    await add(salon.id, hugo.id, "VIEWER");
+
+    // When
+    await add(salon.id, hugo.id, "OWNER");
+
+    // Then
+    expect(state.value.added).toEqual([viewer(hugo), owner(hugo)]);
+  });
 });
 
 function addingHugoToSalon() {
@@ -60,4 +72,8 @@ const hugo: KnownReader = {
 
 function owner(reader: KnownReader): Member {
   return { reader, role: "OWNER" };
+}
+
+function viewer(reader: KnownReader): Member {
+  return { reader, role: "VIEWER" };
 }
