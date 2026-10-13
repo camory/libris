@@ -4,6 +4,8 @@ import { ref } from "vue";
 import { useI18n } from "vue-i18n";
 import { isBookshelfName } from "../../domain/Bookshelf";
 
+const emit = defineEmits<{ create: [name: string] }>();
+
 const { t } = useI18n();
 const name = ref("");
 </script>
@@ -23,6 +25,7 @@ const name = ref("");
         type="button"
         :aria-label="t('home.bookshelves.create')"
         class="flex size-11 items-center justify-center rounded-[10px] text-accent"
+        @click="emit('create', name)"
       >
         <Check :stroke-width="3" />
       </button>

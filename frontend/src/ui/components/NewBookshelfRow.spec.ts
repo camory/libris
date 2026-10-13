@@ -27,6 +27,18 @@ describe("NewBookshelfRow", () => {
     expect(screen.queryByRole("button", { name: "Créer" })).toBeNull();
   });
 
+  it("asks to create the name typed", async () => {
+    // Given
+    const { wrapper, screen } = open();
+    await type(screen, "Bibliothèque familiale");
+
+    // When
+    await fireEvent.click(screen.getByRole("button", { name: "Créer" }));
+
+    // Then
+    expect(wrapper.emitted("create")).toEqual([["Bibliothèque familiale"]]);
+  });
+
   function open() {
     const wrapper = mount(NewBookshelfRow, {
       props: { creating: false },
