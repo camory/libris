@@ -47,6 +47,7 @@ export class FetchBookshelvesApi implements BookshelvesApi {
       headers: {
         "Content-Type": "application/json",
         Accept: "application/json, application/problem+json",
+        "X-Requested-With": "XMLHttpRequest",
       },
       body: JSON.stringify({ name }),
     });

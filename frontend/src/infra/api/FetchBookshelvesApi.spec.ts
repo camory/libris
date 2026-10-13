@@ -77,4 +77,30 @@ describe("FetchBookshelvesApi", () => {
     // Then
     expect(answer).toEqual({ outcome: "problem", type: "/problems/conflict" });
   });
+
+  it("says the creation comes from the application", async () => {
+    // Given
+    const api = new FetchBookshelvesApi("http://libris.invalid");
+    const sent: RequestInit[] = [];
+    vi.stubGlobal("fetch", (_url: string, init: RequestInit) => {
+      sent.push(init);
+      return Promise.resolve(
+        new Response(
+          JSON.stringify({
+            id: "4f5a6b7c-8d9e-4f0a-9b2c-3d4e5f6a7b82",
+            name: "Bibliothèque familiale",
+          }),
+          { status: 201 },
+        ),
+      );
+    });
+
+    // When
+    await api.create("Bibliothèque familiale");
+
+    // Then
+    expect(sent[0]?.headers).toMatchObject({
+      "X-Requested-With": "XMLHttpRequest",
+    });
+  });
 });
