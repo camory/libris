@@ -265,7 +265,7 @@ describe("Bookshelves", () => {
     ).toBeDefined();
   });
 
-  it.skip("S9 Libris unavailable, the home page's bookshelves", async () => {
+  it("S9 Libris unavailable, the home page's bookshelves", async () => {
     // Given
     const libris = new FakeBookshelvesApi({ memberships: noAnswer() });
 
