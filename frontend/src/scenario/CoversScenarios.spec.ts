@@ -18,6 +18,7 @@ import { asterixLeGaulois, bibliothequeDeLea } from "../fixture/Books";
 import { FakeAppUpdate } from "../fixture/FakeAppUpdate";
 import { FakeBarcodeScanner } from "../fixture/FakeBarcodeScanner";
 import { FakeBookshelfApi } from "../fixture/FakeBookshelfApi";
+import { FakeBookshelvesApi } from "../fixture/FakeBookshelvesApi";
 import { FakeCatalogueApi } from "../fixture/FakeCatalogueApi";
 import { FakeIsbnApi } from "../fixture/FakeIsbnApi";
 import { FakeMeApi } from "../fixture/FakeMeApi";
@@ -86,9 +87,11 @@ describe("Covers", () => {
     // Then
     expect(coverImage(screen).getAttribute("src")).toBe(inventaire.url);
     expect(sourceName(screen)).toBe("inventaire.io");
-    expect(dots(screen).map((dot) => dot.getAttribute("aria-label"))).toEqual(
-      ["Couverture inventaire.io", "Couverture Open Library", "Couverture BnF"],
-    );
+    expect(dots(screen).map((dot) => dot.getAttribute("aria-label"))).toEqual([
+      "Couverture inventaire.io",
+      "Couverture Open Library",
+      "Couverture BnF",
+    ]);
     expect(dots(screen).map(isFilled)).toEqual([true, false, false]);
   });
 
@@ -130,9 +133,10 @@ describe("Covers", () => {
     // Then
     expect(coverImage(screen).getAttribute("src")).toBe(openLibrary.url);
     expect(sourceName(screen)).toBe("Open Library");
-    expect(dots(screen).map((dot) => dot.getAttribute("aria-label"))).toEqual(
-      ["Couverture Open Library", "Couverture BnF"],
-    );
+    expect(dots(screen).map((dot) => dot.getAttribute("aria-label"))).toEqual([
+      "Couverture Open Library",
+      "Couverture BnF",
+    ]);
   });
 
   it("S2 The card shows the first cover that loads, none loads", async () => {
@@ -149,8 +153,9 @@ describe("Covers", () => {
     await fails(coverImage(screen));
 
     // Then
-    expect(screen.queryByRole("img", { name: "Couverture de Romance dawn" }))
-      .toBeNull();
+    expect(
+      screen.queryByRole("img", { name: "Couverture de Romance dawn" }),
+    ).toBeNull();
     expect(dots(screen)).toEqual([]);
     expect(sourceName(screen)).toBeNull();
   });
@@ -225,8 +230,9 @@ describe("Covers", () => {
 
     // Then
     await screen.findByText("Romance dawn");
-    expect(screen.queryByRole("img", { name: "Couverture de Romance dawn" }))
-      .toBeNull();
+    expect(
+      screen.queryByRole("img", { name: "Couverture de Romance dawn" }),
+    ).toBeNull();
     expect(dots(screen)).toEqual([]);
   });
 
@@ -320,6 +326,7 @@ describe("Covers", () => {
         barcodeScanner: new FakeBarcodeScanner(false),
         appUpdate: new FakeAppUpdate(),
         catalogueApi: world.catalogue ?? new FakeCatalogueApi([]),
+        bookshelvesApi: new FakeBookshelvesApi({ memberships: [] }),
       },
       "sha-abc1234",
     );
