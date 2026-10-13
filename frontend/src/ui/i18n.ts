@@ -5,6 +5,11 @@ const fr = {
     title: "La bibliothèque de la maison",
     greeting: "Bonjour {name}",
     add: "Ajouter un ouvrage",
+    bookshelves: {
+      role: {
+        OWNER: "propriétaire",
+      },
+    },
   },
   isbn: {
     title: "Ajouter un ouvrage",
