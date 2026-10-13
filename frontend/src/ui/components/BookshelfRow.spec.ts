@@ -22,6 +22,14 @@ describe("BookshelfRow", () => {
     expect(normalised(row)).toBe("Salon invité");
   });
 
+  it("marks the reader's default", () => {
+    // When
+    const row = show({ bookshelf: salon, role: "OWNER" }, true);
+
+    // Then
+    expect(normalised(row)).toBe("Salon propriétaire · par défaut");
+  });
+
   function show(membership: Membership, isDefault: boolean) {
     return mount(BookshelfRow, {
       props: { membership, isDefault },

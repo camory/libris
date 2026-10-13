@@ -10,6 +10,7 @@ const fr = {
         OWNER: "propriétaire",
         VIEWER: "invité",
       },
+      default: "{role} · par défaut",
     },
   },
   isbn: {
