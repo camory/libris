@@ -19,7 +19,10 @@ interface BookshelfResponse {
   name: string;
 }
 
-const problems = new Map([[400, "/problems/validation"]]);
+const problems = new Map([
+  [400, "/problems/validation"],
+  [409, "/problems/conflict"],
+]);
 
 export class FetchBookshelvesApi implements BookshelvesApi {
   constructor(private readonly baseUrl: string) {}

@@ -66,4 +66,15 @@ describe("FetchBookshelvesApi", () => {
       type: "/problems/validation",
     });
   });
+
+  it("answers a problem when the name is taken", async () => {
+    // Given
+    const api = new FetchBookshelvesApi(inject("mockBaseUrl"));
+
+    // When
+    const answer = await api.create("Salon");
+
+    // Then
+    expect(answer).toEqual({ outcome: "problem", type: "/problems/conflict" });
+  });
 });
