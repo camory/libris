@@ -76,7 +76,7 @@ watch([() => props.id, reader], ([id, current]) => {
             {{ t("bookshelf.members.label") }}
           </h2>
           <button
-            v-if="members"
+            v-if="members && !choosing"
             type="button"
             :aria-label="t('bookshelf.members.new')"
             class="flex size-11 items-center justify-center rounded-[10px] text-accent"
@@ -89,7 +89,7 @@ watch([() => props.id, reader], ([id, current]) => {
           class="overflow-hidden rounded-[14px] border border-border bg-surface"
         >
           <ul
-            v-if="members"
+            v-if="members && !choosing"
             :aria-label="t('bookshelf.members.label')"
             class="divide-y divide-border"
           >

@@ -183,6 +183,23 @@ describe("BookshelfView", () => {
     ).toEqual(["Choisir un lecteur", "Élodie", "Hugo"]);
   });
 
+  it("hides the plus while the form is there", async () => {
+    // Given
+    const wrapper = mountBookshelfView(salonOwned, [leaToOthers, marc, hugo]);
+    await flushPromises();
+    const screen = within(wrapper.element as HTMLElement);
+
+    // When
+    await fireEvent.click(
+      screen.getByRole("button", { name: "Ajouter un membre" }),
+    );
+
+    // Then
+    expect(
+      screen.queryByRole("button", { name: "Ajouter un membre" }),
+    ).toBeNull();
+  });
+
   function seen(wrapper: ReturnType<typeof mountBookshelfView>) {
     const screen = within(wrapper.element as HTMLElement);
     return {
