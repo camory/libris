@@ -22,6 +22,7 @@ import { FakeBookshelvesApi } from "../fixture/FakeBookshelvesApi";
 import { FakeCatalogueApi } from "../fixture/FakeCatalogueApi";
 import { FakeIsbnApi } from "../fixture/FakeIsbnApi";
 import { FakeMeApi } from "../fixture/FakeMeApi";
+import { FakeReadersApi } from "../fixture/FakeReadersApi";
 import { lea } from "../fixture/Readers";
 import { onePiece1 } from "../fixture/SourceEditions";
 
@@ -322,6 +323,7 @@ describe("Covers", () => {
         appUpdate: new FakeAppUpdate(),
         catalogueApi: world.catalogue ?? new FakeCatalogueApi([]),
         bookshelvesApi: new FakeBookshelvesApi({ memberships: [] }),
+        readersApi: new FakeReadersApi([]),
       },
       "sha-abc1234",
     );

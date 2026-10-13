@@ -15,6 +15,7 @@ import {
 import { catalogueApiKey, type CatalogueApi } from "./application/CatalogueApi";
 import { isbnApiKey, type IsbnApi } from "./application/IsbnApi";
 import { meApiKey, type MeApi } from "./application/MeApi";
+import { readersApiKey, type ReadersApi } from "./application/ReadersApi";
 import { revisionKey } from "./application/Revision";
 import AppRoot from "./ui/App.vue";
 import { createLibrisI18n } from "./ui/i18n";
@@ -28,6 +29,7 @@ export interface LibrisPorts {
   appUpdate: AppUpdate;
   catalogueApi: CatalogueApi;
   bookshelvesApi: BookshelvesApi;
+  readersApi: ReadersApi;
 }
 
 export function createLibrisApp(ports: LibrisPorts, revision: string): App {
@@ -44,6 +46,7 @@ export function createLibrisApp(ports: LibrisPorts, revision: string): App {
   app.provide(appUpdateKey, ports.appUpdate);
   app.provide(catalogueApiKey, ports.catalogueApi);
   app.provide(bookshelvesApiKey, ports.bookshelvesApi);
+  app.provide(readersApiKey, ports.readersApi);
   app.provide(revisionKey, revision);
   app.provide(LUCIDE_CONTEXT, { strokeWidth: 1.8 });
   return app;

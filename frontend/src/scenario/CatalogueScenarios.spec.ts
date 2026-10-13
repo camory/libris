@@ -13,6 +13,7 @@ import { FakeBookshelvesApi } from "../fixture/FakeBookshelvesApi";
 import { FakeCatalogueApi } from "../fixture/FakeCatalogueApi";
 import { FakeIsbnApi } from "../fixture/FakeIsbnApi";
 import { FakeMeApi } from "../fixture/FakeMeApi";
+import { FakeReadersApi } from "../fixture/FakeReadersApi";
 import { lea } from "../fixture/Readers";
 
 type Screen = BoundFunctions<typeof queries>;
@@ -242,6 +243,7 @@ describe("Catalogue", () => {
         appUpdate: new FakeAppUpdate(),
         catalogueApi: catalogue,
         bookshelvesApi: new FakeBookshelvesApi({ memberships: [] }),
+        readersApi: new FakeReadersApi([]),
       },
       "sha-abc1234",
     );
