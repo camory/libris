@@ -62,6 +62,16 @@ describe("NewBookshelfRow", () => {
     screen.getByText("Vous avez déjà une bibliothèque de ce nom.");
   });
 
+  it("says to try again later when Libris does not answer", () => {
+    // When
+    const { screen } = open(false, "unavailable");
+
+    // Then
+    screen.getByText(
+      "Erreur lors de la création, veuillez réessayer plus tard.",
+    );
+  });
+
   function open(creating = false, failure?: "taken" | "unavailable") {
     const wrapper = mount(NewBookshelfRow, {
       props: { creating, failure },

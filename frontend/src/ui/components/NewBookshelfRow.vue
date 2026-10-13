@@ -47,7 +47,7 @@ const name = ref("");
     </div>
     <p v-if="failure" class="flex items-start gap-2 pb-2 text-body text-danger">
       <IconAlert />
-      <span>{{ t("home.bookshelves.failure.taken") }}</span>
+      <span>{{ t(`home.bookshelves.failure.${failure}`) }}</span>
     </p>
   </div>
 </template>
