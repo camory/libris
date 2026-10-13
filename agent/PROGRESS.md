@@ -341,3 +341,14 @@ Format:
   router, so they never reach the view (written in the gotchas).
 - Deviations from the brief: none.
 - Left over: nothing.
+
+## 2026-10-13 — T083 An owner adds a member — handoff
+- Done: steps 1 to 7, one commit each; S5 un-skipped and read red first
+  (`Unable to find role="button" and name "Ajouter un membre"`), put back skipped.
+- Start with: step 8, *asks no reader for a viewer*. Until it reads
+  `readerId`, `eslint .` reds `useFindBookshelf.ts` (no-unused-vars), so the gate is red.
+- Decided: `BookshelfView` injects `readersApiKey` and watches `[props.id, reader]`,
+  calling `find(id, reader.id)` once the reader is known; its spec's mount
+  provides `new FakeReadersApi([])` already (step 7's commit, for the type check).
+- Decided: `FetchBookshelvesApi` gains `memberOf`, shared by `find` and `addMember`.
+- Guards: none run yet (steps 11, 21, 23 left).
