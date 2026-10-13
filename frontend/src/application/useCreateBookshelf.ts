@@ -3,7 +3,7 @@ import type { Membership } from "../domain/Membership";
 import type { BookshelvesApi } from "./BookshelvesApi";
 
 export interface CreateState {
-  status: "ready" | "creating" | "created";
+  status: "ready" | "creating" | "created" | "taken";
   created: Membership[];
 }
 
@@ -22,6 +22,7 @@ export function useCreateBookshelf(bookshelvesApi: BookshelvesApi): {
         status: "created",
         created: [...created, { bookshelf: answer.bookshelf, role: "OWNER" }],
       };
+    else state.value = { status: "taken", created };
   }
 
   return { state, create };

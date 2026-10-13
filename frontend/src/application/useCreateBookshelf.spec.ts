@@ -45,6 +45,22 @@ describe("useCreateBookshelf", () => {
     ]);
   });
 
+  it("says the name is taken when Libris refuses it", async () => {
+    // Given
+    const { state, create } = useCreateBookshelf(
+      new FakeBookshelvesApi({
+        memberships: [],
+        create: { outcome: "problem", type: "/problems/conflict" },
+      }),
+    );
+
+    // When
+    await create("Salon");
+
+    // Then
+    expect(state.value).toEqual({ status: "taken", created: [] });
+  });
+
   it("is creating until Libris answers", () => {
     // Given
     const { state, create } = useCreateBookshelf(
