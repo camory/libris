@@ -31,6 +31,7 @@ interface BookshelfWithMembersResponse extends BookshelfResponse {
 
 const problems = new Map([
   [400, "/problems/validation"],
+  [404, "/problems/not-found"],
   [409, "/problems/conflict"],
 ]);
 
@@ -75,6 +76,7 @@ export class FetchBookshelvesApi implements BookshelvesApi {
     const response = await fetch(`${this.baseUrl}/api/v1/bookshelves/${id}`, {
       headers: { Accept: "application/json, application/problem+json" },
     });
+    if (response.status !== 200) return problemOf(response, problems);
     const body = (await response.json()) as BookshelfWithMembersResponse;
     return {
       outcome: "found",
