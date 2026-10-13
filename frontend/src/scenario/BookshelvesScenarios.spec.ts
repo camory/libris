@@ -97,7 +97,7 @@ describe("Bookshelves", () => {
     ]);
   });
 
-  it.skip("S2 A reader creates a bookshelf", async () => {
+  it("S2 A reader creates a bookshelf", async () => {
     // Given
     const screen = open(
       "/",

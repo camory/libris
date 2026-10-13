@@ -1,7 +1,10 @@
-import { within } from "@testing-library/dom";
+import { fireEvent, within } from "@testing-library/dom";
 import { flushPromises, mount } from "@vue/test-utils";
 import { describe, expect, it } from "vitest";
-import { bookshelvesApiKey } from "../../../application/BookshelvesApi";
+import {
+  bookshelvesApiKey,
+  type CreateAnswer,
+} from "../../../application/BookshelvesApi";
 import { meApiKey } from "../../../application/MeApi";
 import { revisionKey } from "../../../application/Revision";
 import type { Bookshelf } from "../../../domain/Bookshelf";
@@ -22,16 +25,29 @@ const etagere: Bookshelf = {
   name: "Étagère",
 };
 
+const atelier: Bookshelf = {
+  id: "7e8f9a0b-1c2d-4e3f-8a5b-6c7d8e9f0a1b",
+  name: "Atelier",
+};
+
+class LibrisNotAnswering extends FakeBookshelvesApi {
+  override create(): Promise<CreateAnswer> {
+    return new Promise(() => {});
+  }
+}
+
 const mountHomeView = (
   reader: Reader,
   memberships: Membership[] | Error = [],
+  create?: CreateAnswer,
+  bookshelvesApi = new FakeBookshelvesApi({ memberships, create }),
 ) =>
   mount(HomeView, {
     global: {
       plugins: [createLibrisI18n(), createLibrisRouter()],
       provide: {
         [meApiKey]: new FakeMeApi(reader),
-        [bookshelvesApiKey]: new FakeBookshelvesApi({ memberships }),
+        [bookshelvesApiKey]: bookshelvesApi,
         [revisionKey]: "sha-abc1234",
       },
     },
@@ -146,6 +162,109 @@ describe("HomeView", () => {
     expect(wrapper.findAllComponents(BookshelfRowSkeleton)).toHaveLength(0);
   });
 
+  it("offers Nouvelle bibliothèque once the rows are there", async () => {
+    // Given
+    const wrapper = mountHomeView(chloe, [
+      { bookshelf: salon, role: "VIEWER" },
+    ]);
+    const before = offersNew(wrapper);
+
+    // When
+    await flushPromises();
+
+    // Then
+    expect([before, offersNew(wrapper)]).toEqual([false, true]);
+  });
+
+  it("opens the form as the list's last row, the plus gone", async () => {
+    // Given
+    const wrapper = mountHomeView(chloe, [
+      { bookshelf: salon, role: "VIEWER" },
+    ]);
+    await flushPromises();
+    const screen = within(wrapper.element as HTMLElement);
+
+    // When
+    await fireEvent.click(
+      screen.getByRole("button", { name: "Nouvelle bibliothèque" }),
+    );
+
+    // Then
+    const last = within(screen.getByRole("list", { name: "Mes bibliothèques" }))
+      .getAllByRole("listitem")
+      .at(-1)!;
+    expect(
+      within(last).queryByRole("textbox", { name: "Nom de la bibliothèque" }),
+    ).not.toBeNull();
+    expect(offersNew(wrapper)).toBe(false);
+  });
+
+  it("lists the bookshelf created in order, the form gone, the plus back", async () => {
+    // Given
+    const wrapper = mountHomeView(
+      chloe,
+      [
+        { bookshelf: salon, role: "VIEWER" },
+        { bookshelf: chloe.defaultBookshelf, role: "OWNER" },
+      ],
+      { outcome: "created", bookshelf: atelier },
+    );
+    await flushPromises();
+    const screen = within(wrapper.element as HTMLElement);
+    await fireEvent.click(
+      screen.getByRole("button", { name: "Nouvelle bibliothèque" }),
+    );
+    await fireEvent.input(
+      screen.getByRole("textbox", { name: "Nom de la bibliothèque" }),
+      { target: { value: "Atelier" } },
+    );
+
+    // When
+    await fireEvent.click(screen.getByRole("button", { name: "Créer" }));
+    await flushPromises();
+
+    // Then
+    expect(
+      within(screen.getByRole("list", { name: "Mes bibliothèques" }))
+        .getAllByRole("listitem")
+        .map(normalised),
+    ).toEqual([
+      "Bibliothèque de Chloé propriétaire · par défaut",
+      "Atelier propriétaire",
+      "Salon invité",
+    ]);
+    expect(offersNew(wrapper)).toBe(true);
+  });
+
+  it("is busy while the bookshelf is created", async () => {
+    // Given
+    const memberships: Membership[] = [{ bookshelf: salon, role: "VIEWER" }];
+    const wrapper = mountHomeView(
+      chloe,
+      memberships,
+      undefined,
+      new LibrisNotAnswering({ memberships }),
+    );
+    await flushPromises();
+    const screen = within(wrapper.element as HTMLElement);
+    await fireEvent.click(
+      screen.getByRole("button", { name: "Nouvelle bibliothèque" }),
+    );
+    await fireEvent.input(
+      screen.getByRole("textbox", { name: "Nom de la bibliothèque" }),
+      { target: { value: "Atelier" } },
+    );
+
+    // When
+    await fireEvent.click(screen.getByRole("button", { name: "Créer" }));
+    await flushPromises();
+
+    // Then
+    expect(
+      screen.queryByRole("button", { name: "Création en cours…" }),
+    ).not.toBeNull();
+  });
+
   function seen(wrapper: ReturnType<typeof mountHomeView>) {
     const screen = within(wrapper.element as HTMLElement);
     return {
@@ -153,5 +272,13 @@ describe("HomeView", () => {
       list: screen.queryByRole("list", { name: "Mes bibliothèques" }) !== null,
       skeletonRows: wrapper.findAllComponents(BookshelfRowSkeleton).length,
     };
+  }
+
+  function offersNew(wrapper: ReturnType<typeof mountHomeView>) {
+    return (
+      within(wrapper.element as HTMLElement).queryByRole("button", {
+        name: "Nouvelle bibliothèque",
+      }) !== null
+    );
   }
 });

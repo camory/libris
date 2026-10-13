@@ -149,7 +149,7 @@ longer says.
       `contracteer mock` (D07); the PR body proposes the spec's U08 title. Realises S1 and S9's home page case;
       un-skips the frontend tests of S1 and of S9, the home page.
 
-- [ ] T080 Frontend: a reader creates a bookshelf.
+- [x] T080 Frontend: a reader creates a bookshelf.
       Once the rows are there, the plus *Nouvelle bibliothèque* right of
       *Mes bibliothèques* adds a last row, the field *Nom de la
       bibliothèque* and the check *Créer*, absent while the name is blank,

@@ -1,3 +1,4 @@
+import { LUCIDE_CONTEXT } from "@lucide/vue";
 import { createPinia } from "pinia";
 import { createApp, type App } from "vue";
 import type { RouteLocationNormalizedLoaded } from "vue-router";
@@ -44,5 +45,6 @@ export function createLibrisApp(ports: LibrisPorts, revision: string): App {
   app.provide(catalogueApiKey, ports.catalogueApi);
   app.provide(bookshelvesApiKey, ports.bookshelvesApi);
   app.provide(revisionKey, revision);
+  app.provide(LUCIDE_CONTEXT, { strokeWidth: 1.8 });
   return app;
 }

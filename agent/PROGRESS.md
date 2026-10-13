@@ -272,3 +272,26 @@ Format:
   unchanged.
 - Deviations from the brief: none.
 - Left over: the title case's missing markers, in `agent/PROPOSED.md`.
+
+## 2026-10-13 — T080 A reader creates a bookshelf — done
+- Did: the plus *Nouvelle bibliothèque* right of *Mes bibliothèques* opens
+  `NewBookshelfRow` as the list's last row; *Créer* creates the bookshelf
+  through `useCreateBookshelf`, and the answer joins the rows in S1's order.
+- Decided: `useCreateBookshelf`'s state keeps every membership it created;
+  the view hands them to `membershipsInOrder` with the listed ones, and
+  closes the form only on `created`, so a problem answer leaves it as it is
+  (fix-up on Tophe's ask, in place of a list of the view's own).
+- Decided: the view spec's busy case runs over `LibrisNotAnswering`, a
+  subclass of `FakeBookshelvesApi` declared in the spec, passed to
+  `mountHomeView` as an optional last argument.
+- Deviations from the brief: `@lucide/vue` and the provided stroke arrived
+  in step 9, not 13: `Check` is the first icon drawn.
+- Deviations from the brief: the field carries an `aria-label` holding its
+  placeholder's word; a placeholder alone gives `getByRole("textbox")` no
+  name.
+- Deviations from the brief: the first commit, the domain stub with step
+  1's case, is typed `test(frontend)`.
+- Handoff: the first run did steps 1 to 13 (S2 read red first, put back
+  skipped); this run did steps 14 to 18.
+- Left over: the refusals, the unavailable case and the form's `catch`
+  (T081); the chevron and the row's link (T082); the star (T084).

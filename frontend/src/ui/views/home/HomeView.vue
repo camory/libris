@@ -1,32 +1,44 @@
 <script setup lang="ts">
+import { CirclePlus } from "@lucide/vue";
 import { computed, inject, ref } from "vue";
 import { useI18n } from "vue-i18n";
 import { bookshelvesApiKey } from "../../../application/BookshelvesApi";
 import { meApiKey } from "../../../application/MeApi";
 import { revisionKey } from "../../../application/Revision";
+import { useCreateBookshelf } from "../../../application/useCreateBookshelf";
 import { useListReaderBookshelves } from "../../../application/useListReaderBookshelves";
 import { membershipsInOrder } from "../../../domain/Membership";
 import type { Reader } from "../../../domain/Reader";
 import BookshelfRow from "../../components/BookshelfRow.vue";
 import BookshelfRowSkeleton from "../../components/BookshelfRowSkeleton.vue";
 import IconAlert from "../../components/icons/IconAlert.vue";
+import NewBookshelfRow from "../../components/NewBookshelfRow.vue";
 
 const { t, locale } = useI18n();
 const reader = ref<Reader>();
+const naming = ref(false);
 
 const meApi = inject(meApiKey)!;
 const revision = inject(revisionKey)!;
-const { state, list } = useListReaderBookshelves(inject(bookshelvesApiKey)!);
+const bookshelvesApi = inject(bookshelvesApiKey)!;
+const { state, list } = useListReaderBookshelves(bookshelvesApi);
+const { state: createState, create: createBookshelf } =
+  useCreateBookshelf(bookshelvesApi);
 
 const memberships = computed(() =>
   reader.value && state.value.status === "listed"
     ? membershipsInOrder(
-        state.value.memberships,
+        [...state.value.memberships, ...createState.value.created],
         reader.value.defaultBookshelf.id,
         locale.value,
       )
     : null,
 );
+
+async function create(name: string) {
+  await createBookshelf(name);
+  if (createState.value.status === "created") naming.value = false;
+}
 
 meApi.currentReader().then((current) => {
   reader.value = current;
@@ -44,9 +56,20 @@ void list();
     </header>
 
     <section>
-      <h2 class="pb-2 text-label text-muted">
-        {{ t("home.bookshelves.label") }}
-      </h2>
+      <div class="flex min-h-11 items-center justify-between pb-2">
+        <h2 class="text-label text-muted">
+          {{ t("home.bookshelves.label") }}
+        </h2>
+        <button
+          v-if="memberships && !naming"
+          type="button"
+          :aria-label="t('home.bookshelves.new')"
+          class="flex size-11 items-center justify-center rounded-[10px] text-accent"
+          @click="naming = true"
+        >
+          <CirclePlus />
+        </button>
+      </div>
       <p
         v-if="state.status === 'unavailable'"
         class="flex items-start gap-2 text-body text-danger"
@@ -69,6 +92,12 @@ void list();
               :is-default="
                 membership.bookshelf.id === reader?.defaultBookshelf.id
               "
+            />
+          </li>
+          <li v-if="naming">
+            <NewBookshelfRow
+              :creating="createState.status === 'creating'"
+              @create="create"
             />
           </li>
         </ul>
