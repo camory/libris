@@ -102,7 +102,10 @@ void list();
             />
           </li>
           <li v-if="naming">
-            <NewBookshelfRow :creating="false" @create="create" />
+            <NewBookshelfRow
+              :creating="createState.status === 'creating'"
+              @create="create"
+            />
           </li>
         </ul>
         <template v-else>
