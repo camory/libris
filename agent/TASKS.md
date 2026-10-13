@@ -186,14 +186,27 @@ longer says.
       plus *Ajouter un membre* right of *Membres* adds a last row: *Choisir
       un lecteur* among the readers not members, by display name ignoring
       case and accents, the crown toggle *Propriétaire*, off at first, and
-      *Ajouter*, absent until a reader is chosen; *Ajout en cours…*, then
-      the new member, *invité* or with the crown *propriétaire*. Every
-      reader a member, no plus and *Tous les lecteurs sont déjà membres.*;
-      no answer, S9's adding sentence in the row, reader and crown kept; a
-      refusal reads as no answer (U04, U05, U07, U08). Unit test of the
-      readers' order; both clients tested against `contracteer mock` (D07).
-      Realises S5 and S9's adding case; un-skips the frontend tests of S5
-      and of S9, adding a member.
+      *Ajouter*, absent until a reader is chosen, the plus gone meanwhile;
+      *Ajout en cours…*, then the new member among the members, *invité* or
+      with the crown *propriétaire*, the row gone, the plus back. A
+      viewer's screen has no plus (U03, U04, U05, U07, U08). The readers'
+      port joins `LibrisPorts`, as the bookshelves' did in T079. Unit test
+      of the readers' order; the readers' client and the add's `201`
+      tested against `contracteer mock` (D07).
+      Realises S5; un-skips the frontend tests of S5, both cases.
+
+- [ ] T088 Frontend: every reader a member, or no answer.
+      Every reader a member, no plus right of *Membres* and *Tous les
+      lecteurs sont déjà membres.* in `muted` under the members, from the
+      opening or once the last reader is added. No answer to the add reads
+      S9's adding sentence under the member's line, in its row, the reader
+      and the crown kept and no member added; a refusal, which the screen
+      never provokes, reads as no answer. The readers not answering read
+      as the bookshelf not answering, S9's loading sentence alone, since
+      they are asked with it (U03, U05, U08). The add's `400`, `404` and
+      `409` tested against `contracteer mock` (D07).
+      Realises S5's every reader a member and S9's adding case; un-skips
+      the frontend test of S9, adding a member.
 
 - [ ] T084 Frontend: a reader chooses their default.
       Left of the chevron of a row the reader owns, a star in `accent`,
@@ -275,7 +288,7 @@ copies are in the catalogue.*
   (S3), not what it shows when Libris refuses otherwise: a blank name the
   screen never sends, an add of a member answered `400`, `404` or `409`, a
   default answered `400` or `404`, all reachable only by a race with
-  another reader. T081, T083 and T084 read such a refusal as no answer and
+  another reader. T081, T088 and T084 read such a refusal as no answer and
   show their S9 sentence; say if one should read otherwise.
 - **A refused add on the card.** The spec's screen says what the card shows
   when Libris does not answer the add (S5), not when it answers `400` or
