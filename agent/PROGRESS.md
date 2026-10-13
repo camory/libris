@@ -343,12 +343,14 @@ Format:
 - Left over: nothing.
 
 ## 2026-10-13 — T083 An owner adds a member — handoff
-- Done: steps 1 to 7, one commit each; S5 un-skipped and read red first
-  (`Unable to find role="button" and name "Ajouter un membre"`), put back skipped.
-- Start with: step 8, *asks no reader for a viewer*. Until it reads
-  `readerId`, `eslint .` reds `useFindBookshelf.ts` (no-unused-vars), so the gate is red.
-- Decided: `BookshelfView` injects `readersApiKey` and watches `[props.id, reader]`,
-  calling `find(id, reader.id)` once the reader is known; its spec's mount
-  provides `new FakeReadersApi([])` already (step 7's commit, for the type check).
-- Decided: `FetchBookshelvesApi` gains `memberOf`, shared by `find` and `addMember`.
-- Guards: none run yet (steps 11, 21, 23 left).
+- Done: steps 1 to 22; S5 un-skipped and read red first (`Unable to find role="button"
+  and name "Ajouter un membre"`) in the first run, put back skipped. Start with step 23.
+- Decided: `BookshelfView` watches `[props.id, reader]` and calls `find(id, reader.id)`;
+  `useFindBookshelf` asks `known()` only when the answer names that reader `OWNER`;
+  `FetchBookshelvesApi` gains `memberOf`, shared by `find` and `addMember`.
+- Decided: `NewMemberRow` sizes its `select` with `field-sizing-content` so the chevron
+  follows the chosen text; the crown is `Crown` with `fill` `currentColor` when pressed.
+- Deviation: commit "hide the plus" was committed red (its `v-if` also hid the `ul`);
+  the next commit, `fix(frontend): keep the members listed…`, repairs it. Step 20's case
+  had readers [lea, marc, hugo]; step 22's commit gives it the brief's four.
+- Guards: steps 11 and 21 were reds of their own, not guards; step 23's mutation is left.
