@@ -351,5 +351,6 @@ star, and its copies are in the catalogue.
 - T081 — S3, S9 creating a bookshelf — frontend
 - T082 — S4, S9 opening a bookshelf — frontend
 - T083 — S5 — frontend
+- T089 — S4, S5 the reader first, the choice in its own block — frontend
 - T088 — S5 every reader a member, S9 adding a member — frontend
 - T084 — S7, S8, S9 choosing the default — frontend
