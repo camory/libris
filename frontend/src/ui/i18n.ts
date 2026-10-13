@@ -11,6 +11,7 @@ const fr = {
         VIEWER: "invité",
       },
       default: "{role} · par défaut",
+      error: "Erreur lors du chargement, veuillez réessayer plus tard.",
     },
   },
   isbn: {

@@ -21,7 +21,10 @@ const etagere: Bookshelf = {
   name: "Étagère",
 };
 
-const mountHomeView = (reader: Reader, memberships: Membership[] = []) =>
+const mountHomeView = (
+  reader: Reader,
+  memberships: Membership[] | Error = [],
+) =>
   mount(HomeView, {
     global: {
       plugins: [createLibrisI18n(), createLibrisRouter()],
@@ -117,6 +120,26 @@ describe("HomeView", () => {
     await flushPromises();
 
     // Then
+    expect(wrapper.findAllComponents(BookshelfRowSkeleton)).toHaveLength(0);
+  });
+
+  it("says the bookshelves cannot load when Libris does not answer", async () => {
+    // Given
+    const wrapper = mountHomeView(chloe, new TypeError("Failed to fetch"));
+
+    // When
+    await flushPromises();
+
+    // Then
+    const screen = within(wrapper.element as HTMLElement);
+    expect(
+      screen.getByText(
+        "Erreur lors du chargement, veuillez réessayer plus tard.",
+      ),
+    ).toBeDefined();
+    expect(
+      screen.queryByRole("list", { name: "Mes bibliothèques" }),
+    ).toBeNull();
     expect(wrapper.findAllComponents(BookshelfRowSkeleton)).toHaveLength(0);
   });
 
