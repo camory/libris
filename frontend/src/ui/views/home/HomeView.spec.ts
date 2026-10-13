@@ -211,13 +211,7 @@ describe("HomeView", () => {
     );
     await flushPromises();
     const screen = within(wrapper.element as HTMLElement);
-    await fireEvent.click(
-      screen.getByRole("button", { name: "Nouvelle bibliothèque" }),
-    );
-    await fireEvent.input(
-      screen.getByRole("textbox", { name: "Nom de la bibliothèque" }),
-      { target: { value: "Atelier" } },
-    );
+    await nameNewBookshelf(screen, "Atelier");
 
     // When
     await fireEvent.click(screen.getByRole("button", { name: "Créer" }));
@@ -247,13 +241,7 @@ describe("HomeView", () => {
     );
     await flushPromises();
     const screen = within(wrapper.element as HTMLElement);
-    await fireEvent.click(
-      screen.getByRole("button", { name: "Nouvelle bibliothèque" }),
-    );
-    await fireEvent.input(
-      screen.getByRole("textbox", { name: "Nom de la bibliothèque" }),
-      { target: { value: "Atelier" } },
-    );
+    await nameNewBookshelf(screen, "Atelier");
 
     // When
     await fireEvent.click(screen.getByRole("button", { name: "Créer" }));
@@ -277,13 +265,7 @@ describe("HomeView", () => {
     );
     await flushPromises();
     const screen = within(wrapper.element as HTMLElement);
-    await fireEvent.click(
-      screen.getByRole("button", { name: "Nouvelle bibliothèque" }),
-    );
-    await fireEvent.input(
-      screen.getByRole("textbox", { name: "Nom de la bibliothèque" }),
-      { target: { value: "salon" } },
-    );
+    await nameNewBookshelf(screen, "salon");
 
     // When
     await fireEvent.click(screen.getByRole("button", { name: "Créer" }));
@@ -319,13 +301,7 @@ describe("HomeView", () => {
     );
     await flushPromises();
     const screen = within(wrapper.element as HTMLElement);
-    await fireEvent.click(
-      screen.getByRole("button", { name: "Nouvelle bibliothèque" }),
-    );
-    await fireEvent.input(
-      screen.getByRole("textbox", { name: "Nom de la bibliothèque" }),
-      { target: { value: "salon" } },
-    );
+    await nameNewBookshelf(screen, "salon");
 
     // When
     await fireEvent.click(screen.getByRole("button", { name: "Créer" }));
@@ -363,6 +339,19 @@ describe("HomeView", () => {
       within(wrapper.element as HTMLElement).queryByRole("button", {
         name: "Nouvelle bibliothèque",
       }) !== null
+    );
+  }
+
+  async function nameNewBookshelf(
+    screen: ReturnType<typeof within>,
+    name: string,
+  ) {
+    await fireEvent.click(
+      screen.getByRole("button", { name: "Nouvelle bibliothèque" }),
+    );
+    await fireEvent.input(
+      screen.getByRole("textbox", { name: "Nom de la bibliothèque" }),
+      { target: { value: name } },
     );
   }
 });
