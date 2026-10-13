@@ -7,6 +7,8 @@ import { useFindBookshelf } from "../../../application/useFindBookshelf";
 import { membersInOrder } from "../../../domain/Member";
 import type { Reader } from "../../../domain/Reader";
 import MemberRow from "../../components/MemberRow.vue";
+import MemberRowSkeleton from "../../components/MemberRowSkeleton.vue";
+import PageTitleSkeleton from "../../components/PageTitleSkeleton.vue";
 
 const props = defineProps<{ id: string }>();
 
@@ -35,6 +37,7 @@ void find(props.id);
       <h1 v-if="state.status === 'found'" class="text-page-title">
         {{ state.bookshelf.name }}
       </h1>
+      <PageTitleSkeleton v-else />
     </header>
 
     <section>
@@ -56,6 +59,9 @@ void find(props.id);
             />
           </li>
         </ul>
+        <div v-else class="divide-y divide-border">
+          <MemberRowSkeleton v-for="row in 2" :key="row" />
+        </div>
       </div>
     </section>
   </main>

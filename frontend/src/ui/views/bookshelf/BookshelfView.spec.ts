@@ -13,6 +13,8 @@ import { FakeBookshelvesApi } from "../../../fixture/FakeBookshelvesApi";
 import { FakeMeApi } from "../../../fixture/FakeMeApi";
 import { lea } from "../../../fixture/Readers";
 import { normalised } from "../../../fixture/normalised";
+import MemberRowSkeleton from "../../components/MemberRowSkeleton.vue";
+import PageTitleSkeleton from "../../components/PageTitleSkeleton.vue";
 import { createLibrisI18n } from "../../i18n";
 import BookshelfView from "./BookshelfView.vue";
 
@@ -67,6 +69,32 @@ describe("BookshelfView", () => {
       "Vous · invité",
     ]);
   });
+
+  it("shows skeletons while the bookshelf comes", async () => {
+    // Given
+    const wrapper = mountBookshelfView(salonHeld);
+    const before = seen(wrapper);
+
+    // When
+    await flushPromises();
+
+    // Then
+    expect([before, seen(wrapper)]).toEqual([
+      { label: true, heading: false, list: false, title: 1, rows: 2 },
+      { label: true, heading: true, list: true, title: 0, rows: 0 },
+    ]);
+  });
+
+  function seen(wrapper: ReturnType<typeof mountBookshelfView>) {
+    const screen = within(wrapper.element as HTMLElement);
+    return {
+      label: wrapper.text().includes("Membres"),
+      heading: screen.queryByRole("heading", { name: "Salon" }) !== null,
+      list: screen.queryByRole("list", { name: "Membres" }) !== null,
+      title: wrapper.findAllComponents(PageTitleSkeleton).length,
+      rows: wrapper.findAllComponents(MemberRowSkeleton).length,
+    };
+  }
 });
 
 function owner(reader: KnownReader): Member {
