@@ -349,8 +349,8 @@ Read whole by a run that changes `frontend/`, after `every-run.md`.
   as one of the base's: `FakeBookshelvesApi` holds a private `answers`, and
   a constructor parameter `private readonly answers` fails `vue-tsc` with
   `TS2415 … Types have separate declarations of a private property`.
-- A native `select` is a `combobox` named by its `aria-label`, its entries
-  `option`s within it. A test chooses one by setting the option's
-  `selected = true` and then `await fireEvent.change(select)`: `v-model`
-  reads the value on `change` alone, so without the event nothing moves
-  (`NewMemberRow`, the `add` helper of `BookshelvesScenarios.spec.ts`).
+- jsdom 30 has no `scrollIntoView` (`HTMLElement.prototype.scrollIntoView`
+  is `undefined`): a component that calls it throws under every test that
+  reaches the call, unit and scenario alike. The call goes through optional
+  chaining, `element?.scrollIntoView?.(…)`, or a test that asserts it
+  defines it on the element first.

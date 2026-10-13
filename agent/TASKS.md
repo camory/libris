@@ -195,12 +195,31 @@ longer says.
       tested against `contracteer mock` (D07).
       Realises S5; un-skips the frontend tests of S5, both cases.
 
+- [ ] T089 Frontend: the reader first, and the reader chosen in a block.
+      The members read the reader's own row first, then the other owners,
+      then the viewers, each by display name ignoring case and accents. The
+      plus *Ajouter un membre* opens under *Membres* the block *Choisir un
+      lecteur*, brought into view, its list named so, the cross *Fermer*,
+      Lucide `X` in `muted`, at its label's right closing it: a row per
+      reader not a member, by display name ignoring case and accents, the
+      whole row a button, five rows and half of the sixth shown and the
+      rest scrolling inside the block. A tap on a reader makes their row
+      the form: the name, the crown toggle *Propriétaire*, off, and
+      *Ajouter*; a tap on another reader moves it there, the crown off
+      again. *Ajout en cours…*, the block accepting nothing else; then the
+      new member among the members, the block gone, the plus back. The
+      native `select` and `NewMemberRow` go; `IsbnView`'s `IconClose`
+      becomes Lucide `X` and `IconClose` goes (U03, U04, U07). Unit test of
+      the members' order.
+      Realises S4's order and S5 on the new screen; un-skips the frontend
+      tests of S4, its first case, and of S5, both cases.
+
 - [ ] T088 Frontend: every reader a member, or no answer.
       Every reader a member, no plus right of *Membres* and *Tous les
       lecteurs sont déjà membres.* in `muted` under the members, from the
       opening or once the last reader is added. No answer to the add reads
-      S9's adding sentence under the member's line, in its row, the reader
-      and the crown kept and no member added; a refusal, which the screen
+      S9's adding sentence under the chosen reader's name, in their row,
+      the crown kept, the block open and no member added; a refusal, which the screen
       never provokes, reads as no answer. The readers not answering read
       as the bookshelf not answering, S9's loading sentence alone, since
       they are asked with it (U03, U05, U08). The add's `400`, `404` and

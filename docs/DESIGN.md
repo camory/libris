@@ -74,9 +74,10 @@ viewport unit:
    `bg`. A block may have a label above it, the `label` step in `muted`,
    naming the block as a label names a field (*Mes bibliothèques*). At the
    label's right sits at most one icon button (U04): a plus in a circle
-   that opens the block's form as the last row of its list (U04). The plus
-   is gone while the form is there, and the form leaves only on its
-   success. A row that leads to a screen ends with a chevron at its right,
+   that opens the block's form as the last row of its list (U04), or the
+   block of a choice under it; or, on the block of a choice, a cross that
+   closes it. The plus is gone while the form or the choice is there, and
+   the form leaves only on its success. A row that leads to a screen ends with a chevron at its right,
    and may hold one icon button left of the chevron. Header and content
    scroll together; the tab bar stays put. The home page ends with the
    revision, `label` step, `muted`, one line.
@@ -113,12 +114,21 @@ right, as an icon button.
 
 **Form in a list.** A block's form is the last row of its list (U03), and
 it has no primary button. Its fields have no border and no label: a
-placeholder in `muted` names each one, in place of an example value. A
-choice among many is a native `select`, a chevron down after its text. At
+placeholder in `muted` names each one, in place of an example value. At
 the row's right, a check sends the form: an icon button in `accent`, drawn
 at stroke 3, absent until the form can be sent, its place kept. While the
 form is sent, a spinner takes its place. A message goes under the fields,
 inside the row (U05).
+
+**Choice among many.** Not a field and never a native `select`: a block of
+its own under the list it adds to, its label naming what to choose
+(*Choisir un lecteur*), at the label's right a cross, *Fermer*, in `muted`,
+that closes it. It is brought into view when it opens. One row per option,
+in `text`, the whole row a button; the block shows five rows and half of
+the sixth, and scrolls inside itself. A tap on an option makes its row the
+form, the option's name then its controls and the check; a tap on another
+option moves the form there. While the form is sent the block accepts
+nothing else, and on success it is gone.
 
 **Primary button.** One per thing it serves, the field or the card, and
 never two side by side. It is the next step of the screen's flow: *Chercher*
@@ -243,8 +253,8 @@ except an icon's filled variant: the star and the crown, filled with
 `currentColor`. Sizes are 22 for the alert of a message and the bookshelf
 rows of a card (U06), 32 on the tab bar, 48 for an empty state (U05). A
 component imports the icon it shows under its Lucide name: `CirclePlus`,
-`Check`, `ChevronRight`, `ChevronDown`, `Star`, `Crown`. The hand-drawn
-icons under `ui/components/icons` (`IconHome`, `IconBarcode`, `IconClose`,
+`Check`, `ChevronRight`, `Star`, `Crown`, `X`. The hand-drawn
+icons under `ui/components/icons` (`IconHome`, `IconBarcode`,
 `IconAlert`, `IconBook`, `IconBooks`, three spines on a line, the third
 leaning, for the catalogue tab) stay until a follow-up replaces each with
 its Lucide counterpart; none is added. No icon font.

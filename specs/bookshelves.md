@@ -71,8 +71,9 @@ Given a bookshelf with two owners and a viewer
 When one of its members opens it
 
 Then Libris answers its name and its members, each with their role
-	And the screen shows them the owners first, then the viewers, each by
-	    display name, ignoring case and accents
+	And the screen shows them the member who opened it first, then the
+	    other owners, then the viewers, each by display name, ignoring
+	    case and accents
 ```
 
 A reader who does not belong to the bookshelf is answered that there is no
@@ -180,12 +181,15 @@ scenario test with the API failing, one per case.
 
 Mockups: <https://claude.ai/artifact/DgkPZBCjVEXQeU31rmcsC1>, one artboard
 per state below, exported as `specs/bookshelves/<n>-<state>.jpg` in the
-same order, 1 to 11 the home page, 12 to 21 a bookshelf. The rules of
+same order, 1 to 11 the home page, 12 to 21 a bookshelf; 14, 15 and 20
+are drawn from a prototype of the choice in a block of its own, which the
+artifact predates. The rules of
 `docs/DESIGN.md` hold; what they lack is proposed as an amendment with the
 spec: in U04, the form in a list, a block's form being the last row of
 its list, its fields with no border and no label, a placeholder in
-`muted` naming each, a choice among many a native `select` with a
-chevron down after its text, at the row's right a check, an icon button
+`muted` naming each, a choice among many a block of its own under the
+list, closed by a cross, its options rows that become the form when
+tapped, at the row's right a check, an icon button
 in `accent` drawn at stroke 3, absent until the form can be sent, its
 place kept, a spinner in its place while it runs, a message under the
 fields inside the row; in U03, the block label, the `label` step naming a
@@ -197,7 +201,7 @@ no hint, the bookshelf's until its screen shows its ouvrages; in U07,
 Lucide as the source of new icons, at stroke 1.8, today's hand-drawn
 ones staying until a follow-up moves them, and from it `CirclePlus`
 (`circle-plus`), `Check` (`check`), `ChevronRight`
-(`chevron-right`), `ChevronDown` (`chevron-down`), `Star`
+(`chevron-right`), `X` (`x`), `Star`
 (`star`) outlined and filled, `Crown` (`crown`) outlined and filled,
 the check of a form in a list at stroke 3; in U08, the application's name,
 *Libris*, as the title of the home page, and the bookshelf's name as
@@ -228,14 +232,18 @@ per member, in the order of S4, the display name and after a
 middle dot, in `muted`, the role (*Léa · propriétaire*), the reader's own
 row reading *Vous* in place of their name (*Vous · invité*): the screen
 says the reader's role there and nowhere else. For an owner, at the
-right of the block's label, a plus, *Ajouter un membre*: a tap adds a last
-row to the members, one line: the choice *Lecteur*, placeholder *Choisir
-un lecteur*, among the readers who are not members; then a crown in
-`accent`, a toggle button *Propriétaire*, outlined and off at first,
-filled when on; then the check *Ajouter*, absent until a reader is
-chosen. The reader is added as *invité*, or as *propriétaire* with the
-crown on; changing a member's role afterwards is not in this feature.
-While the row is there the plus is gone.
+right of the block's label, a plus, *Ajouter un membre*: a tap opens the
+block *Choisir un lecteur* under *Membres* and brings it into view, at the
+right of its label a cross, *Fermer*, that closes it. One row per reader
+who is not a member, by display name, ignoring case and accents, the whole
+row a button; the block shows five rows and half of the sixth, and
+scrolls inside itself. A tap on a reader makes their row the form: the
+name, then a crown in `accent`, a toggle button *Propriétaire*, outlined
+and off at first, filled when on, then the check *Ajouter*; a tap on
+another reader moves the form to their row, the crown off again. The
+reader is added as *invité*, or as *propriétaire* with the crown on;
+changing a member's role afterwards is not in this feature. While the
+block is there the plus is gone.
 The readers who are not members are asked with the bookshelf, for an
 owner.
 
@@ -256,11 +264,11 @@ States:
   the right of *Membres*, a viewer's with the members only.
 - **Not found** (S4): no title, and *Bibliothèque introuvable.* as the
   screen's one message.
-- **New member** (S5): the row as the members' last, no reader chosen,
-  the crown off, no check, no plus.
-- **Adding** (S5): *Ajouter* is busy, *Ajout en cours…*; on the answer the
-  new member is among the members, the row is gone and the plus is
-  back. No message.
+- **New member** (S5): the block *Choisir un lecteur* under *Membres*, no
+  reader chosen, so no crown and no check, and no plus.
+- **Adding** (S5): *Ajouter* is busy, *Ajout en cours…*, and the block
+  accepts nothing else; on the answer the new member is among the
+  members, the block is gone and the plus is back. No message.
 - **Every reader a member** (S5): no plus at the right of *Membres*, and
   *Tous les lecteurs sont déjà membres.* in `muted` under the members.
 - **Changing the default** (S7): a spinner in `accent` in place of the
@@ -272,7 +280,7 @@ States:
   tard.* in place of the list, with no plus, or of the bookshelf's blocks; *Erreur lors de
   la création, veuillez réessayer plus tard.* under the field, in its row;
   *Erreur lors de l'ajout, veuillez réessayer plus tard.* under the
-  member's line, in its row, the reader and the crown kept; *Erreur lors
+  chosen reader's name, in their row, the crown kept; *Erreur lors
   du changement, veuillez réessayer plus tard.* in the tapped row, under
   its role, the stars as they were.
 
@@ -343,5 +351,6 @@ star, and its copies are in the catalogue.
 - T081 — S3, S9 creating a bookshelf — frontend
 - T082 — S4, S9 opening a bookshelf — frontend
 - T083 — S5 — frontend
+- T089 — S4, S5 the reader first, the choice in its own block — frontend
 - T088 — S5 every reader a member, S9 adding a member — frontend
 - T084 — S7, S8, S9 choosing the default — frontend

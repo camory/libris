@@ -137,7 +137,7 @@ describe("Bookshelves", () => {
     ]);
   });
 
-  it("S4 A member opens a bookshelf", async () => {
+  it.skip("S4 A member opens a bookshelf", async () => {
     // Given
     const libris = librisHolds(
       salon,
@@ -152,9 +152,9 @@ describe("Bookshelves", () => {
     // Then
     await screen.findByRole("heading", { name: "Salon" });
     expect(members(screen)).toEqual([
+      "Vous · invité",
       "Élodie · propriétaire",
       "Marc · propriétaire",
-      "Vous · invité",
     ]);
   });
 
@@ -174,11 +174,11 @@ describe("Bookshelves", () => {
     expect(screen.queryByRole("list", { name: "Membres" })).toBeNull();
   });
 
-  it.each([
+  it.skip.each([
     {
       case: "added as owner",
       role: "OWNER",
-      then: ["Hugo · propriétaire", "Vous · propriétaire", "Marc · invité"],
+      then: ["Vous · propriétaire", "Hugo · propriétaire", "Marc · invité"],
     },
     {
       case: "added as viewer",
@@ -351,21 +351,13 @@ describe("Bookshelves", () => {
     await screen.findByText(
       "Erreur lors de l'ajout, veuillez réessayer plus tard.",
     );
-    expect(
-      within(
-        screen.getByRole("combobox", { name: "Lecteur" }),
-      ).getByRole<HTMLOptionElement>("option", { name: "Hugo" }).selected,
-    ).toBe(true);
+    expect(readersToChoose(screen)).toEqual([
+      "Hugo Erreur lors de l'ajout, veuillez réessayer plus tard.",
+    ]);
     expect(
       screen.getByRole("button", { name: "Propriétaire", pressed: true }),
     ).toBeDefined();
-    expect(members(screen)).toEqual([
-      "Vous · propriétaire",
-      "Marc · invité",
-      expect.stringContaining(
-        "Erreur lors de l'ajout, veuillez réessayer plus tard.",
-      ),
-    ]);
+    expect(members(screen)).toEqual(["Vous · propriétaire", "Marc · invité"]);
   });
 
   it.skip("S9 Libris unavailable, choosing the default", async () => {
@@ -538,13 +530,11 @@ describe("Bookshelves", () => {
     await fireEvent.click(
       await screen.findByRole("button", { name: "Ajouter un membre" }),
     );
-    const choice = screen.getByRole<HTMLSelectElement>("combobox", {
-      name: "Lecteur",
-    });
-    within(choice).getByRole<HTMLOptionElement>("option", {
-      name: reader.displayName,
-    }).selected = true;
-    await fireEvent.change(choice);
+    await fireEvent.click(
+      within(
+        screen.getByRole("list", { name: "Choisir un lecteur" }),
+      ).getByRole("button", { name: reader.displayName }),
+    );
     if (role === "OWNER")
       await fireEvent.click(
         screen.getByRole("button", { name: "Propriétaire" }),
@@ -572,6 +562,10 @@ describe("Bookshelves", () => {
 
   function members(screen: Screen) {
     return listed(screen, "Membres");
+  }
+
+  function readersToChoose(screen: Screen) {
+    return listed(screen, "Choisir un lecteur");
   }
 
   function listed(screen: Screen, list: string) {
