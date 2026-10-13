@@ -61,6 +61,22 @@ describe("useCreateBookshelf", () => {
     expect(state.value).toEqual({ status: "taken", created: [] });
   });
 
+  it("is unavailable when Libris does not answer", async () => {
+    // Given
+    const { state, create } = useCreateBookshelf(
+      new FakeBookshelvesApi({
+        memberships: [],
+        create: new TypeError("Failed to fetch"),
+      }),
+    );
+
+    // When
+    await create("Bibliothèque familiale");
+
+    // Then
+    expect(state.value).toEqual({ status: "unavailable", created: [] });
+  });
+
   it("is creating until Libris answers", () => {
     // Given
     const { state, create } = useCreateBookshelf(

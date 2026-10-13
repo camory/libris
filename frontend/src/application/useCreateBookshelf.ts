@@ -3,7 +3,7 @@ import type { Membership } from "../domain/Membership";
 import type { BookshelvesApi } from "./BookshelvesApi";
 
 export interface CreateState {
-  status: "ready" | "creating" | "created" | "taken";
+  status: "ready" | "creating" | "created" | "taken" | "unavailable";
   created: Membership[];
 }
 
@@ -16,13 +16,17 @@ export function useCreateBookshelf(bookshelvesApi: BookshelvesApi): {
   async function create(name: string) {
     const { created } = state.value;
     state.value = { status: "creating", created };
-    const answer = await bookshelvesApi.create(name);
-    if (answer.outcome === "created")
-      state.value = {
-        status: "created",
-        created: [...created, { bookshelf: answer.bookshelf, role: "OWNER" }],
-      };
-    else state.value = { status: "taken", created };
+    try {
+      const answer = await bookshelvesApi.create(name);
+      if (answer.outcome === "created")
+        state.value = {
+          status: "created",
+          created: [...created, { bookshelf: answer.bookshelf, role: "OWNER" }],
+        };
+      else state.value = { status: "taken", created };
+    } catch {
+      state.value = { status: "unavailable", created };
+    }
   }
 
   return { state, create };
