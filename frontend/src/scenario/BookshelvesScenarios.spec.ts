@@ -302,7 +302,7 @@ describe("Bookshelves", () => {
     expect(screen.queryByRole("list", { name: "Membres" })).toBeNull();
   });
 
-  it.skip("S9 Libris unavailable, creating a bookshelf", async () => {
+  it("S9 Libris unavailable, creating a bookshelf", async () => {
     // Given
     const screen = open(
       "/",
