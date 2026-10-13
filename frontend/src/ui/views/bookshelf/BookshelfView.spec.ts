@@ -6,11 +6,13 @@ import {
   type FindAnswer,
 } from "../../../application/BookshelvesApi";
 import { meApiKey } from "../../../application/MeApi";
+import { readersApiKey } from "../../../application/ReadersApi";
 import type { KnownReader } from "../../../domain/KnownReader";
 import type { Member } from "../../../domain/Member";
 import { bibliothequeDeLea, salon } from "../../../fixture/Books";
 import { FakeBookshelvesApi } from "../../../fixture/FakeBookshelvesApi";
 import { FakeMeApi } from "../../../fixture/FakeMeApi";
+import { FakeReadersApi } from "../../../fixture/FakeReadersApi";
 import { lea } from "../../../fixture/Readers";
 import { normalised } from "../../../fixture/normalised";
 import MemberRowSkeleton from "../../components/MemberRowSkeleton.vue";
@@ -44,6 +46,7 @@ const mountBookshelfView = (find: FindAnswer | Error) =>
       provide: {
         [meApiKey]: new FakeMeApi(lea),
         [bookshelvesApiKey]: new FakeBookshelvesApi({ memberships: [], find }),
+        [readersApiKey]: new FakeReadersApi([]),
       },
     },
   });

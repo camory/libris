@@ -3,6 +3,7 @@ import { computed, inject, ref, watch } from "vue";
 import { useI18n } from "vue-i18n";
 import { bookshelvesApiKey } from "../../../application/BookshelvesApi";
 import { meApiKey } from "../../../application/MeApi";
+import { readersApiKey } from "../../../application/ReadersApi";
 import { useFindBookshelf } from "../../../application/useFindBookshelf";
 import { membersInOrder } from "../../../domain/Member";
 import type { Reader } from "../../../domain/Reader";
@@ -18,7 +19,8 @@ const reader = ref<Reader>();
 
 const meApi = inject(meApiKey)!;
 const bookshelvesApi = inject(bookshelvesApiKey)!;
-const { state, find } = useFindBookshelf(bookshelvesApi);
+const readersApi = inject(readersApiKey)!;
+const { state, find } = useFindBookshelf(bookshelvesApi, readersApi);
 
 const members = computed(() =>
   reader.value && state.value.status === "found"
@@ -40,11 +42,9 @@ const failure = computed(() => {
 meApi.currentReader().then((current) => {
   reader.value = current;
 });
-watch(
-  () => props.id,
-  (id) => void find(id),
-  { immediate: true },
-);
+watch([() => props.id, reader], ([id, current]) => {
+  if (current) void find(id, current.id);
+});
 </script>
 
 <template>
