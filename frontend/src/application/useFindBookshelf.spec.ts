@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+import type { FindAnswer } from "./BookshelvesApi";
 import type { Bookshelf } from "../domain/Bookshelf";
 import type { Member } from "../domain/Member";
 import { FakeBookshelvesApi } from "../fixture/FakeBookshelvesApi";
@@ -26,7 +27,25 @@ describe("useFindBookshelf", () => {
       members: [lea, marc],
     });
   });
+
+  it("reads another problem as no answer", async () => {
+    // Given
+    const { state, find } = findAnswering({
+      outcome: "problem",
+      type: "/problems/conflict",
+    });
+
+    // When
+    await find(salon.id);
+
+    // Then
+    expect(state.value).toEqual({ status: "unavailable" });
+  });
 });
+
+function findAnswering(find: FindAnswer | Error) {
+  return useFindBookshelf(new FakeBookshelvesApi({ memberships: [], find }));
+}
 
 const salon: Bookshelf = {
   id: "1c2f3e4d-5a6b-4c7d-9e8f-0a1b2c3d4e5f",

@@ -5,7 +5,8 @@ import type { BookshelvesApi } from "./BookshelvesApi";
 
 export type FoundBookshelfState =
   | { status: "loading" }
-  | { status: "found"; bookshelf: Bookshelf; members: Member[] };
+  | { status: "found"; bookshelf: Bookshelf; members: Member[] }
+  | { status: "unavailable" };
 
 export function useFindBookshelf(bookshelvesApi: BookshelvesApi): {
   state: Ref<FoundBookshelfState>;
@@ -21,6 +22,7 @@ export function useFindBookshelf(bookshelvesApi: BookshelvesApi): {
         bookshelf: answer.bookshelf,
         members: answer.members,
       };
+    else state.value = { status: "unavailable" };
   }
 
   return { state, find };
