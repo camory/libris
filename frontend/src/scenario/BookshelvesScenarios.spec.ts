@@ -158,7 +158,7 @@ describe("Bookshelves", () => {
     ]);
   });
 
-  it.skip("S4 A member opens a bookshelf, a reader who does not belong to it", async () => {
+  it("S4 A member opens a bookshelf, a reader who does not belong to it", async () => {
     // Given
     const libris = new FakeBookshelvesApi({
       memberships: [ownerOf(lea.defaultBookshelf)],
