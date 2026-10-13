@@ -47,11 +47,19 @@ void list();
       <h2 class="pb-2 text-label text-muted">
         {{ t("home.bookshelves.label") }}
       </h2>
+      <p
+        v-if="state.status === 'unavailable'"
+        class="flex items-start gap-2 text-body text-danger"
+      >
+        <IconAlert />
+        <span>{{ t("home.bookshelves.error") }}</span>
+      </p>
       <div
-        v-if="memberships"
-        class="overflow-hidden rounded-[14px] border border-border bg-surface"
+        v-else
+        class="divide-y divide-border overflow-hidden rounded-[14px] border border-border bg-surface"
       >
         <ul
+          v-if="memberships"
           :aria-label="t('home.bookshelves.label')"
           class="divide-y divide-border"
         >
@@ -64,19 +72,9 @@ void list();
             />
           </li>
         </ul>
-      </div>
-      <p
-        v-else-if="state.status === 'unavailable'"
-        class="flex items-start gap-2 text-body text-danger"
-      >
-        <IconAlert />
-        <span>{{ t("home.bookshelves.error") }}</span>
-      </p>
-      <div
-        v-else
-        class="divide-y divide-border overflow-hidden rounded-[14px] border border-border bg-surface"
-      >
-        <BookshelfRowSkeleton v-for="row in 3" :key="row" />
+        <template v-else>
+          <BookshelfRowSkeleton v-for="row in 3" :key="row" />
+        </template>
       </div>
     </section>
 
