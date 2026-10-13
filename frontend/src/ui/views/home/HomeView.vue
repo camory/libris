@@ -11,9 +11,11 @@ import type { Reader } from "../../../domain/Reader";
 import BookshelfRow from "../../components/BookshelfRow.vue";
 import BookshelfRowSkeleton from "../../components/BookshelfRowSkeleton.vue";
 import IconAlert from "../../components/icons/IconAlert.vue";
+import NewBookshelfRow from "../../components/NewBookshelfRow.vue";
 
 const { t, locale } = useI18n();
 const reader = ref<Reader>();
+const naming = ref(false);
 
 const meApi = inject(meApiKey)!;
 const revision = inject(revisionKey)!;
@@ -50,10 +52,11 @@ void list();
           {{ t("home.bookshelves.label") }}
         </h2>
         <button
-          v-if="memberships"
+          v-if="memberships && !naming"
           type="button"
           :aria-label="t('home.bookshelves.new')"
           class="flex size-11 items-center justify-center rounded-[10px] text-accent"
+          @click="naming = true"
         >
           <CirclePlus />
         </button>
@@ -81,6 +84,9 @@ void list();
                 membership.bookshelf.id === reader?.defaultBookshelf.id
               "
             />
+          </li>
+          <li v-if="naming">
+            <NewBookshelfRow :creating="false" />
           </li>
         </ul>
         <template v-else>

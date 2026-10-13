@@ -1,4 +1,4 @@
-import { within } from "@testing-library/dom";
+import { fireEvent, within } from "@testing-library/dom";
 import { flushPromises, mount } from "@vue/test-utils";
 import { describe, expect, it } from "vitest";
 import { bookshelvesApiKey } from "../../../application/BookshelvesApi";
@@ -158,6 +158,29 @@ describe("HomeView", () => {
 
     // Then
     expect([before, offersNew(wrapper)]).toEqual([false, true]);
+  });
+
+  it("opens the form as the list's last row, the plus gone", async () => {
+    // Given
+    const wrapper = mountHomeView(chloe, [
+      { bookshelf: salon, role: "VIEWER" },
+    ]);
+    await flushPromises();
+    const screen = within(wrapper.element as HTMLElement);
+
+    // When
+    await fireEvent.click(
+      screen.getByRole("button", { name: "Nouvelle bibliothèque" }),
+    );
+
+    // Then
+    const last = within(screen.getByRole("list", { name: "Mes bibliothèques" }))
+      .getAllByRole("listitem")
+      .at(-1)!;
+    expect(
+      within(last).queryByRole("textbox", { name: "Nom de la bibliothèque" }),
+    ).not.toBeNull();
+    expect(offersNew(wrapper)).toBe(false);
   });
 
   function seen(wrapper: ReturnType<typeof mountHomeView>) {
