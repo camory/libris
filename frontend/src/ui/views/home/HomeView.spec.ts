@@ -1,21 +1,32 @@
 import { within } from "@testing-library/dom";
 import { flushPromises, mount } from "@vue/test-utils";
 import { describe, expect, it } from "vitest";
+import { bookshelvesApiKey } from "../../../application/BookshelvesApi";
 import { meApiKey } from "../../../application/MeApi";
 import { revisionKey } from "../../../application/Revision";
-import { FakeMeApi } from "../../../fixture/FakeMeApi";
+import type { Bookshelf } from "../../../domain/Bookshelf";
+import type { Membership } from "../../../domain/Membership";
 import type { Reader } from "../../../domain/Reader";
+import { salon } from "../../../fixture/Books";
+import { FakeBookshelvesApi } from "../../../fixture/FakeBookshelvesApi";
+import { FakeMeApi } from "../../../fixture/FakeMeApi";
 import { chloe } from "../../../fixture/Readers";
 import { createLibrisI18n } from "../../i18n";
 import { createLibrisRouter } from "../../router";
 import HomeView from "./HomeView.vue";
 
-const mountHomeView = (reader: Reader) =>
+const etagere: Bookshelf = {
+  id: "2d3a4f5e-6b7c-4d8e-8f9a-1b2c3d4e5f60",
+  name: "Étagère",
+};
+
+const mountHomeView = (reader: Reader, memberships: Membership[] = []) =>
   mount(HomeView, {
     global: {
       plugins: [createLibrisI18n(), createLibrisRouter()],
       provide: {
         [meApiKey]: new FakeMeApi(reader),
+        [bookshelvesApiKey]: new FakeBookshelvesApi({ memberships }),
         [revisionKey]: "sha-abc1234",
       },
     },
@@ -62,4 +73,32 @@ describe("HomeView", () => {
       Node.DOCUMENT_POSITION_FOLLOWING,
     );
   });
+
+  it("lists the reader's bookshelves under Mes bibliothèques, the default first", async () => {
+    // Given
+    const wrapper = mountHomeView(chloe, [
+      { bookshelf: salon, role: "VIEWER" },
+      { bookshelf: etagere, role: "OWNER" },
+      { bookshelf: chloe.defaultBookshelf, role: "OWNER" },
+    ]);
+
+    // When
+    await flushPromises();
+
+    // Then
+    const screen = within(wrapper.element as HTMLElement);
+    expect(
+      within(screen.getByRole("list", { name: "Mes bibliothèques" }))
+        .getAllByRole("listitem")
+        .map(normalised),
+    ).toEqual([
+      "Bibliothèque de Chloé propriétaire · par défaut",
+      "Étagère propriétaire",
+      "Salon invité",
+    ]);
+  });
+
+  function normalised(element: Element) {
+    return element.textContent?.replace(/\s+/g, " ").trim() ?? "";
+  }
 });

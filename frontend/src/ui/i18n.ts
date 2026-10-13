@@ -5,6 +5,7 @@ const fr = {
     title: "Libris",
     greeting: "Bonjour {name}",
     bookshelves: {
+      label: "Mes bibliothèques",
       role: {
         OWNER: "propriétaire",
         VIEWER: "invité",
