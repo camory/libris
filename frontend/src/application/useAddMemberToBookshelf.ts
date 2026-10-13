@@ -23,6 +23,8 @@ export function useAddMemberToBookshelf(bookshelvesApi: BookshelvesApi): {
     readerId: string,
     role: MembershipRole,
   ) {
+    const { added } = state.value;
+    state.value = { status: "adding", added };
     const answer = await bookshelvesApi.addMember(bookshelfId, readerId, role);
     if (answer.outcome === "added")
       state.value = { status: "added", added: [answer.member] };

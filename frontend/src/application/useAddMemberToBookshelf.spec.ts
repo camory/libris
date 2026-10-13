@@ -18,6 +18,17 @@ describe("useAddMemberToBookshelf", () => {
     expect(before).toEqual({ status: "ready", added: [] });
     expect(state.value).toEqual({ status: "added", added: [owner(hugo)] });
   });
+
+  it("is adding while Libris answers", () => {
+    // Given
+    const { state, add } = useAddMemberToBookshelf(addingHugoToSalon());
+
+    // When
+    void add(salon.id, hugo.id, "OWNER");
+
+    // Then
+    expect(state.value).toEqual({ status: "adding", added: [] });
+  });
 });
 
 function addingHugoToSalon() {
