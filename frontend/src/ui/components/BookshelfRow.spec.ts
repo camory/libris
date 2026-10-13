@@ -2,6 +2,7 @@ import { mount } from "@vue/test-utils";
 import { describe, expect, it } from "vitest";
 import type { Membership } from "../../domain/Membership";
 import { salon } from "../../fixture/Books";
+import { normalised } from "../../fixture/normalised";
 import { createLibrisI18n } from "../i18n";
 import BookshelfRow from "./BookshelfRow.vue";
 
@@ -35,9 +36,5 @@ describe("BookshelfRow", () => {
       props: { membership, isDefault },
       global: { plugins: [createLibrisI18n()] },
     }).element;
-  }
-
-  function normalised(element: Element) {
-    return element.textContent?.replace(/\s+/g, " ").trim() ?? "";
   }
 });

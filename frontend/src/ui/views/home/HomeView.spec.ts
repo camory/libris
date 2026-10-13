@@ -11,6 +11,7 @@ import { salon } from "../../../fixture/Books";
 import { FakeBookshelvesApi } from "../../../fixture/FakeBookshelvesApi";
 import { FakeMeApi } from "../../../fixture/FakeMeApi";
 import { chloe } from "../../../fixture/Readers";
+import { normalised } from "../../../fixture/normalised";
 import BookshelfRowSkeleton from "../../components/BookshelfRowSkeleton.vue";
 import { createLibrisI18n } from "../../i18n";
 import { createLibrisRouter } from "../../router";
@@ -144,10 +145,6 @@ describe("HomeView", () => {
     ).toBeNull();
     expect(wrapper.findAllComponents(BookshelfRowSkeleton)).toHaveLength(0);
   });
-
-  function normalised(element: Element) {
-    return element.textContent?.replace(/\s+/g, " ").trim() ?? "";
-  }
 
   function seen(wrapper: ReturnType<typeof mountHomeView>) {
     const screen = within(wrapper.element as HTMLElement);
