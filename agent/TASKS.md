@@ -156,9 +156,8 @@ longer says.
       the plus gone meanwhile; *Création en cours…* while it runs, then the
       new bookshelf among the rows, the field's row gone, the plus back
       (U03, U04, U05, U08). Lucide arrives with its first icons,
-      `circle-plus` and `check`; the PR body proposes the spec's U03, U04
-      and U07 amendments. Its client tested against `contracteer mock`
-      (D07). Realises S2; un-skips the frontend test of S2.
+      `circle-plus` and `check`. Its client tested against `contracteer
+      mock` (D07). Realises S2; un-skips the frontend test of S2.
 
 - [ ] T081 Frontend: a name Libris refuses, or no answer.
       A name taken reads *Vous avez déjà une bibliothèque de ce nom.* under
@@ -178,8 +177,7 @@ longer says.
       comes; *Bibliothèque introuvable.* alone for no such bookshelf or an
       id that is not one; S9's loading sentence when Libris does not answer
       (U03, U05, U07, U08). Unit test of the order. Its client tested
-      against `contracteer mock` (D07); the PR body proposes the spec's U03
-      header with no hint.
+      against `contracteer mock` (D07).
       Realises S4 and S9's opening case; un-skips the frontend tests of S4,
       both cases, and of S9, opening a bookshelf.
 
@@ -206,8 +204,7 @@ longer says.
       card's next add puts the copy there. No answer reads S9's sentence in
       the tapped row, the stars as they were; a refusal reads as no answer
       (U03, U04, U05, U07, U08). Its client tested against `contracteer
-      mock` (D07); the PR body proposes the spec's U03 row with an icon
-      button. Realises S7, S8 and S9's default case; un-skips the frontend
+      mock` (D07). Realises S7, S8 and S9's default case; un-skips the frontend
       tests of S7, S8 and of S9, choosing the default.
 
 *Done (Tophe, on the Pixel, from the installed app on staging): create
