@@ -309,3 +309,35 @@ Format:
 - Deviations from the brief: the guard of step 4's subclass names its
   answers `inTurn`: a private `answers` clashes with the base class's.
 - Left over: the bookshelf's screen (T082, T083), the star (T084).
+
+## 2026-10-13 — T082 A member opens a bookshelf — done
+- Did: a home row links its name and role to `/bibliotheques/{id}` and ends
+  with a chevron; `BookshelfView` shows the name and the sorted *Membres*,
+  skeletons while it comes, or one sentence for no such bookshelf or no answer.
+- Decided: `find` shares the client's `problems` map, which gains `404`;
+  `useFindBookshelf`'s state is `FoundBookshelfState`, `stateOf` switching
+  on `type`.
+- Decided: `MemberRow` draws `{name} · {role}` in a `muted` `<p>`, the name
+  in a `text` span; the view picks its failure sentence through a `computed`,
+  `failure`.
+- Decided: *Accueil* is a `RouterLink` `custom` slot setting `aria-current`
+  and `text-accent` from `isActive`; the other two tabs keep
+  `exact-active-class`.
+- Decided: the chevron sits outside the link, `text-muted`, after a
+  `flex-1` link holding the row's padding, so T084's star fits between.
+- Deviations from the brief: none.
+- Handoff: the first run did steps 1 to 18, the three scenarios read red
+  first and put back skipped; this run did steps 19 to 23.
+- Left over: adding a member (T083), the star (T084), the other S9 cases.
+
+## 2026-10-13 — T082 A member opens a bookshelf — reworked
+- Did: `FetchBookshelvesApi.find` encodes the id into its path, so an id
+  the router decoded into `/`, `?` or `#` reaches the operation and reads
+  *Bibliothèque introuvable.*; a client case for an id holding a slash.
+- Decided: the reviewer's verdict of 2026-10-13 (blocking: the encoding;
+  suggestion: the `409` in the `problemOf` gotcha); it amended nothing.
+  Neither `.` nor `..` gets a case: `fetch` normalises them whatever the
+  encoding, and the browser normalises them in the address before the
+  router, so they never reach the view (written in the gotchas).
+- Deviations from the brief: none.
+- Left over: nothing.

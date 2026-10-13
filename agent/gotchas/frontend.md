@@ -49,9 +49,12 @@ Read whole by a run that changes `frontend/`, after `every-run.md`.
   `v0.8.0` none does, and the mock answers the right status and
   `application/problem+json` with a random `type`, `title` and `status` in
   the body, so an adapter spec asserts the outcome of the HTTP status,
-  never the body's `type`. `FetchIsbnApi` and `FetchBookshelfApi` hand a
+  never the body's `type`. The generated `200` of `GET
+  /bookshelves/{id}` held one or two members in 20 tries, never none
+  (T082). `FetchIsbnApi`, `FetchBookshelfApi` and `FetchBookshelvesApi` hand a
   non-2xx answer to `infra/api/problemOf`, which maps the statuses the
-  contract names (400, 404, and 503 for the lookup) to the `/problems/…`
+  contract names (400, 404, 409 for the creation, and 503 for the lookup)
+  to the `/problems/…`
   slugs only when the `Content-Type` is `application/problem+json`, and
   reads the body's `type` otherwise: a proxy's `text/plain` 404 or 503 then
   rejects on `response.json()`, as it did before the mapping, and is never
@@ -236,7 +239,12 @@ Read whole by a run that changes `frontend/`, after `every-run.md`.
   a link to a path no route declares is never current, whatever the
   location, so an active-tab case needs the route first. A test reads it
   with `getByRole("link", { current: "page" })`, a template styles it with
-  `exact-active-class`.
+  `exact-active-class`. *Accueil* is the exception since T082: `/` is a
+  component-less parent of `""` (`HomeView`) and `bibliotheques/:id`, and
+  the tab is a `RouterLink` `custom` slot writing `aria-current` and
+  `text-accent` from `isActive`, so every screen nested under `/` marks it
+  while `/isbn` and `/catalogue` do not. A screen below the home page goes
+  under that parent's `children`, or *Accueil* stops being current there.
 - Two Tailwind utilities for the same property on the same element are settled
   by the order Tailwind emits them, not by the order in the attribute. Where a
   state must win — the active tab's colour and weight over the bar's — put the
@@ -251,6 +259,13 @@ Read whole by a run that changes `frontend/`, after `every-run.md`.
   Pixel 2026-09-19). A view that fills the screen writes `min-h-full` on its
   `<main>`, never `h-full`, or content longer than the viewport is clipped
   instead of scrolling.
+- vue-router decodes a route parameter (`/bibliotheques/a%2Fb` gives `id`
+  `"a/b"`), so a client that puts an id read from the address into a path
+  writes `encodeURIComponent(id)`, or `/`, `?` and `#` reach a path the
+  contract does not declare, where the mock answers an empty `404` and
+  `problemOf` rejects. No encoding sends `.` or `..` as a segment: `fetch`
+  normalises them, `%2E` and `%2e%2e` included; the browser does the same
+  to the address before the router reads it, so neither reaches a view.
 - Mounting a component that holds a `RouterLink` needs the route settled first:
   `await router.push(path)` and `await router.isReady()` before `mount`, then
   `window.history.replaceState(null, "", "/")` in an `afterEach`, since
@@ -322,6 +337,13 @@ Read whole by a run that changes `frontend/`, after `every-run.md`.
   `createLibrisApp`: a component spec mounted alone gets no context and
   draws Lucide's default stroke, 2. A `:stroke-width` on the icon beats the
   context (`NewBookshelfRow`'s check, 3).
+- A home row is a stretched link: `BookshelfRow`'s `RouterLink` wraps the
+  name and role, and its `after:absolute after:inset-0` covers the whole
+  `relative` row, chevron included, so a tap anywhere opens the bookshelf.
+  A control added to the row (the star) sits outside the link and needs
+  `relative` to be above that cover, or the tap opens the bookshelf. jsdom
+  neither lays out nor hit-tests, so no spec sees the cover: it is checked
+  on the running app.
 - A spec's subclass of a fixture fake (`LibrisNotAnswering`,
   `LibrisAnsweringInTurn`) cannot declare a private member of the same name
   as one of the base's: `FakeBookshelvesApi` holds a private `answers`, and

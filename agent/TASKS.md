@@ -168,7 +168,7 @@ longer says.
       Realises S3 on the frontend and S9's creating case; un-skips the
       frontend tests of S3 and of S9, creating a bookshelf.
 
-- [ ] T082 Frontend: a member opens a bookshelf.
+- [x] T082 Frontend: a member opens a bookshelf.
       A home page row gains its chevron and leads to `/bibliotheques/{id}`,
       the *Accueil* tab shown: the bookshelf's name as the title, no hint,
       then *Membres*, a row per member, the owners first, then the viewers,

@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { ChevronRight } from "@lucide/vue";
 import { computed } from "vue";
 import { useI18n } from "vue-i18n";
 import type { Membership } from "../../domain/Membership";
@@ -14,9 +15,15 @@ const role = computed(() => {
 </script>
 
 <template>
-  <div class="flex flex-col gap-1 p-3.5">
-    <p class="text-row-title">{{ membership.bookshelf.name }}</p>
-    {{ " " }}
-    <p class="text-body text-muted">{{ role }}</p>
+  <div class="relative flex items-center">
+    <RouterLink
+      :to="`/bibliotheques/${membership.bookshelf.id}`"
+      class="flex min-w-0 flex-1 flex-col gap-1 p-3.5 after:absolute after:inset-0"
+    >
+      <p class="text-row-title">{{ membership.bookshelf.name }}</p>
+      {{ " " }}
+      <p class="text-body text-muted">{{ role }}</p>
+    </RouterLink>
+    <ChevronRight class="mr-3.5 shrink-0 text-muted" />
   </div>
 </template>

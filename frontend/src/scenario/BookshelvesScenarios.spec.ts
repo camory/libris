@@ -137,7 +137,7 @@ describe("Bookshelves", () => {
     ]);
   });
 
-  it.skip("S4 A member opens a bookshelf", async () => {
+  it("S4 A member opens a bookshelf", async () => {
     // Given
     const libris = librisHolds(
       salon,
@@ -158,7 +158,7 @@ describe("Bookshelves", () => {
     ]);
   });
 
-  it.skip("S4 A member opens a bookshelf, a reader who does not belong to it", async () => {
+  it("S4 A member opens a bookshelf, a reader who does not belong to it", async () => {
     // Given
     const libris = new FakeBookshelvesApi({
       memberships: [ownerOf(lea.defaultBookshelf)],
@@ -284,7 +284,7 @@ describe("Bookshelves", () => {
     ).toBeNull();
   });
 
-  it.skip("S9 Libris unavailable, opening a bookshelf", async () => {
+  it("S9 Libris unavailable, opening a bookshelf", async () => {
     // Given
     const libris = new FakeBookshelvesApi({
       memberships: [ownerOf(lea.defaultBookshelf)],

@@ -19,8 +19,19 @@ interface BookshelfResponse {
   name: string;
 }
 
+interface MemberResponse {
+  id: string;
+  displayName: string;
+  role: MembershipRole;
+}
+
+interface BookshelfWithMembersResponse extends BookshelfResponse {
+  members: MemberResponse[];
+}
+
 const problems = new Map([
   [400, "/problems/validation"],
+  [404, "/problems/not-found"],
   [409, "/problems/conflict"],
 ]);
 
@@ -61,8 +72,21 @@ export class FetchBookshelvesApi implements BookshelvesApi {
     return problemOf(response, problems);
   }
 
-  find(): Promise<FindAnswer> {
-    return Promise.reject(new Error("find is not implemented"));
+  async find(id: string): Promise<FindAnswer> {
+    const response = await fetch(
+      `${this.baseUrl}/api/v1/bookshelves/${encodeURIComponent(id)}`,
+      { headers: { Accept: "application/json, application/problem+json" } },
+    );
+    if (response.status !== 200) return problemOf(response, problems);
+    const body = (await response.json()) as BookshelfWithMembersResponse;
+    return {
+      outcome: "found",
+      bookshelf: { id: body.id, name: body.name },
+      members: body.members.map((member) => ({
+        reader: { id: member.id, displayName: member.displayName },
+        role: member.role,
+      })),
+    };
   }
 
   addMember(): Promise<AddMemberAnswer> {

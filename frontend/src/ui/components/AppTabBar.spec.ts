@@ -1,6 +1,7 @@
 import { within } from "@testing-library/dom";
 import { mount } from "@vue/test-utils";
 import { afterEach, describe, expect, it } from "vitest";
+import { salon } from "../../fixture/Books";
 import { createLibrisI18n } from "../i18n";
 import { createLibrisRouter } from "../router";
 import AppTabBar from "./AppTabBar.vue";
@@ -33,6 +34,16 @@ describe("AppTabBar", () => {
   it("marks Accueil as the screen shown at the root", async () => {
     // When
     const { screen } = await open("/");
+
+    // Then
+    expect(screen.getByRole("link", { current: "page" })).toBe(
+      screen.getByRole("link", { name: "Accueil" }),
+    );
+  });
+
+  it("marks Accueil as the screen shown on a bookshelf", async () => {
+    // When
+    const { screen } = await open(`/bibliotheques/${salon.id}`);
 
     // Then
     expect(screen.getByRole("link", { current: "page" })).toBe(

@@ -12,13 +12,17 @@ const { t } = useI18n();
     class="border-t border-border bg-surface pb-[env(safe-area-inset-bottom)] text-muted"
   >
     <div class="mx-auto grid w-full max-w-120 grid-cols-3">
-      <RouterLink
-        to="/"
-        :aria-label="t('tabs.home')"
-        class="flex h-12 items-center justify-center"
-        exact-active-class="text-accent"
-      >
-        <IconHome class="size-8" />
+      <RouterLink v-slot="{ href, navigate, isActive }" to="/" custom>
+        <a
+          :href="href"
+          :aria-label="t('tabs.home')"
+          :aria-current="isActive ? 'page' : undefined"
+          class="flex h-12 items-center justify-center"
+          :class="{ 'text-accent': isActive }"
+          @click="navigate"
+        >
+          <IconHome class="size-8" />
+        </a>
       </RouterLink>
       <div class="flex h-12 items-center justify-center">
         <RouterLink

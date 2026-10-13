@@ -103,4 +103,66 @@ describe("FetchBookshelvesApi", () => {
       "X-Requested-With": "XMLHttpRequest",
     });
   });
+
+  it("finds the bookshelf with its members", async () => {
+    // Given
+    const api = new FetchBookshelvesApi(inject("mockBaseUrl"));
+
+    // When
+    const answer = await api.find("1c2f3e4d-5a6b-4c7d-9e8f-0a1b2c3d4e5f");
+
+    // Then
+    expect(answer).toEqual({
+      outcome: "found",
+      bookshelf: { id: expect.any(String), name: expect.any(String) },
+      members: expect.any(Array),
+    });
+    const members = answer.outcome === "found" ? answer.members : [];
+    expect(members.length).toBeGreaterThan(0);
+    for (const member of members) {
+      expect(member).toEqual({
+        reader: { id: expect.any(String), displayName: expect.any(String) },
+        role: expect.stringMatching(/^(OWNER|VIEWER)$/),
+      });
+    }
+  });
+
+  it("answers a problem when the reader belongs to no such bookshelf", async () => {
+    // Given
+    const api = new FetchBookshelvesApi(inject("mockBaseUrl"));
+
+    // When
+    const answer = await api.find("9e8d7c6b-5a4f-4e3d-8c2b-1a0f9e8d7c6b");
+
+    // Then
+    expect(answer).toEqual({ outcome: "problem", type: "/problems/not-found" });
+  });
+
+  it("answers a problem when the id is not one", async () => {
+    // Given
+    const api = new FetchBookshelvesApi(inject("mockBaseUrl"));
+
+    // When
+    const answer = await api.find("not-a-uuid");
+
+    // Then
+    expect(answer).toEqual({
+      outcome: "problem",
+      type: "/problems/validation",
+    });
+  });
+
+  it("answers a problem when the id holds a slash", async () => {
+    // Given
+    const api = new FetchBookshelvesApi(inject("mockBaseUrl"));
+
+    // When
+    const answer = await api.find("a/b");
+
+    // Then
+    expect(answer).toEqual({
+      outcome: "problem",
+      type: "/problems/validation",
+    });
+  });
 });

@@ -23,6 +23,19 @@ const fr = {
       },
     },
   },
+  bookshelf: {
+    notFound: "Bibliothèque introuvable.",
+    error: "Erreur lors du chargement, veuillez réessayer plus tard.",
+    members: {
+      label: "Membres",
+      member: "{name} · {role}",
+      you: "Vous",
+      role: {
+        OWNER: "propriétaire",
+        VIEWER: "invité",
+      },
+    },
+  },
   isbn: {
     title: "Ajouter un ouvrage",
     hint: "Scannez le code-barres ou saisissez l'ISBN.",
