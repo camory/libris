@@ -310,11 +310,22 @@ Format:
   answers `inTurn`: a private `answers` clashes with the base class's.
 - Left over: the bookshelf's screen (T082, T083), the star (T084).
 
-## 2026-10-13 — T082 A member opens a bookshelf — handoff
-- Done: steps 1 to 18, one commit each; the three scenarios were un-skipped first and read red (no heading *Salon*, no *Bibliothèque introuvable.*, no loading sentence), then put back skipped. Next: step 19.
-- Guard step 5: `find` reading `new Map([[404, …]])` without `400` read red, `type: "WzxY9rR1qW"` for `/problems/validation`; reverted.
-- Step 2 also read red under a lower-cased `<` order; reverted.
-- Decided: `find` shares the client's `problems` map, which gains `404`; `useFindBookshelf`'s state is `FoundBookshelfState`, and `stateOf` switches on `type`.
-- Decided: `MemberRow` draws `{name} · {role}` in a `muted` `<p>`, the name in a `text` span; the view picks the failure sentence through a `computed`, `failure`.
-- Decided: *Accueil* is a `RouterLink` `custom` slot setting `aria-current` and `text-accent` from `isActive`; the other two tabs keep `exact-active-class`.
-- Learned: the mock's generated `200` for `GET /bookshelves/{id}` held one or two members in 20 tries, never none.
+## 2026-10-13 — T082 A member opens a bookshelf — done
+- Did: a home row links its name and role to `/bibliotheques/{id}` and ends
+  with a chevron; `BookshelfView` shows the name and the sorted *Membres*,
+  skeletons while it comes, or one sentence for no such bookshelf or no answer.
+- Decided: `find` shares the client's `problems` map, which gains `404`;
+  `useFindBookshelf`'s state is `FoundBookshelfState`, `stateOf` switching
+  on `type`.
+- Decided: `MemberRow` draws `{name} · {role}` in a `muted` `<p>`, the name
+  in a `text` span; the view picks its failure sentence through a `computed`,
+  `failure`.
+- Decided: *Accueil* is a `RouterLink` `custom` slot setting `aria-current`
+  and `text-accent` from `isActive`; the other two tabs keep
+  `exact-active-class`.
+- Decided: the chevron sits outside the link, `text-muted`, after a
+  `flex-1` link holding the row's padding, so T084's star fits between.
+- Deviations from the brief: none.
+- Handoff: the first run did steps 1 to 18, the three scenarios read red
+  first and put back skipped; this run did steps 19 to 23.
+- Left over: adding a member (T083), the star (T084), the other S9 cases.

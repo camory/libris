@@ -49,7 +49,9 @@ Read whole by a run that changes `frontend/`, after `every-run.md`.
   `v0.8.0` none does, and the mock answers the right status and
   `application/problem+json` with a random `type`, `title` and `status` in
   the body, so an adapter spec asserts the outcome of the HTTP status,
-  never the body's `type`. `FetchIsbnApi` and `FetchBookshelfApi` hand a
+  never the body's `type`. The generated `200` of `GET
+  /bookshelves/{id}` held one or two members in 20 tries, never none
+  (T082). `FetchIsbnApi`, `FetchBookshelfApi` and `FetchBookshelvesApi` hand a
   non-2xx answer to `infra/api/problemOf`, which maps the statuses the
   contract names (400, 404, and 503 for the lookup) to the `/problems/…`
   slugs only when the `Content-Type` is `application/problem+json`, and
@@ -236,7 +238,12 @@ Read whole by a run that changes `frontend/`, after `every-run.md`.
   a link to a path no route declares is never current, whatever the
   location, so an active-tab case needs the route first. A test reads it
   with `getByRole("link", { current: "page" })`, a template styles it with
-  `exact-active-class`.
+  `exact-active-class`. *Accueil* is the exception since T082: `/` is a
+  component-less parent of `""` (`HomeView`) and `bibliotheques/:id`, and
+  the tab is a `RouterLink` `custom` slot writing `aria-current` and
+  `text-accent` from `isActive`, so every screen nested under `/` marks it
+  while `/isbn` and `/catalogue` do not. A screen below the home page goes
+  under that parent's `children`, or *Accueil* stops being current there.
 - Two Tailwind utilities for the same property on the same element are settled
   by the order Tailwind emits them, not by the order in the attribute. Where a
   state must win — the active tab's colour and weight over the bar's — put the
