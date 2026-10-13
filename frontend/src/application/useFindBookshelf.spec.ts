@@ -110,6 +110,32 @@ describe("useFindBookshelf", () => {
       readers: [leaToOthers, marcToOthers, hugo],
     });
   });
+
+  it("asks no reader for a viewer", async () => {
+    // Given
+    const { state, find } = useFindBookshelf(
+      new FakeBookshelvesApi({
+        memberships: [],
+        find: {
+          outcome: "found",
+          bookshelf: salon,
+          members: [viewer(leaToOthers), owner(marcToOthers)],
+        },
+      }),
+      new FakeReadersApi([leaToOthers, marcToOthers, hugo]),
+    );
+
+    // When
+    await find(salon.id, leaToOthers.id);
+
+    // Then
+    expect(state.value).toEqual({
+      status: "found",
+      bookshelf: salon,
+      members: [viewer(leaToOthers), owner(marcToOthers)],
+      readers: [],
+    });
+  });
 });
 
 function findAnswering(find: FindAnswer | Error) {

@@ -28,13 +28,23 @@ export function useFindBookshelf(
   async function find(id: string, readerId: string) {
     state.value = { status: "loading" };
     try {
-      state.value = stateOf(
-        await bookshelvesApi.find(id),
-        await readersApi.known(),
-      );
+      const answer = await bookshelvesApi.find(id);
+      state.value = stateOf(answer, await readersFor(answer, readerId));
     } catch {
       state.value = { status: "unavailable" };
     }
+  }
+
+  async function readersFor(
+    answer: FindAnswer,
+    readerId: string,
+  ): Promise<KnownReader[]> {
+    const owns =
+      answer.outcome === "found" &&
+      answer.members.some(
+        (member) => member.reader.id === readerId && member.role === "OWNER",
+      );
+    return owns ? readersApi.known() : [];
   }
 
   return { state, find };
