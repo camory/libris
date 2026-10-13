@@ -295,3 +295,17 @@ Format:
   skipped); this run did steps 14 to 18.
 - Left over: the refusals, the unavailable case and the form's `catch`
   (T081); the chevron and the row's link (T082); the star (T084).
+
+## 2026-10-13 — T081 A name Libris refuses, or no answer — done
+- Did: `useCreateBookshelf` answers `taken` for `/problems/conflict` and
+  `unavailable` for any other problem or no answer; `NewBookshelfRow` draws
+  the sentence of its `failure` under the field; `HomeView` hands it over.
+- Decided: the view reads the failure from the state through a `computed`,
+  `createFailure`, the row's prop being a literal union of its own.
+- Decided: the message is a `<p>` under the field's line, inside the row's
+  padding; the row's box became a column holding the field's line and it.
+- Decided: the view spec's four cases that open the form and type a name
+  share one helper, `nameNewBookshelf`, in its own `refactor` commit.
+- Deviations from the brief: the guard of step 4's subclass names its
+  answers `inTurn`: a private `answers` clashes with the base class's.
+- Left over: the bookshelf's screen (T082, T083), the star (T084).

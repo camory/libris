@@ -159,7 +159,7 @@ longer says.
       `circle-plus` and `check`. Its client tested against `contracteer
       mock` (D07). Realises S2; un-skips the frontend test of S2.
 
-- [ ] T081 Frontend: a name Libris refuses, or no answer.
+- [x] T081 Frontend: a name Libris refuses, or no answer.
       A name taken reads *Vous avez déjà une bibliothèque de ce nom.* under
       the field, in its row, the field keeping what was typed; no answer
       reads S9's creating sentence in the same place; in both the row stays
