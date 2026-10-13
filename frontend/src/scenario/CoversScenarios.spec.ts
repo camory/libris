@@ -87,11 +87,9 @@ describe("Covers", () => {
     // Then
     expect(coverImage(screen).getAttribute("src")).toBe(inventaire.url);
     expect(sourceName(screen)).toBe("inventaire.io");
-    expect(dots(screen).map((dot) => dot.getAttribute("aria-label"))).toEqual([
-      "Couverture inventaire.io",
-      "Couverture Open Library",
-      "Couverture BnF",
-    ]);
+    expect(dots(screen).map((dot) => dot.getAttribute("aria-label"))).toEqual(
+      ["Couverture inventaire.io", "Couverture Open Library", "Couverture BnF"],
+    );
     expect(dots(screen).map(isFilled)).toEqual([true, false, false]);
   });
 
@@ -133,10 +131,9 @@ describe("Covers", () => {
     // Then
     expect(coverImage(screen).getAttribute("src")).toBe(openLibrary.url);
     expect(sourceName(screen)).toBe("Open Library");
-    expect(dots(screen).map((dot) => dot.getAttribute("aria-label"))).toEqual([
-      "Couverture Open Library",
-      "Couverture BnF",
-    ]);
+    expect(dots(screen).map((dot) => dot.getAttribute("aria-label"))).toEqual(
+      ["Couverture Open Library", "Couverture BnF"],
+    );
   });
 
   it("S2 The card shows the first cover that loads, none loads", async () => {
@@ -153,9 +150,8 @@ describe("Covers", () => {
     await fails(coverImage(screen));
 
     // Then
-    expect(
-      screen.queryByRole("img", { name: "Couverture de Romance dawn" }),
-    ).toBeNull();
+    expect(screen.queryByRole("img", { name: "Couverture de Romance dawn" }))
+      .toBeNull();
     expect(dots(screen)).toEqual([]);
     expect(sourceName(screen)).toBeNull();
   });
@@ -230,9 +226,8 @@ describe("Covers", () => {
 
     // Then
     await screen.findByText("Romance dawn");
-    expect(
-      screen.queryByRole("img", { name: "Couverture de Romance dawn" }),
-    ).toBeNull();
+    expect(screen.queryByRole("img", { name: "Couverture de Romance dawn" }))
+      .toBeNull();
     expect(dots(screen)).toEqual([]);
   });
 
