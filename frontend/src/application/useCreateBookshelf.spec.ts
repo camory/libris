@@ -18,11 +18,31 @@ describe("useCreateBookshelf", () => {
     await create("Bibliothèque familiale");
 
     // Then
-    expect(before).toEqual({ status: "ready" });
+    expect(before).toEqual({ status: "ready", created: [] });
     expect(state.value).toEqual({
       status: "created",
-      membership: { bookshelf: bibliothequeFamiliale, role: "OWNER" },
+      created: [{ bookshelf: bibliothequeFamiliale, role: "OWNER" }],
     });
+  });
+
+  it("keeps every bookshelf it created", async () => {
+    // Given
+    const { state, create } = useCreateBookshelf(
+      new FakeBookshelvesApi({
+        memberships: [],
+        create: { outcome: "created", bookshelf: bibliothequeFamiliale },
+      }),
+    );
+    await create("Bibliothèque familiale");
+
+    // When
+    await create("Bibliothèque familiale");
+
+    // Then
+    expect(state.value.created).toEqual([
+      { bookshelf: bibliothequeFamiliale, role: "OWNER" },
+      { bookshelf: bibliothequeFamiliale, role: "OWNER" },
+    ]);
   });
 
   it("is creating until Libris answers", () => {
@@ -38,7 +58,7 @@ describe("useCreateBookshelf", () => {
     void create("Bibliothèque familiale");
 
     // Then
-    expect(state.value).toEqual({ status: "creating" });
+    expect(state.value).toEqual({ status: "creating", created: [] });
   });
 });
 

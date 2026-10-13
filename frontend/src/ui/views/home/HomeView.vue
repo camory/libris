@@ -7,10 +7,7 @@ import { meApiKey } from "../../../application/MeApi";
 import { revisionKey } from "../../../application/Revision";
 import { useCreateBookshelf } from "../../../application/useCreateBookshelf";
 import { useListReaderBookshelves } from "../../../application/useListReaderBookshelves";
-import {
-  membershipsInOrder,
-  type Membership,
-} from "../../../domain/Membership";
+import { membershipsInOrder } from "../../../domain/Membership";
 import type { Reader } from "../../../domain/Reader";
 import BookshelfRow from "../../components/BookshelfRow.vue";
 import BookshelfRowSkeleton from "../../components/BookshelfRowSkeleton.vue";
@@ -27,12 +24,11 @@ const bookshelvesApi = inject(bookshelvesApiKey)!;
 const { state, list } = useListReaderBookshelves(bookshelvesApi);
 const { state: createState, create: createBookshelf } =
   useCreateBookshelf(bookshelvesApi);
-const created = ref<Membership[]>([]);
 
 const memberships = computed(() =>
   reader.value && state.value.status === "listed"
     ? membershipsInOrder(
-        [...state.value.memberships, ...created.value],
+        [...state.value.memberships, ...createState.value.created],
         reader.value.defaultBookshelf.id,
         locale.value,
       )
@@ -41,10 +37,7 @@ const memberships = computed(() =>
 
 async function create(name: string) {
   await createBookshelf(name);
-  if (createState.value.status === "created") {
-    created.value.push(createState.value.membership);
-    naming.value = false;
-  }
+  if (createState.value.status === "created") naming.value = false;
 }
 
 meApi.currentReader().then((current) => {

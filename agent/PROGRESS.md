@@ -277,9 +277,10 @@ Format:
 - Did: the plus *Nouvelle bibliothèque* right of *Mes bibliothèques* opens
   `NewBookshelfRow` as the list's last row; *Créer* creates the bookshelf
   through `useCreateBookshelf`, and the answer joins the rows in S1's order.
-- Decided: the view keeps the memberships created on the page in a list of
-  its own and hands it to `membershipsInOrder` with the listed ones; the row
-  goes on `created` only, so a problem answer leaves the form as it is.
+- Decided: `useCreateBookshelf`'s state keeps every membership it created;
+  the view hands them to `membershipsInOrder` with the listed ones, and
+  closes the form only on `created`, so a problem answer leaves it as it is
+  (fix-up on Tophe's ask, in place of a list of the view's own).
 - Decided: the view spec's busy case runs over `LibrisNotAnswering`, a
   subclass of `FakeBookshelvesApi` declared in the spec, passed to
   `mountHomeView` as an optional last argument.

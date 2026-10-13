@@ -2,24 +2,25 @@ import { ref, type Ref } from "vue";
 import type { Membership } from "../domain/Membership";
 import type { BookshelvesApi } from "./BookshelvesApi";
 
-export type CreateState =
-  | { status: "ready" }
-  | { status: "creating" }
-  | { status: "created"; membership: Membership };
+export interface CreateState {
+  status: "ready" | "creating" | "created";
+  created: Membership[];
+}
 
 export function useCreateBookshelf(bookshelvesApi: BookshelvesApi): {
   state: Ref<CreateState>;
   create: (name: string) => Promise<void>;
 } {
-  const state = ref<CreateState>({ status: "ready" });
+  const state = ref<CreateState>({ status: "ready", created: [] });
 
   async function create(name: string) {
-    state.value = { status: "creating" };
+    const { created } = state.value;
+    state.value = { status: "creating", created };
     const answer = await bookshelvesApi.create(name);
     if (answer.outcome === "created")
       state.value = {
         status: "created",
-        membership: { bookshelf: answer.bookshelf, role: "OWNER" },
+        created: [...created, { bookshelf: answer.bookshelf, role: "OWNER" }],
       };
   }
 
