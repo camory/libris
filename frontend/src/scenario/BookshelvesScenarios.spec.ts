@@ -284,7 +284,7 @@ describe("Bookshelves", () => {
     ).toBeNull();
   });
 
-  it.skip("S9 Libris unavailable, opening a bookshelf", async () => {
+  it("S9 Libris unavailable, opening a bookshelf", async () => {
     // Given
     const libris = new FakeBookshelvesApi({
       memberships: [ownerOf(lea.defaultBookshelf)],
