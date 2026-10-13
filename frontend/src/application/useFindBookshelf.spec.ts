@@ -55,6 +55,20 @@ describe("useFindBookshelf", () => {
     // Then
     expect(state.value).toEqual({ status: "notFound" });
   });
+
+  it("reads an id that is not one as no such bookshelf", async () => {
+    // Given
+    const { state, find } = findAnswering({
+      outcome: "problem",
+      type: "/problems/validation",
+    });
+
+    // When
+    await find("not-a-uuid");
+
+    // Then
+    expect(state.value).toEqual({ status: "notFound" });
+  });
 });
 
 function findAnswering(find: FindAnswer | Error) {

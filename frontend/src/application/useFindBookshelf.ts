@@ -31,6 +31,7 @@ function stateOf(answer: FindAnswer): FoundBookshelfState {
     };
   switch (answer.type) {
     case "/problems/not-found":
+    case "/problems/validation":
       return { status: "notFound" };
     default:
       return { status: "unavailable" };
