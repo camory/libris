@@ -22,6 +22,20 @@ describe("useListReaderBookshelves", () => {
       memberships: [viewerOfSalon, ownerOfDefault],
     });
   });
+
+  it("is unavailable when Libris does not answer", async () => {
+    // Given
+    const { state, list } = useListReaderBookshelves(
+      new FakeBookshelvesApi({ memberships: new TypeError("Failed to fetch") }),
+    );
+
+    // When
+    const listed = list();
+
+    // Then
+    await expect(listed).resolves.toBeUndefined();
+    expect(state.value).toEqual({ status: "unavailable" });
+  });
 });
 
 const viewerOfSalon: Membership = {

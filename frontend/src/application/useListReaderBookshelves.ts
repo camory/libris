@@ -14,10 +14,14 @@ export function useListReaderBookshelves(bookshelvesApi: BookshelvesApi): {
   const state = ref<ReaderBookshelvesState>({ status: "loading" });
 
   async function list() {
-    state.value = {
-      status: "listed",
-      memberships: await bookshelvesApi.memberships(),
-    };
+    try {
+      state.value = {
+        status: "listed",
+        memberships: await bookshelvesApi.memberships(),
+      };
+    } catch {
+      state.value = { status: "unavailable" };
+    }
   }
 
   return { state, list };
