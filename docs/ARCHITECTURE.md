@@ -181,7 +181,7 @@ release it implements:
 Vue 3 with `<script setup>`, Vite, TypeScript strict, Vue Router, Pinia (only
 for the session and the offline catalogue cache), `vue-i18n` with the single
 locale `fr`, Vitest with Vue Test Utils. Tailwind CSS only, hand-written
-components, no UI library. Mobile first. Node latest LTS, pinned in
+components, no UI library; icons from Lucide, through `@lucide/vue`. Mobile first. Node latest LTS, pinned in
 `frontend/.node-version`.
 
 PWA via `vite-plugin-pwa` (Workbox): precached app shell, API GET responses

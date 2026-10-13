@@ -235,14 +235,19 @@ or a volume, the choice lives in the key (`role.MANGA.WRITER`,
 of words, so the catalogue reads as the spec's table and the component
 picks an entry and never branches.
 
-### U07 — Icons: hand-drawn, inline, no library
-An icon is an inline SVG on a 24 grid, stroke 1.8, round caps and joins,
-`currentColor`, no fill; 22 for the alert of a message and the bookshelf
-rows of a card (U06), 32 on the tab bar, 48 for an empty state (U05). Each is its own component under `ui/components/icons`, named
-by what it shows (`IconHome`, `IconBarcode`, `IconClose`, `IconAlert`,
-`IconBook`, `IconBooks`, three spines on a line, the third leaning, for the
-catalogue tab), drawn once and reused. No icon font, no icon package (D05:
-no UI library).
+### U07 — Icons: Lucide, inline
+An icon is a Lucide icon from `@lucide/vue`: an inline SVG on a 24 grid,
+round caps and joins, `currentColor`, stroke 1.8 set once for the whole
+app, and stroke 3 for the check of a form in a list (U04). It has no fill,
+except an icon's filled variant: the star and the crown, filled with
+`currentColor`. Sizes are 22 for the alert of a message and the bookshelf
+rows of a card (U06), 32 on the tab bar, 48 for an empty state (U05). A
+component imports the icon it shows under its Lucide name: `CirclePlus`,
+`Check`, `ChevronRight`, `ChevronDown`, `Star`, `Crown`. The hand-drawn
+icons under `ui/components/icons` (`IconHome`, `IconBarcode`, `IconClose`,
+`IconAlert`, `IconBook`, `IconBooks`, three spines on a line, the third
+leaning, for the catalogue tab) stay until a follow-up replaces each with
+its Lucide counterpart; none is added. No icon font.
 
 An icon next to a word is decoration: `aria-hidden`, the word carries the
 meaning. An icon alone is a button (U04) or a tab (U03) and carries its
