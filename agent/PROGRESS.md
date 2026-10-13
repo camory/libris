@@ -234,3 +234,11 @@ Format:
   the reader in its place; `ChooseDefaultBookshelfTest` stores Marc too; the
   gotcha on the fake's order goes.
 - Left over: the frontend's pin and home page (T079), the star (T084).
+
+## 2026-10-13 — T079 The home page lists the reader's bookshelves — handoff
+- Done: steps 1 to 7 (pin, `FetchBookshelvesApi.memberships`, the port in `LibrisPorts`, `membershipsInOrder`, `useListReaderBookshelves`). Start with step 8, `BookshelfRow.spec.ts`.
+- Scenarios first: S1 and S9's home page case were un-skipped before any unit test and read red (`Unable to find an element with the text: Mangas`, and the loading sentence), then put back skipped, uncommitted; they stay skipped until steps 16 and 17, the brief's guards.
+- Deviation: the client sends `Accept: application/json, application/problem+json`, the header every request carries, where the brief says `application/json`.
+- Deviation: step 6 keeps `state.value` before `list()` in the Given as `before` and asserts it in the Then, so the case keeps the Given/When/Then layout.
+- Step 5's mutations: the others sorted by plain `<` on the name, and by `<` on the lower-cased name, each red (`1 failed | 1 passed`), reverted.
+- The four other operations of `FetchBookshelvesApi` reject with an `Error` naming the operation, as the brief says.

@@ -80,7 +80,9 @@ Read whole by a run that changes `frontend/`, after `every-run.md`.
   the mock generates.
 - `npm run format` passes `--ignore-path ../.gitignore`, or Prettier
   rewrites `dist/` and `coverage/`; `prettier --check` cannot parse
-  `nginx.conf`.
+  `nginx.conf`. `npx prettier --write src` also rewrites `src/domain/Copy.ts`
+  and `src/ui/components/icons/IconBooks.vue`, which `main` holds unformatted:
+  format the files the task touches, by name.
 - `registerType: "prompt"` and `injectRegister: false` on the PWA plugin: no
   `registerSW.js` is emitted, the app registers `/sw.js` itself through
   `ServiceWorkerAppUpdate`, and Workbox writes the `SKIP_WAITING` message
