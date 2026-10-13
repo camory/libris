@@ -8,6 +8,7 @@ const fr = {
     bookshelves: {
       role: {
         OWNER: "propriétaire",
+        VIEWER: "invité",
       },
     },
   },

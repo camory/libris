@@ -14,6 +14,14 @@ describe("BookshelfRow", () => {
     expect(normalised(row)).toBe("Salon propriétaire");
   });
 
+  it("names a bookshelf the reader views over invité", () => {
+    // When
+    const row = show({ bookshelf: salon, role: "VIEWER" }, false);
+
+    // Then
+    expect(normalised(row)).toBe("Salon invité");
+  });
+
   function show(membership: Membership, isDefault: boolean) {
     return mount(BookshelfRow, {
       props: { membership, isDefault },

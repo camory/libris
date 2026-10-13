@@ -11,6 +11,8 @@ const { t } = useI18n();
   <div class="flex flex-col gap-1 p-3.5">
     <p class="text-row-title">{{ membership.bookshelf.name }}</p>
     {{ " " }}
-    <p class="text-body text-muted">{{ t("home.bookshelves.role.OWNER") }}</p>
+    <p class="text-body text-muted">
+      {{ t(`home.bookshelves.role.${membership.role}`) }}
+    </p>
   </div>
 </template>
