@@ -1,4 +1,9 @@
-import { fireEvent, within } from "@testing-library/dom";
+import {
+  fireEvent,
+  within,
+  type BoundFunctions,
+  type queries,
+} from "@testing-library/dom";
 import { flushPromises, mount } from "@vue/test-utils";
 import { describe, expect, it } from "vitest";
 import {
@@ -200,6 +205,45 @@ describe("BookshelfView", () => {
     ).toBeNull();
   });
 
+  it("shows the new member among the members, the form gone", async () => {
+    // Given
+    const wrapper = mountBookshelfView(
+      salonOwned,
+      [leaToOthers, marc, hugo],
+      hugo,
+    );
+    await flushPromises();
+    const screen = within(wrapper.element as HTMLElement);
+    await chooseHugo(screen);
+    await fireEvent.click(screen.getByRole("button", { name: "Propriétaire" }));
+
+    // When
+    await fireEvent.click(screen.getByRole("button", { name: "Ajouter" }));
+    await flushPromises();
+
+    // Then
+    expect(
+      within(screen.getByRole("list", { name: "Membres" }))
+        .getAllByRole("listitem")
+        .map(normalised),
+    ).toEqual(["Hugo · propriétaire", "Vous · propriétaire", "Marc · invité"]);
+    expect(screen.queryByRole("combobox")).toBeNull();
+    screen.getByRole("button", { name: "Ajouter un membre" });
+  });
+
+  async function chooseHugo(screen: Screen) {
+    await fireEvent.click(
+      screen.getByRole("button", { name: "Ajouter un membre" }),
+    );
+    const choice = screen.getByRole<HTMLSelectElement>("combobox", {
+      name: "Lecteur",
+    });
+    within(choice).getByRole<HTMLOptionElement>("option", {
+      name: "Hugo",
+    }).selected = true;
+    await fireEvent.change(choice);
+  }
+
   function seen(wrapper: ReturnType<typeof mountBookshelfView>) {
     const screen = within(wrapper.element as HTMLElement);
     return {
@@ -211,6 +255,8 @@ describe("BookshelfView", () => {
     };
   }
 });
+
+type Screen = BoundFunctions<typeof queries>;
 
 function owner(reader: KnownReader): Member {
   return { reader, role: "OWNER" };

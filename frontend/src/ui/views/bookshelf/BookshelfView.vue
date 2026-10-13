@@ -5,8 +5,14 @@ import { useI18n } from "vue-i18n";
 import { bookshelvesApiKey } from "../../../application/BookshelvesApi";
 import { meApiKey } from "../../../application/MeApi";
 import { readersApiKey } from "../../../application/ReadersApi";
+import { useAddMemberToBookshelf } from "../../../application/useAddMemberToBookshelf";
 import { useFindBookshelf } from "../../../application/useFindBookshelf";
-import { membersInOrder, nonMembersInOrder } from "../../../domain/Member";
+import {
+  membersInOrder,
+  nonMembersInOrder,
+  type Member,
+} from "../../../domain/Member";
+import type { MembershipRole } from "../../../domain/Membership";
 import type { Reader } from "../../../domain/Reader";
 import IconAlert from "../../components/icons/IconAlert.vue";
 import MemberRow from "../../components/MemberRow.vue";
@@ -24,16 +30,24 @@ const meApi = inject(meApiKey)!;
 const bookshelvesApi = inject(bookshelvesApiKey)!;
 const readersApi = inject(readersApiKey)!;
 const { state, find } = useFindBookshelf(bookshelvesApi, readersApi);
+const { state: addState, add: addMember } =
+  useAddMemberToBookshelf(bookshelvesApi);
+
+const everyMember = computed<Member[]>(() =>
+  state.value.status === "found"
+    ? [...state.value.members, ...addState.value.added]
+    : [],
+);
 
 const members = computed(() =>
   reader.value && state.value.status === "found"
-    ? membersInOrder(state.value.members, locale.value)
+    ? membersInOrder(everyMember.value, locale.value)
     : null,
 );
 
 const nonMembers = computed(() =>
   state.value.status === "found"
-    ? nonMembersInOrder(state.value.readers, state.value.members, locale.value)
+    ? nonMembersInOrder(state.value.readers, everyMember.value, locale.value)
     : [],
 );
 
@@ -47,6 +61,11 @@ const failure = computed(() => {
       return undefined;
   }
 });
+
+async function add(readerId: string, role: MembershipRole) {
+  await addMember(props.id, readerId, role);
+  if (addState.value.status === "added") choosing.value = false;
+}
 
 meApi.currentReader().then((current) => {
   reader.value = current;
@@ -100,7 +119,7 @@ watch([() => props.id, reader], ([id, current]) => {
               />
             </li>
             <li v-if="choosing">
-              <NewMemberRow :readers="nonMembers" :adding="false" />
+              <NewMemberRow :readers="nonMembers" :adding="false" @add="add" />
             </li>
           </ul>
           <div v-else class="divide-y divide-border">
