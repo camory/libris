@@ -14,7 +14,9 @@ const { t } = useI18n();
     class="p-3.5 text-body text-muted"
   >
     <template #name>
-      <span class="text-text">{{ member.reader.displayName }}</span>
+      <span class="text-text">{{
+        isReader ? t("bookshelf.members.you") : member.reader.displayName
+      }}</span>
     </template>
     <template #role>{{ t(`bookshelf.members.role.${member.role}`) }}</template>
   </i18n-t>

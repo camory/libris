@@ -26,6 +26,7 @@ const fr = {
   bookshelf: {
     members: {
       member: "{name} · {role}",
+      you: "Vous",
       role: {
         OWNER: "propriétaire",
         VIEWER: "invité",

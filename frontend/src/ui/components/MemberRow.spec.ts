@@ -23,6 +23,14 @@ describe("MemberRow", () => {
     expect(normalised(row)).toBe("Marc · invité");
   });
 
+  it("names the reader Vous", () => {
+    // When
+    const row = show({ reader: lea, role: "VIEWER" }, true);
+
+    // Then
+    expect(normalised(row)).toBe("Vous · invité");
+  });
+
   function show(member: Member, isReader: boolean) {
     return mount(MemberRow, {
       props: { member, isReader },
