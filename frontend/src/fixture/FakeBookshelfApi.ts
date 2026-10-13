@@ -9,7 +9,11 @@ export class FakeBookshelfApi implements BookshelfApi {
   }[] = [];
 
   constructor(
-    private readonly answer: AddAnswer | Promise<AddAnswer> | Error,
+    private readonly answer:
+      | AddAnswer
+      | Promise<AddAnswer>
+      | Error
+      | ((bookshelfId: string) => AddAnswer),
   ) {}
 
   add(
@@ -22,8 +26,12 @@ export class FakeBookshelfApi implements BookshelfApi {
         ? { bookshelfId, edition }
         : { bookshelfId, edition, coverSource },
     );
-    return this.answer instanceof Error
-      ? Promise.reject(this.answer)
-      : Promise.resolve(this.answer);
+    const answer =
+      typeof this.answer === "function"
+        ? this.answer(bookshelfId)
+        : this.answer;
+    return answer instanceof Error
+      ? Promise.reject(answer)
+      : Promise.resolve(answer);
   }
 }
