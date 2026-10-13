@@ -40,10 +40,11 @@ function toggleOwner() {
     <button
       type="button"
       :aria-label="t('bookshelf.members.owner')"
+      :aria-pressed="role === 'OWNER'"
       class="flex size-11 shrink-0 items-center justify-center rounded-[10px] text-accent"
       @click="toggleOwner"
     >
-      <Crown />
+      <Crown :fill="role === 'OWNER' ? 'currentColor' : 'none'" />
     </button>
     <div class="size-11 shrink-0">
       <button

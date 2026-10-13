@@ -60,6 +60,22 @@ describe("NewMemberRow", () => {
     expect(wrapper.emitted("add")).toEqual([[hugo.id, "OWNER"]]);
   });
 
+  it("presses the crown once tapped", async () => {
+    // Given
+    const { screen } = open();
+    const before = screen.queryByRole("button", {
+      name: "Propriétaire",
+      pressed: false,
+    });
+
+    // When
+    await fireEvent.click(screen.getByRole("button", { name: "Propriétaire" }));
+
+    // Then
+    expect(before).not.toBeNull();
+    screen.getByRole("button", { name: "Propriétaire", pressed: true });
+  });
+
   function open(adding = false) {
     const wrapper = mount(NewMemberRow, {
       props: { readers: [hugo, marc], adding },
