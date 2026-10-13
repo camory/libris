@@ -12,6 +12,7 @@ const fr = {
       },
       default: "{role} · par défaut",
       error: "Erreur lors du chargement, veuillez réessayer plus tard.",
+      new: "Nouvelle bibliothèque",
       name: "Nom de la bibliothèque",
       create: "Créer",
       creating: "Création en cours…",

@@ -146,6 +146,20 @@ describe("HomeView", () => {
     expect(wrapper.findAllComponents(BookshelfRowSkeleton)).toHaveLength(0);
   });
 
+  it("offers Nouvelle bibliothèque once the rows are there", async () => {
+    // Given
+    const wrapper = mountHomeView(chloe, [
+      { bookshelf: salon, role: "VIEWER" },
+    ]);
+    const before = offersNew(wrapper);
+
+    // When
+    await flushPromises();
+
+    // Then
+    expect([before, offersNew(wrapper)]).toEqual([false, true]);
+  });
+
   function seen(wrapper: ReturnType<typeof mountHomeView>) {
     const screen = within(wrapper.element as HTMLElement);
     return {
@@ -153,5 +167,13 @@ describe("HomeView", () => {
       list: screen.queryByRole("list", { name: "Mes bibliothèques" }) !== null,
       skeletonRows: wrapper.findAllComponents(BookshelfRowSkeleton).length,
     };
+  }
+
+  function offersNew(wrapper: ReturnType<typeof mountHomeView>) {
+    return (
+      within(wrapper.element as HTMLElement).queryByRole("button", {
+        name: "Nouvelle bibliothèque",
+      }) !== null
+    );
   }
 });

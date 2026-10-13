@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { CirclePlus } from "@lucide/vue";
 import { computed, inject, ref } from "vue";
 import { useI18n } from "vue-i18n";
 import { bookshelvesApiKey } from "../../../application/BookshelvesApi";
@@ -44,9 +45,19 @@ void list();
     </header>
 
     <section>
-      <h2 class="pb-2 text-label text-muted">
-        {{ t("home.bookshelves.label") }}
-      </h2>
+      <div class="flex min-h-11 items-center justify-between pb-2">
+        <h2 class="text-label text-muted">
+          {{ t("home.bookshelves.label") }}
+        </h2>
+        <button
+          v-if="memberships"
+          type="button"
+          :aria-label="t('home.bookshelves.new')"
+          class="flex size-11 items-center justify-center rounded-[10px] text-accent"
+        >
+          <CirclePlus />
+        </button>
+      </div>
       <p
         v-if="state.status === 'unavailable'"
         class="flex items-start gap-2 text-body text-danger"
