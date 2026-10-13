@@ -243,7 +243,9 @@ saisissez l'ISBN.*) and without one when they are labels or messages of a
 few words (*ISBN*, *ISBN invalide*, *Chercher*). The reader is addressed as
 *vous*. An action in progress ends with an ellipsis (*Recherche en
 cours…*). A title names the thing done on the screen, in the infinitive with
-its object: *Ajouter un ouvrage*. Typography is French: the non-breaking
+its object: *Ajouter un ouvrage*. Two screens take a proper name instead:
+the home page, *Libris*, the application's name, and a bookshelf's screen,
+the bookshelf's name. Typography is French: the non-breaking
 space before `:`, `;` and `?`, guillemets « » for quotes, the middle dot
 ` · ` to join two facts on one line (*One piece · tome 1*).
 
