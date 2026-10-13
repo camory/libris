@@ -85,6 +85,20 @@ describe("BookshelfView", () => {
     ]);
   });
 
+  it("says there is no such bookshelf, alone", async () => {
+    // Given
+    const wrapper = mountBookshelfView({
+      outcome: "problem",
+      type: "/problems/not-found",
+    });
+
+    // When
+    await flushPromises();
+
+    // Then
+    expect(normalised(wrapper.element)).toBe("Bibliothèque introuvable.");
+  });
+
   function seen(wrapper: ReturnType<typeof mountBookshelfView>) {
     const screen = within(wrapper.element as HTMLElement);
     return {

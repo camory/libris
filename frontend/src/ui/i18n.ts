@@ -24,6 +24,7 @@ const fr = {
     },
   },
   bookshelf: {
+    notFound: "Bibliothèque introuvable.",
     members: {
       label: "Membres",
       member: "{name} · {role}",
