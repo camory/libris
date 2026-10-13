@@ -30,6 +30,8 @@ const fr = {
       label: "Membres",
       member: "{name} · {role}",
       you: "Vous",
+      reader: "Lecteur",
+      choose: "Choisir un lecteur",
       role: {
         OWNER: "propriétaire",
         VIEWER: "invité",
