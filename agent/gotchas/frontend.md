@@ -313,3 +313,12 @@ Read whole by a run that changes `frontend/`, after `every-run.md`.
   count, so *À lire* sorts before *Albums*, and *Øre* equals *Ore*, unlike
   the backend's `BookshelfName` folding. The sandbox's default locale is
   `en-US`: a collator built with no locale is not the screen's.
+- Icons come from `@lucide/vue` (`1.56.0`), imported by name from the
+  package root (`import { Check } from "@lucide/vue"`); it has no sub-path
+  exports. An icon given no `aria-label`, `title` or `aria-*` prop renders
+  `aria-hidden="true"`, so a test reaches the button that holds it by the
+  button's `aria-label`, and the icon itself through `findComponent`. The
+  stroke comes from `app.provide(LUCIDE_CONTEXT, { strokeWidth: 1.8 })` in
+  `createLibrisApp`: a component spec mounted alone gets no context and
+  draws Lucide's default stroke, 2. A `:stroke-width` on the icon beats the
+  context (`NewBookshelfRow`'s check, 3).

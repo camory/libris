@@ -273,13 +273,24 @@ Format:
 - Deviations from the brief: none.
 - Left over: the title case's missing markers, in `agent/PROPOSED.md`.
 
-## 2026-10-13 — T080 A reader creates a bookshelf — handoff
-- Done: steps 1 to 13, one commit each. S2 was un-skipped first and read red
-  (no button *Nouvelle bibliothèque*), then put back skipped until step 18.
-- Next: step 14, the guard (S9's home page case; mutation `v-if="state.status
-  !== 'loading'"` on the plus), then steps 15 to 18. No guard run yet.
-- Deviation: `@lucide/vue` 1.56.0 and `app.provide(LUCIDE_CONTEXT, {
-  strokeWidth: 1.8 })` arrived in step 9, not 13: `Check` is the first icon.
-- Deviation: the field carries `aria-label` with its placeholder's word; a
-  placeholder alone gives no accessible name to `getByRole("textbox")`.
-- Learned: the first commit is typed `test(frontend)`, it holds the stub too.
+## 2026-10-13 — T080 A reader creates a bookshelf — done
+- Did: the plus *Nouvelle bibliothèque* right of *Mes bibliothèques* opens
+  `NewBookshelfRow` as the list's last row; *Créer* creates the bookshelf
+  through `useCreateBookshelf`, and the answer joins the rows in S1's order.
+- Decided: the view keeps the memberships created on the page in a list of
+  its own and hands it to `membershipsInOrder` with the listed ones; the row
+  goes on `created` only, so a problem answer leaves the form as it is.
+- Decided: the view spec's busy case runs over `LibrisNotAnswering`, a
+  subclass of `FakeBookshelvesApi` declared in the spec, passed to
+  `mountHomeView` as an optional last argument.
+- Deviations from the brief: `@lucide/vue` and the provided stroke arrived
+  in step 9, not 13: `Check` is the first icon drawn.
+- Deviations from the brief: the field carries an `aria-label` holding its
+  placeholder's word; a placeholder alone gives `getByRole("textbox")` no
+  name.
+- Deviations from the brief: the first commit, the domain stub with step
+  1's case, is typed `test(frontend)`.
+- Handoff: the first run did steps 1 to 13 (S2 read red first, put back
+  skipped); this run did steps 14 to 18.
+- Left over: the refusals, the unavailable case and the form's `catch`
+  (T081); the chevron and the row's link (T082); the star (T084).
