@@ -14,6 +14,7 @@ export function useCreateBookshelf(bookshelvesApi: BookshelvesApi): {
   const state = ref<CreateState>({ status: "ready" });
 
   async function create(name: string) {
+    state.value = { status: "creating" };
     const answer = await bookshelvesApi.create(name);
     if (answer.outcome === "created")
       state.value = {

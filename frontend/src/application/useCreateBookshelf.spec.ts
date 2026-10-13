@@ -24,6 +24,22 @@ describe("useCreateBookshelf", () => {
       membership: { bookshelf: bibliothequeFamiliale, role: "OWNER" },
     });
   });
+
+  it("is creating until Libris answers", () => {
+    // Given
+    const { state, create } = useCreateBookshelf(
+      new FakeBookshelvesApi({
+        memberships: [],
+        create: { outcome: "created", bookshelf: bibliothequeFamiliale },
+      }),
+    );
+
+    // When
+    void create("Bibliothèque familiale");
+
+    // Then
+    expect(state.value).toEqual({ status: "creating" });
+  });
 });
 
 const bibliothequeFamiliale: Bookshelf = {
