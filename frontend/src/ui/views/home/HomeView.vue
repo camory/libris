@@ -5,8 +5,12 @@ import { useI18n } from "vue-i18n";
 import { bookshelvesApiKey } from "../../../application/BookshelvesApi";
 import { meApiKey } from "../../../application/MeApi";
 import { revisionKey } from "../../../application/Revision";
+import { useCreateBookshelf } from "../../../application/useCreateBookshelf";
 import { useListReaderBookshelves } from "../../../application/useListReaderBookshelves";
-import { membershipsInOrder } from "../../../domain/Membership";
+import {
+  membershipsInOrder,
+  type Membership,
+} from "../../../domain/Membership";
 import type { Reader } from "../../../domain/Reader";
 import BookshelfRow from "../../components/BookshelfRow.vue";
 import BookshelfRowSkeleton from "../../components/BookshelfRowSkeleton.vue";
@@ -19,17 +23,29 @@ const naming = ref(false);
 
 const meApi = inject(meApiKey)!;
 const revision = inject(revisionKey)!;
-const { state, list } = useListReaderBookshelves(inject(bookshelvesApiKey)!);
+const bookshelvesApi = inject(bookshelvesApiKey)!;
+const { state, list } = useListReaderBookshelves(bookshelvesApi);
+const { state: createState, create: createBookshelf } =
+  useCreateBookshelf(bookshelvesApi);
+const created = ref<Membership[]>([]);
 
 const memberships = computed(() =>
   reader.value && state.value.status === "listed"
     ? membershipsInOrder(
-        state.value.memberships,
+        [...state.value.memberships, ...created.value],
         reader.value.defaultBookshelf.id,
         locale.value,
       )
     : null,
 );
+
+async function create(name: string) {
+  await createBookshelf(name);
+  if (createState.value.status === "created") {
+    created.value.push(createState.value.membership);
+    naming.value = false;
+  }
+}
 
 meApi.currentReader().then((current) => {
   reader.value = current;
@@ -86,7 +102,7 @@ void list();
             />
           </li>
           <li v-if="naming">
-            <NewBookshelfRow :creating="false" />
+            <NewBookshelfRow :creating="false" @create="create" />
           </li>
         </ul>
         <template v-else>
