@@ -73,9 +73,10 @@ export class FetchBookshelvesApi implements BookshelvesApi {
   }
 
   async find(id: string): Promise<FindAnswer> {
-    const response = await fetch(`${this.baseUrl}/api/v1/bookshelves/${id}`, {
-      headers: { Accept: "application/json, application/problem+json" },
-    });
+    const response = await fetch(
+      `${this.baseUrl}/api/v1/bookshelves/${encodeURIComponent(id)}`,
+      { headers: { Accept: "application/json, application/problem+json" } },
+    );
     if (response.status !== 200) return problemOf(response, problems);
     const body = (await response.json()) as BookshelfWithMembersResponse;
     return {
