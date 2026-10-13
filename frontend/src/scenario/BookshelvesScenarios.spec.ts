@@ -116,7 +116,7 @@ describe("Bookshelves", () => {
     ]);
   });
 
-  it.skip("S3 A name Libris refuses, a name taken", async () => {
+  it("S3 A name Libris refuses, a name taken", async () => {
     // Given
     const screen = open(
       "/",
