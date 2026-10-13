@@ -12,6 +12,8 @@ const fr = {
       },
       default: "{role} · par défaut",
       error: "Erreur lors du chargement, veuillez réessayer plus tard.",
+      name: "Nom de la bibliothèque",
+      create: "Créer",
     },
   },
   isbn: {
