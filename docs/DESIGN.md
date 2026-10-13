@@ -111,6 +111,15 @@ takes a `danger` outline and keeps its text; the message goes under it (U05).
 An icon that acts on the field, the scanner, sits inside the box at the
 right, as an icon button.
 
+**Form in a list.** A block's form is the last row of its list (U03), and
+it has no primary button. Its fields have no border and no label: a
+placeholder in `muted` names each one, in place of an example value. A
+choice among many is a native `select`, a chevron down after its text. At
+the row's right, a check sends the form: an icon button in `accent`, drawn
+at stroke 3, absent until the form can be sent, its place kept. While the
+form is sent, a spinner takes its place. A message goes under the fields,
+inside the row (U05).
+
 **Primary button.** One per thing it serves, the field or the card, and
 never two side by side. It is the next step of the screen's flow: *Chercher*
 for the field, *Ajouter à ma bibliothèque* for the card. 50 tall, radius 12,
