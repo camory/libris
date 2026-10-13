@@ -25,6 +25,7 @@ const fr = {
   },
   bookshelf: {
     members: {
+      label: "Membres",
       member: "{name} · {role}",
       you: "Vous",
       role: {
