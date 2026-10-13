@@ -76,6 +76,21 @@ describe("NewMemberRow", () => {
     screen.getByRole("button", { name: "Propriétaire", pressed: true });
   });
 
+  it("is busy while the member is added", async () => {
+    // Given
+    const { screen } = open(true);
+
+    // When
+    await choose(screen, "Hugo");
+
+    // Then
+    const busy = screen.getByRole<HTMLButtonElement>("button", {
+      name: "Ajout en cours…",
+    });
+    expect(busy.disabled).toBe(true);
+    expect(screen.queryByRole("button", { name: "Ajouter" })).toBeNull();
+  });
+
   function open(adding = false) {
     const wrapper = mount(NewMemberRow, {
       props: { readers: [hugo, marc], adding },
