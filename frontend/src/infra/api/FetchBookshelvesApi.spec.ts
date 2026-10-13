@@ -165,4 +165,25 @@ describe("FetchBookshelvesApi", () => {
       type: "/problems/validation",
     });
   });
+
+  it("adds the reader with their role", async () => {
+    // Given
+    const api = new FetchBookshelvesApi(inject("mockBaseUrl"));
+
+    // When
+    const answer = await api.addMember(
+      "1c2f3e4d-5a6b-4c7d-9e8f-0a1b2c3d4e5f",
+      "0199c0de-1000-7000-8000-000000000004",
+      "OWNER",
+    );
+
+    // Then
+    expect(answer).toEqual({
+      outcome: "added",
+      member: {
+        reader: { id: expect.any(String), displayName: expect.any(String) },
+        role: expect.stringMatching(/^(OWNER|VIEWER)$/),
+      },
+    });
+  });
 });
