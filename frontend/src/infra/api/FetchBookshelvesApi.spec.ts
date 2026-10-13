@@ -186,4 +186,35 @@ describe("FetchBookshelvesApi", () => {
       },
     });
   });
+
+  it("says the add comes from the application", async () => {
+    // Given
+    const api = new FetchBookshelvesApi("http://libris.invalid");
+    const sent: RequestInit[] = [];
+    vi.stubGlobal("fetch", (_url: string, init: RequestInit) => {
+      sent.push(init);
+      return Promise.resolve(
+        new Response(
+          JSON.stringify({
+            id: "0199c0de-1000-7000-8000-000000000004",
+            displayName: "Hugo",
+            role: "OWNER",
+          }),
+          { status: 201 },
+        ),
+      );
+    });
+
+    // When
+    await api.addMember(
+      "1c2f3e4d-5a6b-4c7d-9e8f-0a1b2c3d4e5f",
+      "0199c0de-1000-7000-8000-000000000004",
+      "OWNER",
+    );
+
+    // Then
+    expect(sent[0]?.headers).toMatchObject({
+      "X-Requested-With": "XMLHttpRequest",
+    });
+  });
 });
