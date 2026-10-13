@@ -69,6 +69,17 @@ describe("useFindBookshelf", () => {
     // Then
     expect(state.value).toEqual({ status: "notFound" });
   });
+
+  it("is unavailable when Libris does not answer", async () => {
+    // Given
+    const { state, find } = findAnswering(new TypeError("Failed to fetch"));
+
+    // When
+    await find(salon.id);
+
+    // Then
+    expect(state.value).toEqual({ status: "unavailable" });
+  });
 });
 
 function findAnswering(find: FindAnswer | Error) {
