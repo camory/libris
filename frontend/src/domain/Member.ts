@@ -22,5 +22,8 @@ export function nonMembersInOrder(
   locale: string,
 ): KnownReader[] {
   const memberIds = new Set(members.map((member) => member.reader.id));
-  return readers.filter((reader) => !memberIds.has(reader.id));
+  const byName = nameOrder(locale);
+  return readers
+    .filter((reader) => !memberIds.has(reader.id))
+    .sort((a, b) => byName(a.displayName, b.displayName));
 }

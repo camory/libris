@@ -31,6 +31,12 @@ describe("nonMembersInOrder", () => {
       nonMembersInOrder([lea, marc, hugo], [owner(lea), viewer(marc)], "fr"),
     ).toEqual([hugo]);
   });
+
+  it("by display name, ignoring case and accents", () => {
+    expect(
+      nonMembersInOrder([marc, hugoInLowerCase, elodie, anais], [], "fr"),
+    ).toEqual([anais, elodie, hugoInLowerCase, marc]);
+  });
 });
 
 function owner(reader: KnownReader): Member {
