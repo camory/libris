@@ -66,12 +66,20 @@ pinned to the window, `fixed` at its four edges, never measured in a
 viewport unit:
 
 1. **Header**: the page title and, under it, one hint sentence in `body`,
-   `muted`, ending with a full stop. Padding 20 at the sides, 20 above,
-   12 below. Nothing else lives there: no back arrow, no action button. It
-   belongs to its screen and scrolls with the content.
+   `muted`, ending with a full stop. A screen with nothing to explain yet
+   has no hint: a bookshelf's, until it shows its ouvrages. Padding 20 at
+   the sides, 20 above, 12 below. Nothing else lives there: no back arrow,
+   no action button. It belongs to its screen and scrolls with the content.
 2. **Content**: the blocks of the screen, 20 apart, 20 of side padding, on
-   `bg`. Header and content scroll together; the tab bar stays put. The
-   home page ends with the revision, `label` step, `muted`, one line.
+   `bg`. A block may have a label above it, the `label` step in `muted`,
+   naming the block as a label names a field (*Mes bibliothèques*). At the
+   label's right sits at most one icon button (U04): a plus in a circle
+   that opens the block's form as the last row of its list (U04). The plus
+   is gone while the form is there, and the form leaves only on its
+   success. A row that leads to a screen ends with a chevron at its right,
+   and may hold one icon button left of the chevron. Header and content
+   scroll together; the tab bar stays put. The home page ends with the
+   revision, `label` step, `muted`, one line.
 3. **Tab bar**: on `surface` with a `border` hairline above, 48 tall, in
    three equal columns. A tab is its icon alone, drawn at 32, `accent` when
    it is the screen shown and `muted` otherwise; a link, its `aria-label`
