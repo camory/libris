@@ -181,12 +181,15 @@ scenario test with the API failing, one per case.
 
 Mockups: <https://claude.ai/artifact/DgkPZBCjVEXQeU31rmcsC1>, one artboard
 per state below, exported as `specs/bookshelves/<n>-<state>.jpg` in the
-same order, 1 to 11 the home page, 12 to 21 a bookshelf. The rules of
+same order, 1 to 11 the home page, 12 to 21 a bookshelf; 14, 15 and 20
+are drawn from a prototype of the choice in a block of its own, which the
+artifact predates. The rules of
 `docs/DESIGN.md` hold; what they lack is proposed as an amendment with the
 spec: in U04, the form in a list, a block's form being the last row of
 its list, its fields with no border and no label, a placeholder in
-`muted` naming each, a choice among many a native `select` with a
-chevron down after its text, at the row's right a check, an icon button
+`muted` naming each, a choice among many a block of its own under the
+list, closed by a cross, its options rows that become the form when
+tapped, at the row's right a check, an icon button
 in `accent` drawn at stroke 3, absent until the form can be sent, its
 place kept, a spinner in its place while it runs, a message under the
 fields inside the row; in U03, the block label, the `label` step naming a
@@ -198,7 +201,7 @@ no hint, the bookshelf's until its screen shows its ouvrages; in U07,
 Lucide as the source of new icons, at stroke 1.8, today's hand-drawn
 ones staying until a follow-up moves them, and from it `CirclePlus`
 (`circle-plus`), `Check` (`check`), `ChevronRight`
-(`chevron-right`), `ChevronDown` (`chevron-down`), `Star`
+(`chevron-right`), `X` (`x`), `Star`
 (`star`) outlined and filled, `Crown` (`crown`) outlined and filled,
 the check of a form in a list at stroke 3; in U08, the application's name,
 *Libris*, as the title of the home page, and the bookshelf's name as
