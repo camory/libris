@@ -23,6 +23,14 @@ const fr = {
       },
     },
   },
+  bookshelf: {
+    members: {
+      member: "{name} · {role}",
+      role: {
+        OWNER: "propriétaire",
+      },
+    },
+  },
   isbn: {
     title: "Ajouter un ouvrage",
     hint: "Scannez le code-barres ou saisissez l'ISBN.",
