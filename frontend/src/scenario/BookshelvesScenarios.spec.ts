@@ -77,7 +77,7 @@ describe("Bookshelves", () => {
     window.history.replaceState(null, "", "/");
   });
 
-  it.skip("S1 The reader's bookshelves", async () => {
+  it("S1 The reader's bookshelves", async () => {
     // Given
     const libris = leaBelongsTo(
       viewerOf(mangas),
