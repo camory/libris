@@ -14,9 +14,14 @@ const role = computed(() => {
 </script>
 
 <template>
-  <div class="flex flex-col gap-1 p-3.5">
-    <p class="text-row-title">{{ membership.bookshelf.name }}</p>
-    {{ " " }}
-    <p class="text-body text-muted">{{ role }}</p>
+  <div class="flex items-center">
+    <RouterLink
+      :to="`/bibliotheques/${membership.bookshelf.id}`"
+      class="flex min-w-0 flex-1 flex-col gap-1 p-3.5"
+    >
+      <p class="text-row-title">{{ membership.bookshelf.name }}</p>
+      {{ " " }}
+      <p class="text-body text-muted">{{ role }}</p>
+    </RouterLink>
   </div>
 </template>
