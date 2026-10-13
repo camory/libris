@@ -337,6 +337,13 @@ Read whole by a run that changes `frontend/`, after `every-run.md`.
   `createLibrisApp`: a component spec mounted alone gets no context and
   draws Lucide's default stroke, 2. A `:stroke-width` on the icon beats the
   context (`NewBookshelfRow`'s check, 3).
+- A home row is a stretched link: `BookshelfRow`'s `RouterLink` wraps the
+  name and role, and its `after:absolute after:inset-0` covers the whole
+  `relative` row, chevron included, so a tap anywhere opens the bookshelf.
+  A control added to the row (the star) sits outside the link and needs
+  `relative` to be above that cover, or the tap opens the bookshelf. jsdom
+  neither lays out nor hit-tests, so no spec sees the cover: it is checked
+  on the running app.
 - A spec's subclass of a fixture fake (`LibrisNotAnswering`,
   `LibrisAnsweringInTurn`) cannot declare a private member of the same name
   as one of the base's: `FakeBookshelvesApi` holds a private `answers`, and

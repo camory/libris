@@ -15,10 +15,10 @@ const role = computed(() => {
 </script>
 
 <template>
-  <div class="flex items-center">
+  <div class="relative flex items-center">
     <RouterLink
       :to="`/bibliotheques/${membership.bookshelf.id}`"
-      class="flex min-w-0 flex-1 flex-col gap-1 p-3.5"
+      class="flex min-w-0 flex-1 flex-col gap-1 p-3.5 after:absolute after:inset-0"
     >
       <p class="text-row-title">{{ membership.bookshelf.name }}</p>
       {{ " " }}
