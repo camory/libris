@@ -54,9 +54,15 @@ describe("HomeView", () => {
     expect(wrapper.text()).toContain("Bonjour Chloé");
   });
 
-  it("has no link to add an ouvrage", () => {
-    const screen = within(mountHomeView(chloe).element as HTMLElement);
+  it("has no link to add an ouvrage", async () => {
+    // Given
+    const wrapper = mountHomeView(chloe);
 
+    // When
+    await flushPromises();
+
+    // Then
+    const screen = within(wrapper.element as HTMLElement);
     expect(
       screen.queryByRole("link", { name: "Ajouter un ouvrage" }),
     ).toBeNull();
@@ -107,20 +113,16 @@ describe("HomeView", () => {
     const wrapper = mountHomeView(chloe, [
       { bookshelf: salon, role: "VIEWER" },
     ]);
-    const screen = within(wrapper.element as HTMLElement);
-
-    // Then
-    expect(wrapper.text()).toContain("Mes bibliothèques");
-    expect(
-      screen.queryByRole("list", { name: "Mes bibliothèques" }),
-    ).toBeNull();
-    expect(wrapper.findAllComponents(BookshelfRowSkeleton)).toHaveLength(3);
+    const before = seen(wrapper);
 
     // When
     await flushPromises();
 
     // Then
-    expect(wrapper.findAllComponents(BookshelfRowSkeleton)).toHaveLength(0);
+    expect([before, seen(wrapper)]).toEqual([
+      { label: true, list: false, skeletonRows: 3 },
+      { label: true, list: true, skeletonRows: 0 },
+    ]);
   });
 
   it("says the bookshelves cannot load when Libris does not answer", async () => {
@@ -145,5 +147,14 @@ describe("HomeView", () => {
 
   function normalised(element: Element) {
     return element.textContent?.replace(/\s+/g, " ").trim() ?? "";
+  }
+
+  function seen(wrapper: ReturnType<typeof mountHomeView>) {
+    const screen = within(wrapper.element as HTMLElement);
+    return {
+      label: wrapper.text().includes("Mes bibliothèques"),
+      list: screen.queryByRole("list", { name: "Mes bibliothèques" }) !== null,
+      skeletonRows: wrapper.findAllComponents(BookshelfRowSkeleton).length,
+    };
   }
 });
