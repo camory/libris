@@ -30,8 +30,11 @@ const meApi = inject(meApiKey)!;
 const bookshelvesApi = inject(bookshelvesApiKey)!;
 const readersApi = inject(readersApiKey)!;
 const { state, find } = useFindBookshelf(bookshelvesApi, readersApi);
-const { state: addState, add: addMember } =
-  useAddMemberToBookshelf(bookshelvesApi);
+const {
+  state: addState,
+  add: addMember,
+  reset: forgetAdded,
+} = useAddMemberToBookshelf(bookshelvesApi);
 
 const everyMember = computed<Member[]>(() =>
   state.value.status === "found"
@@ -71,6 +74,8 @@ meApi.currentReader().then((current) => {
   reader.value = current;
 });
 watch([() => props.id, reader], ([id, current]) => {
+  choosing.value = false;
+  forgetAdded();
   if (current) void find(id, current.id);
 });
 </script>

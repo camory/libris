@@ -15,6 +15,7 @@ export function useAddMemberToBookshelf(bookshelvesApi: BookshelvesApi): {
     readerId: string,
     role: MembershipRole,
   ) => Promise<void>;
+  reset: () => void;
 } {
   const state = ref<AddMemberState>({ status: "ready", added: [] });
 
@@ -30,5 +31,9 @@ export function useAddMemberToBookshelf(bookshelvesApi: BookshelvesApi): {
       state.value = { status: "added", added: [...added, answer.member] };
   }
 
-  return { state, add };
+  function reset() {
+    state.value = { status: "ready", added: [] };
+  }
+
+  return { state, add, reset };
 }

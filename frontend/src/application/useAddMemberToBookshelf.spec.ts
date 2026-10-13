@@ -41,6 +41,18 @@ describe("useAddMemberToBookshelf", () => {
     // Then
     expect(state.value.added).toEqual([viewer(hugo), owner(hugo)]);
   });
+
+  it("forgets the members it added once reset", async () => {
+    // Given
+    const { state, add, reset } = useAddMemberToBookshelf(addingHugoToSalon());
+    await add(salon.id, hugo.id, "VIEWER");
+
+    // When
+    reset();
+
+    // Then
+    expect(state.value).toEqual({ status: "ready", added: [] });
+  });
 });
 
 function addingHugoToSalon() {
