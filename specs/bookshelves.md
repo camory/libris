@@ -229,14 +229,18 @@ per member, in the order of S4, the display name and after a
 middle dot, in `muted`, the role (*Léa · propriétaire*), the reader's own
 row reading *Vous* in place of their name (*Vous · invité*): the screen
 says the reader's role there and nowhere else. For an owner, at the
-right of the block's label, a plus, *Ajouter un membre*: a tap adds a last
-row to the members, one line: the choice *Lecteur*, placeholder *Choisir
-un lecteur*, among the readers who are not members; then a crown in
-`accent`, a toggle button *Propriétaire*, outlined and off at first,
-filled when on; then the check *Ajouter*, absent until a reader is
-chosen. The reader is added as *invité*, or as *propriétaire* with the
-crown on; changing a member's role afterwards is not in this feature.
-While the row is there the plus is gone.
+right of the block's label, a plus, *Ajouter un membre*: a tap opens the
+block *Choisir un lecteur* under *Membres* and brings it into view, at the
+right of its label a cross, *Fermer*, that closes it. One row per reader
+who is not a member, by display name, ignoring case and accents, the whole
+row a button; the block shows five rows and half of the sixth, and
+scrolls inside itself. A tap on a reader makes their row the form: the
+name, then a crown in `accent`, a toggle button *Propriétaire*, outlined
+and off at first, filled when on, then the check *Ajouter*; a tap on
+another reader moves the form to their row, the crown off again. The
+reader is added as *invité*, or as *propriétaire* with the crown on;
+changing a member's role afterwards is not in this feature. While the
+block is there the plus is gone.
 The readers who are not members are asked with the bookshelf, for an
 owner.
 
@@ -257,11 +261,11 @@ States:
   the right of *Membres*, a viewer's with the members only.
 - **Not found** (S4): no title, and *Bibliothèque introuvable.* as the
   screen's one message.
-- **New member** (S5): the row as the members' last, no reader chosen,
-  the crown off, no check, no plus.
-- **Adding** (S5): *Ajouter* is busy, *Ajout en cours…*; on the answer the
-  new member is among the members, the row is gone and the plus is
-  back. No message.
+- **New member** (S5): the block *Choisir un lecteur* under *Membres*, no
+  reader chosen, so no crown and no check, and no plus.
+- **Adding** (S5): *Ajouter* is busy, *Ajout en cours…*, and the block
+  accepts nothing else; on the answer the new member is among the
+  members, the block is gone and the plus is back. No message.
 - **Every reader a member** (S5): no plus at the right of *Membres*, and
   *Tous les lecteurs sont déjà membres.* in `muted` under the members.
 - **Changing the default** (S7): a spinner in `accent` in place of the
@@ -273,7 +277,7 @@ States:
   tard.* in place of the list, with no plus, or of the bookshelf's blocks; *Erreur lors de
   la création, veuillez réessayer plus tard.* under the field, in its row;
   *Erreur lors de l'ajout, veuillez réessayer plus tard.* under the
-  member's line, in its row, the reader and the crown kept; *Erreur lors
+  chosen reader's name, in their row, the crown kept; *Erreur lors
   du changement, veuillez réessayer plus tard.* in the tapped row, under
   its role, the stars as they were.
 
