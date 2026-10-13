@@ -28,6 +28,7 @@ const fr = {
       member: "{name} · {role}",
       role: {
         OWNER: "propriétaire",
+        VIEWER: "invité",
       },
     },
   },

@@ -15,6 +15,14 @@ describe("MemberRow", () => {
     expect(normalised(row)).toBe("Léa · propriétaire");
   });
 
+  it("names a viewer over invité", () => {
+    // When
+    const row = show({ reader: marc, role: "VIEWER" }, false);
+
+    // Then
+    expect(normalised(row)).toBe("Marc · invité");
+  });
+
   function show(member: Member, isReader: boolean) {
     return mount(MemberRow, {
       props: { member, isReader },
@@ -26,4 +34,9 @@ describe("MemberRow", () => {
 const lea: KnownReader = {
   id: "0199c0de-1000-7000-8000-000000000002",
   displayName: "Léa",
+};
+
+const marc: KnownReader = {
+  id: "0199c0de-1000-7000-8000-000000000005",
+  displayName: "Marc",
 };
