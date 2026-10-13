@@ -16,6 +16,7 @@ export function useFindBookshelf(bookshelvesApi: BookshelvesApi): {
   const state = ref<FoundBookshelfState>({ status: "loading" });
 
   async function find(id: string) {
+    state.value = { status: "loading" };
     try {
       state.value = stateOf(await bookshelvesApi.find(id));
     } catch {

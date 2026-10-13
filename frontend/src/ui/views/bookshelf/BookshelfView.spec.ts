@@ -8,7 +8,7 @@ import {
 import { meApiKey } from "../../../application/MeApi";
 import type { KnownReader } from "../../../domain/KnownReader";
 import type { Member } from "../../../domain/Member";
-import { salon } from "../../../fixture/Books";
+import { bibliothequeDeLea, salon } from "../../../fixture/Books";
 import { FakeBookshelvesApi } from "../../../fixture/FakeBookshelvesApi";
 import { FakeMeApi } from "../../../fixture/FakeMeApi";
 import { lea } from "../../../fixture/Readers";
@@ -110,6 +110,27 @@ describe("BookshelfView", () => {
     expect(normalised(wrapper.element)).toBe(
       "Erreur lors du chargement, veuillez réessayer plus tard.",
     );
+  });
+
+  it("finds the bookshelf again when its id changes", async () => {
+    // Given
+    const wrapper = mountBookshelfView(salonHeld);
+    await flushPromises();
+
+    // When
+    await wrapper.setProps({ id: bibliothequeDeLea.id });
+    const during = seen(wrapper);
+    await flushPromises();
+
+    // Then
+    expect(during).toEqual({
+      label: true,
+      heading: false,
+      list: false,
+      title: 1,
+      rows: 2,
+    });
+    expect(normalised(wrapper.element)).toBe("Bibliothèque introuvable.");
   });
 
   function seen(wrapper: ReturnType<typeof mountBookshelfView>) {

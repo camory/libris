@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, inject, ref } from "vue";
+import { computed, inject, ref, watch } from "vue";
 import { useI18n } from "vue-i18n";
 import { bookshelvesApiKey } from "../../../application/BookshelvesApi";
 import { meApiKey } from "../../../application/MeApi";
@@ -40,7 +40,11 @@ const failure = computed(() => {
 meApi.currentReader().then((current) => {
   reader.value = current;
 });
-void find(props.id);
+watch(
+  () => props.id,
+  (id) => void find(id),
+  { immediate: true },
+);
 </script>
 
 <template>
