@@ -71,8 +71,9 @@ Given a bookshelf with two owners and a viewer
 When one of its members opens it
 
 Then Libris answers its name and its members, each with their role
-	And the screen shows them the owners first, then the viewers, each by
-	    display name, ignoring case and accents
+	And the screen shows them the member who opened it first, then the
+	    other owners, then the viewers, each by display name, ignoring
+	    case and accents
 ```
 
 A reader who does not belong to the bookshelf is answered that there is no
