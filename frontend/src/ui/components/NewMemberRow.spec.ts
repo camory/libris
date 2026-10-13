@@ -39,6 +39,14 @@ describe("NewMemberRow", () => {
     expect(wrapper.emitted("add")).toEqual([[hugo.id, "VIEWER"]]);
   });
 
+  it("offers no Ajouter until a reader is chosen", () => {
+    // When
+    const { screen } = open();
+
+    // Then
+    expect(screen.queryByRole("button", { name: "Ajouter" })).toBeNull();
+  });
+
   function open(adding = false) {
     const wrapper = mount(NewMemberRow, {
       props: { readers: [hugo, marc], adding },

@@ -34,6 +34,7 @@ const readerId = ref("");
     </div>
     <div class="size-11 shrink-0">
       <button
+        v-if="readerId !== ''"
         type="button"
         :aria-label="t('bookshelf.members.add')"
         class="flex size-11 items-center justify-center rounded-[10px] text-accent"
