@@ -6,6 +6,7 @@ import type {
   FindAnswer,
 } from "../../application/BookshelvesApi";
 import type { Membership, MembershipRole } from "../../domain/Membership";
+import { problemOf } from "./problemOf";
 
 interface ReaderBookshelfResponse {
   id: string;
@@ -17,6 +18,8 @@ interface BookshelfResponse {
   id: string;
   name: string;
 }
+
+const problems = new Map([[400, "/problems/validation"]]);
 
 export class FetchBookshelvesApi implements BookshelvesApi {
   constructor(private readonly baseUrl: string) {}
@@ -44,11 +47,14 @@ export class FetchBookshelvesApi implements BookshelvesApi {
       },
       body: JSON.stringify({ name }),
     });
-    const body = (await response.json()) as BookshelfResponse;
-    return {
-      outcome: "created",
-      bookshelf: { id: body.id, name: body.name },
-    };
+    if (response.status === 201) {
+      const body = (await response.json()) as BookshelfResponse;
+      return {
+        outcome: "created",
+        bookshelf: { id: body.id, name: body.name },
+      };
+    }
+    return problemOf(response, problems);
   }
 
   find(): Promise<FindAnswer> {

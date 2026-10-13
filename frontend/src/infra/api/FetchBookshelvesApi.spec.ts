@@ -52,4 +52,18 @@ describe("FetchBookshelvesApi", () => {
       bookshelf: { id: expect.any(String), name: expect.any(String) },
     });
   });
+
+  it("answers a problem when the name is blank", async () => {
+    // Given
+    const api = new FetchBookshelvesApi(inject("mockBaseUrl"));
+
+    // When
+    const answer = await api.create("   ");
+
+    // Then
+    expect(answer).toEqual({
+      outcome: "problem",
+      type: "/problems/validation",
+    });
+  });
 });
