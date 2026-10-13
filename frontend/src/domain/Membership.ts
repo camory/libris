@@ -1,4 +1,5 @@
 import type { Bookshelf } from "./Bookshelf";
+import { nameOrder } from "./nameOrder";
 
 export type MembershipRole = "OWNER" | "VIEWER";
 
@@ -14,8 +15,11 @@ export function membershipsInOrder(
 ): Membership[] {
   const isDefault = ({ bookshelf }: Membership) =>
     bookshelf.id === defaultBookshelfId;
+  const byName = nameOrder(locale);
   return [
     ...memberships.filter(isDefault),
-    ...memberships.filter((membership) => !isDefault(membership)),
+    ...memberships
+      .filter((membership) => !isDefault(membership))
+      .sort((a, b) => byName(a.bookshelf.name, b.bookshelf.name)),
   ];
 }
