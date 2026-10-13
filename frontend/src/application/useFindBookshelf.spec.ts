@@ -41,6 +41,20 @@ describe("useFindBookshelf", () => {
     // Then
     expect(state.value).toEqual({ status: "unavailable" });
   });
+
+  it("says there is no such bookshelf", async () => {
+    // Given
+    const { state, find } = findAnswering({
+      outcome: "problem",
+      type: "/problems/not-found",
+    });
+
+    // When
+    await find(salon.id);
+
+    // Then
+    expect(state.value).toEqual({ status: "notFound" });
+  });
 });
 
 function findAnswering(find: FindAnswer | Error) {
