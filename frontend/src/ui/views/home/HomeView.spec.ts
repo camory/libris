@@ -39,7 +39,7 @@ class LibrisNotAnswering extends FakeBookshelvesApi {
 const mountHomeView = (
   reader: Reader,
   memberships: Membership[] | Error = [],
-  create?: CreateAnswer,
+  create?: CreateAnswer | Error,
   bookshelvesApi = new FakeBookshelvesApi({ memberships, create }),
 ) =>
   mount(HomeView, {
@@ -263,6 +263,48 @@ describe("HomeView", () => {
     expect(
       screen.queryByRole("button", { name: "Création en cours…" }),
     ).not.toBeNull();
+  });
+
+  it("says the name is taken in the form's row, the field keeping it", async () => {
+    // Given
+    const wrapper = mountHomeView(
+      chloe,
+      [
+        { bookshelf: salon, role: "VIEWER" },
+        { bookshelf: chloe.defaultBookshelf, role: "OWNER" },
+      ],
+      { outcome: "problem", type: "/problems/conflict" },
+    );
+    await flushPromises();
+    const screen = within(wrapper.element as HTMLElement);
+    await fireEvent.click(
+      screen.getByRole("button", { name: "Nouvelle bibliothèque" }),
+    );
+    await fireEvent.input(
+      screen.getByRole("textbox", { name: "Nom de la bibliothèque" }),
+      { target: { value: "salon" } },
+    );
+
+    // When
+    await fireEvent.click(screen.getByRole("button", { name: "Créer" }));
+    await flushPromises();
+
+    // Then
+    expect(
+      within(screen.getByRole("list", { name: "Mes bibliothèques" }))
+        .getAllByRole("listitem")
+        .map(normalised),
+    ).toEqual([
+      "Bibliothèque de Chloé propriétaire · par défaut",
+      "Salon invité",
+      "Vous avez déjà une bibliothèque de ce nom.",
+    ]);
+    expect(
+      screen.getByRole<HTMLInputElement>("textbox", {
+        name: "Nom de la bibliothèque",
+      }).value,
+    ).toBe("salon");
+    expect(offersNew(wrapper)).toBe(false);
   });
 
   function seen(wrapper: ReturnType<typeof mountHomeView>) {

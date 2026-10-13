@@ -97,6 +97,7 @@ void list();
           <li v-if="naming">
             <NewBookshelfRow
               :creating="createState.status === 'creating'"
+              :failure="createState.status === 'taken' ? 'taken' : undefined"
               @create="create"
             />
           </li>
