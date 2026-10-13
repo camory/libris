@@ -1,13 +1,16 @@
 <script setup lang="ts">
-import { ChevronDown } from "@lucide/vue";
+import { Check, ChevronDown } from "@lucide/vue";
 import { ref } from "vue";
 import { useI18n } from "vue-i18n";
 import type { KnownReader } from "../../domain/KnownReader";
+import type { MembershipRole } from "../../domain/Membership";
 
 defineProps<{
   readers: KnownReader[];
   adding: boolean;
 }>();
+
+const emit = defineEmits<{ add: [readerId: string, role: MembershipRole] }>();
 
 const { t } = useI18n();
 const readerId = ref("");
@@ -28,6 +31,16 @@ const readerId = ref("");
         </option>
       </select>
       <ChevronDown class="shrink-0 text-muted" />
+    </div>
+    <div class="size-11 shrink-0">
+      <button
+        type="button"
+        :aria-label="t('bookshelf.members.add')"
+        class="flex size-11 items-center justify-center rounded-[10px] text-accent"
+        @click="emit('add', readerId, 'VIEWER')"
+      >
+        <Check :stroke-width="3" />
+      </button>
     </div>
   </div>
 </template>

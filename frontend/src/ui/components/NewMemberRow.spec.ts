@@ -1,4 +1,9 @@
-import { within } from "@testing-library/dom";
+import {
+  fireEvent,
+  within,
+  type BoundFunctions,
+  type queries,
+} from "@testing-library/dom";
 import { mount } from "@vue/test-utils";
 import { describe, expect, it } from "vitest";
 import type { KnownReader } from "../../domain/KnownReader";
@@ -22,6 +27,18 @@ describe("NewMemberRow", () => {
     ).toEqual(["Choisir un lecteur", "Hugo", "Marc"]);
   });
 
+  it("adds the chosen reader as invité", async () => {
+    // Given
+    const { wrapper, screen } = open();
+    await choose(screen, "Hugo");
+
+    // When
+    await fireEvent.click(screen.getByRole("button", { name: "Ajouter" }));
+
+    // Then
+    expect(wrapper.emitted("add")).toEqual([[hugo.id, "VIEWER"]]);
+  });
+
   function open(adding = false) {
     const wrapper = mount(NewMemberRow, {
       props: { readers: [hugo, marc], adding },
@@ -29,7 +46,19 @@ describe("NewMemberRow", () => {
     });
     return { wrapper, screen: within(wrapper.element as HTMLElement) };
   }
+
+  async function choose(screen: Screen, displayName: string) {
+    const choice = screen.getByRole<HTMLSelectElement>("combobox", {
+      name: "Lecteur",
+    });
+    within(choice).getByRole<HTMLOptionElement>("option", {
+      name: displayName,
+    }).selected = true;
+    await fireEvent.change(choice);
+  }
 });
+
+type Screen = BoundFunctions<typeof queries>;
 
 const hugo: KnownReader = {
   id: "0199c0de-1000-7000-8000-000000000004",
