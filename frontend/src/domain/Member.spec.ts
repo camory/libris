@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import type { KnownReader } from "./KnownReader";
-import { membersInOrder, type Member } from "./Member";
+import { membersInOrder, nonMembersInOrder, type Member } from "./Member";
 
 describe("membersInOrder", () => {
   it("puts the owners first", () => {
@@ -25,6 +25,20 @@ describe("membersInOrder", () => {
   });
 });
 
+describe("nonMembersInOrder", () => {
+  it("offers the readers who are not members", () => {
+    expect(
+      nonMembersInOrder([lea, marc, hugo], [owner(lea), viewer(marc)], "fr"),
+    ).toEqual([hugo]);
+  });
+
+  it("by display name, ignoring case and accents", () => {
+    expect(
+      nonMembersInOrder([marc, hugoInLowerCase, elodie, anais], [], "fr"),
+    ).toEqual([anais, elodie, hugoInLowerCase, marc]);
+  });
+});
+
 function owner(reader: KnownReader): Member {
   return { reader, role: "OWNER" };
 }
@@ -32,6 +46,11 @@ function owner(reader: KnownReader): Member {
 function viewer(reader: KnownReader): Member {
   return { reader, role: "VIEWER" };
 }
+
+const lea: KnownReader = {
+  id: "0199c0de-1000-7000-8000-000000000002",
+  displayName: "Léa",
+};
 
 const hugo: KnownReader = {
   id: "0199c0de-1000-7000-8000-000000000004",

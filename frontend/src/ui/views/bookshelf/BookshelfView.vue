@@ -1,29 +1,57 @@
 <script setup lang="ts">
+import { CirclePlus } from "@lucide/vue";
 import { computed, inject, ref, watch } from "vue";
 import { useI18n } from "vue-i18n";
 import { bookshelvesApiKey } from "../../../application/BookshelvesApi";
 import { meApiKey } from "../../../application/MeApi";
+import { readersApiKey } from "../../../application/ReadersApi";
+import { useAddMemberToBookshelf } from "../../../application/useAddMemberToBookshelf";
 import { useFindBookshelf } from "../../../application/useFindBookshelf";
-import { membersInOrder } from "../../../domain/Member";
+import {
+  membersInOrder,
+  nonMembersInOrder,
+  type Member,
+} from "../../../domain/Member";
+import type { MembershipRole } from "../../../domain/Membership";
 import type { Reader } from "../../../domain/Reader";
 import IconAlert from "../../components/icons/IconAlert.vue";
 import MemberRow from "../../components/MemberRow.vue";
 import MemberRowSkeleton from "../../components/MemberRowSkeleton.vue";
+import NewMemberRow from "../../components/NewMemberRow.vue";
 import PageTitleSkeleton from "../../components/PageTitleSkeleton.vue";
 
 const props = defineProps<{ id: string }>();
 
 const { t, locale } = useI18n();
 const reader = ref<Reader>();
+const choosing = ref(false);
 
 const meApi = inject(meApiKey)!;
 const bookshelvesApi = inject(bookshelvesApiKey)!;
-const { state, find } = useFindBookshelf(bookshelvesApi);
+const readersApi = inject(readersApiKey)!;
+const { state, find } = useFindBookshelf(bookshelvesApi, readersApi);
+const {
+  state: addState,
+  add: addMember,
+  reset: forgetAdded,
+} = useAddMemberToBookshelf(bookshelvesApi);
+
+const everyMember = computed<Member[]>(() =>
+  state.value.status === "found"
+    ? [...state.value.members, ...addState.value.added]
+    : [],
+);
 
 const members = computed(() =>
   reader.value && state.value.status === "found"
-    ? membersInOrder(state.value.members, locale.value)
+    ? membersInOrder(everyMember.value, locale.value)
     : null,
+);
+
+const nonMembers = computed(() =>
+  state.value.status === "found"
+    ? nonMembersInOrder(state.value.readers, everyMember.value, locale.value)
+    : [],
 );
 
 const failure = computed(() => {
@@ -37,14 +65,19 @@ const failure = computed(() => {
   }
 });
 
+async function add(readerId: string, role: MembershipRole) {
+  await addMember(props.id, readerId, role);
+  if (addState.value.status === "added") choosing.value = false;
+}
+
 meApi.currentReader().then((current) => {
   reader.value = current;
 });
-watch(
-  () => props.id,
-  (id) => void find(id),
-  { immediate: true },
-);
+watch([() => props.id, reader], ([id, current]) => {
+  choosing.value = false;
+  forgetAdded();
+  if (current) void find(id, current.id);
+});
 </script>
 
 <template>
@@ -62,9 +95,20 @@ watch(
       </header>
 
       <section>
-        <h2 class="flex min-h-11 items-center pb-2 text-label text-muted">
-          {{ t("bookshelf.members.label") }}
-        </h2>
+        <div class="flex min-h-11 items-center justify-between pb-2">
+          <h2 class="text-label text-muted">
+            {{ t("bookshelf.members.label") }}
+          </h2>
+          <button
+            v-if="members && nonMembers.length > 0 && !choosing"
+            type="button"
+            :aria-label="t('bookshelf.members.new')"
+            class="flex size-11 items-center justify-center rounded-[10px] text-accent"
+            @click="choosing = true"
+          >
+            <CirclePlus />
+          </button>
+        </div>
         <div
           class="overflow-hidden rounded-[14px] border border-border bg-surface"
         >
@@ -77,6 +121,13 @@ watch(
               <MemberRow
                 :member="member"
                 :is-reader="member.reader.id === reader?.id"
+              />
+            </li>
+            <li v-if="choosing">
+              <NewMemberRow
+                :readers="nonMembers"
+                :adding="addState.status === 'adding'"
+                @add="add"
               />
             </li>
           </ul>

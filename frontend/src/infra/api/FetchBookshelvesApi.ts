@@ -5,6 +5,7 @@ import type {
   CreateAnswer,
   FindAnswer,
 } from "../../application/BookshelvesApi";
+import type { Member } from "../../domain/Member";
 import type { Membership, MembershipRole } from "../../domain/Membership";
 import { problemOf } from "./problemOf";
 
@@ -82,18 +83,39 @@ export class FetchBookshelvesApi implements BookshelvesApi {
     return {
       outcome: "found",
       bookshelf: { id: body.id, name: body.name },
-      members: body.members.map((member) => ({
-        reader: { id: member.id, displayName: member.displayName },
-        role: member.role,
-      })),
+      members: body.members.map(memberOf),
     };
   }
 
-  addMember(): Promise<AddMemberAnswer> {
-    return Promise.reject(new Error("addMember is not implemented"));
+  async addMember(
+    bookshelfId: string,
+    readerId: string,
+    role: MembershipRole,
+  ): Promise<AddMemberAnswer> {
+    const response = await fetch(
+      `${this.baseUrl}/api/v1/bookshelves/${encodeURIComponent(bookshelfId)}/members`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json, application/problem+json",
+          "X-Requested-With": "XMLHttpRequest",
+        },
+        body: JSON.stringify({ readerId, role }),
+      },
+    );
+    const body = (await response.json()) as MemberResponse;
+    return { outcome: "added", member: memberOf(body) };
   }
 
   chooseDefault(): Promise<ChooseDefaultAnswer> {
     return Promise.reject(new Error("chooseDefault is not implemented"));
   }
+}
+
+function memberOf(member: MemberResponse): Member {
+  return {
+    reader: { id: member.id, displayName: member.displayName },
+    role: member.role,
+  };
 }

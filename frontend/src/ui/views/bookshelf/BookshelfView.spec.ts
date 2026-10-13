@@ -1,4 +1,9 @@
-import { within } from "@testing-library/dom";
+import {
+  fireEvent,
+  within,
+  type BoundFunctions,
+  type queries,
+} from "@testing-library/dom";
 import { flushPromises, mount } from "@vue/test-utils";
 import { describe, expect, it } from "vitest";
 import {
@@ -6,11 +11,13 @@ import {
   type FindAnswer,
 } from "../../../application/BookshelvesApi";
 import { meApiKey } from "../../../application/MeApi";
+import { readersApiKey } from "../../../application/ReadersApi";
 import type { KnownReader } from "../../../domain/KnownReader";
 import type { Member } from "../../../domain/Member";
 import { bibliothequeDeLea, salon } from "../../../fixture/Books";
 import { FakeBookshelvesApi } from "../../../fixture/FakeBookshelvesApi";
 import { FakeMeApi } from "../../../fixture/FakeMeApi";
+import { FakeReadersApi } from "../../../fixture/FakeReadersApi";
 import { lea } from "../../../fixture/Readers";
 import { normalised } from "../../../fixture/normalised";
 import MemberRowSkeleton from "../../components/MemberRowSkeleton.vue";
@@ -30,20 +37,40 @@ const elodie: KnownReader = {
   displayName: "Élodie",
 };
 
+const hugo: KnownReader = {
+  id: "0199c0de-1000-7000-8000-000000000004",
+  displayName: "Hugo",
+};
+
 const salonHeld: FindAnswer = {
   outcome: "found",
   bookshelf: salon,
   members: [viewer(leaToOthers), owner(marc), owner(elodie)],
 };
 
-const mountBookshelfView = (find: FindAnswer | Error) =>
+const salonOwned: FindAnswer = {
+  outcome: "found",
+  bookshelf: salon,
+  members: [owner(leaToOthers), viewer(marc)],
+};
+
+const mountBookshelfView = (
+  find: FindAnswer | Error,
+  readers: KnownReader[] = [],
+  adds?: KnownReader,
+) =>
   mount(BookshelfView, {
     props: { id: salon.id },
     global: {
       plugins: [createLibrisI18n()],
       provide: {
         [meApiKey]: new FakeMeApi(lea),
-        [bookshelvesApiKey]: new FakeBookshelvesApi({ memberships: [], find }),
+        [bookshelvesApiKey]: new FakeBookshelvesApi({
+          memberships: [],
+          find,
+          adds,
+        }),
+        [readersApiKey]: new FakeReadersApi(readers),
       },
     },
   });
@@ -133,6 +160,173 @@ describe("BookshelfView", () => {
     expect(normalised(wrapper.element)).toBe("Bibliothèque introuvable.");
   });
 
+  it("adds the form as the last row of Membres", async () => {
+    // Given
+    const wrapper = mountBookshelfView(salonOwned, [
+      leaToOthers,
+      marc,
+      hugo,
+      elodie,
+    ]);
+    await flushPromises();
+    const screen = within(wrapper.element as HTMLElement);
+
+    // When
+    await fireEvent.click(
+      screen.getByRole("button", { name: "Ajouter un membre" }),
+    );
+
+    // Then
+    const last = within(screen.getByRole("list", { name: "Membres" }))
+      .getAllByRole("listitem")
+      .at(-1)!;
+    const choice = within(last).getByRole("combobox", { name: "Lecteur" });
+    expect(
+      within(choice)
+        .getAllByRole("option")
+        .map((option) => option.textContent),
+    ).toEqual(["Choisir un lecteur", "Élodie", "Hugo"]);
+  });
+
+  it("hides the plus while the form is there", async () => {
+    // Given
+    const wrapper = mountBookshelfView(salonOwned, [leaToOthers, marc, hugo]);
+    await flushPromises();
+    const screen = within(wrapper.element as HTMLElement);
+
+    // When
+    await fireEvent.click(
+      screen.getByRole("button", { name: "Ajouter un membre" }),
+    );
+
+    // Then
+    expect(
+      screen.queryByRole("button", { name: "Ajouter un membre" }),
+    ).toBeNull();
+  });
+
+  it("shows the new member among the members, the form gone", async () => {
+    // Given
+    const wrapper = mountBookshelfView(
+      salonOwned,
+      [leaToOthers, marc, hugo, elodie],
+      hugo,
+    );
+    await flushPromises();
+    const screen = within(wrapper.element as HTMLElement);
+    await chooseHugo(screen);
+    await fireEvent.click(screen.getByRole("button", { name: "Propriétaire" }));
+
+    // When
+    await fireEvent.click(screen.getByRole("button", { name: "Ajouter" }));
+    await flushPromises();
+
+    // Then
+    expect(
+      within(screen.getByRole("list", { name: "Membres" }))
+        .getAllByRole("listitem")
+        .map(normalised),
+    ).toEqual(["Hugo · propriétaire", "Vous · propriétaire", "Marc · invité"]);
+    expect(screen.queryByRole("combobox")).toBeNull();
+    screen.getByRole("button", { name: "Ajouter un membre" });
+  });
+
+  it("says Ajout en cours… while the member is added", async () => {
+    // Given
+    const wrapper = mountBookshelfView(
+      salonOwned,
+      [leaToOthers, marc, hugo, elodie],
+      hugo,
+    );
+    await flushPromises();
+    const screen = within(wrapper.element as HTMLElement);
+    await chooseHugo(screen);
+
+    // When
+    await fireEvent.click(screen.getByRole("button", { name: "Ajouter" }));
+
+    // Then
+    screen.getByRole("button", { name: "Ajout en cours…" });
+  });
+
+  it("forgets the members it added once another bookshelf opens", async () => {
+    // Given
+    const wrapper = mountBookshelfView(
+      salonOwned,
+      [leaToOthers, marc, hugo],
+      hugo,
+    );
+    await flushPromises();
+    const screen = within(wrapper.element as HTMLElement);
+    await chooseHugo(screen);
+    await fireEvent.click(screen.getByRole("button", { name: "Ajouter" }));
+    await flushPromises();
+    await wrapper.setProps({ id: bibliothequeDeLea.id });
+    await flushPromises();
+
+    // When
+    await wrapper.setProps({ id: salon.id });
+    await flushPromises();
+
+    // Then
+    expect(
+      within(screen.getByRole("list", { name: "Membres" }))
+        .getAllByRole("listitem")
+        .map(normalised),
+    ).toEqual(["Vous · propriétaire", "Hugo · invité", "Marc · invité"]);
+  });
+
+  it("closes the new member's row once another bookshelf opens", async () => {
+    // Given
+    const wrapper = mountBookshelfView(salonOwned, [leaToOthers, marc, hugo]);
+    await flushPromises();
+    const screen = within(wrapper.element as HTMLElement);
+    await fireEvent.click(
+      screen.getByRole("button", { name: "Ajouter un membre" }),
+    );
+    await wrapper.setProps({ id: bibliothequeDeLea.id });
+    await flushPromises();
+
+    // When
+    await wrapper.setProps({ id: salon.id });
+    await flushPromises();
+
+    // Then
+    expect(screen.queryByRole("combobox")).toBeNull();
+  });
+
+  it("offers a viewer no plus", async () => {
+    // Given
+    const wrapper = mountBookshelfView(salonHeld, [
+      leaToOthers,
+      marc,
+      elodie,
+      hugo,
+    ]);
+
+    // When
+    await flushPromises();
+
+    // Then
+    const screen = within(wrapper.element as HTMLElement);
+    expect(
+      screen.queryByRole("button", { name: "Ajouter un membre" }),
+    ).toBeNull();
+  });
+
+  async function chooseHugo(screen: Screen) {
+    await fireEvent.click(
+      screen.getByRole("button", { name: "Ajouter un membre" }),
+    );
+    const choice = screen.getByRole<HTMLSelectElement>("combobox", {
+      name: "Lecteur",
+    });
+    within(choice).getByRole<HTMLOptionElement>("option", {
+      name: "Hugo",
+    }).selected = true;
+    await fireEvent.change(choice);
+  }
+
   function seen(wrapper: ReturnType<typeof mountBookshelfView>) {
     const screen = within(wrapper.element as HTMLElement);
     return {
@@ -144,6 +338,8 @@ describe("BookshelfView", () => {
     };
   }
 });
+
+type Screen = BoundFunctions<typeof queries>;
 
 function owner(reader: KnownReader): Member {
   return { reader, role: "OWNER" };

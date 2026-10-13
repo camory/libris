@@ -10,7 +10,7 @@ import type { App } from "vue";
 import type { BookshelvesApi } from "../application/BookshelvesApi";
 import type { BookshelfApi } from "../application/BookshelfApi";
 import type { IsbnApi } from "../application/IsbnApi";
-import { readersApiKey, type ReadersApi } from "../application/ReadersApi";
+import type { ReadersApi } from "../application/ReadersApi";
 import { createLibrisApp } from "../createLibrisApp";
 import type { Bookshelf } from "../domain/Bookshelf";
 import type { Copy } from "../domain/Copy";
@@ -174,7 +174,7 @@ describe("Bookshelves", () => {
     expect(screen.queryByRole("list", { name: "Membres" })).toBeNull();
   });
 
-  it.skip.each([
+  it.each([
     {
       case: "added as owner",
       role: "OWNER",
@@ -508,12 +508,9 @@ describe("Bookshelves", () => {
         appUpdate: new FakeAppUpdate(),
         catalogueApi: new FakeCatalogueApi([]),
         bookshelvesApi: bookshelves,
+        readersApi: world.readers ?? new FakeReadersApi([leaToOthers]),
       },
       "sha-abc1234",
-    );
-    app.provide(
-      readersApiKey,
-      world.readers ?? new FakeReadersApi([leaToOthers]),
     );
     app.mount(host);
     return within(host);

@@ -1,8 +1,10 @@
 import { describe, expect, it } from "vitest";
 import type { FindAnswer } from "./BookshelvesApi";
 import type { Bookshelf } from "../domain/Bookshelf";
+import type { KnownReader } from "../domain/KnownReader";
 import type { Member } from "../domain/Member";
 import { FakeBookshelvesApi } from "../fixture/FakeBookshelvesApi";
+import { FakeReadersApi } from "../fixture/FakeReadersApi";
 import { useFindBookshelf } from "./useFindBookshelf";
 
 describe("useFindBookshelf", () => {
@@ -13,11 +15,12 @@ describe("useFindBookshelf", () => {
         memberships: [],
         find: { outcome: "found", bookshelf: salon, members: [lea, marc] },
       }),
+      new FakeReadersApi([]),
     );
     const before = state.value;
 
     // When
-    await find(salon.id);
+    await find(salon.id, lea.reader.id);
 
     // Then
     expect(before).toEqual({ status: "loading" });
@@ -25,6 +28,7 @@ describe("useFindBookshelf", () => {
       status: "found",
       bookshelf: salon,
       members: [lea, marc],
+      readers: [],
     });
   });
 
@@ -36,7 +40,7 @@ describe("useFindBookshelf", () => {
     });
 
     // When
-    await find(salon.id);
+    await find(salon.id, lea.reader.id);
 
     // Then
     expect(state.value).toEqual({ status: "unavailable" });
@@ -50,7 +54,7 @@ describe("useFindBookshelf", () => {
     });
 
     // When
-    await find(salon.id);
+    await find(salon.id, lea.reader.id);
 
     // Then
     expect(state.value).toEqual({ status: "notFound" });
@@ -64,7 +68,7 @@ describe("useFindBookshelf", () => {
     });
 
     // When
-    await find("not-a-uuid");
+    await find("not-a-uuid", lea.reader.id);
 
     // Then
     expect(state.value).toEqual({ status: "notFound" });
@@ -75,15 +79,70 @@ describe("useFindBookshelf", () => {
     const { state, find } = findAnswering(new TypeError("Failed to fetch"));
 
     // When
-    await find(salon.id);
+    await find(salon.id, lea.reader.id);
 
     // Then
     expect(state.value).toEqual({ status: "unavailable" });
   });
+
+  it("asks the readers Libris knows for an owner", async () => {
+    // Given
+    const { state, find } = useFindBookshelf(
+      new FakeBookshelvesApi({
+        memberships: [],
+        find: {
+          outcome: "found",
+          bookshelf: salon,
+          members: [owner(leaToOthers), viewer(marcToOthers)],
+        },
+      }),
+      new FakeReadersApi([leaToOthers, marcToOthers, hugo]),
+    );
+
+    // When
+    await find(salon.id, leaToOthers.id);
+
+    // Then
+    expect(state.value).toEqual({
+      status: "found",
+      bookshelf: salon,
+      members: [owner(leaToOthers), viewer(marcToOthers)],
+      readers: [leaToOthers, marcToOthers, hugo],
+    });
+  });
+
+  it("asks no reader for a viewer", async () => {
+    // Given
+    const { state, find } = useFindBookshelf(
+      new FakeBookshelvesApi({
+        memberships: [],
+        find: {
+          outcome: "found",
+          bookshelf: salon,
+          members: [viewer(leaToOthers), owner(marcToOthers)],
+        },
+      }),
+      new FakeReadersApi([leaToOthers, marcToOthers, hugo]),
+    );
+
+    // When
+    await find(salon.id, leaToOthers.id);
+
+    // Then
+    expect(state.value).toEqual({
+      status: "found",
+      bookshelf: salon,
+      members: [viewer(leaToOthers), owner(marcToOthers)],
+      readers: [],
+    });
+  });
 });
 
 function findAnswering(find: FindAnswer | Error) {
-  return useFindBookshelf(new FakeBookshelvesApi({ memberships: [], find }));
+  return useFindBookshelf(
+    new FakeBookshelvesApi({ memberships: [], find }),
+    new FakeReadersApi([]),
+  );
 }
 
 const salon: Bookshelf = {
@@ -100,3 +159,20 @@ const marc: Member = {
   reader: { id: "0199c0de-1000-7000-8000-000000000005", displayName: "Marc" },
   role: "OWNER",
 };
+
+const leaToOthers: KnownReader = lea.reader;
+
+const marcToOthers: KnownReader = marc.reader;
+
+const hugo: KnownReader = {
+  id: "0199c0de-1000-7000-8000-000000000004",
+  displayName: "Hugo",
+};
+
+function owner(reader: KnownReader): Member {
+  return { reader, role: "OWNER" };
+}
+
+function viewer(reader: KnownReader): Member {
+  return { reader, role: "VIEWER" };
+}
