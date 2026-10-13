@@ -1,4 +1,4 @@
-import { within } from "@testing-library/dom";
+import { fireEvent, within } from "@testing-library/dom";
 import { flushPromises, mount } from "@vue/test-utils";
 import { describe, expect, it } from "vitest";
 import {
@@ -32,21 +32,40 @@ const elodie: KnownReader = {
   displayName: "Élodie",
 };
 
+const hugo: KnownReader = {
+  id: "0199c0de-1000-7000-8000-000000000004",
+  displayName: "Hugo",
+};
+
 const salonHeld: FindAnswer = {
   outcome: "found",
   bookshelf: salon,
   members: [viewer(leaToOthers), owner(marc), owner(elodie)],
 };
 
-const mountBookshelfView = (find: FindAnswer | Error) =>
+const salonOwned: FindAnswer = {
+  outcome: "found",
+  bookshelf: salon,
+  members: [owner(leaToOthers), viewer(marc)],
+};
+
+const mountBookshelfView = (
+  find: FindAnswer | Error,
+  readers: KnownReader[] = [],
+  adds?: KnownReader,
+) =>
   mount(BookshelfView, {
     props: { id: salon.id },
     global: {
       plugins: [createLibrisI18n()],
       provide: {
         [meApiKey]: new FakeMeApi(lea),
-        [bookshelvesApiKey]: new FakeBookshelvesApi({ memberships: [], find }),
-        [readersApiKey]: new FakeReadersApi([]),
+        [bookshelvesApiKey]: new FakeBookshelvesApi({
+          memberships: [],
+          find,
+          adds,
+        }),
+        [readersApiKey]: new FakeReadersApi(readers),
       },
     },
   });
@@ -134,6 +153,34 @@ describe("BookshelfView", () => {
       rows: 2,
     });
     expect(normalised(wrapper.element)).toBe("Bibliothèque introuvable.");
+  });
+
+  it("adds the form as the last row of Membres", async () => {
+    // Given
+    const wrapper = mountBookshelfView(salonOwned, [
+      leaToOthers,
+      marc,
+      hugo,
+      elodie,
+    ]);
+    await flushPromises();
+    const screen = within(wrapper.element as HTMLElement);
+
+    // When
+    await fireEvent.click(
+      screen.getByRole("button", { name: "Ajouter un membre" }),
+    );
+
+    // Then
+    const last = within(screen.getByRole("list", { name: "Membres" }))
+      .getAllByRole("listitem")
+      .at(-1)!;
+    const choice = within(last).getByRole("combobox", { name: "Lecteur" });
+    expect(
+      within(choice)
+        .getAllByRole("option")
+        .map((option) => option.textContent),
+    ).toEqual(["Choisir un lecteur", "Élodie", "Hugo"]);
   });
 
   function seen(wrapper: ReturnType<typeof mountBookshelfView>) {

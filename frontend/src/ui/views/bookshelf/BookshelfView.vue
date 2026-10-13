@@ -1,21 +1,24 @@
 <script setup lang="ts">
+import { CirclePlus } from "@lucide/vue";
 import { computed, inject, ref, watch } from "vue";
 import { useI18n } from "vue-i18n";
 import { bookshelvesApiKey } from "../../../application/BookshelvesApi";
 import { meApiKey } from "../../../application/MeApi";
 import { readersApiKey } from "../../../application/ReadersApi";
 import { useFindBookshelf } from "../../../application/useFindBookshelf";
-import { membersInOrder } from "../../../domain/Member";
+import { membersInOrder, nonMembersInOrder } from "../../../domain/Member";
 import type { Reader } from "../../../domain/Reader";
 import IconAlert from "../../components/icons/IconAlert.vue";
 import MemberRow from "../../components/MemberRow.vue";
 import MemberRowSkeleton from "../../components/MemberRowSkeleton.vue";
+import NewMemberRow from "../../components/NewMemberRow.vue";
 import PageTitleSkeleton from "../../components/PageTitleSkeleton.vue";
 
 const props = defineProps<{ id: string }>();
 
 const { t, locale } = useI18n();
 const reader = ref<Reader>();
+const choosing = ref(false);
 
 const meApi = inject(meApiKey)!;
 const bookshelvesApi = inject(bookshelvesApiKey)!;
@@ -26,6 +29,12 @@ const members = computed(() =>
   reader.value && state.value.status === "found"
     ? membersInOrder(state.value.members, locale.value)
     : null,
+);
+
+const nonMembers = computed(() =>
+  state.value.status === "found"
+    ? nonMembersInOrder(state.value.readers, state.value.members, locale.value)
+    : [],
 );
 
 const failure = computed(() => {
@@ -62,9 +71,20 @@ watch([() => props.id, reader], ([id, current]) => {
       </header>
 
       <section>
-        <h2 class="flex min-h-11 items-center pb-2 text-label text-muted">
-          {{ t("bookshelf.members.label") }}
-        </h2>
+        <div class="flex min-h-11 items-center justify-between pb-2">
+          <h2 class="text-label text-muted">
+            {{ t("bookshelf.members.label") }}
+          </h2>
+          <button
+            v-if="members"
+            type="button"
+            :aria-label="t('bookshelf.members.new')"
+            class="flex size-11 items-center justify-center rounded-[10px] text-accent"
+            @click="choosing = true"
+          >
+            <CirclePlus />
+          </button>
+        </div>
         <div
           class="overflow-hidden rounded-[14px] border border-border bg-surface"
         >
@@ -78,6 +98,9 @@ watch([() => props.id, reader], ([id, current]) => {
                 :member="member"
                 :is-reader="member.reader.id === reader?.id"
               />
+            </li>
+            <li v-if="choosing">
+              <NewMemberRow :readers="nonMembers" :adding="false" />
             </li>
           </ul>
           <div v-else class="divide-y divide-border">
