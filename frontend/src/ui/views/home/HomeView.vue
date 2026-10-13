@@ -8,6 +8,7 @@ import { useListReaderBookshelves } from "../../../application/useListReaderBook
 import { membershipsInOrder } from "../../../domain/Membership";
 import type { Reader } from "../../../domain/Reader";
 import BookshelfRow from "../../components/BookshelfRow.vue";
+import BookshelfRowSkeleton from "../../components/BookshelfRowSkeleton.vue";
 
 const { t, locale } = useI18n();
 const reader = ref<Reader>();
@@ -62,6 +63,12 @@ void list();
             />
           </li>
         </ul>
+      </div>
+      <div
+        v-else
+        class="divide-y divide-border overflow-hidden rounded-[14px] border border-border bg-surface"
+      >
+        <BookshelfRowSkeleton v-for="row in 3" :key="row" />
       </div>
     </section>
 

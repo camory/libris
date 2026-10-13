@@ -11,6 +11,7 @@ import { salon } from "../../../fixture/Books";
 import { FakeBookshelvesApi } from "../../../fixture/FakeBookshelvesApi";
 import { FakeMeApi } from "../../../fixture/FakeMeApi";
 import { chloe } from "../../../fixture/Readers";
+import BookshelfRowSkeleton from "../../components/BookshelfRowSkeleton.vue";
 import { createLibrisI18n } from "../../i18n";
 import { createLibrisRouter } from "../../router";
 import HomeView from "./HomeView.vue";
@@ -96,6 +97,27 @@ describe("HomeView", () => {
       "Étagère propriétaire",
       "Salon invité",
     ]);
+  });
+
+  it("draws skeleton rows under the label while the bookshelves come", async () => {
+    // Given
+    const wrapper = mountHomeView(chloe, [
+      { bookshelf: salon, role: "VIEWER" },
+    ]);
+    const screen = within(wrapper.element as HTMLElement);
+
+    // Then
+    expect(wrapper.text()).toContain("Mes bibliothèques");
+    expect(
+      screen.queryByRole("list", { name: "Mes bibliothèques" }),
+    ).toBeNull();
+    expect(wrapper.findAllComponents(BookshelfRowSkeleton)).toHaveLength(3);
+
+    // When
+    await flushPromises();
+
+    // Then
+    expect(wrapper.findAllComponents(BookshelfRowSkeleton)).toHaveLength(0);
   });
 
   function normalised(element: Element) {
