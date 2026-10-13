@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { ChevronRight } from "@lucide/vue";
 import { computed } from "vue";
 import { useI18n } from "vue-i18n";
 import type { Membership } from "../../domain/Membership";
@@ -23,5 +24,6 @@ const role = computed(() => {
       {{ " " }}
       <p class="text-body text-muted">{{ role }}</p>
     </RouterLink>
+    <ChevronRight class="mr-3.5 shrink-0 text-muted" />
   </div>
 </template>

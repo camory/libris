@@ -1,4 +1,5 @@
 import { within } from "@testing-library/dom";
+import { ChevronRight } from "@lucide/vue";
 import { mount } from "@vue/test-utils";
 import { afterEach, describe, expect, it } from "vitest";
 import type { Membership } from "../../domain/Membership";
@@ -47,13 +48,25 @@ describe("BookshelfRow", () => {
     );
   });
 
+  it("ends with a chevron", async () => {
+    // When
+    const wrapper = await mountRow({ bookshelf: salon, role: "OWNER" }, false);
+
+    // Then
+    expect(wrapper.findComponent(ChevronRight).exists()).toBe(true);
+  });
+
   async function show(membership: Membership, isDefault: boolean) {
+    return (await mountRow(membership, isDefault)).element as HTMLElement;
+  }
+
+  async function mountRow(membership: Membership, isDefault: boolean) {
     const router = createLibrisRouter();
     await router.push("/");
     await router.isReady();
     return mount(BookshelfRow, {
       props: { membership, isDefault },
       global: { plugins: [createLibrisI18n(), router] },
-    }).element as HTMLElement;
+    });
   }
 });
