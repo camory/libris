@@ -35,6 +35,13 @@ const memberships = computed(() =>
     : null,
 );
 
+const createFailure = computed(() =>
+  createState.value.status === "taken" ||
+  createState.value.status === "unavailable"
+    ? createState.value.status
+    : undefined,
+);
+
 async function create(name: string) {
   await createBookshelf(name);
   if (createState.value.status === "created") naming.value = false;
@@ -97,6 +104,7 @@ void list();
           <li v-if="naming">
             <NewBookshelfRow
               :creating="createState.status === 'creating'"
+              :failure="createFailure"
               @create="create"
             />
           </li>

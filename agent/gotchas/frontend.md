@@ -322,3 +322,8 @@ Read whole by a run that changes `frontend/`, after `every-run.md`.
   `createLibrisApp`: a component spec mounted alone gets no context and
   draws Lucide's default stroke, 2. A `:stroke-width` on the icon beats the
   context (`NewBookshelfRow`'s check, 3).
+- A spec's subclass of a fixture fake (`LibrisNotAnswering`,
+  `LibrisAnsweringInTurn`) cannot declare a private member of the same name
+  as one of the base's: `FakeBookshelvesApi` holds a private `answers`, and
+  a constructor parameter `private readonly answers` fails `vue-tsc` with
+  `TS2415 … Types have separate declarations of a private property`.

@@ -54,9 +54,27 @@ describe("NewBookshelfRow", () => {
     expect(screen.queryByRole("button", { name: "Créer" })).toBeNull();
   });
 
-  function open(creating = false) {
+  it("says the name is taken under the field", () => {
+    // When
+    const { screen } = open(false, "taken");
+
+    // Then
+    screen.getByText("Vous avez déjà une bibliothèque de ce nom.");
+  });
+
+  it("says to try again later when Libris does not answer", () => {
+    // When
+    const { screen } = open(false, "unavailable");
+
+    // Then
+    screen.getByText(
+      "Erreur lors de la création, veuillez réessayer plus tard.",
+    );
+  });
+
+  function open(creating = false, failure?: "taken" | "unavailable") {
     const wrapper = mount(NewBookshelfRow, {
-      props: { creating },
+      props: { creating, failure },
       global: { plugins: [createLibrisI18n()] },
     });
     return { wrapper, screen: within(wrapper.element as HTMLElement) };

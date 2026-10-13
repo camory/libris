@@ -16,6 +16,11 @@ const fr = {
       name: "Nom de la bibliothèque",
       create: "Créer",
       creating: "Création en cours…",
+      failure: {
+        taken: "Vous avez déjà une bibliothèque de ce nom.",
+        unavailable:
+          "Erreur lors de la création, veuillez réessayer plus tard.",
+      },
     },
   },
   isbn: {
