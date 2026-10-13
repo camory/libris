@@ -259,3 +259,16 @@ Format:
   back skipped); this run did steps 8 to 17.
 - Left over: the chevron and the row's link (T082), the star (T084), the
   plus (T080); the spec's U08 and U03 amendments, proposed in the PR.
+
+## 2026-10-13 — T079 The home page lists the reader's bookshelves — reworked
+- Did: *draws skeleton rows under the label while the bookshelves come*
+  keeps what the reader sees before `flushPromises` in its Given and
+  asserts before and after in one Then; *has no link to add an ouvrage*
+  takes Given / When / Then; one card holds the list or the skeleton rows.
+- Decided: the reviewer's verdict of 2026-10-13 amended nothing; its two
+  blocking findings are the layout D07 asks, its card suggestion applied.
+  The `normalised` helper stays in both specs, as the suggestion itself
+  allows: a shared one would sit in `src/fixture`, which the brief keeps
+  unchanged.
+- Deviations from the brief: none.
+- Left over: the title case's missing markers, in `agent/PROPOSED.md`.
