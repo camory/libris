@@ -449,7 +449,10 @@
   `IconRefresh`) to their Lucide counterparts at stroke 1.8, once the
   bookshelves feature has brought Lucide in; *library* has the leaning
   third spine of `IconBooks` (found 2026-10-10 by Tophe while reviewing
-  the bookshelves mockups).
+  the bookshelves mockups). Candidates to review with Tophe one by one
+  before any task: `house`, `barcode` or `scan-barcode`, `library`,
+  `book`, `circle-alert`, `x`, `search`, `refresh-cw` (2026-10-13, with
+  U07's move to `@lucide/vue`).
 - Frontend: `HomeView.spec.ts` *renders the French title from the messages*
   is two statements with no Given / When / Then markers, as on `main`
   before T079 changed its text; give it the markers or one statement

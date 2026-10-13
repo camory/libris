@@ -66,12 +66,20 @@ pinned to the window, `fixed` at its four edges, never measured in a
 viewport unit:
 
 1. **Header**: the page title and, under it, one hint sentence in `body`,
-   `muted`, ending with a full stop. Padding 20 at the sides, 20 above,
-   12 below. Nothing else lives there: no back arrow, no action button. It
-   belongs to its screen and scrolls with the content.
+   `muted`, ending with a full stop. A screen with nothing to explain yet
+   has no hint: a bookshelf's, until it shows its ouvrages. Padding 20 at
+   the sides, 20 above, 12 below. Nothing else lives there: no back arrow,
+   no action button. It belongs to its screen and scrolls with the content.
 2. **Content**: the blocks of the screen, 20 apart, 20 of side padding, on
-   `bg`. Header and content scroll together; the tab bar stays put. The
-   home page ends with the revision, `label` step, `muted`, one line.
+   `bg`. A block may have a label above it, the `label` step in `muted`,
+   naming the block as a label names a field (*Mes bibliothèques*). At the
+   label's right sits at most one icon button (U04): a plus in a circle
+   that opens the block's form as the last row of its list (U04). The plus
+   is gone while the form is there, and the form leaves only on its
+   success. A row that leads to a screen ends with a chevron at its right,
+   and may hold one icon button left of the chevron. Header and content
+   scroll together; the tab bar stays put. The home page ends with the
+   revision, `label` step, `muted`, one line.
 3. **Tab bar**: on `surface` with a `border` hairline above, 48 tall, in
    three equal columns. A tab is its icon alone, drawn at 32, `accent` when
    it is the screen shown and `muted` otherwise; a link, its `aria-label`
@@ -102,6 +110,15 @@ reads it lives in the domain, not in the field. A field the answer refuses
 takes a `danger` outline and keeps its text; the message goes under it (U05).
 An icon that acts on the field, the scanner, sits inside the box at the
 right, as an icon button.
+
+**Form in a list.** A block's form is the last row of its list (U03), and
+it has no primary button. Its fields have no border and no label: a
+placeholder in `muted` names each one, in place of an example value. A
+choice among many is a native `select`, a chevron down after its text. At
+the row's right, a check sends the form: an icon button in `accent`, drawn
+at stroke 3, absent until the form can be sent, its place kept. While the
+form is sent, a spinner takes its place. A message goes under the fields,
+inside the row (U05).
 
 **Primary button.** One per thing it serves, the field or the card, and
 never two side by side. It is the next step of the screen's flow: *Chercher*
@@ -218,14 +235,19 @@ or a volume, the choice lives in the key (`role.MANGA.WRITER`,
 of words, so the catalogue reads as the spec's table and the component
 picks an entry and never branches.
 
-### U07 — Icons: hand-drawn, inline, no library
-An icon is an inline SVG on a 24 grid, stroke 1.8, round caps and joins,
-`currentColor`, no fill; 22 for the alert of a message and the bookshelf
-rows of a card (U06), 32 on the tab bar, 48 for an empty state (U05). Each is its own component under `ui/components/icons`, named
-by what it shows (`IconHome`, `IconBarcode`, `IconClose`, `IconAlert`,
-`IconBook`, `IconBooks`, three spines on a line, the third leaning, for the
-catalogue tab), drawn once and reused. No icon font, no icon package (D05:
-no UI library).
+### U07 — Icons: Lucide, inline
+An icon is a Lucide icon from `@lucide/vue`: an inline SVG on a 24 grid,
+round caps and joins, `currentColor`, stroke 1.8 set once for the whole
+app, and stroke 3 for the check of a form in a list (U04). It has no fill,
+except an icon's filled variant: the star and the crown, filled with
+`currentColor`. Sizes are 22 for the alert of a message and the bookshelf
+rows of a card (U06), 32 on the tab bar, 48 for an empty state (U05). A
+component imports the icon it shows under its Lucide name: `CirclePlus`,
+`Check`, `ChevronRight`, `ChevronDown`, `Star`, `Crown`. The hand-drawn
+icons under `ui/components/icons` (`IconHome`, `IconBarcode`, `IconClose`,
+`IconAlert`, `IconBook`, `IconBooks`, three spines on a line, the third
+leaning, for the catalogue tab) stay until a follow-up replaces each with
+its Lucide counterpart; none is added. No icon font.
 
 An icon next to a word is decoration: `aria-hidden`, the word carries the
 meaning. An icon alone is a button (U04) or a tab (U03) and carries its
@@ -243,7 +265,9 @@ saisissez l'ISBN.*) and without one when they are labels or messages of a
 few words (*ISBN*, *ISBN invalide*, *Chercher*). The reader is addressed as
 *vous*. An action in progress ends with an ellipsis (*Recherche en
 cours…*). A title names the thing done on the screen, in the infinitive with
-its object: *Ajouter un ouvrage*. Typography is French: the non-breaking
+its object: *Ajouter un ouvrage*. Two screens take a proper name instead:
+the home page, *Libris*, the application's name, and a bookshelf's screen,
+the bookshelf's name. Typography is French: the non-breaking
 space before `:`, `;` and `?`, guillemets « » for quotes, the middle dot
 ` · ` to join two facts on one line (*One piece · tome 1*).
 

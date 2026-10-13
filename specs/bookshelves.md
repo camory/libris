@@ -195,10 +195,10 @@ its list and is gone while the form is there, the form leaving only on its succe
 a row that leads to a screen holding one icon button left of its chevron; in U03 again, a header with
 no hint, the bookshelf's until its screen shows its ouvrages; in U07,
 Lucide as the source of new icons, at stroke 1.8, today's hand-drawn
-ones staying until a follow-up moves them, and from it `IconCirclePlus`
-(`circle-plus`), `IconCheck` (`check`), `IconChevronRight`
-(`chevron-right`), `IconChevronDown` (`chevron-down`), `IconStar`
-(`star`) outlined and filled, `IconCrown` (`crown`) outlined and filled,
+ones staying until a follow-up moves them, and from it `CirclePlus`
+(`circle-plus`), `Check` (`check`), `ChevronRight`
+(`chevron-right`), `ChevronDown` (`chevron-down`), `Star`
+(`star`) outlined and filled, `Crown` (`crown`) outlined and filled,
 the check of a form in a list at stroke 3; in U08, the application's name,
 *Libris*, as the title of the home page, and the bookshelf's name as
 the title of its screen, a proper name in place of an infinitive.
