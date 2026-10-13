@@ -15,3 +15,12 @@ export function membersInOrder(members: Member[], locale: string): Member[] {
       .sort((a, b) => byName(a.reader.displayName, b.reader.displayName));
   return [...withRole("OWNER"), ...withRole("VIEWER")];
 }
+
+export function nonMembersInOrder(
+  readers: KnownReader[],
+  members: Member[],
+  locale: string,
+): KnownReader[] {
+  const memberIds = new Set(members.map((member) => member.reader.id));
+  return readers.filter((reader) => !memberIds.has(reader.id));
+}
