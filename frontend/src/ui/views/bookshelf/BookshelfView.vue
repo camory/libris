@@ -119,7 +119,11 @@ watch([() => props.id, reader], ([id, current]) => {
               />
             </li>
             <li v-if="choosing">
-              <NewMemberRow :readers="nonMembers" :adding="false" @add="add" />
+              <NewMemberRow
+                :readers="nonMembers"
+                :adding="addState.status === 'adding'"
+                @add="add"
+              />
             </li>
           </ul>
           <div v-else class="divide-y divide-border">

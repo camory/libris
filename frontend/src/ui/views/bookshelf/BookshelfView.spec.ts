@@ -231,6 +231,24 @@ describe("BookshelfView", () => {
     screen.getByRole("button", { name: "Ajouter un membre" });
   });
 
+  it("says Ajout en cours… while the member is added", async () => {
+    // Given
+    const wrapper = mountBookshelfView(
+      salonOwned,
+      [leaToOthers, marc, hugo],
+      hugo,
+    );
+    await flushPromises();
+    const screen = within(wrapper.element as HTMLElement);
+    await chooseHugo(screen);
+
+    // When
+    await fireEvent.click(screen.getByRole("button", { name: "Ajouter" }));
+
+    // Then
+    screen.getByRole("button", { name: "Ajout en cours…" });
+  });
+
   async function chooseHugo(screen: Screen) {
     await fireEvent.click(
       screen.getByRole("button", { name: "Ajouter un membre" }),
