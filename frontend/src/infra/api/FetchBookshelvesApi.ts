@@ -13,6 +13,11 @@ interface ReaderBookshelfResponse {
   role: MembershipRole;
 }
 
+interface BookshelfResponse {
+  id: string;
+  name: string;
+}
+
 export class FetchBookshelvesApi implements BookshelvesApi {
   constructor(private readonly baseUrl: string) {}
 
@@ -30,8 +35,20 @@ export class FetchBookshelvesApi implements BookshelvesApi {
     }));
   }
 
-  create(): Promise<CreateAnswer> {
-    return Promise.reject(new Error("create is not implemented"));
+  async create(name: string): Promise<CreateAnswer> {
+    const response = await fetch(`${this.baseUrl}/api/v1/bookshelves`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Accept: "application/json, application/problem+json",
+      },
+      body: JSON.stringify({ name }),
+    });
+    const body = (await response.json()) as BookshelfResponse;
+    return {
+      outcome: "created",
+      bookshelf: { id: body.id, name: body.name },
+    };
   }
 
   find(): Promise<FindAnswer> {

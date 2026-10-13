@@ -38,4 +38,18 @@ describe("FetchBookshelvesApi", () => {
     // Then
     await expect(memberships).rejects.toThrow("The bookshelves answered 500");
   });
+
+  it("creates the bookshelf named", async () => {
+    // Given
+    const api = new FetchBookshelvesApi(inject("mockBaseUrl"));
+
+    // When
+    const answer = await api.create("Bibliothèque familiale");
+
+    // Then
+    expect(answer).toEqual({
+      outcome: "created",
+      bookshelf: { id: expect.any(String), name: expect.any(String) },
+    });
+  });
 });
