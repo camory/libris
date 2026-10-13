@@ -4,5 +4,5 @@ export interface Bookshelf {
 }
 
 export function isBookshelfName(text: string): boolean {
-  return false;
+  return /\S/.test(text);
 }

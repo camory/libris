@@ -5,4 +5,8 @@ describe("isBookshelfName", () => {
   it("refuses a blank name", () => {
     expect(isBookshelfName("   ")).toBe(false);
   });
+
+  it("accepts a name", () => {
+    expect(isBookshelfName("Salon")).toBe(true);
+  });
 });
