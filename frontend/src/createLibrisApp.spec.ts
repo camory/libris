@@ -42,7 +42,7 @@ describe("createLibrisApp", () => {
     await flushPromises();
 
     // Then
-    expect(host.textContent).toContain("La bibliothèque de la maison");
+    expect(host.textContent).toContain("Libris");
     expect(host.textContent).toContain("Bonjour Chloé");
     expect(host.textContent).toContain("sha-abc1234");
 

@@ -25,7 +25,7 @@ describe("HomeView", () => {
   it("renders the French title from the messages", () => {
     const wrapper = mountHomeView(chloe);
 
-    expect(wrapper.text()).toContain("La bibliothèque de la maison");
+    expect(wrapper.text()).toContain("Libris");
   });
 
   it("greets the reader the API answers by display name", async () => {

@@ -2,7 +2,7 @@ import { createI18n } from "vue-i18n";
 
 const fr = {
   home: {
-    title: "La bibliothèque de la maison",
+    title: "Libris",
     greeting: "Bonjour {name}",
     add: "Ajouter un ouvrage",
     bookshelves: {
