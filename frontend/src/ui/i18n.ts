@@ -32,6 +32,7 @@ const fr = {
       you: "Vous",
       reader: "Lecteur",
       choose: "Choisir un lecteur",
+      owner: "Propriétaire",
       add: "Ajouter",
       role: {
         OWNER: "propriétaire",
