@@ -4,7 +4,6 @@ const fr = {
   home: {
     title: "Libris",
     greeting: "Bonjour {name}",
-    add: "Ajouter un ouvrage",
     bookshelves: {
       role: {
         OWNER: "propriétaire",

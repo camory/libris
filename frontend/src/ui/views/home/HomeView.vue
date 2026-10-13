@@ -25,10 +25,6 @@ meApi.currentReader().then((current) => {
       </p>
     </header>
 
-    <RouterLink to="/isbn" class="text-body text-accent">
-      {{ t("home.add") }}
-    </RouterLink>
-
     <p class="mt-5 text-label text-muted">{{ revision }}</p>
   </main>
 </template>

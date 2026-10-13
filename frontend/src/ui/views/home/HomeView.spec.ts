@@ -39,24 +39,26 @@ describe("HomeView", () => {
     expect(wrapper.text()).toContain("Bonjour Chloé");
   });
 
-  it("links to the screen that adds an ouvrage", () => {
+  it("has no link to add an ouvrage", () => {
     const screen = within(mountHomeView(chloe).element as HTMLElement);
 
     expect(
-      screen
-        .getByRole("link", { name: "Ajouter un ouvrage" })
-        .getAttribute("href"),
-    ).toBe("/isbn");
+      screen.queryByRole("link", { name: "Ajouter un ouvrage" }),
+    ).toBeNull();
   });
 
-  it("shows the revision at the foot of the page", () => {
+  it("shows the revision at the foot of the page", async () => {
+    // Given
+    const wrapper = mountHomeView(chloe);
+
     // When
-    const screen = within(mountHomeView(chloe).element as HTMLElement);
+    await flushPromises();
 
     // Then
+    const screen = within(wrapper.element as HTMLElement);
     const revision = screen.getByText("sha-abc1234");
-    const link = screen.getByRole("link", { name: "Ajouter un ouvrage" });
-    expect(link.compareDocumentPosition(revision)).toBe(
+    const greeting = screen.getByText("Bonjour Chloé");
+    expect(greeting.compareDocumentPosition(revision)).toBe(
       Node.DOCUMENT_POSITION_FOLLOWING,
     );
   });
