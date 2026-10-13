@@ -89,7 +89,7 @@ watch([() => props.id, reader], ([id, current]) => {
           class="overflow-hidden rounded-[14px] border border-border bg-surface"
         >
           <ul
-            v-if="members && !choosing"
+            v-if="members"
             :aria-label="t('bookshelf.members.label')"
             class="divide-y divide-border"
           >
