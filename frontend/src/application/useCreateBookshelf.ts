@@ -23,7 +23,9 @@ export function useCreateBookshelf(bookshelvesApi: BookshelvesApi): {
           status: "created",
           created: [...created, { bookshelf: answer.bookshelf, role: "OWNER" }],
         };
-      else state.value = { status: "taken", created };
+      else if (answer.type === "/problems/conflict")
+        state.value = { status: "taken", created };
+      else state.value = { status: "unavailable", created };
     } catch {
       state.value = { status: "unavailable", created };
     }
