@@ -342,15 +342,23 @@ Format:
 - Deviations from the brief: none.
 - Left over: nothing.
 
-## 2026-10-13 — T083 An owner adds a member — handoff
-- Done: steps 1 to 22; S5 un-skipped and read red first (`Unable to find role="button"
-  and name "Ajouter un membre"`) in the first run, put back skipped. Start with step 23.
-- Decided: `BookshelfView` watches `[props.id, reader]` and calls `find(id, reader.id)`;
-  `useFindBookshelf` asks `known()` only when the answer names that reader `OWNER`;
-  `FetchBookshelvesApi` gains `memberOf`, shared by `find` and `addMember`.
-- Decided: `NewMemberRow` sizes its `select` with `field-sizing-content` so the chevron
-  follows the chosen text; the crown is `Crown` with `fill` `currentColor` when pressed.
-- Deviation: commit "hide the plus" was committed red (its `v-if` also hid the `ul`);
-  the next commit, `fix(frontend): keep the members listed…`, repairs it. Step 20's case
-  had readers [lea, marc, hugo]; step 22's commit gives it the brief's four.
-- Guards: steps 11 and 21 were reds of their own, not guards; step 23's mutation is left.
+## 2026-10-13 — T083 An owner adds a member — done
+- Did: an owner's bookshelf screen offers the plus *Ajouter un membre*, a last
+  row choosing a reader not a member, the crown *Propriétaire*, then shows the
+  new member among the members; `ReadersApi` joins `LibrisPorts`.
+- Decided: `BookshelfView` watches `[props.id, reader]` and calls
+  `find(id, reader.id)`, so the bookshelf is asked once the reader is known;
+  `useFindBookshelf` asks `known()` only when the answer names that reader
+  `OWNER`.
+- Decided: `FetchBookshelvesApi` gains `memberOf`, shared by `find` and
+  `addMember`.
+- Decided: `NewMemberRow` sizes its `select` with `field-sizing-content`, so
+  the chevron follows the chosen text; the crown is `Crown`, `fill`
+  `currentColor` while pressed.
+- Deviations from the brief: the commit "hide the plus" went in red (its
+  `v-if` also hid the `ul`), repaired by the next commit, `fix(frontend): keep
+  the members listed…`; history left as is. Step 20's case first had readers
+  [lea, marc, hugo], step 22's commit gives it the brief's four. Steps 11 and
+  21 were reds of their own, not guards.
+- Left over: refusals, no answer, the readers' failure and every reader a
+  member (T088); the star (T084).

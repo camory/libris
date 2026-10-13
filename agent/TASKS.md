@@ -181,7 +181,7 @@ longer says.
       Realises S4 and S9's opening case; un-skips the frontend tests of S4,
       both cases, and of S9, opening a bookshelf.
 
-- [ ] T083 Frontend: an owner adds a member.
+- [x] T083 Frontend: an owner adds a member.
       For an owner, the readers Libris knows asked with the bookshelf, the
       plus *Ajouter un membre* right of *Membres* adds a last row: *Choisir
       un lecteur* among the readers not members, by display name ignoring
