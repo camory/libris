@@ -307,6 +307,48 @@ describe("HomeView", () => {
     expect(offersNew(wrapper)).toBe(false);
   });
 
+  it("says to try again later in the form's row when Libris does not answer", async () => {
+    // Given
+    const wrapper = mountHomeView(
+      chloe,
+      [
+        { bookshelf: salon, role: "VIEWER" },
+        { bookshelf: chloe.defaultBookshelf, role: "OWNER" },
+      ],
+      new TypeError("Failed to fetch"),
+    );
+    await flushPromises();
+    const screen = within(wrapper.element as HTMLElement);
+    await fireEvent.click(
+      screen.getByRole("button", { name: "Nouvelle bibliothèque" }),
+    );
+    await fireEvent.input(
+      screen.getByRole("textbox", { name: "Nom de la bibliothèque" }),
+      { target: { value: "salon" } },
+    );
+
+    // When
+    await fireEvent.click(screen.getByRole("button", { name: "Créer" }));
+    await flushPromises();
+
+    // Then
+    expect(
+      within(screen.getByRole("list", { name: "Mes bibliothèques" }))
+        .getAllByRole("listitem")
+        .map(normalised),
+    ).toEqual([
+      "Bibliothèque de Chloé propriétaire · par défaut",
+      "Salon invité",
+      "Erreur lors de la création, veuillez réessayer plus tard.",
+    ]);
+    expect(
+      screen.getByRole<HTMLInputElement>("textbox", {
+        name: "Nom de la bibliothèque",
+      }).value,
+    ).toBe("salon");
+    expect(offersNew(wrapper)).toBe(false);
+  });
+
   function seen(wrapper: ReturnType<typeof mountHomeView>) {
     const screen = within(wrapper.element as HTMLElement);
     return {
