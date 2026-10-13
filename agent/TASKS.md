@@ -132,7 +132,7 @@ longer says.
       transaction (D12).
       Realises S7, S8; un-skips the backend tests of S7 and of S8, both cases.
 
-- [ ] T079 Frontend: the home page lists the reader's bookshelves, on
+- [x] T079 Frontend: the home page lists the reader's bookshelves, on
       `v0.11.0`.
       Precondition (human): T078 deployed (D04); the frontend piece of the
       spec, its skipped scenario tests over the fakes with the ports, fakes

@@ -22,7 +22,7 @@ Read whole by a run that changes `frontend/`, after `every-run.md`.
   an `afterEach`, or the contract case passes only by running first.
 - `vitest.global-setup.ts` starts `contracteer mock` on port 9099 over the
   contract the frontend pins, a `raw.githubusercontent.com` URL of
-  `camory/libris-api` (`v0.9.0` since T060); it starts in about four seconds
+  `camory/libris-api` (`v0.11.0` since T079); it starts in about four seconds
   and logs `Contracteer mock server started on port 9099` last, and the
   setup resolves on that line and kills the process in its teardown. The
   mock generates values, so an `infra/api` spec asserts shape and types,
@@ -39,7 +39,7 @@ Read whole by a run that changes `frontend/`, after `every-run.md`.
   A value that matches no example gets a generated 200. A `POST` is matched
   on the path parameter and the body together, so one bookshelf id answers
   201 to the body `NewOnePiece1` and 400 to `NewOnePiece1WrongDigit`, and
-  the 404 id answers 404 to `NewOnePiece1`. On `v0.9.0` those bodies carry
+  the 404 id answers 404 to `NewOnePiece1`. Since `v0.9.0` those bodies carry
   `coverSource: "inventaire.io"`: the same body with `coverSource: null`
   matches no example and gets a generated 201 on either id, and a body
   without the field is refused. A scenario whose key sits on
@@ -80,7 +80,10 @@ Read whole by a run that changes `frontend/`, after `every-run.md`.
   the mock generates.
 - `npm run format` passes `--ignore-path ../.gitignore`, or Prettier
   rewrites `dist/` and `coverage/`; `prettier --check` cannot parse
-  `nginx.conf`.
+  `nginx.conf`. `npx prettier --write src` also rewrites `src/domain/Copy.ts`,
+  `src/ui/components/icons/IconBooks.vue` and
+  `src/scenario/CoversScenarios.spec.ts`, which `main` holds unformatted:
+  format the files the task touches, by name.
 - `registerType: "prompt"` and `injectRegister: false` on the PWA plugin: no
   `registerSW.js` is emitted, the app registers `/sw.js` itself through
   `ServiceWorkerAppUpdate`, and Workbox writes the `SKIP_WAITING` message
@@ -108,6 +111,11 @@ Read whole by a run that changes `frontend/`, after `every-run.md`.
   navigation still runs, so the history listeners and `isReady()` are wired
   as usual. Drop that line and every scenario that does not query through
   `findBy*` fails on an empty host holding the tab bar alone.
+- `aria-labelledby` does not resolve on a detached tree: a `getByRole(…, {
+  name })` over it throws `root.getElementById is not a function`, and every
+  component spec and scenario mounts detached. A list is named with
+  `aria-label` holding the catalogue word its visible label shows
+  (`HomeView`'s *Mes bibliothèques*).
 - `getByRole("textbox")` finds `<input type="text">` only: `type="number"` is
   a `spinbutton` and `type="search"` a `searchbox`. A numeric keyboard comes
   from `inputmode="numeric"`. An accessible name from `<label for>` resolves

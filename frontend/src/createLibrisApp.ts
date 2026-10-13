@@ -7,6 +7,10 @@ import {
   barcodeScannerKey,
   type BarcodeScanner,
 } from "./application/BarcodeScanner";
+import {
+  bookshelvesApiKey,
+  type BookshelvesApi,
+} from "./application/BookshelvesApi";
 import { catalogueApiKey, type CatalogueApi } from "./application/CatalogueApi";
 import { isbnApiKey, type IsbnApi } from "./application/IsbnApi";
 import { meApiKey, type MeApi } from "./application/MeApi";
@@ -22,6 +26,7 @@ export interface LibrisPorts {
   barcodeScanner: BarcodeScanner;
   appUpdate: AppUpdate;
   catalogueApi: CatalogueApi;
+  bookshelvesApi: BookshelvesApi;
 }
 
 export function createLibrisApp(ports: LibrisPorts, revision: string): App {
@@ -37,6 +42,7 @@ export function createLibrisApp(ports: LibrisPorts, revision: string): App {
   app.provide(barcodeScannerKey, ports.barcodeScanner);
   app.provide(appUpdateKey, ports.appUpdate);
   app.provide(catalogueApiKey, ports.catalogueApi);
+  app.provide(bookshelvesApiKey, ports.bookshelvesApi);
   app.provide(revisionKey, revision);
   return app;
 }

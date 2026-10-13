@@ -10,6 +10,7 @@ import {
   romanceDawn,
   salon,
 } from "../../fixture/Books";
+import { normalised } from "../../fixture/normalised";
 import { createLibrisI18n } from "../i18n";
 import IconBook from "./icons/IconBook.vue";
 import CatalogueRow from "./CatalogueRow.vue";
@@ -181,9 +182,5 @@ describe("CatalogueRow", () => {
       global: { plugins: [createLibrisI18n()] },
     });
     return { wrapper, screen: within(wrapper.element as HTMLElement) };
-  }
-
-  function normalised(element: Element) {
-    return element.textContent?.replace(/\s+/g, " ").trim() ?? "";
   }
 });

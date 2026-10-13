@@ -234,3 +234,41 @@ Format:
   the reader in its place; `ChooseDefaultBookshelfTest` stores Marc too; the
   gotcha on the fake's order goes.
 - Left over: the frontend's pin and home page (T079), the star (T084).
+
+## 2026-10-13 — T079 The home page lists the reader's bookshelves — done
+- Did: the home page reads *Libris*, the greeting, then *Mes bibliothèques*:
+  a `BookshelfRow` per membership in `membershipsInOrder`, skeleton rows
+  while they come, the loading sentence when Libris does not answer.
+- Decided: the four operations of `FetchBookshelvesApi` no screen uses yet
+  reject with an `Error` naming the operation, as the brief says.
+- Decided: the row's muted line is one catalogue entry, `{role} · par
+  défaut` on the default; the label is an `h2` in the `label` step.
+- Decided: the view computes the list once both the reader and the
+  memberships are there; the skeleton shows until then, the sentence as
+  soon as the memberships fail.
+- Deviations from the brief: the client sends `Accept: application/json,
+  application/problem+json`, the header every request of this tree carries.
+- Deviations from the brief: the list is named by `aria-label`, not
+  labelled by the visible label: `aria-labelledby` throws on the detached
+  trees the specs and the scenarios mount.
+- Deviations from the brief: step 6 keeps the state before `list()` as
+  `before` in the Given; step 14 asserts before and after `flushPromises`.
+- Deviations from the brief: the handoff's Prettier reformatting of
+  `CoversScenarios.spec.ts` reverted in its own commit, its `open()` kept.
+- Handoff: the first run did steps 1 to 7 (scenarios read red first, put
+  back skipped); this run did steps 8 to 17.
+- Left over: the chevron and the row's link (T082), the star (T084), the
+  plus (T080); the spec's U08 and U03 amendments, proposed in the PR.
+
+## 2026-10-13 — T079 The home page lists the reader's bookshelves — reworked
+- Did: *draws skeleton rows under the label while the bookshelves come*
+  keeps what the reader sees before `flushPromises` in its Given and
+  asserts before and after in one Then; *has no link to add an ouvrage*
+  takes Given / When / Then; one card holds the list or the skeleton rows.
+- Decided: the reviewer's verdict of 2026-10-13 amended nothing; its two
+  blocking findings are the layout D07 asks, its card suggestion applied.
+  The `normalised` helper stays in both specs, as the suggestion itself
+  allows: a shared one would sit in `src/fixture`, which the brief keeps
+  unchanged.
+- Deviations from the brief: none.
+- Left over: the title case's missing markers, in `agent/PROPOSED.md`.

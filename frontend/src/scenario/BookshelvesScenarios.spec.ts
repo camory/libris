@@ -7,10 +7,7 @@ import {
 } from "@testing-library/dom";
 import { afterEach, describe, expect, it } from "vitest";
 import type { App } from "vue";
-import {
-  bookshelvesApiKey,
-  type BookshelvesApi,
-} from "../application/BookshelvesApi";
+import type { BookshelvesApi } from "../application/BookshelvesApi";
 import type { BookshelfApi } from "../application/BookshelfApi";
 import type { IsbnApi } from "../application/IsbnApi";
 import { readersApiKey, type ReadersApi } from "../application/ReadersApi";
@@ -80,7 +77,7 @@ describe("Bookshelves", () => {
     window.history.replaceState(null, "", "/");
   });
 
-  it.skip("S1 The reader's bookshelves", async () => {
+  it("S1 The reader's bookshelves", async () => {
     // Given
     const libris = leaBelongsTo(
       viewerOf(mangas),
@@ -268,7 +265,7 @@ describe("Bookshelves", () => {
     ).toBeDefined();
   });
 
-  it.skip("S9 Libris unavailable, the home page's bookshelves", async () => {
+  it("S9 Libris unavailable, the home page's bookshelves", async () => {
     // Given
     const libris = new FakeBookshelvesApi({ memberships: noAnswer() });
 
@@ -510,10 +507,10 @@ describe("Bookshelves", () => {
         barcodeScanner: new FakeBarcodeScanner(false),
         appUpdate: new FakeAppUpdate(),
         catalogueApi: new FakeCatalogueApi([]),
+        bookshelvesApi: bookshelves,
       },
       "sha-abc1234",
     );
-    app.provide(bookshelvesApiKey, bookshelves);
     app.provide(
       readersApiKey,
       world.readers ?? new FakeReadersApi([leaToOthers]),

@@ -9,6 +9,7 @@ import type { Copy } from "../domain/Copy";
 import { FakeAppUpdate } from "../fixture/FakeAppUpdate";
 import { FakeBarcodeScanner } from "../fixture/FakeBarcodeScanner";
 import { FakeBookshelfApi } from "../fixture/FakeBookshelfApi";
+import { FakeBookshelvesApi } from "../fixture/FakeBookshelvesApi";
 import { FakeCatalogueApi } from "../fixture/FakeCatalogueApi";
 import { FakeIsbnApi } from "../fixture/FakeIsbnApi";
 import { FakeMeApi } from "../fixture/FakeMeApi";
@@ -240,6 +241,7 @@ describe("Catalogue", () => {
         barcodeScanner: new FakeBarcodeScanner(false),
         appUpdate: new FakeAppUpdate(),
         catalogueApi: catalogue,
+        bookshelvesApi: new FakeBookshelvesApi({ memberships: [] }),
       },
       "sha-abc1234",
     );

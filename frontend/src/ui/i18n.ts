@@ -2,9 +2,17 @@ import { createI18n } from "vue-i18n";
 
 const fr = {
   home: {
-    title: "La bibliothèque de la maison",
+    title: "Libris",
     greeting: "Bonjour {name}",
-    add: "Ajouter un ouvrage",
+    bookshelves: {
+      label: "Mes bibliothèques",
+      role: {
+        OWNER: "propriétaire",
+        VIEWER: "invité",
+      },
+      default: "{role} · par défaut",
+      error: "Erreur lors du chargement, veuillez réessayer plus tard.",
+    },
   },
   isbn: {
     title: "Ajouter un ouvrage",

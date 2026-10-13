@@ -100,11 +100,10 @@ true; the diary keeps the date it was found.
   `backend/build/test-results/test/TEST-fr.amory.libris.ApiContractTest.xml`:
   read it there after the gate, never count by hand.
 - No schema of the contract says `additionalProperties: false` since
-  `v0.11.0`, so the backend's verifier refuses no extra field in any answer;
-  the frontend's pin (`v0.9.0` in `vitest.global-setup.ts`) keeps the keyword
-  until it bumps. The keyword cannot sit on a branch of an `allOf` anyway:
-  the standard applies each branch on its own, so the base refuses the
-  fields the other branch adds. A property declared again in a second
+  `v0.11.0`, which both sides pin (the frontend since T079), so no verifier
+  refuses an extra field in any answer. The keyword cannot sit on a branch
+  of an `allOf` anyway: the standard applies each branch on its own, so the
+  base refuses the fields the other branch adds. A property declared again in a second
   branch tightens the base's, `isbn13` never null on `IsbnLookup`.
 - Contracteer honours `readOnly`: the mock answers `400` to a request whose
   body carries a read-only field, even empty. The contract avoids `readOnly`
