@@ -272,3 +272,14 @@ Format:
   unchanged.
 - Deviations from the brief: none.
 - Left over: the title case's missing markers, in `agent/PROPOSED.md`.
+
+## 2026-10-13 — T080 A reader creates a bookshelf — handoff
+- Done: steps 1 to 13, one commit each. S2 was un-skipped first and read red
+  (no button *Nouvelle bibliothèque*), then put back skipped until step 18.
+- Next: step 14, the guard (S9's home page case; mutation `v-if="state.status
+  !== 'loading'"` on the plus), then steps 15 to 18. No guard run yet.
+- Deviation: `@lucide/vue` 1.56.0 and `app.provide(LUCIDE_CONTEXT, {
+  strokeWidth: 1.8 })` arrived in step 9, not 13: `Check` is the first icon.
+- Deviation: the field carries `aria-label` with its placeholder's word; a
+  placeholder alone gives no accessible name to `getByRole("textbox")`.
+- Learned: the first commit is typed `test(frontend)`, it holds the stub too.
