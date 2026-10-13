@@ -174,7 +174,7 @@ describe("Bookshelves", () => {
     expect(screen.queryByRole("list", { name: "Membres" })).toBeNull();
   });
 
-  it.skip.each([
+  it.each([
     {
       case: "added as owner",
       role: "OWNER",
