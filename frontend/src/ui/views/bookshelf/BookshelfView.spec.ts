@@ -209,7 +209,7 @@ describe("BookshelfView", () => {
     // Given
     const wrapper = mountBookshelfView(
       salonOwned,
-      [leaToOthers, marc, hugo],
+      [leaToOthers, marc, hugo, elodie],
       hugo,
     );
     await flushPromises();
@@ -235,7 +235,7 @@ describe("BookshelfView", () => {
     // Given
     const wrapper = mountBookshelfView(
       salonOwned,
-      [leaToOthers, marc, hugo],
+      [leaToOthers, marc, hugo, elodie],
       hugo,
     );
     await flushPromises();
@@ -247,6 +247,25 @@ describe("BookshelfView", () => {
 
     // Then
     screen.getByRole("button", { name: "Ajout en cours…" });
+  });
+
+  it("offers a viewer no plus", async () => {
+    // Given
+    const wrapper = mountBookshelfView(salonHeld, [
+      leaToOthers,
+      marc,
+      elodie,
+      hugo,
+    ]);
+
+    // When
+    await flushPromises();
+
+    // Then
+    const screen = within(wrapper.element as HTMLElement);
+    expect(
+      screen.queryByRole("button", { name: "Ajouter un membre" }),
+    ).toBeNull();
   });
 
   async function chooseHugo(screen: Screen) {
