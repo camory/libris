@@ -362,3 +362,35 @@ Format:
   21 were reds of their own, not guards.
 - Left over: refusals, no answer, the readers' failure and every reader a
   member (T088); the star (T084).
+
+## 2026-10-14 — T089 The reader first, and the reader chosen in a block — done
+- Did: `membersInOrder` takes the reader's id and puts their row first; the
+  plus opens `ReaderChoice`, the block *Choisir un lecteur* under *Membres*,
+  whose tapped row becomes the form; `NewMemberRow` and `IconClose` are gone.
+- Decided: `ReaderChoice`'s root is a `section` given `pt-5` by the view, so
+  the 20 between blocks scrolls into view with it; the rows are `min-h-14`
+  buttons and the chosen row is the form's 44 buttons with `py-1.5`.
+- Decided: the cited scenarios were un-skipped first, their reds read (S4 the
+  owners first, S5 no list *Choisir un lecteur*) and put back skipped, then
+  un-skipped for good as steps 16 and 17.
+- Decided: two cases of `BookshelfView.spec.ts` named after the form
+  (*…the form gone*, *hides the plus while the form is there*) now say *the
+  choice*, which is what they read.
+- Deviations from the brief: step 1's first red was the `RangeError` of the
+  id read as the locale; the parameter was added alone to read the order's
+  red. Step 7 was a red of its own (step 6 left the check emitting
+  `VIEWER`), not a guard.
+- Left over: the add's failure and every reader a member (T088); the star
+  (T084).
+
+## 2026-10-14 — T089 The reader first, and the reader chosen in a block — reworked
+- Did: `ReaderChoice.spec.ts` reads top down (`open`, then `formRow`, then
+  `rowOf`); *makes the tapped reader's row the form* finds the row holding
+  the crown and reads *Hugo* in it; the scroll case pins `{ block: "nearest" }`.
+- Decided: the reviewer's verdict of 2026-10-14 (blocking: `rowOf` above
+  `open`; suggestions: the tautological name, the scroll's argument); it
+  amended nothing. The form's row is found by its *Propriétaire* button, a
+  new helper `formRow`, so the name is asserted where the form is; `rowOf`
+  stays for *moves the form to another reader*, which the reviews leave alone.
+- Deviations from the brief: none.
+- Left over: nothing.

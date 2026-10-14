@@ -17,8 +17,8 @@ import type { Reader } from "../../../domain/Reader";
 import IconAlert from "../../components/icons/IconAlert.vue";
 import MemberRow from "../../components/MemberRow.vue";
 import MemberRowSkeleton from "../../components/MemberRowSkeleton.vue";
-import NewMemberRow from "../../components/NewMemberRow.vue";
 import PageTitleSkeleton from "../../components/PageTitleSkeleton.vue";
+import ReaderChoice from "../../components/ReaderChoice.vue";
 
 const props = defineProps<{ id: string }>();
 
@@ -44,7 +44,7 @@ const everyMember = computed<Member[]>(() =>
 
 const members = computed(() =>
   reader.value && state.value.status === "found"
-    ? membersInOrder(everyMember.value, locale.value)
+    ? membersInOrder(everyMember.value, reader.value.id, locale.value)
     : null,
 );
 
@@ -123,19 +123,21 @@ watch([() => props.id, reader], ([id, current]) => {
                 :is-reader="member.reader.id === reader?.id"
               />
             </li>
-            <li v-if="choosing">
-              <NewMemberRow
-                :readers="nonMembers"
-                :adding="addState.status === 'adding'"
-                @add="add"
-              />
-            </li>
           </ul>
           <div v-else class="divide-y divide-border">
             <MemberRowSkeleton v-for="row in 2" :key="row" />
           </div>
         </div>
       </section>
+
+      <ReaderChoice
+        v-if="choosing"
+        class="pt-5"
+        :readers="nonMembers"
+        :adding="addState.status === 'adding'"
+        @add="add"
+        @close="choosing = false"
+      />
     </template>
   </main>
 </template>

@@ -337,6 +337,11 @@ Read whole by a run that changes `frontend/`, after `every-run.md`.
   `createLibrisApp`: a component spec mounted alone gets no context and
   draws Lucide's default stroke, 2. A `:stroke-width` on the icon beats the
   context (`NewBookshelfRow`'s check, 3).
+- `findComponent(SomeIcon)` over a tree that draws none answers an empty
+  wrapper whose `.element` throws `Cannot call element on an empty
+  VueWrapper`: that is the red of a case asserting an icon before the icon is
+  drawn, not a broken spec (`IsbnView`'s *draws a cross while the camera is
+  open*).
 - A home row is a stretched link: `BookshelfRow`'s `RouterLink` wraps the
   name and role, and its `after:absolute after:inset-0` covers the whole
   `relative` row, chevron included, so a tap anywhere opens the bookshelf.

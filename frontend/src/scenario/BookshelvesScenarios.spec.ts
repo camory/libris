@@ -137,7 +137,7 @@ describe("Bookshelves", () => {
     ]);
   });
 
-  it.skip("S4 A member opens a bookshelf", async () => {
+  it("S4 A member opens a bookshelf", async () => {
     // Given
     const libris = librisHolds(
       salon,
@@ -174,7 +174,7 @@ describe("Bookshelves", () => {
     expect(screen.queryByRole("list", { name: "Membres" })).toBeNull();
   });
 
-  it.skip.each([
+  it.each([
     {
       case: "added as owner",
       role: "OWNER",

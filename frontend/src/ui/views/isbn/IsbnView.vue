@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { X } from "@lucide/vue";
 import {
   computed,
   inject,
@@ -24,7 +25,6 @@ import SourceEditionCard from "../../components/SourceEditionCard.vue";
 import SourceEditionCardSkeleton from "../../components/SourceEditionCardSkeleton.vue";
 import IconAlert from "../../components/icons/IconAlert.vue";
 import IconBarcode from "../../components/icons/IconBarcode.vue";
-import IconClose from "../../components/icons/IconClose.vue";
 import IconMagnifier from "../../components/icons/IconMagnifier.vue";
 
 const messages = new Map([["/problems/not-found", "isbn.unknown"]]);
@@ -138,7 +138,7 @@ async function search() {
             class="absolute top-1/2 right-[3px] flex size-11 -translate-y-1/2 items-center justify-center rounded-[10px] text-accent"
             @click="toggleCamera"
           >
-            <IconClose v-if="scanning" />
+            <X v-if="scanning" :size="22" />
             <IconBarcode v-else />
           </button>
         </div>
