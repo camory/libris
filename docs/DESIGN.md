@@ -116,7 +116,8 @@ right, as an icon button.
 it has no primary button. Its fields have no label: a placeholder in
 `muted` names each one, in place of an example value. Each keeps the box
 of a field, 44 tall in place of 50, 12 of side padding, 10 from the
-row's edges, so the form never reads as one more row of the list. At
+row's edges, so the form never reads as one more row of the list. Its
+first field takes the focus when the form opens. At
 the row's right, a check sends the form: an icon button in `accent`, drawn
 at stroke 3, absent until the form can be sent, its place kept. While the
 form is sent, a spinner takes its place. A message goes under the fields,

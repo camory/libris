@@ -221,7 +221,7 @@ mark and not a button; outlined on the others, an icon button,
 *Choisir comme bibliothèque par défaut*, a tap making it the default. A
 viewer's row has no star. At the right of the block's label, a plus,
 *Nouvelle bibliothèque*: a tap adds a last row to the list, the field
-*Nom de la bibliothèque* in its box, that name its placeholder, and at its right,
+*Nom de la bibliothèque* in its box, focused, that name its placeholder, and at its right,
 aligned with the chevrons, the check *Créer*, absent while the name is
 blank; while the row is there the plus is gone. Then the revision, as
 today.
