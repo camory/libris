@@ -410,11 +410,24 @@ Format:
   (`HugoErreur…`). Steps 14 and 15 were reds of their own, not guards.
 - Left over: the star and S7, S8, S9's default case (T084).
 
-## 2026-10-14 — T084 A reader chooses their default — handoff
-- Done: steps 1–18 of the test plan, one commit each. Start with step 19 (`HomeView` busy in the tapped row), then 20, 21, then 22–24.
-- Decided: the three scenarios were un-skipped first, their red read (no button *Choisir comme bibliothèque par défaut* in all three) and put back skipped; steps 22–24 un-skip them for good.
-- Decided: step 4 was a guard (step 1 already sent the `addMember` headers); step 9 a guard (the failure keeps `defaultBookshelfId`); step 14 a red of its own (step 10 drew the star on every row).
-- Mutations read: step 3, `status === 404` in place of `!== 204` → `expected { outcome: 'chosen' }`; step 4, the header dropped → `expected { …(2) } to match object { Object (X-Requested-With) }`; step 9, the refusal written with `defaultBookshelfId: null` → the case red; step 13, the button's star `fill="currentColor"` → `expected 'currentColor' not to be 'currentColor'`.
-- Deviation: step 3 is named *answers a problem when the default's id is not one*, since `find` already holds a case named as the brief's.
-- Self-review to do: `HomeView.vue` passes `defaultBookshelfId.value!` to `membershipsInOrder`; drop the `!`. `BookshelfRow.spec.ts` `show()` takes a `choice` third argument.
-- Learned: the row's message sits in a `min-w-0 flex-1` div beside the link, after an interpolated `{{ " " }}`, so `normalised` reads it apart from the role.
+## 2026-10-14 — T084 A reader chooses their default — done
+- Did: the home page's star makes a bookshelf the reader owns their default:
+  `FetchBookshelvesApi.chooseDefault`, `useChooseDefaultBookshelf`, and
+  `BookshelfRow`'s `busy`, `locked`, `failed` and `choose`, wired in `HomeView`.
+- Decided: the three scenarios were un-skipped first, their red read (no
+  button *Choisir comme bibliothèque par défaut* in all three), put back
+  skipped, and un-skipped for good as steps 22–24.
+- Decided: the row's message sits in a `min-w-0 flex-1` div beside the link,
+  after an interpolated `{{ " " }}`, so the link's name stays name and role.
+- Decided: `HomeView` lists the rows once `defaultBookshelfId` is known, the
+  choice's or the reader's, in place of a non-null assertion; a row can only
+  be tapped once the reader is there, so nothing else changes.
+- Decided: the run handed off once, after step 18; the next run did 19–24,
+  the self-review, and opened the PR.
+- Deviations from the brief: step 3 is named *answers a problem when the
+  default's id is not one*, since `find` already holds a case named as the
+  brief's. Step 4 and 9 were guards; step 14 a red of its own (step 10 drew
+  the star on every row), not a guard.
+- Left over: telling the refusals apart on screen (S9, *Questions for the
+  human*); the star's tap above the stretched link is checked on the
+  running app only.
