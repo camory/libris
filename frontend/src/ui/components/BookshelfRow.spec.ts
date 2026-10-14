@@ -56,6 +56,18 @@ describe("BookshelfRow", () => {
     expect(wrapper.findComponent(ChevronRight).exists()).toBe(true);
   });
 
+  it("offers to make an owned bookshelf the default", async () => {
+    // When
+    const row = await show({ bookshelf: salon, role: "OWNER" }, false);
+
+    // Then
+    expect(
+      within(row).getByRole("button", {
+        name: "Choisir comme bibliothèque par défaut",
+      }),
+    ).toBeDefined();
+  });
+
   async function show(membership: Membership, isDefault: boolean) {
     return (await mountRow(membership, isDefault)).element as HTMLElement;
   }
