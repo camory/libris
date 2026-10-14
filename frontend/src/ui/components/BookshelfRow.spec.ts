@@ -94,6 +94,16 @@ describe("BookshelfRow", () => {
     expect(wrapper.findComponent(Star).attributes("fill")).toBe("currentColor");
   });
 
+  it("outlines the star of the button", async () => {
+    // When
+    const wrapper = await mountRow({ bookshelf: salon, role: "OWNER" }, false);
+
+    // Then
+    expect(wrapper.findComponent(Star).attributes("fill")).not.toBe(
+      "currentColor",
+    );
+  });
+
   async function show(membership: Membership, isDefault: boolean) {
     return (await mountRow(membership, isDefault)).element as HTMLElement;
   }
