@@ -291,4 +291,18 @@ describe("FetchBookshelvesApi", () => {
     // Then
     expect(answer).toEqual({ outcome: "problem", type: "/problems/not-found" });
   });
+
+  it("answers a problem when the default's id is not one", async () => {
+    // Given
+    const api = new FetchBookshelvesApi(inject("mockBaseUrl"));
+
+    // When
+    const answer = await api.chooseDefault("not-a-uuid");
+
+    // Then
+    expect(answer).toEqual({
+      outcome: "problem",
+      type: "/problems/validation",
+    });
+  });
 });
