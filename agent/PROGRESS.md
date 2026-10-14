@@ -382,3 +382,15 @@ Format:
   `VIEWER`), not a guard.
 - Left over: the add's failure and every reader a member (T088); the star
   (T084).
+
+## 2026-10-14 — T089 The reader first, and the reader chosen in a block — reworked
+- Did: `ReaderChoice.spec.ts` reads top down (`open`, then `formRow`, then
+  `rowOf`); *makes the tapped reader's row the form* finds the row holding
+  the crown and reads *Hugo* in it; the scroll case pins `{ block: "nearest" }`.
+- Decided: the reviewer's verdict of 2026-10-14 (blocking: `rowOf` above
+  `open`; suggestions: the tautological name, the scroll's argument); it
+  amended nothing. The form's row is found by its *Propriétaire* button, a
+  new helper `formRow`, so the name is asserted where the form is; `rowOf`
+  stays for *moves the form to another reader*, which the reviews leave alone.
+- Deviations from the brief: none.
+- Left over: nothing.
