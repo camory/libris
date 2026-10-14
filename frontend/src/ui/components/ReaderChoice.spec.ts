@@ -66,6 +66,20 @@ describe("ReaderChoice", () => {
     expect(wrapper.emitted("add")).toEqual([[hugo.id, "VIEWER"]]);
   });
 
+  it("presses the crown once tapped", async () => {
+    // Given
+    const { screen } = open();
+    await fireEvent.click(screen.getByRole("button", { name: "Hugo" }));
+
+    // When
+    await fireEvent.click(screen.getByRole("button", { name: "Propriétaire" }));
+
+    // Then
+    expect(
+      screen.getByRole("button", { name: "Propriétaire", pressed: true }),
+    ).toBeDefined();
+  });
+
   function rowOf(screen: Screen, displayName: string) {
     return within(screen.getByRole("list", { name: "Choisir un lecteur" }))
       .getAllByRole("listitem")
