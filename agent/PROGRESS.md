@@ -394,3 +394,19 @@ Format:
   stays for *moves the form to another reader*, which the reviews leave alone.
 - Deviations from the brief: none.
 - Left over: nothing.
+
+## 2026-10-14 — T088 Every reader a member, or no answer — handoff
+- Done: steps 1–18 of the test plan, each committed at green; the cited S9
+  adding scenario un-skipped first (red: no sentence, an unhandled rejection),
+  put back skipped, un-skipped for good at step 18. Gate green. Next: self-review
+  is done (nothing changed); tick T088, rewrite this entry as the diary, open the PR.
+- Decided: `ReaderChoice` keeps `failedId`, set from `chosenId` by a `watch` on
+  `failed`, so the message stays with the reader whose add failed.
+- Deviations: step 12 asserts the row's *Hugo* and sentence by `getByText`, not
+  `normalised` (it glues them, `HugoErreur…`); steps 14 and 15 were reds of their own.
+- Mutations (each red, reverted): 3 `known().catch(() => [])` → *is unavailable when
+  the readers do not answer*; 6 failed state `added: []` → *keeps the members…*; 8
+  `status === 400` → *…owns no such bookshelf*; 9 `400 || 404` → *…already a member*;
+  14 condition `owned` alone → *says nothing of it while…*; 16 non-members from
+  `state.members` → *…once the last is added*; 17 plus `v-if` without `nonMembers`
+  → *offers no plus…* and *offers a viewer no plus*; 18 `add` closes always → S9 adding.
