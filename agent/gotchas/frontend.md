@@ -356,7 +356,10 @@ Read whole by a run that changes `frontend/`, after `every-run.md`.
   name and role, and its `after:absolute after:inset-0` covers the whole
   `relative` row, chevron included, so a tap anywhere opens the bookshelf.
   A control added to the row (the star) sits outside the link and needs
-  `relative` to be above that cover, or the tap opens the bookshelf. jsdom
+  `relative` to be above that cover, or the tap opens the bookshelf. A
+  message under the row (the default's error) sits after the `relative`
+  row, in the component's outer `div`, out of the cover; its `-mt-1.5`
+  pulls it back under the cover, so it is `relative` too. jsdom
   neither lays out nor hit-tests, so no spec sees the cover: it is checked
   on the running app.
 - A spec's subclass of a fixture fake (`LibrisNotAnswering`,

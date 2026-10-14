@@ -25,48 +25,48 @@ const role = computed(() => {
 </script>
 
 <template>
-  <div class="relative flex items-center">
-    <div class="min-w-0 flex-1">
+  <div>
+    <div class="relative flex items-center">
       <RouterLink
         :to="`/bibliotheques/${membership.bookshelf.id}`"
-        class="flex flex-col gap-1 p-3.5 after:absolute after:inset-0"
+        class="flex min-w-0 flex-1 flex-col gap-1 p-3.5 after:absolute after:inset-0"
       >
         <p class="text-row-title">{{ membership.bookshelf.name }}</p>
         {{ " " }}
         <p class="text-body text-muted">{{ role }}</p>
       </RouterLink>
-      {{ " " }}
-      <p
-        v-if="failed"
-        class="-mt-1.5 flex items-start gap-2 px-3.5 pb-3.5 text-body text-danger"
-      >
-        <IconAlert />
-        <span>{{ t("home.bookshelves.defaultError") }}</span>
-      </p>
+      <template v-if="membership.role === 'OWNER'">
+        <span
+          v-if="isDefault"
+          class="flex size-11 shrink-0 items-center justify-center text-accent"
+        >
+          <Star fill="currentColor" />
+        </span>
+        <button
+          v-else
+          type="button"
+          :disabled="busy || locked"
+          :aria-label="
+            busy
+              ? t('home.bookshelves.choosingDefault')
+              : t('home.bookshelves.chooseDefault')
+          "
+          class="relative flex size-11 shrink-0 items-center justify-center rounded-[10px] text-accent"
+          @click="emit('choose')"
+        >
+          <BusySpinner v-if="busy" class="size-5.5" />
+          <Star v-else />
+        </button>
+      </template>
+      <ChevronRight class="mr-3.5 shrink-0 text-muted" />
     </div>
-    <template v-if="membership.role === 'OWNER'">
-      <span
-        v-if="isDefault"
-        class="flex size-11 shrink-0 items-center justify-center text-accent"
-      >
-        <Star fill="currentColor" />
-      </span>
-      <button
-        v-else
-        type="button"
-        :disabled="busy || locked"
-        :aria-label="
-          busy
-            ? t('home.bookshelves.choosingDefault')
-            : t('home.bookshelves.chooseDefault')
-        "
-        class="relative flex size-11 shrink-0 items-center justify-center rounded-[10px] text-accent"
-        @click="emit('choose')"
-      >
-        <BusySpinner v-if="busy" class="size-5.5" />
-        <Star v-else />
-      </button>
-    </template>
-    <ChevronRight class="mr-3.5 shrink-0 text-muted" />
+    {{ " " }}
+    <p
+      v-if="failed"
+      class="relative -mt-1.5 flex items-start gap-2 px-3.5 pb-3.5 text-body text-danger"
+    >
+      <IconAlert />
+      <span>{{ t("home.bookshelves.defaultError") }}</span>
+    </p>
   </div>
 </template>
