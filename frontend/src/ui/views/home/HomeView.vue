@@ -5,7 +5,10 @@ import { useI18n } from "vue-i18n";
 import { bookshelvesApiKey } from "../../../application/BookshelvesApi";
 import { meApiKey } from "../../../application/MeApi";
 import { revisionKey } from "../../../application/Revision";
-import { useChooseDefaultBookshelf } from "../../../application/useChooseDefaultBookshelf";
+import {
+  type ChooseDefaultState,
+  useChooseDefaultBookshelf,
+} from "../../../application/useChooseDefaultBookshelf";
 import { useCreateBookshelf } from "../../../application/useCreateBookshelf";
 import { useListReaderBookshelves } from "../../../application/useListReaderBookshelves";
 import { membershipsInOrder } from "../../../domain/Membership";
@@ -50,11 +53,12 @@ const createFailure = computed(() =>
     : undefined,
 );
 
-const choosingId = computed(() =>
-  chooseState.value.status === "choosing"
-    ? chooseState.value.bookshelfId
-    : null,
-);
+function isChoice(bookshelfId: string, status: ChooseDefaultState["status"]) {
+  return (
+    chooseState.value.status === status &&
+    chooseState.value.bookshelfId === bookshelfId
+  );
+}
 
 async function create(name: string) {
   await createBookshelf(name);
@@ -111,8 +115,9 @@ void list();
             <BookshelfRow
               :membership="membership"
               :is-default="membership.bookshelf.id === defaultBookshelfId"
-              :busy="membership.bookshelf.id === choosingId"
+              :busy="isChoice(membership.bookshelf.id, 'choosing')"
               :locked="chooseState.status === 'choosing'"
+              :failed="isChoice(membership.bookshelf.id, 'unavailable')"
               @choose="choose(membership.bookshelf.id)"
             />
           </li>

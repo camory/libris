@@ -410,6 +410,36 @@ describe("HomeView", () => {
     expect(starOf(screen, "Étagère").disabled).toBe(true);
   });
 
+  it("says Libris did not answer in the tapped row, the stars as they were", async () => {
+    // Given
+    const memberships: Membership[] = [
+      { bookshelf: chloe.defaultBookshelf, role: "OWNER" },
+      { bookshelf: atelier, role: "OWNER" },
+    ];
+    const wrapper = mountHomeView(
+      chloe,
+      memberships,
+      undefined,
+      new FakeBookshelvesApi({
+        memberships,
+        defaultChosen: new TypeError("Failed to fetch"),
+      }),
+    );
+    await flushPromises();
+    const screen = within(wrapper.element as HTMLElement);
+
+    // When
+    await fireEvent.click(starOf(screen, "Atelier"));
+    await flushPromises();
+
+    // Then
+    expect(rows(screen)).toEqual([
+      "Bibliothèque de Chloé propriétaire · par défaut",
+      "Atelier propriétaire Erreur lors du changement, veuillez réessayer plus tard.",
+    ]);
+    expect(starOf(screen, "Atelier").disabled).toBe(false);
+  });
+
   function seen(wrapper: ReturnType<typeof mountHomeView>) {
     const screen = within(wrapper.element as HTMLElement);
     return {
