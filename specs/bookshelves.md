@@ -5,7 +5,7 @@ Libris knows to it as owner or viewer, and chooses which bookshelf they own
 takes their one-tap add: two readers of the household fill one bookshelf
 together. Now, because each reader has only the bookshelf created with them,
 and the household wants one bookshelf for two.
-**Status:** draft
+**Status:** done 2026-10-14
 
 ## Scenarios
 
@@ -337,6 +337,10 @@ reads *Dans Bibliothèque familiale*. Then create *Salon* and add the
 second account as *invité*: on that account, the row of *Salon* has no
 star, and its copies are in the catalogue.
 
+Checked by Tophe on the Pixel, recorded on 2026-10-14; the second
+account's ouvrage typed, not scanned: that account's staging origin has no
+camera.
+
 ## Tasks
 
 - T072 — S2, the backend on `v0.11.0` — backend
@@ -355,3 +359,4 @@ star, and its copies are in the catalogue.
 - T089 — S4, S5 the reader first, the choice in its own block — frontend
 - T088 — S5 every reader a member, S9 adding a member — frontend
 - T084 — S7, S8, S9 choosing the default — frontend
+- T090 — U04's form in a list, the name's field boxed and focused — frontend
