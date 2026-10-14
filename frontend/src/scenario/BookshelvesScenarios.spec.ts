@@ -201,7 +201,7 @@ describe("Bookshelves", () => {
     await waitFor(() => expect(members(screen)).toEqual(then));
   });
 
-  it.skip("S7 A reader chooses their default", async () => {
+  it("S7 A reader chooses their default", async () => {
     // Given
     const me = new FakeMeApi(lea);
     const screen = open(
