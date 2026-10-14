@@ -278,4 +278,17 @@ describe("FetchBookshelvesApi", () => {
     // Then
     expect(answer).toEqual({ outcome: "chosen" });
   });
+
+  it("answers a problem when the reader owns no such bookshelf", async () => {
+    // Given
+    const api = new FetchBookshelvesApi(inject("mockBaseUrl"));
+
+    // When
+    const answer = await api.chooseDefault(
+      "9e8d7c6b-5a4f-4e3d-8c2b-1a0f9e8d7c6b",
+    );
+
+    // Then
+    expect(answer).toEqual({ outcome: "problem", type: "/problems/not-found" });
+  });
 });

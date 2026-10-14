@@ -110,15 +110,19 @@ export class FetchBookshelvesApi implements BookshelvesApi {
   }
 
   async chooseDefault(id: string): Promise<ChooseDefaultAnswer> {
-    await fetch(`${this.baseUrl}/api/v1/me/default-bookshelf`, {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-        Accept: "application/json, application/problem+json",
-        "X-Requested-With": "XMLHttpRequest",
+    const response = await fetch(
+      `${this.baseUrl}/api/v1/me/default-bookshelf`,
+      {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json, application/problem+json",
+          "X-Requested-With": "XMLHttpRequest",
+        },
+        body: JSON.stringify({ id }),
       },
-      body: JSON.stringify({ id }),
-    });
+    );
+    if (response.status !== 204) return problemOf(response, problems);
     return { outcome: "chosen" };
   }
 }
