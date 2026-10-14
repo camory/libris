@@ -13,6 +13,9 @@ export class FetchReadersApi implements ReadersApi {
     const response = await fetch(`${this.baseUrl}/api/v1/readers`, {
       headers: { Accept: "application/json, application/problem+json" },
     });
+    if (response.status !== 200) {
+      throw Error(`The readers answered ${response.status}`);
+    }
     const body = (await response.json()) as ReaderResponse[];
     return body.map((reader) => ({
       id: reader.id,
