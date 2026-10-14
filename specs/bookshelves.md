@@ -182,11 +182,12 @@ scenario test with the API failing, one per case.
 Mockups: <https://claude.ai/artifact/DgkPZBCjVEXQeU31rmcsC1>, one artboard
 per state below, exported as `specs/bookshelves/<n>-<state>.jpg` in the
 same order, 1 to 11 the home page, 12 to 21 a bookshelf; 14, 15 and 20
-are drawn from a prototype of the choice in a block of its own, which the
-artifact predates. The rules of
+are drawn from a prototype of the choice in a block of its own, and 3, 4,
+6 and 8 from a prototype of the boxed field, both of which the artifact
+predates. The rules of
 `docs/DESIGN.md` hold; what they lack is proposed as an amendment with the
 spec: in U04, the form in a list, a block's form being the last row of
-its list, its fields with no border and no label, a placeholder in
+its list, its fields boxed and with no label, a placeholder in
 `muted` naming each, a choice among many a block of its own under the
 list, closed by a cross, its options rows that become the form when
 tapped, at the row's right a check, an icon button
@@ -220,7 +221,7 @@ mark and not a button; outlined on the others, an icon button,
 *Choisir comme bibliothèque par défaut*, a tap making it the default. A
 viewer's row has no star. At the right of the block's label, a plus,
 *Nouvelle bibliothèque*: a tap adds a last row to the list, the field
-*Nom de la bibliothèque*, that name its placeholder, and at its right,
+*Nom de la bibliothèque* in its box, focused, that name its placeholder, and at its right,
 aligned with the chevrons, the check *Créer*, absent while the name is
 blank; while the row is there the plus is gone. Then the revision, as
 today.
