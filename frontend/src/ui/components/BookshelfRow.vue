@@ -4,12 +4,14 @@ import { computed } from "vue";
 import { useI18n } from "vue-i18n";
 import type { Membership } from "../../domain/Membership";
 import BusySpinner from "./BusySpinner.vue";
+import IconAlert from "./icons/IconAlert.vue";
 
 const props = defineProps<{
   membership: Membership;
   isDefault: boolean;
   busy?: boolean;
   locked?: boolean;
+  failed?: boolean;
 }>();
 
 const emit = defineEmits<{ choose: [] }>();
@@ -24,14 +26,24 @@ const role = computed(() => {
 
 <template>
   <div class="relative flex items-center">
-    <RouterLink
-      :to="`/bibliotheques/${membership.bookshelf.id}`"
-      class="flex min-w-0 flex-1 flex-col gap-1 p-3.5 after:absolute after:inset-0"
-    >
-      <p class="text-row-title">{{ membership.bookshelf.name }}</p>
+    <div class="min-w-0 flex-1">
+      <RouterLink
+        :to="`/bibliotheques/${membership.bookshelf.id}`"
+        class="flex flex-col gap-1 p-3.5 after:absolute after:inset-0"
+      >
+        <p class="text-row-title">{{ membership.bookshelf.name }}</p>
+        {{ " " }}
+        <p class="text-body text-muted">{{ role }}</p>
+      </RouterLink>
       {{ " " }}
-      <p class="text-body text-muted">{{ role }}</p>
-    </RouterLink>
+      <p
+        v-if="failed"
+        class="-mt-1.5 flex items-start gap-2 px-3.5 pb-3.5 text-body text-danger"
+      >
+        <IconAlert />
+        <span>{{ t("home.bookshelves.defaultError") }}</span>
+      </p>
+    </div>
     <template v-if="membership.role === 'OWNER'">
       <span
         v-if="isDefault"

@@ -150,6 +150,18 @@ describe("BookshelfRow", () => {
     ).toBe(true);
   });
 
+  it("says Libris did not answer under the role", async () => {
+    // When
+    const row = await show({ bookshelf: salon, role: "OWNER" }, false, {
+      failed: true,
+    });
+
+    // Then
+    expect(normalised(row)).toBe(
+      "Salon propriétaire Erreur lors du changement, veuillez réessayer plus tard.",
+    );
+  });
+
   async function show(
     membership: Membership,
     isDefault: boolean,
@@ -177,4 +189,5 @@ describe("BookshelfRow", () => {
 interface Choice {
   busy?: boolean;
   locked?: boolean;
+  failed?: boolean;
 }
