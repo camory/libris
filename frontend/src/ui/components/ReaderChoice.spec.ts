@@ -182,18 +182,18 @@ describe("ReaderChoice", () => {
     expect(scrollIntoView.mock.contexts[0]).toBe(wrapper.element);
   });
 
-  function rowOf(screen: Screen, displayName: string) {
-    return within(screen.getByRole("list", { name: "Choisir un lecteur" }))
-      .getAllByRole("listitem")
-      .find((row) => row.textContent?.includes(displayName))!;
-  }
-
   function open(adding = false) {
     const wrapper = mount(ReaderChoice, {
       props: { readers: [hugo, marc], adding },
       global: { plugins: [createLibrisI18n()] },
     });
     return { wrapper, screen: within(wrapper.element as HTMLElement) };
+  }
+
+  function rowOf(screen: Screen, displayName: string) {
+    return within(screen.getByRole("list", { name: "Choisir un lecteur" }))
+      .getAllByRole("listitem")
+      .find((row) => row.textContent?.includes(displayName))!;
   }
 });
 
