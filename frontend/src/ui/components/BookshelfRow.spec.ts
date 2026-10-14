@@ -1,5 +1,5 @@
 import { fireEvent, within } from "@testing-library/dom";
-import { ChevronRight } from "@lucide/vue";
+import { ChevronRight, Star } from "@lucide/vue";
 import { mount } from "@vue/test-utils";
 import { afterEach, describe, expect, it } from "vitest";
 import type { Membership } from "../../domain/Membership";
@@ -81,6 +81,17 @@ describe("BookshelfRow", () => {
 
     // Then
     expect(wrapper.emitted("choose")).toHaveLength(1);
+  });
+
+  it("marks the default with a star that is no button", async () => {
+    // When
+    const wrapper = await mountRow({ bookshelf: salon, role: "OWNER" }, true);
+
+    // Then
+    expect(
+      within(wrapper.element as HTMLElement).queryByRole("button"),
+    ).toBeNull();
+    expect(wrapper.findComponent(Star).attributes("fill")).toBe("currentColor");
   });
 
   async function show(membership: Membership, isDefault: boolean) {
