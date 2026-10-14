@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { Check, Crown } from "@lucide/vue";
+import { ref } from "vue";
 import { useI18n } from "vue-i18n";
 import type { KnownReader } from "../../domain/KnownReader";
 
@@ -8,6 +10,7 @@ defineProps<{
 }>();
 
 const { t } = useI18n();
+const chosenId = ref<string>();
 </script>
 
 <template>
@@ -23,9 +26,34 @@ const { t } = useI18n();
         class="max-h-[313px] divide-y divide-border overflow-y-auto"
       >
         <li v-for="reader in readers" :key="reader.id">
+          <div
+            v-if="reader.id === chosenId"
+            class="flex items-center gap-2 py-1.5 pr-1.5 pl-3.5"
+          >
+            <span class="min-w-0 flex-1 text-body text-text">
+              {{ reader.displayName }}
+            </span>
+            <button
+              type="button"
+              :aria-label="t('bookshelf.members.owner')"
+              :aria-pressed="false"
+              class="flex size-11 shrink-0 items-center justify-center rounded-[10px] text-accent"
+            >
+              <Crown />
+            </button>
+            <button
+              type="button"
+              :aria-label="t('bookshelf.members.add')"
+              class="flex size-11 shrink-0 items-center justify-center rounded-[10px] text-accent"
+            >
+              <Check :stroke-width="3" />
+            </button>
+          </div>
           <button
+            v-else
             type="button"
             class="flex min-h-14 w-full items-center px-3.5 text-left text-body text-text"
+            @click="chosenId = reader.id"
           >
             {{ reader.displayName }}
           </button>
