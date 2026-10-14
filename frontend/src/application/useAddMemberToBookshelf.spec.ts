@@ -70,6 +70,18 @@ describe("useAddMemberToBookshelf", () => {
     expect(state.value).toEqual({ status: "unavailable", added: [] });
   });
 
+  it("keeps the members it added through a failure", async () => {
+    // Given
+    const { state, add } = useAddMemberToBookshelf(addingHugoToSalon());
+    await add(salon.id, hugo.id, "VIEWER");
+
+    // When
+    await add(salon.id, marc.id, "VIEWER");
+
+    // Then
+    expect(state.value.added).toEqual([viewer(hugo)]);
+  });
+
   it("forgets the members it added once reset", async () => {
     // Given
     const { state, add, reset } = useAddMemberToBookshelf(addingHugoToSalon());
