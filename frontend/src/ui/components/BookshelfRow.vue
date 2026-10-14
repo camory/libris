@@ -26,21 +26,23 @@ const role = computed(() => {
       {{ " " }}
       <p class="text-body text-muted">{{ role }}</p>
     </RouterLink>
-    <span
-      v-if="isDefault"
-      class="flex size-11 shrink-0 items-center justify-center text-accent"
-    >
-      <Star fill="currentColor" />
-    </span>
-    <button
-      v-else
-      type="button"
-      :aria-label="t('home.bookshelves.chooseDefault')"
-      class="relative flex size-11 shrink-0 items-center justify-center rounded-[10px] text-accent"
-      @click="emit('choose')"
-    >
-      <Star />
-    </button>
+    <template v-if="membership.role === 'OWNER'">
+      <span
+        v-if="isDefault"
+        class="flex size-11 shrink-0 items-center justify-center text-accent"
+      >
+        <Star fill="currentColor" />
+      </span>
+      <button
+        v-else
+        type="button"
+        :aria-label="t('home.bookshelves.chooseDefault')"
+        class="relative flex size-11 shrink-0 items-center justify-center rounded-[10px] text-accent"
+        @click="emit('choose')"
+      >
+        <Star />
+      </button>
+    </template>
     <ChevronRight class="mr-3.5 shrink-0 text-muted" />
   </div>
 </template>

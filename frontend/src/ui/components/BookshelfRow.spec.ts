@@ -104,6 +104,17 @@ describe("BookshelfRow", () => {
     );
   });
 
+  it("draws no star on a viewer's row", async () => {
+    // When
+    const wrapper = await mountRow({ bookshelf: salon, role: "VIEWER" }, false);
+
+    // Then
+    expect(wrapper.findAllComponents(Star)).toHaveLength(0);
+    expect(
+      within(wrapper.element as HTMLElement).queryByRole("button"),
+    ).toBeNull();
+  });
+
   async function show(membership: Membership, isDefault: boolean) {
     return (await mountRow(membership, isDefault)).element as HTMLElement;
   }
