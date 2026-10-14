@@ -136,6 +136,20 @@ describe("BookshelfRow", () => {
     ).toBeNull();
   });
 
+  it("accepts nothing while a choice runs", async () => {
+    // When
+    const row = await show({ bookshelf: salon, role: "OWNER" }, false, {
+      locked: true,
+    });
+
+    // Then
+    expect(
+      within(row).getByRole<HTMLButtonElement>("button", {
+        name: "Choisir comme bibliothèque par défaut",
+      }).disabled,
+    ).toBe(true);
+  });
+
   async function show(
     membership: Membership,
     isDefault: boolean,
@@ -162,4 +176,5 @@ describe("BookshelfRow", () => {
 
 interface Choice {
   busy?: boolean;
+  locked?: boolean;
 }

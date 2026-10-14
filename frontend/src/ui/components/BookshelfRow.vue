@@ -9,6 +9,7 @@ const props = defineProps<{
   membership: Membership;
   isDefault: boolean;
   busy?: boolean;
+  locked?: boolean;
 }>();
 
 const emit = defineEmits<{ choose: [] }>();
@@ -41,7 +42,7 @@ const role = computed(() => {
       <button
         v-else
         type="button"
-        :disabled="busy"
+        :disabled="busy || locked"
         :aria-label="
           busy
             ? t('home.bookshelves.choosingDefault')
