@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { Check, Crown } from "@lucide/vue";
+import { Check, Crown, X } from "@lucide/vue";
 import { ref } from "vue";
 import { useI18n } from "vue-i18n";
 import type { KnownReader } from "../../domain/KnownReader";
@@ -10,7 +10,10 @@ defineProps<{
   adding: boolean;
 }>();
 
-const emit = defineEmits<{ add: [readerId: string, role: MembershipRole] }>();
+const emit = defineEmits<{
+  add: [readerId: string, role: MembershipRole];
+  close: [];
+}>();
 
 const { t } = useI18n();
 const chosenId = ref<string>();
@@ -32,6 +35,14 @@ function toggleOwner() {
       <h2 class="text-label text-muted">
         {{ t("bookshelf.members.choose") }}
       </h2>
+      <button
+        type="button"
+        :aria-label="t('bookshelf.members.close')"
+        class="flex size-11 items-center justify-center rounded-[10px] text-muted"
+        @click="emit('close')"
+      >
+        <X />
+      </button>
     </div>
     <div class="overflow-hidden rounded-[14px] border border-border bg-surface">
       <ul

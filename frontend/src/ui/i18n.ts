@@ -33,6 +33,7 @@ const fr = {
       new: "Ajouter un membre",
       reader: "Lecteur",
       choose: "Choisir un lecteur",
+      close: "Fermer",
       owner: "Propriétaire",
       add: "Ajouter",
       adding: "Ajout en cours…",

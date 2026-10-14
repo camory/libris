@@ -118,6 +118,17 @@ describe("ReaderChoice", () => {
     ).toBeDefined();
   });
 
+  it("asks to close on Fermer", async () => {
+    // Given
+    const { wrapper, screen } = open();
+
+    // When
+    await fireEvent.click(screen.getByRole("button", { name: "Fermer" }));
+
+    // Then
+    expect(wrapper.emitted("close")).toHaveLength(1);
+  });
+
   function rowOf(screen: Screen, displayName: string) {
     return within(screen.getByRole("list", { name: "Choisir un lecteur" }))
       .getAllByRole("listitem")
