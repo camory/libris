@@ -386,6 +386,30 @@ describe("HomeView", () => {
     ).not.toBeNull();
   });
 
+  it("lets no other star be tapped while the default is changed", async () => {
+    // Given
+    const memberships: Membership[] = [
+      { bookshelf: chloe.defaultBookshelf, role: "OWNER" },
+      { bookshelf: atelier, role: "OWNER" },
+      { bookshelf: etagere, role: "OWNER" },
+    ];
+    const wrapper = mountHomeView(
+      chloe,
+      memberships,
+      undefined,
+      new LibrisNotAnswering({ memberships }),
+    );
+    await flushPromises();
+    const screen = within(wrapper.element as HTMLElement);
+
+    // When
+    await fireEvent.click(starOf(screen, "Atelier"));
+    await flushPromises();
+
+    // Then
+    expect(starOf(screen, "Étagère").disabled).toBe(true);
+  });
+
   function seen(wrapper: ReturnType<typeof mountHomeView>) {
     const screen = within(wrapper.element as HTMLElement);
     return {

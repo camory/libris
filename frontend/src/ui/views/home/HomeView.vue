@@ -112,6 +112,7 @@ void list();
               :membership="membership"
               :is-default="membership.bookshelf.id === defaultBookshelfId"
               :busy="membership.bookshelf.id === choosingId"
+              :locked="chooseState.status === 'choosing'"
               @choose="choose(membership.bookshelf.id)"
             />
           </li>
