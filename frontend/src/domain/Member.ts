@@ -7,13 +7,22 @@ export interface Member {
   role: MembershipRole;
 }
 
-export function membersInOrder(members: Member[], locale: string): Member[] {
+export function membersInOrder(
+  members: Member[],
+  readerId: string,
+  locale: string,
+): Member[] {
   const byName = nameOrder(locale);
+  const others = members.filter((member) => member.reader.id !== readerId);
   const withRole = (role: MembershipRole) =>
-    members
+    others
       .filter((member) => member.role === role)
       .sort((a, b) => byName(a.reader.displayName, b.reader.displayName));
-  return [...withRole("OWNER"), ...withRole("VIEWER")];
+  return [
+    ...members.filter((member) => member.reader.id === readerId),
+    ...withRole("OWNER"),
+    ...withRole("VIEWER"),
+  ];
 }
 
 export function nonMembersInOrder(

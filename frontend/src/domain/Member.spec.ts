@@ -3,8 +3,14 @@ import type { KnownReader } from "./KnownReader";
 import { membersInOrder, nonMembersInOrder, type Member } from "./Member";
 
 describe("membersInOrder", () => {
+  it("puts the reader first, whatever their role", () => {
+    expect(
+      membersInOrder([owner(marc), viewer(lea), owner(elodie)], lea.id, "fr"),
+    ).toEqual([viewer(lea), owner(elodie), owner(marc)]);
+  });
+
   it("puts the owners first", () => {
-    expect(membersInOrder([viewer(hugo), owner(marc)], "fr")).toEqual([
+    expect(membersInOrder([viewer(hugo), owner(marc)], lea.id, "fr")).toEqual([
       owner(marc),
       viewer(hugo),
     ]);
@@ -14,6 +20,7 @@ describe("membersInOrder", () => {
     expect(
       membersInOrder(
         [owner(marc), viewer(hugoInLowerCase), owner(elodie), viewer(anais)],
+        lea.id,
         "fr",
       ),
     ).toEqual([

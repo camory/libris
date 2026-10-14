@@ -44,7 +44,7 @@ const everyMember = computed<Member[]>(() =>
 
 const members = computed(() =>
   reader.value && state.value.status === "found"
-    ? membersInOrder(everyMember.value, locale.value)
+    ? membersInOrder(everyMember.value, reader.value.id, locale.value)
     : null,
 );
 

@@ -76,7 +76,7 @@ const mountBookshelfView = (
   });
 
 describe("BookshelfView", () => {
-  it("names the bookshelf over its members, owners first", async () => {
+  it("names the bookshelf over its members, the reader first", async () => {
     // Given
     const wrapper = mountBookshelfView(salonHeld);
 
@@ -91,9 +91,9 @@ describe("BookshelfView", () => {
         .getAllByRole("listitem")
         .map(normalised),
     ).toEqual([
+      "Vous · invité",
       "Élodie · propriétaire",
       "Marc · propriétaire",
-      "Vous · invité",
     ]);
   });
 
@@ -226,7 +226,7 @@ describe("BookshelfView", () => {
       within(screen.getByRole("list", { name: "Membres" }))
         .getAllByRole("listitem")
         .map(normalised),
-    ).toEqual(["Hugo · propriétaire", "Vous · propriétaire", "Marc · invité"]);
+    ).toEqual(["Vous · propriétaire", "Hugo · propriétaire", "Marc · invité"]);
     expect(screen.queryByRole("combobox")).toBeNull();
     screen.getByRole("button", { name: "Ajouter un membre" });
   });
