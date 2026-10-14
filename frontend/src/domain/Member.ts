@@ -36,3 +36,7 @@ export function nonMembersInOrder(
     .filter((reader) => !memberIds.has(reader.id))
     .sort((a, b) => byName(a.displayName, b.displayName));
 }
+
+export function isOwnedBy(members: Member[], readerId: string): boolean {
+  return members.some((member) => member.reader.id === readerId);
+}

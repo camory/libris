@@ -1,6 +1,11 @@
 import { describe, expect, it } from "vitest";
 import type { KnownReader } from "./KnownReader";
-import { membersInOrder, nonMembersInOrder, type Member } from "./Member";
+import {
+  isOwnedBy,
+  membersInOrder,
+  nonMembersInOrder,
+  type Member,
+} from "./Member";
 
 describe("membersInOrder", () => {
   it("puts the reader first, whatever their role", () => {
@@ -43,6 +48,12 @@ describe("nonMembersInOrder", () => {
     expect(
       nonMembersInOrder([marc, hugoInLowerCase, elodie, anais], [], "fr"),
     ).toEqual([anais, elodie, hugoInLowerCase, marc]);
+  });
+});
+
+describe("isOwnedBy", () => {
+  it("answers that an owner owns the bookshelf", () => {
+    expect(isOwnedBy([owner(lea), viewer(marc)], lea.id)).toBe(true);
   });
 });
 
