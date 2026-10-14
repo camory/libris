@@ -128,6 +128,9 @@ watch([() => props.id, reader], ([id, current]) => {
             <MemberRowSkeleton v-for="row in 2" :key="row" />
           </div>
         </div>
+        <p v-if="members" class="pt-2 text-body text-muted">
+          {{ t("bookshelf.members.everyone") }}
+        </p>
       </section>
 
       <ReaderChoice

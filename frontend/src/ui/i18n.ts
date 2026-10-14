@@ -37,6 +37,7 @@ const fr = {
       add: "Ajouter",
       adding: "Ajout en cours…",
       unavailable: "Erreur lors de l'ajout, veuillez réessayer plus tard.",
+      everyone: "Tous les lecteurs sont déjà membres.",
       role: {
         OWNER: "propriétaire",
         VIEWER: "invité",
