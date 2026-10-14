@@ -136,6 +136,7 @@ watch([() => props.id, reader], ([id, current]) => {
         :readers="nonMembers"
         :adding="addState.status === 'adding'"
         @add="add"
+        @close="choosing = false"
       />
     </template>
   </main>

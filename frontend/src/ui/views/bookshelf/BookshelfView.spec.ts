@@ -189,6 +189,25 @@ describe("BookshelfView", () => {
     ).toEqual(["Vous · propriétaire", "Marc · invité"]);
   });
 
+  it("closes Choisir un lecteur on Fermer, the plus back", async () => {
+    // Given
+    const wrapper = mountBookshelfView(salonOwned, [leaToOthers, marc, hugo]);
+    await flushPromises();
+    const screen = within(wrapper.element as HTMLElement);
+    await fireEvent.click(
+      screen.getByRole("button", { name: "Ajouter un membre" }),
+    );
+
+    // When
+    await fireEvent.click(screen.getByRole("button", { name: "Fermer" }));
+
+    // Then
+    expect(
+      screen.queryByRole("list", { name: "Choisir un lecteur" }),
+    ).toBeNull();
+    screen.getByRole("button", { name: "Ajouter un membre" });
+  });
+
   it("hides the plus while the choice is there", async () => {
     // Given
     const wrapper = mountBookshelfView(salonOwned, [leaToOthers, marc, hugo]);
