@@ -21,7 +21,7 @@ onMounted(() => field.value?.focus());
 </script>
 
 <template>
-  <div class="py-1.5 pr-1.5 pl-3.5">
+  <div class="py-2.5 pr-1.5 pl-2.5">
     <div class="flex items-center gap-2">
       <input
         ref="field"
@@ -29,7 +29,7 @@ onMounted(() => field.value?.focus());
         type="text"
         :placeholder="t('home.bookshelves.name')"
         :aria-label="t('home.bookshelves.name')"
-        class="min-w-0 flex-1 bg-transparent text-field outline-none placeholder:text-muted"
+        class="h-11 min-w-0 flex-1 rounded-xl border-[1.5px] border-border bg-surface px-3 text-field outline-none placeholder:text-muted"
       />
       <div class="size-11 shrink-0">
         <button
@@ -49,7 +49,10 @@ onMounted(() => field.value?.focus());
         </button>
       </div>
     </div>
-    <p v-if="failure" class="flex items-start gap-2 pb-2 text-body text-danger">
+    <p
+      v-if="failure"
+      class="flex items-start gap-2 pt-2 pb-1 text-body text-danger"
+    >
       <IconAlert />
       <span>{{ t(`home.bookshelves.failure.${failure}`) }}</span>
     </p>
