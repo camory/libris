@@ -4,6 +4,7 @@ import { ref } from "vue";
 import { useI18n } from "vue-i18n";
 import type { KnownReader } from "../../domain/KnownReader";
 import type { MembershipRole } from "../../domain/Membership";
+import BusySpinner from "./BusySpinner.vue";
 
 defineProps<{
   readers: KnownReader[];
@@ -68,11 +69,17 @@ function toggleOwner() {
             </button>
             <button
               type="button"
-              :aria-label="t('bookshelf.members.add')"
+              :disabled="adding"
+              :aria-label="
+                adding
+                  ? t('bookshelf.members.adding')
+                  : t('bookshelf.members.add')
+              "
               class="flex size-11 shrink-0 items-center justify-center rounded-[10px] text-accent"
               @click="emit('add', reader.id, role)"
             >
-              <Check :stroke-width="3" />
+              <BusySpinner v-if="adding" class="size-5.5" />
+              <Check v-else :stroke-width="3" />
             </button>
           </div>
           <button

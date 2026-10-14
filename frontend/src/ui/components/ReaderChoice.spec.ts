@@ -129,6 +129,22 @@ describe("ReaderChoice", () => {
     expect(wrapper.emitted("close")).toHaveLength(1);
   });
 
+  it("is busy while the member is added", async () => {
+    // Given
+    const { wrapper, screen } = open();
+    await fireEvent.click(screen.getByRole("button", { name: "Hugo" }));
+
+    // When
+    await wrapper.setProps({ adding: true });
+
+    // Then
+    const busy = screen.getByRole<HTMLButtonElement>("button", {
+      name: "Ajout en cours…",
+    });
+    expect(busy.disabled).toBe(true);
+    expect(screen.queryByRole("button", { name: "Ajouter" })).toBeNull();
+  });
+
   function rowOf(screen: Screen, displayName: string) {
     return within(screen.getByRole("list", { name: "Choisir un lecteur" }))
       .getAllByRole("listitem")
