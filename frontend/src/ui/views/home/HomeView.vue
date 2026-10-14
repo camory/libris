@@ -5,6 +5,7 @@ import { useI18n } from "vue-i18n";
 import { bookshelvesApiKey } from "../../../application/BookshelvesApi";
 import { meApiKey } from "../../../application/MeApi";
 import { revisionKey } from "../../../application/Revision";
+import { useChooseDefaultBookshelf } from "../../../application/useChooseDefaultBookshelf";
 import { useCreateBookshelf } from "../../../application/useCreateBookshelf";
 import { useListReaderBookshelves } from "../../../application/useListReaderBookshelves";
 import { membershipsInOrder } from "../../../domain/Membership";
@@ -24,12 +25,19 @@ const bookshelvesApi = inject(bookshelvesApiKey)!;
 const { state, list } = useListReaderBookshelves(bookshelvesApi);
 const { state: createState, create: createBookshelf } =
   useCreateBookshelf(bookshelvesApi);
+const { state: chooseState, choose } =
+  useChooseDefaultBookshelf(bookshelvesApi);
+
+const defaultBookshelfId = computed(
+  () =>
+    chooseState.value.defaultBookshelfId ?? reader.value?.defaultBookshelf.id,
+);
 
 const memberships = computed(() =>
   reader.value && state.value.status === "listed"
     ? membershipsInOrder(
         [...state.value.memberships, ...createState.value.created],
-        reader.value.defaultBookshelf.id,
+        defaultBookshelfId.value!,
         locale.value,
       )
     : null,
@@ -96,9 +104,8 @@ void list();
           <li v-for="membership in memberships" :key="membership.bookshelf.id">
             <BookshelfRow
               :membership="membership"
-              :is-default="
-                membership.bookshelf.id === reader?.defaultBookshelf.id
-              "
+              :is-default="membership.bookshelf.id === defaultBookshelfId"
+              @choose="choose(membership.bookshelf.id)"
             />
           </li>
           <li v-if="naming">
