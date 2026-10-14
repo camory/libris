@@ -4,7 +4,6 @@ import fr.amory.libris.fixture.Transaction
 import fr.amory.libris.fixture.TransactionsObserving
 import fr.amory.libris.library.application.ChooseDefaultResult.Chosen
 import fr.amory.libris.library.application.ChooseDefaultResult.NoSuchBookshelf
-import fr.amory.libris.library.domain.bookshelf.Bookshelf
 import fr.amory.libris.library.domain.bookshelf.BookshelfId
 import fr.amory.libris.library.domain.bookshelf.BookshelfName
 import fr.amory.libris.library.domain.bookshelf.Membership
@@ -12,6 +11,7 @@ import fr.amory.libris.library.domain.bookshelf.MembershipRole.OWNER
 import fr.amory.libris.library.domain.bookshelf.MembershipRole.VIEWER
 import fr.amory.libris.library.fixture.BookshelvesInMemory
 import fr.amory.libris.library.fixture.ReadersInMemory
+import fr.amory.libris.library.fixture.bookshelfOf
 import fr.amory.libris.library.fixture.bookshelfOwnedBy
 import fr.amory.libris.library.fixture.readerNamed
 import io.kotest.matchers.shouldBe
@@ -34,7 +34,7 @@ class ChooseDefaultBookshelfTest {
   @Test
   fun `an owner makes the bookshelf their default, stored in one transaction`() {
     // Given
-    val salon = Bookshelf(BookshelfId.new(), BookshelfName("Salon"), listOf(Membership(lea.id, OWNER)))
+    val salon = bookshelfOf(BookshelfId.new(), BookshelfName("Salon"), listOf(Membership(lea.id, OWNER)))
     bookshelves.insert(salon)
 
     // When
@@ -50,7 +50,7 @@ class ChooseDefaultBookshelfTest {
   @Test
   fun `a viewer of the bookshelf answers no such bookshelf, the reader as stored`() {
     // Given
-    val salon = Bookshelf(
+    val salon = bookshelfOf(
       BookshelfId.new(),
       BookshelfName("Salon"),
       listOf(Membership(marc.id, OWNER), Membership(lea.id, VIEWER)),
@@ -69,7 +69,7 @@ class ChooseDefaultBookshelfTest {
   @Test
   fun `a reader who does not belong to the bookshelf answers no such bookshelf, the reader as stored`() {
     // Given
-    val salon = Bookshelf(BookshelfId.new(), BookshelfName("Salon"), listOf(Membership(marc.id, OWNER)))
+    val salon = bookshelfOf(BookshelfId.new(), BookshelfName("Salon"), listOf(Membership(marc.id, OWNER)))
     bookshelves.insert(salon)
 
     // When

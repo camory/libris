@@ -10,9 +10,13 @@ import fr.amory.libris.library.domain.reader.ReaderId
 import org.springframework.jdbc.core.simple.JdbcClient
 import org.springframework.stereotype.Repository
 import java.sql.ResultSet
+import java.time.Instant
+import java.time.OffsetDateTime
+import java.time.ZoneOffset.UTC
 import java.util.UUID
 
-private const val INSERT_BOOKSHELF = "INSERT INTO bookshelf (id, name) VALUES (:id, :name)"
+private const val INSERT_BOOKSHELF =
+  "INSERT INTO bookshelf (id, name, created_by, created_at) VALUES (:id, :name, :createdBy, :createdAt)"
 
 private const val INSERT_MEMBERSHIP =
   "INSERT INTO membership (bookshelf_id, reader_id, role) VALUES (:bookshelfId, :readerId, :role)"
@@ -23,7 +27,7 @@ private const val DELETE_MEMBERSHIPS = "DELETE FROM membership WHERE bookshelf_i
 
 private const val FIND_BOOKSHELF_BY_ID =
   """
-    SELECT bookshelf.id, bookshelf.name, membership.reader_id, membership.role
+    SELECT bookshelf.id, bookshelf.name, bookshelf.created_by, bookshelf.created_at, membership.reader_id, membership.role
     FROM bookshelf
     JOIN membership ON membership.bookshelf_id = bookshelf.id
     WHERE bookshelf.id = :id
@@ -32,7 +36,7 @@ private const val FIND_BOOKSHELF_BY_ID =
 
 private const val FIND_BOOKSHELVES_BY_MEMBER =
   """
-    SELECT bookshelf.id, bookshelf.name, membership.reader_id, membership.role
+    SELECT bookshelf.id, bookshelf.name, bookshelf.created_by, bookshelf.created_at, membership.reader_id, membership.role
     FROM bookshelf
     JOIN membership ON membership.bookshelf_id = bookshelf.id
     WHERE bookshelf.id IN (SELECT member.bookshelf_id FROM membership member WHERE member.reader_id = :readerId)
@@ -42,6 +46,8 @@ private const val FIND_BOOKSHELVES_BY_MEMBER =
 private class BookshelfRow(
   val id: BookshelfId,
   val name: BookshelfName,
+  val createdBy: ReaderId,
+  val createdAt: Instant,
   val membership: Membership)
 
 @Repository
@@ -51,6 +57,8 @@ class JdbcBookshelfRepository(private val jdbcClient: JdbcClient) : BookshelfRep
       .sql(INSERT_BOOKSHELF)
       .param("id", bookshelf.id.value)
       .param("name", bookshelf.name.value)
+      .param("createdBy", bookshelf.createdBy.value)
+      .param("createdAt", bookshelf.createdAt.atOffset(UTC))
       .update()
     insertMemberships(bookshelf)
   }
@@ -102,6 +110,8 @@ class JdbcBookshelfRepository(private val jdbcClient: JdbcClient) : BookshelfRep
     BookshelfRow(
       id = BookshelfId(rs.getObject("id", UUID::class.java)),
       name = BookshelfName(rs.getString("name")),
+      createdBy = ReaderId(rs.getObject("created_by", UUID::class.java)),
+      createdAt = rs.getObject("created_at", OffsetDateTime::class.java).toInstant(),
       membership = Membership(
         ReaderId(rs.getObject("reader_id", UUID::class.java)),
         MembershipRole.valueOf(rs.getString("role")),
@@ -109,5 +119,5 @@ class JdbcBookshelfRepository(private val jdbcClient: JdbcClient) : BookshelfRep
     )
 
   private fun bookshelfOf(rows: List<BookshelfRow>): Bookshelf =
-    Bookshelf(rows.first().id, rows.first().name, rows.map { it.membership })
+    rows.first().let { Bookshelf(it.id, it.name, rows.map { row -> row.membership }, it.createdBy, it.createdAt) }
 }

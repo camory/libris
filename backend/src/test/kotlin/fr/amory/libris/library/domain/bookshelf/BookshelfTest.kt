@@ -3,22 +3,25 @@ package fr.amory.libris.library.domain.bookshelf
 import fr.amory.libris.library.domain.bookshelf.MembershipRole.OWNER
 import fr.amory.libris.library.domain.bookshelf.MembershipRole.VIEWER
 import fr.amory.libris.library.domain.reader.ReaderId
+import fr.amory.libris.library.fixture.bookshelfOf
 import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.matchers.shouldBe
 import org.junit.jupiter.api.Test
+import java.time.Instant
 
 class BookshelfTest {
   @Test
-  fun `the bookshelf of a reader is named after them and owned by them`() {
+  fun `the bookshelf of a reader is named after them, owned and created by them`() {
     // Given
     val lea = ReaderId.new()
     val id = BookshelfId.new()
+    val at = Instant.parse("2026-10-14T09:30:00Z")
 
     // When
-    val bookshelf = Bookshelf.ownedBy(lea, "Léa", id)
+    val bookshelf = Bookshelf.ownedBy(lea, "Léa", id, at)
 
     // Then
-    bookshelf shouldBe Bookshelf(id, BookshelfName("Bibliothèque de Léa"), listOf(Membership(lea, OWNER)))
+    bookshelf shouldBe Bookshelf(id, BookshelfName("Bibliothèque de Léa"), listOf(Membership(lea, OWNER)), lea, at)
   }
 
   @Test
@@ -27,7 +30,7 @@ class BookshelfTest {
     val lea = ReaderId.new()
     val juliette = ReaderId.new()
     val stranger = ReaderId.new()
-    val bookshelf = Bookshelf(
+    val bookshelf = bookshelfOf(
       BookshelfId.new(),
       BookshelfName("Salon"),
       listOf(Membership(lea, OWNER), Membership(juliette, VIEWER)),
@@ -47,7 +50,7 @@ class BookshelfTest {
     // Given
     val lea = ReaderId.new()
     val juliette = ReaderId.new()
-    val bookshelf = Bookshelf(
+    val bookshelf = bookshelfOf(
       BookshelfId.new(),
       BookshelfName("Salon"),
       listOf(Membership(lea, OWNER), Membership(juliette, VIEWER)),
@@ -61,7 +64,7 @@ class BookshelfTest {
   @Test
   fun `a bookshelf answers no role for a reader who is no member`() {
     // Given
-    val bookshelf = Bookshelf.ownedBy(ReaderId.new(), "Léa", BookshelfId.new())
+    val bookshelf = Bookshelf.ownedBy(ReaderId.new(), "Léa", BookshelfId.new(), Instant.parse("2026-10-14T09:30:00Z"))
 
     // When / Then
     bookshelf.roleOf(ReaderId.new()) shouldBe null
@@ -73,13 +76,13 @@ class BookshelfTest {
     val marc = ReaderId.new()
     val lea = ReaderId.new()
     val id = BookshelfId.new()
-    val bookshelf = Bookshelf(id, BookshelfName("Bibliothèque familiale"), listOf(Membership(marc, OWNER)))
+    val bookshelf = bookshelfOf(id, BookshelfName("Bibliothèque familiale"), listOf(Membership(marc, OWNER)))
 
     // When
     val added = bookshelf.withMember(Membership(lea, VIEWER))
 
     // Then
-    added shouldBe Bookshelf(
+    added shouldBe bookshelfOf(
       id,
       BookshelfName("Bibliothèque familiale"),
       listOf(Membership(marc, OWNER), Membership(lea, VIEWER)),
@@ -89,7 +92,7 @@ class BookshelfTest {
   @Test
   fun `a bookshelf without an owner is refused`() {
     shouldThrow<IllegalArgumentException> {
-      Bookshelf(
+      bookshelfOf(
         BookshelfId.new(),
         BookshelfName("Bibliothèque de personne"),
         listOf(Membership(ReaderId.new(), VIEWER)),
@@ -101,7 +104,7 @@ class BookshelfTest {
   fun `a bookshelf with a reader twice is refused, whatever the roles`() {
     val lea = ReaderId.new()
     shouldThrow<IllegalArgumentException> {
-      Bookshelf(
+      bookshelfOf(
         BookshelfId.new(),
         BookshelfName("Bibliothèque familiale"),
         listOf(Membership(lea, OWNER), Membership(lea, VIEWER)),

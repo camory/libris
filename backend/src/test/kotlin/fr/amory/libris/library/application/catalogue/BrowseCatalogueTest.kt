@@ -21,6 +21,7 @@ import fr.amory.libris.library.domain.reader.ReaderId
 import fr.amory.libris.library.fixture.BookshelvesInMemory
 import fr.amory.libris.library.fixture.CatalogueEditionsAnswering
 import fr.amory.libris.library.fixture.CopiesInMemory
+import fr.amory.libris.library.fixture.bookshelfOf
 import io.kotest.matchers.shouldBe
 import org.junit.jupiter.api.Test
 
@@ -133,7 +134,7 @@ class BrowseCatalogueTest {
     BrowseCatalogue(CatalogueEditionsAnswering(answer), bookshelves, copies, editions)
 
   private fun bookshelfOf(name: String, vararg memberships: Membership): Bookshelf =
-    Bookshelf(BookshelfId.new(), BookshelfName(name), memberships.toList()).also { bookshelves.insert(it) }
+    bookshelfOf(BookshelfId.new(), BookshelfName(name), memberships.toList()).also { bookshelves.insert(it) }
 
   private fun copyOf(edition: Edition, bookshelf: Bookshelf): Copy =
     Copy(CopyId.new(), edition.id, bookshelf.id).also { copies.insert(it) }

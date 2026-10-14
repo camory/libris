@@ -9,12 +9,14 @@ import fr.amory.libris.library.domain.reader.ReaderId
 import fr.amory.libris.library.domain.reader.ReaderRepository
 import org.springframework.stereotype.Service
 import org.springframework.transaction.support.TransactionOperations
+import java.time.Clock
 
 @Service
 class WelcomeReader(
   private val readers: ReaderRepository,
   private val bookshelves: BookshelfRepository,
-  private val transactions: TransactionOperations) {
+  private val transactions: TransactionOperations,
+  private val clock: Clock) {
   operator fun invoke(username: String, email: String, displayName: String): Reader {
     readers.findByUsername(username)?.let { return it }
     return try {
@@ -26,7 +28,7 @@ class WelcomeReader(
 
   private fun welcome(username: String, email: String, displayName: String): Reader {
     val readerId = ReaderId.new()
-    val bookshelf = Bookshelf.ownedBy(readerId, displayName, BookshelfId.new())
+    val bookshelf = Bookshelf.ownedBy(readerId, displayName, BookshelfId.new(), clock.instant())
     val reader = Reader(readerId, username, email, displayName, bookshelf.id)
     transactions.executeWithoutResult {
       readers.insert(reader)

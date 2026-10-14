@@ -1,5 +1,6 @@
 package fr.amory.libris.library.application
 
+import fr.amory.libris.fixture.MutableClock
 import fr.amory.libris.fixture.Transaction
 import fr.amory.libris.fixture.TransactionsObserving
 import fr.amory.libris.library.domain.bookshelf.Bookshelf
@@ -23,7 +24,7 @@ class WelcomeReaderTest {
   fun `a first visit stores the reader of the headers`() {
     // Given
     val readers = ReadersInMemory()
-    val welcomeReader = WelcomeReader(readers, BookshelvesInMemory(), withoutTransaction())
+    val welcomeReader = WelcomeReader(readers, BookshelvesInMemory(), withoutTransaction(), MutableClock())
 
     // When
     val juliette = welcomeReader("juliette", "juliette@amory.fr", "Juliette")
@@ -36,17 +37,24 @@ class WelcomeReaderTest {
   }
 
   @Test
-  fun `a first visit creates the bookshelf the reader owns, their default`() {
+  fun `a first visit creates the bookshelf the reader owns and created, now, their default`() {
     // Given
+    val clock = MutableClock()
     val bookshelves = BookshelvesInMemory()
-    val welcomeReader = WelcomeReader(ReadersInMemory(), bookshelves, withoutTransaction())
+    val welcomeReader = WelcomeReader(ReadersInMemory(), bookshelves, withoutTransaction(), clock)
 
     // When
     val lea = welcomeReader("lea", "lea@amory.fr", "Léa")
 
     // Then
     bookshelves.stored shouldBe listOf(
-      Bookshelf(lea.defaultBookshelfId, BookshelfName("Bibliothèque de Léa"), listOf(Membership(lea.id, OWNER))),
+      Bookshelf(
+        lea.defaultBookshelfId,
+        BookshelfName("Bibliothèque de Léa"),
+        listOf(Membership(lea.id, OWNER)),
+        lea.id,
+        clock.instant(),
+      ),
     )
   }
 
@@ -55,8 +63,9 @@ class WelcomeReaderTest {
     // Given
     val readers = ReadersInMemory()
     val bookshelves = BookshelvesInMemory()
+    val clock = MutableClock()
     val transactions = TransactionsObserving { readers.stored to bookshelves.stored }
-    val welcomeReader = WelcomeReader(readers, bookshelves, transactions)
+    val welcomeReader = WelcomeReader(readers, bookshelves, transactions, clock)
 
     // When
     val lea = welcomeReader("lea", "lea@amory.fr", "Léa")
@@ -65,7 +74,7 @@ class WelcomeReaderTest {
     transactions.recorded shouldBe listOf(
       Transaction(
         before = emptyList<Reader>() to emptyList<Bookshelf>(),
-        after = listOf(lea) to listOf(bookshelfOwnedBy(lea)),
+        after = listOf(lea) to listOf(bookshelfOwnedBy(lea, clock.instant())),
       ),
     )
   }
@@ -73,7 +82,7 @@ class WelcomeReaderTest {
   @Test
   fun `a later visit returns the stored reader and keeps the display name Libris owns`() {
     // Given
-    val welcomeReader = WelcomeReader(ReadersInMemory(), BookshelvesInMemory(), withoutTransaction())
+    val welcomeReader = WelcomeReader(ReadersInMemory(), BookshelvesInMemory(), withoutTransaction(), MutableClock())
     val firstVisit = welcomeReader("juliette", "juliette@amory.fr", "Juliette")
 
     // When
@@ -88,7 +97,7 @@ class WelcomeReaderTest {
     // Given
     val readers = ReadersInMemory()
     val bookshelves = BookshelvesInMemory()
-    val welcomeReader = WelcomeReader(readers, bookshelves, withoutTransaction())
+    val welcomeReader = WelcomeReader(readers, bookshelves, withoutTransaction(), MutableClock())
     readers.insert(readerNamed("juliette", "Juliette"))
 
     // When
@@ -103,7 +112,7 @@ class WelcomeReaderTest {
     // Given
     val winner = readerNamed("juliette", "Juliette")
     val readers = ReadersLosingTheRace(winner)
-    val welcomeReader = WelcomeReader(readers, BookshelvesInMemory(), withoutTransaction())
+    val welcomeReader = WelcomeReader(readers, BookshelvesInMemory(), withoutTransaction(), MutableClock())
 
     // When
     val loser = welcomeReader("juliette", "juju@amory.fr", "Juju")

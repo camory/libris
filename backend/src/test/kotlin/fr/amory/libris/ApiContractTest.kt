@@ -55,7 +55,6 @@ import fr.amory.libris.library.application.catalogue.HeldEdition
 import fr.amory.libris.library.application.lookup.CopyOnBookshelf
 import fr.amory.libris.library.application.lookup.IsbnLookup
 import fr.amory.libris.library.application.lookup.LookupIsbnForReader
-import fr.amory.libris.library.domain.bookshelf.Bookshelf
 import fr.amory.libris.library.domain.bookshelf.BookshelfId
 import fr.amory.libris.library.domain.bookshelf.BookshelfName
 import fr.amory.libris.library.domain.bookshelf.Membership
@@ -64,6 +63,7 @@ import fr.amory.libris.library.domain.bookshelf.MembershipRole.VIEWER
 import fr.amory.libris.library.domain.copy.Copy
 import fr.amory.libris.library.domain.copy.CopyId
 import fr.amory.libris.library.domain.reader.ReaderId
+import fr.amory.libris.library.fixture.bookshelfOf
 import fr.amory.libris.library.fixture.bookshelfOwnedBy
 import fr.amory.libris.library.fixture.readerNamed
 import jakarta.servlet.Filter
@@ -312,7 +312,7 @@ private val ASTERIX_1_HELD = HeldEdition(
 
 private val NO_COVER = "0".repeat(64)
 
-private val FAMILIALE = Bookshelf(
+private val FAMILIALE = bookshelfOf(
   BookshelfId.new(),
   BookshelfName("Bibliothèque familiale"),
   listOf(Membership(CONTRACTEER.id, OWNER)),

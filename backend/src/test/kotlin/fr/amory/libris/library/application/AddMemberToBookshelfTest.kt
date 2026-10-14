@@ -6,7 +6,6 @@ import fr.amory.libris.library.application.AddMemberResult.Added
 import fr.amory.libris.library.application.AddMemberResult.AlreadyAMember
 import fr.amory.libris.library.application.AddMemberResult.NoSuchBookshelf
 import fr.amory.libris.library.application.AddMemberResult.UnknownReader
-import fr.amory.libris.library.domain.bookshelf.Bookshelf
 import fr.amory.libris.library.domain.bookshelf.BookshelfId
 import fr.amory.libris.library.domain.bookshelf.BookshelfName
 import fr.amory.libris.library.domain.bookshelf.Membership
@@ -15,6 +14,7 @@ import fr.amory.libris.library.domain.bookshelf.MembershipRole.VIEWER
 import fr.amory.libris.library.domain.reader.ReaderId
 import fr.amory.libris.library.fixture.BookshelvesInMemory
 import fr.amory.libris.library.fixture.ReadersInMemory
+import fr.amory.libris.library.fixture.bookshelfOf
 import fr.amory.libris.library.fixture.readerNamed
 import io.kotest.matchers.shouldBe
 import org.junit.jupiter.api.Test
@@ -24,7 +24,7 @@ class AddMemberToBookshelfTest {
   private val lea = readerNamed("lea", "Léa")
   private val sam = readerNamed("sam", "Sam")
   private val familiale =
-    Bookshelf(BookshelfId.new(), BookshelfName("Bibliothèque familiale"), listOf(Membership(marc.id, OWNER)))
+    bookshelfOf(BookshelfId.new(), BookshelfName("Bibliothèque familiale"), listOf(Membership(marc.id, OWNER)))
   private val bookshelves = BookshelvesInMemory().apply { insert(familiale) }
   private val readers = ReadersInMemory().apply {
     insert(marc)
@@ -40,7 +40,7 @@ class AddMemberToBookshelfTest {
     val answer = addMemberToBookshelf(marc.id, familiale.id, Membership(lea.id, VIEWER))
 
     // Then
-    val withLea = Bookshelf(
+    val withLea = bookshelfOf(
       familiale.id,
       BookshelfName("Bibliothèque familiale"),
       listOf(Membership(marc.id, OWNER), Membership(lea.id, VIEWER)),

@@ -15,6 +15,7 @@ import fr.amory.libris.library.domain.bookshelf.MembershipRole.OWNER
 import fr.amory.libris.library.domain.copy.Copy
 import fr.amory.libris.library.domain.copy.CopyId
 import fr.amory.libris.library.domain.copy.EditionIdPage
+import fr.amory.libris.library.fixture.bookshelfOf
 import fr.amory.libris.library.fixture.bookshelfOwnedBy
 import fr.amory.libris.library.fixture.readerNamed
 import io.kotest.matchers.shouldBe
@@ -279,7 +280,7 @@ class JdbcCatalogueEditionsTest @Autowired constructor(
   @Test
   fun `an edition on two of the reader's bookshelves comes once`() {
     // Given
-    val salon = Bookshelf(BookshelfId.new(), BookshelfName("Salon"), listOf(Membership(lea.id, OWNER)))
+    val salon = bookshelfOf(BookshelfId.new(), BookshelfName("Salon"), listOf(Membership(lea.id, OWNER)))
     bookshelves.insert(salon)
     val edition = heldOn(leasBookshelf, heldOn(salon, roman(1)))
 
