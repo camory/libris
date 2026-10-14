@@ -1,5 +1,6 @@
 package fr.amory.libris.library.application
 
+import fr.amory.libris.fixture.MutableClock
 import fr.amory.libris.fixture.Transaction
 import fr.amory.libris.fixture.TransactionsObserving
 import fr.amory.libris.library.application.CreateBookshelfResult.Created
@@ -12,18 +13,20 @@ import fr.amory.libris.library.domain.bookshelf.MembershipRole.OWNER
 import fr.amory.libris.library.domain.bookshelf.MembershipRole.VIEWER
 import fr.amory.libris.library.domain.reader.ReaderId
 import fr.amory.libris.library.fixture.BookshelvesInMemory
+import fr.amory.libris.library.fixture.bookshelfOf
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.types.shouldBeInstanceOf
 import org.junit.jupiter.api.Test
 
 class CreateBookshelfTest {
   @Test
-  fun `a created bookshelf bears the name asked, the reader its one owner, stored in one transaction`() {
+  fun `a created bookshelf bears the name asked, the reader its owner and creator, now, stored in one transaction`() {
     // Given
     val lea = ReaderId.new()
+    val clock = MutableClock()
     val bookshelves = BookshelvesInMemory()
     val transactions = TransactionsObserving { bookshelves.stored }
-    val createBookshelf = CreateBookshelf(bookshelves, transactions)
+    val createBookshelf = CreateBookshelf(bookshelves, transactions, clock)
 
     // When
     val answer = createBookshelf(lea, BookshelfName("Bibliothèque familiale"))
@@ -32,6 +35,8 @@ class CreateBookshelfTest {
     val created = answer.shouldBeInstanceOf<Created>().bookshelf
     created.name shouldBe BookshelfName("Bibliothèque familiale")
     created.memberships shouldBe listOf(Membership(lea, OWNER))
+    created.createdBy shouldBe lea
+    created.createdAt shouldBe clock.instant()
     bookshelves.stored shouldBe listOf(created)
     transactions.recorded shouldBe listOf(Transaction(before = emptyList<Bookshelf>(), after = listOf(created)))
   }
@@ -41,14 +46,14 @@ class CreateBookshelfTest {
     // Given
     val marc = ReaderId.new()
     val lea = ReaderId.new()
-    val familiale = Bookshelf(
+    val familiale = bookshelfOf(
       BookshelfId.new(),
       BookshelfName("Bibliothèque familiale"),
       listOf(Membership(marc, OWNER), Membership(lea, VIEWER)),
     )
     val bookshelves = BookshelvesInMemory().apply { insert(familiale) }
     val transactions = TransactionsObserving { bookshelves.stored }
-    val createBookshelf = CreateBookshelf(bookshelves, transactions)
+    val createBookshelf = CreateBookshelf(bookshelves, transactions, MutableClock())
 
     // When
     val answer = createBookshelf(lea, BookshelfName("bibliotheque FAMILIALE"))

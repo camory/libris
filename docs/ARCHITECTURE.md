@@ -540,8 +540,12 @@ Time
   Calendar dates in `date`, exchanged as `YYYY-MM-DD`. Publication year is an
   integer.
 - A date the product shows (added, acquired, lent since) is an attribute of
-  its aggregate, set by the use case that creates it; there are no audit
-  columns.
+  its aggregate, set by the use case that creates it.
+- When and by whom an aggregate came to be is an attribute of it, set by
+  the use case that creates it from the acting reader and the `Clock`,
+  whether a screen shows it or not: a bookshelf's creator and creation
+  instant, a copy's adder and adding instant. Nothing else fills a column:
+  no database `default now()`, no framework auditing.
 
 Schema
 - snake_case, singular table names (`edition`, `copy`, `bookshelf`). The

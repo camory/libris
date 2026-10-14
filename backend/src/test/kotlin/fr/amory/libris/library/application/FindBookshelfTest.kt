@@ -2,7 +2,6 @@ package fr.amory.libris.library.application
 
 import fr.amory.libris.library.application.FindBookshelfResult.Found
 import fr.amory.libris.library.application.FindBookshelfResult.NoSuchBookshelf
-import fr.amory.libris.library.domain.bookshelf.Bookshelf
 import fr.amory.libris.library.domain.bookshelf.BookshelfId
 import fr.amory.libris.library.domain.bookshelf.BookshelfName
 import fr.amory.libris.library.domain.bookshelf.Membership
@@ -10,6 +9,7 @@ import fr.amory.libris.library.domain.bookshelf.MembershipRole.OWNER
 import fr.amory.libris.library.domain.bookshelf.MembershipRole.VIEWER
 import fr.amory.libris.library.fixture.BookshelvesInMemory
 import fr.amory.libris.library.fixture.ReadersInMemory
+import fr.amory.libris.library.fixture.bookshelfOf
 import fr.amory.libris.library.fixture.readerNamed
 import io.kotest.matchers.collections.shouldContainExactlyInAnyOrder
 import io.kotest.matchers.shouldBe
@@ -19,7 +19,7 @@ import org.junit.jupiter.api.Test
 class FindBookshelfTest {
   private val marc = readerNamed("marc", "Marc")
   private val lea = readerNamed("lea", "Léa")
-  private val familiale = Bookshelf(
+  private val familiale = bookshelfOf(
     BookshelfId.new(),
     BookshelfName("Bibliothèque familiale"),
     listOf(Membership(marc.id, OWNER), Membership(lea.id, VIEWER)),

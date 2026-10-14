@@ -1,12 +1,12 @@
 package fr.amory.libris.library.application
 
-import fr.amory.libris.library.domain.bookshelf.Bookshelf
 import fr.amory.libris.library.domain.bookshelf.BookshelfId
 import fr.amory.libris.library.domain.bookshelf.BookshelfName
 import fr.amory.libris.library.domain.bookshelf.Membership
 import fr.amory.libris.library.domain.bookshelf.MembershipRole.OWNER
 import fr.amory.libris.library.domain.bookshelf.MembershipRole.VIEWER
 import fr.amory.libris.library.fixture.BookshelvesInMemory
+import fr.amory.libris.library.fixture.bookshelfOf
 import fr.amory.libris.library.fixture.bookshelfOwnedBy
 import fr.amory.libris.library.fixture.readerNamed
 import io.kotest.matchers.collections.shouldContainExactlyInAnyOrder
@@ -18,7 +18,7 @@ class ListReaderBookshelvesTest {
     // Given
     val lea = readerNamed("lea", "Léa")
     val marc = readerNamed("marc", "Marc")
-    val salon = Bookshelf(
+    val salon = bookshelfOf(
       BookshelfId.new(),
       BookshelfName("Salon"),
       listOf(Membership(marc.id, OWNER), Membership(lea.id, VIEWER)),

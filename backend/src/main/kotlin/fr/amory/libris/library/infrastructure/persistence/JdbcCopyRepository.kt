@@ -5,19 +5,33 @@ import fr.amory.libris.library.domain.bookshelf.BookshelfId
 import fr.amory.libris.library.domain.copy.Copy
 import fr.amory.libris.library.domain.copy.CopyId
 import fr.amory.libris.library.domain.copy.CopyRepository
+import fr.amory.libris.library.domain.reader.ReaderId
 import org.springframework.jdbc.core.simple.JdbcClient
 import org.springframework.stereotype.Repository
 import java.sql.ResultSet
+import java.time.OffsetDateTime
+import java.time.ZoneOffset.UTC
 import java.util.UUID
 
 private const val INSERT_COPY =
-  "INSERT INTO copy (id, edition_id, bookshelf_id) VALUES (:id, :editionId, :bookshelfId)"
+  """
+    INSERT INTO copy (id, edition_id, bookshelf_id, added_by, added_at)
+    VALUES (:id, :editionId, :bookshelfId, :addedBy, :addedAt)
+    """
 
 private const val FIND_COPIES_BY_EDITION =
-  "SELECT copy.id, copy.edition_id, copy.bookshelf_id FROM copy WHERE copy.edition_id = :editionId"
+  """
+    SELECT copy.id, copy.edition_id, copy.bookshelf_id, copy.added_by, copy.added_at
+    FROM copy
+    WHERE copy.edition_id = :editionId
+    """
 
 private const val FIND_COPIES_BY_EDITIONS =
-  "SELECT copy.id, copy.edition_id, copy.bookshelf_id FROM copy WHERE copy.edition_id IN (:editionIds)"
+  """
+    SELECT copy.id, copy.edition_id, copy.bookshelf_id, copy.added_by, copy.added_at
+    FROM copy
+    WHERE copy.edition_id IN (:editionIds)
+    """
 
 @Repository
 class JdbcCopyRepository(private val jdbcClient: JdbcClient) : CopyRepository {
@@ -27,6 +41,8 @@ class JdbcCopyRepository(private val jdbcClient: JdbcClient) : CopyRepository {
       .param("id", copy.id.value)
       .param("editionId", copy.editionId.value)
       .param("bookshelfId", copy.bookshelfId.value)
+      .param("addedBy", copy.addedBy.value)
+      .param("addedAt", copy.addedAt.atOffset(UTC))
       .update()
   }
 
@@ -53,5 +69,7 @@ class JdbcCopyRepository(private val jdbcClient: JdbcClient) : CopyRepository {
       id = CopyId(rs.getObject("id", UUID::class.java)),
       editionId = EditionId(rs.getObject("edition_id", UUID::class.java)),
       bookshelfId = BookshelfId(rs.getObject("bookshelf_id", UUID::class.java)),
+      addedBy = ReaderId(rs.getObject("added_by", UUID::class.java)),
+      addedAt = rs.getObject("added_at", OffsetDateTime::class.java).toInstant(),
     )
 }

@@ -7,6 +7,7 @@ import fr.amory.libris.library.domain.bookshelf.BookshelfName
 import fr.amory.libris.library.domain.bookshelf.Membership
 import fr.amory.libris.library.domain.bookshelf.MembershipRole.OWNER
 import fr.amory.libris.library.domain.bookshelf.MembershipRole.VIEWER
+import fr.amory.libris.library.fixture.bookshelfOf
 import fr.amory.libris.library.fixture.bookshelfOwnedBy
 import fr.amory.libris.library.fixture.readerNamed
 import io.kotest.assertions.throwables.shouldThrow
@@ -16,6 +17,7 @@ import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.context.annotation.Import
 import org.springframework.dao.DataIntegrityViolationException
+import java.time.Instant
 
 @JdbcSliceTest
 @Import(JdbcBookshelfRepository::class, JdbcReaderRepository::class)
@@ -23,7 +25,7 @@ class JdbcBookshelfRepositoryTest @Autowired constructor(
   private val bookshelves: JdbcBookshelfRepository,
   private val readers: JdbcReaderRepository) {
   @Test
-  fun `an inserted bookshelf is read back whole, its members included`() {
+  fun `an inserted bookshelf is read back whole, its members and its creation included`() {
     // Given
     val lea = readerNamed("lea", "Léa")
     val juliette = readerNamed("juliette", "Juliette")
@@ -31,6 +33,8 @@ class JdbcBookshelfRepositoryTest @Autowired constructor(
       id = lea.defaultBookshelfId,
       name = BookshelfName("Bibliothèque de Léa"),
       memberships = listOf(Membership(lea.id, OWNER), Membership(juliette.id, VIEWER)),
+      createdBy = juliette.id,
+      createdAt = Instant.parse("2026-10-14T09:30:00.123456Z"),
     )
 
     readers.insert(lea)
@@ -52,7 +56,7 @@ class JdbcBookshelfRepositoryTest @Autowired constructor(
     val lea = readerNamed("lea", "Léa").also { readers.insert(it) }
     val juliette = readerNamed("juliette", "Juliette").also { readers.insert(it) }
     val bookshelf = bookshelfOwnedBy(lea).also { bookshelves.insert(it) }
-    val updated = Bookshelf(
+    val updated = bookshelfOf(
       id = bookshelf.id,
       name = BookshelfName("Salon"),
       memberships = listOf(Membership(lea.id, OWNER), Membership(juliette.id, VIEWER)),
@@ -90,13 +94,25 @@ class JdbcBookshelfRepositoryTest @Autowired constructor(
   }
 
   @Test
+  fun `a creator Libris does not know is refused`() {
+    // Given
+    val lea = readerNamed("lea", "Léa").also { readers.insert(it) }
+    val nobody = readerNamed("nobody", "Nobody")
+
+    // When / Then
+    shouldThrow<DataIntegrityViolationException> {
+      bookshelves.insert(bookshelfOwnedBy(lea).copy(createdBy = nobody.id))
+    }
+  }
+
+  @Test
   fun `the bookshelves a reader is a member of are found whole, none of another's`() {
     // Given
     val lea = readerNamed("lea", "Léa").also { readers.insert(it) }
     val tom = readerNamed("tom", "Tom").also { readers.insert(it) }
     val leasBookshelf = bookshelfOwnedBy(lea).also { bookshelves.insert(it) }
     bookshelfOwnedBy(tom).also { bookshelves.insert(it) }
-    val salon = Bookshelf(
+    val salon = bookshelfOf(
       BookshelfId.new(),
       BookshelfName("Salon"),
       listOf(Membership(tom.id, OWNER), Membership(lea.id, VIEWER)),

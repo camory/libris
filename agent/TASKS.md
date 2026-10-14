@@ -16,6 +16,20 @@
 >
 > Follow-ups and ideas go to `agent/PROPOSED.md`, never here.
 
+## Creation audit — docs/ARCHITECTURE.md
+
+No contract release: nothing in the API changes, the creation is recorded
+in the database only (D11).
+
+- [x] T091 Backend: a bookshelf records who created it and when, a copy
+      who added it and when.
+      `CreateBookshelf` and `WelcomeReader` set the reader acting and the
+      `Clock`'s instant on the bookshelf, `AddBookToBookshelf` on the
+      copy; the repositories write and read them back. Existing rows are
+      filled by the migration: the bookshelf's owner of the smallest id
+      for both, the migration's instant for the date; then the columns are
+      `NOT NULL`, the reader a reference. Done by Claude with Tophe.
+
 ## Done
 
 - Phase 0 — Foundations, T001 to T012, done 2026-09-10 with `v0.1.3` on the

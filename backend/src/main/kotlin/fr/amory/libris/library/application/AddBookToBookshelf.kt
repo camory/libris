@@ -19,28 +19,31 @@ import fr.amory.libris.library.domain.copy.CopyRepository
 import fr.amory.libris.library.domain.reader.ReaderId
 import org.springframework.stereotype.Service
 import org.springframework.transaction.support.TransactionOperations
+import java.time.Clock
 
 @Service
+@Suppress("LongParameterList")
 class AddBookToBookshelf(
   private val editions: EditionRepository,
   private val awaitedCovers: AwaitedCoverRepository,
   private val copies: CopyRepository,
   private val bookshelves: BookshelfRepository,
   private val transactions: TransactionOperations,
-  private val coverWorker: CoverWorker) {
+  private val coverWorker: CoverWorker,
+  private val clock: Clock) {
   operator fun invoke(readerId: ReaderId, bookshelfId: BookshelfId, book: NewBook): AddBookResult {
     val bookshelf = bookshelves.findById(bookshelfId)?.takeIf { it.hasMember(readerId) }
     return when {
       bookshelf == null              -> NoSuchBookshelf
       !bookshelf.isOwnedBy(readerId) -> NotAnOwner
-      else                           -> added(bookshelf, book)
+      else                           -> added(readerId, bookshelf, book)
     }
   }
 
-  private fun added(bookshelf: Bookshelf, book: NewBook): AddBookResult {
+  private fun added(readerId: ReaderId, bookshelf: Bookshelf, book: NewBook): AddBookResult {
     val heldEdition = book.isbn?.let { editions.findByIsbn(it) }
     val edition = heldEdition ?: newEdition(book)
-    val copy = Copy(CopyId.new(), edition.id, bookshelf.id)
+    val copy = Copy(CopyId.new(), edition.id, bookshelf.id, readerId, clock.instant())
     transactions.executeWithoutResult {
       if (heldEdition == null) insert(edition, book.coverSource)
       copies.insert(copy)
