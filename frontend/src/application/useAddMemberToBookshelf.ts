@@ -26,10 +26,18 @@ export function useAddMemberToBookshelf(bookshelvesApi: BookshelvesApi): {
   ) {
     const { added } = state.value;
     state.value = { status: "adding", added };
-    const answer = await bookshelvesApi.addMember(bookshelfId, readerId, role);
-    if (answer.outcome === "added")
-      state.value = { status: "added", added: [...added, answer.member] };
-    else state.value = { status: "unavailable", added };
+    try {
+      const answer = await bookshelvesApi.addMember(
+        bookshelfId,
+        readerId,
+        role,
+      );
+      if (answer.outcome === "added")
+        state.value = { status: "added", added: [...added, answer.member] };
+      else state.value = { status: "unavailable", added };
+    } catch {
+      state.value = { status: "unavailable", added };
+    }
   }
 
   function reset() {

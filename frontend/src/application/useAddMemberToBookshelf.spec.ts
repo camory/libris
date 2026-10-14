@@ -53,6 +53,23 @@ describe("useAddMemberToBookshelf", () => {
     expect(state.value).toEqual({ status: "unavailable", added: [] });
   });
 
+  it("is unavailable when Libris does not answer", async () => {
+    // Given
+    const { state, add } = useAddMemberToBookshelf(
+      new FakeBookshelvesApi({
+        memberships: [],
+        find: { outcome: "found", bookshelf: salon, members: [owner(lea)] },
+        adds: new TypeError("Failed to fetch"),
+      }),
+    );
+
+    // When
+    await add(salon.id, hugo.id, "VIEWER");
+
+    // Then
+    expect(state.value).toEqual({ status: "unavailable", added: [] });
+  });
+
   it("forgets the members it added once reset", async () => {
     // Given
     const { state, add, reset } = useAddMemberToBookshelf(addingHugoToSalon());
