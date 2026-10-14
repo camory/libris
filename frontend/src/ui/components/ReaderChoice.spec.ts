@@ -40,8 +40,8 @@ describe("ReaderChoice", () => {
     await fireEvent.click(screen.getByRole("button", { name: "Hugo" }));
 
     // Then
-    const row = rowOf(screen, "Hugo");
-    expect(row.textContent).toContain("Hugo");
+    const row = formRow(screen);
+    expect(within(row).getByText("Hugo")).toBeDefined();
     expect(
       within(row).getByRole("button", { name: "Propriétaire", pressed: false }),
     ).toBeDefined();
@@ -188,6 +188,14 @@ describe("ReaderChoice", () => {
       global: { plugins: [createLibrisI18n()] },
     });
     return { wrapper, screen: within(wrapper.element as HTMLElement) };
+  }
+
+  function formRow(screen: Screen) {
+    return within(screen.getByRole("list", { name: "Choisir un lecteur" }))
+      .getAllByRole("listitem")
+      .find((row) =>
+        within(row).queryByRole("button", { name: "Propriétaire" }),
+      )!;
   }
 
   function rowOf(screen: Screen, displayName: string) {
