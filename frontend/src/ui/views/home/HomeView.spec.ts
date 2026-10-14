@@ -119,11 +119,7 @@ describe("HomeView", () => {
 
     // Then
     const screen = within(wrapper.element as HTMLElement);
-    expect(
-      within(screen.getByRole("list", { name: "Mes bibliothèques" }))
-        .getAllByRole("listitem")
-        .map(normalised),
-    ).toEqual([
+    expect(rows(screen)).toEqual([
       "Bibliothèque de Chloé propriétaire · par défaut",
       "Étagère propriétaire",
       "Salon invité",
@@ -195,9 +191,7 @@ describe("HomeView", () => {
     );
 
     // Then
-    const last = within(screen.getByRole("list", { name: "Mes bibliothèques" }))
-      .getAllByRole("listitem")
-      .at(-1)!;
+    const last = listItems(screen).at(-1)!;
     expect(
       within(last).queryByRole("textbox", { name: "Nom de la bibliothèque" }),
     ).not.toBeNull();
@@ -223,11 +217,7 @@ describe("HomeView", () => {
     await flushPromises();
 
     // Then
-    expect(
-      within(screen.getByRole("list", { name: "Mes bibliothèques" }))
-        .getAllByRole("listitem")
-        .map(normalised),
-    ).toEqual([
+    expect(rows(screen)).toEqual([
       "Bibliothèque de Chloé propriétaire · par défaut",
       "Atelier propriétaire",
       "Salon invité",
@@ -277,11 +267,7 @@ describe("HomeView", () => {
     await flushPromises();
 
     // Then
-    expect(
-      within(screen.getByRole("list", { name: "Mes bibliothèques" }))
-        .getAllByRole("listitem")
-        .map(normalised),
-    ).toEqual([
+    expect(rows(screen)).toEqual([
       "Bibliothèque de Chloé propriétaire · par défaut",
       "Salon invité",
       "Vous avez déjà une bibliothèque de ce nom.",
@@ -313,11 +299,7 @@ describe("HomeView", () => {
     await flushPromises();
 
     // Then
-    expect(
-      within(screen.getByRole("list", { name: "Mes bibliothèques" }))
-        .getAllByRole("listitem")
-        .map(normalised),
-    ).toEqual([
+    expect(rows(screen)).toEqual([
       "Bibliothèque de Chloé propriétaire · par défaut",
       "Salon invité",
       "Erreur lors de la création, veuillez réessayer plus tard.",
@@ -458,17 +440,21 @@ describe("HomeView", () => {
   }
 
   function rows(screen: ReturnType<typeof within>) {
-    return within(screen.getByRole("list", { name: "Mes bibliothèques" }))
-      .getAllByRole("listitem")
-      .map(normalised);
+    return listItems(screen).map(normalised);
   }
 
   function rowOf(screen: ReturnType<typeof within>, name: string) {
     return within(
-      within(screen.getByRole("list", { name: "Mes bibliothèques" }))
-        .getAllByRole("listitem")
-        .find((item) => within(item).queryByText(name) !== null)!,
+      listItems(screen).find(
+        (item) => within(item).queryByText(name) !== null,
+      )!,
     );
+  }
+
+  function listItems(screen: ReturnType<typeof within>) {
+    return within(
+      screen.getByRole("list", { name: "Mes bibliothèques" }),
+    ).getAllByRole("listitem");
   }
 
   function starOf(screen: ReturnType<typeof within>, name: string) {
