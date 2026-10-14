@@ -57,7 +57,7 @@ const salonOwned: FindAnswer = {
 const mountBookshelfView = (
   find: FindAnswer | Error,
   readers: KnownReader[] = [],
-  adds?: KnownReader,
+  adds?: KnownReader | Error,
 ) =>
   mount(BookshelfView, {
     props: { id: salon.id },
@@ -269,6 +269,37 @@ describe("BookshelfView", () => {
 
     // Then
     screen.getByRole("button", { name: "Ajout en cours…" });
+  });
+
+  it("says Libris did not answer the add in the reader's row, the choice open", async () => {
+    // Given
+    const wrapper = mountBookshelfView(
+      salonOwned,
+      [leaToOthers, marc, hugo],
+      new TypeError("Failed to fetch"),
+    );
+    await flushPromises();
+    const screen = within(wrapper.element as HTMLElement);
+    await chooseHugo(screen);
+
+    // When
+    await fireEvent.click(screen.getByRole("button", { name: "Ajouter" }));
+    await flushPromises();
+
+    // Then
+    const rows = within(
+      screen.getByRole("list", { name: "Choisir un lecteur" }),
+    ).getAllByRole("listitem");
+    expect(rows).toHaveLength(1);
+    within(rows[0]!).getByText("Hugo");
+    within(rows[0]!).getByText(
+      "Erreur lors de l'ajout, veuillez réessayer plus tard.",
+    );
+    expect(
+      within(screen.getByRole("list", { name: "Membres" }))
+        .getAllByRole("listitem")
+        .map(normalised),
+    ).toEqual(["Vous · propriétaire", "Marc · invité"]);
   });
 
   it("forgets the members it added once another bookshelf opens", async () => {
