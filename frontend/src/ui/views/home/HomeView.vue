@@ -37,10 +37,10 @@ const defaultBookshelfId = computed(
 );
 
 const memberships = computed(() =>
-  reader.value && state.value.status === "listed"
+  defaultBookshelfId.value && state.value.status === "listed"
     ? membershipsInOrder(
         [...state.value.memberships, ...createState.value.created],
-        defaultBookshelfId.value!,
+        defaultBookshelfId.value,
         locale.value,
       )
     : null,
