@@ -3,11 +3,14 @@ import { Check, Crown } from "@lucide/vue";
 import { ref } from "vue";
 import { useI18n } from "vue-i18n";
 import type { KnownReader } from "../../domain/KnownReader";
+import type { MembershipRole } from "../../domain/Membership";
 
 defineProps<{
   readers: KnownReader[];
   adding: boolean;
 }>();
+
+const emit = defineEmits<{ add: [readerId: string, role: MembershipRole] }>();
 
 const { t } = useI18n();
 const chosenId = ref<string>();
@@ -45,6 +48,7 @@ const chosenId = ref<string>();
               type="button"
               :aria-label="t('bookshelf.members.add')"
               class="flex size-11 shrink-0 items-center justify-center rounded-[10px] text-accent"
+              @click="emit('add', reader.id, 'VIEWER')"
             >
               <Check :stroke-width="3" />
             </button>

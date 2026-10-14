@@ -54,6 +54,18 @@ describe("ReaderChoice", () => {
     expect(screen.queryByRole("button", { name: "Ajouter" })).toBeNull();
   });
 
+  it("adds the tapped reader as invité", async () => {
+    // Given
+    const { wrapper, screen } = open();
+    await fireEvent.click(screen.getByRole("button", { name: "Hugo" }));
+
+    // When
+    await fireEvent.click(screen.getByRole("button", { name: "Ajouter" }));
+
+    // Then
+    expect(wrapper.emitted("add")).toEqual([[hugo.id, "VIEWER"]]);
+  });
+
   function rowOf(screen: Screen, displayName: string) {
     return within(screen.getByRole("list", { name: "Choisir un lecteur" }))
       .getAllByRole("listitem")
