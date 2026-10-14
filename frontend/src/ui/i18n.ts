@@ -31,7 +31,6 @@ const fr = {
       member: "{name} · {role}",
       you: "Vous",
       new: "Ajouter un membre",
-      reader: "Lecteur",
       choose: "Choisir un lecteur",
       close: "Fermer",
       owner: "Propriétaire",

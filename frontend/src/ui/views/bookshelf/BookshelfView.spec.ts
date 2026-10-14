@@ -160,7 +160,7 @@ describe("BookshelfView", () => {
     expect(normalised(wrapper.element)).toBe("Bibliothèque introuvable.");
   });
 
-  it("adds the form as the last row of Membres", async () => {
+  it("opens Choisir un lecteur under Membres", async () => {
     // Given
     const wrapper = mountBookshelfView(salonOwned, [
       leaToOthers,
@@ -177,18 +177,19 @@ describe("BookshelfView", () => {
     );
 
     // Then
-    const last = within(screen.getByRole("list", { name: "Membres" }))
-      .getAllByRole("listitem")
-      .at(-1)!;
-    const choice = within(last).getByRole("combobox", { name: "Lecteur" });
     expect(
-      within(choice)
-        .getAllByRole("option")
-        .map((option) => option.textContent),
-    ).toEqual(["Choisir un lecteur", "Élodie", "Hugo"]);
+      within(screen.getByRole("list", { name: "Choisir un lecteur" }))
+        .getAllByRole("button")
+        .map((button) => button.textContent?.trim()),
+    ).toEqual(["Élodie", "Hugo"]);
+    expect(
+      within(screen.getByRole("list", { name: "Membres" }))
+        .getAllByRole("listitem")
+        .map(normalised),
+    ).toEqual(["Vous · propriétaire", "Marc · invité"]);
   });
 
-  it("hides the plus while the form is there", async () => {
+  it("hides the plus while the choice is there", async () => {
     // Given
     const wrapper = mountBookshelfView(salonOwned, [leaToOthers, marc, hugo]);
     await flushPromises();
@@ -205,7 +206,7 @@ describe("BookshelfView", () => {
     ).toBeNull();
   });
 
-  it("shows the new member among the members, the form gone", async () => {
+  it("shows the new member among the members, the choice gone", async () => {
     // Given
     const wrapper = mountBookshelfView(
       salonOwned,
@@ -227,7 +228,9 @@ describe("BookshelfView", () => {
         .getAllByRole("listitem")
         .map(normalised),
     ).toEqual(["Vous · propriétaire", "Hugo · propriétaire", "Marc · invité"]);
-    expect(screen.queryByRole("combobox")).toBeNull();
+    expect(
+      screen.queryByRole("list", { name: "Choisir un lecteur" }),
+    ).toBeNull();
     screen.getByRole("button", { name: "Ajouter un membre" });
   });
 
@@ -276,7 +279,7 @@ describe("BookshelfView", () => {
     ).toEqual(["Vous · propriétaire", "Hugo · invité", "Marc · invité"]);
   });
 
-  it("closes the new member's row once another bookshelf opens", async () => {
+  it("closes the choice once another bookshelf opens", async () => {
     // Given
     const wrapper = mountBookshelfView(salonOwned, [leaToOthers, marc, hugo]);
     await flushPromises();
@@ -292,7 +295,9 @@ describe("BookshelfView", () => {
     await flushPromises();
 
     // Then
-    expect(screen.queryByRole("combobox")).toBeNull();
+    expect(
+      screen.queryByRole("list", { name: "Choisir un lecteur" }),
+    ).toBeNull();
   });
 
   it("offers a viewer no plus", async () => {
@@ -318,13 +323,11 @@ describe("BookshelfView", () => {
     await fireEvent.click(
       screen.getByRole("button", { name: "Ajouter un membre" }),
     );
-    const choice = screen.getByRole<HTMLSelectElement>("combobox", {
-      name: "Lecteur",
-    });
-    within(choice).getByRole<HTMLOptionElement>("option", {
-      name: "Hugo",
-    }).selected = true;
-    await fireEvent.change(choice);
+    await fireEvent.click(
+      within(
+        screen.getByRole("list", { name: "Choisir un lecteur" }),
+      ).getByRole("button", { name: "Hugo" }),
+    );
   }
 
   function seen(wrapper: ReturnType<typeof mountBookshelfView>) {
