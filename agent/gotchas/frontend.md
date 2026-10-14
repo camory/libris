@@ -372,3 +372,8 @@ Read whole by a run that changes `frontend/`, after `every-run.md`.
   reaches the call, unit and scenario alike. The call goes through optional
   chaining, `element?.scrollIntoView?.(…)`, or a test that asserts it
   defines it on the element first.
+- jsdom moves the focus only to an element in the document: on the detached
+  tree every spec mounts, `focus()` leaves `document.activeElement` on the
+  body. A case about the focus mounts with `attachTo: document.body` and
+  calls `wrapper.unmount()` at its end (`NewBookshelfRow`'s *takes the focus
+  when it opens*).
