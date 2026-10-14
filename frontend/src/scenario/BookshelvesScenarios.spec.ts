@@ -241,7 +241,7 @@ describe("Bookshelves", () => {
     await screen.findByText("Dans Salon");
   });
 
-  it.skip("S8 A bookshelf the reader cannot make their default", async () => {
+  it("S8 A bookshelf the reader cannot make their default", async () => {
     // Given
     const libris = leaBelongsTo(
       ownerOf(lea.defaultBookshelf),
