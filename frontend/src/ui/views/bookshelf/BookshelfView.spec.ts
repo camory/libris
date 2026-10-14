@@ -412,6 +412,25 @@ describe("BookshelfView", () => {
     ).toBeNull();
   });
 
+  it("says every reader is a member once the last is added", async () => {
+    // Given
+    const wrapper = mountBookshelfView(
+      salonOwned,
+      [leaToOthers, marc, hugo],
+      hugo,
+    );
+    await flushPromises();
+    const screen = within(wrapper.element as HTMLElement);
+    await chooseHugo(screen);
+
+    // When
+    await fireEvent.click(screen.getByRole("button", { name: "Ajouter" }));
+    await flushPromises();
+
+    // Then
+    screen.getByText("Tous les lecteurs sont déjà membres.");
+  });
+
   async function chooseHugo(screen: Screen) {
     await fireEvent.click(
       screen.getByRole("button", { name: "Ajouter un membre" }),
