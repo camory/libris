@@ -93,6 +93,31 @@ describe("ReaderChoice", () => {
     expect(wrapper.emitted("add")).toEqual([[hugo.id, "OWNER"]]);
   });
 
+  it("moves the form to another reader, the crown off again", async () => {
+    // Given
+    const { screen } = open();
+    await fireEvent.click(screen.getByRole("button", { name: "Hugo" }));
+    await fireEvent.click(screen.getByRole("button", { name: "Propriétaire" }));
+
+    // When
+    await fireEvent.click(screen.getByRole("button", { name: "Marc" }));
+
+    // Then
+    const marcRow = rowOf(screen, "Marc");
+    expect(
+      within(marcRow).getByRole("button", {
+        name: "Propriétaire",
+        pressed: false,
+      }),
+    ).toBeDefined();
+    expect(
+      within(marcRow).getByRole("button", { name: "Ajouter" }),
+    ).toBeDefined();
+    expect(
+      within(rowOf(screen, "Hugo")).getByRole("button", { name: "Hugo" }),
+    ).toBeDefined();
+  });
+
   function rowOf(screen: Screen, displayName: string) {
     return within(screen.getByRole("list", { name: "Choisir un lecteur" }))
       .getAllByRole("listitem")

@@ -16,6 +16,11 @@ const { t } = useI18n();
 const chosenId = ref<string>();
 const role = ref<MembershipRole>("VIEWER");
 
+function choose(readerId: string) {
+  chosenId.value = readerId;
+  role.value = "VIEWER";
+}
+
 function toggleOwner() {
   role.value = role.value === "OWNER" ? "VIEWER" : "OWNER";
 }
@@ -63,7 +68,7 @@ function toggleOwner() {
             v-else
             type="button"
             class="flex min-h-14 w-full items-center px-3.5 text-left text-body text-text"
-            @click="chosenId = reader.id"
+            @click="choose(reader.id)"
           >
             {{ reader.displayName }}
           </button>
