@@ -187,6 +187,24 @@ describe("FetchBookshelvesApi", () => {
     });
   });
 
+  it("answers a problem when the reader added is unknown", async () => {
+    // Given
+    const api = new FetchBookshelvesApi(inject("mockBaseUrl"));
+
+    // When
+    const answer = await api.addMember(
+      "0b1e2d3c-4f5a-4b6c-8d7e-9f0a1b2c3d4e",
+      "00000000-0000-4000-8000-000000000000",
+      "VIEWER",
+    );
+
+    // Then
+    expect(answer).toEqual({
+      outcome: "problem",
+      type: "/problems/validation",
+    });
+  });
+
   it("says the add comes from the application", async () => {
     // Given
     const api = new FetchBookshelvesApi("http://libris.invalid");
