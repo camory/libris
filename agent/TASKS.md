@@ -68,7 +68,8 @@
 - Creation audit, T091, done 2026-10-14, `docs/ARCHITECTURE.md`: a
   bookshelf records the reader who created it and when, a copy the reader
   who added it and when, set by the use cases from the `Clock`, in the
-  database only; the rows already there filled by the migration.
+  database only; the rows already there filled by the migration. Deployed
+  on staging.
 
 ## Questions for the human
 
