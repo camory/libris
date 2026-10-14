@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+import type { ChooseDefaultAnswer } from "./BookshelvesApi";
 import type { Bookshelf } from "../domain/Bookshelf";
 import { bibliothequeDeLea, salon } from "../fixture/Books";
 import { FakeBookshelvesApi } from "../fixture/FakeBookshelvesApi";
@@ -26,6 +27,23 @@ describe("useChooseDefaultBookshelf", () => {
     });
   });
 
+  it("is choosing while Libris answers", () => {
+    // Given
+    const { state, choose } = useChooseDefaultBookshelf(
+      new LibrisNotAnswering(),
+    );
+
+    // When
+    void choose(salon.id);
+
+    // Then
+    expect(state.value).toEqual({
+      status: "choosing",
+      bookshelfId: salon.id,
+      defaultBookshelfId: null,
+    });
+  });
+
   function librisChoosing() {
     return new FakeBookshelvesApi({
       memberships: [
@@ -42,3 +60,13 @@ const mangas: Bookshelf = {
   id: "3e4f5a6b-7c8d-4e9f-8a1b-2c3d4e5f6a71",
   name: "Mangas",
 };
+
+class LibrisNotAnswering extends FakeBookshelvesApi {
+  constructor() {
+    super({ memberships: [] });
+  }
+
+  override chooseDefault(): Promise<ChooseDefaultAnswer> {
+    return new Promise(() => {});
+  }
+}

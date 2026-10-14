@@ -18,6 +18,8 @@ export function useChooseDefaultBookshelf(bookshelvesApi: BookshelvesApi): {
   });
 
   async function choose(bookshelfId: string) {
+    const { defaultBookshelfId } = state.value;
+    state.value = { status: "choosing", bookshelfId, defaultBookshelfId };
     await bookshelvesApi.chooseDefault(bookshelfId);
     state.value = {
       status: "chosen",
