@@ -195,7 +195,7 @@ longer says.
       tested against `contracteer mock` (D07).
       Realises S5; un-skips the frontend tests of S5, both cases.
 
-- [ ] T089 Frontend: the reader first, and the reader chosen in a block.
+- [x] T089 Frontend: the reader first, and the reader chosen in a block.
       The members read the reader's own row first, then the other owners,
       then the viewers, each by display name ignoring case and accents. The
       plus *Ajouter un membre* opens under *Membres* the block *Choisir un
