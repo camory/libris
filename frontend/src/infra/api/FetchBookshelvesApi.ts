@@ -109,8 +109,21 @@ export class FetchBookshelvesApi implements BookshelvesApi {
     return { outcome: "added", member: memberOf(body) };
   }
 
-  chooseDefault(): Promise<ChooseDefaultAnswer> {
-    return Promise.reject(new Error("chooseDefault is not implemented"));
+  async chooseDefault(id: string): Promise<ChooseDefaultAnswer> {
+    const response = await fetch(
+      `${this.baseUrl}/api/v1/me/default-bookshelf`,
+      {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json, application/problem+json",
+          "X-Requested-With": "XMLHttpRequest",
+        },
+        body: JSON.stringify({ id }),
+      },
+    );
+    if (response.status !== 204) return problemOf(response, problems);
+    return { outcome: "chosen" };
   }
 }
 

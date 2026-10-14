@@ -227,7 +227,7 @@ longer says.
       Realises S5's every reader a member and S9's adding case; un-skips
       the frontend test of S9, adding a member.
 
-- [ ] T084 Frontend: a reader chooses their default.
+- [x] T084 Frontend: a reader chooses their default.
       Left of the chevron of a row the reader owns, a star in `accent`,
       filled on the default as a mark, outlined elsewhere as the button
       *Choisir comme bibliothèque par défaut*; none on a viewer's row. A tap

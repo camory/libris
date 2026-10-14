@@ -5,6 +5,10 @@ import { useI18n } from "vue-i18n";
 import { bookshelvesApiKey } from "../../../application/BookshelvesApi";
 import { meApiKey } from "../../../application/MeApi";
 import { revisionKey } from "../../../application/Revision";
+import {
+  type ChooseDefaultState,
+  useChooseDefaultBookshelf,
+} from "../../../application/useChooseDefaultBookshelf";
 import { useCreateBookshelf } from "../../../application/useCreateBookshelf";
 import { useListReaderBookshelves } from "../../../application/useListReaderBookshelves";
 import { membershipsInOrder } from "../../../domain/Membership";
@@ -24,12 +28,19 @@ const bookshelvesApi = inject(bookshelvesApiKey)!;
 const { state, list } = useListReaderBookshelves(bookshelvesApi);
 const { state: createState, create: createBookshelf } =
   useCreateBookshelf(bookshelvesApi);
+const { state: chooseState, choose } =
+  useChooseDefaultBookshelf(bookshelvesApi);
+
+const defaultBookshelfId = computed(
+  () =>
+    chooseState.value.defaultBookshelfId ?? reader.value?.defaultBookshelf.id,
+);
 
 const memberships = computed(() =>
-  reader.value && state.value.status === "listed"
+  defaultBookshelfId.value && state.value.status === "listed"
     ? membershipsInOrder(
         [...state.value.memberships, ...createState.value.created],
-        reader.value.defaultBookshelf.id,
+        defaultBookshelfId.value,
         locale.value,
       )
     : null,
@@ -41,6 +52,13 @@ const createFailure = computed(() =>
     ? createState.value.status
     : undefined,
 );
+
+function isChoice(bookshelfId: string, status: ChooseDefaultState["status"]) {
+  return (
+    chooseState.value.status === status &&
+    chooseState.value.bookshelfId === bookshelfId
+  );
+}
 
 async function create(name: string) {
   await createBookshelf(name);
@@ -96,9 +114,11 @@ void list();
           <li v-for="membership in memberships" :key="membership.bookshelf.id">
             <BookshelfRow
               :membership="membership"
-              :is-default="
-                membership.bookshelf.id === reader?.defaultBookshelf.id
-              "
+              :is-default="membership.bookshelf.id === defaultBookshelfId"
+              :busy="isChoice(membership.bookshelf.id, 'choosing')"
+              :locked="chooseState.status === 'choosing'"
+              :failed="isChoice(membership.bookshelf.id, 'unavailable')"
+              @choose="choose(membership.bookshelf.id)"
             />
           </li>
           <li v-if="naming">

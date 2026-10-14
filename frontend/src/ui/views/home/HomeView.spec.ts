@@ -3,6 +3,7 @@ import { flushPromises, mount } from "@vue/test-utils";
 import { describe, expect, it } from "vitest";
 import {
   bookshelvesApiKey,
+  type ChooseDefaultAnswer,
   type CreateAnswer,
 } from "../../../application/BookshelvesApi";
 import { meApiKey } from "../../../application/MeApi";
@@ -32,6 +33,10 @@ const atelier: Bookshelf = {
 
 class LibrisNotAnswering extends FakeBookshelvesApi {
   override create(): Promise<CreateAnswer> {
+    return new Promise(() => {});
+  }
+
+  override chooseDefault(): Promise<ChooseDefaultAnswer> {
     return new Promise(() => {});
   }
 }
@@ -114,11 +119,7 @@ describe("HomeView", () => {
 
     // Then
     const screen = within(wrapper.element as HTMLElement);
-    expect(
-      within(screen.getByRole("list", { name: "Mes bibliothèques" }))
-        .getAllByRole("listitem")
-        .map(normalised),
-    ).toEqual([
+    expect(rows(screen)).toEqual([
       "Bibliothèque de Chloé propriétaire · par défaut",
       "Étagère propriétaire",
       "Salon invité",
@@ -190,9 +191,7 @@ describe("HomeView", () => {
     );
 
     // Then
-    const last = within(screen.getByRole("list", { name: "Mes bibliothèques" }))
-      .getAllByRole("listitem")
-      .at(-1)!;
+    const last = listItems(screen).at(-1)!;
     expect(
       within(last).queryByRole("textbox", { name: "Nom de la bibliothèque" }),
     ).not.toBeNull();
@@ -218,11 +217,7 @@ describe("HomeView", () => {
     await flushPromises();
 
     // Then
-    expect(
-      within(screen.getByRole("list", { name: "Mes bibliothèques" }))
-        .getAllByRole("listitem")
-        .map(normalised),
-    ).toEqual([
+    expect(rows(screen)).toEqual([
       "Bibliothèque de Chloé propriétaire · par défaut",
       "Atelier propriétaire",
       "Salon invité",
@@ -272,11 +267,7 @@ describe("HomeView", () => {
     await flushPromises();
 
     // Then
-    expect(
-      within(screen.getByRole("list", { name: "Mes bibliothèques" }))
-        .getAllByRole("listitem")
-        .map(normalised),
-    ).toEqual([
+    expect(rows(screen)).toEqual([
       "Bibliothèque de Chloé propriétaire · par défaut",
       "Salon invité",
       "Vous avez déjà une bibliothèque de ce nom.",
@@ -308,11 +299,7 @@ describe("HomeView", () => {
     await flushPromises();
 
     // Then
-    expect(
-      within(screen.getByRole("list", { name: "Mes bibliothèques" }))
-        .getAllByRole("listitem")
-        .map(normalised),
-    ).toEqual([
+    expect(rows(screen)).toEqual([
       "Bibliothèque de Chloé propriétaire · par défaut",
       "Salon invité",
       "Erreur lors de la création, veuillez réessayer plus tard.",
@@ -323,6 +310,116 @@ describe("HomeView", () => {
       }).value,
     ).toBe("salon");
     expect(offersNew(wrapper)).toBe(false);
+  });
+
+  it("makes the tapped bookshelf the default, first and marked", async () => {
+    // Given
+    const memberships: Membership[] = [
+      { bookshelf: salon, role: "VIEWER" },
+      { bookshelf: atelier, role: "OWNER" },
+      { bookshelf: chloe.defaultBookshelf, role: "OWNER" },
+    ];
+    const wrapper = mountHomeView(
+      chloe,
+      memberships,
+      undefined,
+      new FakeBookshelvesApi({ memberships, defaultChosen: () => {} }),
+    );
+    await flushPromises();
+    const screen = within(wrapper.element as HTMLElement);
+
+    // When
+    await fireEvent.click(starOf(screen, "Atelier"));
+    await flushPromises();
+
+    // Then
+    expect(rows(screen)).toEqual([
+      "Atelier propriétaire · par défaut",
+      "Bibliothèque de Chloé propriétaire",
+      "Salon invité",
+    ]);
+  });
+
+  it("is busy in the tapped row while the default is changed", async () => {
+    // Given
+    const memberships: Membership[] = [
+      { bookshelf: chloe.defaultBookshelf, role: "OWNER" },
+      { bookshelf: atelier, role: "OWNER" },
+      { bookshelf: etagere, role: "OWNER" },
+    ];
+    const wrapper = mountHomeView(
+      chloe,
+      memberships,
+      undefined,
+      new LibrisNotAnswering({ memberships }),
+    );
+    await flushPromises();
+    const screen = within(wrapper.element as HTMLElement);
+
+    // When
+    await fireEvent.click(starOf(screen, "Atelier"));
+    await flushPromises();
+
+    // Then
+    expect(
+      rowOf(screen, "Atelier").queryByRole("button", {
+        name: "Changement en cours…",
+      }),
+    ).not.toBeNull();
+  });
+
+  it("lets no other star be tapped while the default is changed", async () => {
+    // Given
+    const memberships: Membership[] = [
+      { bookshelf: chloe.defaultBookshelf, role: "OWNER" },
+      { bookshelf: atelier, role: "OWNER" },
+      { bookshelf: etagere, role: "OWNER" },
+    ];
+    const wrapper = mountHomeView(
+      chloe,
+      memberships,
+      undefined,
+      new LibrisNotAnswering({ memberships }),
+    );
+    await flushPromises();
+    const screen = within(wrapper.element as HTMLElement);
+
+    // When
+    await fireEvent.click(starOf(screen, "Atelier"));
+    await flushPromises();
+
+    // Then
+    expect(starOf(screen, "Étagère").disabled).toBe(true);
+  });
+
+  it("says Libris did not answer in the tapped row, the stars as they were", async () => {
+    // Given
+    const memberships: Membership[] = [
+      { bookshelf: chloe.defaultBookshelf, role: "OWNER" },
+      { bookshelf: atelier, role: "OWNER" },
+    ];
+    const wrapper = mountHomeView(
+      chloe,
+      memberships,
+      undefined,
+      new FakeBookshelvesApi({
+        memberships,
+        defaultChosen: new TypeError("Failed to fetch"),
+      }),
+    );
+    await flushPromises();
+    const screen = within(wrapper.element as HTMLElement);
+
+    // When
+    await fireEvent.click(starOf(screen, "Atelier"));
+    await flushPromises();
+
+    // Then
+    expect(rows(screen)).toEqual([
+      "Bibliothèque de Chloé propriétaire · par défaut",
+      "Atelier propriétaire Erreur lors du changement, veuillez réessayer plus tard.",
+    ]);
+    expect(starOf(screen, "Atelier").disabled).toBe(false);
   });
 
   function seen(wrapper: ReturnType<typeof mountHomeView>) {
@@ -340,6 +437,30 @@ describe("HomeView", () => {
         name: "Nouvelle bibliothèque",
       }) !== null
     );
+  }
+
+  function rows(screen: ReturnType<typeof within>) {
+    return listItems(screen).map(normalised);
+  }
+
+  function rowOf(screen: ReturnType<typeof within>, name: string) {
+    return within(
+      listItems(screen).find(
+        (item) => within(item).queryByText(name) !== null,
+      )!,
+    );
+  }
+
+  function listItems(screen: ReturnType<typeof within>) {
+    return within(
+      screen.getByRole("list", { name: "Mes bibliothèques" }),
+    ).getAllByRole("listitem");
+  }
+
+  function starOf(screen: ReturnType<typeof within>, name: string) {
+    return rowOf(screen, name).getByRole<HTMLButtonElement>("button", {
+      name: "Choisir comme bibliothèque par défaut",
+    });
   }
 
   async function nameNewBookshelf(

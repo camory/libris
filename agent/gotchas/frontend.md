@@ -57,9 +57,12 @@ Read whole by a run that changes `frontend/`, after `every-run.md`.
   `9e8d7c6b-5a4f-4e3d-8c2b-1a0f9e8d7c6b`, reader
   `7f8091a2-b3c4-4d5e-8f6a-7b8c9d0e1f2a`, `VIEWER`; `409` for bookshelf
   `0b1e2d3c-…`, reader `6e7f8091-a2b3-4c4d-9e5f-6a7b8c9d0e1f`, `OWNER`
-  (`v0.11.0`). `FetchIsbnApi`, `FetchBookshelfApi` and `FetchBookshelvesApi` hand a
+  (`v0.11.0`). The choice of the default, `PUT /me/default-bookshelf`,
+  answers `404` for the body `{ id: "9e8d7c6b-5a4f-4e3d-8c2b-1a0f9e8d7c6b" }`,
+  `400` for `{ id: "not-a-uuid" }` and a `204` for any other uuid. `FetchIsbnApi`, `FetchBookshelfApi` and `FetchBookshelvesApi` hand a
   non-2xx answer to `infra/api/problemOf`, which maps the statuses the
-  contract names (400, 404, 409 for the creation and the add of a member,
+  contract names (400, 404, 409 for the creation and the add of a member, 400 and
+  404 for the choice of the default,
   and 503 for the lookup)
   to the `/problems/…`
   slugs only when the `Content-Type` is `application/problem+json`, and
@@ -353,7 +356,10 @@ Read whole by a run that changes `frontend/`, after `every-run.md`.
   name and role, and its `after:absolute after:inset-0` covers the whole
   `relative` row, chevron included, so a tap anywhere opens the bookshelf.
   A control added to the row (the star) sits outside the link and needs
-  `relative` to be above that cover, or the tap opens the bookshelf. jsdom
+  `relative` to be above that cover, or the tap opens the bookshelf. A
+  message under the row (the default's error) sits after the `relative`
+  row, in the component's outer `div`, out of the cover; its `-mt-1.5`
+  pulls it back under the cover, so it is `relative` too. jsdom
   neither lays out nor hit-tests, so no spec sees the cover: it is checked
   on the running app.
 - A spec's subclass of a fixture fake (`LibrisNotAnswering`,

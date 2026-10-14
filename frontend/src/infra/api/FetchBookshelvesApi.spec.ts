@@ -265,4 +265,62 @@ describe("FetchBookshelvesApi", () => {
       "X-Requested-With": "XMLHttpRequest",
     });
   });
+
+  it("makes the bookshelf the reader's default", async () => {
+    // Given
+    const api = new FetchBookshelvesApi(inject("mockBaseUrl"));
+
+    // When
+    const answer = await api.chooseDefault(
+      "1c2f3e4d-5a6b-4c7d-9e8f-0a1b2c3d4e5f",
+    );
+
+    // Then
+    expect(answer).toEqual({ outcome: "chosen" });
+  });
+
+  it("answers a problem when the reader owns no such bookshelf", async () => {
+    // Given
+    const api = new FetchBookshelvesApi(inject("mockBaseUrl"));
+
+    // When
+    const answer = await api.chooseDefault(
+      "9e8d7c6b-5a4f-4e3d-8c2b-1a0f9e8d7c6b",
+    );
+
+    // Then
+    expect(answer).toEqual({ outcome: "problem", type: "/problems/not-found" });
+  });
+
+  it("answers a problem when the default's id is not one", async () => {
+    // Given
+    const api = new FetchBookshelvesApi(inject("mockBaseUrl"));
+
+    // When
+    const answer = await api.chooseDefault("not-a-uuid");
+
+    // Then
+    expect(answer).toEqual({
+      outcome: "problem",
+      type: "/problems/validation",
+    });
+  });
+
+  it("says the choice comes from the application", async () => {
+    // Given
+    const api = new FetchBookshelvesApi("http://libris.invalid");
+    const sent: RequestInit[] = [];
+    vi.stubGlobal("fetch", (_url: string, init: RequestInit) => {
+      sent.push(init);
+      return Promise.resolve(new Response(null, { status: 204 }));
+    });
+
+    // When
+    await api.chooseDefault("1c2f3e4d-5a6b-4c7d-9e8f-0a1b2c3d4e5f");
+
+    // Then
+    expect(sent[0]?.headers).toMatchObject({
+      "X-Requested-With": "XMLHttpRequest",
+    });
+  });
 });

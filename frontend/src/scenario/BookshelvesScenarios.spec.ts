@@ -201,7 +201,7 @@ describe("Bookshelves", () => {
     await waitFor(() => expect(members(screen)).toEqual(then));
   });
 
-  it.skip("S7 A reader chooses their default", async () => {
+  it("S7 A reader chooses their default", async () => {
     // Given
     const me = new FakeMeApi(lea);
     const screen = open(
@@ -241,7 +241,7 @@ describe("Bookshelves", () => {
     await screen.findByText("Dans Salon");
   });
 
-  it.skip("S8 A bookshelf the reader cannot make their default", async () => {
+  it("S8 A bookshelf the reader cannot make their default", async () => {
     // Given
     const libris = leaBelongsTo(
       ownerOf(lea.defaultBookshelf),
@@ -360,7 +360,7 @@ describe("Bookshelves", () => {
     expect(members(screen)).toEqual(["Vous · propriétaire", "Marc · invité"]);
   });
 
-  it.skip("S9 Libris unavailable, choosing the default", async () => {
+  it("S9 Libris unavailable, choosing the default", async () => {
     // Given
     const screen = open(
       "/",
