@@ -36,6 +36,7 @@ onMounted(() => root.value?.scrollIntoView?.({ block: "nearest" }));
 function choose(readerId: string) {
   chosenId.value = readerId;
   role.value = "VIEWER";
+  failedId.value = undefined;
 }
 
 function toggleOwner() {

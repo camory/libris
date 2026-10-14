@@ -199,6 +199,24 @@ describe("ReaderChoice", () => {
     ).toBeNull();
   });
 
+  it("brings the form back to the failed reader without the message", async () => {
+    // Given
+    const { wrapper, screen } = open();
+    await fireEvent.click(screen.getByRole("button", { name: "Hugo" }));
+    await wrapper.setProps({ failed: true });
+    await fireEvent.click(screen.getByRole("button", { name: "Marc" }));
+
+    // When
+    await fireEvent.click(screen.getByRole("button", { name: "Hugo" }));
+
+    // Then
+    expect(
+      screen.queryByText(
+        "Erreur lors de l'ajout, veuillez réessayer plus tard.",
+      ),
+    ).toBeNull();
+  });
+
   it("brings itself into view when it opens", () => {
     // Given
     const scrollIntoView = vi.fn();
