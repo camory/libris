@@ -55,6 +55,10 @@ describe("isOwnedBy", () => {
   it("answers that an owner owns the bookshelf", () => {
     expect(isOwnedBy([owner(lea), viewer(marc)], lea.id)).toBe(true);
   });
+
+  it("answers that a viewer does not", () => {
+    expect(isOwnedBy([owner(lea), viewer(marc)], marc.id)).toBe(false);
+  });
 });
 
 function owner(reader: KnownReader): Member {

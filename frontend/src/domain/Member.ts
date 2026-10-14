@@ -38,5 +38,7 @@ export function nonMembersInOrder(
 }
 
 export function isOwnedBy(members: Member[], readerId: string): boolean {
-  return members.some((member) => member.reader.id === readerId);
+  return members.some(
+    (member) => member.reader.id === readerId && member.role === "OWNER",
+  );
 }
