@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { Check, Crown, X } from "@lucide/vue";
-import { ref } from "vue";
+import { onMounted, ref, useTemplateRef } from "vue";
 import { useI18n } from "vue-i18n";
 import type { KnownReader } from "../../domain/KnownReader";
 import type { MembershipRole } from "../../domain/Membership";
@@ -20,6 +20,9 @@ const { t } = useI18n();
 const chosenId = ref<string>();
 const role = ref<MembershipRole>("VIEWER");
 
+const root = useTemplateRef("root");
+onMounted(() => root.value?.scrollIntoView?.({ block: "nearest" }));
+
 function choose(readerId: string) {
   chosenId.value = readerId;
   role.value = "VIEWER";
@@ -31,7 +34,7 @@ function toggleOwner() {
 </script>
 
 <template>
-  <section>
+  <section ref="root">
     <div class="flex min-h-11 items-center justify-between pb-2">
       <h2 class="text-label text-muted">
         {{ t("bookshelf.members.choose") }}

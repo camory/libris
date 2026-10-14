@@ -5,12 +5,16 @@ import {
   type queries,
 } from "@testing-library/dom";
 import { mount } from "@vue/test-utils";
-import { describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 import type { KnownReader } from "../../domain/KnownReader";
 import { createLibrisI18n } from "../i18n";
 import ReaderChoice from "./ReaderChoice.vue";
 
 describe("ReaderChoice", () => {
+  afterEach(() => {
+    Reflect.deleteProperty(HTMLElement.prototype, "scrollIntoView");
+  });
+
   it("offers a row per reader, each a button", () => {
     // When
     const { screen } = open();
@@ -160,6 +164,22 @@ describe("ReaderChoice", () => {
           screen.getByRole<HTMLButtonElement>("button", { name }).disabled,
       ),
     ).toEqual([true, true, true]);
+  });
+
+  it("brings itself into view when it opens", () => {
+    // Given
+    const scrollIntoView = vi.fn();
+    Object.defineProperty(HTMLElement.prototype, "scrollIntoView", {
+      configurable: true,
+      value: scrollIntoView,
+    });
+
+    // When
+    const { wrapper } = open();
+
+    // Then
+    expect(scrollIntoView).toHaveBeenCalledOnce();
+    expect(scrollIntoView.mock.contexts[0]).toBe(wrapper.element);
   });
 
   function rowOf(screen: Screen, displayName: string) {
