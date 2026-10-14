@@ -395,18 +395,17 @@ Format:
 - Deviations from the brief: none.
 - Left over: nothing.
 
-## 2026-10-14 — T088 Every reader a member, or no answer — handoff
-- Done: steps 1–18 of the test plan, each committed at green; the cited S9
-  adding scenario un-skipped first (red: no sentence, an unhandled rejection),
-  put back skipped, un-skipped for good at step 18. Gate green. Next: self-review
-  is done (nothing changed); tick T088, rewrite this entry as the diary, open the PR.
+## 2026-10-14 — T088 Every reader a member, or no answer — done
+- Did: `isOwnedBy` in `Member.ts` holds the owner rule for the view and
+  `useFindBookshelf`; the add reads a refusal or no answer as `unavailable`,
+  shown in the chosen reader's row; an owner with every reader a member reads
+  *Tous les lecteurs sont déjà membres.* in place of the plus.
 - Decided: `ReaderChoice` keeps `failedId`, set from `chosenId` by a `watch` on
-  `failed`, so the message stays with the reader whose add failed.
-- Deviations: step 12 asserts the row's *Hugo* and sentence by `getByText`, not
-  `normalised` (it glues them, `HugoErreur…`); steps 14 and 15 were reds of their own.
-- Mutations (each red, reverted): 3 `known().catch(() => [])` → *is unavailable when
-  the readers do not answer*; 6 failed state `added: []` → *keeps the members…*; 8
-  `status === 400` → *…owns no such bookshelf*; 9 `400 || 404` → *…already a member*;
-  14 condition `owned` alone → *says nothing of it while…*; 16 non-members from
-  `state.members` → *…once the last is added*; 17 plus `v-if` without `nonMembers`
-  → *offers no plus…* and *offers a viewer no plus*; 18 `add` closes always → S9 adding.
+  `failed`, so the message stays with the reader whose add failed and leaves
+  when another is tapped or the next add runs.
+- Decided: the run handed off once, after step 18 and the self-review; the
+  next run ticked the task and opened the PR.
+- Deviations from the brief: step 12 asserts the row's *Hugo* and sentence by
+  `getByText`, not by the row's normalised text, which glues them
+  (`HugoErreur…`). Steps 14 and 15 were reds of their own, not guards.
+- Left over: the star and S7, S8, S9's default case (T084).

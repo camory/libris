@@ -214,7 +214,7 @@ longer says.
       Realises S4's order and S5 on the new screen; un-skips the frontend
       tests of S4, its first case, and of S5, both cases.
 
-- [ ] T088 Frontend: every reader a member, or no answer.
+- [x] T088 Frontend: every reader a member, or no answer.
       Every reader a member, no plus right of *Membres* and *Tous les
       lecteurs sont déjà membres.* in `muted` under the members, from the
       opening or once the last reader is added. No answer to the add reads
