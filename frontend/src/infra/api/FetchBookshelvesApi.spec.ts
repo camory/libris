@@ -305,4 +305,22 @@ describe("FetchBookshelvesApi", () => {
       type: "/problems/validation",
     });
   });
+
+  it("says the choice comes from the application", async () => {
+    // Given
+    const api = new FetchBookshelvesApi("http://libris.invalid");
+    const sent: RequestInit[] = [];
+    vi.stubGlobal("fetch", (_url: string, init: RequestInit) => {
+      sent.push(init);
+      return Promise.resolve(new Response(null, { status: 204 }));
+    });
+
+    // When
+    await api.chooseDefault("1c2f3e4d-5a6b-4c7d-9e8f-0a1b2c3d4e5f");
+
+    // Then
+    expect(sent[0]?.headers).toMatchObject({
+      "X-Requested-With": "XMLHttpRequest",
+    });
+  });
 });
