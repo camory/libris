@@ -45,6 +45,15 @@ describe("ReaderChoice", () => {
     expect(screen.queryByRole("button", { name: "Hugo" })).toBeNull();
   });
 
+  it("offers no crown and no Ajouter until a reader is tapped", () => {
+    // When
+    const { screen } = open();
+
+    // Then
+    expect(screen.queryByRole("button", { name: "Propriétaire" })).toBeNull();
+    expect(screen.queryByRole("button", { name: "Ajouter" })).toBeNull();
+  });
+
   function rowOf(screen: Screen, displayName: string) {
     return within(screen.getByRole("list", { name: "Choisir un lecteur" }))
       .getAllByRole("listitem")
