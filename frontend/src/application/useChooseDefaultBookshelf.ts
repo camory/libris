@@ -20,15 +20,23 @@ export function useChooseDefaultBookshelf(bookshelvesApi: BookshelvesApi): {
   async function choose(bookshelfId: string) {
     const { defaultBookshelfId } = state.value;
     state.value = { status: "choosing", bookshelfId, defaultBookshelfId };
-    const answer = await bookshelvesApi.chooseDefault(bookshelfId);
-    if (answer.outcome === "chosen")
-      state.value = {
-        status: "chosen",
-        bookshelfId,
-        defaultBookshelfId: bookshelfId,
-      };
-    else
+    try {
+      const answer = await bookshelvesApi.chooseDefault(bookshelfId);
+      if (answer.outcome === "chosen")
+        state.value = {
+          status: "chosen",
+          bookshelfId,
+          defaultBookshelfId: bookshelfId,
+        };
+      else
+        state.value = {
+          status: "unavailable",
+          bookshelfId,
+          defaultBookshelfId,
+        };
+    } catch {
       state.value = { status: "unavailable", bookshelfId, defaultBookshelfId };
+    }
   }
 
   return { state, choose };

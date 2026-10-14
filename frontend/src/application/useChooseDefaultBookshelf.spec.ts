@@ -59,6 +59,26 @@ describe("useChooseDefaultBookshelf", () => {
     });
   });
 
+  it("is unavailable when Libris does not answer", async () => {
+    // Given
+    const { state, choose } = useChooseDefaultBookshelf(
+      new FakeBookshelvesApi({
+        memberships: [{ bookshelf: salon, role: "OWNER" }],
+        defaultChosen: new TypeError("Failed to fetch"),
+      }),
+    );
+
+    // When
+    await choose(salon.id);
+
+    // Then
+    expect(state.value).toEqual({
+      status: "unavailable",
+      bookshelfId: salon.id,
+      defaultBookshelfId: null,
+    });
+  });
+
   function librisChoosing() {
     return new FakeBookshelvesApi({
       memberships: [
