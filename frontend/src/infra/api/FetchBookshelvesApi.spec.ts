@@ -205,6 +205,21 @@ describe("FetchBookshelvesApi", () => {
     });
   });
 
+  it("answers a problem when the reader asking owns no such bookshelf", async () => {
+    // Given
+    const api = new FetchBookshelvesApi(inject("mockBaseUrl"));
+
+    // When
+    const answer = await api.addMember(
+      "9e8d7c6b-5a4f-4e3d-8c2b-1a0f9e8d7c6b",
+      "7f8091a2-b3c4-4d5e-8f6a-7b8c9d0e1f2a",
+      "VIEWER",
+    );
+
+    // Then
+    expect(answer).toEqual({ outcome: "problem", type: "/problems/not-found" });
+  });
+
   it("says the add comes from the application", async () => {
     // Given
     const api = new FetchBookshelvesApi("http://libris.invalid");
