@@ -4,6 +4,7 @@ import {
   within,
   type BoundFunctions,
 } from "@testing-library/dom";
+import { X } from "@lucide/vue";
 import { flushPromises, mount } from "@vue/test-utils";
 import { describe, expect, it } from "vitest";
 import { barcodeScannerKey } from "../../../application/BarcodeScanner";
@@ -325,6 +326,23 @@ describe("IsbnView", () => {
       screen.getByRole("button", { name: "Fermer la caméra" }),
     ).toBeDefined();
     expect(scanner.readsInto).toHaveLength(1);
+  });
+
+  it("draws a cross while the camera is open", async () => {
+    // Given
+    const view = mountView(
+      new FakeIsbnApi(unknownIsbn),
+      new FakeBarcodeScanner(true, neverRead),
+    );
+
+    // When
+    await flushPromises();
+
+    // Then
+    const button = within(view.element as HTMLElement).getByRole("button", {
+      name: "Fermer la caméra",
+    });
+    expect(button.contains(view.findComponent(X).element)).toBe(true);
   });
 
   it("runs the lookup with the first code the camera reads", async () => {
