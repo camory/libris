@@ -431,6 +431,21 @@ describe("BookshelfView", () => {
     screen.getByText("Tous les lecteurs sont déjà membres.");
   });
 
+  it("offers no plus when every reader is a member", async () => {
+    // Given
+    const wrapper = mountBookshelfView(salonOwned, [leaToOthers, marc]);
+
+    // When
+    await flushPromises();
+
+    // Then
+    expect(
+      within(wrapper.element as HTMLElement).queryByRole("button", {
+        name: "Ajouter un membre",
+      }),
+    ).toBeNull();
+  });
+
   async function chooseHugo(screen: Screen) {
     await fireEvent.click(
       screen.getByRole("button", { name: "Ajouter un membre" }),
