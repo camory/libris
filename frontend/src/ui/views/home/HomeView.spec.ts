@@ -3,6 +3,7 @@ import { flushPromises, mount } from "@vue/test-utils";
 import { describe, expect, it } from "vitest";
 import {
   bookshelvesApiKey,
+  type ChooseDefaultAnswer,
   type CreateAnswer,
 } from "../../../application/BookshelvesApi";
 import { meApiKey } from "../../../application/MeApi";
@@ -32,6 +33,10 @@ const atelier: Bookshelf = {
 
 class LibrisNotAnswering extends FakeBookshelvesApi {
   override create(): Promise<CreateAnswer> {
+    return new Promise(() => {});
+  }
+
+  override chooseDefault(): Promise<ChooseDefaultAnswer> {
     return new Promise(() => {});
   }
 }
@@ -351,6 +356,34 @@ describe("HomeView", () => {
       "Bibliothèque de Chloé propriétaire",
       "Salon invité",
     ]);
+  });
+
+  it("is busy in the tapped row while the default is changed", async () => {
+    // Given
+    const memberships: Membership[] = [
+      { bookshelf: chloe.defaultBookshelf, role: "OWNER" },
+      { bookshelf: atelier, role: "OWNER" },
+      { bookshelf: etagere, role: "OWNER" },
+    ];
+    const wrapper = mountHomeView(
+      chloe,
+      memberships,
+      undefined,
+      new LibrisNotAnswering({ memberships }),
+    );
+    await flushPromises();
+    const screen = within(wrapper.element as HTMLElement);
+
+    // When
+    await fireEvent.click(starOf(screen, "Atelier"));
+    await flushPromises();
+
+    // Then
+    expect(
+      rowOf(screen, "Atelier").queryByRole("button", {
+        name: "Changement en cours…",
+      }),
+    ).not.toBeNull();
   });
 
   function seen(wrapper: ReturnType<typeof mountHomeView>) {

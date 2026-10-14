@@ -50,6 +50,12 @@ const createFailure = computed(() =>
     : undefined,
 );
 
+const choosingId = computed(() =>
+  chooseState.value.status === "choosing"
+    ? chooseState.value.bookshelfId
+    : null,
+);
+
 async function create(name: string) {
   await createBookshelf(name);
   if (createState.value.status === "created") naming.value = false;
@@ -105,6 +111,7 @@ void list();
             <BookshelfRow
               :membership="membership"
               :is-default="membership.bookshelf.id === defaultBookshelfId"
+              :busy="membership.bookshelf.id === choosingId"
               @choose="choose(membership.bookshelf.id)"
             />
           </li>
