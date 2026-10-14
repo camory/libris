@@ -5,6 +5,23 @@ import { createLibrisI18n } from "../i18n";
 import NewBookshelfRow from "./NewBookshelfRow.vue";
 
 describe("NewBookshelfRow", () => {
+  it("takes the focus when it opens", () => {
+    // When
+    const wrapper = mount(NewBookshelfRow, {
+      props: { creating: false },
+      global: { plugins: [createLibrisI18n()] },
+      attachTo: document.body,
+    });
+
+    // Then
+    expect(document.activeElement).toBe(
+      within(wrapper.element as HTMLElement).getByRole("textbox", {
+        name: "Nom de la bibliothèque",
+      }),
+    );
+    wrapper.unmount();
+  });
+
   it("offers Créer once a name is typed", async () => {
     // Given
     const { screen } = open();

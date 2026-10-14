@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { Check } from "@lucide/vue";
-import { ref } from "vue";
+import { onMounted, ref, useTemplateRef } from "vue";
 import { useI18n } from "vue-i18n";
 import { isBookshelfName } from "../../domain/Bookshelf";
 import BusySpinner from "./BusySpinner.vue";
@@ -15,12 +15,16 @@ const emit = defineEmits<{ create: [name: string] }>();
 
 const { t } = useI18n();
 const name = ref("");
+const field = useTemplateRef("field");
+
+onMounted(() => field.value?.focus());
 </script>
 
 <template>
   <div class="py-1.5 pr-1.5 pl-3.5">
     <div class="flex items-center gap-2">
       <input
+        ref="field"
         v-model="name"
         type="text"
         :placeholder="t('home.bookshelves.name')"
