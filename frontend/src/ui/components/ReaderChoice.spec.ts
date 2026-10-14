@@ -80,6 +80,19 @@ describe("ReaderChoice", () => {
     ).toBeDefined();
   });
 
+  it("adds as propriétaire with the crown on", async () => {
+    // Given
+    const { wrapper, screen } = open();
+    await fireEvent.click(screen.getByRole("button", { name: "Hugo" }));
+    await fireEvent.click(screen.getByRole("button", { name: "Propriétaire" }));
+
+    // When
+    await fireEvent.click(screen.getByRole("button", { name: "Ajouter" }));
+
+    // Then
+    expect(wrapper.emitted("add")).toEqual([[hugo.id, "OWNER"]]);
+  });
+
   function rowOf(screen: Screen, displayName: string) {
     return within(screen.getByRole("list", { name: "Choisir un lecteur" }))
       .getAllByRole("listitem")

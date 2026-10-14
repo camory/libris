@@ -54,7 +54,7 @@ function toggleOwner() {
               type="button"
               :aria-label="t('bookshelf.members.add')"
               class="flex size-11 shrink-0 items-center justify-center rounded-[10px] text-accent"
-              @click="emit('add', reader.id, 'VIEWER')"
+              @click="emit('add', reader.id, role)"
             >
               <Check :stroke-width="3" />
             </button>
