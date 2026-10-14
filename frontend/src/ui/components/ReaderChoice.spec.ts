@@ -145,6 +145,23 @@ describe("ReaderChoice", () => {
     expect(screen.queryByRole("button", { name: "Ajouter" })).toBeNull();
   });
 
+  it("accepts nothing else while the member is added", async () => {
+    // Given
+    const { wrapper, screen } = open();
+    await fireEvent.click(screen.getByRole("button", { name: "Hugo" }));
+
+    // When
+    await wrapper.setProps({ adding: true });
+
+    // Then
+    expect(
+      ["Marc", "Propriétaire", "Fermer"].map(
+        (name) =>
+          screen.getByRole<HTMLButtonElement>("button", { name }).disabled,
+      ),
+    ).toEqual([true, true, true]);
+  });
+
   function rowOf(screen: Screen, displayName: string) {
     return within(screen.getByRole("list", { name: "Choisir un lecteur" }))
       .getAllByRole("listitem")

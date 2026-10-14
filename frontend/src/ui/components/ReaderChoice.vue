@@ -38,6 +38,7 @@ function toggleOwner() {
       </h2>
       <button
         type="button"
+        :disabled="adding"
         :aria-label="t('bookshelf.members.close')"
         class="flex size-11 items-center justify-center rounded-[10px] text-muted"
         @click="emit('close')"
@@ -60,6 +61,7 @@ function toggleOwner() {
             </span>
             <button
               type="button"
+              :disabled="adding"
               :aria-label="t('bookshelf.members.owner')"
               :aria-pressed="role === 'OWNER'"
               class="flex size-11 shrink-0 items-center justify-center rounded-[10px] text-accent"
@@ -85,6 +87,7 @@ function toggleOwner() {
           <button
             v-else
             type="button"
+            :disabled="adding"
             class="flex min-h-14 w-full items-center px-3.5 text-left text-body text-text"
             @click="choose(reader.id)"
           >
