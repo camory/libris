@@ -397,6 +397,21 @@ describe("BookshelfView", () => {
     ).toBeNull();
   });
 
+  it("says nothing of it to a viewer", async () => {
+    // Given
+    const wrapper = mountBookshelfView(salonHeld, []);
+
+    // When
+    await flushPromises();
+
+    // Then
+    expect(
+      within(wrapper.element as HTMLElement).queryByText(
+        "Tous les lecteurs sont déjà membres.",
+      ),
+    ).toBeNull();
+  });
+
   async function chooseHugo(screen: Screen) {
     await fireEvent.click(
       screen.getByRole("button", { name: "Ajouter un membre" }),
