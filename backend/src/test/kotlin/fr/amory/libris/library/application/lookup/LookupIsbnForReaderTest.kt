@@ -26,11 +26,11 @@ import fr.amory.libris.library.domain.bookshelf.Membership
 import fr.amory.libris.library.domain.bookshelf.MembershipRole.OWNER
 import fr.amory.libris.library.domain.bookshelf.MembershipRole.VIEWER
 import fr.amory.libris.library.domain.copy.Copy
-import fr.amory.libris.library.domain.copy.CopyId
 import fr.amory.libris.library.domain.reader.ReaderId
 import fr.amory.libris.library.fixture.BookshelvesInMemory
 import fr.amory.libris.library.fixture.CopiesInMemory
 import fr.amory.libris.library.fixture.bookshelfOf
+import fr.amory.libris.library.fixture.copyOn
 import io.kotest.matchers.collections.shouldContainExactlyInAnyOrder
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.types.shouldBeInstanceOf
@@ -138,7 +138,7 @@ class LookupIsbnForReaderTest {
     bookshelfOf(BookshelfId.new(), BookshelfName(name), memberships.toList()).also { bookshelves.insert(it) }
 
   private fun copyOf(edition: Edition, bookshelf: Bookshelf): Copy =
-    Copy(CopyId.new(), edition.id, bookshelf.id).also { copies.insert(it) }
+    copyOn(bookshelf, edition.id).also { copies.insert(it) }
 
   private fun lookupAsking(
     vararg sources: EditionLookup,

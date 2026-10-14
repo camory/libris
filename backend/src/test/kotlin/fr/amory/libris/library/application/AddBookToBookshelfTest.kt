@@ -13,12 +13,14 @@ import fr.amory.libris.bibliography.fixture.AwaitedCoversInMemory
 import fr.amory.libris.bibliography.fixture.CoverWorkerObserving
 import fr.amory.libris.bibliography.fixture.EditionsInMemory
 import fr.amory.libris.bibliography.fixture.isbnOf
+import fr.amory.libris.fixture.MutableClock
 import fr.amory.libris.fixture.Transaction
 import fr.amory.libris.fixture.TransactionsObserving
 import fr.amory.libris.library.application.AddBookResult.Added
 import fr.amory.libris.library.application.AddBookResult.NoSuchBookshelf
 import fr.amory.libris.library.application.AddBookResult.NotAnOwner
 import fr.amory.libris.library.domain.bookshelf.Membership
+import fr.amory.libris.library.domain.bookshelf.MembershipRole.OWNER
 import fr.amory.libris.library.domain.bookshelf.MembershipRole.VIEWER
 import fr.amory.libris.library.domain.copy.Copy
 import fr.amory.libris.library.fixture.BookshelvesInMemory
@@ -39,11 +41,12 @@ class AddBookToBookshelfTest {
   private val copies = CopiesInMemory()
   private val bookshelves = BookshelvesInMemory()
   private val coverWorker = CoverWorkerObserving {}
+  private val clock = MutableClock()
   private val addBookToBookshelf =
-    AddBookToBookshelf(editions, awaitedCovers, copies, bookshelves, withoutTransaction(), coverWorker)
+    AddBookToBookshelf(editions, awaitedCovers, copies, bookshelves, withoutTransaction(), coverWorker, clock)
 
   @Test
-  fun `the house lacking the ISBN gains the edition and the copy`() {
+  fun `the house lacking the ISBN gains the edition and the copy, added by the reader, now`() {
     // Given
     val lea = readerNamed("lea", "Léa")
     val bookshelf = bookshelfOwnedBy(lea)
@@ -71,8 +74,23 @@ class AddBookToBookshelfTest {
       coverName = null,
     )
     val copy = copies.stored.single()
-    copy shouldBe Copy(copy.id, edition.id, bookshelf.id)
+    copy shouldBe Copy(copy.id, edition.id, bookshelf.id, lea.id, clock.instant())
     result shouldBe Added(copy, bookshelf)
+  }
+
+  @Test
+  fun `a copy an owner adds to a bookshelf another reader created is added by that owner`() {
+    // Given
+    val lea = readerNamed("lea", "Léa")
+    val juliette = readerNamed("juliette", "Juliette")
+    val bookshelf = bookshelfOwnedBy(lea).withMember(Membership(juliette.id, OWNER))
+    bookshelves.insert(bookshelf)
+
+    // When
+    addBookToBookshelf(juliette.id, bookshelf.id, onePieceTomeOne())
+
+    // Then
+    copies.stored.single().addedBy shouldBe juliette.id
   }
 
   @Test
@@ -106,7 +124,7 @@ class AddBookToBookshelfTest {
     // Then
     val edition = editions.stored.single()
     val copy = copies.stored.last()
-    copy shouldBe Copy(copy.id, edition.id, juliettesBookshelf.id)
+    copy shouldBe Copy(copy.id, edition.id, juliettesBookshelf.id, juliette.id, clock.instant())
     copies.stored.map { it.editionId } shouldBe listOf(edition.id, edition.id)
     result shouldBe Added(copy, juliettesBookshelf)
   }
@@ -154,8 +172,8 @@ class AddBookToBookshelfTest {
     // Then
     val edition = editions.stored.single()
     val (first, second) = copies.stored
-    first shouldBe Copy(first.id, edition.id, bookshelf.id)
-    second shouldBe Copy(second.id, edition.id, bookshelf.id)
+    first shouldBe Copy(first.id, edition.id, bookshelf.id, lea.id, clock.instant())
+    second shouldBe Copy(second.id, edition.id, bookshelf.id, lea.id, clock.instant())
     second.id shouldNotBe first.id
   }
 
@@ -252,7 +270,8 @@ class AddBookToBookshelfTest {
     val transactions = TransactionsObserving {
       Triple(editions.stored.size, awaitedCovers.stored.size, copies.stored.size)
     }
-    val addBookToBookshelf = AddBookToBookshelf(editions, awaitedCovers, copies, bookshelves, transactions, coverWorker)
+    val addBookToBookshelf =
+      AddBookToBookshelf(editions, awaitedCovers, copies, bookshelves, transactions, coverWorker, clock)
 
     // When
     addBookToBookshelf(lea.id, bookshelf.id, onePieceTomeOne())
@@ -283,7 +302,8 @@ class AddBookToBookshelfTest {
     bookshelves.insert(bookshelf)
     val transactions = TransactionsObserving {}
     val coverWorker = CoverWorkerObserving { transactions.recorded.size }
-    val addBookToBookshelf = AddBookToBookshelf(editions, awaitedCovers, copies, bookshelves, transactions, coverWorker)
+    val addBookToBookshelf =
+      AddBookToBookshelf(editions, awaitedCovers, copies, bookshelves, transactions, coverWorker, clock)
 
     // When
     addBookToBookshelf(lea.id, bookshelf.id, onePieceTomeOne())

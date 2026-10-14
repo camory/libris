@@ -12,11 +12,10 @@ import fr.amory.libris.library.domain.bookshelf.BookshelfId
 import fr.amory.libris.library.domain.bookshelf.BookshelfName
 import fr.amory.libris.library.domain.bookshelf.Membership
 import fr.amory.libris.library.domain.bookshelf.MembershipRole.OWNER
-import fr.amory.libris.library.domain.copy.Copy
-import fr.amory.libris.library.domain.copy.CopyId
 import fr.amory.libris.library.domain.copy.EditionIdPage
 import fr.amory.libris.library.fixture.bookshelfOf
 import fr.amory.libris.library.fixture.bookshelfOwnedBy
+import fr.amory.libris.library.fixture.copyOn
 import fr.amory.libris.library.fixture.readerNamed
 import io.kotest.matchers.shouldBe
 import org.junit.jupiter.api.BeforeEach
@@ -325,7 +324,7 @@ class JdbcCatalogueEditionsTest @Autowired constructor(
     edition("Roman %02d".format(number), id = id)
 
   private fun heldOn(bookshelf: Bookshelf, edition: Edition): Edition {
-    copies.insert(Copy(CopyId.new(), edition.id, bookshelf.id))
+    copies.insert(copyOn(bookshelf, edition.id))
     return edition
   }
 }

@@ -60,11 +60,11 @@ import fr.amory.libris.library.domain.bookshelf.BookshelfName
 import fr.amory.libris.library.domain.bookshelf.Membership
 import fr.amory.libris.library.domain.bookshelf.MembershipRole.OWNER
 import fr.amory.libris.library.domain.bookshelf.MembershipRole.VIEWER
-import fr.amory.libris.library.domain.copy.Copy
 import fr.amory.libris.library.domain.copy.CopyId
 import fr.amory.libris.library.domain.reader.ReaderId
 import fr.amory.libris.library.fixture.bookshelfOf
 import fr.amory.libris.library.fixture.bookshelfOwnedBy
+import fr.amory.libris.library.fixture.copyOn
 import fr.amory.libris.library.fixture.readerNamed
 import jakarta.servlet.Filter
 import jakarta.servlet.http.HttpServletRequest
@@ -146,7 +146,7 @@ class ApiContractTest @Autowired constructor(
 
   private fun addingABookAnswers() {
     given(addBookToBookshelf(CONTRACTEER.id, CONTRACTEER_BOOKSHELF.id, NEW_ONE_PIECE_1))
-      .willReturn(Added(Copy(CopyId.new(), EditionId.new(), CONTRACTEER_BOOKSHELF.id), CONTRACTEER_BOOKSHELF))
+      .willReturn(Added(copyOn(CONTRACTEER_BOOKSHELF, EditionId.new()), CONTRACTEER_BOOKSHELF))
     given(addBookToBookshelf(CONTRACTEER.id, NOT_MINE, NEW_ONE_PIECE_1))
       .willReturn(NotAnOwner)
   }
