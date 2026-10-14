@@ -79,6 +79,22 @@ describe("useChooseDefaultBookshelf", () => {
     });
   });
 
+  it("keeps the default it chose through a failure", async () => {
+    // Given
+    const { state, choose } = useChooseDefaultBookshelf(librisChoosing());
+    await choose(salon.id);
+
+    // When
+    await choose(mangas.id);
+
+    // Then
+    expect(state.value).toEqual({
+      status: "unavailable",
+      bookshelfId: mangas.id,
+      defaultBookshelfId: salon.id,
+    });
+  });
+
   function librisChoosing() {
     return new FakeBookshelvesApi({
       memberships: [
