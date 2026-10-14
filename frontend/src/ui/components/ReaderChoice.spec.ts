@@ -166,6 +166,22 @@ describe("ReaderChoice", () => {
     ).toEqual([true, true, true]);
   });
 
+  it("says Libris did not answer under the chosen reader's name", async () => {
+    // Given
+    const { wrapper, screen } = open();
+    await fireEvent.click(screen.getByRole("button", { name: "Hugo" }));
+
+    // When
+    await wrapper.setProps({ failed: true });
+
+    // Then
+    expect(
+      within(formRow(screen)).getByText(
+        "Erreur lors de l'ajout, veuillez réessayer plus tard.",
+      ),
+    ).toBeDefined();
+  });
+
   it("brings itself into view when it opens", () => {
     // Given
     const scrollIntoView = vi.fn();
