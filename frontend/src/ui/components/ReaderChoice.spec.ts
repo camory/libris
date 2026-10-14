@@ -182,6 +182,23 @@ describe("ReaderChoice", () => {
     ).toBeDefined();
   });
 
+  it("moves the form to another reader without the message", async () => {
+    // Given
+    const { wrapper, screen } = open();
+    await fireEvent.click(screen.getByRole("button", { name: "Hugo" }));
+    await wrapper.setProps({ failed: true });
+
+    // When
+    await fireEvent.click(screen.getByRole("button", { name: "Marc" }));
+
+    // Then
+    expect(
+      screen.queryByText(
+        "Erreur lors de l'ajout, veuillez réessayer plus tard.",
+      ),
+    ).toBeNull();
+  });
+
   it("brings itself into view when it opens", () => {
     // Given
     const scrollIntoView = vi.fn();

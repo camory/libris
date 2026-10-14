@@ -1,13 +1,13 @@
 <script setup lang="ts">
 import { Check, Crown, X } from "@lucide/vue";
-import { onMounted, ref, useTemplateRef } from "vue";
+import { onMounted, ref, useTemplateRef, watch } from "vue";
 import { useI18n } from "vue-i18n";
 import type { KnownReader } from "../../domain/KnownReader";
 import type { MembershipRole } from "../../domain/Membership";
 import BusySpinner from "./BusySpinner.vue";
 import IconAlert from "./icons/IconAlert.vue";
 
-defineProps<{
+const props = defineProps<{
   readers: KnownReader[];
   adding: boolean;
   failed?: boolean;
@@ -21,6 +21,14 @@ const emit = defineEmits<{
 const { t } = useI18n();
 const chosenId = ref<string>();
 const role = ref<MembershipRole>("VIEWER");
+const failedId = ref<string>();
+
+watch(
+  () => props.failed,
+  (failed) => {
+    failedId.value = failed ? chosenId.value : undefined;
+  },
+);
 
 const root = useTemplateRef("root");
 onMounted(() => root.value?.scrollIntoView?.({ block: "nearest" }));
@@ -88,7 +96,7 @@ function toggleOwner() {
               </button>
             </div>
             <p
-              v-if="failed"
+              v-if="reader.id === failedId"
               class="flex items-start gap-2 pb-2 text-body text-danger"
             >
               <IconAlert />
