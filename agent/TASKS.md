@@ -239,6 +239,12 @@ longer says.
       mock` (D07). Realises S7, S8 and S9's default case; un-skips the frontend
       tests of S7, S8 and of S9, choosing the default.
 
+- [x] T090 Frontend: the new bookshelf's name in a field's box, focused.
+      The field *Nom de la bibliothèque* keeps the box of a field inside
+      its row, 44 tall, and takes the focus when the row opens (U04).
+      Done by Claude on Tophe's ask, after the Pixel showed the row read as
+      one more bookshelf.
+
 *Done (Tophe, on the Pixel, from the installed app on staging): create
 Bibliothèque familiale, make it your default, add the second account of the
 family as propriétaire; on that account, the bookshelf is on the home page,

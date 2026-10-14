@@ -431,3 +431,16 @@ Format:
 - Left over: telling the refusals apart on screen (S9, *Questions for the
   human*); the star's tap above the stretched link is checked on the
   running app only.
+
+## 2026-10-14 — T090 The new bookshelf's name in a field's box — done
+- Did: `NewBookshelfRow` draws its field in a field's box (`h-11`,
+  `border-[1.5px]`, `rounded-xl`) inside a row of 10 padding, the message
+  8 under it, and focuses the field on mount.
+- Decided: by Claude, interactive, on Tophe's ask; the rule is U04's
+  amendment of the same day (docs PR #256), chosen over a tinted row on a
+  render of both.
+- Decided: the focus is proven by a case mounted with `attachTo:
+  document.body`, jsdom moving the focus only inside the document; the box
+  is checked on the running app over a fake API (no class is asserted).
+- Left over: none.
+
