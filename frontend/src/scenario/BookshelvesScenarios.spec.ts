@@ -360,7 +360,7 @@ describe("Bookshelves", () => {
     expect(members(screen)).toEqual(["Vous · propriétaire", "Marc · invité"]);
   });
 
-  it.skip("S9 Libris unavailable, choosing the default", async () => {
+  it("S9 Libris unavailable, choosing the default", async () => {
     // Given
     const screen = open(
       "/",
