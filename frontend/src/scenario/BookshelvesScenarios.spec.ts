@@ -327,7 +327,7 @@ describe("Bookshelves", () => {
     ]);
   });
 
-  it.skip("S9 Libris unavailable, adding a member", async () => {
+  it("S9 Libris unavailable, adding a member", async () => {
     // Given
     const screen = open(
       `/bibliotheques/${salon.id}`,
