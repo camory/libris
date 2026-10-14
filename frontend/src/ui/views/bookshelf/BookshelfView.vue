@@ -8,6 +8,7 @@ import { readersApiKey } from "../../../application/ReadersApi";
 import { useAddMemberToBookshelf } from "../../../application/useAddMemberToBookshelf";
 import { useFindBookshelf } from "../../../application/useFindBookshelf";
 import {
+  isOwnedBy,
   membersInOrder,
   nonMembersInOrder,
   type Member,
@@ -46,6 +47,13 @@ const members = computed(() =>
   reader.value && state.value.status === "found"
     ? membersInOrder(everyMember.value, reader.value.id, locale.value)
     : null,
+);
+
+const owned = computed(
+  () =>
+    reader.value !== undefined &&
+    state.value.status === "found" &&
+    isOwnedBy(state.value.members, reader.value.id),
 );
 
 const nonMembers = computed(() =>
@@ -128,6 +136,12 @@ watch([() => props.id, reader], ([id, current]) => {
             <MemberRowSkeleton v-for="row in 2" :key="row" />
           </div>
         </div>
+        <p
+          v-if="owned && nonMembers.length === 0"
+          class="pt-2 text-body text-muted"
+        >
+          {{ t("bookshelf.members.everyone") }}
+        </p>
       </section>
 
       <ReaderChoice
@@ -135,6 +149,7 @@ watch([() => props.id, reader], ([id, current]) => {
         class="pt-5"
         :readers="nonMembers"
         :adding="addState.status === 'adding'"
+        :failed="addState.status === 'unavailable'"
         @add="add"
         @close="choosing = false"
       />

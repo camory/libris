@@ -166,6 +166,57 @@ describe("ReaderChoice", () => {
     ).toEqual([true, true, true]);
   });
 
+  it("says Libris did not answer under the chosen reader's name", async () => {
+    // Given
+    const { wrapper, screen } = open();
+    await fireEvent.click(screen.getByRole("button", { name: "Hugo" }));
+
+    // When
+    await wrapper.setProps({ failed: true });
+
+    // Then
+    expect(
+      within(formRow(screen)).getByText(
+        "Erreur lors de l'ajout, veuillez réessayer plus tard.",
+      ),
+    ).toBeDefined();
+  });
+
+  it("moves the form to another reader without the message", async () => {
+    // Given
+    const { wrapper, screen } = open();
+    await fireEvent.click(screen.getByRole("button", { name: "Hugo" }));
+    await wrapper.setProps({ failed: true });
+
+    // When
+    await fireEvent.click(screen.getByRole("button", { name: "Marc" }));
+
+    // Then
+    expect(
+      screen.queryByText(
+        "Erreur lors de l'ajout, veuillez réessayer plus tard.",
+      ),
+    ).toBeNull();
+  });
+
+  it("brings the form back to the failed reader without the message", async () => {
+    // Given
+    const { wrapper, screen } = open();
+    await fireEvent.click(screen.getByRole("button", { name: "Hugo" }));
+    await wrapper.setProps({ failed: true });
+    await fireEvent.click(screen.getByRole("button", { name: "Marc" }));
+
+    // When
+    await fireEvent.click(screen.getByRole("button", { name: "Hugo" }));
+
+    // Then
+    expect(
+      screen.queryByText(
+        "Erreur lors de l'ajout, veuillez réessayer plus tard.",
+      ),
+    ).toBeNull();
+  });
+
   it("brings itself into view when it opens", () => {
     // Given
     const scrollIntoView = vi.fn();

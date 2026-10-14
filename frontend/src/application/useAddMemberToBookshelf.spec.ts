@@ -42,6 +42,46 @@ describe("useAddMemberToBookshelf", () => {
     expect(state.value.added).toEqual([viewer(hugo), owner(hugo)]);
   });
 
+  it("reads a refusal as no answer", async () => {
+    // Given
+    const { state, add } = useAddMemberToBookshelf(addingHugoToSalon());
+
+    // When
+    await add(salon.id, marc.id, "VIEWER");
+
+    // Then
+    expect(state.value).toEqual({ status: "unavailable", added: [] });
+  });
+
+  it("is unavailable when Libris does not answer", async () => {
+    // Given
+    const { state, add } = useAddMemberToBookshelf(
+      new FakeBookshelvesApi({
+        memberships: [],
+        find: { outcome: "found", bookshelf: salon, members: [owner(lea)] },
+        adds: new TypeError("Failed to fetch"),
+      }),
+    );
+
+    // When
+    await add(salon.id, hugo.id, "VIEWER");
+
+    // Then
+    expect(state.value).toEqual({ status: "unavailable", added: [] });
+  });
+
+  it("keeps the members it added through a failure", async () => {
+    // Given
+    const { state, add } = useAddMemberToBookshelf(addingHugoToSalon());
+    await add(salon.id, hugo.id, "VIEWER");
+
+    // When
+    await add(salon.id, marc.id, "VIEWER");
+
+    // Then
+    expect(state.value.added).toEqual([viewer(hugo)]);
+  });
+
   it("forgets the members it added once reset", async () => {
     // Given
     const { state, add, reset } = useAddMemberToBookshelf(addingHugoToSalon());
@@ -80,6 +120,11 @@ const lea: KnownReader = {
 const hugo: KnownReader = {
   id: "0199c0de-1000-7000-8000-000000000004",
   displayName: "Hugo",
+};
+
+const marc: KnownReader = {
+  id: "0199c0de-1000-7000-8000-000000000005",
+  displayName: "Marc",
 };
 
 function owner(reader: KnownReader): Member {

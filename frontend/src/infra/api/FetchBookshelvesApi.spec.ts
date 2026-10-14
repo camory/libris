@@ -187,6 +187,54 @@ describe("FetchBookshelvesApi", () => {
     });
   });
 
+  it("answers a problem when the reader added is unknown", async () => {
+    // Given
+    const api = new FetchBookshelvesApi(inject("mockBaseUrl"));
+
+    // When
+    const answer = await api.addMember(
+      "0b1e2d3c-4f5a-4b6c-8d7e-9f0a1b2c3d4e",
+      "00000000-0000-4000-8000-000000000000",
+      "VIEWER",
+    );
+
+    // Then
+    expect(answer).toEqual({
+      outcome: "problem",
+      type: "/problems/validation",
+    });
+  });
+
+  it("answers a problem when the reader asking owns no such bookshelf", async () => {
+    // Given
+    const api = new FetchBookshelvesApi(inject("mockBaseUrl"));
+
+    // When
+    const answer = await api.addMember(
+      "9e8d7c6b-5a4f-4e3d-8c2b-1a0f9e8d7c6b",
+      "7f8091a2-b3c4-4d5e-8f6a-7b8c9d0e1f2a",
+      "VIEWER",
+    );
+
+    // Then
+    expect(answer).toEqual({ outcome: "problem", type: "/problems/not-found" });
+  });
+
+  it("answers a problem when the reader is already a member", async () => {
+    // Given
+    const api = new FetchBookshelvesApi(inject("mockBaseUrl"));
+
+    // When
+    const answer = await api.addMember(
+      "0b1e2d3c-4f5a-4b6c-8d7e-9f0a1b2c3d4e",
+      "6e7f8091-a2b3-4c4d-9e5f-6a7b8c9d0e1f",
+      "OWNER",
+    );
+
+    // Then
+    expect(answer).toEqual({ outcome: "problem", type: "/problems/conflict" });
+  });
+
   it("says the add comes from the application", async () => {
     // Given
     const api = new FetchBookshelvesApi("http://libris.invalid");

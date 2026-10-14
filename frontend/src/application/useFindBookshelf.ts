@@ -1,7 +1,7 @@
 import { ref, type Ref } from "vue";
 import type { Bookshelf } from "../domain/Bookshelf";
 import type { KnownReader } from "../domain/KnownReader";
-import type { Member } from "../domain/Member";
+import { isOwnedBy, type Member } from "../domain/Member";
 import type { BookshelvesApi, FindAnswer } from "./BookshelvesApi";
 import type { ReadersApi } from "./ReadersApi";
 
@@ -39,12 +39,9 @@ export function useFindBookshelf(
     answer: FindAnswer,
     readerId: string,
   ): Promise<KnownReader[]> {
-    const owns =
-      answer.outcome === "found" &&
-      answer.members.some(
-        (member) => member.reader.id === readerId && member.role === "OWNER",
-      );
-    return owns ? readersApi.known() : [];
+    return answer.outcome === "found" && isOwnedBy(answer.members, readerId)
+      ? readersApi.known()
+      : [];
   }
 
   return { state, find };

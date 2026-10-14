@@ -1,14 +1,16 @@
 <script setup lang="ts">
 import { Check, Crown, X } from "@lucide/vue";
-import { onMounted, ref, useTemplateRef } from "vue";
+import { onMounted, ref, useTemplateRef, watch } from "vue";
 import { useI18n } from "vue-i18n";
 import type { KnownReader } from "../../domain/KnownReader";
 import type { MembershipRole } from "../../domain/Membership";
 import BusySpinner from "./BusySpinner.vue";
+import IconAlert from "./icons/IconAlert.vue";
 
-defineProps<{
+const props = defineProps<{
   readers: KnownReader[];
   adding: boolean;
+  failed?: boolean;
 }>();
 
 const emit = defineEmits<{
@@ -19,6 +21,14 @@ const emit = defineEmits<{
 const { t } = useI18n();
 const chosenId = ref<string>();
 const role = ref<MembershipRole>("VIEWER");
+const failedId = ref<string>();
+
+watch(
+  () => props.failed,
+  (failed) => {
+    failedId.value = failed ? chosenId.value : undefined;
+  },
+);
 
 const root = useTemplateRef("root");
 onMounted(() => root.value?.scrollIntoView?.({ block: "nearest" }));
@@ -26,6 +36,7 @@ onMounted(() => root.value?.scrollIntoView?.({ block: "nearest" }));
 function choose(readerId: string) {
   chosenId.value = readerId;
   role.value = "VIEWER";
+  failedId.value = undefined;
 }
 
 function toggleOwner() {
@@ -55,37 +66,43 @@ function toggleOwner() {
         class="max-h-[313px] divide-y divide-border overflow-y-auto"
       >
         <li v-for="reader in readers" :key="reader.id">
-          <div
-            v-if="reader.id === chosenId"
-            class="flex items-center gap-2 py-1.5 pr-1.5 pl-3.5"
-          >
-            <span class="min-w-0 flex-1 text-body text-text">
-              {{ reader.displayName }}
-            </span>
-            <button
-              type="button"
-              :disabled="adding"
-              :aria-label="t('bookshelf.members.owner')"
-              :aria-pressed="role === 'OWNER'"
-              class="flex size-11 shrink-0 items-center justify-center rounded-[10px] text-accent"
-              @click="toggleOwner"
+          <div v-if="reader.id === chosenId" class="py-1.5 pr-1.5 pl-3.5">
+            <div class="flex items-center gap-2">
+              <span class="min-w-0 flex-1 text-body text-text">
+                {{ reader.displayName }}
+              </span>
+              <button
+                type="button"
+                :disabled="adding"
+                :aria-label="t('bookshelf.members.owner')"
+                :aria-pressed="role === 'OWNER'"
+                class="flex size-11 shrink-0 items-center justify-center rounded-[10px] text-accent"
+                @click="toggleOwner"
+              >
+                <Crown :fill="role === 'OWNER' ? 'currentColor' : 'none'" />
+              </button>
+              <button
+                type="button"
+                :disabled="adding"
+                :aria-label="
+                  adding
+                    ? t('bookshelf.members.adding')
+                    : t('bookshelf.members.add')
+                "
+                class="flex size-11 shrink-0 items-center justify-center rounded-[10px] text-accent"
+                @click="emit('add', reader.id, role)"
+              >
+                <BusySpinner v-if="adding" class="size-5.5" />
+                <Check v-else :stroke-width="3" />
+              </button>
+            </div>
+            <p
+              v-if="reader.id === failedId"
+              class="flex items-start gap-2 pb-2 text-body text-danger"
             >
-              <Crown :fill="role === 'OWNER' ? 'currentColor' : 'none'" />
-            </button>
-            <button
-              type="button"
-              :disabled="adding"
-              :aria-label="
-                adding
-                  ? t('bookshelf.members.adding')
-                  : t('bookshelf.members.add')
-              "
-              class="flex size-11 shrink-0 items-center justify-center rounded-[10px] text-accent"
-              @click="emit('add', reader.id, role)"
-            >
-              <BusySpinner v-if="adding" class="size-5.5" />
-              <Check v-else :stroke-width="3" />
-            </button>
+              <IconAlert />
+              <span>{{ t("bookshelf.members.unavailable") }}</span>
+            </p>
           </div>
           <button
             v-else

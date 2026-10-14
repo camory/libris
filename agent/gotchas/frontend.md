@@ -51,9 +51,16 @@ Read whole by a run that changes `frontend/`, after `every-run.md`.
   the body, so an adapter spec asserts the outcome of the HTTP status,
   never the body's `type`. The generated `200` of `GET
   /bookshelves/{id}` held one or two members in 20 tries, never none
-  (T082). `FetchIsbnApi`, `FetchBookshelfApi` and `FetchBookshelvesApi` hand a
+  (T082). The add of a member answers `400` for bookshelf
+  `0b1e2d3c-4f5a-4b6c-8d7e-9f0a1b2c3d4e`, reader
+  `00000000-0000-4000-8000-000000000000`, `VIEWER`; `404` for bookshelf
+  `9e8d7c6b-5a4f-4e3d-8c2b-1a0f9e8d7c6b`, reader
+  `7f8091a2-b3c4-4d5e-8f6a-7b8c9d0e1f2a`, `VIEWER`; `409` for bookshelf
+  `0b1e2d3c-…`, reader `6e7f8091-a2b3-4c4d-9e5f-6a7b8c9d0e1f`, `OWNER`
+  (`v0.11.0`). `FetchIsbnApi`, `FetchBookshelfApi` and `FetchBookshelvesApi` hand a
   non-2xx answer to `infra/api/problemOf`, which maps the statuses the
-  contract names (400, 404, 409 for the creation, and 503 for the lookup)
+  contract names (400, 404, 409 for the creation and the add of a member,
+  and 503 for the lookup)
   to the `/problems/…`
   slugs only when the `Content-Type` is `application/problem+json`, and
   reads the body's `type` otherwise: a proxy's `text/plain` 404 or 503 then

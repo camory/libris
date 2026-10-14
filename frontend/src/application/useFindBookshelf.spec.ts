@@ -85,6 +85,27 @@ describe("useFindBookshelf", () => {
     expect(state.value).toEqual({ status: "unavailable" });
   });
 
+  it("is unavailable when the readers do not answer", async () => {
+    // Given
+    const { state, find } = useFindBookshelf(
+      new FakeBookshelvesApi({
+        memberships: [],
+        find: {
+          outcome: "found",
+          bookshelf: salon,
+          members: [owner(leaToOthers), viewer(marcToOthers)],
+        },
+      }),
+      new FakeReadersApi(new TypeError("Failed to fetch")),
+    );
+
+    // When
+    await find(salon.id, leaToOthers.id);
+
+    // Then
+    expect(state.value).toEqual({ status: "unavailable" });
+  });
+
   it("asks the readers Libris knows for an owner", async () => {
     // Given
     const { state, find } = useFindBookshelf(

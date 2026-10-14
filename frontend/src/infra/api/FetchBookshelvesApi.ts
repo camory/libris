@@ -104,6 +104,7 @@ export class FetchBookshelvesApi implements BookshelvesApi {
         body: JSON.stringify({ readerId, role }),
       },
     );
+    if (response.status !== 201) return problemOf(response, problems);
     const body = (await response.json()) as MemberResponse;
     return { outcome: "added", member: memberOf(body) };
   }

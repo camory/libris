@@ -394,3 +394,18 @@ Format:
   stays for *moves the form to another reader*, which the reviews leave alone.
 - Deviations from the brief: none.
 - Left over: nothing.
+
+## 2026-10-14 — T088 Every reader a member, or no answer — done
+- Did: `isOwnedBy` in `Member.ts` holds the owner rule for the view and
+  `useFindBookshelf`; the add reads a refusal or no answer as `unavailable`,
+  shown in the chosen reader's row; an owner with every reader a member reads
+  *Tous les lecteurs sont déjà membres.* in place of the plus.
+- Decided: `ReaderChoice` keeps `failedId`, set from `chosenId` by a `watch` on
+  `failed`, so the message stays with the reader whose add failed and leaves
+  when another is tapped or the next add runs.
+- Decided: the run handed off once, after step 18 and the self-review; the
+  next run ticked the task and opened the PR.
+- Deviations from the brief: step 12 asserts the row's *Hugo* and sentence by
+  `getByText`, not by the row's normalised text, which glues them
+  (`HugoErreur…`). Steps 14 and 15 were reds of their own, not guards.
+- Left over: the star and S7, S8, S9's default case (T084).
