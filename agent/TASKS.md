@@ -21,7 +21,7 @@
 No contract release: nothing in the API changes, the creation is recorded
 in the database only (D11).
 
-- [ ] T091 Backend: a bookshelf records who created it and when, a copy
+- [x] T091 Backend: a bookshelf records who created it and when, a copy
       who added it and when.
       `CreateBookshelf` and `WelcomeReader` set the reader acting and the
       `Clock`'s instant on the bookshelf, `AddBookToBookshelf` on the

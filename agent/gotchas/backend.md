@@ -371,6 +371,13 @@ Read whole by a run that changes `backend/`, after `every-run.md`.
   `clock` of `StubbedSources`) is `@Primary` over it. A use case takes
   `Clock`, never `MutableClock`; its plain tests pass a `MutableClock` from
   the root `fixture`.
+- A `Bookshelf` takes `createdBy` and `createdAt`, a `Copy` `addedBy` and
+  `addedAt`. A test that does not look at them builds through the
+  `library.fixture` helpers: `bookshelfOf(id, name, memberships)` (the
+  first member as creator), `bookshelfOwnedBy(reader)` and
+  `copyOn(bookshelf, editionId)` (the bookshelf's creator as adder), all
+  dated with `MutableClock`'s default instant, so a use case built on a
+  fresh `MutableClock()` stores what they build.
 - `ReaderRepository` has a second test double besides `ReadersInMemory`:
   `ReadersLosingTheRace`, private to `WelcomeReaderTest`. A method the port
   gains fails `compileTestKotlin` there until that double implements it.
