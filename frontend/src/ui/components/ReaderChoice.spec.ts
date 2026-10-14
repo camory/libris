@@ -178,7 +178,9 @@ describe("ReaderChoice", () => {
     const { wrapper } = open();
 
     // Then
-    expect(scrollIntoView).toHaveBeenCalledOnce();
+    expect(scrollIntoView).toHaveBeenCalledExactlyOnceWith({
+      block: "nearest",
+    });
     expect(scrollIntoView.mock.contexts[0]).toBe(wrapper.element);
   });
 
