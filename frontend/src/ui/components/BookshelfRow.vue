@@ -6,6 +6,8 @@ import type { Membership } from "../../domain/Membership";
 
 const props = defineProps<{ membership: Membership; isDefault: boolean }>();
 
+const emit = defineEmits<{ choose: [] }>();
+
 const { t } = useI18n();
 
 const role = computed(() => {
@@ -28,6 +30,7 @@ const role = computed(() => {
       type="button"
       :aria-label="t('home.bookshelves.chooseDefault')"
       class="relative flex size-11 shrink-0 items-center justify-center rounded-[10px] text-accent"
+      @click="emit('choose')"
     >
       <Star />
     </button>

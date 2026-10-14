@@ -1,4 +1,4 @@
-import { within } from "@testing-library/dom";
+import { fireEvent, within } from "@testing-library/dom";
 import { ChevronRight } from "@lucide/vue";
 import { mount } from "@vue/test-utils";
 import { afterEach, describe, expect, it } from "vitest";
@@ -66,6 +66,21 @@ describe("BookshelfRow", () => {
         name: "Choisir comme bibliothèque par défaut",
       }),
     ).toBeDefined();
+  });
+
+  it("asks for the bookshelf on a tap of its star", async () => {
+    // Given
+    const wrapper = await mountRow({ bookshelf: salon, role: "OWNER" }, false);
+
+    // When
+    await fireEvent.click(
+      within(wrapper.element as HTMLElement).getByRole("button", {
+        name: "Choisir comme bibliothèque par défaut",
+      }),
+    );
+
+    // Then
+    expect(wrapper.emitted("choose")).toHaveLength(1);
   });
 
   async function show(membership: Membership, isDefault: boolean) {
