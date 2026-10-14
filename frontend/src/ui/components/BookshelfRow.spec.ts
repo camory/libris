@@ -8,6 +8,7 @@ import { normalised } from "../../fixture/normalised";
 import { createLibrisI18n } from "../i18n";
 import { createLibrisRouter } from "../router";
 import BookshelfRow from "./BookshelfRow.vue";
+import BusySpinner from "./BusySpinner.vue";
 
 describe("BookshelfRow", () => {
   afterEach(() => {
@@ -115,17 +116,50 @@ describe("BookshelfRow", () => {
     ).toBeNull();
   });
 
-  async function show(membership: Membership, isDefault: boolean) {
-    return (await mountRow(membership, isDefault)).element as HTMLElement;
+  it("is busy while its choice runs", async () => {
+    // When
+    const wrapper = await mountRow({ bookshelf: salon, role: "OWNER" }, false, {
+      busy: true,
+    });
+
+    // Then
+    const row = within(wrapper.element as HTMLElement);
+    const busy = row.getByRole<HTMLButtonElement>("button", {
+      name: "Changement en cours…",
+    });
+    expect(busy.disabled).toBe(true);
+    expect(wrapper.findComponent(BusySpinner).exists()).toBe(true);
+    expect(
+      row.queryByRole("button", {
+        name: "Choisir comme bibliothèque par défaut",
+      }),
+    ).toBeNull();
+  });
+
+  async function show(
+    membership: Membership,
+    isDefault: boolean,
+    choice: Choice = {},
+  ) {
+    return (await mountRow(membership, isDefault, choice))
+      .element as HTMLElement;
   }
 
-  async function mountRow(membership: Membership, isDefault: boolean) {
+  async function mountRow(
+    membership: Membership,
+    isDefault: boolean,
+    choice: Choice = {},
+  ) {
     const router = createLibrisRouter();
     await router.push("/");
     await router.isReady();
     return mount(BookshelfRow, {
-      props: { membership, isDefault },
+      props: { membership, isDefault, ...choice },
       global: { plugins: [createLibrisI18n(), router] },
     });
   }
 });
+
+interface Choice {
+  busy?: boolean;
+}

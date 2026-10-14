@@ -12,6 +12,7 @@ const fr = {
       },
       default: "{role} · par défaut",
       chooseDefault: "Choisir comme bibliothèque par défaut",
+      choosingDefault: "Changement en cours…",
       error: "Erreur lors du chargement, veuillez réessayer plus tard.",
       new: "Nouvelle bibliothèque",
       name: "Nom de la bibliothèque",

@@ -3,8 +3,13 @@ import { ChevronRight, Star } from "@lucide/vue";
 import { computed } from "vue";
 import { useI18n } from "vue-i18n";
 import type { Membership } from "../../domain/Membership";
+import BusySpinner from "./BusySpinner.vue";
 
-const props = defineProps<{ membership: Membership; isDefault: boolean }>();
+const props = defineProps<{
+  membership: Membership;
+  isDefault: boolean;
+  busy?: boolean;
+}>();
 
 const emit = defineEmits<{ choose: [] }>();
 
@@ -36,11 +41,17 @@ const role = computed(() => {
       <button
         v-else
         type="button"
-        :aria-label="t('home.bookshelves.chooseDefault')"
+        :disabled="busy"
+        :aria-label="
+          busy
+            ? t('home.bookshelves.choosingDefault')
+            : t('home.bookshelves.chooseDefault')
+        "
         class="relative flex size-11 shrink-0 items-center justify-center rounded-[10px] text-accent"
         @click="emit('choose')"
       >
-        <Star />
+        <BusySpinner v-if="busy" class="size-5.5" />
+        <Star v-else />
       </button>
     </template>
     <ChevronRight class="mr-3.5 shrink-0 text-muted" />
