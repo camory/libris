@@ -220,6 +220,21 @@ describe("FetchBookshelvesApi", () => {
     expect(answer).toEqual({ outcome: "problem", type: "/problems/not-found" });
   });
 
+  it("answers a problem when the reader is already a member", async () => {
+    // Given
+    const api = new FetchBookshelvesApi(inject("mockBaseUrl"));
+
+    // When
+    const answer = await api.addMember(
+      "0b1e2d3c-4f5a-4b6c-8d7e-9f0a1b2c3d4e",
+      "6e7f8091-a2b3-4c4d-9e5f-6a7b8c9d0e1f",
+      "OWNER",
+    );
+
+    // Then
+    expect(answer).toEqual({ outcome: "problem", type: "/problems/conflict" });
+  });
+
   it("says the add comes from the application", async () => {
     // Given
     const api = new FetchBookshelvesApi("http://libris.invalid");
