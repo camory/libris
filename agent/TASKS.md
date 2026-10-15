@@ -29,7 +29,7 @@ gives S2 and S3, which have no backend scenario test. The frontend pin
 moves from `v0.11.0` in T096, once T095 is deployed. No other task touches
 the contract (D04).
 
-- [ ] T092 Backend: the series list on `v0.12.1`, the thinnest answer.
+- [x] T092 Backend: the series list on `v0.12.1`, the thinnest answer.
       `ApiContractTest` pins `v0.12.1`, the backend's one bump (D04).
       Libris serves the series of the reader's catalogue, an array of
       `Series`, each its `name`, `volumeCount`, `coverUrl` and `kind`, and
