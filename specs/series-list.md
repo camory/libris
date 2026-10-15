@@ -81,9 +81,10 @@ tome after the numbered tomes, then by title. The cover of another edition
 never stands in: the row would show one tome's cover in the place of the
 first. Three cases: the first tome has a cover; the first tome has none
 and the second has one, answered none; no edition has a tome, the first by
-title giving the cover. Proof: backend unit test of the cover rule, one per
-case; frontend scenario test over the fakes of the second case, the
-stand-in shown.
+title giving the cover. Proof: backend persistence test of the order, one
+per case, with the catalogue's comparison of titles; backend unit test that
+a series answers its first edition's cover, or none; frontend scenario test
+over the fakes of the second case, the stand-in shown.
 
 **S4 The reader switches the view** · frontend
 

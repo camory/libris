@@ -24,10 +24,10 @@ series in no promised order, and two schemas added, `Kind` and `Series`;
 the edition's `Series` renamed `SeriesEntry`, which changes no byte. An
 operation is added, so the backend goes first. Its pin moves once, in T092,
 the thinnest answer that serves the operation; T093 to T095 complete it,
-T093 red on S1's scenario test, T094 and T095 on the unit tests the spec
-gives S2 and S3, which have no backend scenario test. The frontend pin
-moves from `v0.11.0` in T096, once T095 is deployed. No other task touches
-the contract (D04).
+T093 red on S1's scenario test, T094 on the unit tests the spec gives S2,
+T095 on the persistence tests it gives S3, neither having a backend
+scenario test. The frontend pin moves from `v0.11.0` in T096, once T095 is
+deployed. No other task touches the contract (D04).
 
 - [x] T092 Backend: the series list on `v0.12.1`, the thinnest answer.
       `ApiContractTest` pins `v0.12.1`, the backend's one bump (D04).
@@ -63,11 +63,18 @@ the contract (D04).
       order a shelf reads, catalogue S1's: by tome, an edition without a
       tome after the numbered tomes, then by title; its address as a
       `Book`'s, or none when that edition has none, another edition's
-      never standing in (D11, a pick by position). Unit tests of the cover
-      rule, one per case: the first tome has a cover; the first tome has
-      none and the second has one, answered none; no edition has a tome,
-      the first by title giving the cover; S3's first red, the spec giving
-      it no backend scenario test. Realises S3.
+      never standing in (D11, a pick by position). The first edition of
+      each series is found in SQL through `CatalogueEditions`, with the
+      catalogue page's comparisons: titles through
+      `ignoring_case_and_accents`, ties by id; no Kotlin compares titles.
+      Persistence tests of the order, one per case: the first tome; an
+      edition without a tome after the numbered tomes; no edition has a
+      tome, the first by title; two titles that differ at a space, *Le
+      secret de l'Espadon* before *Les cigares du pharaon*; two editions
+      alike but for their id. Unit tests of the use case: the first
+      edition's cover; none when the first has none and the second has
+      one. S3's first red, the spec giving it no backend scenario test.
+      Realises S3.
 
 - [ ] T096 Frontend: the series of the catalogue, none yet, on `v0.12.1`.
       Precondition (human): T095 deployed (D04); the frontend piece of the
