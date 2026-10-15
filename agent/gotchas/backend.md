@@ -473,10 +473,11 @@ Read whole by a run that changes `backend/`, after `every-run.md`.
   nullable tome out (`IS NULL`, `IS NOT DISTINCT FROM`) instead.
 - `JdbcCatalogueEditions.findFirstOfEachSeries`'s semi-join is planned as a
   `HashAggregate` on `copy.edition_id`, so before the sort the rows come in
-  the hash order of their ids, not in the order inserted, and a sort keeps
-  that order among equal keys: a case whose red needs a missing key to pick
-  the wrong edition fixes the ids (`LESSER_TWIN` comes out before
-  `GREATER_TWIN`), or it passes or fails by the draw of fresh ones
-  (measured 2026-10-15).
+  the hash order of their ids, not in the order inserted, and with the few
+  rows of a slice case the sort happened to keep that order among equal
+  keys (PostgreSQL promises no stable sort): a case whose red needs a
+  missing key to pick the wrong edition fixes the ids (`LESSER_TWIN` came
+  out before `GREATER_TWIN`), or it passes or fails by the draw of fresh
+  ones (measured 2026-10-15).
 - `placing` is a reserved word of PostgreSQL: as a table alias it is a
   syntax error (`syntax error at or near "placing"`).
