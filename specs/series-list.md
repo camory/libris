@@ -28,13 +28,13 @@ When the reader opens the series of their catalogue
 
 Then Libris answers each series with an edition on one of their
      bookshelves, once each, and no other
-	And in the order of their names, ignoring case and accents
-	And the screen lists them in that order, each with its cover, its name
-	    and its count
+	And the screen lists them by name, ignoring case and accents, each
+	    with its cover, its name and its count
 ```
 
 Proof: the shape of the answer verified by Contracteer on both sides;
-backend scenario test over HTTP; frontend scenario test over the fakes.
+backend scenario test over HTTP; frontend unit test of the order; frontend
+scenario test over the fakes.
 
 **S2 The count of a series** · frontend, backend
 
@@ -146,13 +146,12 @@ The switch is a segmented choice (U04), which DESIGN gains with this spec:
 
 On `/catalogue`, nothing changes under the switch: the list of
 `specs/catalogue.md`. On `/catalogue/series`, the list is the catalogue's
-block, one row per series, in the order of the answer; the screen sorts
-nothing. A row shows the cover at the left, 48 by 74, or its stand-in; at
-its right, stacked 6 apart, the name in the row title step and, in
-`muted`, the count (*6 albums*, *1 tome*). No overline: the name is the
-row's subject. No chevron: a row leads nowhere until the series page. The
-screen asks the series anew on each arrival, so an ouvrage added a moment
-ago counts.
+block, one row per series, by name, ignoring case and accents (S1). A row
+shows the cover at the left, 48 by 74, or its stand-in; at its right,
+stacked 6 apart, the name in the row title step and, in `muted`, the count
+(*6 albums*, *1 tome*). No overline: the name is the row's subject. No
+chevron: a row leads nowhere until the series page. The screen asks the
+series anew on each arrival, so an ouvrage added a moment ago counts.
 
 States:
 
@@ -169,10 +168,11 @@ States:
 
 ## Contract
 
-Release `v0.12.0` of `camory/libris-api`, after `v0.11.0`. Nothing changes
-in an existing answer: one operation and two schemas are added, and one
-schema is renamed, which changes no byte, since a JSON body carries no
-schema name.
+Release `v0.12.1` of `camory/libris-api`, after `v0.11.0`; it supersedes
+`v0.12.0`, which nothing pins and which promised the series by name.
+Nothing changes in an existing answer: one operation and two schemas are
+added, and one schema is renamed, which changes no byte, since a JSON body
+carries no schema name.
 
 - `Kind`, `BOOK | BD | MANGA`, the enum `Edition.kind` held inline, now a
   schema both kinds share.
@@ -185,9 +185,9 @@ schema name.
   the series shares. All four required. No `id`: the series page
   adds it without breaking anything.
 - `GET /api/v1/series`, the series of the reader's catalogue, each with an
-  edition on a bookshelf they belong to, in the order of S1 → `200`, an
-  array of `Series`, empty when there is none. Not paged: a household's
-  series are a few dozen.
+  edition on a bookshelf they belong to → `200`, an array of `Series` in
+  no promised order, the screen sorting them (S1), empty when there is
+  none. Not paged: a household's series are a few dozen.
 
 The operation carries no example: it takes no input for one to fix, and
 Contracteer verifies an answer's shape, never its values. The order, the
