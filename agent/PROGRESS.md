@@ -92,3 +92,24 @@ Format:
   every case was red before green and none is a guard.
 - Deviations from the brief: none.
 - Left over: T095 picks each series' cover behind the same read.
+
+## 2026-10-15 — T095 The cover of a series — done
+- Did: `CatalogueEditions.findFirstOfEachSeries` finds in SQL the first
+  edition of each series the reader holds, in the order a shelf reads, and
+  `ListCatalogueSeries` answers each series with that edition's cover.
+- Decided: one edition per series through `DISTINCT ON (edition.series_id)`,
+  the partition the series row, the name being unique under `LOWER`; the
+  tome, the title under `ignoring_case_and_accents` and the id order each
+  series' rows, the reader's scope the semi-join of `findPage`, its SQL
+  untouched. The use case reads the set once and picks the series' edition
+  it names; `CatalogueEditionsAnswering`'s page defaults to empty.
+- Deviations from the brief: step 4's case was green on arrival, the
+  semi-join being planned as a `HashAggregate` on `copy.edition_id`, so
+  that among equal keys the rows come in the hash order of their ids, not
+  in the order inserted: without a title key the case passed or failed by
+  the draw of fresh ids. Its two editions now carry `LESSER_TWIN` and
+  `GREATER_TWIN`, the expected one the greater, and the case is red on
+  every run without the title key and with the plain title. Step 6 was
+  green on arrival for the same reason, the lesser twin coming first: it
+  is a guard, as the brief foresaw, its mutation the id key `DESC`.
+- Left over: T096 moves the frontend pin, once T095 is deployed.

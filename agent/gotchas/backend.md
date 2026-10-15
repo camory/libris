@@ -471,5 +471,12 @@ Read whole by a run that changes `backend/`, after `every-run.md`.
 - A row comparison `(a, b) > (c, d)` with a nullable member answers `NULL`
   when it meets one: the keyset of `JdbcCatalogueEditions` spells the
   nullable tome out (`IS NULL`, `IS NOT DISTINCT FROM`) instead.
+- `JdbcCatalogueEditions.findFirstOfEachSeries`'s semi-join is planned as a
+  `HashAggregate` on `copy.edition_id`, so before the sort the rows come in
+  the hash order of their ids, not in the order inserted, and a sort keeps
+  that order among equal keys: a case whose red needs a missing key to pick
+  the wrong edition fixes the ids (`LESSER_TWIN` comes out before
+  `GREATER_TWIN`), or it passes or fails by the draw of fresh ones
+  (measured 2026-10-15).
 - `placing` is a reserved word of PostgreSQL: as a table alias it is a
   syntax error (`syntax error at or near "placing"`).
