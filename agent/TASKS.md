@@ -18,8 +18,9 @@
 
 ## Series list — specs/series-list.md
 
-Contract: release `v0.12.0` of `camory/libris-api`, after `v0.11.0`: one
-operation, the reader's series, and two schemas added, `Kind` and `Series`;
+Contract: release `v0.12.1` of `camory/libris-api`, after `v0.11.0`,
+superseding `v0.12.0`, which nothing pins: one operation, the reader's
+series in no promised order, and two schemas added, `Kind` and `Series`;
 the edition's `Series` renamed `SeriesEntry`, which changes no byte. An
 operation is added, so the backend goes first. Its pin moves once, in T092,
 the thinnest answer that serves the operation; T093 to T095 complete it,
@@ -28,8 +29,8 @@ gives S2 and S3, which have no backend scenario test. The frontend pin
 moves from `v0.11.0` in T096, once T095 is deployed. No other task touches
 the contract (D04).
 
-- [ ] T092 Backend: the series list on `v0.12.0`, the thinnest answer.
-      `ApiContractTest` pins `v0.12.0`, the backend's one bump (D04).
+- [ ] T092 Backend: the series list on `v0.12.1`, the thinnest answer.
+      `ApiContractTest` pins `v0.12.1`, the backend's one bump (D04).
       Libris serves the series of the reader's catalogue, an array of
       `Series`, each its `name`, `volumeCount`, `coverUrl` and `kind`, and
       answers none to every reader until T093 finds them. Contracteer
@@ -41,10 +42,10 @@ the contract (D04).
 - [ ] T093 Backend: the reader's series, each counted.
       Libris answers each series with an edition on a bookshelf the reader
       belongs to, the catalogue's rule, once each; none for a bookshelf
-      they do not belong to, nor for an edition with no series; in the
-      order of their names, ignoring case and accents, as S1 says (see
-      *Questions*). Each series counts its editions, each once however
-      many copies it has; its kind and cover null until T094 and T095. A
+      they do not belong to, nor for an edition with no series; in no
+      promised order, the screen sorting them (D11). Each series counts
+      its editions, each once however many copies it has; its kind and
+      cover null until T094 and T095. A
       read across both contexts, each answering what it knows (D02, D12).
       Unit test of the count, an edition in two copies counted once.
       Realises S1 and S2's count; un-skips the backend test of S1.
@@ -68,11 +69,11 @@ the contract (D04).
       the first by title giving the cover; S3's first red, the spec giving
       it no backend scenario test. Realises S3.
 
-- [ ] T096 Frontend: the series of the catalogue, none yet, on `v0.12.0`.
+- [ ] T096 Frontend: the series of the catalogue, none yet, on `v0.12.1`.
       Precondition (human): T095 deployed (D04); the frontend piece of the
       spec, its skipped scenario tests over the fakes with the port, fake
       and domain types they name (D07).
-      `vitest.global-setup.ts` pins `v0.12.0`, the frontend's one bump
+      `vitest.global-setup.ts` pins `v0.12.1`, the frontend's one bump
       (D04). `/catalogue/series` shows the catalogue's header unchanged,
       the *Catalogue* tab in `accent`, and asks the series anew on each
       arrival: five skeleton rows, a cover and two lines each, until the
@@ -84,12 +85,14 @@ the contract (D04).
 
 - [ ] T097 Frontend: the reader's series listed.
       In place of the empty state, the catalogue's block, a row per series
-      in the order of the answer, the screen sorting nothing: the cover at
+      by name, ignoring case and accents, in the reader's language, with
+      `nameOrder`, whatever the order of the answer (D11): the cover at
       the left, 48 by 74, or its stand-in; at its right, 6 apart, the name
       in the row title step and, in `muted`, the count, *1 album*, *6
       albums* for a BD series, *1 tome*, *3 tomes* otherwise; no overline,
       no chevron. The series' kind chooses the word in its key, every word
-      from the `fr` catalogue (U02, U05, U06, U08).
+      from the `fr` catalogue (U02, U05, U06, U08). Unit test of the
+      order: an answer out of order, shown by name.
       Realises S1, S2 and S3 on the frontend; un-skips the frontend tests
       of S1, of S2, its three cases, and of S3.
 
@@ -183,15 +186,6 @@ choose Séries and read the empty sentence.*
   series page, its gaps, the number of published volumes, the series
   filter and renaming a series — §4.6 wishlist, §4.9 import and export,
   §4.10 administration, and the offline browsing of §4.8.
-- **The series in Libris's order, or the screen's.** S1 and the *Screen*
-  of `specs/series-list.md` have Libris answer the series in the order of
-  their names, ignoring case and accents, and the screen sort nothing; the
-  backend test of S1 asserts that order. D11 (*Order*) says a complete list
-  shown to a reader comes in no promised order and the screen sorts it,
-  the backend folding case and accents only to apply a rule, and the series
-  are a complete list, not paged. T093 and T097 follow the spec, its
-  scenario tests being yours; say if D11 should gain the exception, or the
-  spec and its backend test move the order to the screen, before T093 runs.
 - **A refusal the bookshelves screens never provoke.** The spec says what
   each form shows when Libris does not answer (S9), and the taken name
   (S3), not what it shows when Libris refuses otherwise: a blank name the
