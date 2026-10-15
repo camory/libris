@@ -42,6 +42,8 @@ class ListCatalogueSeriesTest {
     it.insert(SPIROU_ET_FANTASIO_1)
     it.insert(LES_MURAILLES_DE_SAMARIS)
     it.insert(LA_FIEVRE_D_URBICANDE)
+    it.insert(L_OMBRE_D_UN_HOMME)
+    it.insert(L_ECHO_DES_CITES)
   }
   private val listCatalogueSeries = ListCatalogueSeries(bookshelves, copies, editions)
 
@@ -143,6 +145,20 @@ class ListCatalogueSeriesTest {
 
     // Then
     series shouldBe listOf(CatalogueSeries("Les Cités obscures", 2, LA_FIEVRE_D_URBICANDE_COVER, BD))
+  }
+
+  @Test
+  fun `titles are compared ignoring case and accents`() {
+    // Given
+    val leasBookshelf = bookshelfOf("Bibliothèque de Léa", Membership(lea, OWNER))
+    copies.insert(copyOn(leasBookshelf, L_OMBRE_D_UN_HOMME.id))
+    copies.insert(copyOn(leasBookshelf, L_ECHO_DES_CITES.id))
+
+    // When
+    val series = listCatalogueSeries(lea)
+
+    // Then
+    series shouldBe listOf(CatalogueSeries("Les Cités obscures", 2, L_ECHO_DES_CITES_COVER, BD))
   }
 
   private fun bookshelfOf(name: String, vararg memberships: Membership): Bookshelf =
@@ -265,4 +281,20 @@ private val LA_FIEVRE_D_URBICANDE = LES_MURAILLES_DE_SAMARIS.copy(
   id = EditionId.new(),
   title = "La fièvre d'Urbicande",
   coverName = LA_FIEVRE_D_URBICANDE_COVER,
+)
+
+private val L_OMBRE_D_UN_HOMME_COVER = CoverName("7a".repeat(32))
+
+private val L_OMBRE_D_UN_HOMME = LES_MURAILLES_DE_SAMARIS.copy(
+  id = EditionId.new(),
+  title = "L'Ombre d'un homme",
+  coverName = L_OMBRE_D_UN_HOMME_COVER,
+)
+
+private val L_ECHO_DES_CITES_COVER = CoverName("8b".repeat(32))
+
+private val L_ECHO_DES_CITES = LES_MURAILLES_DE_SAMARIS.copy(
+  id = EditionId.new(),
+  title = "L'écho des cités",
+  coverName = L_ECHO_DES_CITES_COVER,
 )

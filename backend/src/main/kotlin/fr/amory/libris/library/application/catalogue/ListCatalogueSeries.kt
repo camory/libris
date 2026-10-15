@@ -6,6 +6,9 @@ import fr.amory.libris.library.domain.bookshelf.BookshelfRepository
 import fr.amory.libris.library.domain.copy.CopyRepository
 import fr.amory.libris.library.domain.reader.ReaderId
 import org.springframework.stereotype.Service
+import java.text.Collator
+import java.text.Collator.PRIMARY
+import java.util.Locale.ROOT
 
 @Service
 class ListCatalogueSeries(
@@ -33,4 +36,9 @@ class ListCatalogueSeries(
 
 private val SHELF_ORDER =
   compareBy<Edition, Int?>(nullsLast()) { it.series?.volumeNumber }
-    .thenBy { it.title }
+    .thenBy(ignoringCaseAndAccents()) { it.title }
+
+private fun ignoringCaseAndAccents() =
+  Collator
+    .getInstance(ROOT)
+    .apply { strength = PRIMARY }
