@@ -51,6 +51,7 @@ import fr.amory.libris.library.application.ReaderBookshelf
 import fr.amory.libris.library.application.WelcomeReader
 import fr.amory.libris.library.application.catalogue.BrowseCatalogue
 import fr.amory.libris.library.application.catalogue.CataloguePage
+import fr.amory.libris.library.application.catalogue.CatalogueSeries
 import fr.amory.libris.library.application.catalogue.HeldEdition
 import fr.amory.libris.library.application.catalogue.ListCatalogueSeries
 import fr.amory.libris.library.application.lookup.CopyOnBookshelf
@@ -116,7 +117,8 @@ class ApiContractTest @Autowired constructor(
   private val findBookshelf: FindBookshelf,
   private val listReaders: ListReaders,
   private val addMemberToBookshelf: AddMemberToBookshelf,
-  private val chooseDefaultBookshelf: ChooseDefaultBookshelf) {
+  private val chooseDefaultBookshelf: ChooseDefaultBookshelf,
+  private val listCatalogueSeries: ListCatalogueSeries) {
   @ContracteerTest(openApiDoc = "https://raw.githubusercontent.com/camory/libris-api/v0.12.1/openapi.yaml")
   fun `the API matches the contract`() {
     contracteerIsWelcomed()
@@ -130,6 +132,7 @@ class ApiContractTest @Autowired constructor(
     readersAnswer()
     addingAMemberAnswers()
     choosingTheDefaultAnswers()
+    seriesAnswer()
   }
 
   private fun contracteerIsWelcomed() {
@@ -199,6 +202,11 @@ class ApiContractTest @Autowired constructor(
     given(chooseDefaultBookshelf(eq(CONTRACTEER) ?: CONTRACTEER, BookshelfId(any() ?: NOT_MINE.value)))
       .willReturn(Chosen)
     given(chooseDefaultBookshelf(CONTRACTEER, NOT_MINE)).willReturn(ChooseDefaultResult.NoSuchBookshelf)
+  }
+
+  private fun seriesAnswer() {
+    given(listCatalogueSeries(ReaderId(eq(CONTRACTEER.id.value) ?: CONTRACTEER.id.value)))
+      .willReturn(listOf(CatalogueSeries("Astérix", 1, ASTERIX_1_COVER, BD)))
   }
 
   private fun noCopy(answer: EditionLookupResult) =
