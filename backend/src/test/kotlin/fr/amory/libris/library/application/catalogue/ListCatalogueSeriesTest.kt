@@ -38,6 +38,8 @@ class ListCatalogueSeriesTest {
     it.insert(THORGAL_2)
     it.insert(BLAKE_ET_MORTIMER_1)
     it.insert(BLAKE_ET_MORTIMER_2)
+    it.insert(LE_JOURNAL_D_UN_INGENU)
+    it.insert(SPIROU_ET_FANTASIO_1)
   }
   private val listCatalogueSeries = ListCatalogueSeries(bookshelves, copies, editions)
 
@@ -111,6 +113,20 @@ class ListCatalogueSeriesTest {
 
     // Then
     series shouldBe listOf(CatalogueSeries("Blake et Mortimer", 2, null, BD))
+  }
+
+  @Test
+  fun `an edition without a tome comes after the numbered tomes`() {
+    // Given
+    val leasBookshelf = bookshelfOf("Bibliothèque de Léa", Membership(lea, OWNER))
+    copies.insert(copyOn(leasBookshelf, LE_JOURNAL_D_UN_INGENU.id))
+    copies.insert(copyOn(leasBookshelf, SPIROU_ET_FANTASIO_1.id))
+
+    // When
+    val series = listCatalogueSeries(lea)
+
+    // Then
+    series shouldBe listOf(CatalogueSeries("Spirou et Fantasio", 2, SPIROU_ET_FANTASIO_1_COVER, BD))
   }
 
   private fun bookshelfOf(name: String, vararg memberships: Membership): Bookshelf =
@@ -198,4 +214,22 @@ private val BLAKE_ET_MORTIMER_2 = BLAKE_ET_MORTIMER_1.copy(
   title = "Le mystère de la Grande Pyramide",
   series = SeriesEntry("Blake et Mortimer", 2),
   coverName = BLAKE_ET_MORTIMER_2_COVER,
+)
+
+private val LE_JOURNAL_D_UN_INGENU_COVER = CoverName("3c".repeat(32))
+
+private val LE_JOURNAL_D_UN_INGENU = THORGAL_1.copy(
+  id = EditionId.new(),
+  title = "Le journal d'un ingénu",
+  series = SeriesEntry("Spirou et Fantasio", null),
+  coverName = LE_JOURNAL_D_UN_INGENU_COVER,
+)
+
+private val SPIROU_ET_FANTASIO_1_COVER = CoverName("4d".repeat(32))
+
+private val SPIROU_ET_FANTASIO_1 = LE_JOURNAL_D_UN_INGENU.copy(
+  id = EditionId.new(),
+  title = "4 aventures de Spirou et Fantasio",
+  series = SeriesEntry("Spirou et Fantasio", 1),
+  coverName = SPIROU_ET_FANTASIO_1_COVER,
 )
