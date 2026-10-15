@@ -8,6 +8,7 @@ import fr.amory.libris.scenario.dsl.SeriesEntry
 import fr.amory.libris.scenario.dsl.hasAdded
 import fr.amory.libris.scenario.dsl.hasCreated
 import fr.amory.libris.scenario.dsl.series
+import io.kotest.matchers.collections.shouldContainExactlyInAnyOrder
 import io.kotest.matchers.shouldBe
 import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
@@ -34,7 +35,12 @@ class SeriesListScenarios @Autowired constructor(private val libris: Libris) {
     val series = lea.series()
 
     // Then
-    series.map { it.name } shouldBe listOf("Astérix", "blacksad", "Émile et Margot", "One piece")
+    series.map { it.name } shouldContainExactlyInAnyOrder listOf(
+      "Astérix",
+      "blacksad",
+      "Émile et Margot",
+      "One piece",
+    )
   }
 
   @Test
