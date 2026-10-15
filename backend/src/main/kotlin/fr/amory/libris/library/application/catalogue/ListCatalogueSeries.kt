@@ -29,7 +29,7 @@ class ListCatalogueSeries(
     CatalogueSeries(
       name,
       seriesEditions.size,
-      seriesEditions.minWith(SHELF_ORDER).coverName,
+      coverName = seriesEditions.minWith(SHELF_ORDER).coverName,
       kind = seriesEditions.map { it.kind }.distinct().singleOrNull(),
     )
 }
