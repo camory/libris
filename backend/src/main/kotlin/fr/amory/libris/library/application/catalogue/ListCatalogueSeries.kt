@@ -18,7 +18,7 @@ class ListCatalogueSeries(
     return editions
       .findByIds(readersCopies.map { it.editionId })
       .mapNotNull { edition -> edition.series?.let { it.name to edition } }
-      .groupBy({ (name) -> name }, { (_, edition) -> edition })
+      .groupBy({ it.first }, { it.second })
       .map { (name, seriesEditions) -> seriesOf(name, seriesEditions) }
   }
 
