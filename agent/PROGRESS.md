@@ -43,3 +43,15 @@ Format:
   `agent/archive/progress-bookshelves.md`, as the phases before them did.
 - Left over: the backlog is empty; the next feature needs its spec,
   written with Tophe.
+
+## 2026-10-15 — T092 The series list on v0.12.1, the thinnest answer — done
+- Did: the backend pins `v0.12.1` and serves `GET /api/v1/series` from
+  `SeriesController` through `ListCatalogueSeries`, which answers no
+  series to any reader; S5 No series un-skipped and green.
+- Decided: the reds of steps 1 and 2 are commits of their own, the
+  controller their green, so the log reads the test plan step by step.
+- Deviations from the brief: `listCatalogueSeries` joined the constructor
+  of `ApiContractTest` in step 4, with `seriesAnswer()`, not in step 3:
+  unread until the stub, detekt's `UnusedPrivateProperty` fails it.
+- Left over: T093 finds the reader's series and their count behind the
+  same use case, red on S1.

@@ -12,6 +12,7 @@ import fr.amory.libris.library.application.ListReaderBookshelves
 import fr.amory.libris.library.application.ListReaders
 import fr.amory.libris.library.application.WelcomeReader
 import fr.amory.libris.library.application.catalogue.BrowseCatalogue
+import fr.amory.libris.library.application.catalogue.ListCatalogueSeries
 import fr.amory.libris.library.application.lookup.LookupIsbnForReader
 import fr.amory.libris.library.domain.bookshelf.BookshelfId
 import fr.amory.libris.library.domain.reader.ReaderId
@@ -50,6 +51,7 @@ private val TOPHE = readerNamed(
     ListReaders::class,
     AddMemberToBookshelf::class,
     ChooseDefaultBookshelf::class,
+    ListCatalogueSeries::class,
   ],
 )
 class ProblemAdviceTest @Autowired constructor(

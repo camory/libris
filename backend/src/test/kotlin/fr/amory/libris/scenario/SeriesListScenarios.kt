@@ -44,7 +44,6 @@ class SeriesListScenarios @Autowired constructor(private val libris: Libris) {
   }
 
   @Test
-  @Disabled("series list")
   fun `S5 No series`() {
     // Given
     val nina = libris.reader("nina", "Nina")
