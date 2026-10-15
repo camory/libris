@@ -50,7 +50,7 @@ private const val FIND_FIRST_OF_EACH_SERIES =
           JOIN membership ON membership.bookshelf_id = copy.bookshelf_id
           WHERE copy.edition_id = edition.id AND membership.reader_id = :readerId
       )
-    ORDER BY edition.series_id, edition.volume_number
+    ORDER BY edition.series_id, edition.volume_number, edition.title COLLATE ignoring_case_and_accents
     """
 
 @Repository
