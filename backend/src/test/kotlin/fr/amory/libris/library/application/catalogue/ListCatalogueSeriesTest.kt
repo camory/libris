@@ -4,6 +4,7 @@ import fr.amory.libris.bibliography.domain.Contributions
 import fr.amory.libris.bibliography.domain.Kind.BD
 import fr.amory.libris.bibliography.domain.Kind.MANGA
 import fr.amory.libris.bibliography.domain.SeriesEntry
+import fr.amory.libris.bibliography.domain.cover.CoverName
 import fr.amory.libris.bibliography.domain.edition.Edition
 import fr.amory.libris.bibliography.domain.edition.EditionId
 import fr.amory.libris.bibliography.fixture.EditionsInMemory
@@ -33,6 +34,8 @@ class ListCatalogueSeriesTest {
     it.insert(LA_SERPE_D_OR)
     it.insert(LASTMAN_1)
     it.insert(LASTMAN_2)
+    it.insert(BLACKSAD_1)
+    it.insert(BLACKSAD_2)
   }
   private val listCatalogueSeries = ListCatalogueSeries(bookshelves, copies, editions)
 
@@ -78,6 +81,20 @@ class ListCatalogueSeriesTest {
 
     // Then
     series shouldBe listOf(CatalogueSeries("Lastman", 2, null, null))
+  }
+
+  @Test
+  fun `a series answers the cover of its first edition`() {
+    // Given
+    val leasBookshelf = bookshelfOf("Bibliothèque de Léa", Membership(lea, OWNER))
+    copies.insert(copyOn(leasBookshelf, BLACKSAD_1.id))
+    copies.insert(copyOn(leasBookshelf, BLACKSAD_2.id))
+
+    // When
+    val series = listCatalogueSeries(lea)
+
+    // Then
+    series shouldBe listOf(CatalogueSeries("Blacksad", 2, BLACKSAD_1_COVER, BD))
   }
 
   private fun bookshelfOf(name: String, vararg memberships: Membership): Bookshelf =
@@ -132,4 +149,20 @@ private val LASTMAN_2 = LASTMAN_1.copy(
   kind = MANGA,
   title = "Lastman 2",
   series = SeriesEntry("Lastman", 2),
+)
+
+private val BLACKSAD_1_COVER = CoverName("6f2b0c4e8a1d3f5b7c9e0a2d4f6b8c1e3a5d7f9b0c2e4a6d8f1b3c5e7a9d0f2b")
+
+private val BLACKSAD_1 = ASTERIX_LE_GAULOIS.copy(
+  id = EditionId.new(),
+  title = "Quelque part entre les ombres",
+  series = SeriesEntry("Blacksad", 1),
+  coverName = BLACKSAD_1_COVER,
+)
+
+private val BLACKSAD_2 = BLACKSAD_1.copy(
+  id = EditionId.new(),
+  title = "Arctic-Nation",
+  series = SeriesEntry("Blacksad", 2),
+  coverName = null,
 )
