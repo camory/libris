@@ -50,7 +50,7 @@ the contract (D04).
       Unit test of the count, an edition in two copies counted once.
       Realises S1 and S2's count; un-skips the backend test of S1.
 
-- [ ] T094 Backend: the kind a series shares.
+- [x] T094 Backend: the kind a series shares.
       Each series of T093 answers the kind every one of its editions
       shares, `BD`, `MANGA` or `BOOK`, or none when two of them differ
       (PRD §3). Unit tests of the shared kind and of the count, one per

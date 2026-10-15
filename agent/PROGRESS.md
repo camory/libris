@@ -79,3 +79,16 @@ Format:
   are named in `agent/gotchas/backend.md`.
 - Deviations from the brief: none.
 - Left over: nothing beyond T094 and T095.
+
+## 2026-10-15 — T094 The kind a series shares — done
+- Did: `ListCatalogueSeries` answers each series with the kind every one
+  of its editions shares, or none when two differ; T093's case now expects
+  `MANGA`, and two unit cases add the BD series and the mixed one.
+- Decided: the grouping pairs each edition with its series' name and keeps
+  the editions (`groupBy` with a value selector), so the count is the size
+  of a series' editions and the kind `map { kind }.distinct().singleOrNull()`
+  over them, in a private `seriesOf` beside `invoke`; each step's green was
+  the smallest (the constant `MANGA`, then the first edition's kind), so
+  every case was red before green and none is a guard.
+- Deviations from the brief: none.
+- Left over: T095 picks each series' cover behind the same read.

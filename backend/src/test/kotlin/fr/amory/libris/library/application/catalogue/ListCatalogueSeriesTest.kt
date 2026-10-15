@@ -1,6 +1,7 @@
 package fr.amory.libris.library.application.catalogue
 
 import fr.amory.libris.bibliography.domain.Contributions
+import fr.amory.libris.bibliography.domain.Kind.BD
 import fr.amory.libris.bibliography.domain.Kind.MANGA
 import fr.amory.libris.bibliography.domain.SeriesEntry
 import fr.amory.libris.bibliography.domain.edition.Edition
@@ -28,6 +29,10 @@ class ListCatalogueSeriesTest {
   private val editions = EditionsInMemory().also {
     it.insert(ROMANCE_DAWN)
     it.insert(BAGGY)
+    it.insert(ASTERIX_LE_GAULOIS)
+    it.insert(LA_SERPE_D_OR)
+    it.insert(LASTMAN_1)
+    it.insert(LASTMAN_2)
   }
   private val listCatalogueSeries = ListCatalogueSeries(bookshelves, copies, editions)
 
@@ -44,7 +49,35 @@ class ListCatalogueSeriesTest {
     val series = listCatalogueSeries(lea)
 
     // Then
-    series shouldBe listOf(CatalogueSeries("One piece", 2, null, null))
+    series shouldBe listOf(CatalogueSeries("One piece", 2, null, MANGA))
+  }
+
+  @Test
+  fun `a series whose editions are all BD has the kind BD`() {
+    // Given
+    val leasBookshelf = bookshelfOf("Bibliothèque de Léa", Membership(lea, OWNER))
+    copies.insert(copyOn(leasBookshelf, ASTERIX_LE_GAULOIS.id))
+    copies.insert(copyOn(leasBookshelf, LA_SERPE_D_OR.id))
+
+    // When
+    val series = listCatalogueSeries(lea)
+
+    // Then
+    series shouldBe listOf(CatalogueSeries("Astérix", 2, null, BD))
+  }
+
+  @Test
+  fun `a series mixing a BD and a manga has no kind`() {
+    // Given
+    val leasBookshelf = bookshelfOf("Bibliothèque de Léa", Membership(lea, OWNER))
+    copies.insert(copyOn(leasBookshelf, LASTMAN_1.id))
+    copies.insert(copyOn(leasBookshelf, LASTMAN_2.id))
+
+    // When
+    val series = listCatalogueSeries(lea)
+
+    // Then
+    series shouldBe listOf(CatalogueSeries("Lastman", 2, null, null))
   }
 
   private fun bookshelfOf(name: String, vararg memberships: Membership): Bookshelf =
@@ -72,4 +105,31 @@ private val BAGGY = ROMANCE_DAWN.copy(
   id = EditionId.new(),
   title = "Aux prises avec Baggy",
   series = SeriesEntry("One piece", 2),
+)
+
+private val ASTERIX_LE_GAULOIS = ROMANCE_DAWN.copy(
+  id = EditionId.new(),
+  kind = BD,
+  title = "Astérix le Gaulois",
+  series = SeriesEntry("Astérix", 1),
+)
+
+private val LA_SERPE_D_OR = ASTERIX_LE_GAULOIS.copy(
+  id = EditionId.new(),
+  title = "La serpe d'or",
+  series = SeriesEntry("Astérix", 2),
+)
+
+private val LASTMAN_1 = ROMANCE_DAWN.copy(
+  id = EditionId.new(),
+  kind = BD,
+  title = "Lastman 1",
+  series = SeriesEntry("Lastman", 1),
+)
+
+private val LASTMAN_2 = LASTMAN_1.copy(
+  id = EditionId.new(),
+  kind = MANGA,
+  title = "Lastman 2",
+  series = SeriesEntry("Lastman", 2),
 )
