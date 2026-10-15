@@ -4,6 +4,7 @@ import fr.amory.libris.bibliography.domain.Contributions
 import fr.amory.libris.bibliography.domain.Kind.BD
 import fr.amory.libris.bibliography.domain.Kind.MANGA
 import fr.amory.libris.bibliography.domain.SeriesEntry
+import fr.amory.libris.bibliography.domain.cover.CoverName
 import fr.amory.libris.bibliography.domain.edition.Edition
 import fr.amory.libris.bibliography.domain.edition.EditionId
 import fr.amory.libris.bibliography.fixture.EditionsInMemory
@@ -33,6 +34,8 @@ class ListCatalogueSeriesTest {
     it.insert(LA_SERPE_D_OR)
     it.insert(LASTMAN_1)
     it.insert(LASTMAN_2)
+    it.insert(THORGAL_1)
+    it.insert(THORGAL_2)
   }
   private val listCatalogueSeries = ListCatalogueSeries(bookshelves, copies, editions)
 
@@ -78,6 +81,20 @@ class ListCatalogueSeriesTest {
 
     // Then
     series shouldBe listOf(CatalogueSeries("Lastman", 2, null, null))
+  }
+
+  @Test
+  fun `a series has the cover of its first tome`() {
+    // Given
+    val leasBookshelf = bookshelfOf("Bibliothèque de Léa", Membership(lea, OWNER))
+    copies.insert(copyOn(leasBookshelf, THORGAL_1.id))
+    copies.insert(copyOn(leasBookshelf, THORGAL_2.id))
+
+    // When
+    val series = listCatalogueSeries(lea)
+
+    // Then
+    series shouldBe listOf(CatalogueSeries("Thorgal", 2, THORGAL_1_COVER, BD))
   }
 
   private fun bookshelfOf(name: String, vararg memberships: Membership): Bookshelf =
@@ -132,4 +149,21 @@ private val LASTMAN_2 = LASTMAN_1.copy(
   kind = MANGA,
   title = "Lastman 2",
   series = SeriesEntry("Lastman", 2),
+)
+
+private val THORGAL_1_COVER = CoverName("1a".repeat(32))
+
+private val THORGAL_1 = ROMANCE_DAWN.copy(
+  id = EditionId.new(),
+  kind = BD,
+  title = "La magicienne trahie",
+  series = SeriesEntry("Thorgal", 1),
+  coverName = THORGAL_1_COVER,
+)
+
+private val THORGAL_2 = THORGAL_1.copy(
+  id = EditionId.new(),
+  title = "L'île des mers gelées",
+  series = SeriesEntry("Thorgal", 2),
+  coverName = null,
 )
