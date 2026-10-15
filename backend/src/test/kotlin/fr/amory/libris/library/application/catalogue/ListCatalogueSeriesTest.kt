@@ -31,6 +31,8 @@ class ListCatalogueSeriesTest {
     it.insert(BAGGY)
     it.insert(ASTERIX_LE_GAULOIS)
     it.insert(LA_SERPE_D_OR)
+    it.insert(LASTMAN_1)
+    it.insert(LASTMAN_2)
   }
   private val listCatalogueSeries = ListCatalogueSeries(bookshelves, copies, editions)
 
@@ -62,6 +64,20 @@ class ListCatalogueSeriesTest {
 
     // Then
     series shouldBe listOf(CatalogueSeries("Astérix", 2, null, BD))
+  }
+
+  @Test
+  fun `a series mixing a BD and a manga has no kind`() {
+    // Given
+    val leasBookshelf = bookshelfOf("Bibliothèque de Léa", Membership(lea, OWNER))
+    copies.insert(copyOn(leasBookshelf, LASTMAN_1.id))
+    copies.insert(copyOn(leasBookshelf, LASTMAN_2.id))
+
+    // When
+    val series = listCatalogueSeries(lea)
+
+    // Then
+    series shouldBe listOf(CatalogueSeries("Lastman", 2, null, null))
   }
 
   private fun bookshelfOf(name: String, vararg memberships: Membership): Bookshelf =
@@ -102,4 +118,18 @@ private val LA_SERPE_D_OR = ASTERIX_LE_GAULOIS.copy(
   id = EditionId.new(),
   title = "La serpe d'or",
   series = SeriesEntry("Astérix", 2),
+)
+
+private val LASTMAN_1 = ROMANCE_DAWN.copy(
+  id = EditionId.new(),
+  kind = BD,
+  title = "Lastman 1",
+  series = SeriesEntry("Lastman", 1),
+)
+
+private val LASTMAN_2 = LASTMAN_1.copy(
+  id = EditionId.new(),
+  kind = MANGA,
+  title = "Lastman 2",
+  series = SeriesEntry("Lastman", 2),
 )
