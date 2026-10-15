@@ -4,6 +4,7 @@ import { describe, expect, it } from "vitest";
 import { seriesApiKey, type SeriesApi } from "../../../application/SeriesApi";
 import { FakeSeriesApi } from "../../../fixture/FakeSeriesApi";
 import SeriesRowSkeleton from "../../components/SeriesRowSkeleton.vue";
+import IconBook from "../../components/icons/IconBook.vue";
 import { createLibrisI18n } from "../../i18n";
 import SeriesView from "./SeriesView.vue";
 
@@ -38,6 +39,20 @@ describe("SeriesView", () => {
 
     // Then
     expect(wrapper.findAllComponents(SeriesRowSkeleton)).toHaveLength(0);
+  });
+
+  it("says what will fill the series when there are none", async () => {
+    // Given
+    const { wrapper, screen } = open(new FakeSeriesApi([]));
+
+    // When
+    await flushPromises();
+
+    // Then
+    expect(
+      screen.getByText("Les séries de vos bibliothèques apparaîtront ici."),
+    ).toBeDefined();
+    expect(wrapper.findAllComponents(IconBook)).toHaveLength(1);
   });
 
   function open(seriesApi: SeriesApi) {

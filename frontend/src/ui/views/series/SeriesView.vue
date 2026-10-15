@@ -4,6 +4,7 @@ import { useI18n } from "vue-i18n";
 import { seriesApiKey } from "../../../application/SeriesApi";
 import { useListCatalogueSeries } from "../../../application/useListCatalogueSeries";
 import SeriesRowSkeleton from "../../components/SeriesRowSkeleton.vue";
+import IconBook from "../../components/icons/IconBook.vue";
 
 const { t } = useI18n();
 const { state, list } = useListCatalogueSeries(inject(seriesApiKey)!);
@@ -23,6 +24,10 @@ void list();
       class="divide-y divide-border overflow-hidden rounded-[14px] border border-border bg-surface"
     >
       <SeriesRowSkeleton v-for="row in 5" :key="row" />
+    </div>
+    <div v-else class="flex flex-col items-center gap-3 p-7 text-center">
+      <IconBook class="text-muted opacity-60" />
+      <p class="text-lead text-muted">{{ t("series.empty") }}</p>
     </div>
   </main>
 </template>

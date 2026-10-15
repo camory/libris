@@ -94,6 +94,9 @@ const fr = {
     copies: "{bookshelf} | {bookshelf} · {count} exemplaires",
     cover: "Couverture de {title}",
   },
+  series: {
+    empty: "Les séries de vos bibliothèques apparaîtront ici.",
+  },
   language: {
     fr: "français",
   },
