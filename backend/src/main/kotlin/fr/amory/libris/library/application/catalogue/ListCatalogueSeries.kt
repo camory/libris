@@ -26,7 +26,7 @@ class ListCatalogueSeries(
     CatalogueSeries(
       name,
       seriesEditions.size,
-      seriesEditions.firstNotNullOfOrNull { it.coverName },
+      seriesEditions.minWith(compareBy { it.series?.volumeNumber }).coverName,
       kind = seriesEditions.map { it.kind }.distinct().singleOrNull(),
     )
 }

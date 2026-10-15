@@ -36,6 +36,8 @@ class ListCatalogueSeriesTest {
     it.insert(LASTMAN_2)
     it.insert(THORGAL_1)
     it.insert(THORGAL_2)
+    it.insert(BLAKE_ET_MORTIMER_1)
+    it.insert(BLAKE_ET_MORTIMER_2)
   }
   private val listCatalogueSeries = ListCatalogueSeries(bookshelves, copies, editions)
 
@@ -95,6 +97,20 @@ class ListCatalogueSeriesTest {
 
     // Then
     series shouldBe listOf(CatalogueSeries("Thorgal", 2, THORGAL_1_COVER, BD))
+  }
+
+  @Test
+  fun `a series whose first tome has no cover has none, though the second has one`() {
+    // Given
+    val leasBookshelf = bookshelfOf("Bibliothèque de Léa", Membership(lea, OWNER))
+    copies.insert(copyOn(leasBookshelf, BLAKE_ET_MORTIMER_1.id))
+    copies.insert(copyOn(leasBookshelf, BLAKE_ET_MORTIMER_2.id))
+
+    // When
+    val series = listCatalogueSeries(lea)
+
+    // Then
+    series shouldBe listOf(CatalogueSeries("Blake et Mortimer", 2, null, BD))
   }
 
   private fun bookshelfOf(name: String, vararg memberships: Membership): Bookshelf =
@@ -166,4 +182,20 @@ private val THORGAL_2 = THORGAL_1.copy(
   title = "L'île des mers gelées",
   series = SeriesEntry("Thorgal", 2),
   coverName = null,
+)
+
+private val BLAKE_ET_MORTIMER_1 = THORGAL_1.copy(
+  id = EditionId.new(),
+  title = "Le secret de l'Espadon",
+  series = SeriesEntry("Blake et Mortimer", 1),
+  coverName = null,
+)
+
+private val BLAKE_ET_MORTIMER_2_COVER = CoverName("2b".repeat(32))
+
+private val BLAKE_ET_MORTIMER_2 = BLAKE_ET_MORTIMER_1.copy(
+  id = EditionId.new(),
+  title = "Le mystère de la Grande Pyramide",
+  series = SeriesEntry("Blake et Mortimer", 2),
+  coverName = BLAKE_ET_MORTIMER_2_COVER,
 )
