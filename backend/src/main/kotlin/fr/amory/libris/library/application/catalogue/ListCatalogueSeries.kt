@@ -23,5 +23,10 @@ class ListCatalogueSeries(
   }
 
   private fun seriesOf(name: String, seriesEditions: List<Edition>) =
-    CatalogueSeries(name, seriesEditions.size, null, seriesEditions.map { it.kind }.distinct().singleOrNull())
+    CatalogueSeries(
+      name,
+      seriesEditions.size,
+      coverName = null,
+      kind = seriesEditions.map { it.kind }.distinct().singleOrNull(),
+    )
 }
