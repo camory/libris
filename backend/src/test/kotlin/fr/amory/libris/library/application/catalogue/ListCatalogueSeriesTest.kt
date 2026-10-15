@@ -44,7 +44,7 @@ class ListCatalogueSeriesTest {
     val series = listCatalogueSeries(lea)
 
     // Then
-    series shouldBe listOf(CatalogueSeries("One piece", 2, null, null))
+    series shouldBe listOf(CatalogueSeries("One piece", 2, null, MANGA))
   }
 
   private fun bookshelfOf(name: String, vararg memberships: Membership): Bookshelf =
