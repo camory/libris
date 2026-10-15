@@ -148,11 +148,12 @@ The switch is a segmented choice (U04), which DESIGN gains with this spec:
 On `/catalogue`, nothing changes under the switch: the list of
 `specs/catalogue.md`. On `/catalogue/series`, the list is the catalogue's
 block, one row per series, by name, ignoring case and accents (S1). A row
-shows the cover at the left, 48 by 74, or its stand-in; at its right,
-stacked 6 apart, the name in the row title step and, in `muted`, the count
-(*6 albums*, *1 tome*). No overline: the name is the row's subject. No
-chevron: a row leads nowhere until the series page. The screen asks the
-series anew on each arrival, so an ouvrage added a moment ago counts.
+shows the cover at the left, 48 by 74, named *Couverture de* and the
+series' name, or its stand-in; at its right, stacked 6 apart, the name in
+the row title step and, in `muted`, the count (*6 albums*, *1 tome*). No
+overline: the name is the row's subject. No chevron: a row leads nowhere
+until the series page. The screen asks the series anew on each arrival, so
+an ouvrage added a moment ago counts.
 
 States:
 
