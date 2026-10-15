@@ -20,29 +20,6 @@ import fr.amory.libris.library.fixture.copyOn
 import io.kotest.matchers.shouldBe
 import org.junit.jupiter.api.Test
 
-private val ROMANCE_DAWN = Edition(
-  id = EditionId.new(),
-  isbn = null,
-  kind = MANGA,
-  title = "Romance dawn",
-  subtitle = null,
-  contributions = Contributions.of(emptyList()),
-  series = SeriesEntry("One piece", 1),
-  collection = null,
-  publisher = null,
-  publicationYear = null,
-  language = null,
-  pageCount = null,
-  summary = null,
-  coverName = null,
-)
-
-private val BAGGY = ROMANCE_DAWN.copy(
-  id = EditionId.new(),
-  title = "Aux prises avec Baggy",
-  series = SeriesEntry("One piece", 2),
-)
-
 class ListCatalogueSeriesTest {
   private val lea = ReaderId.new()
   private val sam = ReaderId.new()
@@ -73,3 +50,26 @@ class ListCatalogueSeriesTest {
   private fun bookshelfOf(name: String, vararg memberships: Membership): Bookshelf =
     bookshelfOf(BookshelfId.new(), BookshelfName(name), memberships.toList()).also { bookshelves.insert(it) }
 }
+
+private val ROMANCE_DAWN = Edition(
+  id = EditionId.new(),
+  isbn = null,
+  kind = MANGA,
+  title = "Romance dawn",
+  subtitle = null,
+  contributions = Contributions.of(emptyList()),
+  series = SeriesEntry("One piece", 1),
+  collection = null,
+  publisher = null,
+  publicationYear = null,
+  language = null,
+  pageCount = null,
+  summary = null,
+  coverName = null,
+)
+
+private val BAGGY = ROMANCE_DAWN.copy(
+  id = EditionId.new(),
+  title = "Aux prises avec Baggy",
+  series = SeriesEntry("One piece", 2),
+)
