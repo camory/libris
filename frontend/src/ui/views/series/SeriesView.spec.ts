@@ -3,6 +3,7 @@ import { mount } from "@vue/test-utils";
 import { describe, expect, it } from "vitest";
 import { seriesApiKey, type SeriesApi } from "../../../application/SeriesApi";
 import { FakeSeriesApi } from "../../../fixture/FakeSeriesApi";
+import SeriesRowSkeleton from "../../components/SeriesRowSkeleton.vue";
 import { createLibrisI18n } from "../../i18n";
 import SeriesView from "./SeriesView.vue";
 
@@ -18,6 +19,14 @@ describe("SeriesView", () => {
     expect(
       screen.getByText("Les ouvrages de toutes vos bibliothèques."),
     ).toBeDefined();
+  });
+
+  it("shows five skeleton rows while the series are coming", () => {
+    // When
+    const { wrapper } = open(new FakeSeriesApi([]));
+
+    // Then
+    expect(wrapper.findAllComponents(SeriesRowSkeleton)).toHaveLength(5);
   });
 
   function open(seriesApi: SeriesApi) {

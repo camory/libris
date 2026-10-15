@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { useI18n } from "vue-i18n";
+import SeriesRowSkeleton from "../../components/SeriesRowSkeleton.vue";
 
 const { t } = useI18n();
 </script>
@@ -10,5 +11,11 @@ const { t } = useI18n();
       <h1 class="text-page-title">{{ t("catalogue.title") }}</h1>
       <p class="text-body text-muted">{{ t("catalogue.hint") }}</p>
     </header>
+
+    <div
+      class="divide-y divide-border overflow-hidden rounded-[14px] border border-border bg-surface"
+    >
+      <SeriesRowSkeleton v-for="row in 5" :key="row" />
+    </div>
   </main>
 </template>
