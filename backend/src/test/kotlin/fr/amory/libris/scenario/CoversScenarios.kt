@@ -13,7 +13,7 @@ import fr.amory.libris.scenario.dsl.Libris
 import fr.amory.libris.scenario.dsl.NOT_FOUND
 import fr.amory.libris.scenario.dsl.NewBook
 import fr.amory.libris.scenario.dsl.Reader
-import fr.amory.libris.scenario.dsl.Series
+import fr.amory.libris.scenario.dsl.SeriesEntry
 import fr.amory.libris.scenario.dsl.Size
 import fr.amory.libris.scenario.dsl.Sources
 import fr.amory.libris.scenario.dsl.adds
@@ -365,7 +365,7 @@ class CoversScenarios @Autowired constructor(
         kind = "MANGA",
         title = title,
         authors = listOf(Author("Eiichirō Oda", "WRITER"), Author("Eiichirō Oda", "ARTIST")),
-        series = Series("One piece", volume),
+        series = SeriesEntry("One piece", volume),
         language = "fr",
         coverSource = coverSource,
       )

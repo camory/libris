@@ -3,7 +3,7 @@ package fr.amory.libris.scenario.dsl
 data class Book(
   val isbn13: String?,
   val title: String,
-  val series: Series?,
+  val series: SeriesEntry?,
   val copies: List<Copy>,
   val coverUrl: String?)
 

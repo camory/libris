@@ -6,7 +6,7 @@ data class NewBook(
   val title: String,
   val subtitle: String? = null,
   val authors: List<Author> = emptyList(),
-  val series: Series? = null,
+  val series: SeriesEntry? = null,
   val collection: String? = null,
   val publisher: String? = null,
   val publicationYear: Int? = null,
@@ -22,3 +22,6 @@ fun Reader.adds(book: NewBook, to: Bookshelf): Answer<Copy> =
 
 fun Reader.hasAdded(book: NewBook, to: Bookshelf): Copy =
   adds(book, to).value
+
+fun Reader.hasAdded(vararg books: NewBook, to: Bookshelf): List<Copy> =
+  books.map { hasAdded(it, to) }

@@ -8,7 +8,7 @@ import fr.amory.libris.scenario.dsl.NewBook
 import fr.amory.libris.scenario.dsl.Role
 import fr.amory.libris.scenario.dsl.Role.OWNER
 import fr.amory.libris.scenario.dsl.Role.VIEWER
-import fr.amory.libris.scenario.dsl.Series
+import fr.amory.libris.scenario.dsl.SeriesEntry
 import fr.amory.libris.scenario.dsl.adds
 import fr.amory.libris.scenario.dsl.asks
 import fr.amory.libris.scenario.dsl.bookshelves
@@ -281,7 +281,7 @@ class BookshelvesScenarios @Autowired constructor(private val libris: Libris) {
       kind = "MANGA",
       title = "Romance dawn",
       authors = listOf(Author("Eiichirō Oda", "WRITER")),
-      series = Series("One piece", 1),
+      series = SeriesEntry("One piece", 1),
       publisher = "Glénat",
     )
   }

@@ -8,7 +8,7 @@ import fr.amory.libris.scenario.dsl.Cover
 import fr.amory.libris.scenario.dsl.Libris
 import fr.amory.libris.scenario.dsl.NOT_FOUND
 import fr.amory.libris.scenario.dsl.SOURCES_UNAVAILABLE
-import fr.amory.libris.scenario.dsl.Series
+import fr.amory.libris.scenario.dsl.SeriesEntry
 import fr.amory.libris.scenario.dsl.asks
 import io.kotest.matchers.collections.shouldContainExactlyInAnyOrder
 import io.kotest.matchers.shouldBe
@@ -38,7 +38,7 @@ class FastEntryScenarios @Autowired constructor(
       title = "Romance dawn",
       subtitle = "à l'aube d'une grande aventure",
       authors = listOf(Author("Eiichirō Oda", "WRITER")),
-      series = Series("One piece", 1),
+      series = SeriesEntry("One piece", 1),
       collection = "Shonen manga",
       publisher = "Glénat",
       publicationYear = 2013,

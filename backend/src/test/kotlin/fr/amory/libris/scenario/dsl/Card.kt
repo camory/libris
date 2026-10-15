@@ -7,7 +7,7 @@ data class Card(
   val title: String,
   val subtitle: String?,
   val authors: List<Author>,
-  val series: Series?,
+  val series: SeriesEntry?,
   val collection: String?,
   val publisher: String?,
   val publicationYear: Int?,
