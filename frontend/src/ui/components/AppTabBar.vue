@@ -33,13 +33,17 @@ const { t } = useI18n();
           <IconBarcode class="size-8" />
         </RouterLink>
       </div>
-      <RouterLink
-        to="/catalogue"
-        :aria-label="t('tabs.catalogue')"
-        class="flex h-12 items-center justify-center"
-        exact-active-class="text-accent"
-      >
-        <IconBooks class="size-8" />
+      <RouterLink v-slot="{ href, navigate, isActive }" to="/catalogue" custom>
+        <a
+          :href="href"
+          :aria-label="t('tabs.catalogue')"
+          :aria-current="isActive ? 'page' : undefined"
+          class="flex h-12 items-center justify-center"
+          :class="{ 'text-accent': isActive }"
+          @click="navigate"
+        >
+          <IconBooks class="size-8" />
+        </a>
       </RouterLink>
     </div>
   </nav>

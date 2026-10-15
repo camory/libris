@@ -3,6 +3,7 @@ import BookshelfView from "./views/bookshelf/BookshelfView.vue";
 import CatalogueView from "./views/catalogue/CatalogueView.vue";
 import HomeView from "./views/home/HomeView.vue";
 import IsbnView from "./views/isbn/IsbnView.vue";
+import SeriesView from "./views/series/SeriesView.vue";
 
 export function createLibrisRouter() {
   return createRouter({
@@ -16,7 +17,13 @@ export function createLibrisRouter() {
         ],
       },
       { path: "/isbn", component: IsbnView },
-      { path: "/catalogue", component: CatalogueView },
+      {
+        path: "/catalogue",
+        children: [
+          { path: "", component: CatalogueView },
+          { path: "series", component: SeriesView },
+        ],
+      },
     ],
   });
 }
