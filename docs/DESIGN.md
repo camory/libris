@@ -133,6 +133,15 @@ form, the option's name then its controls and the check; a tap on another
 option moves the form there. While the form is sent the block accepts
 nothing else, and on success it is gone.
 
+**Segmented choice.** Two views of one screen, each at its own address: a
+block 44 tall, full width, on `surface`, a 1.5 `border` outline, radius 12,
+the first block of the content, with no label. Its halves are equal, each
+a link to its view, its name in the `button` step; the current one on
+`accent` in white, inset 2, radius 10, marked `aria-current`, the other in
+`muted`. The halves sit in a `nav` named after what they switch (*Vue du
+catalogue*), as the tabs of the tab bar are links. The tab opens the first
+view; the address, not the app, remembers the view shown.
+
 **Primary button.** One per thing it serves, the field or the card, and
 never two side by side. It is the next step of the screen's flow: *Chercher*
 for the field, *Ajouter à ma bibliothèque* for the card. 50 tall, radius 12,
