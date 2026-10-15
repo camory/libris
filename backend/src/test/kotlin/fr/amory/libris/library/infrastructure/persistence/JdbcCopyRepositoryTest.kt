@@ -213,6 +213,11 @@ class JdbcCopyRepositoryTest @Autowired constructor(
     found.toSet() shouldBe setOf(leasCopy, tomsCopy)
   }
 
+  @Test
+  fun `no bookshelf finds no copy`() {
+    copies.findByBookshelfIds(emptyList()) shouldBe emptyList()
+  }
+
   private fun bookshelfOf(username: String, displayName: String): Bookshelf {
     val reader = readerNamed(username, displayName)
     readers.insert(reader)
