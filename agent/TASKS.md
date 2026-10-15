@@ -45,8 +45,8 @@ the contract (D04).
       they do not belong to, nor for an edition with no series; in no
       promised order, the screen sorting them (D11). Each series counts
       its editions, each once however many copies it has; its kind and
-      cover null until T094 and T095. A
-      read across both contexts, each answering what it knows (D02, D12).
+      cover null until T094 and T095. A read across both contexts, each
+      answering what it knows (D02, D12).
       Unit test of the count, an edition in two copies counted once.
       Realises S1 and S2's count; un-skips the backend test of S1.
 
