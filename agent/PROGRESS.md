@@ -68,3 +68,14 @@ Format:
 - Deviations from the brief: none.
 - Left over: T094 fills each series' kind, T095 its cover, behind the same
   read.
+
+## 2026-10-15 — T093 The reader's series, each counted — reworked
+- Did: `ListCatalogueSeriesTest`'s fixtures, `ROMANCE_DAWN` and `BAGGY`,
+  moved below the class and its `bookshelfOf` helper, in the order the
+  class reaches them; nothing else changed.
+- Decided: nothing; the reviewer's verdict of 2026-10-15 asked what D10's
+  top-down rule already required. The brief's model, `BrowseCatalogueTest`,
+  predates that rule; the older files that put fixtures above their class
+  are named in `agent/gotchas/backend.md`.
+- Deviations from the brief: none.
+- Left over: nothing beyond T094 and T095.
