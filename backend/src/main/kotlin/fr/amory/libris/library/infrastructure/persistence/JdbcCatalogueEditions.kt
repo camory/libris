@@ -45,6 +45,11 @@ private const val FIND_FIRST_OF_EACH_SERIES =
     SELECT DISTINCT ON (edition.series_id) edition.id
     FROM edition
     WHERE edition.series_id IS NOT NULL
+      AND EXISTS (
+          SELECT FROM copy
+          JOIN membership ON membership.bookshelf_id = copy.bookshelf_id
+          WHERE copy.edition_id = edition.id AND membership.reader_id = :readerId
+      )
     ORDER BY edition.series_id, edition.volume_number
     """
 
@@ -65,6 +70,7 @@ class JdbcCatalogueEditions(private val jdbcClient: JdbcClient) : CatalogueEditi
   override fun findFirstOfEachSeries(readerId: ReaderId): Set<EditionId> =
     jdbcClient
       .sql(FIND_FIRST_OF_EACH_SERIES)
+      .param("readerId", readerId.value)
       .query { rs, _ -> EditionId(rs.getObject("id", UUID::class.java)) }
       .set()
 }

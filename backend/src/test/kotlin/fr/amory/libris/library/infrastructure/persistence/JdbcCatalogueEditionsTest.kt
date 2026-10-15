@@ -305,6 +305,19 @@ class JdbcCatalogueEditionsTest @Autowired constructor(
     firsts shouldBe setOf(romanceDawn.id, asterixLeGaulois.id)
   }
 
+  @Test
+  fun `the first of a series is the first the reader holds`() {
+    // Given
+    heldOn(tomsBookshelf, edition("Astérix le Gaulois", "Astérix", 1))
+    val laSerpeDOr = heldOn(leasBookshelf, edition("La serpe d'or", "Astérix", 2))
+
+    // When
+    val firsts = catalogueEditions.findFirstOfEachSeries(lea.id)
+
+    // Then
+    firsts shouldBe setOf(laSerpeDOr.id)
+  }
+
   private fun titlesOf(page: EditionIdPage): List<String> {
     val titles = editions.findByIds(page.editionIds).associate { it.id to it.title }
     return page.editionIds.map { titles.getValue(it) }
