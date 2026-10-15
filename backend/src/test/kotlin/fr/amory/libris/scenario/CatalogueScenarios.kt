@@ -3,7 +3,7 @@ package fr.amory.libris.scenario
 import fr.amory.libris.scenario.dsl.Author
 import fr.amory.libris.scenario.dsl.Libris
 import fr.amory.libris.scenario.dsl.NewBook
-import fr.amory.libris.scenario.dsl.Series
+import fr.amory.libris.scenario.dsl.SeriesEntry
 import fr.amory.libris.scenario.dsl.catalogue
 import fr.amory.libris.scenario.dsl.hasAdded
 import io.kotest.matchers.nulls.shouldNotBeNull
@@ -36,8 +36,8 @@ class CatalogueScenarios @Autowired constructor(private val libris: Libris) {
       "Romance dawn",
       "Aux prises avec Baggy et ses hommes",
     )
-    page.books[0].series shouldBe Series("Astérix", 1)
-    page.books[2].series shouldBe Series("Astérix", null)
+    page.books[0].series shouldBe SeriesEntry("Astérix", 1)
+    page.books[2].series shouldBe SeriesEntry("Astérix", null)
     page.books[3].series shouldBe null
     page.books[4].copies.map { it.bookshelf.name } shouldBe listOf("Bibliothèque de Léa", "Bibliothèque de Léa")
     page.books.flatMap { it.copies }.map { it.bookshelf.id } shouldBe List(7) { leasBookshelf.id }
@@ -91,7 +91,7 @@ class CatalogueScenarios @Autowired constructor(private val libris: Libris) {
         kind = "MANGA",
         title = title,
         authors = listOf(Author("Eiichirō Oda", "WRITER"), Author("Eiichirō Oda", "ARTIST")),
-        series = Series(series, volume),
+        series = SeriesEntry(series, volume),
         language = "fr",
       )
 
@@ -101,7 +101,7 @@ class CatalogueScenarios @Autowired constructor(private val libris: Libris) {
         kind = "BD",
         title = title,
         authors = listOf(Author("René Goscinny", "WRITER"), Author("Albert Uderzo", "ARTIST")),
-        series = Series(series, volume),
+        series = SeriesEntry(series, volume),
         language = "fr",
       )
 

@@ -9,7 +9,7 @@ import fr.amory.libris.scenario.dsl.Copy
 import fr.amory.libris.scenario.dsl.Libris
 import fr.amory.libris.scenario.dsl.NewBook
 import fr.amory.libris.scenario.dsl.Reader
-import fr.amory.libris.scenario.dsl.Series
+import fr.amory.libris.scenario.dsl.SeriesEntry
 import fr.amory.libris.scenario.dsl.Sources
 import fr.amory.libris.scenario.dsl.adds
 import fr.amory.libris.scenario.dsl.asks
@@ -169,7 +169,7 @@ class BookshelfScenarios @Autowired constructor(
         title = title,
         subtitle = subtitle,
         authors = listOf(Author("Eiichirō Oda", "WRITER"), Author("Eiichirō Oda", "ARTIST")),
-        series = Series("One piece", volume),
+        series = SeriesEntry("One piece", volume),
         collection = "Shonen manga",
         publisher = "Glénat",
         publicationYear = 2013,
