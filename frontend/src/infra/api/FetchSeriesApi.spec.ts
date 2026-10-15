@@ -1,7 +1,11 @@
-import { describe, expect, inject, it } from "vitest";
+import { afterEach, describe, expect, inject, it, vi } from "vitest";
 import { FetchSeriesApi } from "./FetchSeriesApi";
 
 describe("FetchSeriesApi", () => {
+  afterEach(() => {
+    vi.unstubAllGlobals();
+  });
+
   it("lists the series of the reader's catalogue", async () => {
     // Given
     const api = new FetchSeriesApi(inject("mockBaseUrl"));
@@ -19,6 +23,22 @@ describe("FetchSeriesApi", () => {
         kind: aKindOrNull,
       });
     }
+  });
+
+  it("fails when Libris answers anything but the list", async () => {
+    // Given
+    const api = new FetchSeriesApi("http://libris.invalid");
+    vi.stubGlobal("fetch", () =>
+      Promise.resolve(
+        new Response(JSON.stringify({ status: 500 }), { status: 500 }),
+      ),
+    );
+
+    // When
+    const series = api.owned();
+
+    // Then
+    await expect(series).rejects.toThrow("The series answered 500");
   });
 });
 

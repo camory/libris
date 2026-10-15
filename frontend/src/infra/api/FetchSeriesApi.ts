@@ -16,6 +16,9 @@ export class FetchSeriesApi implements SeriesApi {
     const response = await fetch(`${this.baseUrl}/api/v1/series`, {
       headers: { Accept: "application/json, application/problem+json" },
     });
+    if (response.status !== 200) {
+      throw Error(`The series answered ${response.status}`);
+    }
     const body = (await response.json()) as SeriesResponse[];
     return body.map((series) => ({
       name: series.name,
