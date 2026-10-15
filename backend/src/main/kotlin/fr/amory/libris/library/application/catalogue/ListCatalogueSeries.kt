@@ -1,6 +1,5 @@
 package fr.amory.libris.library.application.catalogue
 
-import fr.amory.libris.bibliography.domain.Kind.MANGA
 import fr.amory.libris.bibliography.domain.edition.EditionRepository
 import fr.amory.libris.library.domain.bookshelf.BookshelfRepository
 import fr.amory.libris.library.domain.copy.CopyRepository
@@ -17,9 +16,8 @@ class ListCatalogueSeries(
     val readersCopies = copies.findByBookshelfIds(readersBookshelves.map { it.id })
     return editions
       .findByIds(readersCopies.map { it.editionId })
-      .mapNotNull { edition -> edition.series?.name }
-      .groupingBy { it }
-      .eachCount()
-      .map { (name, volumeCount) -> CatalogueSeries(name, volumeCount, null, MANGA) }
+      .mapNotNull { edition -> edition.series?.let { it.name to edition } }
+      .groupBy({ (name) -> name }, { (_, edition) -> edition })
+      .map { (name, seriesEditions) -> CatalogueSeries(name, seriesEditions.size, null, seriesEditions.first().kind) }
   }
 }
