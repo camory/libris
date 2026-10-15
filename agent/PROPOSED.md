@@ -468,3 +468,7 @@
   constructor then falls to six parameters and loses its
   `@Suppress("LongParameterList")` (found 2026-10-14 by T091, whose
   `Clock` made it seven).
+- Backend tests: move the top-level fixtures below the class and its
+  helpers in `BrowseCatalogueTest`, `LookupIsbnForReaderTest`,
+  `LookupEditionByIsbnTest`, `AwaitedCoverTest` and `ProblemAdviceTest`,
+  as D10's top-down order asks (found 2026-10-15 by T093's review).

@@ -55,3 +55,27 @@ Format:
   unread until the stub, detekt's `UnusedPrivateProperty` fails it.
 - Left over: T093 finds the reader's series and their count behind the
   same use case, red on S1.
+
+## 2026-10-15 — T093 The reader's series, each counted — done
+- Did: `ListCatalogueSeries` reads the reader's bookshelves, the copies on
+  them through the new `CopyRepository.findByBookshelfIds`, and their
+  editions, and answers one series per name with its number of editions;
+  S1 The reader's series un-skipped and green.
+- Decided: the series are counted with `groupingBy { name }.eachCount()`
+  over the editions `findByIds` answers, each once whatever the duplicates
+  of the ids given, so no `distinct()` on the edition ids; the red of S1 is
+  a commit of its own, as in T092.
+- Deviations from the brief: none.
+- Left over: T094 fills each series' kind, T095 its cover, behind the same
+  read.
+
+## 2026-10-15 — T093 The reader's series, each counted — reworked
+- Did: `ListCatalogueSeriesTest`'s fixtures, `ROMANCE_DAWN` and `BAGGY`,
+  moved below the class and its `bookshelfOf` helper, in the order the
+  class reaches them; nothing else changed.
+- Decided: nothing; the reviewer's verdict of 2026-10-15 asked what D10's
+  top-down rule already required. The brief's model, `BrowseCatalogueTest`,
+  predates that rule; the older files that put fixtures above their class
+  are named in `agent/gotchas/backend.md`.
+- Deviations from the brief: none.
+- Left over: nothing beyond T094 and T095.
