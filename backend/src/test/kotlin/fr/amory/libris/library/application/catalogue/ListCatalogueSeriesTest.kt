@@ -16,6 +16,7 @@ import fr.amory.libris.library.domain.bookshelf.MembershipRole.OWNER
 import fr.amory.libris.library.domain.bookshelf.MembershipRole.VIEWER
 import fr.amory.libris.library.domain.reader.ReaderId
 import fr.amory.libris.library.fixture.BookshelvesInMemory
+import fr.amory.libris.library.fixture.CatalogueEditionsAnswering
 import fr.amory.libris.library.fixture.CopiesInMemory
 import fr.amory.libris.library.fixture.bookshelfOf
 import fr.amory.libris.library.fixture.copyOn
@@ -36,8 +37,13 @@ class ListCatalogueSeriesTest {
     it.insert(LASTMAN_2)
     it.insert(BLACKSAD_1)
     it.insert(BLACKSAD_2)
+    it.insert(NARUTO_1)
+    it.insert(NARUTO_2)
   }
-  private val listCatalogueSeries = ListCatalogueSeries(bookshelves, copies, editions)
+  private val catalogueEditions = CatalogueEditionsAnswering(
+    firstOfEachSeries = setOf(ROMANCE_DAWN.id, ASTERIX_LE_GAULOIS.id, LASTMAN_1.id, BLACKSAD_1.id, NARUTO_1.id),
+  )
+  private val listCatalogueSeries = ListCatalogueSeries(catalogueEditions, bookshelves, copies, editions)
 
   @Test
   fun `a series counts its editions, each once however many copies it has`() {
@@ -95,6 +101,20 @@ class ListCatalogueSeriesTest {
 
     // Then
     series shouldBe listOf(CatalogueSeries("Blacksad", 2, BLACKSAD_1_COVER, BD))
+  }
+
+  @Test
+  fun `a series whose first edition has no cover answers none`() {
+    // Given
+    val leasBookshelf = bookshelfOf("Bibliothèque de Léa", Membership(lea, OWNER))
+    copies.insert(copyOn(leasBookshelf, NARUTO_1.id))
+    copies.insert(copyOn(leasBookshelf, NARUTO_2.id))
+
+    // When
+    val series = listCatalogueSeries(lea)
+
+    // Then
+    series shouldBe listOf(CatalogueSeries("Naruto", 2, null, MANGA))
   }
 
   private fun bookshelfOf(name: String, vararg memberships: Membership): Bookshelf =
@@ -165,4 +185,19 @@ private val BLACKSAD_2 = BLACKSAD_1.copy(
   title = "Arctic-Nation",
   series = SeriesEntry("Blacksad", 2),
   coverName = null,
+)
+
+private val NARUTO_2_COVER = CoverName("0d3e5a7c9f1b2d4e6a8c0f3b5d7e9a1c4f6b8d0e2a5c7f9b1d3e6a8c0f2b4d7e")
+
+private val NARUTO_1 = ROMANCE_DAWN.copy(
+  id = EditionId.new(),
+  title = "Naruto Uzumaki",
+  series = SeriesEntry("Naruto", 1),
+)
+
+private val NARUTO_2 = NARUTO_1.copy(
+  id = EditionId.new(),
+  title = "Un client embarrassant",
+  series = SeriesEntry("Naruto", 2),
+  coverName = NARUTO_2_COVER,
 )
