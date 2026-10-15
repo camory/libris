@@ -55,6 +55,26 @@ describe("SeriesView", () => {
     expect(wrapper.findAllComponents(IconBook)).toHaveLength(1);
   });
 
+  it("asks the series on each arrival", async () => {
+    // Given
+    let asks = 0;
+    const seriesApi: SeriesApi = {
+      owned: () => {
+        asks += 1;
+        return Promise.resolve([]);
+      },
+    };
+    open(seriesApi).wrapper.unmount();
+    await flushPromises();
+
+    // When
+    open(seriesApi);
+    await flushPromises();
+
+    // Then
+    expect(asks).toBe(2);
+  });
+
   function open(seriesApi: SeriesApi) {
     const wrapper = mount(SeriesView, {
       global: {
