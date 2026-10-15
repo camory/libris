@@ -26,7 +26,11 @@ class ListCatalogueSeries(
     CatalogueSeries(
       name,
       seriesEditions.size,
-      seriesEditions.minWith(compareBy(nullsLast()) { it.series?.volumeNumber }).coverName,
+      seriesEditions.minWith(SHELF_ORDER).coverName,
       kind = seriesEditions.map { it.kind }.distinct().singleOrNull(),
     )
 }
+
+private val SHELF_ORDER =
+  compareBy<Edition, Int?>(nullsLast()) { it.series?.volumeNumber }
+    .thenBy { it.title }

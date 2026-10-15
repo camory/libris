@@ -40,6 +40,8 @@ class ListCatalogueSeriesTest {
     it.insert(BLAKE_ET_MORTIMER_2)
     it.insert(LE_JOURNAL_D_UN_INGENU)
     it.insert(SPIROU_ET_FANTASIO_1)
+    it.insert(LES_MURAILLES_DE_SAMARIS)
+    it.insert(LA_FIEVRE_D_URBICANDE)
   }
   private val listCatalogueSeries = ListCatalogueSeries(bookshelves, copies, editions)
 
@@ -127,6 +129,20 @@ class ListCatalogueSeriesTest {
 
     // Then
     series shouldBe listOf(CatalogueSeries("Spirou et Fantasio", 2, SPIROU_ET_FANTASIO_1_COVER, BD))
+  }
+
+  @Test
+  fun `a series without tomes has the cover of its first edition by title`() {
+    // Given
+    val leasBookshelf = bookshelfOf("Bibliothèque de Léa", Membership(lea, OWNER))
+    copies.insert(copyOn(leasBookshelf, LES_MURAILLES_DE_SAMARIS.id))
+    copies.insert(copyOn(leasBookshelf, LA_FIEVRE_D_URBICANDE.id))
+
+    // When
+    val series = listCatalogueSeries(lea)
+
+    // Then
+    series shouldBe listOf(CatalogueSeries("Les Cités obscures", 2, LA_FIEVRE_D_URBICANDE_COVER, BD))
   }
 
   private fun bookshelfOf(name: String, vararg memberships: Membership): Bookshelf =
@@ -232,4 +248,21 @@ private val SPIROU_ET_FANTASIO_1 = LE_JOURNAL_D_UN_INGENU.copy(
   title = "4 aventures de Spirou et Fantasio",
   series = SeriesEntry("Spirou et Fantasio", 1),
   coverName = SPIROU_ET_FANTASIO_1_COVER,
+)
+
+private val LES_MURAILLES_DE_SAMARIS_COVER = CoverName("5e".repeat(32))
+
+private val LES_MURAILLES_DE_SAMARIS = THORGAL_1.copy(
+  id = EditionId.new(),
+  title = "Les murailles de Samaris",
+  series = SeriesEntry("Les Cités obscures", null),
+  coverName = LES_MURAILLES_DE_SAMARIS_COVER,
+)
+
+private val LA_FIEVRE_D_URBICANDE_COVER = CoverName("6f".repeat(32))
+
+private val LA_FIEVRE_D_URBICANDE = LES_MURAILLES_DE_SAMARIS.copy(
+  id = EditionId.new(),
+  title = "La fièvre d'Urbicande",
+  coverName = LA_FIEVRE_D_URBICANDE_COVER,
 )
