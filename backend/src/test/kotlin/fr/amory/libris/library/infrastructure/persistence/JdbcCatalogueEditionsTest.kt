@@ -290,6 +290,90 @@ class JdbcCatalogueEditionsTest @Autowired constructor(
     page shouldBe EditionIdPage(listOf(edition.id), null)
   }
 
+  @Test
+  fun `the first of each series is its first tome`() {
+    // Given
+    heldOn(leasBookshelf, edition("Aux prises avec Baggy", "One piece", 2))
+    val romanceDawn = heldOn(leasBookshelf, edition("Romance dawn", "One piece", 1))
+    heldOn(leasBookshelf, edition("La serpe d'or", "Astérix", 2))
+    val asterixLeGaulois = heldOn(leasBookshelf, edition("Astérix le Gaulois", "Astérix", 1))
+
+    // When
+    val firsts = catalogueEditions.findFirstOfEachSeries(lea.id)
+
+    // Then
+    firsts shouldBe setOf(romanceDawn.id, asterixLeGaulois.id)
+  }
+
+  @Test
+  fun `the first of a series is the first the reader holds`() {
+    // Given
+    heldOn(tomsBookshelf, edition("Astérix le Gaulois", "Astérix", 1))
+    val laSerpeDOr = heldOn(leasBookshelf, edition("La serpe d'or", "Astérix", 2))
+
+    // When
+    val firsts = catalogueEditions.findFirstOfEachSeries(lea.id)
+
+    // Then
+    firsts shouldBe setOf(laSerpeDOr.id)
+  }
+
+  @Test
+  fun `the first of a series has a tome when one of its editions has one`() {
+    // Given
+    heldOn(leasBookshelf, edition("Astérix et ses amis", "Astérix"))
+    val asterixLeGaulois = heldOn(leasBookshelf, edition("Astérix le Gaulois", "Astérix", 1))
+
+    // When
+    val firsts = catalogueEditions.findFirstOfEachSeries(lea.id)
+
+    // Then
+    firsts shouldBe setOf(asterixLeGaulois.id)
+  }
+
+  @Test
+  fun `without a tome, the first of a series is the first by title`() {
+    // Given
+    val lesser = EditionId(UUID.fromString(LESSER_TWIN))
+    val greater = EditionId(UUID.fromString(GREATER_TWIN))
+    heldOn(leasBookshelf, edition("Le Petit Nicolas", "Le Petit Nicolas", id = lesser))
+    val alaRecre = heldOn(leasBookshelf, edition("À la récré du Petit Nicolas", "Le Petit Nicolas", id = greater))
+
+    // When
+    val firsts = catalogueEditions.findFirstOfEachSeries(lea.id)
+
+    // Then
+    firsts shouldBe setOf(alaRecre.id)
+  }
+
+  @Test
+  fun `a title that differs at a space comes before the longer word`() {
+    // Given
+    heldOn(leasBookshelf, edition("Les cigares du pharaon", "Les classiques"))
+    val leSecret = heldOn(leasBookshelf, edition("Le secret de l'Espadon", "Les classiques"))
+
+    // When
+    val firsts = catalogueEditions.findFirstOfEachSeries(lea.id)
+
+    // Then
+    firsts shouldBe setOf(leSecret.id)
+  }
+
+  @Test
+  fun `editions alike but for their id, the first of a series is the lesser id`() {
+    // Given
+    val lesser = EditionId(UUID.fromString(LESSER_TWIN))
+    val greater = EditionId(UUID.fromString(GREATER_TWIN))
+    heldOn(leasBookshelf, edition("Romance dawn", "One piece", 1, greater))
+    heldOn(leasBookshelf, edition("Romance dawn", "One piece", 1, lesser))
+
+    // When
+    val firsts = catalogueEditions.findFirstOfEachSeries(lea.id)
+
+    // Then
+    firsts shouldBe setOf(lesser)
+  }
+
   private fun titlesOf(page: EditionIdPage): List<String> {
     val titles = editions.findByIds(page.editionIds).associate { it.id to it.title }
     return page.editionIds.map { titles.getValue(it) }

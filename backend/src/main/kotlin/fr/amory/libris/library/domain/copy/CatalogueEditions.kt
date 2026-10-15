@@ -5,4 +5,6 @@ import fr.amory.libris.library.domain.reader.ReaderId
 
 interface CatalogueEditions {
   fun findPage(readerId: ReaderId, after: EditionId?, size: Int): EditionIdPage
+
+  fun findFirstOfEachSeries(readerId: ReaderId): Set<EditionId>
 }

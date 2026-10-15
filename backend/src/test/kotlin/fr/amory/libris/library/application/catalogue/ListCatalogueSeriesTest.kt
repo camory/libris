@@ -4,6 +4,7 @@ import fr.amory.libris.bibliography.domain.Contributions
 import fr.amory.libris.bibliography.domain.Kind.BD
 import fr.amory.libris.bibliography.domain.Kind.MANGA
 import fr.amory.libris.bibliography.domain.SeriesEntry
+import fr.amory.libris.bibliography.domain.cover.CoverName
 import fr.amory.libris.bibliography.domain.edition.Edition
 import fr.amory.libris.bibliography.domain.edition.EditionId
 import fr.amory.libris.bibliography.fixture.EditionsInMemory
@@ -15,6 +16,7 @@ import fr.amory.libris.library.domain.bookshelf.MembershipRole.OWNER
 import fr.amory.libris.library.domain.bookshelf.MembershipRole.VIEWER
 import fr.amory.libris.library.domain.reader.ReaderId
 import fr.amory.libris.library.fixture.BookshelvesInMemory
+import fr.amory.libris.library.fixture.CatalogueEditionsAnswering
 import fr.amory.libris.library.fixture.CopiesInMemory
 import fr.amory.libris.library.fixture.bookshelfOf
 import fr.amory.libris.library.fixture.copyOn
@@ -33,8 +35,15 @@ class ListCatalogueSeriesTest {
     it.insert(LA_SERPE_D_OR)
     it.insert(LASTMAN_1)
     it.insert(LASTMAN_2)
+    it.insert(BLACKSAD_1)
+    it.insert(BLACKSAD_2)
+    it.insert(NARUTO_1)
+    it.insert(NARUTO_2)
   }
-  private val listCatalogueSeries = ListCatalogueSeries(bookshelves, copies, editions)
+  private val catalogueEditions = CatalogueEditionsAnswering(
+    firstOfEachSeries = setOf(ROMANCE_DAWN.id, ASTERIX_LE_GAULOIS.id, LASTMAN_1.id, BLACKSAD_1.id, NARUTO_1.id),
+  )
+  private val listCatalogueSeries = ListCatalogueSeries(catalogueEditions, bookshelves, copies, editions)
 
   @Test
   fun `a series counts its editions, each once however many copies it has`() {
@@ -78,6 +87,34 @@ class ListCatalogueSeriesTest {
 
     // Then
     series shouldBe listOf(CatalogueSeries("Lastman", 2, null, null))
+  }
+
+  @Test
+  fun `a series answers the cover of its first edition`() {
+    // Given
+    val leasBookshelf = bookshelfOf("Bibliothèque de Léa", Membership(lea, OWNER))
+    copies.insert(copyOn(leasBookshelf, BLACKSAD_1.id))
+    copies.insert(copyOn(leasBookshelf, BLACKSAD_2.id))
+
+    // When
+    val series = listCatalogueSeries(lea)
+
+    // Then
+    series shouldBe listOf(CatalogueSeries("Blacksad", 2, BLACKSAD_1_COVER, BD))
+  }
+
+  @Test
+  fun `a series whose first edition has no cover answers none`() {
+    // Given
+    val leasBookshelf = bookshelfOf("Bibliothèque de Léa", Membership(lea, OWNER))
+    copies.insert(copyOn(leasBookshelf, NARUTO_1.id))
+    copies.insert(copyOn(leasBookshelf, NARUTO_2.id))
+
+    // When
+    val series = listCatalogueSeries(lea)
+
+    // Then
+    series shouldBe listOf(CatalogueSeries("Naruto", 2, null, MANGA))
   }
 
   private fun bookshelfOf(name: String, vararg memberships: Membership): Bookshelf =
@@ -132,4 +169,35 @@ private val LASTMAN_2 = LASTMAN_1.copy(
   kind = MANGA,
   title = "Lastman 2",
   series = SeriesEntry("Lastman", 2),
+)
+
+private val BLACKSAD_1_COVER = CoverName("6f2b0c4e8a1d3f5b7c9e0a2d4f6b8c1e3a5d7f9b0c2e4a6d8f1b3c5e7a9d0f2b")
+
+private val BLACKSAD_1 = ASTERIX_LE_GAULOIS.copy(
+  id = EditionId.new(),
+  title = "Quelque part entre les ombres",
+  series = SeriesEntry("Blacksad", 1),
+  coverName = BLACKSAD_1_COVER,
+)
+
+private val BLACKSAD_2 = BLACKSAD_1.copy(
+  id = EditionId.new(),
+  title = "Arctic-Nation",
+  series = SeriesEntry("Blacksad", 2),
+  coverName = null,
+)
+
+private val NARUTO_2_COVER = CoverName("0d3e5a7c9f1b2d4e6a8c0f3b5d7e9a1c4f6b8d0e2a5c7f9b1d3e6a8c0f2b4d7e")
+
+private val NARUTO_1 = ROMANCE_DAWN.copy(
+  id = EditionId.new(),
+  title = "Naruto Uzumaki",
+  series = SeriesEntry("Naruto", 1),
+)
+
+private val NARUTO_2 = NARUTO_1.copy(
+  id = EditionId.new(),
+  title = "Un client embarrassant",
+  series = SeriesEntry("Naruto", 2),
+  coverName = NARUTO_2_COVER,
 )
