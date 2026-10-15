@@ -95,9 +95,7 @@ Read whole by a run that changes `backend/`, after `every-run.md`.
   Older unmarked cases (`NewBookRequestTest`'s first five) are not a model.
 - A test file's top-level fixtures sit below its class and the class's
   helpers, in the order the class reaches them; the reviewer blocks one
-  above. Older files put them above the class and are not a model for
-  where they sit: `BrowseCatalogueTest`, `LookupIsbnForReaderTest`,
-  `LookupEditionByIsbnTest`, `AwaitedCoverTest`, `ProblemAdviceTest`.
+  above. A few older files put them above the class: they are not a model.
 - A test written as an expression body, `fun \`case\`() = x shouldBe y`,
   returns what `shouldBe` answers, not `Unit`, and JUnit silently skips a
   non-`void` test method: the run is green with the case never run. A
