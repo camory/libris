@@ -5,7 +5,9 @@ import fr.amory.libris.library.domain.copy.CatalogueEditions
 import fr.amory.libris.library.domain.copy.EditionIdPage
 import fr.amory.libris.library.domain.reader.ReaderId
 
-class CatalogueEditionsAnswering(private val answer: EditionIdPage) : CatalogueEditions {
+class CatalogueEditionsAnswering(
+  private val answer: EditionIdPage = EditionIdPage(emptyList(), null),
+  private val firstOfEachSeries: Set<EditionId> = emptySet()) : CatalogueEditions {
   private val pagesAsked = mutableListOf<Triple<ReaderId, EditionId?, Int>>()
 
   val asked: List<Triple<ReaderId, EditionId?, Int>> get() = pagesAsked.toList()
@@ -14,4 +16,6 @@ class CatalogueEditionsAnswering(private val answer: EditionIdPage) : CatalogueE
     pagesAsked += Triple(readerId, after, size)
     return answer
   }
+
+  override fun findFirstOfEachSeries(readerId: ReaderId): Set<EditionId> = firstOfEachSeries
 }

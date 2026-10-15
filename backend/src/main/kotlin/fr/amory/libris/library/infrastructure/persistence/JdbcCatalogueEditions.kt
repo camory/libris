@@ -40,6 +40,14 @@ private const val FIND_PAGE =
     LIMIT :size
     """
 
+private const val FIND_FIRST_OF_EACH_SERIES =
+  """
+    SELECT DISTINCT ON (edition.series_id) edition.id
+    FROM edition
+    WHERE edition.series_id IS NOT NULL
+    ORDER BY edition.series_id, edition.volume_number
+    """
+
 @Repository
 class JdbcCatalogueEditions(private val jdbcClient: JdbcClient) : CatalogueEditions {
   override fun findPage(readerId: ReaderId, after: EditionId?, size: Int): EditionIdPage {
@@ -53,4 +61,10 @@ class JdbcCatalogueEditions(private val jdbcClient: JdbcClient) : CatalogueEditi
     val page = following.take(size)
     return EditionIdPage(page, if (following.size > size) page.last() else null)
   }
+
+  override fun findFirstOfEachSeries(readerId: ReaderId): Set<EditionId> =
+    jdbcClient
+      .sql(FIND_FIRST_OF_EACH_SERIES)
+      .query { rs, _ -> EditionId(rs.getObject("id", UUID::class.java)) }
+      .set()
 }
