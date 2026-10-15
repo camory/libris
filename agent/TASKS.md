@@ -16,6 +16,109 @@
 >
 > Follow-ups and ideas go to `agent/PROPOSED.md`, never here.
 
+## Series list — specs/series-list.md
+
+Contract: release `v0.12.1` of `camory/libris-api`, after `v0.11.0`,
+superseding `v0.12.0`, which nothing pins: one operation, the reader's
+series in no promised order, and two schemas added, `Kind` and `Series`;
+the edition's `Series` renamed `SeriesEntry`, which changes no byte. An
+operation is added, so the backend goes first. Its pin moves once, in T092,
+the thinnest answer that serves the operation; T093 to T095 complete it,
+T093 red on S1's scenario test, T094 and T095 on the unit tests the spec
+gives S2 and S3, which have no backend scenario test. The frontend pin
+moves from `v0.11.0` in T096, once T095 is deployed. No other task touches
+the contract (D04).
+
+- [ ] T092 Backend: the series list on `v0.12.1`, the thinnest answer.
+      `ApiContractTest` pins `v0.12.1`, the backend's one bump (D04).
+      Libris serves the series of the reader's catalogue, an array of
+      `Series`, each its `name`, `volumeCount`, `coverUrl` and `kind`, and
+      answers none to every reader until T093 finds them. Contracteer
+      verifies the new operation's generated case, every other answer
+      unchanged (D07, D11).
+      The backend's walking skeleton, the thinnest scenario; realises S5;
+      un-skips the backend test of S5.
+
+- [ ] T093 Backend: the reader's series, each counted.
+      Libris answers each series with an edition on a bookshelf the reader
+      belongs to, the catalogue's rule, once each; none for a bookshelf
+      they do not belong to, nor for an edition with no series; in no
+      promised order, the screen sorting them (D11). Each series counts
+      its editions, each once however many copies it has; its kind and
+      cover null until T094 and T095. A read across both contexts, each
+      answering what it knows (D02, D12).
+      Unit test of the count, an edition in two copies counted once.
+      Realises S1 and S2's count; un-skips the backend test of S1.
+
+- [ ] T094 Backend: the kind a series shares.
+      Each series of T093 answers the kind every one of its editions
+      shares, `BD`, `MANGA` or `BOOK`, or none when two of them differ
+      (PRD §3). Unit tests of the shared kind and of the count, one per
+      case: a BD series, a manga series, a series mixing a BD and a manga,
+      answered none; S2's first red, the spec giving it no backend
+      scenario test. Realises S2.
+
+- [ ] T095 Backend: the cover of a series.
+      Each series of T093 answers the cover of its first edition in the
+      order a shelf reads, catalogue S1's: by tome, an edition without a
+      tome after the numbered tomes, then by title; its address as a
+      `Book`'s, or none when that edition has none, another edition's
+      never standing in (D11, a pick by position). Unit tests of the cover
+      rule, one per case: the first tome has a cover; the first tome has
+      none and the second has one, answered none; no edition has a tome,
+      the first by title giving the cover; S3's first red, the spec giving
+      it no backend scenario test. Realises S3.
+
+- [ ] T096 Frontend: the series of the catalogue, none yet, on `v0.12.1`.
+      Precondition (human): T095 deployed (D04); the frontend piece of the
+      spec, its skipped scenario tests over the fakes with the port, fake
+      and domain types they name (D07).
+      `vitest.global-setup.ts` pins `v0.12.1`, the frontend's one bump
+      (D04). `/catalogue/series` shows the catalogue's header unchanged,
+      the *Catalogue* tab in `accent`, and asks the series anew on each
+      arrival: five skeleton rows, a cover and two lines each, until the
+      answer; for none, the outlined book icon over *Les séries de vos
+      bibliothèques apparaîtront ici.* (U03, U05, U08). Its client tested
+      against `contracteer mock` (D07).
+      The frontend's walking skeleton, the thinnest scenario; realises S5;
+      un-skips the frontend test of S5.
+
+- [ ] T097 Frontend: the reader's series listed.
+      In place of the empty state, the catalogue's block, a row per series
+      by name, ignoring case and accents, in the reader's language, with
+      `nameOrder`, whatever the order of the answer (D11): the cover at
+      the left, 48 by 74, or its stand-in; at its right, 6 apart, the name
+      in the row title step and, in `muted`, the count, *1 album*, *6
+      albums* for a BD series, *1 tome*, *3 tomes* otherwise; no overline,
+      no chevron. The series' kind chooses the word in its key, every word
+      from the `fr` catalogue (U02, U05, U06, U08). Unit test of the
+      order: an answer out of order, shown by name.
+      Realises S1, S2 and S3 on the frontend; un-skips the frontend tests
+      of S1, of S2, its three cases, and of S3.
+
+- [ ] T098 Frontend: Libris unavailable on the series.
+      When the series do not come, in place of the list *Erreur lors du
+      chargement, veuillez réessayer plus tard.* with the alert icon, and
+      nothing listed; every word from the `fr` catalogue (U05, U07, U08).
+      Realises S6; un-skips the frontend test of S6.
+
+- [ ] T099 Frontend: the reader switches the view.
+      On `/catalogue` and `/catalogue/series`, the first block of the
+      content is the segmented choice: *Ouvrages* then *Séries*, each a
+      link to its view, in a `nav` named *Vue du catalogue*, the view shown
+      on `accent` and marked current; the *Catalogue* tab still opens
+      `/catalogue`, and nothing under the switch changes there (U03, U04,
+      U08). The phone's back button, from the series to the ouvrages, is
+      the *Done*'s to check.
+      Realises S4; un-skips the frontend test of S4.
+
+*Done (Tophe, on the Pixel, from the installed app on staging): open
+Catalogue and see Ouvrages current; choose Séries and read One Piece with
+its count in tomes and the cover of its first tome, and a BD series counted
+in albums, adding one first if staging holds none; go back with the phone's
+button and land on the ouvrages; on the second account of the family,
+choose Séries and read the empty sentence.*
+
 ## Done
 
 - Phase 0 — Foundations, T001 to T012, done 2026-09-10 with `v0.1.3` on the
@@ -79,9 +182,10 @@
   beyond creating a bookshelf, adding a member and choosing the default —
   removing a member, changing a member's role, adding to a bookshelf other
   than the default, moving and lending a copy, its condition and
-  acquisition date — §4.4 reading, §4.5 series tracking, §4.6 wishlist,
-  §4.9 import and export, §4.10 administration, and the offline browsing of
-  §4.8.
+  acquisition date — §4.4 reading, §4.5 beyond the series list — the
+  series page, its gaps, the number of published volumes, the series
+  filter and renaming a series — §4.6 wishlist, §4.9 import and export,
+  §4.10 administration, and the offline browsing of §4.8.
 - **A refusal the bookshelves screens never provoke.** The spec says what
   each form shows when Libris does not answer (S9), and the taken name
   (S3), not what it shows when Libris refuses otherwise: a blank name the

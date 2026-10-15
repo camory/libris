@@ -205,4 +205,11 @@ tome without a cover are the tests' to show.
 
 ## Tasks
 
-Filled by the planner.
+- T092 — S5, the backend on `v0.12.1` — backend
+- T093 — S1, S2 the count — backend
+- T094 — S2 the shared kind — backend
+- T095 — S3 — backend
+- T096 — S5, the frontend on `v0.12.1` — frontend
+- T097 — S1, S2, S3 — frontend
+- T098 — S6 — frontend
+- T099 — S4 — frontend
