@@ -359,6 +359,21 @@ class JdbcCatalogueEditionsTest @Autowired constructor(
     firsts shouldBe setOf(leSecret.id)
   }
 
+  @Test
+  fun `editions alike but for their id, the first of a series is the lesser id`() {
+    // Given
+    val lesser = EditionId(UUID.fromString(LESSER_TWIN))
+    val greater = EditionId(UUID.fromString(GREATER_TWIN))
+    heldOn(leasBookshelf, edition("Romance dawn", "One piece", 1, greater))
+    heldOn(leasBookshelf, edition("Romance dawn", "One piece", 1, lesser))
+
+    // When
+    val firsts = catalogueEditions.findFirstOfEachSeries(lea.id)
+
+    // Then
+    firsts shouldBe setOf(lesser)
+  }
+
   private fun titlesOf(page: EditionIdPage): List<String> {
     val titles = editions.findByIds(page.editionIds).associate { it.id to it.title }
     return page.editionIds.map { titles.getValue(it) }
