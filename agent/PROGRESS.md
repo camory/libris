@@ -92,3 +92,24 @@ Format:
   every case was red before green and none is a guard.
 - Deviations from the brief: none.
 - Left over: T095 picks each series' cover behind the same read.
+
+## 2026-10-15 — T095 The cover of a series — done
+- Did: `ListCatalogueSeries` answers each series with the cover of its
+  first edition in the order a shelf reads, by tome with an untomed edition
+  last, then by title through a root `Collator` at `PRIMARY`; five unit
+  cases in `ListCatalogueSeriesTest`, each red before green.
+- Decided: the pick is `minWith` over a private top-level `SHELF_ORDER`
+  comparator, `compareBy(nullsLast())` on the tome then `thenBy` on the
+  title, the collator built by a private function below it, since a
+  top-level `val` declared below its user reads as `null`; each step's
+  green the smallest the brief names (first cover found, lowest tome with
+  `null` first, `String` titles), so no case is a guard. A refactor commit
+  names the `coverName` argument, as it was named while `null`.
+- Deviations from the brief: each `…_COVER` fixture sits just above its
+  edition, not below it in the order the class reaches them: the edition
+  is built from it, and a top-level `val` declared below its user reads as
+  `null` (written in `agent/gotchas/backend.md`).
+- Left over: T096 starts the frontend once T095 is deployed; whether a
+  root `Collator` at `PRIMARY` becomes the rule for any order the Kotlin
+  computes on text is Tophe's call in review (the brief's *First of its
+  kind*).

@@ -452,16 +452,24 @@ Read whole by a run that changes `backend/`, after `every-run.md`.
 - In Kotlin, a bookshelf name's sameness ignoring case and accents is
   `BookshelfName.isSameAs`, over a private `folded` in `BookshelfName.kt`,
   the only folding of the backend's Kotlin; `BookshelfName` is not
-  `Comparable` and its `equals` stays exact. No Kotlin code sorts a list
-  the screen shows. The folding: `Normalizer` NFD, the `\p{Mn}`
-  marks dropped, `lowercase()`, then `œ` and `æ` spelt `oe` and `ae`,
-  compared as a plain `String`, so spaces and hyphens still count (`À lire`
-  is not `Alire`). It is not the catalogue's collation: NFD leaves letters
-  with a stroke whole (`Ø`, `Ł`), so `Øre` is not `Ore`, where
+  `Comparable` and its `equals` stays exact. The folding: `Normalizer` NFD,
+  the `\p{Mn}` marks dropped, `lowercase()`, then `œ` and `æ` spelt `oe`
+  and `ae`, compared as a plain `String`, so spaces and hyphens still count
+  (`À lire` is not `Alire`). It is not the catalogue's collation: NFD leaves
+  letters with a stroke whole (`Ø`, `Ł`), so `Øre` is not `Ore`, where
   `ignoring_case_and_accents` would match them (measured both, 2026-10-11).
-  `java.text.Collator` at `PRIMARY` (French or root locale) ignores spaces:
-  it answers `0` for `One piece` against `Onepiece` (measured on JDK 25,
-  2026-10-11), which is why it was set aside.
+  The one order of text the Kotlin computes is the title key of
+  `ListCatalogueSeries`'s pick of a series' cover: a `java.text.Collator` of
+  `Locale.ROOT` at `PRIMARY`, which puts *L'écho des cités* before *L'Ombre
+  d'un homme* where `String.compareTo`, a lowercased or an accent-stripped
+  comparison put it after. No Kotlin code sorts a list the screen shows.
+  That collator ignores spaces: it answers `0` for `One piece` against
+  `Onepiece` (measured on JDK 25, 2026-10-11), which is why it stays out of
+  `BookshelfName`'s sameness. A top-level `val` of a Kotlin file reads one
+  declared below it as `null` (the file's statics initialise in text
+  order), so a fixture built from another sits below the one it is built
+  from (a cover above its edition), and a comparator reaches a collator
+  through a function.
 - `Contributions` holds a `Set`: it is equal whatever the order it was
   given, and iterates in no promised order. A kotest collection matcher
   takes `contributions.toList()`, since `Contributions` is an `Iterable`,

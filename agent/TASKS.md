@@ -58,7 +58,7 @@ the contract (D04).
       answered none; S2's first red, the spec giving it no backend
       scenario test. Realises S2.
 
-- [ ] T095 Backend: the cover of a series.
+- [x] T095 Backend: the cover of a series.
       Each series of T093 answers the cover of its first edition in the
       order a shelf reads, catalogue S1's: by tome, an edition without a
       tome after the numbered tomes, then by title; its address as a
