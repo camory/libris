@@ -171,7 +171,7 @@ describe("Series list", () => {
     ]);
   });
 
-  it.skip("S5 No series", async () => {
+  it("S5 No series", async () => {
     // Given
     const series = librisAnswers([]);
 
