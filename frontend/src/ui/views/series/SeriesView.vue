@@ -1,8 +1,14 @@
 <script setup lang="ts">
+import { inject } from "vue";
 import { useI18n } from "vue-i18n";
+import { seriesApiKey } from "../../../application/SeriesApi";
+import { useListCatalogueSeries } from "../../../application/useListCatalogueSeries";
 import SeriesRowSkeleton from "../../components/SeriesRowSkeleton.vue";
 
 const { t } = useI18n();
+const { state, list } = useListCatalogueSeries(inject(seriesApiKey)!);
+
+void list();
 </script>
 
 <template>
@@ -13,6 +19,7 @@ const { t } = useI18n();
     </header>
 
     <div
+      v-if="state.status === 'loading'"
       class="divide-y divide-border overflow-hidden rounded-[14px] border border-border bg-surface"
     >
       <SeriesRowSkeleton v-for="row in 5" :key="row" />

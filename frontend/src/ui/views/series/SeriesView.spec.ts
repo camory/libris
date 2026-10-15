@@ -1,5 +1,5 @@
 import { within } from "@testing-library/dom";
-import { mount } from "@vue/test-utils";
+import { flushPromises, mount } from "@vue/test-utils";
 import { describe, expect, it } from "vitest";
 import { seriesApiKey, type SeriesApi } from "../../../application/SeriesApi";
 import { FakeSeriesApi } from "../../../fixture/FakeSeriesApi";
@@ -27,6 +27,17 @@ describe("SeriesView", () => {
 
     // Then
     expect(wrapper.findAllComponents(SeriesRowSkeleton)).toHaveLength(5);
+  });
+
+  it("shows no skeleton row once the series have come", async () => {
+    // Given
+    const { wrapper } = open(new FakeSeriesApi([]));
+
+    // When
+    await flushPromises();
+
+    // Then
+    expect(wrapper.findAllComponents(SeriesRowSkeleton)).toHaveLength(0);
   });
 
   function open(seriesApi: SeriesApi) {
