@@ -346,6 +346,19 @@ class JdbcCatalogueEditionsTest @Autowired constructor(
     firsts shouldBe setOf(alaRecre.id)
   }
 
+  @Test
+  fun `a title that differs at a space comes before the longer word`() {
+    // Given
+    heldOn(leasBookshelf, edition("Les cigares du pharaon", "Les classiques"))
+    val leSecret = heldOn(leasBookshelf, edition("Le secret de l'Espadon", "Les classiques"))
+
+    // When
+    val firsts = catalogueEditions.findFirstOfEachSeries(lea.id)
+
+    // Then
+    firsts shouldBe setOf(leSecret.id)
+  }
+
   private fun titlesOf(page: EditionIdPage): List<String> {
     val titles = editions.findByIds(page.editionIds).associate { it.id to it.title }
     return page.editionIds.map { titles.getValue(it) }
