@@ -6,6 +6,7 @@ import { FetchCatalogueApi } from "./infra/api/FetchCatalogueApi";
 import { FetchIsbnApi } from "./infra/api/FetchIsbnApi";
 import { FetchMeApi } from "./infra/api/FetchMeApi";
 import { FetchReadersApi } from "./infra/api/FetchReadersApi";
+import { FetchSeriesApi } from "./infra/api/FetchSeriesApi";
 import { CameraBarcodeScanner } from "./infra/camera/CameraBarcodeScanner";
 import { ServiceWorkerAppUpdate } from "./infra/pwa/ServiceWorkerAppUpdate";
 
@@ -20,6 +21,7 @@ export function bootstrap(origin: string, revision: string): App {
       catalogueApi: new FetchCatalogueApi(origin),
       bookshelvesApi: new FetchBookshelvesApi(origin),
       readersApi: new FetchReadersApi(origin),
+      seriesApi: new FetchSeriesApi(origin),
     },
     revision,
   );
