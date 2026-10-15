@@ -170,17 +170,19 @@ States:
 ## Contract
 
 Release `v0.12.0` of `camory/libris-api`, after `v0.11.0`. Nothing changes
-in an existing answer: one operation and one schema are added, and one
+in an existing answer: one operation and two schemas are added, and one
 schema is renamed, which changes no byte, since a JSON body carries no
 schema name.
 
+- `Kind`, `BOOK | BD | MANGA`, the enum `Edition.kind` held inline, now a
+  schema both kinds share.
 - `SeriesEntry`: the schema `Series` renamed, an edition's place in a
   series, `name` and `volumeNumber`, unchanged; the backend's domain
   already bears the name.
 - `Series`, the PRD's word, a series of the reader's catalogue: `name`, as
   `SeriesEntry`'s; `volumeCount`, an integer, at least 1; `coverUrl`, as
-  `Book`'s, nullable; `kind`, `BOOK | BD | MANGA` or null, the kind every
-  edition of the series shares. All four required. No `id`: the series page
+  `Book`'s, nullable; `kind`, a `Kind` or null, the kind every edition of
+  the series shares. All four required. No `id`: the series page
   adds it without breaking anything.
 - `GET /api/v1/series`, the series of the reader's catalogue, each with an
   edition on a bookshelf they belong to, in the order of S1 → `200`, an
@@ -190,9 +192,6 @@ schema name.
 The operation carries no example: it takes no input for one to fix, and
 Contracteer verifies an answer's shape, never its values. The order, the
 count, the kind and the cover are the tests' to show.
-
-Open, settled when the contract is written: whether `kind` and
-`Edition.kind` share one `Kind` schema, or `Series` repeats the enum.
 
 ## Done
 
