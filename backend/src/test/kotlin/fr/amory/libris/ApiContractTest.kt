@@ -52,6 +52,7 @@ import fr.amory.libris.library.application.WelcomeReader
 import fr.amory.libris.library.application.catalogue.BrowseCatalogue
 import fr.amory.libris.library.application.catalogue.CataloguePage
 import fr.amory.libris.library.application.catalogue.HeldEdition
+import fr.amory.libris.library.application.catalogue.ListCatalogueSeries
 import fr.amory.libris.library.application.lookup.CopyOnBookshelf
 import fr.amory.libris.library.application.lookup.IsbnLookup
 import fr.amory.libris.library.application.lookup.LookupIsbnForReader
@@ -98,6 +99,7 @@ import java.util.UUID
     ListReaders::class,
     AddMemberToBookshelf::class,
     ChooseDefaultBookshelf::class,
+    ListCatalogueSeries::class,
   ],
 )
 @Suppress("LongParameterList")
