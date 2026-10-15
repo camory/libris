@@ -39,7 +39,7 @@ the contract (D04).
       The backend's walking skeleton, the thinnest scenario; realises S5;
       un-skips the backend test of S5.
 
-- [ ] T093 Backend: the reader's series, each counted.
+- [x] T093 Backend: the reader's series, each counted.
       Libris answers each series with an edition on a bookshelf the reader
       belongs to, the catalogue's rule, once each; none for a bookshelf
       they do not belong to, nor for an edition with no series; in no

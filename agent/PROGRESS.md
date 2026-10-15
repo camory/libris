@@ -55,3 +55,16 @@ Format:
   unread until the stub, detekt's `UnusedPrivateProperty` fails it.
 - Left over: T093 finds the reader's series and their count behind the
   same use case, red on S1.
+
+## 2026-10-15 — T093 The reader's series, each counted — done
+- Did: `ListCatalogueSeries` reads the reader's bookshelves, the copies on
+  them through the new `CopyRepository.findByBookshelfIds`, and their
+  editions, and answers one series per name with its number of editions;
+  S1 The reader's series un-skipped and green.
+- Decided: the series are counted with `groupingBy { name }.eachCount()`
+  over the editions `findByIds` answers, each once whatever the duplicates
+  of the ids given, so no `distinct()` on the edition ids; the red of S1 is
+  a commit of its own, as in T092.
+- Deviations from the brief: none.
+- Left over: T094 fills each series' kind, T095 its cover, behind the same
+  read.
