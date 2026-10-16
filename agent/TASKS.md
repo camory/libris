@@ -22,7 +22,7 @@ No contract release: nothing in the API changes, the screen alone does.
 The Lucide glyphs were chosen by Tophe on 2026-10-16, each beside the
 hand-drawn one at its real size.
 
-- [ ] T100 Frontend: the icons are Lucide's.
+- [x] T100 Frontend: the icons are Lucide's.
       Every hand-drawn icon gives way to its Lucide counterpart at the same
       size and colour: `IconHome` → `House`, `IconBarcode` → `ScanBarcode`,
       `IconBooks` → `Library`, `IconBook` → `BookOpen`, `IconAlert` →

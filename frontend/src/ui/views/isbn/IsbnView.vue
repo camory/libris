@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { X } from "@lucide/vue";
+import { CircleAlert, ScanBarcode, Search, X } from "@lucide/vue";
 import {
   computed,
   inject,
@@ -23,9 +23,6 @@ import type { SourceEdition } from "../../../domain/SourceEdition";
 import BusySpinner from "../../components/BusySpinner.vue";
 import SourceEditionCard from "../../components/SourceEditionCard.vue";
 import SourceEditionCardSkeleton from "../../components/SourceEditionCardSkeleton.vue";
-import IconAlert from "../../components/icons/IconAlert.vue";
-import IconBarcode from "../../components/icons/IconBarcode.vue";
-import IconMagnifier from "../../components/icons/IconMagnifier.vue";
 
 const messages = new Map([["/problems/not-found", "isbn.unknown"]]);
 const refusals = ["isbn.invalid", "isbn.unknown"];
@@ -138,8 +135,8 @@ async function search() {
             class="absolute top-1/2 right-[3px] flex size-11 -translate-y-1/2 items-center justify-center rounded-[10px] text-accent"
             @click="toggleCamera"
           >
-            <X v-if="scanning" :size="22" />
-            <IconBarcode v-else />
+            <X v-if="scanning" :size="22" class="shrink-0" />
+            <ScanBarcode v-else :size="22" class="shrink-0" />
           </button>
         </div>
         <button
@@ -150,7 +147,7 @@ async function search() {
           @click="search"
         >
           <BusySpinner v-if="searching" class="size-5.5" />
-          <IconMagnifier v-else />
+          <Search v-else :size="22" class="shrink-0" />
         </button>
       </div>
     </div>
@@ -206,13 +203,13 @@ async function search() {
         v-if="addState.status === 'notAdded'"
         class="flex items-start gap-2 text-body text-danger"
       >
-        <IconAlert />
+        <CircleAlert :size="22" class="shrink-0" />
         <span>{{ t("isbn.addError") }}</span>
       </p>
     </div>
 
     <p v-if="message" class="mt-5 flex items-start gap-2 text-body text-danger">
-      <IconAlert />
+      <CircleAlert :size="22" class="shrink-0" />
       <span>{{ t(message) }}</span>
     </p>
   </main>

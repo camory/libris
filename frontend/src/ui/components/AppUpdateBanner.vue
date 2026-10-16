@@ -1,7 +1,7 @@
 <script setup lang="ts">
+import { RefreshCw } from "@lucide/vue";
 import { useI18n } from "vue-i18n";
 import BusySpinner from "./BusySpinner.vue";
-import IconRefresh from "./icons/IconRefresh.vue";
 
 export type UpdateState = "none" | "ready" | "updating";
 
@@ -16,7 +16,11 @@ const { t } = useI18n();
     <div
       class="mx-auto flex w-full max-w-120 items-center gap-2 py-1.25 pr-2 pl-5"
     >
-      <IconRefresh v-if="state === 'ready'" class="text-accent" />
+      <RefreshCw
+        v-if="state === 'ready'"
+        :size="22"
+        class="shrink-0 text-accent"
+      />
       <BusySpinner v-else class="size-5.5 text-accent" />
       <span class="flex-1 text-body text-text">{{
         state === "ready" ? t("update.available") : t("update.installing")

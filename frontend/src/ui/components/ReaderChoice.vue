@@ -1,11 +1,10 @@
 <script setup lang="ts">
-import { Check, Crown, X } from "@lucide/vue";
+import { Check, CircleAlert, Crown, X } from "@lucide/vue";
 import { onMounted, ref, useTemplateRef, watch } from "vue";
 import { useI18n } from "vue-i18n";
 import type { KnownReader } from "../../domain/KnownReader";
 import type { MembershipRole } from "../../domain/Membership";
 import BusySpinner from "./BusySpinner.vue";
-import IconAlert from "./icons/IconAlert.vue";
 
 const props = defineProps<{
   readers: KnownReader[];
@@ -100,7 +99,7 @@ function toggleOwner() {
               v-if="reader.id === failedId"
               class="flex items-start gap-2 pb-2 text-body text-danger"
             >
-              <IconAlert />
+              <CircleAlert :size="22" class="shrink-0" />
               <span>{{ t("bookshelf.members.unavailable") }}</span>
             </p>
           </div>

@@ -1,10 +1,10 @@
 <script setup lang="ts">
+import { BookOpen } from "@lucide/vue";
 import { computed, ref, watch } from "vue";
 import { useI18n } from "vue-i18n";
 import { bookshelvesHolding, type Copy } from "../../domain/Copy";
 import type { CoverCandidate } from "../../domain/Cover";
 import { authorsInOrder, type SourceEdition } from "../../domain/SourceEdition";
-import IconBook from "./icons/IconBook.vue";
 
 const props = defineProps<{
   edition: SourceEdition;
@@ -114,7 +114,11 @@ const rows = computed(() => {
             :class="{ hidden: !isShown(index) }"
             @error="failed.push(index)"
           />
-          <IconBook v-if="!shown" class="text-muted opacity-60" />
+          <BookOpen
+            v-if="!shown"
+            :size="48"
+            class="shrink-0 text-muted opacity-60"
+          />
         </div>
         <div v-if="!held" class="flex justify-center">
           <button
@@ -172,14 +176,14 @@ const rows = computed(() => {
         :key="bookshelf.id"
         class="flex items-center gap-2"
       >
-        <IconBook class="size-5.5" />
+        <BookOpen :size="22" class="shrink-0" />
         <i18n-t keypath="isbn.card.copies" :plural="count" tag="p">
           <template #bookshelf>{{ bookshelf.name }}</template>
           <template #count>{{ count }}</template>
         </i18n-t>
       </div>
       <div v-if="bookshelves.length === 0" class="flex items-center gap-2">
-        <IconBook class="size-5.5" />
+        <BookOpen :size="22" class="shrink-0" />
         <p>{{ t("isbn.card.noCopy") }}</p>
       </div>
     </div>

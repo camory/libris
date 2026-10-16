@@ -1,3 +1,4 @@
+import { BookOpen, CircleAlert } from "@lucide/vue";
 import { within } from "@testing-library/dom";
 import { flushPromises, mount } from "@vue/test-utils";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
@@ -13,8 +14,6 @@ import {
 } from "../../../fixture/Books";
 import { FakeCatalogueApi } from "../../../fixture/FakeCatalogueApi";
 import CatalogueRowSkeleton from "../../components/CatalogueRowSkeleton.vue";
-import IconAlert from "../../components/icons/IconAlert.vue";
-import IconBook from "../../components/icons/IconBook.vue";
 import { createLibrisI18n } from "../../i18n";
 import { createLibrisRouter } from "../../router";
 import CatalogueView from "./CatalogueView.vue";
@@ -117,7 +116,7 @@ describe("CatalogueView", () => {
     expect(
       screen.getByText("Les ouvrages de vos bibliothèques apparaîtront ici."),
     ).toBeDefined();
-    expect(wrapper.findAllComponents(IconBook)).toHaveLength(1);
+    expect(wrapper.findAllComponents(BookOpen)).toHaveLength(1);
   });
 
   it("lists one row per book of the first page", async () => {
@@ -191,7 +190,7 @@ describe("CatalogueView", () => {
         "Erreur lors du chargement, veuillez réessayer plus tard.",
       ),
     ).toBeDefined();
-    expect(wrapper.findAllComponents(IconAlert)).toHaveLength(1);
+    expect(wrapper.findAllComponents(CircleAlert)).toHaveLength(1);
   });
 
   it("lists nothing when the first page does not come", async () => {
@@ -317,7 +316,7 @@ describe("CatalogueView", () => {
     const message = screen.getByText(
       "Erreur lors du chargement, veuillez réessayer plus tard.",
     );
-    expect(wrapper.findAllComponents(IconAlert)).toHaveLength(1);
+    expect(wrapper.findAllComponents(CircleAlert)).toHaveLength(1);
     expect(screen.getAllByRole("listitem")).toHaveLength(2);
     expect(wrapper.findAllComponents(CatalogueRowSkeleton)).toHaveLength(0);
     expect(under(screen.getByRole("list"), message)).toBe(true);

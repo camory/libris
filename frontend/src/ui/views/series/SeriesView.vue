@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { BookOpen, CircleAlert } from "@lucide/vue";
 import { computed, inject } from "vue";
 import { useI18n } from "vue-i18n";
 import { seriesApiKey } from "../../../application/SeriesApi";
@@ -7,8 +8,6 @@ import { seriesInOrder } from "../../../domain/Series";
 import CatalogueSwitch from "../../components/CatalogueSwitch.vue";
 import SeriesRow from "../../components/SeriesRow.vue";
 import SeriesRowSkeleton from "../../components/SeriesRowSkeleton.vue";
-import IconAlert from "../../components/icons/IconAlert.vue";
-import IconBook from "../../components/icons/IconBook.vue";
 
 const { t, locale } = useI18n();
 const { state, list } = useListCatalogueSeries(inject(seriesApiKey)!);
@@ -48,11 +47,11 @@ void list();
       v-else-if="state.status === 'unavailable'"
       class="flex items-start gap-2 text-body text-danger"
     >
-      <IconAlert />
+      <CircleAlert :size="22" class="shrink-0" />
       <span>{{ t("series.error") }}</span>
     </p>
     <div v-else class="flex flex-col items-center gap-3 p-7 text-center">
-      <IconBook class="text-muted opacity-60" />
+      <BookOpen :size="48" class="shrink-0 text-muted opacity-60" />
       <p class="text-lead text-muted">{{ t("series.empty") }}</p>
     </div>
   </main>

@@ -1,8 +1,8 @@
 <script setup lang="ts">
+import { BookOpen } from "@lucide/vue";
 import { computed, ref } from "vue";
 import { useI18n } from "vue-i18n";
 import type { Series } from "../../domain/Series";
-import IconBook from "./icons/IconBook.vue";
 
 const props = defineProps<{ series: Series }>();
 
@@ -31,7 +31,7 @@ const count = computed(() =>
         class="h-full w-full rounded-md object-contain"
         @error="coverFailed = true"
       />
-      <IconBook v-else class="size-5.5 text-muted opacity-60" />
+      <BookOpen v-else :size="22" class="shrink-0 text-muted opacity-60" />
     </div>
     <div class="flex min-w-0 flex-col gap-1.5">
       <p class="text-row-title">{{ series.name }}</p>

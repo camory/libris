@@ -263,8 +263,8 @@ round caps and joins, `currentColor`, stroke 1.8 set once for the whole
 app, and stroke 3 for the check of a form in a list (U04). It has no fill,
 except an icon's filled variant: the star and the crown, filled with
 `currentColor`. Sizes are 22 for the alert of a message, the bookshelf
-rows of a card (U06), the stand-in of a missing cover and the glyph of a
-button (U04), 32 on the tab bar, 48 for an empty state (U05). A component
+rows of a card (U06), the stand-in of a row's missing cover and the glyph
+of a button (U04), 32 on the tab bar, 48 for an empty state (U05). A component
 imports the icon it shows under its Lucide name: `House`, `ScanBarcode`,
 `Library`, `BookOpen`, `CircleAlert`, `Search`, `RefreshCw`, `CirclePlus`,
 `Check`, `ChevronRight`, `Star`, `Crown`, `X`. No hand-drawn icon, no icon

@@ -1,3 +1,4 @@
+import { BookOpen } from "@lucide/vue";
 import { within } from "@testing-library/dom";
 import { mount } from "@vue/test-utils";
 import { describe, expect, it } from "vitest";
@@ -7,7 +8,6 @@ import type { CoverCandidate } from "../../domain/Cover";
 import type { SourceAuthor, SourceEdition } from "../../domain/SourceEdition";
 import { onePiece1 } from "../../fixture/SourceEditions";
 import { createLibrisI18n } from "../i18n";
-import IconBook from "./icons/IconBook.vue";
 import SourceEditionCard from "./SourceEditionCard.vue";
 
 const barelyKnown: SourceEdition = {
@@ -372,7 +372,7 @@ describe("SourceEditionCard", () => {
     expect(
       within(wrapper.element as HTMLElement).queryAllByRole("img"),
     ).toEqual([]);
-    expect(wrapper.findAllComponents(IconBook)).toHaveLength(2);
+    expect(wrapper.findAllComponents(BookOpen)).toHaveLength(2);
   });
 
   it("shows the next candidate when the first does not load", async () => {
@@ -521,7 +521,7 @@ describe("SourceEditionCard", () => {
     // Given
     const wrapper = card(onePiece1, [], [inventaire, openLibrary, bnf]);
     const shown = within(wrapper.element as HTMLElement);
-    expect(wrapper.findAllComponents(IconBook)).toHaveLength(1);
+    expect(wrapper.findAllComponents(BookOpen)).toHaveLength(1);
 
     // When
     for (const image of shown.getAllByRole("img", { hidden: true })) {
@@ -536,7 +536,7 @@ describe("SourceEditionCard", () => {
     for (const source of ["inventaire.io", "Open Library", "BnF"]) {
       expect(text).not.toContain(source);
     }
-    expect(wrapper.findAllComponents(IconBook)).toHaveLength(2);
+    expect(wrapper.findAllComponents(BookOpen)).toHaveLength(2);
   });
 
   it("names the source of the shown cover, and no other", () => {
@@ -663,7 +663,7 @@ describe("SourceEditionCard", () => {
     const wrapper = card(onePiece1, [onLea], [inventaire]);
 
     // Then
-    const icons = wrapper.findAllComponents(IconBook);
+    const icons = wrapper.findAllComponents(BookOpen);
     expect(icons).toHaveLength(1);
     const words = within(wrapper.element as HTMLElement).getByText(
       "Dans Bibliothèque de Léa",
@@ -676,7 +676,7 @@ describe("SourceEditionCard", () => {
     const wrapper = card(onePiece1, [], [inventaire]);
 
     // Then
-    const icons = wrapper.findAllComponents(IconBook);
+    const icons = wrapper.findAllComponents(BookOpen);
     expect(icons).toHaveLength(1);
     const words = within(wrapper.element as HTMLElement).getByText(
       "Dans aucune de vos bibliothèques",
@@ -695,7 +695,7 @@ describe("SourceEditionCard", () => {
     const wrapper = card(onePiece1, [onSalon, onLea], [inventaire]);
 
     // Then
-    expect(wrapper.findAllComponents(IconBook)).toHaveLength(2);
+    expect(wrapper.findAllComponents(BookOpen)).toHaveLength(2);
   });
 
   it("says no bookshelf when the reader's bookshelves hold no copy", () => {

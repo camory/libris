@@ -1,10 +1,10 @@
+import { BookOpen } from "@lucide/vue";
 import { within } from "@testing-library/dom";
 import { mount } from "@vue/test-utils";
 import { describe, expect, it } from "vitest";
 import { nextTick } from "vue";
 import type { Series } from "../../domain/Series";
 import { createLibrisI18n } from "../i18n";
-import IconBook from "./icons/IconBook.vue";
 import SeriesRow from "./SeriesRow.vue";
 
 describe("SeriesRow", () => {
@@ -31,7 +31,7 @@ describe("SeriesRow", () => {
 
     // Then
     expect(screen.queryByRole("img")).toBeNull();
-    expect(wrapper.findAllComponents(IconBook)).toHaveLength(1);
+    expect(wrapper.findAllComponents(BookOpen)).toHaveLength(1);
   });
 
   it("shows a book icon when the cover does not load", async () => {
@@ -44,7 +44,7 @@ describe("SeriesRow", () => {
 
     // Then
     expect(screen.queryByRole("img")).toBeNull();
-    expect(wrapper.findAllComponents(IconBook)).toHaveLength(1);
+    expect(wrapper.findAllComponents(BookOpen)).toHaveLength(1);
   });
 
   it("counts the albums of a BD series", () => {
