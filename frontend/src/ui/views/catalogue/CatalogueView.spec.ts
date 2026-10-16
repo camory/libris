@@ -1,3 +1,4 @@
+import { BookOpen } from "@lucide/vue";
 import { within } from "@testing-library/dom";
 import { flushPromises, mount } from "@vue/test-utils";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
@@ -14,7 +15,6 @@ import {
 import { FakeCatalogueApi } from "../../../fixture/FakeCatalogueApi";
 import CatalogueRowSkeleton from "../../components/CatalogueRowSkeleton.vue";
 import IconAlert from "../../components/icons/IconAlert.vue";
-import IconBook from "../../components/icons/IconBook.vue";
 import { createLibrisI18n } from "../../i18n";
 import { createLibrisRouter } from "../../router";
 import CatalogueView from "./CatalogueView.vue";
@@ -117,7 +117,7 @@ describe("CatalogueView", () => {
     expect(
       screen.getByText("Les ouvrages de vos bibliothèques apparaîtront ici."),
     ).toBeDefined();
-    expect(wrapper.findAllComponents(IconBook)).toHaveLength(1);
+    expect(wrapper.findAllComponents(BookOpen)).toHaveLength(1);
   });
 
   it("lists one row per book of the first page", async () => {

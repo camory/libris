@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { BookOpen } from "@lucide/vue";
 import { inject, onUnmounted, useTemplateRef, watch } from "vue";
 import { useI18n } from "vue-i18n";
 import { catalogueApiKey } from "../../../application/CatalogueApi";
@@ -7,7 +8,6 @@ import CatalogueRow from "../../components/CatalogueRow.vue";
 import CatalogueRowSkeleton from "../../components/CatalogueRowSkeleton.vue";
 import CatalogueSwitch from "../../components/CatalogueSwitch.vue";
 import IconAlert from "../../components/icons/IconAlert.vue";
-import IconBook from "../../components/icons/IconBook.vue";
 
 const { t } = useI18n();
 const { state, browse } = useBrowseCatalogue(inject(catalogueApiKey)!);
@@ -52,7 +52,7 @@ void browse();
       v-else-if="state.status === 'empty'"
       class="flex flex-col items-center gap-3 p-7 text-center"
     >
-      <IconBook class="text-muted opacity-60" />
+      <BookOpen :size="48" class="shrink-0 text-muted opacity-60" />
       <p class="text-lead text-muted">{{ t("catalogue.empty") }}</p>
     </div>
     <template v-else>
