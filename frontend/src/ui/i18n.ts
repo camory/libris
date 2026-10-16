@@ -98,6 +98,7 @@ const fr = {
     empty: "Les séries de vos bibliothèques apparaîtront ici.",
     cover: "Couverture de {name}",
     count: {
+      BOOK: "{count} tome | {count} tomes",
       BD: "{count} album | {count} albums",
       MANGA: "{count} tome | {count} tomes",
     },

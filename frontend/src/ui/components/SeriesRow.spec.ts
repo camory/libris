@@ -79,6 +79,14 @@ describe("SeriesRow", () => {
     expect(screen.getByText("1 tome")).toBeDefined();
   });
 
+  it("counts in tomes for a book series", () => {
+    // When
+    const { screen } = show({ ...asterix, kind: "BOOK", volumeCount: 3 });
+
+    // Then
+    expect(screen.getByText("3 tomes")).toBeDefined();
+  });
+
   function show(series: Series) {
     const wrapper = mount(SeriesRow, {
       props: { series },
