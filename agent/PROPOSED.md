@@ -472,3 +472,8 @@
   helpers in `BrowseCatalogueTest`, `LookupIsbnForReaderTest`,
   `LookupEditionByIsbnTest`, `AwaitedCoverTest` and `ProblemAdviceTest`,
   as D10's top-down order asks (found 2026-10-15 by T093's review).
+- Frontend: `SeriesRow.vue` copies `CatalogueRow.vue`'s cover block line
+  for line: the 48 × 74 box, the `img` that falls back on `error` and the
+  `IconBook` stand-in. Extract a cover component both rows use, with its
+  own spec taking the cover cases of `SeriesRow.spec.ts` (found
+  2026-10-16 by T097's review).
