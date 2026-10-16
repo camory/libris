@@ -87,6 +87,14 @@ describe("SeriesRow", () => {
     expect(screen.getByText("3 tomes")).toBeDefined();
   });
 
+  it("counts in tomes when the editions differ in kind", () => {
+    // When
+    const { screen } = show({ ...asterix, kind: null, volumeCount: 3 });
+
+    // Then
+    expect(screen.getByText("3 tomes")).toBeDefined();
+  });
+
   function show(series: Series) {
     const wrapper = mount(SeriesRow, {
       props: { series },

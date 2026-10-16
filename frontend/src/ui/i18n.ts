@@ -101,6 +101,7 @@ const fr = {
       BOOK: "{count} tome | {count} tomes",
       BD: "{count} album | {count} albums",
       MANGA: "{count} tome | {count} tomes",
+      null: "{count} tome | {count} tomes",
     },
   },
   language: {
