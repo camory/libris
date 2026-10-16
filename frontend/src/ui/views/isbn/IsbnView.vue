@@ -135,7 +135,7 @@ async function search() {
             class="absolute top-1/2 right-[3px] flex size-11 -translate-y-1/2 items-center justify-center rounded-[10px] text-accent"
             @click="toggleCamera"
           >
-            <X v-if="scanning" :size="22" />
+            <X v-if="scanning" :size="22" class="shrink-0" />
             <ScanBarcode v-else :size="22" class="shrink-0" />
           </button>
         </div>
