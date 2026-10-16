@@ -2,6 +2,7 @@ import { within } from "@testing-library/dom";
 import { flushPromises, mount } from "@vue/test-utils";
 import { describe, expect, it } from "vitest";
 import { seriesApiKey, type SeriesApi } from "../../../application/SeriesApi";
+import type { Series } from "../../../domain/Series";
 import { FakeSeriesApi } from "../../../fixture/FakeSeriesApi";
 import SeriesRowSkeleton from "../../components/SeriesRowSkeleton.vue";
 import IconBook from "../../components/icons/IconBook.vue";
@@ -75,6 +76,17 @@ describe("SeriesView", () => {
     expect(asks).toBe(2);
   });
 
+  it("lists one row per series Libris answers", async () => {
+    // Given
+    const { screen } = open(new FakeSeriesApi([onePiece, asterix]));
+
+    // When
+    await flushPromises();
+
+    // Then
+    expect(screen.getAllByRole("listitem")).toHaveLength(2);
+  });
+
   function open(seriesApi: SeriesApi) {
     const wrapper = mount(SeriesView, {
       global: {
@@ -85,3 +97,17 @@ describe("SeriesView", () => {
     return { wrapper, screen: within(wrapper.element as HTMLElement) };
   }
 });
+
+const onePiece: Series = {
+  name: "One piece",
+  volumeCount: 3,
+  coverUrl: null,
+  kind: "MANGA",
+};
+
+const asterix: Series = {
+  name: "Astérix",
+  volumeCount: 6,
+  coverUrl: null,
+  kind: "BD",
+};

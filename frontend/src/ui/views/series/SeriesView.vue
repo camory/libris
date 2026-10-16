@@ -3,6 +3,7 @@ import { inject } from "vue";
 import { useI18n } from "vue-i18n";
 import { seriesApiKey } from "../../../application/SeriesApi";
 import { useListCatalogueSeries } from "../../../application/useListCatalogueSeries";
+import SeriesRow from "../../components/SeriesRow.vue";
 import SeriesRowSkeleton from "../../components/SeriesRowSkeleton.vue";
 import IconBook from "../../components/icons/IconBook.vue";
 
@@ -25,6 +26,14 @@ void list();
     >
       <SeriesRowSkeleton v-for="row in 5" :key="row" />
     </div>
+    <ul
+      v-else-if="state.status === 'listed'"
+      class="divide-y divide-border overflow-hidden rounded-[14px] border border-border bg-surface"
+    >
+      <li v-for="series in state.series" :key="series.name">
+        <SeriesRow :series="series" />
+      </li>
+    </ul>
     <div v-else class="flex flex-col items-center gap-3 p-7 text-center">
       <IconBook class="text-muted opacity-60" />
       <p class="text-lead text-muted">{{ t("series.empty") }}</p>
