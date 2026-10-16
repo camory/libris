@@ -1,3 +1,4 @@
+import { BookOpen } from "@lucide/vue";
 import { within } from "@testing-library/dom";
 import { mount } from "@vue/test-utils";
 import { describe, expect, it } from "vitest";
@@ -12,7 +13,6 @@ import {
 } from "../../fixture/Books";
 import { normalised } from "../../fixture/normalised";
 import { createLibrisI18n } from "../i18n";
-import IconBook from "./icons/IconBook.vue";
 import CatalogueRow from "./CatalogueRow.vue";
 
 describe("CatalogueRow", () => {
@@ -150,7 +150,7 @@ describe("CatalogueRow", () => {
 
     // Then
     expect(screen.queryByRole("img")).toBeNull();
-    expect(wrapper.findAllComponents(IconBook)).toHaveLength(1);
+    expect(wrapper.findAllComponents(BookOpen)).toHaveLength(1);
   });
 
   it("shows a book icon when the cover does not load", async () => {
@@ -163,7 +163,7 @@ describe("CatalogueRow", () => {
 
     // Then
     expect(screen.queryByRole("img")).toBeNull();
-    expect(wrapper.findAllComponents(IconBook)).toHaveLength(1);
+    expect(wrapper.findAllComponents(BookOpen)).toHaveLength(1);
   });
 
   it("reads its parts separated by one space", () => {

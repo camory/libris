@@ -1,10 +1,10 @@
 <script setup lang="ts">
+import { BookOpen } from "@lucide/vue";
 import { computed, ref } from "vue";
 import { useI18n } from "vue-i18n";
 import type { Book } from "../../domain/Book";
 import { bookshelvesHolding } from "../../domain/Copy";
 import { authorsInOrder } from "../../domain/SourceEdition";
-import IconBook from "./icons/IconBook.vue";
 
 const props = defineProps<{ book: Book }>();
 
@@ -53,7 +53,7 @@ const bookshelves = computed(() =>
         class="h-full w-full rounded-md object-contain"
         @error="coverFailed = true"
       />
-      <IconBook v-else class="size-5.5 text-muted opacity-60" />
+      <BookOpen v-else :size="22" class="shrink-0 text-muted opacity-60" />
     </div>
     <div class="flex min-w-0 flex-col gap-1.5">
       <p v-if="overline" class="text-overline uppercase text-accent">
