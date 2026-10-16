@@ -47,6 +47,14 @@ describe("SeriesRow", () => {
     expect(wrapper.findAllComponents(IconBook)).toHaveLength(1);
   });
 
+  it("counts the albums of a BD series", () => {
+    // When
+    const { screen } = show({ ...asterix, kind: "BD", volumeCount: 6 });
+
+    // Then
+    expect(screen.getByText("6 albums")).toBeDefined();
+  });
+
   function show(series: Series) {
     const wrapper = mount(SeriesRow, {
       props: { series },
