@@ -119,6 +119,24 @@ describe("SeriesView", () => {
     expect(wrapper.findAllComponents(IconAlert)).toHaveLength(1);
   });
 
+  it("lists nothing when the series do not come", async () => {
+    // Given
+    const { wrapper, screen } = open(
+      new FakeSeriesApi(new TypeError("Failed to fetch")),
+    );
+
+    // When
+    await flushPromises();
+
+    // Then
+    expect(wrapper.findAllComponents(SeriesRowSkeleton)).toHaveLength(0);
+    expect(screen.queryAllByRole("listitem")).toEqual([]);
+    expect(screen.queryByRole("list")).toBeNull();
+    expect(
+      screen.queryByText("Les séries de vos bibliothèques apparaîtront ici."),
+    ).toBeNull();
+  });
+
   function open(seriesApi: SeriesApi) {
     const wrapper = mount(SeriesView, {
       global: {
