@@ -90,7 +90,7 @@ deployed. No other task touches the contract (D04).
       The frontend's walking skeleton, the thinnest scenario; realises S5;
       un-skips the frontend test of S5.
 
-- [ ] T097 Frontend: the reader's series listed.
+- [x] T097 Frontend: the reader's series listed.
       In place of the empty state, the catalogue's block, a row per series
       by name, ignoring case and accents, in the reader's language, with
       `nameOrder`, whatever the order of the answer (D11): the cover at

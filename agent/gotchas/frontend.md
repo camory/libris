@@ -211,6 +211,13 @@ Read whole by a run that changes `frontend/`, after `every-run.md`.
   `role.BOOK.WRITER` or `isbn.card.series.BOOK`. Nothing throws and no type
   catches it — `t` takes a template string — so the only proof of a key that
   exists is a case asserting the French word it holds.
+- A catalogue key built from a field that may be `null`, as
+  `` t(`series.count.${series.kind}`, { count }, count) ``, reads the entry
+  named `null` (`series.count.null` in `i18n.ts`), and the third argument
+  picks its form. Neither `vue-tsc` nor ESLint's recommended set refuses
+  `null` in a template literal, so only a case asserting the word of the
+  `null` entry proves it is there (`SeriesRow`'s *counts in tomes when the
+  editions differ in kind*).
 - A catalogue entry of two forms, `"Dans {bookshelf} | Dans {bookshelf} ·
   {count} exemplaires"`, is picked by `<i18n-t :plural="n">`: vue-i18n's
   default rule answers the first form for 1 and the second for any other
