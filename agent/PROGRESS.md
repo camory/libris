@@ -160,3 +160,17 @@ Format:
   foresaw; step 4's guard was red under its mutation (the empty state drawn
   beside the message).
 - Left over: T099 the switch, which un-skips S4.
+
+## 2026-10-16 — T099 The reader switches the view — done
+- Did: `CatalogueSwitch`, a `nav` *Vue du catalogue* of two `RouterLink`s,
+  *Ouvrages* and *Séries*, the view shown on `accent` through
+  `exact-active-class`, drawn by `CatalogueView` and `SeriesView` under
+  their header; S4 green, the last scenario of the series list.
+- Decided: the 20 between the switch and the list is the view's
+  `class="mb-5"` on the component, falling through to its `nav`, so the
+  component holds no outer spacing; the inset 2 is the `nav`'s `p-0.5`
+  inside its 44, the halves filling the grid's two columns.
+- Deviations from the brief: none. S4 went green with step 7, its last
+  red; steps 4 and 5 were guards, each red under its mutation.
+- Left over: Tophe's *Done* of the series list on the Pixel, the back
+  button from the series to the ouvrages included.
