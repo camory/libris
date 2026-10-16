@@ -1,4 +1,4 @@
-import { BookOpen } from "@lucide/vue";
+import { BookOpen, CircleAlert } from "@lucide/vue";
 import { within } from "@testing-library/dom";
 import { flushPromises, mount } from "@vue/test-utils";
 import { describe, expect, it } from "vitest";
@@ -6,7 +6,6 @@ import { seriesApiKey, type SeriesApi } from "../../../application/SeriesApi";
 import type { Series } from "../../../domain/Series";
 import { FakeSeriesApi } from "../../../fixture/FakeSeriesApi";
 import SeriesRowSkeleton from "../../components/SeriesRowSkeleton.vue";
-import IconAlert from "../../components/icons/IconAlert.vue";
 import { createLibrisI18n } from "../../i18n";
 import { createLibrisRouter } from "../../router";
 import SeriesView from "./SeriesView.vue";
@@ -135,7 +134,7 @@ describe("SeriesView", () => {
         "Erreur lors du chargement, veuillez réessayer plus tard.",
       ),
     ).toBeDefined();
-    expect(wrapper.findAllComponents(IconAlert)).toHaveLength(1);
+    expect(wrapper.findAllComponents(CircleAlert)).toHaveLength(1);
   });
 
   it("lists nothing when the series do not come", async () => {
