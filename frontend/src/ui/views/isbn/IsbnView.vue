@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { CircleAlert, Search, X } from "@lucide/vue";
+import { CircleAlert, ScanBarcode, Search, X } from "@lucide/vue";
 import {
   computed,
   inject,
@@ -23,7 +23,6 @@ import type { SourceEdition } from "../../../domain/SourceEdition";
 import BusySpinner from "../../components/BusySpinner.vue";
 import SourceEditionCard from "../../components/SourceEditionCard.vue";
 import SourceEditionCardSkeleton from "../../components/SourceEditionCardSkeleton.vue";
-import IconBarcode from "../../components/icons/IconBarcode.vue";
 
 const messages = new Map([["/problems/not-found", "isbn.unknown"]]);
 const refusals = ["isbn.invalid", "isbn.unknown"];
@@ -137,7 +136,7 @@ async function search() {
             @click="toggleCamera"
           >
             <X v-if="scanning" :size="22" />
-            <IconBarcode v-else />
+            <ScanBarcode v-else :size="22" class="shrink-0" />
           </button>
         </div>
         <button
