@@ -87,7 +87,7 @@ viewport unit:
    the name of its screen: *Accueil* (a house) in the first column. The
    middle column holds the way to add an ouvrage, *Ajouter*: a 44 circle on
    `accent` centred in the bar, the barcode in white at 32, always on
-   `accent`. The third column holds *Catalogue*, the three spines, the reader's
+   `accent`. The third column holds *Catalogue*, a library, the reader's
    catalogue. Below the
    bar the padding the phone's home indicator needs, the bottom safe area
    and nothing more: without one the bar ends at the screen.
@@ -262,14 +262,13 @@ An icon is a Lucide icon from `@lucide/vue`: an inline SVG on a 24 grid,
 round caps and joins, `currentColor`, stroke 1.8 set once for the whole
 app, and stroke 3 for the check of a form in a list (U04). It has no fill,
 except an icon's filled variant: the star and the crown, filled with
-`currentColor`. Sizes are 22 for the alert of a message and the bookshelf
-rows of a card (U06), 32 on the tab bar, 48 for an empty state (U05). A
-component imports the icon it shows under its Lucide name: `CirclePlus`,
-`Check`, `ChevronRight`, `Star`, `Crown`, `X`. The hand-drawn
-icons under `ui/components/icons` (`IconHome`, `IconBarcode`,
-`IconAlert`, `IconBook`, `IconBooks`, three spines on a line, the third
-leaning, for the catalogue tab) stay until a follow-up replaces each with
-its Lucide counterpart; none is added. No icon font.
+`currentColor`. Sizes are 22 for the alert of a message, the bookshelf
+rows of a card (U06), the stand-in of a missing cover and the glyph of a
+button (U04), 32 on the tab bar, 48 for an empty state (U05). A component
+imports the icon it shows under its Lucide name: `House`, `ScanBarcode`,
+`Library`, `BookOpen`, `CircleAlert`, `Search`, `RefreshCw`, `CirclePlus`,
+`Check`, `ChevronRight`, `Star`, `Crown`, `X`. No hand-drawn icon, no icon
+font.
 
 An icon next to a word is decoration: `aria-hidden`, the word carries the
 meaning. An icon alone is a button (U04) or a tab (U03) and carries its
