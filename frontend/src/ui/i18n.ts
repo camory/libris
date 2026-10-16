@@ -96,6 +96,7 @@ const fr = {
   },
   series: {
     empty: "Les séries de vos bibliothèques apparaîtront ici.",
+    cover: "Couverture de {name}",
   },
   language: {
     fr: "français",

@@ -14,6 +14,15 @@ describe("SeriesRow", () => {
     expect(screen.getByText("Astérix")).toBeDefined();
   });
 
+  it("shows the cover, named after the series", () => {
+    // When
+    const { screen } = show(asterix);
+
+    // Then
+    const cover = screen.getByRole("img", { name: "Couverture de Astérix" });
+    expect(cover.getAttribute("src")).toBe(asterix.coverUrl);
+  });
+
   function show(series: Series) {
     const wrapper = mount(SeriesRow, {
       props: { series },
