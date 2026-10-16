@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { BookOpen } from "@lucide/vue";
+import { BookOpen, CircleAlert } from "@lucide/vue";
 import { inject, onUnmounted, useTemplateRef, watch } from "vue";
 import { useI18n } from "vue-i18n";
 import { catalogueApiKey } from "../../../application/CatalogueApi";
@@ -7,7 +7,6 @@ import { useBrowseCatalogue } from "../../../application/useBrowseCatalogue";
 import CatalogueRow from "../../components/CatalogueRow.vue";
 import CatalogueRowSkeleton from "../../components/CatalogueRowSkeleton.vue";
 import CatalogueSwitch from "../../components/CatalogueSwitch.vue";
-import IconAlert from "../../components/icons/IconAlert.vue";
 
 const { t } = useI18n();
 const { state, browse } = useBrowseCatalogue(inject(catalogueApiKey)!);
@@ -74,7 +73,7 @@ void browse();
         class="flex items-start gap-2 text-body text-danger"
         :class="{ 'mt-5': state.books.length > 0 }"
       >
-        <IconAlert />
+        <CircleAlert :size="22" class="shrink-0" />
         <span>{{ t("catalogue.error") }}</span>
       </p>
     </template>
