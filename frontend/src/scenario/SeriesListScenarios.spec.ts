@@ -81,7 +81,7 @@ describe("Series list", () => {
     vi.unstubAllGlobals();
   });
 
-  it.skip("S1 The reader's series", async () => {
+  it("S1 The reader's series", async () => {
     // Given
     const series = librisAnswers([
       onePiece,
@@ -106,7 +106,7 @@ describe("Series list", () => {
     );
   });
 
-  it.skip.each([
+  it.each([
     { case: "a BD series", series: asterix, then: "Astérix 6 albums" },
     {
       case: "a manga series",
@@ -130,7 +130,7 @@ describe("Series list", () => {
     expect(rows(screen)).toEqual([then]);
   });
 
-  it.skip("S3 The cover of a series, the first tome without a cover", async () => {
+  it("S3 The cover of a series, the first tome without a cover", async () => {
     // Given
     const series = librisAnswers([dragonQuest]);
 
