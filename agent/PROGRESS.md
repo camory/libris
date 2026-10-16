@@ -113,3 +113,18 @@ Format:
   green on arrival for the same reason, the lesser twin coming first: it
   is a guard, as the brief foresaw, its mutation the id key `DESC`.
 - Left over: T096 moves the frontend pin, once T095 is deployed.
+
+## 2026-10-15 — T096 The series of the catalogue, none yet — done
+- Did: the frontend pins `v0.12.1`; `/catalogue/series` shows the
+  catalogue's header, five skeleton rows, then the empty state, through
+  `FetchSeriesApi`, `useListCatalogueSeries` and `SeriesView`; S5 green.
+- Decided: `SeriesRowSkeleton` centres its two lines on the cover, as the
+  mockup *2-loading* draws them; `useListCatalogueSeries` reads any answer
+  as empty, the brief's choice, until T097 lists.
+- Deviations from the brief: S5 was un-skipped and its red read and
+  committed right after the pin, before any unit test, as the implementer
+  prompt orders, not last as the brief planned; it stayed red until step
+  11 and its mutation (no empty state drawn) was run at the end as step
+  12 planned.
+- Left over: T097 lists, sorts and counts the series; T098 the failure,
+  whose rejection `list()` does not catch yet; T099 the switch.

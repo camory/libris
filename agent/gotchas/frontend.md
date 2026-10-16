@@ -22,7 +22,7 @@ Read whole by a run that changes `frontend/`, after `every-run.md`.
   an `afterEach`, or the contract case passes only by running first.
 - `vitest.global-setup.ts` starts `contracteer mock` on port 9099 over the
   contract the frontend pins, a `raw.githubusercontent.com` URL of
-  `camory/libris-api` (`v0.11.0` since T079); it starts in about four seconds
+  `camory/libris-api` (`v0.12.1` since T096); it starts in about four seconds
   and logs `Contracteer mock server started on port 9099` last, and the
   setup resolves on that line and kills the process in its teardown. The
   mock generates values, so an `infra/api` spec asserts shape and types,
@@ -59,7 +59,9 @@ Read whole by a run that changes `frontend/`, after `every-run.md`.
   `0b1e2d3c-…`, reader `6e7f8091-a2b3-4c4d-9e5f-6a7b8c9d0e1f`, `OWNER`
   (`v0.11.0`). The choice of the default, `PUT /me/default-bookshelf`,
   answers `404` for the body `{ id: "9e8d7c6b-5a4f-4e3d-8c2b-1a0f9e8d7c6b" }`,
-  `400` for `{ id: "not-a-uuid" }` and a `204` for any other uuid. `FetchIsbnApi`, `FetchBookshelfApi` and `FetchBookshelvesApi` hand a
+  `400` for `{ id: "not-a-uuid" }` and a `204` for any other uuid. The
+  generated `200` of `GET /series` held one or two series in 30 tries,
+  never none (T096). `FetchIsbnApi`, `FetchBookshelfApi` and `FetchBookshelvesApi` hand a
   non-2xx answer to `infra/api/problemOf`, which maps the statuses the
   contract names (400, 404, 409 for the creation and the add of a member, 400 and
   404 for the choice of the default,
@@ -74,7 +76,7 @@ Read whole by a run that changes `frontend/`, after `every-run.md`.
   application runs over the mock* use `inject("mockBaseUrl")`. A new port
   joins `LibrisPorts`, and `vue-tsc` then reds `bootstrap`, which builds the
   real client, `createLibrisApp.spec.ts` and the `open()` of every scenario
-  file: five places, all in the same commit.
+  file, all in the same commit.
 - A fixture may import `domain` and `application` only, so a shared
   app-over-fakes builder cannot live in `src/fixture`: each scenario file
   keeps its own `open()`, naming the ports its spec varies.
@@ -249,12 +251,14 @@ Read whole by a run that changes `frontend/`, after `every-run.md`.
   a link to a path no route declares is never current, whatever the
   location, so an active-tab case needs the route first. A test reads it
   with `getByRole("link", { current: "page" })`, a template styles it with
-  `exact-active-class`. *Accueil* is the exception since T082: `/` is a
-  component-less parent of `""` (`HomeView`) and `bibliotheques/:id`, and
-  the tab is a `RouterLink` `custom` slot writing `aria-current` and
-  `text-accent` from `isActive`, so every screen nested under `/` marks it
-  while `/isbn` and `/catalogue` do not. A screen below the home page goes
-  under that parent's `children`, or *Accueil* stops being current there.
+  `exact-active-class`. *Accueil* (since T082) and *Catalogue* (since T096)
+  are the exceptions: `/` is a component-less parent of `""` (`HomeView`)
+  and `bibliotheques/:id`, `/catalogue` one of `""` (`CatalogueView`) and
+  `series` (`SeriesView`), and each tab is a `RouterLink` `custom` slot
+  writing `aria-current` and `text-accent` from `isActive`, so every screen
+  nested under its parent marks it, while `/isbn` marks neither. A screen
+  below the home page or the catalogue goes under that parent's
+  `children`, or its tab stops being current there.
 - Two Tailwind utilities for the same property on the same element are settled
   by the order Tailwind emits them, not by the order in the attribute. Where a
   state must win — the active tab's colour and weight over the bar's — put the

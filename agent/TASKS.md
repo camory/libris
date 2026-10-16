@@ -76,7 +76,7 @@ deployed. No other task touches the contract (D04).
       one. S3's first red, the spec giving it no backend scenario test.
       Realises S3.
 
-- [ ] T096 Frontend: the series of the catalogue, none yet, on `v0.12.1`.
+- [x] T096 Frontend: the series of the catalogue, none yet, on `v0.12.1`.
       Precondition (human): T095 deployed (D04); the frontend piece of the
       spec, its skipped scenario tests over the fakes with the port, fake
       and domain types they name (D07).

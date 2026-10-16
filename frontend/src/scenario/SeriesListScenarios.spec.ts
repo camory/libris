@@ -7,7 +7,7 @@ import {
 import { afterEach, describe, expect, it, vi } from "vitest";
 import type { App } from "vue";
 import type { CatalogueApi } from "../application/CatalogueApi";
-import { seriesApiKey, type SeriesApi } from "../application/SeriesApi";
+import type { SeriesApi } from "../application/SeriesApi";
 import { createLibrisApp } from "../createLibrisApp";
 import type { Series } from "../domain/Series";
 import { FakeAppUpdate } from "../fixture/FakeAppUpdate";
@@ -171,7 +171,7 @@ describe("Series list", () => {
     ]);
   });
 
-  it.skip("S5 No series", async () => {
+  it("S5 No series", async () => {
     // Given
     const series = librisAnswers([]);
 
@@ -236,10 +236,10 @@ describe("Series list", () => {
         catalogueApi: world.catalogue ?? new FakeCatalogueApi([]),
         bookshelvesApi: new FakeBookshelvesApi({ memberships: [] }),
         readersApi: new FakeReadersApi([]),
+        seriesApi: series,
       },
       "sha-abc1234",
     );
-    app.provide(seriesApiKey, series);
     app.mount(host);
     return within(host);
   }
