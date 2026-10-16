@@ -5,6 +5,7 @@ import { seriesApiKey, type SeriesApi } from "../../../application/SeriesApi";
 import type { Series } from "../../../domain/Series";
 import { FakeSeriesApi } from "../../../fixture/FakeSeriesApi";
 import SeriesRowSkeleton from "../../components/SeriesRowSkeleton.vue";
+import IconAlert from "../../components/icons/IconAlert.vue";
 import IconBook from "../../components/icons/IconBook.vue";
 import { createLibrisI18n } from "../../i18n";
 import SeriesView from "./SeriesView.vue";
@@ -98,6 +99,24 @@ describe("SeriesView", () => {
     const [first, second] = screen.getAllByRole("listitem");
     expect(within(first!).getByText("Astérix")).toBeDefined();
     expect(within(second!).getByText("One piece")).toBeDefined();
+  });
+
+  it("says to try again later when the series do not come", async () => {
+    // Given
+    const { wrapper, screen } = open(
+      new FakeSeriesApi(new TypeError("Failed to fetch")),
+    );
+
+    // When
+    await flushPromises();
+
+    // Then
+    expect(
+      screen.getByText(
+        "Erreur lors du chargement, veuillez réessayer plus tard.",
+      ),
+    ).toBeDefined();
+    expect(wrapper.findAllComponents(IconAlert)).toHaveLength(1);
   });
 
   function open(seriesApi: SeriesApi) {
