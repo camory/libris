@@ -1,13 +1,21 @@
 <script setup lang="ts">
-import { inject } from "vue";
+import { computed, inject } from "vue";
 import { useI18n } from "vue-i18n";
 import { seriesApiKey } from "../../../application/SeriesApi";
 import { useListCatalogueSeries } from "../../../application/useListCatalogueSeries";
+import { seriesInOrder } from "../../../domain/Series";
+import SeriesRow from "../../components/SeriesRow.vue";
 import SeriesRowSkeleton from "../../components/SeriesRowSkeleton.vue";
 import IconBook from "../../components/icons/IconBook.vue";
 
-const { t } = useI18n();
+const { t, locale } = useI18n();
 const { state, list } = useListCatalogueSeries(inject(seriesApiKey)!);
+
+const seriesByName = computed(() =>
+  state.value.status === "listed"
+    ? seriesInOrder(state.value.series, locale.value)
+    : [],
+);
 
 void list();
 </script>
@@ -25,6 +33,14 @@ void list();
     >
       <SeriesRowSkeleton v-for="row in 5" :key="row" />
     </div>
+    <ul
+      v-else-if="state.status === 'listed'"
+      class="divide-y divide-border overflow-hidden rounded-[14px] border border-border bg-surface"
+    >
+      <li v-for="series in seriesByName" :key="series.name">
+        <SeriesRow :series="series" />
+      </li>
+    </ul>
     <div v-else class="flex flex-col items-center gap-3 p-7 text-center">
       <IconBook class="text-muted opacity-60" />
       <p class="text-lead text-muted">{{ t("series.empty") }}</p>

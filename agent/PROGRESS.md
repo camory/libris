@@ -128,3 +128,22 @@ Format:
   12 planned.
 - Left over: T097 lists, sorts and counts the series; T098 the failure,
   whose rejection `list()` does not catch yet; T099 the switch.
+
+## 2026-10-16 — T097 The reader's series listed — done
+- Did: `/catalogue/series` lists the reader's series by name in the
+  catalogue's block, each `SeriesRow` its cover or the stand-in, its name
+  and its count in albums or tomes; S1, S2 (three runs) and S3 green.
+- Decided: the view's sorted list is a `computed`, `seriesByName`, over
+  the `listed` state, as `HomeView`'s `memberships`; the block is the `ul`
+  itself, carrying the card's classes, with no wrapping `div`, the list
+  having no skeleton rows to append as the catalogue's has; `listed` holds
+  the answer as given, `empty` when it is empty; no `{{ " " }}` between
+  the name and the count, none being asked.
+- Deviations from the brief: step 1's red was `findByText` on the name for
+  all five runs, not `rows(screen)` for S1 and S2: the name is drawn
+  nowhere before `SeriesRow`, so the first query of each fails first.
+  A `style` commit after step 10 fixes a line a `sed` of mine half-joined.
+- Left over: T098 the failure, `list()` still not catching; T099 the
+  switch. The `: []` arm of `seriesByName` is never read (the template
+  reads it under `listed` only), the branch coverage's one gap in
+  `SeriesView.vue`.

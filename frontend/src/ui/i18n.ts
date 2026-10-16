@@ -96,6 +96,13 @@ const fr = {
   },
   series: {
     empty: "Les séries de vos bibliothèques apparaîtront ici.",
+    cover: "Couverture de {name}",
+    count: {
+      BOOK: "{count} tome | {count} tomes",
+      BD: "{count} album | {count} albums",
+      MANGA: "{count} tome | {count} tomes",
+      null: "{count} tome | {count} tomes",
+    },
   },
   language: {
     fr: "français",
