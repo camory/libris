@@ -109,7 +109,7 @@ deployed. No other task touches the contract (D04).
       nothing listed; every word from the `fr` catalogue (U05, U07, U08).
       Realises S6; un-skips the frontend test of S6.
 
-- [ ] T099 Frontend: the reader switches the view.
+- [x] T099 Frontend: the reader switches the view.
       On `/catalogue` and `/catalogue/series`, the first block of the
       content is the segmented choice: *Ouvrages* then *Séries*, each a
       link to its view, in a `nav` named *Vue du catalogue*, the view shown

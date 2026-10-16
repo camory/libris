@@ -5,6 +5,7 @@ import { catalogueApiKey } from "../../../application/CatalogueApi";
 import { useBrowseCatalogue } from "../../../application/useBrowseCatalogue";
 import CatalogueRow from "../../components/CatalogueRow.vue";
 import CatalogueRowSkeleton from "../../components/CatalogueRowSkeleton.vue";
+import CatalogueSwitch from "../../components/CatalogueSwitch.vue";
 import IconAlert from "../../components/icons/IconAlert.vue";
 import IconBook from "../../components/icons/IconBook.vue";
 
@@ -39,6 +40,7 @@ void browse();
       <h1 class="text-page-title">{{ t("catalogue.title") }}</h1>
       <p class="text-body text-muted">{{ t("catalogue.hint") }}</p>
     </header>
+    <CatalogueSwitch class="mb-5" />
 
     <div
       v-if="state.status === 'loading'"

@@ -86,6 +86,11 @@ const fr = {
     hint: "Les ouvrages de toutes vos bibliothèques.",
     empty: "Les ouvrages de vos bibliothèques apparaîtront ici.",
     error: "Erreur lors du chargement, veuillez réessayer plus tard.",
+    switch: {
+      name: "Vue du catalogue",
+      books: "Ouvrages",
+      series: "Séries",
+    },
     series: {
       BOOK: "{name} · tome {volume}",
       BD: "{name} · album {volume}",

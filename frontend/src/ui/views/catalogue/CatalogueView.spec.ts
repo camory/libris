@@ -16,6 +16,7 @@ import CatalogueRowSkeleton from "../../components/CatalogueRowSkeleton.vue";
 import IconAlert from "../../components/icons/IconAlert.vue";
 import IconBook from "../../components/icons/IconBook.vue";
 import { createLibrisI18n } from "../../i18n";
+import { createLibrisRouter } from "../../router";
 import CatalogueView from "./CatalogueView.vue";
 
 describe("CatalogueView", () => {
@@ -62,6 +63,26 @@ describe("CatalogueView", () => {
     expect(
       screen.getByText("Les ouvrages de toutes vos bibliothèques."),
     ).toBeDefined();
+  });
+
+  it("shows the switch between the title and the ouvrages", async () => {
+    // Given
+    const { screen } = open(
+      new FakeCatalogueApi([{ books: [asterixLeGaulois], next: null }]),
+    );
+
+    // When
+    await flushPromises();
+
+    // Then
+    const title = screen.getByRole("heading", {
+      name: "Parcourir le catalogue",
+    });
+    const viewSwitch = screen.getByRole("navigation", {
+      name: "Vue du catalogue",
+    });
+    expect(under(title, viewSwitch)).toBe(true);
+    expect(under(viewSwitch, screen.getByRole("list"))).toBe(true);
   });
 
   it("shows five skeleton rows while the first page is coming", () => {
@@ -150,8 +171,9 @@ describe("CatalogueView", () => {
     await flushPromises();
 
     // Then
-    expect(screen.queryAllByRole("link")).toEqual([]);
-    expect(screen.queryAllByRole("button")).toEqual([]);
+    const list = within(screen.getByRole("list"));
+    expect(list.queryAllByRole("link")).toEqual([]);
+    expect(list.queryAllByRole("button")).toEqual([]);
   });
 
   it("says to try again later when the first page does not come", async () => {
@@ -315,7 +337,7 @@ describe("CatalogueView", () => {
   function open(catalogueApi: CatalogueApi) {
     const wrapper = mount(CatalogueView, {
       global: {
-        plugins: [createLibrisI18n()],
+        plugins: [createLibrisI18n(), createLibrisRouter()],
         provide: { [catalogueApiKey]: catalogueApi },
       },
     });

@@ -142,7 +142,7 @@ describe("Series list", () => {
     expect(within(screen.getByRole("listitem")).queryByRole("img")).toBeNull();
   });
 
-  it.skip("S4 The reader switches the view", async () => {
+  it("S4 The reader switches the view", async () => {
     // Given
     const screen = open("/", librisAnswers([asterix]), {
       catalogue: new FakeCatalogueApi([

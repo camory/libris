@@ -266,6 +266,13 @@ Read whole by a run that changes `frontend/`, after `every-run.md`.
   nested under its parent marks it, while `/isbn` marks neither. A screen
   below the home page or the catalogue goes under that parent's
   `children`, or its tab stops being current there.
+- A plain `RouterLink`, no `custom`, to a component-less parent's `""` child
+  is active but not exactly active on a sibling child: at
+  `/catalogue/series` the link to `/catalogue` carries `router-link-active`
+  and no `aria-current`. A switch between sibling views styles its current
+  half with `exact-active-class`, never `active-class` nor a `custom` slot
+  over `isActive`, which mark *Ouvrages* on the series too
+  (`CatalogueSwitch`).
 - Two Tailwind utilities for the same property on the same element are settled
   by the order Tailwind emits them, not by the order in the attribute. Where a
   state must win — the active tab's colour and weight over the bar's — put the
