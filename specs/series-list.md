@@ -6,7 +6,7 @@ many tomes or albums they own: the shelf of BD and manga read as the family
 thinks of it. Now, because the catalogue lists every edition one by one,
 and the series page and the series details, the next two specs of §4.5,
 start from this list.
-**Status:** draft
+**Status:** done 2026-10-16
 
 ## Scenarios
 
@@ -204,6 +204,8 @@ adding one first if staging holds none; go back with the phone's button
 and land on the ouvrages; on the second account of the family, choose
 *Séries* and read the empty sentence. A series mixing kinds and a first
 tome without a cover are the tests' to show.
+
+Checked by Tophe on the Pixel, recorded on 2026-10-16.
 
 ## Tasks
 
