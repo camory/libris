@@ -3,6 +3,7 @@ import { mount } from "@vue/test-utils";
 import { describe, expect, it } from "vitest";
 import type { Series } from "../../domain/Series";
 import { createLibrisI18n } from "../i18n";
+import IconBook from "./icons/IconBook.vue";
 import SeriesRow from "./SeriesRow.vue";
 
 describe("SeriesRow", () => {
@@ -21,6 +22,15 @@ describe("SeriesRow", () => {
     // Then
     const cover = screen.getByRole("img", { name: "Couverture de Astérix" });
     expect(cover.getAttribute("src")).toBe(asterix.coverUrl);
+  });
+
+  it("shows a book icon when the series has no cover", () => {
+    // When
+    const { wrapper, screen } = show({ ...asterix, coverUrl: null });
+
+    // Then
+    expect(screen.queryByRole("img")).toBeNull();
+    expect(wrapper.findAllComponents(IconBook)).toHaveLength(1);
   });
 
   function show(series: Series) {
