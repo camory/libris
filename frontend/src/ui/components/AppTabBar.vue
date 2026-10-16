@@ -1,8 +1,6 @@
 <script setup lang="ts">
+import { House, Library, ScanBarcode } from "@lucide/vue";
 import { useI18n } from "vue-i18n";
-import IconBarcode from "./icons/IconBarcode.vue";
-import IconBooks from "./icons/IconBooks.vue";
-import IconHome from "./icons/IconHome.vue";
 
 const { t } = useI18n();
 </script>
@@ -21,7 +19,7 @@ const { t } = useI18n();
           :class="{ 'text-accent': isActive }"
           @click="navigate"
         >
-          <IconHome class="size-8" />
+          <House :size="32" class="shrink-0" />
         </a>
       </RouterLink>
       <div class="flex h-12 items-center justify-center">
@@ -30,7 +28,7 @@ const { t } = useI18n();
           :aria-label="t('tabs.add')"
           class="flex size-11 items-center justify-center rounded-full bg-accent text-white active:bg-accent-pressed"
         >
-          <IconBarcode class="size-8" />
+          <ScanBarcode :size="32" class="shrink-0" />
         </RouterLink>
       </div>
       <RouterLink v-slot="{ href, navigate, isActive }" to="/catalogue" custom>
@@ -42,7 +40,7 @@ const { t } = useI18n();
           :class="{ 'text-accent': isActive }"
           @click="navigate"
         >
-          <IconBooks class="size-8" />
+          <Library :size="32" class="shrink-0" />
         </a>
       </RouterLink>
     </div>

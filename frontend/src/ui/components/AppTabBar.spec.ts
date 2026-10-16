@@ -1,3 +1,4 @@
+import { House, Library, ScanBarcode } from "@lucide/vue";
 import { within } from "@testing-library/dom";
 import { mount } from "@vue/test-utils";
 import { afterEach, describe, expect, it } from "vitest";
@@ -5,9 +6,6 @@ import { salon } from "../../fixture/Books";
 import { createLibrisI18n } from "../i18n";
 import { createLibrisRouter } from "../router";
 import AppTabBar from "./AppTabBar.vue";
-import IconBarcode from "./icons/IconBarcode.vue";
-import IconBooks from "./icons/IconBooks.vue";
-import IconHome from "./icons/IconHome.vue";
 
 describe("AppTabBar", () => {
   afterEach(() => {
@@ -86,9 +84,9 @@ describe("AppTabBar", () => {
     const { wrapper } = await open("/");
 
     // Then
-    expect(wrapper.findComponent(IconHome).exists()).toBe(true);
-    expect(wrapper.findComponent(IconBarcode).exists()).toBe(true);
-    expect(wrapper.findComponent(IconBooks).exists()).toBe(true);
+    expect(wrapper.findComponent(House).exists()).toBe(true);
+    expect(wrapper.findComponent(ScanBarcode).exists()).toBe(true);
+    expect(wrapper.findComponent(Library).exists()).toBe(true);
   });
 
   async function open(path: string) {
