@@ -4,7 +4,7 @@ import {
   within,
   type BoundFunctions,
 } from "@testing-library/dom";
-import { X } from "@lucide/vue";
+import { Search, X } from "@lucide/vue";
 import { flushPromises, mount } from "@vue/test-utils";
 import { describe, expect, it } from "vitest";
 import { barcodeScannerKey } from "../../../application/BarcodeScanner";
@@ -21,7 +21,6 @@ import { FakeMeApi } from "../../../fixture/FakeMeApi";
 import { lea } from "../../../fixture/Readers";
 import { onePiece1 } from "../../../fixture/SourceEditions";
 import BusySpinner from "../../components/BusySpinner.vue";
-import IconMagnifier from "../../components/icons/IconMagnifier.vue";
 import { createLibrisI18n } from "../../i18n";
 import IsbnView from "./IsbnView.vue";
 
@@ -274,7 +273,7 @@ describe("IsbnView", () => {
     const button = within(view.element as HTMLElement).getByRole("button", {
       name: "Chercher",
     });
-    const magnifiers = view.findAllComponents(IconMagnifier);
+    const magnifiers = view.findAllComponents(Search);
     expect(magnifiers).toHaveLength(1);
     expect(button.contains(magnifiers[0]!.element)).toBe(true);
   });
@@ -292,7 +291,7 @@ describe("IsbnView", () => {
       name: "Recherche en cours…",
     });
     expect(button.contains(view.findComponent(BusySpinner).element)).toBe(true);
-    expect(view.findAllComponents(IconMagnifier)).toHaveLength(0);
+    expect(view.findAllComponents(Search)).toHaveLength(0);
   });
 
   it("offers the field alone where the browser detects no barcode", async () => {

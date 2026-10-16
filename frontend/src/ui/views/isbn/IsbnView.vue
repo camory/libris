@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { X } from "@lucide/vue";
+import { Search, X } from "@lucide/vue";
 import {
   computed,
   inject,
@@ -25,7 +25,6 @@ import SourceEditionCard from "../../components/SourceEditionCard.vue";
 import SourceEditionCardSkeleton from "../../components/SourceEditionCardSkeleton.vue";
 import IconAlert from "../../components/icons/IconAlert.vue";
 import IconBarcode from "../../components/icons/IconBarcode.vue";
-import IconMagnifier from "../../components/icons/IconMagnifier.vue";
 
 const messages = new Map([["/problems/not-found", "isbn.unknown"]]);
 const refusals = ["isbn.invalid", "isbn.unknown"];
@@ -150,7 +149,7 @@ async function search() {
           @click="search"
         >
           <BusySpinner v-if="searching" class="size-5.5" />
-          <IconMagnifier v-else />
+          <Search v-else :size="22" class="shrink-0" />
         </button>
       </div>
     </div>
