@@ -1,10 +1,10 @@
+import { RefreshCw } from "@lucide/vue";
 import { fireEvent, within } from "@testing-library/dom";
 import { mount } from "@vue/test-utils";
 import { describe, expect, it } from "vitest";
 import { createLibrisI18n } from "../i18n";
 import AppUpdateBanner, { type UpdateState } from "./AppUpdateBanner.vue";
 import BusySpinner from "./BusySpinner.vue";
-import IconRefresh from "./icons/IconRefresh.vue";
 
 describe("AppUpdateBanner", () => {
   it("shows the new version and the way to install it", () => {
@@ -14,7 +14,7 @@ describe("AppUpdateBanner", () => {
     // Then
     screen.getByText("Nouvelle version disponible");
     screen.getByRole("button", { name: "Mettre à jour" });
-    expect(wrapper.findComponent(IconRefresh).exists()).toBe(true);
+    expect(wrapper.findComponent(RefreshCw).exists()).toBe(true);
   });
 
   it("gives the order on the tap", async () => {
@@ -38,7 +38,7 @@ describe("AppUpdateBanner", () => {
     screen.getByText("Mise à jour…");
     expect(wrapper.findComponent(BusySpinner).exists()).toBe(true);
     expect(screen.queryByRole("button")).toBeNull();
-    expect(wrapper.findComponent(IconRefresh).exists()).toBe(false);
+    expect(wrapper.findComponent(RefreshCw).exists()).toBe(false);
   });
 
   it("shows nothing while no version waits", () => {
