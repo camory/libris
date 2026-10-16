@@ -1,6 +1,7 @@
 import { within } from "@testing-library/dom";
 import { mount } from "@vue/test-utils";
 import { describe, expect, it } from "vitest";
+import { nextTick } from "vue";
 import type { Series } from "../../domain/Series";
 import { createLibrisI18n } from "../i18n";
 import IconBook from "./icons/IconBook.vue";
@@ -27,6 +28,19 @@ describe("SeriesRow", () => {
   it("shows a book icon when the series has no cover", () => {
     // When
     const { wrapper, screen } = show({ ...asterix, coverUrl: null });
+
+    // Then
+    expect(screen.queryByRole("img")).toBeNull();
+    expect(wrapper.findAllComponents(IconBook)).toHaveLength(1);
+  });
+
+  it("shows a book icon when the cover does not load", async () => {
+    // Given
+    const { wrapper, screen } = show(asterix);
+
+    // When
+    screen.getByRole("img").dispatchEvent(new Event("error"));
+    await nextTick();
 
     // Then
     expect(screen.queryByRole("img")).toBeNull();
