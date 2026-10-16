@@ -8,6 +8,7 @@ import SeriesRowSkeleton from "../../components/SeriesRowSkeleton.vue";
 import IconAlert from "../../components/icons/IconAlert.vue";
 import IconBook from "../../components/icons/IconBook.vue";
 import { createLibrisI18n } from "../../i18n";
+import { createLibrisRouter } from "../../router";
 import SeriesView from "./SeriesView.vue";
 
 describe("SeriesView", () => {
@@ -22,6 +23,24 @@ describe("SeriesView", () => {
     expect(
       screen.getByText("Les ouvrages de toutes vos bibliothèques."),
     ).toBeDefined();
+  });
+
+  it("shows the switch between the title and the series", async () => {
+    // Given
+    const { screen } = open(new FakeSeriesApi([onePiece]));
+
+    // When
+    await flushPromises();
+
+    // Then
+    const title = screen.getByRole("heading", {
+      name: "Parcourir le catalogue",
+    });
+    const viewSwitch = screen.getByRole("navigation", {
+      name: "Vue du catalogue",
+    });
+    expect(under(title, viewSwitch)).toBe(true);
+    expect(under(viewSwitch, screen.getByRole("list"))).toBe(true);
   });
 
   it("shows five skeleton rows while the series are coming", () => {
@@ -140,11 +159,19 @@ describe("SeriesView", () => {
   function open(seriesApi: SeriesApi) {
     const wrapper = mount(SeriesView, {
       global: {
-        plugins: [createLibrisI18n()],
+        plugins: [createLibrisI18n(), createLibrisRouter()],
         provide: { [seriesApiKey]: seriesApi },
       },
     });
     return { wrapper, screen: within(wrapper.element as HTMLElement) };
+  }
+
+  function under(above: Element, below: Element) {
+    return (
+      (above.compareDocumentPosition(below) &
+        Node.DOCUMENT_POSITION_FOLLOWING) !==
+      0
+    );
   }
 });
 

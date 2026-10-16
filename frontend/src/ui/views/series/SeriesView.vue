@@ -4,6 +4,7 @@ import { useI18n } from "vue-i18n";
 import { seriesApiKey } from "../../../application/SeriesApi";
 import { useListCatalogueSeries } from "../../../application/useListCatalogueSeries";
 import { seriesInOrder } from "../../../domain/Series";
+import CatalogueSwitch from "../../components/CatalogueSwitch.vue";
 import SeriesRow from "../../components/SeriesRow.vue";
 import SeriesRowSkeleton from "../../components/SeriesRowSkeleton.vue";
 import IconAlert from "../../components/icons/IconAlert.vue";
@@ -27,6 +28,7 @@ void list();
       <h1 class="text-page-title">{{ t("catalogue.title") }}</h1>
       <p class="text-body text-muted">{{ t("catalogue.hint") }}</p>
     </header>
+    <CatalogueSwitch class="mb-5" />
 
     <div
       v-if="state.status === 'loading'"
