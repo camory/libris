@@ -103,7 +103,7 @@ deployed. No other task touches the contract (D04).
       Realises S1, S2 and S3 on the frontend; un-skips the frontend tests
       of S1, of S2, its three cases, and of S3.
 
-- [ ] T098 Frontend: Libris unavailable on the series.
+- [x] T098 Frontend: Libris unavailable on the series.
       When the series do not come, in place of the list *Erreur lors du
       chargement, veuillez réessayer plus tard.* with the alert icon, and
       nothing listed; every word from the `fr` catalogue (U05, U07, U08).

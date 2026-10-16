@@ -185,7 +185,7 @@ describe("Series list", () => {
     expect(rows(screen)).toEqual([]);
   });
 
-  it.skip("S6 Libris unavailable", async () => {
+  it("S6 Libris unavailable", async () => {
     // Given
     const series = librisDoesNotAnswer();
 

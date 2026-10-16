@@ -96,6 +96,7 @@ const fr = {
   },
   series: {
     empty: "Les séries de vos bibliothèques apparaîtront ici.",
+    error: "Erreur lors du chargement, veuillez réessayer plus tard.",
     cover: "Couverture de {name}",
     count: {
       BOOK: "{count} tome | {count} tomes",

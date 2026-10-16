@@ -147,3 +147,16 @@ Format:
   switch. The `: []` arm of `seriesByName` is never read (the template
   reads it under `listed` only), the branch coverage's one gap in
   `SeriesView.vue`.
+
+## 2026-10-16 — T098 Libris unavailable on the series — done
+- Did: `useListCatalogueSeries` catches the port's rejection into
+  `{ status: "unavailable" }`, and `SeriesView` draws, in place of the
+  list, `IconAlert` and *Erreur lors du chargement, veuillez réessayer plus
+  tard.* from `series.error`; S6 green.
+- Decided: the message is the catalogue's markup, a `p` in `text-body
+  text-danger` with `gap-2`, in a `v-else-if` of its own between the list
+  and the empty state, so the empty state keeps its `v-else`.
+- Deviations from the brief: none. S6 went green with step 3, as the brief
+  foresaw; step 4's guard was red under its mutation (the empty state drawn
+  beside the message).
+- Left over: T099 the switch, which un-skips S4.

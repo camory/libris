@@ -6,6 +6,7 @@ import { useListCatalogueSeries } from "../../../application/useListCatalogueSer
 import { seriesInOrder } from "../../../domain/Series";
 import SeriesRow from "../../components/SeriesRow.vue";
 import SeriesRowSkeleton from "../../components/SeriesRowSkeleton.vue";
+import IconAlert from "../../components/icons/IconAlert.vue";
 import IconBook from "../../components/icons/IconBook.vue";
 
 const { t, locale } = useI18n();
@@ -41,6 +42,13 @@ void list();
         <SeriesRow :series="series" />
       </li>
     </ul>
+    <p
+      v-else-if="state.status === 'unavailable'"
+      class="flex items-start gap-2 text-body text-danger"
+    >
+      <IconAlert />
+      <span>{{ t("series.error") }}</span>
+    </p>
     <div v-else class="flex flex-col items-center gap-3 p-7 text-center">
       <IconBook class="text-muted opacity-60" />
       <p class="text-lead text-muted">{{ t("series.empty") }}</p>
