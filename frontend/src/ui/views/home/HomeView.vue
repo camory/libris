@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { CirclePlus } from "@lucide/vue";
+import { CircleAlert, CirclePlus } from "@lucide/vue";
 import { computed, inject, ref } from "vue";
 import { useI18n } from "vue-i18n";
 import { bookshelvesApiKey } from "../../../application/BookshelvesApi";
@@ -15,7 +15,6 @@ import { membershipsInOrder } from "../../../domain/Membership";
 import type { Reader } from "../../../domain/Reader";
 import BookshelfRow from "../../components/BookshelfRow.vue";
 import BookshelfRowSkeleton from "../../components/BookshelfRowSkeleton.vue";
-import IconAlert from "../../components/icons/IconAlert.vue";
 import NewBookshelfRow from "../../components/NewBookshelfRow.vue";
 
 const { t, locale } = useI18n();
@@ -99,7 +98,7 @@ void list();
         v-if="state.status === 'unavailable'"
         class="flex items-start gap-2 text-body text-danger"
       >
-        <IconAlert />
+        <CircleAlert :size="22" class="shrink-0" />
         <span>{{ t("home.bookshelves.error") }}</span>
       </p>
       <div

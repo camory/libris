@@ -1,10 +1,9 @@
 <script setup lang="ts">
-import { ChevronRight, Star } from "@lucide/vue";
+import { ChevronRight, CircleAlert, Star } from "@lucide/vue";
 import { computed } from "vue";
 import { useI18n } from "vue-i18n";
 import type { Membership } from "../../domain/Membership";
 import BusySpinner from "./BusySpinner.vue";
-import IconAlert from "./icons/IconAlert.vue";
 
 const props = defineProps<{
   membership: Membership;
@@ -65,7 +64,7 @@ const role = computed(() => {
       v-if="failed"
       class="relative -mt-1.5 flex items-start gap-2 px-3.5 pb-3.5 text-body text-danger"
     >
-      <IconAlert />
+      <CircleAlert :size="22" class="shrink-0" />
       <span>{{ t("home.bookshelves.defaultError") }}</span>
     </p>
   </div>
