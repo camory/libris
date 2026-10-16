@@ -45,6 +45,18 @@ describe("CatalogueSwitch", () => {
     ).toBe("Ouvrages");
   });
 
+  it("marks Séries alone current on the series", async () => {
+    // When
+    const screen = await show("/catalogue/series");
+
+    // Then
+    expect(
+      screen
+        .getAllByRole("link", { current: "page" })
+        .map((link) => link.textContent?.trim()),
+    ).toEqual(["Séries"]);
+  });
+
   async function show(path: string) {
     const router = createLibrisRouter();
     await router.push(path);
