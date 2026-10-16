@@ -35,6 +35,16 @@ describe("CatalogueSwitch", () => {
     ]);
   });
 
+  it("marks Ouvrages current on the ouvrages", async () => {
+    // When
+    const screen = await show("/catalogue");
+
+    // Then
+    expect(
+      screen.getByRole("link", { current: "page" }).textContent?.trim(),
+    ).toBe("Ouvrages");
+  });
+
   async function show(path: string) {
     const router = createLibrisRouter();
     await router.push(path);
