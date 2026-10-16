@@ -95,12 +95,33 @@ describe("SeriesRow", () => {
     expect(screen.getByText("3 tomes")).toBeDefined();
   });
 
+  it("shows the name and the count alone", () => {
+    // When
+    const { wrapper } = show(asterix);
+
+    // Then
+    expect(words(wrapper.element as HTMLElement)).toEqual([
+      "Astérix",
+      "6 albums",
+    ]);
+  });
+
   function show(series: Series) {
     const wrapper = mount(SeriesRow, {
       props: { series },
       global: { plugins: [createLibrisI18n()] },
     });
     return { wrapper, screen: within(wrapper.element as HTMLElement) };
+  }
+
+  function words(row: HTMLElement) {
+    const texts = document.createTreeWalker(row, NodeFilter.SHOW_TEXT);
+    const words: string[] = [];
+    while (texts.nextNode()) {
+      const text = texts.currentNode.textContent?.trim();
+      if (text) words.push(text);
+    }
+    return words;
   }
 });
 
