@@ -16,23 +16,6 @@
 >
 > Follow-ups and ideas go to `agent/PROPOSED.md`, never here.
 
-## Icons — docs/DESIGN.md
-
-No contract release: nothing in the API changes, the screen alone does.
-The Lucide glyphs were chosen by Tophe on 2026-10-16, each beside the
-hand-drawn one at its real size.
-
-- [x] T100 Frontend: the icons are Lucide's.
-      Every hand-drawn icon gives way to its Lucide counterpart at the same
-      size and colour: `IconHome` → `House`, `IconBarcode` → `ScanBarcode`,
-      `IconBooks` → `Library`, `IconBook` → `BookOpen`, `IconAlert` →
-      `CircleAlert`, `IconMagnifier` → `Search`, `IconRefresh` →
-      `RefreshCw`; `ui/components/icons` is deleted. The specs that find an
-      icon by its component find the Lucide one; nothing a reader does or
-      reads changes. The *Done*: the tab bar, the ISBN field and its
-      button, a card, the catalogue and the series in their states, the
-      update banner, on the Pixel (U03, U07).
-
 ## Done
 
 - Phase 0 — Foundations, T001 to T012, done 2026-09-10 with `v0.1.3` on the
@@ -92,6 +75,9 @@ hand-drawn one at its real size.
   bookshelves hold, one row per series with the cover of its first edition
   and its count in tomes or albums, the kind every edition shares;
   checked on the Pixel from the installed app on staging.
+- Icons, T100, done 2026-10-16, `docs/DESIGN.md`: every icon is Lucide's,
+  from `@lucide/vue`, at the size and colour the hand-drawn one had, the
+  hand-drawn files deleted; checked on the Pixel on staging.
 
 ## Questions for the human
 
