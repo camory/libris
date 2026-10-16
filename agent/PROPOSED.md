@@ -477,3 +477,10 @@
   `IconBook` stand-in. Extract a cover component both rows use, with its
   own spec taking the cover cases of `SeriesRow.spec.ts` (found
   2026-10-16 by T097's review).
+- Frontend: the message of a failure, `IconAlert` and a sentence in a `p`
+  with `flex items-start gap-2 text-body text-danger`, is written out nine
+  times: in `SeriesView`, `CatalogueView`, `HomeView`, `BookshelfView`,
+  twice in `IsbnView`, and in `BookshelfRow`, `NewBookshelfRow` and
+  `ReaderChoice`, each adding only its own spacing. Extract a message
+  component taking the sentence, with its own spec (found 2026-10-16 by
+  T098's review).
