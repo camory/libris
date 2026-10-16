@@ -99,6 +99,7 @@ const fr = {
     cover: "Couverture de {name}",
     count: {
       BD: "{count} album | {count} albums",
+      MANGA: "{count} tomes",
     },
   },
   language: {

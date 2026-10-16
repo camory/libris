@@ -1,14 +1,22 @@
 <script setup lang="ts">
-import { ref } from "vue";
+import { computed, ref } from "vue";
 import { useI18n } from "vue-i18n";
 import type { Series } from "../../domain/Series";
 import IconBook from "./icons/IconBook.vue";
 
-defineProps<{ series: Series }>();
+const props = defineProps<{ series: Series }>();
 
 const { t } = useI18n();
 
 const coverFailed = ref(false);
+
+const count = computed(() =>
+  t(
+    `series.count.${props.series.kind}`,
+    { count: props.series.volumeCount },
+    props.series.volumeCount,
+  ),
+);
 </script>
 
 <template>
@@ -27,14 +35,7 @@ const coverFailed = ref(false);
     </div>
     <div class="flex min-w-0 flex-col gap-1.5">
       <p class="text-row-title">{{ series.name }}</p>
-      <p class="text-body text-muted">
-        {{
-          t(
-            "series.count.BD",
-            { count: series.volumeCount },
-            series.volumeCount,
-          )
-        }}
+      <p class="text-body text-muted">{{ count }}
       </p>
     </div>
   </div>
