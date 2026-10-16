@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+import type { Series } from "../domain/Series";
 import { FakeSeriesApi } from "../fixture/FakeSeriesApi";
 import { useListCatalogueSeries } from "./useListCatalogueSeries";
 
@@ -15,4 +16,24 @@ describe("useListCatalogueSeries", () => {
     expect(before).toEqual({ status: "loading" });
     expect(state.value).toEqual({ status: "empty" });
   });
+
+  it("lists the series Libris answers", async () => {
+    // Given
+    const { state, list } = useListCatalogueSeries(
+      new FakeSeriesApi([onePiece]),
+    );
+
+    // When
+    await list();
+
+    // Then
+    expect(state.value).toEqual({ status: "listed", series: [onePiece] });
+  });
 });
+
+const onePiece: Series = {
+  name: "One piece",
+  volumeCount: 3,
+  coverUrl: null,
+  kind: "MANGA",
+};
