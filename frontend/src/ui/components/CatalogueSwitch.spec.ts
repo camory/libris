@@ -20,6 +20,21 @@ describe("CatalogueSwitch", () => {
     ).toBeDefined();
   });
 
+  it("offers Ouvrages then Séries, each a link to its view", async () => {
+    // When
+    const screen = await show("/catalogue");
+
+    // Then
+    expect(
+      screen
+        .getAllByRole("link")
+        .map((link) => [link.textContent?.trim(), link.getAttribute("href")]),
+    ).toEqual([
+      ["Ouvrages", "/catalogue"],
+      ["Séries", "/catalogue/series"],
+    ]);
+  });
+
   async function show(path: string) {
     const router = createLibrisRouter();
     await router.push(path);

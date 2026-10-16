@@ -88,6 +88,8 @@ const fr = {
     error: "Erreur lors du chargement, veuillez réessayer plus tard.",
     switch: {
       name: "Vue du catalogue",
+      books: "Ouvrages",
+      series: "Séries",
     },
     series: {
       BOOK: "{name} · tome {volume}",
