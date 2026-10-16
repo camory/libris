@@ -87,6 +87,19 @@ describe("SeriesView", () => {
     expect(screen.getAllByRole("listitem")).toHaveLength(2);
   });
 
+  it("lists the series by name whatever the order of the answer", async () => {
+    // Given
+    const { screen } = open(new FakeSeriesApi([onePiece, asterix]));
+
+    // When
+    await flushPromises();
+
+    // Then
+    const [first, second] = screen.getAllByRole("listitem");
+    expect(within(first!).getByText("Astérix")).toBeDefined();
+    expect(within(second!).getByText("One piece")).toBeDefined();
+  });
+
   function open(seriesApi: SeriesApi) {
     const wrapper = mount(SeriesView, {
       global: {
