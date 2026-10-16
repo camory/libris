@@ -28,7 +28,13 @@ const coverFailed = ref(false);
     <div class="flex min-w-0 flex-col gap-1.5">
       <p class="text-row-title">{{ series.name }}</p>
       <p class="text-body text-muted">
-        {{ t("series.count.BD", { count: series.volumeCount }) }}
+        {{
+          t(
+            "series.count.BD",
+            { count: series.volumeCount },
+            series.volumeCount,
+          )
+        }}
       </p>
     </div>
   </div>

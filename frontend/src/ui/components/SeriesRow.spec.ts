@@ -55,6 +55,14 @@ describe("SeriesRow", () => {
     expect(screen.getByText("6 albums")).toBeDefined();
   });
 
+  it("counts one album", () => {
+    // When
+    const { screen } = show({ ...asterix, kind: "BD", volumeCount: 1 });
+
+    // Then
+    expect(screen.getByText("1 album")).toBeDefined();
+  });
+
   function show(series: Series) {
     const wrapper = mount(SeriesRow, {
       props: { series },
