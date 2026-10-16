@@ -95,9 +95,8 @@ Read whole by a run that changes `frontend/`, after `every-run.md`.
   the mock generates.
 - `npm run format` passes `--ignore-path ../.gitignore`, or Prettier
   rewrites `dist/` and `coverage/`; `prettier --check` cannot parse
-  `nginx.conf`. `npx prettier --write src` also rewrites `src/domain/Copy.ts`,
-  `src/ui/components/icons/IconBooks.vue` and
-  `src/scenario/CoversScenarios.spec.ts`, which `main` holds unformatted:
+  `nginx.conf`. `npx prettier --write src` also rewrites `src/domain/Copy.ts`
+  and `src/scenario/CoversScenarios.spec.ts`, which `main` holds unformatted:
   format the files the task touches, by name.
 - `registerType: "prompt"` and `injectRegister: false` on the PWA plugin: no
   `registerSW.js` is emitted, the app registers `/sw.js` itself through
@@ -176,11 +175,11 @@ Read whole by a run that changes `frontend/`, after `every-run.md`.
   with `getTracks()` to it is an ordinary property assignment: no IDL
   conversion, no throw.
 - `SourceEditionCard` keeps one `img` per candidate of the lookup's
-  `covers`, the shown one alone accessible, and the stand-in `IconBook`
+  `covers`, the shown one alone accessible, and the stand-in `BookOpen`
   when none is left; its props are `edition`, `copies`, `covers` and
   `held`, required, the dots' row and the name drawn only when `held` is
   false. Its spec's `card()`, `show()` and `screen()` default to no
-  candidate and `held` false, so a case counting the rows' `IconBook`s
+  candidate and `held` false, so a case counting the rows' `BookOpen`s
   passes a candidate, or the stand-in adds one. `getAllByRole("img", { hidden: true
   })` reaches every candidate's image, in the answer's order.
 - jsdom clears its computed-style cache only when the tree is attached to
@@ -199,9 +198,9 @@ Read whole by a run that changes `frontend/`, after `every-run.md`.
   `new Event("error")` on the element itself and awaits `nextTick()`. Vue Test
   Utils' `findComponent(SomeIcon)` is how a rendered icon is asserted: an
   `aria-hidden` SVG carries no text and no role, so no `getBy*` query reaches
-  it. Every `SourceEditionCard` draws `IconBook` on its bookshelf rows or
+  it. Every `SourceEditionCard` draws `BookOpen` on its bookshelf rows or
   its absence row, so the cover's stand-in is proven by counting,
-  `findAllComponents(IconBook)`, never by `exists()`.
+  `findAllComponents(BookOpen)`, never by `exists()`.
 - A spec importing a component that does not exist yet fails the whole file
   at load (`Failed to resolve import`, `Tests no tests`), not the one case:
   write the component first, drawing nothing the case asserts, and the red is
@@ -364,7 +363,10 @@ Read whole by a run that changes `frontend/`, after `every-run.md`.
   stroke comes from `app.provide(LUCIDE_CONTEXT, { strokeWidth: 1.8 })` in
   `createLibrisApp`: a component spec mounted alone gets no context and
   draws Lucide's default stroke, 2. A `:stroke-width` on the icon beats the
-  context (`NewBookshelfRow`'s check, 3).
+  context (`NewBookshelfRow`'s check, 3). An icon draws at 24 unless given
+  `:size` (`:size="22"`), which writes the `svg`'s own `width` and
+  `height`, and carries no `shrink-0` of its own: one beside a sentence
+  in a flex row says `class="shrink-0"`.
 - `findComponent(SomeIcon)` over a tree that draws none answers an empty
   wrapper whose `.element` throws `Cannot call element on an empty
   VueWrapper`: that is the red of a case asserting an icon before the icon is
