@@ -246,13 +246,6 @@
   of publisher's blurb there, which the card has a place for; the day the
   summary is wanted, its task decides what to do with prose that long
   (found on T027, 2026-09-16).
-- Frontend: the six icons of `src/ui/components/icons/` repeat the same
-  eleven-line `<svg>` shell (the 24 grid, `stroke-width` 1.8, the round caps,
-  `aria-hidden`), differing only by their paths and, for `IconBook`, by the
-  drawn size. A shared shell the icons pass their paths to would keep the grid
-  and the stroke in one place; six files are still cheaper to read than to
-  abstract, so the day a seventh arrives is the day to weigh it (found on
-  T030, 2026-09-16).
 - Frontend: nothing tells the reader an update that does not finish. The
   banner's `updating` state ends only on the reload, so a worker that never
   activates leaves *Mise à jour…* on the screen for ever; `specs/update.md`
@@ -373,9 +366,6 @@
 - Frontend: `CatalogueRow` and `SourceEditionCard` each group the copies of
   an edition by bookshelf with the same loop; one function beside `Book` or
   `Copy` could serve both (found 2026-09-28 while implementing T047).
-- Design: U07 gives no size for the stand-in icon of a list row's cover;
-  `CatalogueRow` draws `IconBook` at 22 in its 48 by 74 block. Add that job
-  to U07's list of sizes (found 2026-09-28 while implementing T047).
 - Backend: `BrowseCatalogue` reads the page's edition ids in one statement
   and their copies in another; a copy removed between the two would leave
   an edition of the page without copies and fail `getValue`. Nothing
@@ -444,15 +434,6 @@
   Levers to weigh with Tophe: ask the redirect's target directly, one Open
   Library request instead of two, a shorter Open Library timeout, or answer
   without it past a delay (found 2026-10-07 by Tophe on the lookup page).
-- Frontend: move today's hand-drawn icons (`IconHome`, `IconBarcode`,
-  `IconBooks`, `IconBook`, `IconAlert`, `IconClose`, `IconMagnifier`,
-  `IconRefresh`) to their Lucide counterparts at stroke 1.8, once the
-  bookshelves feature has brought Lucide in; *library* has the leaning
-  third spine of `IconBooks` (found 2026-10-10 by Tophe while reviewing
-  the bookshelves mockups). Candidates to review with Tophe one by one
-  before any task: `house`, `barcode` or `scan-barcode`, `library`,
-  `book`, `circle-alert`, `x`, `search`, `refresh-cw` (2026-10-13, with
-  U07's move to `@lucide/vue`).
 - Frontend: `HomeView.spec.ts` *renders the French title from the messages*
   is two statements with no Given / When / Then markers, as on `main`
   before T079 changed its text; give it the markers or one statement
