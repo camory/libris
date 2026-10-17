@@ -234,3 +234,12 @@ account of the family, paste the address of *Tintin*'s page and read
 *Série introuvable.* The other cases are the tests' to show.
 
 ## Tasks
+
+- T101 — S5, the backend on `v0.13.0` — backend
+- T102 — S1 — backend
+- T103 — S5, the frontend on `v0.13.0` — frontend
+- T104 — S1 — frontend
+- T105 — S2 — frontend
+- T106 — S3 — frontend
+- T107 — S4 — frontend
+- T108 — S6 — frontend
