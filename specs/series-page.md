@@ -139,24 +139,22 @@ Proof: frontend scenario test with the API failing.
 Mockups: <https://claude.ai/artifact/TqcQHTCC7APD8HQXPGPjjF>, one
 artboard per state below, exported as `specs/series-page/<n>-<state>.jpg`
 in the same order; the listed state is option D of the layouts weighed,
-<https://claude.ai/artifact/86pggv3YHgDGQv6HBYLKXH>. Route `/catalogue/series/{id}`, reached from a row of the
-series list; the *Catalogue* tab is in `accent`.
+<https://claude.ai/artifact/86pggv3YHgDGQv6HBYLKXH>. Route
+`/catalogue/series/{id}`, reached from a row of the series list; the
+*Catalogue* tab is in `accent`.
 
-The spec proposes amendments to `docs/DESIGN.md`: in U03, the band, a
-picture above the header at the screen's full width, with no text, the
-header under it 12 from it in place of 20; on this screen the first block
-12 under the header, with no other space; and no chevron at the right of a
-row that leads to a screen, any row of a list being tappable, so the
-bookshelf rows of the home page lose theirs; in U08, the series' name as
-the title of its screen, a third proper name in place of an infinitive.
+`docs/DESIGN.md` gains with this spec: in U03, the band above the header
+and the spacing under it, and a row that leads to a screen with no
+chevron, so the bookshelf rows of the home page lose theirs; in U07,
+`ChevronRight` gone; in U08, the series' name as the title of its screen.
 
 The series list (`specs/series-list.md`) changes: a row leads to the
 series' page, the whole row a link, with no chevron.
 
 Top to bottom on a phone, everything but the tab bar scrolling together:
 
-- **The band**: the series' cover, cropped from its top, at the full width
-  of the column, 130 tall; no text on it.
+- **The band** (U03): the series' cover, named *Couverture de* and the
+  series' name.
 - **The header**: the series' name as the title; under it the hint, the
   series' count followed by *dans vos bibliothèques.* (*28 tomes dans vos
   bibliothèques.*, *1 album dans vos bibliothèques.*), the words of
