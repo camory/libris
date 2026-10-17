@@ -54,6 +54,7 @@ import fr.amory.libris.library.application.catalogue.BrowseCatalogue
 import fr.amory.libris.library.application.catalogue.CataloguePage
 import fr.amory.libris.library.application.catalogue.CatalogueSeries
 import fr.amory.libris.library.application.catalogue.FindCatalogueSeries
+import fr.amory.libris.library.application.catalogue.FindCatalogueSeriesResult
 import fr.amory.libris.library.application.catalogue.FindCatalogueSeriesResult.NoSuchSeries
 import fr.amory.libris.library.application.catalogue.HeldEdition
 import fr.amory.libris.library.application.catalogue.ListCatalogueSeries
@@ -212,10 +213,13 @@ class ApiContractTest @Autowired constructor(
 
   private fun seriesAnswer() {
     given(listCatalogueSeries(ReaderId(eq(CONTRACTEER.id.value) ?: CONTRACTEER.id.value)))
-      .willReturn(listOf(CatalogueSeries(ASTERIX, "Astérix", 1, ASTERIX_1_COVER, BD)))
+      .willReturn(listOf(ASTERIX_SERIES))
   }
 
   private fun findingASeriesAnswers() {
+    val contracteer = ReaderId(eq(CONTRACTEER.id.value) ?: CONTRACTEER.id.value)
+    given(findCatalogueSeries(contracteer, SeriesId(any() ?: NOT_IN_MY_CATALOGUE.value)))
+      .willReturn(FindCatalogueSeriesResult.Found(ASTERIX_SERIES, listOf(ASTERIX_1_HELD)))
     given(findCatalogueSeries(CONTRACTEER.id, NOT_IN_MY_CATALOGUE)).willReturn(NoSuchSeries)
   }
 
@@ -347,6 +351,8 @@ private val UNKNOWN_AS_VIEWER = Membership(readerId("00000000-0000-4000-8000-000
 private val TOPHE_AS_OWNER = Membership(readerId("6e7f8091-a2b3-4c4d-9e5f-6a7b8c9d0e1f"), OWNER)
 
 private val ASTERIX = seriesId("6a7b8c9d-0e1f-4a2b-8c3d-4e5f6a7b8c9d")
+
+private val ASTERIX_SERIES = CatalogueSeries(ASTERIX, "Astérix", 1, ASTERIX_1_COVER, BD)
 
 private val NOT_IN_MY_CATALOGUE = seriesId("5b6c7d8e-9f0a-4b1c-8d2e-3f4a5b6c7d8e")
 
