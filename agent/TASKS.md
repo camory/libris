@@ -27,7 +27,7 @@ T102 finds the series, red on S1's scenario test. The frontend pin moves
 from `v0.12.1` in T103, once T102 is deployed; T104 to T108 each add one
 scenario to the page. No other task touches the contract (D04).
 
-- [ ] T101 Backend: the series page on `v0.13.0`, no such series.
+- [x] T101 Backend: the series page on `v0.13.0`, no such series.
       `ApiContractTest` pins `v0.13.0`, the backend's one bump (D04).
       Each series of the series list answers its `id`, the row its name
       has in persistence (D12). Libris serves a series by its id and

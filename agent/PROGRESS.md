@@ -62,11 +62,20 @@ Format:
 - Left over: the backlog is empty; the next feature, the series page, needs
   its spec, written with Tophe.
 
-## 2026-10-17 — T101 The series page on v0.13.0, no such series — handoff
-- Done: steps 1 to 9 of the test plan, one commit per green (steps 1–3 in one, steps 4 and 8 together, since step 4's red lasts until step 8). Start at step 10: tidy, gate, gotcha, tick, entry, PR.
-- Red of step 1, the PR needs it: 4 of 38 cases, `GET /api/v1/series -> 200 (generated)` (`'[0].id': is required`), and on `/api/v1/series/{id}` `404 with scenario '404_NOT_IN_MY_CATALOGUE'`, `200 (generated)` and `400|404 (auto: path 'id' type mismatch)`, each `Actual: 403`. After step 9: `tests=38`, 0 failures (partial run; read it again after the gate).
-- Step 2 red: `not a problem: 404 NOT_FOUND` (Boot's error body, path unmapped). Step 4 red: `404` expected, `400` `/problems/validation` (the list answered no id).
-- Guard, step 6: mutation dropping `membership.reader_id = :readerId` from `FIND_SERIES_IDS` reds `an edition on a bookshelf the reader does not belong to answers no series id` (`Values differed at keys`: Tom's *Astérix* answered too); reverted, green.
-- Decided: `ListCatalogueSeries` reads the id as `seriesIds.getValue(seriesEditions.first().id)` of its name groups; `ApiContractTest` holds `ASTERIX` (series id) and `ASTERIX_SERIES` (the `CatalogueSeries` shared by the list's stub and `Found`), fixtures at the foot.
-- Deviations: none so far.
-- Left over for step 10: the `additionalProperties: false` item of `agent/gotchas/every-run.md` (backend pins `v0.13.0` since T101, frontend `v0.12.1` since T096); self-review of `git diff main...HEAD`.
+## 2026-10-17 — T101 The series page on v0.13.0, no such series — done
+- Did: the backend pins `v0.13.0`; each series of the list answers its
+  `id`, the uuid of its `series` row read through
+  `CatalogueEditions.findSeriesIds`; `GET /api/v1/series/{id}` answers every
+  reader `404` `/problems/not-found` through `FindCatalogueSeries`, `Found`
+  answered `200` once T102 produces it.
+- Decided: `ListCatalogueSeries` reads the id of a name group from its first
+  edition, `seriesIds.getValue(seriesEditions.first().id)`; `ApiContractTest`
+  shares one `CatalogueSeries` fixture, `ASTERIX_SERIES`, between the list's
+  stub and `Found`'s, beside `ASTERIX` its id. The run handed off after
+  step 9 and a second run finished step 10.
+- Deviations from the brief: steps 1 to 3 went in one commit, steps 4 and
+  8 in one, since each red lasted until its green and a red commit would
+  leave `main..HEAD` failing.
+- Left over: finding the series and its books, T102; the series page on the
+  frontend, T103.
+
