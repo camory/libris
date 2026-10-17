@@ -395,6 +395,19 @@ class JdbcCatalogueEditionsTest @Autowired constructor(
     )
   }
 
+  @Test
+  fun `an edition on a bookshelf the reader does not belong to answers no series id`() {
+    // Given
+    heldOn(tomsBookshelf, edition("Astérix le Gaulois", "Astérix", 1))
+    val romanceDawn = heldOn(leasBookshelf, edition("Romance dawn", "One piece", 1))
+
+    // When
+    val seriesIds = catalogueEditions.findSeriesIds(lea.id)
+
+    // Then
+    seriesIds shouldBe mapOf(romanceDawn.id to seriesIdOf("One piece"))
+  }
+
   private fun titlesOf(page: EditionIdPage): List<String> {
     val titles = editions.findByIds(page.editionIds).associate { it.id to it.title }
     return page.editionIds.map { titles.getValue(it) }
