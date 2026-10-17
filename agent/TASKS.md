@@ -100,9 +100,10 @@ scenario to the page. No other task touches the contract (D04).
 - [ ] T107 Frontend: the band of a series.
       Above the header, the series' cover as a band (U03): cropped from
       its top, the column's full width, 130 tall, named *Couverture de*
-      and the series' name; the header 12 under it in place of 20. No band
-      when the series has no cover or its cover does not load. The crop
-      and the height are checked by hand on the Pixel.
+      and the series' name; the header 12 under it in place of 20, and
+      the card right after the header's 12, with no other space. No band
+      when the series has no cover or its cover does not load. The crop,
+      the height and the spacing are checked by hand on the Pixel.
       Realises S4; un-skips the frontend tests of S4, its three cases.
 
 - [ ] T108 Frontend: Libris unavailable on a series.
