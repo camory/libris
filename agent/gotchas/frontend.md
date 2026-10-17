@@ -80,6 +80,11 @@ Read whole by a run that changes `frontend/`, after `every-run.md`.
 - A fixture may import `domain` and `application` only, so a shared
   app-over-fakes builder cannot live in `src/fixture`: each scenario file
   keeps its own `open()`, naming the ports its spec varies.
+- `Series.id` is optional and `SeriesPageApi` stands apart from `SeriesApi`,
+  provided by `SeriesPageScenarios`' `open()` through `app.provide`, only
+  until the series page task bumps the pin to `v0.13.0`: that task makes
+  `id` required, maps it in `FetchSeriesApi`, and folds `find` into
+  `SeriesApi` with its client, `SeriesPageApi` and its fake gone.
 - A fake built with `Promise.reject(...)` in a Given is an unhandled
   rejection by the time the When awaits it: the test passes, and Vitest
   reports an *Unhandled Rejection* that fails the run (measured 2026-09-25).
