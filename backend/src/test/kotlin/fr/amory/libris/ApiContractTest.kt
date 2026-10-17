@@ -212,7 +212,7 @@ class ApiContractTest @Autowired constructor(
 
   private fun seriesAnswer() {
     given(listCatalogueSeries(ReaderId(eq(CONTRACTEER.id.value) ?: CONTRACTEER.id.value)))
-      .willReturn(listOf(CatalogueSeries("Astérix", 1, ASTERIX_1_COVER, BD)))
+      .willReturn(listOf(CatalogueSeries(ASTERIX, "Astérix", 1, ASTERIX_1_COVER, BD)))
   }
 
   private fun findingASeriesAnswers() {
@@ -345,6 +345,8 @@ private val EVE_AS_VIEWER = Membership(readerId("7f8091a2-b3c4-4d5e-8f6a-7b8c9d0
 private val UNKNOWN_AS_VIEWER = Membership(readerId("00000000-0000-4000-8000-000000000000"), VIEWER)
 
 private val TOPHE_AS_OWNER = Membership(readerId("6e7f8091-a2b3-4c4d-9e5f-6a7b8c9d0e1f"), OWNER)
+
+private val ASTERIX = seriesId("6a7b8c9d-0e1f-4a2b-8c3d-4e5f6a7b8c9d")
 
 private val NOT_IN_MY_CATALOGUE = seriesId("5b6c7d8e-9f0a-4b1c-8d2e-3f4a5b6c7d8e")
 

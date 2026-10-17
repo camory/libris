@@ -4,6 +4,7 @@ import fr.amory.libris.bibliography.domain.Contributions
 import fr.amory.libris.bibliography.domain.Kind.BD
 import fr.amory.libris.bibliography.domain.Kind.MANGA
 import fr.amory.libris.bibliography.domain.SeriesEntry
+import fr.amory.libris.bibliography.domain.SeriesId
 import fr.amory.libris.bibliography.domain.cover.CoverName
 import fr.amory.libris.bibliography.domain.edition.Edition
 import fr.amory.libris.bibliography.domain.edition.EditionId
@@ -20,8 +21,10 @@ import fr.amory.libris.library.fixture.CatalogueEditionsAnswering
 import fr.amory.libris.library.fixture.CopiesInMemory
 import fr.amory.libris.library.fixture.bookshelfOf
 import fr.amory.libris.library.fixture.copyOn
+import io.kotest.matchers.collections.shouldContainExactlyInAnyOrder
 import io.kotest.matchers.shouldBe
 import org.junit.jupiter.api.Test
+import java.util.UUID
 
 class ListCatalogueSeriesTest {
   private val lea = ReaderId.new()
@@ -42,6 +45,18 @@ class ListCatalogueSeriesTest {
   }
   private val catalogueEditions = CatalogueEditionsAnswering(
     firstOfEachSeries = setOf(ROMANCE_DAWN.id, ASTERIX_LE_GAULOIS.id, LASTMAN_1.id, BLACKSAD_1.id, NARUTO_1.id),
+    seriesIds = mapOf(
+      ROMANCE_DAWN.id to ONE_PIECE,
+      BAGGY.id to ONE_PIECE,
+      ASTERIX_LE_GAULOIS.id to ASTERIX,
+      LA_SERPE_D_OR.id to ASTERIX,
+      LASTMAN_1.id to LASTMAN,
+      LASTMAN_2.id to LASTMAN,
+      BLACKSAD_1.id to BLACKSAD,
+      BLACKSAD_2.id to BLACKSAD,
+      NARUTO_1.id to NARUTO,
+      NARUTO_2.id to NARUTO,
+    ),
   )
   private val listCatalogueSeries = ListCatalogueSeries(catalogueEditions, bookshelves, copies, editions)
 
@@ -58,7 +73,7 @@ class ListCatalogueSeriesTest {
     val series = listCatalogueSeries(lea)
 
     // Then
-    series shouldBe listOf(CatalogueSeries("One piece", 2, null, MANGA))
+    series shouldBe listOf(CatalogueSeries(ONE_PIECE, "One piece", 2, null, MANGA))
   }
 
   @Test
@@ -72,7 +87,7 @@ class ListCatalogueSeriesTest {
     val series = listCatalogueSeries(lea)
 
     // Then
-    series shouldBe listOf(CatalogueSeries("Astérix", 2, null, BD))
+    series shouldBe listOf(CatalogueSeries(ASTERIX, "Astérix", 2, null, BD))
   }
 
   @Test
@@ -86,7 +101,7 @@ class ListCatalogueSeriesTest {
     val series = listCatalogueSeries(lea)
 
     // Then
-    series shouldBe listOf(CatalogueSeries("Lastman", 2, null, null))
+    series shouldBe listOf(CatalogueSeries(LASTMAN, "Lastman", 2, null, null))
   }
 
   @Test
@@ -100,7 +115,7 @@ class ListCatalogueSeriesTest {
     val series = listCatalogueSeries(lea)
 
     // Then
-    series shouldBe listOf(CatalogueSeries("Blacksad", 2, BLACKSAD_1_COVER, BD))
+    series shouldBe listOf(CatalogueSeries(BLACKSAD, "Blacksad", 2, BLACKSAD_1_COVER, BD))
   }
 
   @Test
@@ -114,7 +129,25 @@ class ListCatalogueSeriesTest {
     val series = listCatalogueSeries(lea)
 
     // Then
-    series shouldBe listOf(CatalogueSeries("Naruto", 2, null, MANGA))
+    series shouldBe listOf(CatalogueSeries(NARUTO, "Naruto", 2, null, MANGA))
+  }
+
+  @Test
+  fun `each series answers the id of its series`() {
+    // Given
+    val leasBookshelf = bookshelfOf("Bibliothèque de Léa", Membership(lea, OWNER))
+    copies.insert(copyOn(leasBookshelf, ROMANCE_DAWN.id))
+    copies.insert(copyOn(leasBookshelf, BAGGY.id))
+    copies.insert(copyOn(leasBookshelf, ASTERIX_LE_GAULOIS.id))
+
+    // When
+    val series = listCatalogueSeries(lea)
+
+    // Then
+    series shouldContainExactlyInAnyOrder listOf(
+      CatalogueSeries(ONE_PIECE, "One piece", 2, null, MANGA),
+      CatalogueSeries(ASTERIX, "Astérix", 1, null, BD),
+    )
   }
 
   private fun bookshelfOf(name: String, vararg memberships: Membership): Bookshelf =
@@ -201,3 +234,16 @@ private val NARUTO_2 = NARUTO_1.copy(
   series = SeriesEntry("Naruto", 2),
   coverName = NARUTO_2_COVER,
 )
+
+private val ONE_PIECE = seriesId("0a1b2c3d-4e5f-4a6b-8c7d-9e0f1a2b3c4d")
+
+private val ASTERIX = seriesId("1b2c3d4e-5f6a-4b7c-9d8e-0f1a2b3c4d5e")
+
+private val LASTMAN = seriesId("2c3d4e5f-6a7b-4c8d-ae9f-1a2b3c4d5e6f")
+
+private val BLACKSAD = seriesId("3d4e5f6a-7b8c-4d9e-bfa0-2b3c4d5e6f7a")
+
+private val NARUTO = seriesId("4e5f6a7b-8c9d-4eaf-80b1-3c4d5e6f7a8b")
+
+private fun seriesId(id: String) =
+  SeriesId(UUID.fromString(id))
