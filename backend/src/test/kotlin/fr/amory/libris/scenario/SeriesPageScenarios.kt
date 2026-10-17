@@ -47,7 +47,6 @@ class SeriesPageScenarios @Autowired constructor(private val libris: Libris) {
   }
 
   @Test
-  @Disabled("series page")
   fun `S5 No such series, a series Libris does not know`() {
     // Given
     val lea = libris.reader("lea", "Léa")
