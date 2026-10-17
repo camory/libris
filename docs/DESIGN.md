@@ -70,6 +70,12 @@ viewport unit:
    has no hint: a bookshelf's, until it shows its ouvrages. Padding 20 at
    the sides, 20 above, 12 below. Nothing else lives there: no back arrow,
    no action button. It belongs to its screen and scrolls with the content.
+   A screen about one thing that has a picture, a series' cover, may open
+   with a **band** above the header: the picture cropped from its top, at
+   the full width of the column, 130 tall, no text on it; no band when
+   there is no picture or it does not load. Under a band the header has 12
+   above it in place of 20, and the first block of the content follows the
+   header's 12 with no other space.
 2. **Content**: the blocks of the screen, 20 apart, 20 of side padding, on
    `bg`. A block may have a label above it, the `label` step in `muted`,
    naming the block as a label names a field (*Mes bibliothèques*). At the
@@ -77,9 +83,9 @@ viewport unit:
    that opens the block's form as the last row of its list (U04), or the
    block of a choice under it; or, on the block of a choice, a cross that
    closes it. The plus is gone while the form or the choice is there, and
-   the form leaves only on its success. A row that leads to a screen ends with a chevron at its right,
-   and may hold one icon button left of the chevron. Header and content
-   scroll together; the tab bar stays put. The home page ends with the
+   the form leaves only on its success. A row that leads to a screen is a
+   link as a whole, with no chevron, and may hold one icon button at its
+   right. Header and content scroll together; the tab bar stays put. The home page ends with the
    revision, `label` step, `muted`, one line.
 3. **Tab bar**: on `surface` with a `border` hairline above, 48 tall, in
    three equal columns. A tab is its icon alone, drawn at 32, `accent` when
@@ -267,8 +273,7 @@ rows of a card (U06), the stand-in of a row's missing cover and the glyph
 of a button (U04), 32 on the tab bar, 48 for an empty state (U05). A component
 imports the icon it shows under its Lucide name: `House`, `ScanBarcode`,
 `Library`, `BookOpen`, `CircleAlert`, `Search`, `RefreshCw`, `CirclePlus`,
-`Check`, `ChevronRight`, `Star`, `Crown`, `X`. No hand-drawn icon, no icon
-font.
+`Check`, `Star`, `Crown`, `X`. No hand-drawn icon, no icon font.
 
 An icon next to a word is decoration: `aria-hidden`, the word carries the
 meaning. An icon alone is a button (U04) or a tab (U03) and carries its
@@ -286,10 +291,10 @@ saisissez l'ISBN.*) and without one when they are labels or messages of a
 few words (*ISBN*, *ISBN invalide*, *Chercher*). The reader is addressed as
 *vous*. An action in progress ends with an ellipsis (*Recherche en
 cours…*). A title names the thing done on the screen, in the infinitive with
-its object: *Ajouter un ouvrage*. Two screens take a proper name instead:
-the home page, *Libris*, the application's name, and a bookshelf's screen,
-the bookshelf's name. Typography is French: the non-breaking
-space before `:`, `;` and `?`, guillemets « » for quotes, the middle dot
+its object: *Ajouter un ouvrage*. Three screens take a proper name instead:
+the home page, *Libris*, the application's name, a bookshelf's screen, the
+bookshelf's name, and a series' screen, the series' name. Typography is
+French: the non-breaking space before `:`, `;` and `?`, guillemets « » for quotes, the middle dot
 ` · ` to join two facts on one line (*One piece · tome 1*).
 
 Proper names keep their own spelling and case, *Open Library*, *BnF*,
