@@ -113,9 +113,10 @@ Then Libris answers that there is no such series
 	And the screen says the series cannot be found
 ```
 
-Three cases: a series Libris does not know, one only on bookshelves the
-reader does not belong to, one whose last copy the reader has just
-removed. An address whose id is not one reads the same way on the screen.
+Two cases: a series Libris does not know, one only on bookshelves the
+reader does not belong to; the series whose last copy the reader has just
+removed comes with removing a copy, which Libris does not offer yet. An
+address whose id is not one reads the same way on the screen.
 Proof: contract example `404_NOT_IN_MY_CATALOGUE` verified by Contracteer
 on both sides, the id that is not one its generated case; backend scenario
 test over HTTP, one per case; frontend scenario test over the fakes, the
