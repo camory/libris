@@ -1,5 +1,6 @@
 package fr.amory.libris.library.fixture
 
+import fr.amory.libris.bibliography.domain.SeriesId
 import fr.amory.libris.bibliography.domain.edition.EditionId
 import fr.amory.libris.library.domain.copy.CatalogueEditions
 import fr.amory.libris.library.domain.copy.EditionIdPage
@@ -7,7 +8,8 @@ import fr.amory.libris.library.domain.reader.ReaderId
 
 class CatalogueEditionsAnswering(
   private val answer: EditionIdPage = EditionIdPage(emptyList(), null),
-  private val firstOfEachSeries: Set<EditionId> = emptySet()) : CatalogueEditions {
+  private val firstOfEachSeries: Set<EditionId> = emptySet(),
+  private val seriesIds: Map<EditionId, SeriesId> = emptyMap()) : CatalogueEditions {
   private val pagesAsked = mutableListOf<Triple<ReaderId, EditionId?, Int>>()
 
   val asked: List<Triple<ReaderId, EditionId?, Int>> get() = pagesAsked.toList()
@@ -18,4 +20,6 @@ class CatalogueEditionsAnswering(
   }
 
   override fun findFirstOfEachSeries(readerId: ReaderId): Set<EditionId> = firstOfEachSeries
+
+  override fun findSeriesIds(readerId: ReaderId): Map<EditionId, SeriesId> = seriesIds
 }

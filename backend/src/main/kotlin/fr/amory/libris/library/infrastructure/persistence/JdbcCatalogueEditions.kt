@@ -1,5 +1,6 @@
 package fr.amory.libris.library.infrastructure.persistence
 
+import fr.amory.libris.bibliography.domain.SeriesId
 import fr.amory.libris.bibliography.domain.edition.EditionId
 import fr.amory.libris.library.domain.copy.CatalogueEditions
 import fr.amory.libris.library.domain.copy.EditionIdPage
@@ -53,6 +54,18 @@ private const val FIND_FIRST_OF_EACH_SERIES =
     ORDER BY edition.series_id, edition.volume_number, edition.title COLLATE ignoring_case_and_accents, edition.id
     """
 
+private const val FIND_SERIES_IDS =
+  """
+    SELECT edition.id, edition.series_id
+    FROM edition
+    WHERE edition.series_id IS NOT NULL
+      AND EXISTS (
+          SELECT FROM copy
+          JOIN membership ON membership.bookshelf_id = copy.bookshelf_id
+          WHERE copy.edition_id = edition.id AND membership.reader_id = :readerId
+      )
+    """
+
 @Repository
 class JdbcCatalogueEditions(private val jdbcClient: JdbcClient) : CatalogueEditions {
   override fun findPage(readerId: ReaderId, after: EditionId?, size: Int): EditionIdPage {
@@ -73,4 +86,14 @@ class JdbcCatalogueEditions(private val jdbcClient: JdbcClient) : CatalogueEditi
       .param("readerId", readerId.value)
       .query { rs, _ -> EditionId(rs.getObject("id", UUID::class.java)) }
       .set()
+
+  override fun findSeriesIds(readerId: ReaderId): Map<EditionId, SeriesId> =
+    jdbcClient
+      .sql(FIND_SERIES_IDS)
+      .param("readerId", readerId.value)
+      .query { rs, _ ->
+        EditionId(rs.getObject("id", UUID::class.java)) to SeriesId(rs.getObject("series_id", UUID::class.java))
+      }
+      .list()
+      .toMap()
 }

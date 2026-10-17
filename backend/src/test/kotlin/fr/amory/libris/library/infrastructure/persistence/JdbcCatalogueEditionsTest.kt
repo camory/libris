@@ -3,6 +3,7 @@ package fr.amory.libris.library.infrastructure.persistence
 import fr.amory.libris.bibliography.domain.Contributions
 import fr.amory.libris.bibliography.domain.Kind.BD
 import fr.amory.libris.bibliography.domain.SeriesEntry
+import fr.amory.libris.bibliography.domain.SeriesId
 import fr.amory.libris.bibliography.domain.edition.Edition
 import fr.amory.libris.bibliography.domain.edition.EditionId
 import fr.amory.libris.bibliography.infrastructure.persistence.JdbcEditionRepository
@@ -22,6 +23,7 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.context.annotation.Import
+import org.springframework.jdbc.core.simple.JdbcClient
 import java.util.UUID
 
 private const val PAGE_SIZE = 50
@@ -41,7 +43,8 @@ class JdbcCatalogueEditionsTest @Autowired constructor(
   private val copies: JdbcCopyRepository,
   private val editions: JdbcEditionRepository,
   private val bookshelves: JdbcBookshelfRepository,
-  private val readers: JdbcReaderRepository) {
+  private val readers: JdbcReaderRepository,
+  private val jdbcClient: JdbcClient) {
   private val lea = readerNamed("lea", "Léa")
   private val tom = readerNamed("tom", "Tom")
   private val leasBookshelf = bookshelfOwnedBy(lea)
@@ -374,6 +377,24 @@ class JdbcCatalogueEditionsTest @Autowired constructor(
     firsts shouldBe setOf(lesser)
   }
 
+  @Test
+  fun `each edition the reader holds answers the id of its series' row`() {
+    // Given
+    val romanceDawn = heldOn(leasBookshelf, edition("Romance dawn", "One piece", 1))
+    val auxPrises = heldOn(leasBookshelf, edition("Aux prises avec Baggy", "One piece", 2))
+    val narutoUzumaki = heldOn(leasBookshelf, edition("Naruto Uzumaki", "Naruto", 1))
+
+    // When
+    val seriesIds = catalogueEditions.findSeriesIds(lea.id)
+
+    // Then
+    seriesIds shouldBe mapOf(
+      romanceDawn.id to seriesIdOf("One piece"),
+      auxPrises.id to seriesIdOf("One piece"),
+      narutoUzumaki.id to seriesIdOf("Naruto"),
+    )
+  }
+
   private fun titlesOf(page: EditionIdPage): List<String> {
     val titles = editions.findByIds(page.editionIds).associate { it.id to it.title }
     return page.editionIds.map { titles.getValue(it) }
@@ -411,4 +432,11 @@ class JdbcCatalogueEditionsTest @Autowired constructor(
     copies.insert(copyOn(bookshelf, edition.id))
     return edition
   }
+
+  private fun seriesIdOf(name: String): SeriesId =
+    jdbcClient
+      .sql("SELECT series.id FROM series WHERE series.name = :name")
+      .param("name", name)
+      .query { rs, _ -> SeriesId(rs.getObject("id", UUID::class.java)) }
+      .single()
 }
