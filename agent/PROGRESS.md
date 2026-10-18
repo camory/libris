@@ -80,12 +80,21 @@ Format:
 - Left over: nothing new; T110 gives `HoldEdition` the series'
   find-or-insert.
 
-## 2026-10-18 — T110 The series, an aggregate of the bibliography — handoff
-- Done: steps 1–7 of the test plan, one commit each (step 4 a test-only guard commit). Next: step 8.
-- Contract cases on `main`, read before the first commit: `tests="35"` in `TEST-fr.amory.libris.ApiContractTest.xml`.
-- Step 7's green keeps the series `findOrInsert` answers (`HoldEdition.seriesVolumeOf`) and answers the held preview with its series, so step 8 and step 11 are guards: run their mutations.
-- `SeriesInMemory` matches names with `lowercase()` since step 7, so step 8's guard bites.
-- Deviation: `findById` reads with `.optional().orElse(null)`, the tree's idiom (`JdbcReaderRepository`); `JdbcClient` has no `singleOrNull`. Step 4's mutation was `.single()` in its place: red `EmptyResultDataAccessException: Incorrect result size: expected 1, actual 0` on steps 3 and 4, reverted.
-- Step 7 also adapted the steps 12–13 classes' fixtures (`TINTIN` stored for `BrowseCatalogueTest`, five stored series for `ListCatalogueSeriesTest`): only their mutations remain to run, plus step 10's rewritten case.
-- `HoldEdition.inserted` reads the edition back from `transactions.execute`, wrapped in `checkNotNull` (Spring's `execute` answers a nullable `T`).
-- `JdbcEditionRepositoryTest` stores its two series in a `@BeforeEach` (FreshSchema's callback runs first); the moved case is renamed *an author named again in another capitalisation is not doubled*.
+## 2026-10-18 — T110 The series, an aggregate of the bibliography — done
+- Did: `Series`, `SeriesId`, `SeriesVolume` and `SeriesRepository` in
+  `bibliography.domain.series`, `JdbcSeriesRepository` beside the edition's;
+  an edition refers to its series by `seriesVolume`, and the held ISBN's
+  preview, the catalogue's page and the series list read it by id.
+- Decided: `HoldEdition` reads the edition back from `transactions.execute`,
+  wrapped in `checkNotNull`, since Spring's `execute` answers a nullable
+  `T`. `JdbcEditionRepositoryTest` stores its two series in a `@BeforeEach`,
+  after `FreshSchema`'s callback. The work spanned two runs, a handoff after
+  step 7.
+- Deviations from the brief: `findById` reads with `.optional().orElse(null)`,
+  the tree's idiom, since `JdbcClient` has no `singleOrNull`; step 4's
+  mutation was `.single()` in its place. Steps 12 and 13 add no case: step 7
+  adapted their fixtures, so their guards are the brief's mutations alone,
+  run on the existing cases. Steps 8 and 11 are guards, since step 7's
+  green already kept the answered series and read the held preview's.
+- Left over: nothing new; T101 and T102 hand the series' `id` to the series
+  list and page.
