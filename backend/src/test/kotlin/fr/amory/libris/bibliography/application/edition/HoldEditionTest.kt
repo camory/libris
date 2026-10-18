@@ -66,6 +66,15 @@ class HoldEditionTest {
     awaitedCovers.stored shouldBe listOf(AwaitedCover(isbnOf(ONE_PIECE), INVENTAIRE))
   }
 
+  @Test
+  fun `an edition gained with no chosen source awaits its cover all the same`() {
+    // When
+    holdEdition(onePieceTomeOne().copy(coverSource = null))
+
+    // Then
+    awaitedCovers.stored shouldBe listOf(AwaitedCover(isbnOf(ONE_PIECE), null))
+  }
+
   private fun onePieceTomeOne(): NewEdition =
     NewEdition(
       isbn = isbnOf(ONE_PIECE),
