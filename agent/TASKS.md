@@ -16,6 +16,44 @@
 >
 > Follow-ups and ideas go to `agent/PROPOSED.md`, never here.
 
+## Series aggregate — docs/ARCHITECTURE.md
+
+The series becomes an aggregate of the bibliography (D12, #285) before
+the series page addresses it by id. Two backend refactors, no behaviour
+changed: the bibliography first takes the edition an ouvrage adds, then
+the series' name gains an aggregate there. No task touches the contract
+or the frontend.
+
+- [ ] T109 Backend: the bibliography holds the edition an ouvrage adds.
+      A use case of the bibliography, `HoldEdition`, answers the edition
+      the house holds for a `NewEdition`: the one of its ISBN when the
+      house has it, else a new one, inserted with the cover it awaits
+      from the chosen source, in a transaction of its own that the add's
+      transaction joins (PRD §3, D02, D12). `NewBook` becomes that
+      `NewEdition` of the bibliography. `AddBookToBookshelf` keeps the
+      bookshelf's rules and the copy, calls `HoldEdition` inside its
+      transaction, and wakes the worker after it, as today; it loses
+      `EditionRepository` and `AwaitedCoverRepository`, and its
+      `@Suppress("LongParameterList")`. The edition cases of
+      `AddBookToBookshelfTest` move to `HoldEditionTest`. No behaviour
+      changes: every scenario test and the contract verification stay
+      green, untouched.
+
+- [ ] T110 Backend: the series, an aggregate of the bibliography.
+      `Series(id, name)` and `SeriesId` in `bibliography.domain.series`,
+      with `SeriesRepository`, whose `findOrInsert(series)` answers the
+      series stored under that name, matched ignoring case (PRD §3, D12).
+      An edition refers to its series by a `SeriesVolume(seriesId,
+      volumeNumber)`; `SeriesEntry(name, volumeNumber)` stays what a
+      source or the reader says. `HoldEdition` finds or inserts the series
+      of a new edition's name and keeps the series the repository
+      answers; `JdbcEditionRepository` writes and reads only the edition's
+      `series_id`. Each answer that names a series reads the series
+      through `SeriesRepository`: the lookup of an ISBN the house holds,
+      the catalogue's page and the series list (D12). The schema is
+      unchanged. No behaviour changes: every scenario test and the
+      contract verification stay green, untouched.
+
 ## Series page — specs/series-page.md
 
 Contract: release `v0.13.0` of `camory/libris-api`, after `v0.12.1`: one
@@ -29,8 +67,8 @@ scenario to the page. No other task touches the contract (D04).
 
 - [ ] T101 Backend: the series page on `v0.13.0`, no such series.
       `ApiContractTest` pins `v0.13.0`, the backend's one bump (D04).
-      Each series of the series list answers its `id`, the row its name
-      has in persistence (D12). Libris serves a series by its id and
+      Each series of the series list answers its `id`, the `SeriesId` of
+      the bibliography's series (D12). Libris serves a series by its id and
       answers every reader that there is no such series, `404`
       `/problems/not-found`, until T102 finds it; an id that is not one
       is `400` `/problems/validation`. Contracteer verifies the new
@@ -47,7 +85,7 @@ scenario to the page. No other task touches the contract (D04).
       those the series list answers for it, by the same rules (series-list
       S2, S3). A series none of whose editions sits on the reader's
       bookshelves stays no such series. A read across both contexts, the
-      series a value of the edition, never an aggregate (D02, D12).
+      series read through `SeriesRepository` (D02, D12).
       Realises S1 and keeps S5; un-skips the backend test of S1.
 
 - [ ] T103 Frontend: the series page on `v0.13.0`, no such series.
