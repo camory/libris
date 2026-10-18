@@ -28,32 +28,6 @@ import fr.amory.libris.library.fixture.copyOn
 import io.kotest.matchers.shouldBe
 import org.junit.jupiter.api.Test
 
-private val TINTIN = Series(SeriesId.new(), "Tintin")
-
-private val CIGARES = Edition(
-  id = EditionId.new(),
-  isbn = null,
-  kind = BD,
-  title = "Les cigares du pharaon",
-  subtitle = null,
-  contributions = Contributions.of(emptyList()),
-  seriesVolume = SeriesVolume(TINTIN.id, 1),
-  collection = null,
-  publisher = null,
-  publicationYear = null,
-  language = null,
-  pageCount = null,
-  summary = null,
-  coverName = null,
-)
-
-private val PIERRE = CIGARES.copy(
-  id = EditionId.new(),
-  kind = BOOK,
-  title = "Pierre et le loup",
-  seriesVolume = null,
-)
-
 class BrowseCatalogueTest {
   private val lea = ReaderId.new()
   private val tom = ReaderId.new()
@@ -148,3 +122,29 @@ class BrowseCatalogueTest {
   private fun copyOf(edition: Edition, bookshelf: Bookshelf): Copy =
     copyOn(bookshelf, edition.id).also { copies.insert(it) }
 }
+
+private val TINTIN = Series(SeriesId.new(), "Tintin")
+
+private val CIGARES = Edition(
+  id = EditionId.new(),
+  isbn = null,
+  kind = BD,
+  title = "Les cigares du pharaon",
+  subtitle = null,
+  contributions = Contributions.of(emptyList()),
+  seriesVolume = SeriesVolume(TINTIN.id, 1),
+  collection = null,
+  publisher = null,
+  publicationYear = null,
+  language = null,
+  pageCount = null,
+  summary = null,
+  coverName = null,
+)
+
+private val PIERRE = CIGARES.copy(
+  id = EditionId.new(),
+  kind = BOOK,
+  title = "Pierre et le loup",
+  seriesVolume = null,
+)
