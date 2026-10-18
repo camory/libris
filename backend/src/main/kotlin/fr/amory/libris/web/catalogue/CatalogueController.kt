@@ -57,7 +57,7 @@ data class BookResponse(
         title = held.edition.title,
         subtitle = held.edition.subtitle,
         authors = held.edition.contributions.map { IsbnAuthorResponse.from(it) },
-        series = held.edition.series?.let { IsbnSeriesResponse.from(it) },
+        series = held.series?.let { IsbnSeriesResponse.from(it) },
         collection = held.edition.collection,
         publisher = held.edition.publisher,
         publicationYear = held.edition.publicationYear,

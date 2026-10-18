@@ -9,8 +9,12 @@ import fr.amory.libris.bibliography.domain.cover.AwaitedCover
 import fr.amory.libris.bibliography.domain.cover.CoverSource.INVENTAIRE
 import fr.amory.libris.bibliography.domain.cover.CoverSource.OPEN_LIBRARY
 import fr.amory.libris.bibliography.domain.edition.Edition
+import fr.amory.libris.bibliography.domain.series.Series
+import fr.amory.libris.bibliography.domain.series.SeriesId
+import fr.amory.libris.bibliography.domain.series.SeriesVolume
 import fr.amory.libris.bibliography.fixture.AwaitedCoversInMemory
 import fr.amory.libris.bibliography.fixture.EditionsInMemory
+import fr.amory.libris.bibliography.fixture.SeriesInMemory
 import fr.amory.libris.bibliography.fixture.isbnOf
 import fr.amory.libris.fixture.Transaction
 import fr.amory.libris.fixture.TransactionsObserving
@@ -21,8 +25,9 @@ import org.springframework.transaction.support.TransactionOperations.withoutTran
 
 class HoldEditionTest {
   private val editions = EditionsInMemory()
+  private val seriesRepository = SeriesInMemory()
   private val awaitedCovers = AwaitedCoversInMemory()
-  private val holdEdition = HoldEdition(editions, awaitedCovers, withoutTransaction())
+  private val holdEdition = HoldEdition(editions, seriesRepository, awaitedCovers, withoutTransaction())
 
   @Test
   fun `the house lacking the ISBN gains the edition`() {
@@ -37,7 +42,7 @@ class HoldEditionTest {
       title = "Romance dawn",
       subtitle = "À l'aube d'une grande aventure",
       contributions = Contributions.of(listOf(Contribution("Eiichiro Oda", WRITER))),
-      series = SeriesEntry("One piece", 1),
+      seriesVolume = SeriesVolume(seriesRepository.stored.single().id, 1),
       collection = "Shonen manga",
       publisher = "Glénat",
       publicationYear = 2013,
@@ -47,6 +52,30 @@ class HoldEditionTest {
       coverName = null,
     )
     editions.stored shouldBe listOf(edition)
+  }
+
+  @Test
+  fun `the edition the house gains refers to the series of its name`() {
+    // When
+    val edition = holdEdition(onePieceTomeOne())
+
+    // Then
+    val series = seriesRepository.stored.single()
+    series shouldBe Series(series.id, "One piece")
+    edition.seriesVolume shouldBe SeriesVolume(series.id, 1)
+  }
+
+  @Test
+  fun `a series name the house holds, in another capitalisation, reaches the stored series`() {
+    // Given
+    val stored = seriesRepository.findOrInsert(Series(SeriesId.new(), "One piece"))
+
+    // When
+    val edition = holdEdition(onePieceTomeOne().copy(series = SeriesEntry("ONE PIECE", 1)))
+
+    // Then
+    edition.seriesVolume shouldBe SeriesVolume(stored.id, 1)
+    seriesRepository.stored shouldBe listOf(stored)
   }
 
   @Test
@@ -60,6 +89,18 @@ class HoldEditionTest {
     // Then
     edition shouldBe held
     editions.stored shouldBe listOf(held)
+  }
+
+  @Test
+  fun `an ISBN the house holds finds or inserts no series`() {
+    // Given
+    holdEdition(onePieceTomeOne())
+
+    // When
+    holdEdition(onePieceTomeOne().copy(series = SeriesEntry("Naruto", 1)))
+
+    // Then
+    seriesRepository.stored.map { it.name } shouldBe listOf("One piece")
   }
 
   @Test
@@ -108,16 +149,18 @@ class HoldEditionTest {
   }
 
   @Test
-  fun `the edition and its awaited cover land in one transaction`() {
+  fun `the series, the edition and its awaited cover land in one transaction`() {
     // Given
-    val transactions = TransactionsObserving { editions.stored.size to awaitedCovers.stored.size }
-    val holdEdition = HoldEdition(editions, awaitedCovers, transactions)
+    val transactions = TransactionsObserving {
+      Triple(seriesRepository.stored.size, editions.stored.size, awaitedCovers.stored.size)
+    }
+    val holdEdition = HoldEdition(editions, seriesRepository, awaitedCovers, transactions)
 
     // When
     holdEdition(onePieceTomeOne())
 
     // Then
-    transactions.recorded shouldBe listOf(Transaction(before = 0 to 0, after = 1 to 1))
+    transactions.recorded shouldBe listOf(Transaction(before = Triple(0, 0, 0), after = Triple(1, 1, 1)))
   }
 
   private fun onePieceTomeOne(): NewEdition =

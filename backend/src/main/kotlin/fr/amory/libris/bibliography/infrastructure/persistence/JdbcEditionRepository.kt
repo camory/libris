@@ -6,11 +6,12 @@ import fr.amory.libris.bibliography.domain.ContributionRole
 import fr.amory.libris.bibliography.domain.Contributions
 import fr.amory.libris.bibliography.domain.Isbn
 import fr.amory.libris.bibliography.domain.Kind
-import fr.amory.libris.bibliography.domain.SeriesEntry
 import fr.amory.libris.bibliography.domain.cover.CoverName
 import fr.amory.libris.bibliography.domain.edition.Edition
 import fr.amory.libris.bibliography.domain.edition.EditionId
 import fr.amory.libris.bibliography.domain.edition.EditionRepository
+import fr.amory.libris.bibliography.domain.series.SeriesId
+import fr.amory.libris.bibliography.domain.series.SeriesVolume
 import org.springframework.jdbc.core.simple.JdbcClient
 import org.springframework.stereotype.Repository
 import java.sql.ResultSet
@@ -34,13 +35,6 @@ private const val UPDATE_EDITION =
     WHERE edition.id = :id
     """
 
-private const val INSERT_SERIES =
-  """
-    INSERT INTO series (id, name) VALUES (:id, :name)
-    ON CONFLICT (LOWER(name)) DO UPDATE SET name = series.name
-    RETURNING id
-    """
-
 private const val INSERT_AUTHOR =
   """
     INSERT INTO author (id, name) VALUES (:id, :name)
@@ -56,12 +50,11 @@ private const val DELETE_CONTRIBUTIONS =
 
 private const val SELECT_EDITIONS =
   """
-    SELECT edition.id, edition.isbn13, edition.kind, edition.title, edition.subtitle,
+    SELECT edition.id, edition.isbn13, edition.kind, edition.title, edition.subtitle, edition.series_id,
            edition.volume_number, edition.collection, edition.publisher, edition.publication_year,
            edition.language, edition.page_count, edition.summary, edition.cover_name,
-           series.name AS series_name, author.name AS author_name, contribution.role
+           author.name AS author_name, contribution.role
     FROM edition
-    LEFT JOIN series ON series.id = edition.series_id
     LEFT JOIN contribution ON contribution.edition_id = edition.id
     LEFT JOIN author ON author.id = contribution.author_id
     """
@@ -116,7 +109,6 @@ class JdbcEditionRepository(private val jdbcClient: JdbcClient) : EditionReposit
     }
 
   private fun write(statement: String, edition: Edition) {
-    val seriesId = edition.series?.let { nameIdOf(INSERT_SERIES, it.name) }
     jdbcClient
       .sql(statement)
       .param("id", edition.id.value)
@@ -124,8 +116,8 @@ class JdbcEditionRepository(private val jdbcClient: JdbcClient) : EditionReposit
       .param("kind", edition.kind.name)
       .param("title", edition.title)
       .param("subtitle", edition.subtitle)
-      .param("seriesId", seriesId)
-      .param("volumeNumber", edition.series?.volumeNumber)
+      .param("seriesId", edition.seriesVolume?.seriesId?.value)
+      .param("volumeNumber", edition.seriesVolume?.volumeNumber)
       .param("collection", edition.collection)
       .param("publisher", edition.publisher)
       .param("publicationYear", edition.publicationYear)
@@ -157,10 +149,9 @@ class JdbcEditionRepository(private val jdbcClient: JdbcClient) : EditionReposit
         title = rs.getString("title"),
         subtitle = rs.getString("subtitle"),
         contributions = Contributions.of(emptyList()),
-        series = SeriesEntry.of(
-          rs.getString("series_name"),
-          rs.getObject("volume_number", Int::class.javaObjectType),
-        ),
+        seriesVolume = rs.getObject("series_id", UUID::class.java)?.let {
+          SeriesVolume(SeriesId(it), rs.getObject("volume_number", Int::class.javaObjectType))
+        },
         collection = rs.getString("collection"),
         publisher = rs.getString("publisher"),
         publicationYear = rs.getObject("publication_year", Int::class.javaObjectType),

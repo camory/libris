@@ -5,6 +5,7 @@ import fr.amory.libris.bibliography.application.lookup.EditionLookupResult.Held
 import fr.amory.libris.bibliography.application.lookup.EditionLookupResult.SourcesUnavailable
 import fr.amory.libris.bibliography.application.lookup.EditionLookupResult.UnknownIsbn
 import fr.amory.libris.bibliography.domain.Isbn
+import fr.amory.libris.bibliography.domain.SeriesEntry
 import fr.amory.libris.bibliography.domain.edition.Edition
 import fr.amory.libris.bibliography.domain.edition.EditionRepository
 import fr.amory.libris.bibliography.domain.lookup.CoverCandidate
@@ -15,6 +16,7 @@ import fr.amory.libris.bibliography.domain.lookup.EditionPreview
 import fr.amory.libris.bibliography.domain.lookup.EditionSourceAnswer
 import fr.amory.libris.bibliography.domain.lookup.EditionSourceAnswer.Failed
 import fr.amory.libris.bibliography.domain.lookup.EditionSourceAnswer.Known
+import fr.amory.libris.bibliography.domain.series.SeriesRepository
 import org.springframework.stereotype.Service
 import java.util.concurrent.Callable
 import java.util.concurrent.Executors.newVirtualThreadPerTaskExecutor
@@ -22,6 +24,7 @@ import java.util.concurrent.Executors.newVirtualThreadPerTaskExecutor
 @Service
 class LookupEditionByIsbn(
   private val editions: EditionRepository,
+  private val seriesRepository: SeriesRepository,
   editionLookups: List<EditionLookup>,
   private val coverLookup: CoverLookup) {
   private val editionLookups = editionLookups.sortedBy { it.source.precedence }
@@ -30,7 +33,10 @@ class LookupEditionByIsbn(
     editions.findByIsbn(isbn)?.let(::held) ?: askTheSources(isbn)
 
   private fun held(edition: Edition): Held? =
-    EditionPreview.of(edition)?.let { Held(edition.id, it, edition.coverName) }
+    EditionPreview.of(edition, seriesEntryOf(edition))?.let { Held(edition.id, it, edition.coverName) }
+
+  private fun seriesEntryOf(edition: Edition): SeriesEntry? =
+    edition.seriesVolume?.let { volume -> seriesRepository.findById(volume.seriesId)?.let(volume::entryIn) }
 
   private fun askTheSources(isbn: Isbn): EditionLookupResult =
     newVirtualThreadPerTaskExecutor().use { executor ->

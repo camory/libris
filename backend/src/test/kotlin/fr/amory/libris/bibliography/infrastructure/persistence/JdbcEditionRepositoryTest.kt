@@ -7,15 +7,18 @@ import fr.amory.libris.bibliography.domain.ContributionRole.WRITER
 import fr.amory.libris.bibliography.domain.Contributions
 import fr.amory.libris.bibliography.domain.Kind.BD
 import fr.amory.libris.bibliography.domain.Kind.MANGA
-import fr.amory.libris.bibliography.domain.SeriesEntry
 import fr.amory.libris.bibliography.domain.cover.CoverName
 import fr.amory.libris.bibliography.domain.edition.Edition
 import fr.amory.libris.bibliography.domain.edition.EditionId
+import fr.amory.libris.bibliography.domain.series.Series
+import fr.amory.libris.bibliography.domain.series.SeriesId
+import fr.amory.libris.bibliography.domain.series.SeriesVolume
 import fr.amory.libris.bibliography.fixture.isbnOf
 import fr.amory.libris.fixture.JdbcSliceTest
 import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.matchers.collections.shouldContainExactlyInAnyOrder
 import io.kotest.matchers.shouldBe
+import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.context.annotation.Import
@@ -26,10 +29,17 @@ private const val ONE_PIECE = "9782723488525"
 private const val ONE_PIECE_TOME_TWO = "9782723489898"
 
 @JdbcSliceTest
-@Import(JdbcEditionRepository::class)
+@Import(JdbcEditionRepository::class, JdbcSeriesRepository::class)
 class JdbcEditionRepositoryTest @Autowired constructor(
   private val editions: JdbcEditionRepository,
+  private val seriesRepository: JdbcSeriesRepository,
   private val jdbcClient: JdbcClient) {
+  @BeforeEach
+  fun storeTheSeries() {
+    seriesRepository.findOrInsert(ONE_PIECE_SERIES)
+    seriesRepository.findOrInsert(ONE_PIECE_COLOR_SERIES)
+  }
+
   @Test
   fun `an inserted edition is read back whole by its ISBN-13`() {
     // Given
@@ -55,7 +65,7 @@ class JdbcEditionRepositoryTest @Autowired constructor(
   }
 
   @Test
-  fun `a series and an author named again in another capitalisation are not doubled`() {
+  fun `an author named again in another capitalisation is not doubled`() {
     // Given
     val first = onePieceTomeOne()
     val second = first.copy(
@@ -65,7 +75,7 @@ class JdbcEditionRepositoryTest @Autowired constructor(
       contributions = Contributions.of(
         listOf(Contribution("EIICHIRO ODA", WRITER), Contribution("akiko indei", TRANSLATOR)),
       ),
-      series = SeriesEntry("ONE PIECE", 2),
+      seriesVolume = SeriesVolume(ONE_PIECE_SERIES.id, 2),
     )
     editions.insert(first)
 
@@ -73,12 +83,8 @@ class JdbcEditionRepositoryTest @Autowired constructor(
     editions.insert(second)
 
     // Then
-    rowsOf("series") shouldBe 1
     rowsOf("author") shouldBe 2
-    editions.findByIsbn(isbnOf(ONE_PIECE_TOME_TWO)) shouldBe second.copy(
-      contributions = first.contributions,
-      series = SeriesEntry("One piece", 2),
-    )
+    editions.findByIsbn(isbnOf(ONE_PIECE_TOME_TWO)) shouldBe second.copy(contributions = first.contributions)
   }
 
   @Test
@@ -120,7 +126,7 @@ class JdbcEditionRepositoryTest @Autowired constructor(
       id = EditionId.new(),
       isbn = isbnOf(ONE_PIECE_TOME_TWO),
       title = "Aux prises avec Baggy et ses hommes",
-      series = SeriesEntry("One piece", 2),
+      seriesVolume = SeriesVolume(ONE_PIECE_SERIES.id, 2),
     )
     val tomeThree = bare(tomeOne).copy(id = EditionId.new(), isbn = null, title = "Le serment")
     editions.insert(tomeOne)
@@ -145,7 +151,7 @@ class JdbcEditionRepositoryTest @Autowired constructor(
       title = "Aux prises avec Baggy et ses hommes",
       subtitle = "Le clown",
       contributions = Contributions.of(listOf(Contribution("Eiichiro Oda", ARTIST))),
-      series = SeriesEntry("One piece Color", 2),
+      seriesVolume = SeriesVolume(ONE_PIECE_COLOR_SERIES.id, 2),
       collection = "Edition originale",
       publisher = "Glénat Manga",
       publicationYear = 2014,
@@ -170,7 +176,7 @@ class JdbcEditionRepositoryTest @Autowired constructor(
       id = EditionId.new(),
       isbn = isbnOf(ONE_PIECE_TOME_TWO),
       title = "Aux prises avec Baggy et ses hommes",
-      series = SeriesEntry("One piece", 2),
+      seriesVolume = SeriesVolume(ONE_PIECE_SERIES.id, 2),
     )
     editions.insert(tomeOne)
     editions.insert(tomeTwo)
@@ -201,7 +207,7 @@ class JdbcEditionRepositoryTest @Autowired constructor(
     edition.copy(
       subtitle = null,
       contributions = Contributions.of(emptyList()),
-      series = null,
+      seriesVolume = null,
       collection = null,
       publisher = null,
       publicationYear = null,
@@ -221,7 +227,7 @@ class JdbcEditionRepositoryTest @Autowired constructor(
       contributions = Contributions.of(
         listOf(Contribution("Akiko Indei", TRANSLATOR), Contribution("Eiichiro Oda", WRITER)),
       ),
-      series = SeriesEntry("One piece", 1),
+      seriesVolume = SeriesVolume(ONE_PIECE_SERIES.id, 1),
       collection = "Shonen manga",
       publisher = "Glénat",
       publicationYear = 2013,
@@ -231,3 +237,7 @@ class JdbcEditionRepositoryTest @Autowired constructor(
       coverName = CoverName("9f86d081884c7d659a2feaa0c55ad015a3bf4f1b2b0b822cd15d6c15b0f00a08"),
     )
 }
+
+private val ONE_PIECE_SERIES = Series(SeriesId.new(), "One piece")
+
+private val ONE_PIECE_COLOR_SERIES = Series(SeriesId.new(), "One piece Color")

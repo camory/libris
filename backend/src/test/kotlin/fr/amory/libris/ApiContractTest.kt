@@ -24,6 +24,9 @@ import fr.amory.libris.bibliography.domain.edition.EditionId
 import fr.amory.libris.bibliography.domain.lookup.CoverCandidate
 import fr.amory.libris.bibliography.domain.lookup.CoverCandidates
 import fr.amory.libris.bibliography.domain.lookup.EditionPreview
+import fr.amory.libris.bibliography.domain.series.Series
+import fr.amory.libris.bibliography.domain.series.SeriesId
+import fr.amory.libris.bibliography.domain.series.SeriesVolume
 import fr.amory.libris.bibliography.fixture.coverOf
 import fr.amory.libris.bibliography.fixture.isbnOf
 import fr.amory.libris.bibliography.fixture.recordedBytes
@@ -300,6 +303,8 @@ private val NEW_ONE_PIECE_1 = NewEdition(
 
 private val NOT_MINE = bookshelfId("9e8d7c6b-5a4f-4e3d-8c2b-1a0f9e8d7c6b")
 
+private val ASTERIX = Series(SeriesId.new(), "Astérix")
+
 private val ASTERIX_1_HELD = HeldEdition(
   edition = Edition(
     id = EditionId.new(),
@@ -308,7 +313,7 @@ private val ASTERIX_1_HELD = HeldEdition(
     title = ASTERIX_1.title,
     subtitle = ASTERIX_1.subtitle,
     contributions = ASTERIX_1.contributions,
-    series = ASTERIX_1.series,
+    seriesVolume = SeriesVolume(ASTERIX.id, 1),
     collection = ASTERIX_1.collection,
     publisher = ASTERIX_1.publisher,
     publicationYear = ASTERIX_1.publicationYear,
@@ -317,6 +322,7 @@ private val ASTERIX_1_HELD = HeldEdition(
     summary = ASTERIX_1.summary,
     coverName = ASTERIX_1_COVER,
   ),
+  series = SeriesEntry("Astérix", 1),
   copies = listOf(COPY_OF_ASTERIX_1),
 )
 

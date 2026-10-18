@@ -19,7 +19,7 @@ class EditionTest {
       title = title,
       subtitle = null,
       contributions = Contributions.of(emptyList()),
-      series = null,
+      seriesVolume = null,
       collection = null,
       publisher = null,
       publicationYear = null,

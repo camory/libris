@@ -39,7 +39,7 @@ or the frontend.
       changes: every scenario test and the contract verification stay
       green, untouched.
 
-- [ ] T110 Backend: the series, an aggregate of the bibliography.
+- [x] T110 Backend: the series, an aggregate of the bibliography.
       `Series(id, name)` and `SeriesId` in `bibliography.domain.series`,
       with `SeriesRepository`, whose `findOrInsert(series)` answers the
       series stored under that name, matched ignoring case (PRD §3, D12).

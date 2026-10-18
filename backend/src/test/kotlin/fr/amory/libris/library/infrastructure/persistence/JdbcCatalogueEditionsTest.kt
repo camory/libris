@@ -2,10 +2,13 @@ package fr.amory.libris.library.infrastructure.persistence
 
 import fr.amory.libris.bibliography.domain.Contributions
 import fr.amory.libris.bibliography.domain.Kind.BD
-import fr.amory.libris.bibliography.domain.SeriesEntry
 import fr.amory.libris.bibliography.domain.edition.Edition
 import fr.amory.libris.bibliography.domain.edition.EditionId
+import fr.amory.libris.bibliography.domain.series.Series
+import fr.amory.libris.bibliography.domain.series.SeriesId
+import fr.amory.libris.bibliography.domain.series.SeriesVolume
 import fr.amory.libris.bibliography.infrastructure.persistence.JdbcEditionRepository
+import fr.amory.libris.bibliography.infrastructure.persistence.JdbcSeriesRepository
 import fr.amory.libris.fixture.JdbcSliceTest
 import fr.amory.libris.library.domain.bookshelf.Bookshelf
 import fr.amory.libris.library.domain.bookshelf.BookshelfId
@@ -33,6 +36,7 @@ private const val GREATER_TWIN = "00000000-0000-7000-8000-000000000002"
   JdbcCatalogueEditions::class,
   JdbcCopyRepository::class,
   JdbcEditionRepository::class,
+  JdbcSeriesRepository::class,
   JdbcBookshelfRepository::class,
   JdbcReaderRepository::class,
 )
@@ -40,6 +44,7 @@ class JdbcCatalogueEditionsTest @Autowired constructor(
   private val catalogueEditions: JdbcCatalogueEditions,
   private val copies: JdbcCopyRepository,
   private val editions: JdbcEditionRepository,
+  private val seriesRepository: JdbcSeriesRepository,
   private val bookshelves: JdbcBookshelfRepository,
   private val readers: JdbcReaderRepository) {
   private val lea = readerNamed("lea", "Léa")
@@ -391,7 +396,9 @@ class JdbcCatalogueEditionsTest @Autowired constructor(
       title = title,
       subtitle = null,
       contributions = Contributions.of(emptyList()),
-      series = seriesName?.let { SeriesEntry(it, volumeNumber) },
+      seriesVolume = seriesName?.let {
+        SeriesVolume(seriesRepository.findOrInsert(Series(SeriesId.new(), it)).id, volumeNumber)
+      },
       collection = null,
       publisher = null,
       publicationYear = null,

@@ -10,6 +10,7 @@ import fr.amory.libris.bibliography.domain.SeriesEntry
 import fr.amory.libris.bibliography.fixture.AwaitedCoversInMemory
 import fr.amory.libris.bibliography.fixture.CoverWorkerObserving
 import fr.amory.libris.bibliography.fixture.EditionsInMemory
+import fr.amory.libris.bibliography.fixture.SeriesInMemory
 import fr.amory.libris.bibliography.fixture.isbnOf
 import fr.amory.libris.fixture.MutableClock
 import fr.amory.libris.fixture.Transaction
@@ -40,7 +41,7 @@ class AddBookToBookshelfTest {
   private val bookshelves = BookshelvesInMemory()
   private val coverWorker = CoverWorkerObserving {}
   private val clock = MutableClock()
-  private val holdEdition = HoldEdition(editions, awaitedCovers, withoutTransaction())
+  private val holdEdition = HoldEdition(editions, SeriesInMemory(), awaitedCovers, withoutTransaction())
   private val addBookToBookshelf =
     AddBookToBookshelf(holdEdition, copies, bookshelves, withoutTransaction(), coverWorker, clock)
 

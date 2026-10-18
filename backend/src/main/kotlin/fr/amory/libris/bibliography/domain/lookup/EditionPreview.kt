@@ -33,7 +33,7 @@ data class EditionPreview(
     )
 
   companion object {
-    fun of(edition: Edition): EditionPreview? =
+    fun of(edition: Edition, series: SeriesEntry?): EditionPreview? =
       edition.isbn?.let {
         EditionPreview(
           isbn = it,
@@ -41,7 +41,7 @@ data class EditionPreview(
           title = edition.title,
           subtitle = edition.subtitle,
           contributions = edition.contributions,
-          series = edition.series,
+          series = series,
           collection = edition.collection,
           publisher = edition.publisher,
           publicationYear = edition.publicationYear,
