@@ -319,7 +319,7 @@ private val NOT_IN_MY_CATALOGUE = SeriesId(UUID.fromString("5b6c7d8e-9f0a-4b1c-8
 
 private val ASTERIX = Series(SeriesId.new(), "Astérix")
 
-private val ASTERIX_IN_MY_CATALOGUE = CatalogueSeries("Astérix", 1, ASTERIX_1_COVER, BD)
+private val ASTERIX_IN_MY_CATALOGUE = CatalogueSeries(ASTERIX.id, "Astérix", 1, ASTERIX_1_COVER, BD)
 
 private val ASTERIX_1_HELD = HeldEdition(
   edition = Edition(

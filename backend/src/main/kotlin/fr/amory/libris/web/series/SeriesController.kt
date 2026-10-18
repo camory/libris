@@ -39,6 +39,7 @@ class SeriesController(
 }
 
 data class SeriesResponse(
+  val id: String,
   val name: String,
   val volumeCount: Int,
   val coverUrl: String?,
@@ -46,6 +47,7 @@ data class SeriesResponse(
   companion object {
     fun from(series: CatalogueSeries): SeriesResponse =
       SeriesResponse(
+        id = series.id.value.toString(),
         name = series.name,
         volumeCount = series.volumeCount,
         coverUrl = series.coverName?.let { coverPathOf(it) },
@@ -55,6 +57,7 @@ data class SeriesResponse(
 }
 
 data class SeriesWithBooksResponse(
+  val id: String,
   val name: String,
   val volumeCount: Int,
   val coverUrl: String?,
@@ -63,6 +66,7 @@ data class SeriesWithBooksResponse(
   companion object {
     fun from(found: Found): SeriesWithBooksResponse =
       SeriesWithBooksResponse(
+        id = found.series.id.value.toString(),
         name = found.series.name,
         volumeCount = found.series.volumeCount,
         coverUrl = found.series.coverName?.let { coverPathOf(it) },
