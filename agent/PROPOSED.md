@@ -465,3 +465,13 @@
   `ReaderChoice`, each adding only its own spacing. Extract a message
   component taking the sentence, with its own spec (found 2026-10-16 by
   T098's review).
+- Bibliography: the series gains a cover of its own, `Series.coverName`,
+  kept on write as the cover of its lowest tome, after the series page
+  phase (Tophe, 2026-10-18, when the series became an aggregate). Open
+  before a spec: whether it is the household's lowest tome or the
+  reader's, the latter being what the series list's *S3* and the series
+  page's *S4* show today; whether it is a fact of its own or a copy of an
+  edition's cover, which D12 forbids an aggregate to carry; what keeps it
+  true when a cover arrives late through the awaited covers, when an
+  edition is corrected or moves to another series, and when the lowest
+  tome has no cover or the series only untomed editions.
