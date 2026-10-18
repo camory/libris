@@ -38,4 +38,9 @@ class JdbcSeriesRepositoryTest @Autowired constructor(private val seriesReposito
     stored shouldBe first
     seriesRepository.findById(again.id) shouldBe null
   }
+
+  @Test
+  fun `an id no series has finds none`() {
+    seriesRepository.findById(SeriesId.new()) shouldBe null
+  }
 }
