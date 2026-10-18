@@ -5,7 +5,6 @@ import fr.amory.libris.bibliography.domain.Isbn
 import fr.amory.libris.bibliography.domain.Kind
 import fr.amory.libris.bibliography.domain.SeriesEntry
 import fr.amory.libris.bibliography.domain.edition.Edition
-import fr.amory.libris.bibliography.domain.series.Series
 
 data class EditionPreview(
   val isbn: Isbn,
@@ -34,7 +33,7 @@ data class EditionPreview(
     )
 
   companion object {
-    fun of(edition: Edition, series: Series?): EditionPreview? =
+    fun of(edition: Edition, series: SeriesEntry?): EditionPreview? =
       edition.isbn?.let {
         EditionPreview(
           isbn = it,
@@ -42,7 +41,7 @@ data class EditionPreview(
           title = edition.title,
           subtitle = edition.subtitle,
           contributions = edition.contributions,
-          series = series?.let { SeriesEntry(it.name, edition.seriesVolume?.volumeNumber) },
+          series = series,
           collection = edition.collection,
           publisher = edition.publisher,
           publicationYear = edition.publicationYear,

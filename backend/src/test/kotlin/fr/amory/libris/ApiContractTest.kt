@@ -322,7 +322,7 @@ private val ASTERIX_1_HELD = HeldEdition(
     summary = ASTERIX_1.summary,
     coverName = ASTERIX_1_COVER,
   ),
-  series = ASTERIX,
+  series = SeriesEntry("Astérix", 1),
   copies = listOf(COPY_OF_ASTERIX_1),
 )
 

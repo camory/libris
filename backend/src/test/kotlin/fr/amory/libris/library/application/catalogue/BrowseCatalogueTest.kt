@@ -3,6 +3,7 @@ package fr.amory.libris.library.application.catalogue
 import fr.amory.libris.bibliography.domain.Contributions
 import fr.amory.libris.bibliography.domain.Kind.BD
 import fr.amory.libris.bibliography.domain.Kind.BOOK
+import fr.amory.libris.bibliography.domain.SeriesEntry
 import fr.amory.libris.bibliography.domain.edition.Edition
 import fr.amory.libris.bibliography.domain.edition.EditionId
 import fr.amory.libris.bibliography.domain.series.Series
@@ -58,7 +59,7 @@ class BrowseCatalogueTest {
       listOf(
         HeldEdition(
           CIGARES,
-          TINTIN,
+          SeriesEntry("Tintin", 1),
           listOf(
             CopyOnBookshelf(cigaresOnLeasBookshelf.id, leasBookshelf.id, "Bibliothèque de Léa"),
             CopyOnBookshelf(cigaresInTheSalon.id, salon.id, "Salon"),
@@ -91,7 +92,7 @@ class BrowseCatalogueTest {
       listOf(
         HeldEdition(
           CIGARES,
-          TINTIN,
+          SeriesEntry("Tintin", 1),
           listOf(CopyOnBookshelf(leasCopy.id, leasBookshelf.id, "Bibliothèque de Léa")),
         ),
       ),

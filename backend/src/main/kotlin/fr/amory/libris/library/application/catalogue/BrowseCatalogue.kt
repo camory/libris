@@ -35,7 +35,7 @@ class BrowseCatalogue(
         val edition = editionsById.getValue(editionId)
         HeldEdition(
           edition,
-          edition.seriesVolume?.let { seriesById[it.seriesId] },
+          edition.seriesVolume?.let { volume -> seriesById[volume.seriesId]?.let(volume::entryIn) },
           copiesByEdition.getValue(editionId).map { copy ->
             CopyOnBookshelf(copy.id, copy.bookshelfId, readersBookshelves.getValue(copy.bookshelfId).name.value)
           },

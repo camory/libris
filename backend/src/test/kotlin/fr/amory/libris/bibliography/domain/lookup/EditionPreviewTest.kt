@@ -10,7 +10,6 @@ import fr.amory.libris.bibliography.domain.Kind.MANGA
 import fr.amory.libris.bibliography.domain.SeriesEntry
 import fr.amory.libris.bibliography.domain.edition.Edition
 import fr.amory.libris.bibliography.domain.edition.EditionId
-import fr.amory.libris.bibliography.domain.series.Series
 import fr.amory.libris.bibliography.domain.series.SeriesId
 import fr.amory.libris.bibliography.domain.series.SeriesVolume
 import fr.amory.libris.bibliography.fixture.A_PREVIEW
@@ -129,7 +128,6 @@ class EditionPreviewTest {
   @Test
   fun `an edition the house holds previews as itself`() {
     // Given
-    val series = Series(SeriesId.new(), "One Piece")
     val edition = Edition(
       id = EditionId.new(),
       isbn = isbnOf("9782723488525"),
@@ -137,7 +135,7 @@ class EditionPreviewTest {
       title = "Romance dawn",
       subtitle = "Tome 01",
       contributions = Contributions.of(listOf(Contribution("Eiichirō Oda", WRITER))),
-      seriesVolume = SeriesVolume(series.id, 1),
+      seriesVolume = SeriesVolume(SeriesId.new(), 1),
       collection = "Shōnen",
       publisher = "Glénat",
       publicationYear = 2013,
@@ -148,7 +146,7 @@ class EditionPreviewTest {
     )
 
     // When
-    val preview = EditionPreview.of(edition, series)
+    val preview = EditionPreview.of(edition, SeriesEntry("One Piece", 1))
 
     // Then
     preview shouldBe EditionPreview(

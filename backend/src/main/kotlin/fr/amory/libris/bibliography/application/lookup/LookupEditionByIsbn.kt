@@ -5,6 +5,7 @@ import fr.amory.libris.bibliography.application.lookup.EditionLookupResult.Held
 import fr.amory.libris.bibliography.application.lookup.EditionLookupResult.SourcesUnavailable
 import fr.amory.libris.bibliography.application.lookup.EditionLookupResult.UnknownIsbn
 import fr.amory.libris.bibliography.domain.Isbn
+import fr.amory.libris.bibliography.domain.SeriesEntry
 import fr.amory.libris.bibliography.domain.edition.Edition
 import fr.amory.libris.bibliography.domain.edition.EditionRepository
 import fr.amory.libris.bibliography.domain.lookup.CoverCandidate
@@ -32,9 +33,10 @@ class LookupEditionByIsbn(
     editions.findByIsbn(isbn)?.let(::held) ?: askTheSources(isbn)
 
   private fun held(edition: Edition): Held? =
-    EditionPreview
-      .of(edition, edition.seriesVolume?.let { seriesRepository.findById(it.seriesId) })
-      ?.let { Held(edition.id, it, edition.coverName) }
+    EditionPreview.of(edition, seriesEntryOf(edition))?.let { Held(edition.id, it, edition.coverName) }
+
+  private fun seriesEntryOf(edition: Edition): SeriesEntry? =
+    edition.seriesVolume?.let { volume -> seriesRepository.findById(volume.seriesId)?.let(volume::entryIn) }
 
   private fun askTheSources(isbn: Isbn): EditionLookupResult =
     newVirtualThreadPerTaskExecutor().use { executor ->
