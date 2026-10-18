@@ -23,4 +23,19 @@ class JdbcSeriesRepositoryTest @Autowired constructor(private val seriesReposito
     stored shouldBe series
     seriesRepository.findById(series.id) shouldBe series
   }
+
+  @Test
+  fun `a name the house holds, in another capitalisation, answers the series stored`() {
+    // Given
+    val first = Series(SeriesId.new(), "One piece")
+    seriesRepository.findOrInsert(first)
+    val again = Series(SeriesId.new(), "ONE PIECE")
+
+    // When
+    val stored = seriesRepository.findOrInsert(again)
+
+    // Then
+    stored shouldBe first
+    seriesRepository.findById(again.id) shouldBe null
+  }
 }

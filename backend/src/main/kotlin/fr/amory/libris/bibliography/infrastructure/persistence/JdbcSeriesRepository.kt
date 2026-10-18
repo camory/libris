@@ -9,7 +9,11 @@ import java.sql.ResultSet
 import java.util.UUID
 
 private const val INSERT_SERIES =
-  "INSERT INTO series (id, name) VALUES (:id, :name) RETURNING id, name"
+  """
+    INSERT INTO series (id, name) VALUES (:id, :name)
+    ON CONFLICT (LOWER(name)) DO UPDATE SET name = series.name
+    RETURNING id, name
+    """
 
 private const val FIND_SERIES_BY_ID =
   "SELECT series.id, series.name FROM series WHERE series.id = :id"
