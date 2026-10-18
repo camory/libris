@@ -5,7 +5,10 @@ import fr.amory.libris.bibliography.domain.ContributionRole.WRITER
 import fr.amory.libris.bibliography.domain.Contributions
 import fr.amory.libris.bibliography.domain.Kind.MANGA
 import fr.amory.libris.bibliography.domain.SeriesEntry
+import fr.amory.libris.bibliography.domain.cover.AwaitedCover
+import fr.amory.libris.bibliography.domain.cover.CoverSource.INVENTAIRE
 import fr.amory.libris.bibliography.domain.edition.Edition
+import fr.amory.libris.bibliography.fixture.AwaitedCoversInMemory
 import fr.amory.libris.bibliography.fixture.EditionsInMemory
 import fr.amory.libris.bibliography.fixture.isbnOf
 import io.kotest.matchers.shouldBe
@@ -13,7 +16,8 @@ import org.junit.jupiter.api.Test
 
 class HoldEditionTest {
   private val editions = EditionsInMemory()
-  private val holdEdition = HoldEdition(editions)
+  private val awaitedCovers = AwaitedCoversInMemory()
+  private val holdEdition = HoldEdition(editions, awaitedCovers)
 
   @Test
   fun `the house lacking the ISBN gains the edition`() {
@@ -51,6 +55,15 @@ class HoldEditionTest {
     // Then
     edition shouldBe held
     editions.stored shouldBe listOf(held)
+  }
+
+  @Test
+  fun `the edition the house gains awaits its cover from the chosen source`() {
+    // When
+    holdEdition(onePieceTomeOne().copy(coverSource = INVENTAIRE))
+
+    // Then
+    awaitedCovers.stored shouldBe listOf(AwaitedCover(isbnOf(ONE_PIECE), INVENTAIRE))
   }
 
   private fun onePieceTomeOne(): NewEdition =
