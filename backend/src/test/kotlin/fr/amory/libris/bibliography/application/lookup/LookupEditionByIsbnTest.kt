@@ -6,6 +6,7 @@ import fr.amory.libris.bibliography.application.lookup.EditionLookupResult.Sourc
 import fr.amory.libris.bibliography.application.lookup.EditionLookupResult.UnknownIsbn
 import fr.amory.libris.bibliography.domain.Contributions
 import fr.amory.libris.bibliography.domain.Kind.MANGA
+import fr.amory.libris.bibliography.domain.SeriesEntry
 import fr.amory.libris.bibliography.domain.cover.CoverName
 import fr.amory.libris.bibliography.domain.cover.CoverSource
 import fr.amory.libris.bibliography.domain.cover.CoverSource.INVENTAIRE
@@ -18,6 +19,9 @@ import fr.amory.libris.bibliography.domain.lookup.EditionSource
 import fr.amory.libris.bibliography.domain.lookup.EditionSourceAnswer.Failed
 import fr.amory.libris.bibliography.domain.lookup.EditionSourceAnswer.Known
 import fr.amory.libris.bibliography.domain.lookup.EditionSourceAnswer.NothingKnown
+import fr.amory.libris.bibliography.domain.series.Series
+import fr.amory.libris.bibliography.domain.series.SeriesId
+import fr.amory.libris.bibliography.domain.series.SeriesVolume
 import fr.amory.libris.bibliography.fixture.A_PREVIEW
 import fr.amory.libris.bibliography.fixture.CoverLookupAnswering
 import fr.amory.libris.bibliography.fixture.CoverLookupAnsweringAtRendezvous
@@ -94,6 +98,25 @@ class LookupEditionByIsbnTest {
     result shouldBe Held(ROMANCE_DAWN.id, checkNotNull(EditionPreview.of(romanceDawn, null)), ROMANCE_DAWN_COVER)
     source.asked shouldBe emptyList()
     coverLookup.asked shouldBe emptyList()
+  }
+
+  @Test
+  fun `an ISBN the house holds is answered with the name of its series`() {
+    // Given
+    val seriesRepository = SeriesInMemory()
+    val onePiece = seriesRepository.findOrInsert(Series(SeriesId.new(), "One piece"))
+    val lookupEditionByIsbn = LookupEditionByIsbn(
+      EditionsInMemory().also { it.insert(ROMANCE_DAWN.copy(seriesVolume = SeriesVolume(onePiece.id, 1))) },
+      seriesRepository,
+      listOf(LookupAnswering(Known(A_PREVIEW, null))),
+      NO_COVER_LOOKUP,
+    )
+
+    // When
+    val result = lookupEditionByIsbn(isbnOf("9782723488525"))
+
+    // Then
+    result.shouldBeInstanceOf<Held>().preview.series shouldBe SeriesEntry("One piece", 1)
   }
 
   @Test
