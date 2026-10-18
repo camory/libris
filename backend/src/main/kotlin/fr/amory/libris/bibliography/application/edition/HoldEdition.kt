@@ -6,18 +6,22 @@ import fr.amory.libris.bibliography.domain.edition.Edition
 import fr.amory.libris.bibliography.domain.edition.EditionId
 import fr.amory.libris.bibliography.domain.edition.EditionRepository
 import org.springframework.stereotype.Service
+import org.springframework.transaction.support.TransactionOperations
 
 @Service
 class HoldEdition(
   private val editions: EditionRepository,
-  private val awaitedCovers: AwaitedCoverRepository) {
+  private val awaitedCovers: AwaitedCoverRepository,
+  private val transactions: TransactionOperations) {
   operator fun invoke(newEdition: NewEdition): Edition =
     newEdition.isbn?.let { editions.findByIsbn(it) } ?: inserted(newEdition)
 
   private fun inserted(newEdition: NewEdition): Edition {
     val edition = editionOf(newEdition)
-    editions.insert(edition)
-    edition.isbn?.let { awaitedCovers.insert(AwaitedCover(it, newEdition.coverSource)) }
+    transactions.executeWithoutResult {
+      editions.insert(edition)
+      edition.isbn?.let { awaitedCovers.insert(AwaitedCover(it, newEdition.coverSource)) }
+    }
     return edition
   }
 

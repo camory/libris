@@ -12,14 +12,17 @@ import fr.amory.libris.bibliography.domain.edition.Edition
 import fr.amory.libris.bibliography.fixture.AwaitedCoversInMemory
 import fr.amory.libris.bibliography.fixture.EditionsInMemory
 import fr.amory.libris.bibliography.fixture.isbnOf
+import fr.amory.libris.fixture.Transaction
+import fr.amory.libris.fixture.TransactionsObserving
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.shouldNotBe
 import org.junit.jupiter.api.Test
+import org.springframework.transaction.support.TransactionOperations.withoutTransaction
 
 class HoldEditionTest {
   private val editions = EditionsInMemory()
   private val awaitedCovers = AwaitedCoversInMemory()
-  private val holdEdition = HoldEdition(editions, awaitedCovers)
+  private val holdEdition = HoldEdition(editions, awaitedCovers, withoutTransaction())
 
   @Test
   fun `the house lacking the ISBN gains the edition`() {
@@ -102,6 +105,19 @@ class HoldEditionTest {
 
     // Then
     awaitedCovers.stored shouldBe listOf(AwaitedCover(isbnOf(ONE_PIECE), INVENTAIRE))
+  }
+
+  @Test
+  fun `the edition and its awaited cover land in one transaction`() {
+    // Given
+    val transactions = TransactionsObserving { editions.stored.size to awaitedCovers.stored.size }
+    val holdEdition = HoldEdition(editions, awaitedCovers, transactions)
+
+    // When
+    holdEdition(onePieceTomeOne())
+
+    // Then
+    transactions.recorded shouldBe listOf(Transaction(before = 0 to 0, after = 1 to 1))
   }
 
   private fun onePieceTomeOne(): NewEdition =
