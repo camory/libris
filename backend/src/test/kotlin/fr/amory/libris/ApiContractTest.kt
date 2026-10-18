@@ -3,6 +3,7 @@ package fr.amory.libris
 import dev.contracteer.verifier.junit.ContracteerServerPort
 import dev.contracteer.verifier.junit.ContracteerTest
 import fr.amory.libris.bibliography.application.cover.FindCover
+import fr.amory.libris.bibliography.application.edition.NewEdition
 import fr.amory.libris.bibliography.application.lookup.EditionLookupResult
 import fr.amory.libris.bibliography.application.lookup.EditionLookupResult.Found
 import fr.amory.libris.bibliography.application.lookup.EditionLookupResult.Held
@@ -46,7 +47,6 @@ import fr.amory.libris.library.application.FindBookshelfResult
 import fr.amory.libris.library.application.FindDefaultBookshelf
 import fr.amory.libris.library.application.ListReaderBookshelves
 import fr.amory.libris.library.application.ListReaders
-import fr.amory.libris.library.application.NewBook
 import fr.amory.libris.library.application.ReaderBookshelf
 import fr.amory.libris.library.application.WelcomeReader
 import fr.amory.libris.library.application.catalogue.BrowseCatalogue
@@ -277,7 +277,7 @@ private val COPY_OF_ASTERIX_1 = CopyOnBookshelf(
   "Grenier",
 )
 
-private val NEW_ONE_PIECE_1 = NewBook(
+private val NEW_ONE_PIECE_1 = NewEdition(
   isbn = isbnOf("9782723488525"),
   kind = MANGA,
   title = "Romance dawn",

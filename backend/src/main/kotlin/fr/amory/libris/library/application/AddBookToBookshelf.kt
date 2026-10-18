@@ -1,6 +1,7 @@
 package fr.amory.libris.library.application
 
 import fr.amory.libris.bibliography.application.cover.CoverWorker
+import fr.amory.libris.bibliography.application.edition.NewEdition
 import fr.amory.libris.bibliography.domain.cover.AwaitedCover
 import fr.amory.libris.bibliography.domain.cover.AwaitedCoverRepository
 import fr.amory.libris.bibliography.domain.cover.CoverSource
@@ -31,7 +32,7 @@ class AddBookToBookshelf(
   private val transactions: TransactionOperations,
   private val coverWorker: CoverWorker,
   private val clock: Clock) {
-  operator fun invoke(readerId: ReaderId, bookshelfId: BookshelfId, book: NewBook): AddBookResult {
+  operator fun invoke(readerId: ReaderId, bookshelfId: BookshelfId, book: NewEdition): AddBookResult {
     val bookshelf = bookshelves.findById(bookshelfId)?.takeIf { it.hasMember(readerId) }
     return when {
       bookshelf == null              -> NoSuchBookshelf
@@ -40,7 +41,7 @@ class AddBookToBookshelf(
     }
   }
 
-  private fun added(readerId: ReaderId, bookshelf: Bookshelf, book: NewBook): AddBookResult {
+  private fun added(readerId: ReaderId, bookshelf: Bookshelf, book: NewEdition): AddBookResult {
     val heldEdition = book.isbn?.let { editions.findByIsbn(it) }
     val edition = heldEdition ?: newEdition(book)
     val copy = Copy(CopyId.new(), edition.id, bookshelf.id, readerId, clock.instant())
@@ -57,7 +58,7 @@ class AddBookToBookshelf(
     edition.isbn?.let { awaitedCovers.insert(AwaitedCover(it, chosenSource)) }
   }
 
-  private fun newEdition(book: NewBook): Edition =
+  private fun newEdition(book: NewEdition): Edition =
     Edition(
       id = EditionId.new(),
       isbn = book.isbn,

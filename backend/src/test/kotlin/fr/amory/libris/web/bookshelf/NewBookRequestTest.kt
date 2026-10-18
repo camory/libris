@@ -54,7 +54,7 @@ class NewBookRequestTest {
     val request = romanceDawn(coverSource = "inventaire.io")
 
     // When / Then
-    request.validate().shouldBeInstanceOf<Accepted>().book.coverSource shouldBe INVENTAIRE
+    request.validate().shouldBeInstanceOf<Accepted>().newEdition.coverSource shouldBe INVENTAIRE
   }
 
   @Test
@@ -63,7 +63,7 @@ class NewBookRequestTest {
     val request = romanceDawn(coverSource = "Libris")
 
     // When / Then
-    request.validate().shouldBeInstanceOf<Accepted>().book.coverSource shouldBe null
+    request.validate().shouldBeInstanceOf<Accepted>().newEdition.coverSource shouldBe null
   }
 
   private fun romanceDawn(

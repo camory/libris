@@ -1,5 +1,6 @@
 package fr.amory.libris.library.application
 
+import fr.amory.libris.bibliography.application.edition.NewEdition
 import fr.amory.libris.bibliography.domain.Contribution
 import fr.amory.libris.bibliography.domain.ContributionRole.WRITER
 import fr.amory.libris.bibliography.domain.Contributions
@@ -330,8 +331,8 @@ class AddBookToBookshelfTest {
     coverWorker.wakings.shouldBeEmpty()
   }
 
-  private fun onePieceTomeOne(): NewBook =
-    NewBook(
+  private fun onePieceTomeOne(): NewEdition =
+    NewEdition(
       isbn = isbnOf(ONE_PIECE),
       kind = MANGA,
       title = "Romance dawn",
