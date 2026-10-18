@@ -1,4 +1,4 @@
-package fr.amory.libris.library.application
+package fr.amory.libris.bibliography.application.edition
 
 import fr.amory.libris.bibliography.domain.Contribution
 import fr.amory.libris.bibliography.domain.ContributionRole.WRITER
@@ -10,10 +10,10 @@ import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.matchers.shouldBe
 import org.junit.jupiter.api.Test
 
-class NewBookTest {
+class NewEditionTest {
   @Test
-  fun `a new book without a title is none`() {
-    val book = NewBook.of(
+  fun `a new edition without a title is none`() {
+    val newEdition = NewEdition.of(
       isbn = isbnOf("9782723488525"),
       kind = MANGA,
       title = " ",
@@ -29,13 +29,13 @@ class NewBookTest {
       coverSource = null,
     )
 
-    book shouldBe null
+    newEdition shouldBe null
   }
 
   @Test
-  fun `a new book without a title is refused`() {
+  fun `a new edition without a title is refused`() {
     shouldThrow<IllegalArgumentException> {
-      NewBook(
+      NewEdition(
         isbn = isbnOf("9782723488525"),
         kind = MANGA,
         title = " ",

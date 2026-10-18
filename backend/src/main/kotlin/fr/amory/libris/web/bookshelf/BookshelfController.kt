@@ -80,7 +80,7 @@ class BookshelfController(
     @RequestBody request: NewBookRequest): ResponseEntity<Any> =
     when (val validation = request.validate()) {
       is Refused  -> invalid(validation.errors).asResponse()
-      is Accepted -> responseOf(addBookToBookshelf(reader.id, BookshelfId(id), validation.book))
+      is Accepted -> responseOf(addBookToBookshelf(reader.id, BookshelfId(id), validation.newEdition))
     }
 
   @PostMapping("/api/v1/bookshelves/{id}/members")

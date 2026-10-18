@@ -1,4 +1,4 @@
-package fr.amory.libris.library.application
+package fr.amory.libris.bibliography.application.edition
 
 import fr.amory.libris.bibliography.domain.Contributions
 import fr.amory.libris.bibliography.domain.Isbn
@@ -6,7 +6,7 @@ import fr.amory.libris.bibliography.domain.Kind
 import fr.amory.libris.bibliography.domain.SeriesEntry
 import fr.amory.libris.bibliography.domain.cover.CoverSource
 
-data class NewBook(
+data class NewEdition(
   val isbn: Isbn?,
   val kind: Kind,
   val title: String,
@@ -21,7 +21,7 @@ data class NewBook(
   val summary: String?,
   val coverSource: CoverSource?) {
   init {
-    require(title.isNotBlank()) { "a new book needs a title" }
+    require(title.isNotBlank()) { "a new edition needs a title" }
   }
 
   companion object {
@@ -39,9 +39,9 @@ data class NewBook(
       language: String?,
       pageCount: Int?,
       summary: String?,
-      coverSource: CoverSource?): NewBook? =
+      coverSource: CoverSource?): NewEdition? =
       title.takeUnless { it.isBlank() }?.let {
-        NewBook(
+        NewEdition(
           isbn = isbn,
           kind = kind,
           title = it,
