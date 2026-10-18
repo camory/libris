@@ -7,6 +7,7 @@ import fr.amory.libris.bibliography.domain.Kind.MANGA
 import fr.amory.libris.bibliography.domain.SeriesEntry
 import fr.amory.libris.bibliography.domain.cover.AwaitedCover
 import fr.amory.libris.bibliography.domain.cover.CoverSource.INVENTAIRE
+import fr.amory.libris.bibliography.domain.cover.CoverSource.OPEN_LIBRARY
 import fr.amory.libris.bibliography.domain.edition.Edition
 import fr.amory.libris.bibliography.fixture.AwaitedCoversInMemory
 import fr.amory.libris.bibliography.fixture.EditionsInMemory
@@ -89,6 +90,18 @@ class HoldEditionTest {
     second.id shouldNotBe first.id
     editions.stored shouldBe listOf(first, second)
     editions.stored.map { it.isbn } shouldBe listOf(null, null)
+  }
+
+  @Test
+  fun `an ISBN the house holds awaits no second cover`() {
+    // Given
+    holdEdition(onePieceTomeOne().copy(coverSource = INVENTAIRE))
+
+    // When
+    holdEdition(onePieceTomeOne().copy(coverSource = OPEN_LIBRARY))
+
+    // Then
+    awaitedCovers.stored shouldBe listOf(AwaitedCover(isbnOf(ONE_PIECE), INVENTAIRE))
   }
 
   private fun onePieceTomeOne(): NewEdition =
