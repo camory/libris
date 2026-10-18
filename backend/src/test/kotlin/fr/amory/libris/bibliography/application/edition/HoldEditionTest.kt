@@ -10,6 +10,7 @@ import fr.amory.libris.bibliography.domain.cover.CoverSource.INVENTAIRE
 import fr.amory.libris.bibliography.domain.cover.CoverSource.OPEN_LIBRARY
 import fr.amory.libris.bibliography.domain.edition.Edition
 import fr.amory.libris.bibliography.domain.series.Series
+import fr.amory.libris.bibliography.domain.series.SeriesId
 import fr.amory.libris.bibliography.domain.series.SeriesVolume
 import fr.amory.libris.bibliography.fixture.AwaitedCoversInMemory
 import fr.amory.libris.bibliography.fixture.EditionsInMemory
@@ -62,6 +63,19 @@ class HoldEditionTest {
     val series = seriesRepository.stored.single()
     series shouldBe Series(series.id, "One piece")
     edition.seriesVolume shouldBe SeriesVolume(series.id, 1)
+  }
+
+  @Test
+  fun `a series name the house holds, in another capitalisation, reaches the stored series`() {
+    // Given
+    val stored = seriesRepository.findOrInsert(Series(SeriesId.new(), "One piece"))
+
+    // When
+    val edition = holdEdition(onePieceTomeOne().copy(series = SeriesEntry("ONE PIECE", 1)))
+
+    // Then
+    edition.seriesVolume shouldBe SeriesVolume(stored.id, 1)
+    seriesRepository.stored shouldBe listOf(stored)
   }
 
   @Test
