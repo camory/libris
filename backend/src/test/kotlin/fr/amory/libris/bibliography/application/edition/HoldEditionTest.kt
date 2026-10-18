@@ -149,16 +149,18 @@ class HoldEditionTest {
   }
 
   @Test
-  fun `the edition and its awaited cover land in one transaction`() {
+  fun `the series, the edition and its awaited cover land in one transaction`() {
     // Given
-    val transactions = TransactionsObserving { editions.stored.size to awaitedCovers.stored.size }
+    val transactions = TransactionsObserving {
+      Triple(seriesRepository.stored.size, editions.stored.size, awaitedCovers.stored.size)
+    }
     val holdEdition = HoldEdition(editions, seriesRepository, awaitedCovers, transactions)
 
     // When
     holdEdition(onePieceTomeOne())
 
     // Then
-    transactions.recorded shouldBe listOf(Transaction(before = 0 to 0, after = 1 to 1))
+    transactions.recorded shouldBe listOf(Transaction(before = Triple(0, 0, 0), after = Triple(1, 1, 1)))
   }
 
   private fun onePieceTomeOne(): NewEdition =
