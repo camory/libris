@@ -92,6 +92,18 @@ class HoldEditionTest {
   }
 
   @Test
+  fun `an ISBN the house holds finds or inserts no series`() {
+    // Given
+    holdEdition(onePieceTomeOne())
+
+    // When
+    holdEdition(onePieceTomeOne().copy(series = SeriesEntry("Naruto", 1)))
+
+    // Then
+    seriesRepository.stored.map { it.name } shouldBe listOf("One piece")
+  }
+
+  @Test
   fun `the edition the house gains awaits its cover from the chosen source`() {
     // When
     holdEdition(onePieceTomeOne().copy(coverSource = INVENTAIRE))
