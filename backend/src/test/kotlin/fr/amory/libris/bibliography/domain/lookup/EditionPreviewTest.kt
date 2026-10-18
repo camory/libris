@@ -10,6 +10,9 @@ import fr.amory.libris.bibliography.domain.Kind.MANGA
 import fr.amory.libris.bibliography.domain.SeriesEntry
 import fr.amory.libris.bibliography.domain.edition.Edition
 import fr.amory.libris.bibliography.domain.edition.EditionId
+import fr.amory.libris.bibliography.domain.series.Series
+import fr.amory.libris.bibliography.domain.series.SeriesId
+import fr.amory.libris.bibliography.domain.series.SeriesVolume
 import fr.amory.libris.bibliography.fixture.A_PREVIEW
 import fr.amory.libris.bibliography.fixture.isbnOf
 import io.kotest.matchers.nulls.shouldBeNull
@@ -126,6 +129,7 @@ class EditionPreviewTest {
   @Test
   fun `an edition the house holds previews as itself`() {
     // Given
+    val series = Series(SeriesId.new(), "One Piece")
     val edition = Edition(
       id = EditionId.new(),
       isbn = isbnOf("9782723488525"),
@@ -133,7 +137,7 @@ class EditionPreviewTest {
       title = "Romance dawn",
       subtitle = "Tome 01",
       contributions = Contributions.of(listOf(Contribution("Eiichirō Oda", WRITER))),
-      series = SeriesEntry("One Piece", 1),
+      seriesVolume = SeriesVolume(series.id, 1),
       collection = "Shōnen",
       publisher = "Glénat",
       publicationYear = 2013,
@@ -144,7 +148,7 @@ class EditionPreviewTest {
     )
 
     // When
-    val preview = EditionPreview.of(edition)
+    val preview = EditionPreview.of(edition, series)
 
     // Then
     preview shouldBe EditionPreview(
@@ -173,7 +177,7 @@ class EditionPreviewTest {
       title = "Romance dawn",
       subtitle = null,
       contributions = Contributions.of(emptyList()),
-      series = null,
+      seriesVolume = null,
       collection = null,
       publisher = null,
       publicationYear = null,
@@ -184,7 +188,7 @@ class EditionPreviewTest {
     )
 
     // When
-    val preview = EditionPreview.of(edition)
+    val preview = EditionPreview.of(edition, null)
 
     // Then
     preview.shouldBeNull()

@@ -18,6 +18,7 @@ import fr.amory.libris.bibliography.fixture.A_PREVIEW
 import fr.amory.libris.bibliography.fixture.CoverLookupAnswering
 import fr.amory.libris.bibliography.fixture.EditionsInMemory
 import fr.amory.libris.bibliography.fixture.LookupAnswering
+import fr.amory.libris.bibliography.fixture.SeriesInMemory
 import fr.amory.libris.bibliography.fixture.isbnOf
 import fr.amory.libris.library.domain.bookshelf.Bookshelf
 import fr.amory.libris.library.domain.bookshelf.BookshelfId
@@ -45,7 +46,7 @@ private val ROMANCE_DAWN = Edition(
   title = "Romance dawn",
   subtitle = null,
   contributions = Contributions.of(emptyList()),
-  series = null,
+  seriesVolume = null,
   collection = null,
   publisher = null,
   publicationYear = null,
@@ -144,7 +145,7 @@ class LookupIsbnForReaderTest {
     vararg sources: EditionLookup,
     house: EditionsInMemory = EditionsInMemory()): LookupIsbnForReader =
     LookupIsbnForReader(
-      LookupEditionByIsbn(house, sources.toList(), CoverLookupAnswering(null)),
+      LookupEditionByIsbn(house, SeriesInMemory(), sources.toList(), CoverLookupAnswering(null)),
       copies,
       bookshelves,
     )

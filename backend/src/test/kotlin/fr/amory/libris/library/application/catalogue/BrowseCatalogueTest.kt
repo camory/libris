@@ -3,10 +3,13 @@ package fr.amory.libris.library.application.catalogue
 import fr.amory.libris.bibliography.domain.Contributions
 import fr.amory.libris.bibliography.domain.Kind.BD
 import fr.amory.libris.bibliography.domain.Kind.BOOK
-import fr.amory.libris.bibliography.domain.SeriesEntry
 import fr.amory.libris.bibliography.domain.edition.Edition
 import fr.amory.libris.bibliography.domain.edition.EditionId
+import fr.amory.libris.bibliography.domain.series.Series
+import fr.amory.libris.bibliography.domain.series.SeriesId
+import fr.amory.libris.bibliography.domain.series.SeriesVolume
 import fr.amory.libris.bibliography.fixture.EditionsInMemory
+import fr.amory.libris.bibliography.fixture.SeriesInMemory
 import fr.amory.libris.library.application.lookup.CopyOnBookshelf
 import fr.amory.libris.library.domain.bookshelf.Bookshelf
 import fr.amory.libris.library.domain.bookshelf.BookshelfId
@@ -25,6 +28,8 @@ import fr.amory.libris.library.fixture.copyOn
 import io.kotest.matchers.shouldBe
 import org.junit.jupiter.api.Test
 
+private val TINTIN = Series(SeriesId.new(), "Tintin")
+
 private val CIGARES = Edition(
   id = EditionId.new(),
   isbn = null,
@@ -32,7 +37,7 @@ private val CIGARES = Edition(
   title = "Les cigares du pharaon",
   subtitle = null,
   contributions = Contributions.of(emptyList()),
-  series = SeriesEntry("Tintin", 1),
+  seriesVolume = SeriesVolume(TINTIN.id, 1),
   collection = null,
   publisher = null,
   publicationYear = null,
@@ -46,7 +51,7 @@ private val PIERRE = CIGARES.copy(
   id = EditionId.new(),
   kind = BOOK,
   title = "Pierre et le loup",
-  series = null,
+  seriesVolume = null,
 )
 
 class BrowseCatalogueTest {
@@ -58,6 +63,7 @@ class BrowseCatalogueTest {
     it.insert(CIGARES)
     it.insert(PIERRE)
   }
+  private val seriesRepository = SeriesInMemory().also { it.findOrInsert(TINTIN) }
 
   @Test
   fun `the catalogue answers the port's editions in its order, with the reader's copies and its next`() {
@@ -78,6 +84,7 @@ class BrowseCatalogueTest {
       listOf(
         HeldEdition(
           CIGARES,
+          TINTIN,
           listOf(
             CopyOnBookshelf(cigaresOnLeasBookshelf.id, leasBookshelf.id, "Bibliothèque de Léa"),
             CopyOnBookshelf(cigaresInTheSalon.id, salon.id, "Salon"),
@@ -85,6 +92,7 @@ class BrowseCatalogueTest {
         ),
         HeldEdition(
           PIERRE,
+          null,
           listOf(CopyOnBookshelf(pierreOnLeasBookshelf.id, leasBookshelf.id, "Bibliothèque de Léa")),
         ),
       ),
@@ -109,6 +117,7 @@ class BrowseCatalogueTest {
       listOf(
         HeldEdition(
           CIGARES,
+          TINTIN,
           listOf(CopyOnBookshelf(leasCopy.id, leasBookshelf.id, "Bibliothèque de Léa")),
         ),
       ),
@@ -121,7 +130,7 @@ class BrowseCatalogueTest {
     // Given
     val after = EditionId.new()
     val catalogueEditions = CatalogueEditionsAnswering(EditionIdPage(emptyList(), null))
-    val browseCatalogue = BrowseCatalogue(catalogueEditions, bookshelves, copies, editions)
+    val browseCatalogue = BrowseCatalogue(catalogueEditions, bookshelves, copies, editions, seriesRepository)
 
     // When
     browseCatalogue(lea, after)
@@ -131,7 +140,7 @@ class BrowseCatalogueTest {
   }
 
   private fun browsing(answer: EditionIdPage): BrowseCatalogue =
-    BrowseCatalogue(CatalogueEditionsAnswering(answer), bookshelves, copies, editions)
+    BrowseCatalogue(CatalogueEditionsAnswering(answer), bookshelves, copies, editions, seriesRepository)
 
   private fun bookshelfOf(name: String, vararg memberships: Membership): Bookshelf =
     bookshelfOf(BookshelfId.new(), BookshelfName(name), memberships.toList()).also { bookshelves.insert(it) }

@@ -3,6 +3,7 @@ package fr.amory.libris.library.application.catalogue
 import fr.amory.libris.bibliography.domain.edition.Edition
 import fr.amory.libris.bibliography.domain.edition.EditionId
 import fr.amory.libris.bibliography.domain.edition.EditionRepository
+import fr.amory.libris.bibliography.domain.series.SeriesRepository
 import fr.amory.libris.library.domain.bookshelf.BookshelfRepository
 import fr.amory.libris.library.domain.copy.CatalogueEditions
 import fr.amory.libris.library.domain.copy.CopyRepository
@@ -14,16 +15,22 @@ class ListCatalogueSeries(
   private val catalogueEditions: CatalogueEditions,
   private val bookshelves: BookshelfRepository,
   private val copies: CopyRepository,
-  private val editions: EditionRepository) {
+  private val editions: EditionRepository,
+  private val seriesRepository: SeriesRepository) {
   operator fun invoke(readerId: ReaderId): List<CatalogueSeries> {
     val readersBookshelves = bookshelves.findByMember(readerId)
     val readersCopies = copies.findByBookshelfIds(readersBookshelves.map { it.id })
     val firstOfEachSeries = catalogueEditions.findFirstOfEachSeries(readerId)
-    return editions
+    val editionsBySeriesId = editions
       .findByIds(readersCopies.map { it.editionId })
-      .mapNotNull { edition -> edition.series?.let { it.name to edition } }
+      .mapNotNull { edition -> edition.seriesVolume?.let { it.seriesId to edition } }
       .groupBy({ it.first }, { it.second })
-      .map { (name, seriesEditions) -> seriesOf(name, seriesEditions, firstOfEachSeries) }
+    val seriesById = seriesRepository
+      .findByIds(editionsBySeriesId.keys.toList())
+      .associateBy { it.id }
+    return editionsBySeriesId.map { (seriesId, seriesEditions) ->
+      seriesOf(seriesById.getValue(seriesId).name, seriesEditions, firstOfEachSeries)
+    }
   }
 
   private fun seriesOf(name: String, seriesEditions: List<Edition>, firstOfEachSeries: Set<EditionId>) =

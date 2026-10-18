@@ -138,7 +138,7 @@ class JdbcAwaitedCoverRepositoryTest @Autowired constructor(
       title = "Romance dawn",
       subtitle = null,
       contributions = Contributions.of(emptyList()),
-      series = null,
+      seriesVolume = null,
       collection = null,
       publisher = null,
       publicationYear = null,
