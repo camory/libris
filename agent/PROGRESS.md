@@ -98,3 +98,15 @@ Format:
   green already kept the answered series and read the held preview's.
 - Left over: nothing new; T101 and T102 hand the series' `id` to the series
   list and page.
+
+## 2026-10-18 — T110 The series, an aggregate of the bibliography — reworked
+- Did: `BrowseCatalogueTest`'s fixtures, `TINTIN`, `CIGARES` and `PIERRE`,
+  moved below the class and its helpers in that order, as
+  `ListCatalogueSeriesTest` has them; no case changed.
+- Decided: the reviewer's verdict of 2026-10-18 on #288 settled that a
+  fixture added to a file whose fixtures sit above the class moves all of
+  them below it, by D10's top-down rule. No other file of the branch added
+  a fixture above a class; the older files that keep theirs there are left
+  as they are.
+- Deviations from the brief: none.
+- Left over: nothing new.
