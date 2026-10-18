@@ -40,6 +40,19 @@ class HoldEditionTest {
     editions.stored shouldBe listOf(edition)
   }
 
+  @Test
+  fun `an ISBN the house holds reaches the existing edition`() {
+    // Given
+    val held = holdEdition(onePieceTomeOne())
+
+    // When
+    val edition = holdEdition(onePieceTomeOne())
+
+    // Then
+    edition shouldBe held
+    editions.stored shouldBe listOf(held)
+  }
+
   private fun onePieceTomeOne(): NewEdition =
     NewEdition(
       isbn = isbnOf(ONE_PIECE),

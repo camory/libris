@@ -8,7 +8,10 @@ import org.springframework.stereotype.Service
 @Service
 class HoldEdition(
   private val editions: EditionRepository) {
-  operator fun invoke(newEdition: NewEdition): Edition {
+  operator fun invoke(newEdition: NewEdition): Edition =
+    newEdition.isbn?.let { editions.findByIsbn(it) } ?: inserted(newEdition)
+
+  private fun inserted(newEdition: NewEdition): Edition {
     val edition = editionOf(newEdition)
     editions.insert(edition)
     return edition
