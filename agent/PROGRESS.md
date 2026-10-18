@@ -61,3 +61,21 @@ Format:
   cover", landed with T100's pull request on Tophe's go.
 - Left over: the backlog is empty; the next feature, the series page, needs
   its spec, written with Tophe.
+
+## 2026-10-18 — T109 The bibliography holds the edition an ouvrage adds — done
+- Did: `HoldEdition` in `bibliography.application.edition` answers the
+  edition of a `NewEdition` (the held one of its ISBN, else a new one with
+  its awaited cover, in one block); `NewBook` is that `NewEdition`;
+  `AddBookToBookshelf` calls the hold inside its block, six parameters.
+- Decided: `HoldEdition`'s constructor grew one parameter per cycle
+  (`editions`, then `awaitedCovers`, then `transactions`), since detekt
+  fails a constructor property no case reads yet. `NewBookRequest`'s local
+  `book` and `NewEditionTest`'s `book` are `newEdition` too, D10's word
+  for the type. The add builds and inserts the copy inside its block, after
+  the hold, and reads it back from `execute`.
+- Deviations from the brief: `NewEditionTest`'s two bodies rename their
+  local `book` to `newEdition`, where the brief said bodies unchanged.
+  An extra mutation beside the brief's: the hold called before the add's
+  block reds step 8's transaction case.
+- Left over: nothing new; T110 gives `HoldEdition` the series'
+  find-or-insert.

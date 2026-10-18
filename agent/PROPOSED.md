@@ -438,17 +438,6 @@
   is two statements with no Given / When / Then markers, as on `main`
   before T079 changed its text; give it the markers or one statement
   (found 2026-10-13 reworking T079).
-- Backend: `AddBookToBookshelf` reaches into the bibliography's
-  `EditionRepository` and `AwaitedCoverRepository` to find the edition of
-  an ISBN or create it awaiting its cover, the rule of PRD §3 that an ISBN
-  never makes a second edition. Move that into a bibliography use case
-  (`HoldEdition`, taking a bibliography `NewEdition` split from
-  `NewBook`), called inside the add's transaction, which its own block
-  joins, as `LookupIsbnForReader` calls `LookupEditionByIsbn`; its test
-  takes the edition cases of `AddBookToBookshelfTest`. The add's
-  constructor then falls to six parameters and loses its
-  `@Suppress("LongParameterList")` (found 2026-10-14 by T091, whose
-  `Clock` made it seven).
 - Backend tests: move the top-level fixtures below the class and its
   helpers in `BrowseCatalogueTest`, `LookupIsbnForReaderTest`,
   `LookupEditionByIsbnTest`, `AwaitedCoverTest` and `ProblemAdviceTest`,

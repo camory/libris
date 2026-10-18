@@ -24,7 +24,7 @@ changed: the bibliography first takes the edition an ouvrage adds, then
 the series' name gains an aggregate there. No task touches the contract
 or the frontend.
 
-- [ ] T109 Backend: the bibliography holds the edition an ouvrage adds.
+- [x] T109 Backend: the bibliography holds the edition an ouvrage adds.
       A use case of the bibliography, `HoldEdition`, answers the edition
       the house holds for a `NewEdition`: the one of its ISBN when the
       house has it, else a new one, inserted with the cover it awaits

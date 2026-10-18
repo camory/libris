@@ -386,6 +386,12 @@ Read whole by a run that changes `backend/`, after `every-run.md`.
   gains fails `compileTestKotlin` there until that double implements it.
 - `TransactionsObserving` and `Transaction` live in the root
   `fr.amory.libris.fixture`, shared by both contexts' use-case tests.
+- A use case called inside another's block (`HoldEdition` inside
+  `AddBookToBookshelf`'s) opens a block of its own, which Spring's
+  `TransactionTemplate` joins to the caller's. `TransactionsObserving` would
+  record it as a second transaction: the caller's test builds the callee over
+  `withoutTransaction()`, so the one block recorded is the caller's, and the
+  callee's own test proves its block.
 - `InventaireStubs.picturePaths()` answers the URLs of the picture requests
   served, `pictureRequests()` their count; `knowsButThePictureFails(isbn)`
   serves the entity, then `500` on the picture; `knows(isbn, picture,
