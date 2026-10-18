@@ -3,6 +3,7 @@ package fr.amory.libris.bibliography.infrastructure.persistence
 import fr.amory.libris.bibliography.domain.series.Series
 import fr.amory.libris.bibliography.domain.series.SeriesId
 import fr.amory.libris.fixture.JdbcSliceTest
+import io.kotest.matchers.collections.shouldContainExactlyInAnyOrder
 import io.kotest.matchers.shouldBe
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
@@ -42,5 +43,19 @@ class JdbcSeriesRepositoryTest @Autowired constructor(private val seriesReposito
   @Test
   fun `an id no series has finds none`() {
     seriesRepository.findById(SeriesId.new()) shouldBe null
+  }
+
+  @Test
+  fun `the series of the given ids are read back, none other`() {
+    // Given
+    val onePiece = seriesRepository.findOrInsert(Series(SeriesId.new(), "One piece"))
+    val tintin = seriesRepository.findOrInsert(Series(SeriesId.new(), "Tintin"))
+    seriesRepository.findOrInsert(Series(SeriesId.new(), "Naruto"))
+
+    // When
+    val found = seriesRepository.findByIds(listOf(onePiece.id, tintin.id))
+
+    // Then
+    found shouldContainExactlyInAnyOrder listOf(onePiece, tintin)
   }
 }
