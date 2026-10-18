@@ -690,13 +690,30 @@ Contract
   in the sub-package of its concern, answering a read model the persistence
   adapter builds from one query. No aggregate is rebuilt from a join, and no
   aggregate carries another's data to spare a query.
-- A series, an author and a tag are values of the edition, not aggregates:
-  `SeriesEntry(name, volumeNumber)` and `Contribution(name, role)` on the
-  `Edition`, matched by name as PRD §3 says. Each name has a row of its own
-  in persistence, with a uuid key and never doubled, and the edition's child
-  tables reference it: that row is what a filter or a sort by the name
-  reads. There is no renaming: a name is corrected edition by edition. Such
-  a value becomes an aggregate the day it gains a fact of its own.
+- A series is an aggregate of the bibliography, `Series(id, name)`, and
+  its `SeriesId` is what the API addresses a series by. No two series
+  share a name, the names matched as PRD §3 matches them. That rule spans
+  every series and is kept atomically by `SeriesRepository`:
+  `findOrInsert(series)` answers the series stored under that name: the
+  one already there, or the given one, now inserted. A use case that
+  writes an edition builds a `Series` from the name it was given and keeps
+  what the repository answers, never the series it built. The schema's
+  unique index on the name is the rule's only implementation, and it
+  resolves the conflict inside the statement, so the edition's transaction
+  never aborts on it. An edition refers to its series by id, with its
+  volume number beside it; the volume number and the kind stay facts of
+  the edition. A series holds no list of its editions. A read that answers
+  a series' name reads it through `SeriesRepository`. There is no
+  renaming: a name is corrected edition by edition, which moves the
+  edition to the series of the corrected name.
+- An author and a tag are values of the edition, not aggregates:
+  `Contribution(name, role)` on the `Edition`, matched by name as PRD §3
+  says. Each name has a row of its own in persistence, with a uuid key and
+  never doubled, and the edition's child tables reference it: that row is
+  what a filter or a sort by the name reads. There is no renaming: a name
+  is corrected edition by edition. Such a value becomes an aggregate the
+  day it gains a fact of its own, or the day something outside the edition
+  addresses it, as the series did when the API gave it an id.
 
 ## Local development (human)
 
