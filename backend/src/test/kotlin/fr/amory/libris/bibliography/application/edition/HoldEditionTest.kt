@@ -12,6 +12,7 @@ import fr.amory.libris.bibliography.fixture.AwaitedCoversInMemory
 import fr.amory.libris.bibliography.fixture.EditionsInMemory
 import fr.amory.libris.bibliography.fixture.isbnOf
 import io.kotest.matchers.shouldBe
+import io.kotest.matchers.shouldNotBe
 import org.junit.jupiter.api.Test
 
 class HoldEditionTest {
@@ -73,6 +74,21 @@ class HoldEditionTest {
 
     // Then
     awaitedCovers.stored shouldBe listOf(AwaitedCover(isbnOf(ONE_PIECE), null))
+  }
+
+  @Test
+  fun `the ouvrage without an ISBN gives the house a new edition every time`() {
+    // Given
+    val withoutIsbn = onePieceTomeOne().copy(isbn = null)
+    val first = holdEdition(withoutIsbn)
+
+    // When
+    val second = holdEdition(withoutIsbn)
+
+    // Then
+    second.id shouldNotBe first.id
+    editions.stored shouldBe listOf(first, second)
+    editions.stored.map { it.isbn } shouldBe listOf(null, null)
   }
 
   private fun onePieceTomeOne(): NewEdition =
