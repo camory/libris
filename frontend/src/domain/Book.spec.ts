@@ -175,6 +175,28 @@ describe("authorsOf", () => {
     // Then
     expect(authors).toEqual(["Anthea Bell"]);
   });
+
+  it("sorts the authors by their first role, then by name", () => {
+    // Given
+    const books = [
+      album(2, null, [uderzo, goscinny]),
+      album(37, null, [
+        { name: "Didier Conrad", role: "ARTIST" },
+        { name: "Jean-Yves Ferri", role: "WRITER" },
+      ]),
+    ];
+
+    // When
+    const authors = authorsOf(books, "fr");
+
+    // Then
+    expect(authors).toEqual([
+      "Jean-Yves Ferri",
+      "René Goscinny",
+      "Albert Uderzo",
+      "Didier Conrad",
+    ]);
+  });
 });
 
 const goscinny: SourceAuthor = { name: "René Goscinny", role: "WRITER" };
