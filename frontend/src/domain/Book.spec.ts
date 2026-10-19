@@ -211,6 +211,20 @@ describe("authorsOf", () => {
     // Then
     expect(authors).toEqual(["René Goscinny"]);
   });
+
+  it("spells an author as the first edition a shelf reads", () => {
+    // Given
+    const books = [
+      album(2, null, [{ name: "Rene goscinny", role: "WRITER" }]),
+      album(1, null, [goscinny]),
+    ];
+
+    // When
+    const authors = authorsOf(books, "fr");
+
+    // Then
+    expect(authors).toEqual(["René Goscinny"]);
+  });
 });
 
 const goscinny: SourceAuthor = { name: "René Goscinny", role: "WRITER" };
