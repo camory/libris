@@ -28,6 +28,15 @@ describe("booksInOrder", () => {
       ).map(({ title }) => title),
     ).toEqual(["Astérix le Gaulois", "Asterix the Gaul"]);
   });
+
+  it("sorts the editions without a tome by title", () => {
+    expect(
+      booksInOrder(
+        [tome(null, "Le Livre d'or"), tome(null, "Astérix et ses amis")],
+        "fr",
+      ).map(({ title }) => title),
+    ).toEqual(["Astérix et ses amis", "Le Livre d'or"]);
+  });
 });
 
 function tome(volumeNumber: number | null, title: string): Book {
