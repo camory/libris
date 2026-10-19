@@ -64,6 +64,17 @@ describe("runsOf", () => {
       ],
     });
   });
+
+  it("answers no missing run when no tome is missing", () => {
+    // Given
+    const books = [tome(1), tome(2), tome(3)];
+
+    // When
+    const runs = runsOf(books);
+
+    // Then
+    expect(runs).toEqual({ owned: [{ first: 1, last: 3 }], missing: [] });
+  });
 });
 
 function tome(volumeNumber: number | null): Book {
