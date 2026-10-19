@@ -12,12 +12,13 @@ const { t, locale } = useI18n();
 const rows = computed(() => {
   const { kind, books } = props.series;
   const { owned, missing } = runsOf(books);
+  const authors = authorsOf(books, locale.value);
   return [
     { label: t(`seriesPage.owned.${kind}`), value: read(owned) },
     { label: t(`seriesPage.missing.${kind}`), value: read(missing) },
     {
-      label: t("seriesPage.authors"),
-      value: authorsOf(books, locale.value).join(", "),
+      label: t("seriesPage.authors", authors.length),
+      value: authors.join(", "),
     },
   ].filter(({ value }) => value !== "");
 });

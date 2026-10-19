@@ -95,6 +95,19 @@ describe("SeriesCard", () => {
       "Albums possédés 1, 2 Auteurs René Goscinny, Albert Uderzo",
     );
   });
+
+  it("says auteur for one author", () => {
+    // Given
+    const series = owning("BD", [1, 2], [goscinny]);
+
+    // When
+    const wrapper = show(series);
+
+    // Then
+    expect(words(wrapper.element)).toBe(
+      "Albums possédés 1, 2 Auteur René Goscinny",
+    );
+  });
 });
 
 const goscinny: SourceAuthor = { name: "René Goscinny", role: "WRITER" };
