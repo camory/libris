@@ -94,6 +94,21 @@ describe("SeriesPageView", () => {
     expect(libris.asked).toEqual([asterixId, tintinId]);
   });
 
+  it("shows skeletons again while another series comes", async () => {
+    // Given
+    const wrapper = mountSeriesPageView(noSuchSeries, asterixId);
+    await flushPromises();
+
+    // When
+    await wrapper.setProps({ id: tintinId });
+    const during = seen(wrapper);
+    await flushPromises();
+
+    // Then
+    expect(during).toEqual({ title: 1, hint: 1, fields: 2, rows: 5 });
+    expect(normalised(wrapper.element)).toBe("Série introuvable.");
+  });
+
   it("asks the series on each arrival", async () => {
     // Given
     const libris = new LibrisRecordingAsks();

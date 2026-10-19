@@ -147,8 +147,8 @@ Format:
   port finds one by id, `SeriesPageApi` folded into it; `/catalogue/series/{id}`
   shows its skeletons, then *Série introuvable.*; S5 runs, both cases.
 - Decided: `useFindCatalogueSeries` reads any answer as `notFound` until T104
-  brings `found`, so step 9 is a guard; its `find` does not reset to
-  `loading`, no case asks it yet. The view asks through a `watch` on `id`
+  brings `found`, so step 9 is a guard; its `find` resets to `loading`
+  first (fix-up). The view asks through a `watch` on `id`
   with `immediate`, as the brief's step 12 asks. `PageHintSkeleton` is a 14
   bar in a 20 line, `FieldRowSkeleton` two 14 bars at the ends of a card
   row, padded 14.

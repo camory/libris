@@ -10,6 +10,7 @@ export function useFindCatalogueSeries(seriesApi: SeriesApi): {
   const state = ref<FoundSeriesState>({ status: "loading" });
 
   async function find(id: string) {
+    state.value = { status: "loading" };
     await seriesApi.find(id);
     state.value = { status: "notFound" };
   }
