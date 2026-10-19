@@ -32,6 +32,22 @@ const asterix: SeriesWithBooks = {
 
 const asterixFound: FindSeriesAnswer = { outcome: "found", series: asterix };
 
+const asterixWithAGap: FindSeriesAnswer = {
+  outcome: "found",
+  series: {
+    ...asterix,
+    books: [
+      {
+        ...asterixLeGaulois,
+        id: "8d9e0f1a-2b3c-4d4e-9f5a-6b7c8d9e0f1a",
+        title: "Astérix et les Goths",
+        series: { name: "Astérix", volumeNumber: 3 },
+      },
+      asterixLeGaulois,
+    ],
+  },
+};
+
 const noSuchSeries: FindSeriesAnswer = {
   outcome: "problem",
   type: "/problems/not-found",
@@ -181,6 +197,43 @@ describe("SeriesPageView", () => {
     ).toEqual([
       "Album 1 Astérix le Gaulois René Goscinny, Albert Uderzo Bibliothèque de Léa",
       "Astérix et ses amis René Goscinny, Albert Uderzo Salon",
+    ]);
+  });
+
+  it("shows the albums owned between the header and the editions", async () => {
+    // Given
+    const wrapper = mountSeriesPageView(asterixFound);
+
+    // When
+    await flushPromises();
+
+    // Then
+    const text = normalised(wrapper.element);
+    const positions = [
+      "2 albums dans vos bibliothèques.",
+      "Albums possédés",
+      "Astérix le Gaulois",
+    ].map((part) => text.indexOf(part));
+    expect(positions).not.toContain(-1);
+    expect(positions).toEqual([...positions].sort((a, b) => a - b));
+  });
+
+  it("lists a row for a missing album in its place", async () => {
+    // Given
+    const wrapper = mountSeriesPageView(asterixWithAGap);
+
+    // When
+    await flushPromises();
+
+    // Then
+    expect(
+      within(wrapper.element as HTMLElement)
+        .queryAllByRole("listitem")
+        .map(normalised),
+    ).toEqual([
+      "Album 1 Astérix le Gaulois René Goscinny, Albert Uderzo Bibliothèque de Léa",
+      "Album 2 Manquant",
+      "Album 3 Astérix et les Goths René Goscinny, Albert Uderzo Bibliothèque de Léa",
     ]);
   });
 

@@ -95,7 +95,7 @@ describe("Series page", () => {
     ]);
   });
 
-  it.skip.each([
+  it.each([
     {
       case: "tomes 1 to 25, 36, 37 and 50",
       owned: owns("One piece", "MANGA", [...from(1, 25), 36, 37, 50]),

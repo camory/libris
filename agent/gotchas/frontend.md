@@ -223,7 +223,11 @@ Read whole by a run that changes `frontend/`, after `every-run.md`.
 - A catalogue entry of two forms, `"Dans {bookshelf} | Dans {bookshelf} ·
   {count} exemplaires"`, is picked by `<i18n-t :plural="n">`: vue-i18n's
   default rule answers the first form for 1 and the second for any other
-  count, 0 included. The placeholders are filled by the named slots
+  count, 0 included. An entry of three forms, `"{first} | {first}, {last} |
+  {first} à {last}"` (`seriesPage.run`), follows vue-i18n 11's other rule:
+  the first form for 0, the second for 1, the third for any other count, so
+  `t("seriesPage.run", { first, last }, last - first)` reads a run as one
+  tome, two or its ends. The placeholders are filled by the named slots
   (`#bookshelf`, `#count`); a slot is the only part of the sentence a class
   can style, so a class on the count would cover the number alone, not the
   words around it. Where no part is styled, `t(key, { … }, count)`

@@ -118,6 +118,26 @@ const fr = {
   seriesPage: {
     hint: "{count} dans vos bibliothèques.",
     notFound: "Série introuvable.",
+    owned: {
+      BOOK: "Tomes possédés",
+      BD: "Albums possédés",
+      MANGA: "Tomes possédés",
+      null: "Tomes possédés",
+    },
+    missing: {
+      BOOK: "Tomes manquants",
+      BD: "Albums manquants",
+      MANGA: "Tomes manquants",
+      null: "Tomes manquants",
+    },
+    run: "{first} | {first}, {last} | {first} à {last}",
+    gap: {
+      BOOK: "Tome {run} | Tomes {run}",
+      BD: "Album {run} | Albums {run}",
+      MANGA: "Tome {run} | Tomes {run}",
+      null: "Tome {run} | Tomes {run}",
+    },
+    gapHint: "Manquant | Manquants",
   },
   language: {
     fr: "français",
