@@ -27,9 +27,10 @@ true; the diary keeps the date it was found.
   something else, or stop the process from what started it.
 - `git checkout <file>` reverts to the last commit, not to the working tree:
   commit the cycle before a mutation check.
-- `gh pr edit --body` fails on this repository with a GraphQL error about
-  classic Projects; a body is updated with `gh api -X PATCH
-  repos/camory/libris/pulls/N -F body=@file`. The label form,
+- `gh pr edit N --body-file <file>` updates a body (it worked on
+  2026-10-19); it once failed here with a GraphQL error about classic
+  Projects, and then `gh api -X PATCH repos/camory/libris/pulls/N -F
+  body=@file` does the same over REST. The label form,
   `gh pr edit N --add-label`, works. `gh` GraphQL calls are rate-limited:
   poll `gh pr checks` every 30 s or more, and merge through REST
   (`gh api -X PUT repos/camory/libris/pulls/N/merge -f
