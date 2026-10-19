@@ -68,6 +68,17 @@ describe("FetchSeriesApi", () => {
       expect(book).toEqual(aBook);
     }
   });
+
+  it("answers a problem when no edition of the series is on the reader's bookshelves", async () => {
+    // Given
+    const api = new FetchSeriesApi(inject("mockBaseUrl"));
+
+    // When
+    const answer = await api.find("5b6c7d8e-9f0a-4b1c-8d2e-3f4a5b6c7d8e");
+
+    // Then
+    expect(answer).toEqual({ outcome: "problem", type: "/problems/not-found" });
+  });
 });
 
 const aStringOrNull = expect.toSatisfy(
