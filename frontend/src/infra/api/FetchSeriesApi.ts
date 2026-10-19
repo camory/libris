@@ -1,5 +1,4 @@
-import type { SeriesApi } from "../../application/SeriesApi";
-import type { FindSeriesAnswer } from "../../application/SeriesPageApi";
+import type { FindSeriesAnswer, SeriesApi } from "../../application/SeriesApi";
 import type { Series } from "../../domain/Series";
 import type { Kind } from "../../domain/SourceEdition";
 import { bookOf, type BookResponse } from "./bookOf";
