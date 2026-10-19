@@ -56,6 +56,19 @@ describe("SeriesCard", () => {
     // Then
     expect(words(wrapper.element)).toBe("Tomes possédés 1, 2");
   });
+
+  it("says albums for a BD", () => {
+    // Given
+    const series = owning("BD", [1, 3]);
+
+    // When
+    const wrapper = show(series);
+
+    // Then
+    expect(words(wrapper.element)).toBe(
+      "Albums possédés 1, 3 Albums manquants 2",
+    );
+  });
 });
 
 function show(series: SeriesWithBooks) {

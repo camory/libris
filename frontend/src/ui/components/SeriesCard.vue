@@ -9,10 +9,11 @@ const props = defineProps<{ series: SeriesWithBooks }>();
 const { t } = useI18n();
 
 const rows = computed(() => {
-  const { owned, missing } = runsOf(props.series.books);
+  const { kind, books } = props.series;
+  const { owned, missing } = runsOf(books);
   return [
-    { label: t("seriesPage.owned"), value: read(owned) },
-    { label: t("seriesPage.missing"), value: read(missing) },
+    { label: t(`seriesPage.owned.${kind}`), value: read(owned) },
+    { label: t(`seriesPage.missing.${kind}`), value: read(missing) },
   ].filter(({ value }) => value !== "");
 });
 
