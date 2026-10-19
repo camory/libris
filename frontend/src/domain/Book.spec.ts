@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { booksInOrder, type Book } from "./Book";
+import { booksAndGapsInOrder, booksInOrder, type Book } from "./Book";
 
 describe("booksInOrder", () => {
   it("sorts the editions by tome", () => {
@@ -36,6 +36,31 @@ describe("booksInOrder", () => {
         "fr",
       ).map(({ title }) => title),
     ).toEqual(["Astérix et ses amis", "Le Livre d'or"]);
+  });
+});
+
+describe("booksAndGapsInOrder", () => {
+  it("puts each run of missing tomes in its place among the editions", () => {
+    // Given
+    const books = [
+      tome(null, "Astérix et ses amis"),
+      tome(5, "Astérix et Cléopâtre"),
+      tome(2, "La Serpe d'or"),
+    ];
+
+    // When
+    const list = booksAndGapsInOrder(books, "fr");
+
+    // Then
+    expect(
+      list.map((each) => ("book" in each ? each.book.title : each.gap)),
+    ).toEqual([
+      { first: 1, last: 1 },
+      "La Serpe d'or",
+      { first: 3, last: 4 },
+      "Astérix et Cléopâtre",
+      "Astérix et ses amis",
+    ]);
   });
 });
 

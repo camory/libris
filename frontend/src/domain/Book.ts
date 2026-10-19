@@ -1,5 +1,6 @@
 import type { Copy } from "./Copy";
 import { nameOrder } from "./nameOrder";
+import { runsOf, type Run } from "./Run";
 import type { Kind, SourceAuthor, SourceSeries } from "./SourceEdition";
 
 export interface Book {
@@ -23,6 +24,21 @@ export interface Book {
 export function booksInOrder(books: Book[], locale: string): Book[] {
   const byTitle = nameOrder(locale);
   return [...books].sort((a, b) => byTome(a, b) || byTitle(a.title, b.title));
+}
+
+export type BookOrGap = { book: Book } | { gap: Run };
+
+export function booksAndGapsInOrder(
+  books: Book[],
+  locale: string,
+): BookOrGap[] {
+  const gaps = runsOf(books).missing;
+  return booksInOrder(books, locale).flatMap((book) => [
+    ...gaps
+      .splice(0, gaps.filter((gap) => gap.last < tomeOf(book)).length)
+      .map((gap) => ({ gap })),
+    { book },
+  ]);
 }
 
 function byTome(a: Book, b: Book): number {
