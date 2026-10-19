@@ -47,3 +47,35 @@ export const aSeriesOrNull = expect.toSatisfy((value: unknown) => {
     (series.volumeNumber === null || typeof series.volumeNumber === "number")
   );
 }, "a series or null");
+
+export const aBook = {
+  id: expect.any(String),
+  isbn13: aStringOrNull,
+  kind: aKind,
+  title: expect.any(String),
+  subtitle: aStringOrNull,
+  authors: authorsWithNameAndRole,
+  series: aSeriesOrNull,
+  collection: aStringOrNull,
+  publisher: aStringOrNull,
+  publicationYear: aNumberOrNull,
+  language: aStringOrNull,
+  pageCount: aNumberOrNull,
+  summary: aStringOrNull,
+  coverUrl: aStringOrNull,
+  copies: expect.toSatisfy(areCopies, "copies with an id and a bookshelf"),
+};
+
+function areCopies(value: unknown) {
+  return (
+    Array.isArray(value) &&
+    value.every(
+      (copy) =>
+        Object.keys(copy).sort().join() === "bookshelf,id" &&
+        typeof copy.id === "string" &&
+        Object.keys(copy.bookshelf).sort().join() === "id,name" &&
+        typeof copy.bookshelf.id === "string" &&
+        typeof copy.bookshelf.name === "string",
+    )
+  );
+}

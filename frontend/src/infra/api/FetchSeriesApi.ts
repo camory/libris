@@ -1,6 +1,8 @@
 import type { SeriesApi } from "../../application/SeriesApi";
+import type { FindSeriesAnswer } from "../../application/SeriesPageApi";
 import type { Series } from "../../domain/Series";
 import type { Kind } from "../../domain/SourceEdition";
+import { bookOf, type BookResponse } from "./bookOf";
 
 interface SeriesResponse {
   id: string;
@@ -8,6 +10,10 @@ interface SeriesResponse {
   volumeCount: number;
   coverUrl: string | null;
   kind: Kind | null;
+}
+
+interface SeriesWithBooksResponse extends SeriesResponse {
+  books: BookResponse[];
 }
 
 export class FetchSeriesApi implements SeriesApi {
@@ -21,12 +27,27 @@ export class FetchSeriesApi implements SeriesApi {
       throw Error(`The series answered ${response.status}`);
     }
     const body = (await response.json()) as SeriesResponse[];
-    return body.map((series) => ({
-      id: series.id,
-      name: series.name,
-      volumeCount: series.volumeCount,
-      coverUrl: series.coverUrl,
-      kind: series.kind,
-    }));
+    return body.map(seriesOf);
   }
+
+  async find(id: string): Promise<FindSeriesAnswer> {
+    const response = await fetch(`${this.baseUrl}/api/v1/series/${id}`, {
+      headers: { Accept: "application/json, application/problem+json" },
+    });
+    const body = (await response.json()) as SeriesWithBooksResponse;
+    return {
+      outcome: "found",
+      series: { ...seriesOf(body), books: body.books.map(bookOf) },
+    };
+  }
+}
+
+function seriesOf(series: SeriesResponse): Series {
+  return {
+    id: series.id,
+    name: series.name,
+    volumeCount: series.volumeCount,
+    coverUrl: series.coverUrl,
+    kind: series.kind,
+  };
 }

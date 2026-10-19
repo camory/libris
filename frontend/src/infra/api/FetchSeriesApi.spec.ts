@@ -1,4 +1,5 @@
 import { afterEach, describe, expect, inject, it, vi } from "vitest";
+import { aBook } from "../../fixture/EditionShapes";
 import { FetchSeriesApi } from "./FetchSeriesApi";
 
 describe("FetchSeriesApi", () => {
@@ -40,6 +41,32 @@ describe("FetchSeriesApi", () => {
 
     // Then
     await expect(series).rejects.toThrow("The series answered 500");
+  });
+
+  it("finds the series with its books", async () => {
+    // Given
+    const api = new FetchSeriesApi(inject("mockBaseUrl"));
+
+    // When
+    const answer = await api.find("1c2f3e4d-5a6b-4c7d-9e8f-0a1b2c3d4e5f");
+
+    // Then
+    expect(answer).toEqual({
+      outcome: "found",
+      series: {
+        id: expect.any(String),
+        name: expect.any(String),
+        volumeCount: expect.any(Number),
+        coverUrl: aStringOrNull,
+        kind: aKindOrNull,
+        books: expect.any(Array),
+      },
+    });
+    const books = answer.outcome === "found" ? answer.series.books : [];
+    expect(books.length).toBeGreaterThan(0);
+    for (const book of books) {
+      expect(book).toEqual(aBook);
+    }
   });
 });
 
