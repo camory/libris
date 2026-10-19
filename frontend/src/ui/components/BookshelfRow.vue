@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ChevronRight, CircleAlert, Star } from "@lucide/vue";
+import { CircleAlert, Star } from "@lucide/vue";
 import { computed } from "vue";
 import { useI18n } from "vue-i18n";
 import type { Membership } from "../../domain/Membership";
@@ -37,7 +37,7 @@ const role = computed(() => {
       <template v-if="membership.role === 'OWNER'">
         <span
           v-if="isDefault"
-          class="flex size-11 shrink-0 items-center justify-center text-accent"
+          class="mr-1.5 flex size-11 shrink-0 items-center justify-center text-accent"
         >
           <Star fill="currentColor" />
         </span>
@@ -50,14 +50,13 @@ const role = computed(() => {
               ? t('home.bookshelves.choosingDefault')
               : t('home.bookshelves.chooseDefault')
           "
-          class="relative flex size-11 shrink-0 items-center justify-center rounded-[10px] text-accent"
+          class="relative mr-1.5 flex size-11 shrink-0 items-center justify-center rounded-[10px] text-accent"
           @click="emit('choose')"
         >
           <BusySpinner v-if="busy" class="size-5.5" />
           <Star v-else />
         </button>
       </template>
-      <ChevronRight class="mr-3.5 shrink-0 text-muted" />
     </div>
     {{ " " }}
     <p

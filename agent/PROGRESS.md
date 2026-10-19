@@ -161,3 +161,22 @@ Format:
   9 and a second run finished it.
 - Left over: T104 adds `found` to the composable and the page; T108 the
   failure and any other problem type.
+
+## 2026-10-19 — T104 The reader opens a series — done
+- Did: a series row is a link to `/catalogue/series/{id}`, which shows the
+  series' name, *N albums dans vos bibliothèques.* and its editions in the
+  order a shelf reads, each overlined with its tome alone; no chevron left.
+- Decided: `booksInOrder` reads a missing tome as `Infinity`, and `byTome`
+  answers 0 for two equal tomes, since `Infinity - Infinity` is `NaN` and
+  two editions without a tome must reach the title. The hint is
+  `seriesPage.hint` filled with `series.count.<kind>`, in a `computed` of
+  the view. `SeriesRow`'s root is its `RouterLink`, wrapping the row: it
+  holds no control, so no stretched cover is needed.
+- Deviations from the brief: `SeriesRow.spec.ts`'s `show` builds its
+  `screen` on `wrapper.element.parentElement`, since `within(root)` searches
+  descendants only and the root is now the link; no assertion changed. S1
+  was un-skipped and its red read before any unit test, then put back
+  skipped, uncommitted, so its un-skip stayed step 14, as in T103. The run
+  handed off after step 12 and a second run finished it.
+- Left over: T105 the card of owned tomes and the missing rows; T106 the
+  authors and publishers; T107 the band; T108 the failure.

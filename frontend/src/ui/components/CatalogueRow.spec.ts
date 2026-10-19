@@ -40,6 +40,30 @@ describe("CatalogueRow", () => {
     expect(screen.getByText("Astérix · album 1")).toBeDefined();
   });
 
+  it("shows the tome alone over the title in its series", () => {
+    // When
+    const { screen } = show(romanceDawn, { withoutSeriesName: true });
+
+    // Then
+    expect(screen.getByText("Tome 1")).toBeDefined();
+  });
+
+  it("says album alone for a BD in its series", () => {
+    // When
+    const { screen } = show(asterixLeGaulois, { withoutSeriesName: true });
+
+    // Then
+    expect(screen.getByText("Album 1")).toBeDefined();
+  });
+
+  it("shows no overline for an edition without a tome in its series", () => {
+    // When
+    const { wrapper } = show(asterixEtSesAmis, { withoutSeriesName: true });
+
+    // Then
+    expect(normalised(wrapper.element)).toMatch(/^Astérix et ses amis/);
+  });
+
   it("shows the series alone when the edition has no tome", () => {
     // When
     const { screen } = show(asterixEtSesAmis);
@@ -176,9 +200,9 @@ describe("CatalogueRow", () => {
     );
   });
 
-  function show(book: Book) {
+  function show(book: Book, { withoutSeriesName = false } = {}) {
     const wrapper = mount(CatalogueRow, {
-      props: { book },
+      props: { book, withoutSeriesName },
       global: { plugins: [createLibrisI18n()] },
     });
     return { wrapper, screen: within(wrapper.element as HTMLElement) };

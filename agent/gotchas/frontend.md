@@ -377,14 +377,17 @@ Read whole by a run that changes `frontend/`, after `every-run.md`.
   open*).
 - A home row is a stretched link: `BookshelfRow`'s `RouterLink` wraps the
   name and role, and its `after:absolute after:inset-0` covers the whole
-  `relative` row, chevron included, so a tap anywhere opens the bookshelf.
+  `relative` row, so a tap anywhere opens the bookshelf.
   A control added to the row (the star) sits outside the link and needs
   `relative` to be above that cover, or the tap opens the bookshelf. A
   message under the row (the default's error) sits after the `relative`
   row, in the component's outer `div`, out of the cover; its `-mt-1.5`
   pulls it back under the cover, so it is `relative` too. jsdom
   neither lays out nor hit-tests, so no spec sees the cover: it is checked
-  on the running app.
+  on the running app. A series list row holds no control, so `SeriesRow`'s
+  root is its `RouterLink` itself; `within(wrapper.element)` then misses
+  the link, since it searches descendants only, and its spec queries from
+  the root's parent.
 - A spec's subclass of a fixture fake (`LibrisNotAnswering`,
   `LibrisAnsweringInTurn`) cannot declare a private member of the same name
   as one of the base's: `FakeBookshelvesApi` holds a private `answers`, and
