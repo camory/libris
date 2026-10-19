@@ -239,3 +239,19 @@ Format:
 - Left over: the crop, the 130, the full width and the 12 above the header
   are left to Tophe on the Pixel, the sandbox having no browser; T108 the
   failure.
+
+## 2026-10-19 — T107 The band of a series — reworked
+- Did: `LibrisAnsweringById` moved below the `describe` of
+  `SeriesPageView.spec.ts`; the cases read the band through one helper,
+  `bandsOf`, every image of a name; the band's `block` class dropped and the
+  gotcha that asked for it rewritten.
+- Decided: the reviewer's verdict of 2026-10-19 amended nothing: its
+  blocking finding was the brief's D10 rule unmet, and its two first
+  suggestions were applied. `bandsOf` answers the elements, not their `src`,
+  since two cases fire `error` on the band and one reads its place before
+  the heading; the cases that saw no band now expect `[]`. The file's
+  fixtures and `LibrisRecordingAsks`, above the `describe` since T103, stay
+  where they are: the reviewer leaves the file's whole D10 order to Tophe.
+- Deviations from the brief: none.
+- Left over: the crop, the 130, the full width and the 12 above the header
+  to Tophe on the Pixel; T108 the failure.
