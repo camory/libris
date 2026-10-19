@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed } from "vue";
 import { useI18n } from "vue-i18n";
-import { authorsOf } from "../../domain/Book";
+import { authorsOf, publishersOf } from "../../domain/Book";
 import { runsOf, type Run } from "../../domain/Run";
 import type { SeriesWithBooks } from "../../domain/Series";
 
@@ -19,6 +19,10 @@ const rows = computed(() => {
     {
       label: t("seriesPage.authors", authors.length),
       value: authors.join(", "),
+    },
+    {
+      label: t("seriesPage.publishers"),
+      value: publishersOf(books, locale.value).join(", "),
     },
   ].filter(({ value }) => value !== "");
 });
