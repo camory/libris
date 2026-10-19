@@ -111,6 +111,17 @@ describe("publishersOf", () => {
     // Then
     expect(publishers).toEqual(["Hachette"]);
   });
+
+  it("reads two spellings of one publisher as one", () => {
+    // Given
+    const books = [album(1, "Hachette", []), album(2, "HACHETTE", [])];
+
+    // When
+    const publishers = publishersOf(books, "fr");
+
+    // Then
+    expect(publishers).toEqual(["Hachette"]);
+  });
 });
 
 function tome(volumeNumber: number | null, title: string): Book {
