@@ -32,13 +32,14 @@ export function booksAndGapsInOrder(
   books: Book[],
   locale: string,
 ): BookOrGap[] {
-  const gaps = runsOf(books).missing;
-  return booksInOrder(books, locale).flatMap((book) => [
-    ...gaps
-      .splice(0, gaps.filter((gap) => gap.last < tomeOf(book)).length)
-      .map((gap) => ({ gap })),
-    { book },
-  ]);
+  const gapBefore = new Map(
+    runsOf(books).missing.map((gap) => [gap.last + 1, gap]),
+  );
+  return booksInOrder(books, locale).flatMap((book) => {
+    const gap = gapBefore.get(tomeOf(book));
+    gapBefore.delete(tomeOf(book));
+    return gap === undefined ? [{ book }] : [{ gap }, { book }];
+  });
 }
 
 function byTome(a: Book, b: Book): number {
