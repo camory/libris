@@ -193,6 +193,17 @@ describe("SeriesPageView", () => {
     ).toBe(Node.DOCUMENT_POSITION_FOLLOWING);
   });
 
+  it("draws no band for a series without a cover", async () => {
+    // Given
+    const wrapper = mountSeriesPageView(asterixFound);
+
+    // When
+    await flushPromises();
+
+    // Then
+    expect(bandOf(wrapper, "Astérix")).toBeNull();
+  });
+
   it("says how many albums the reader's bookshelves hold", async () => {
     // Given
     const wrapper = mountSeriesPageView(asterixFound);
@@ -262,6 +273,15 @@ describe("SeriesPageView", () => {
       "Album 3 Astérix et les Goths René Goscinny, Albert Uderzo Bibliothèque de Léa",
     ]);
   });
+
+  function bandOf(
+    wrapper: ReturnType<typeof mountSeriesPageView>,
+    name: string,
+  ) {
+    return within(wrapper.element as HTMLElement).queryByRole("img", {
+      name: `Couverture de ${name}`,
+    });
+  }
 
   function seen(wrapper: ReturnType<typeof mountSeriesPageView>) {
     return {
