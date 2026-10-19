@@ -220,9 +220,8 @@ it needs it: one operation and one schema are added.
 
 The series is an aggregate of the bibliography (D12): the id is its
 `SeriesId`, and the books are read across the editions that refer to it,
-the series holding no list of them. The runs,
-the gaps, the authors and the publishers are the screen's, derived from
-the books.
+the series holding no list of them. The runs, the gaps, the authors and
+the publishers are the screen's, derived from the books.
 
 ## Done
 
