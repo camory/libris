@@ -121,6 +121,19 @@ describe("SeriesCard", () => {
       "Albums possédés 1, 2 Auteur René Goscinny Éditeurs Hachette, Orion",
     );
   });
+
+  it("says éditeur for one publisher", () => {
+    // Given
+    const series = owning("BD", [1, 2], [], ["Hachette", "Hachette"]);
+
+    // When
+    const wrapper = show(series);
+
+    // Then
+    expect(words(wrapper.element)).toBe(
+      "Albums possédés 1, 2 Éditeur Hachette",
+    );
+  });
 });
 
 const goscinny: SourceAuthor = { name: "René Goscinny", role: "WRITER" };

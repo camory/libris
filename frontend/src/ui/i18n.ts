@@ -139,7 +139,7 @@ const fr = {
     },
     gapHint: "Manquant | Manquants",
     authors: "Auteur | Auteurs",
-    publishers: "Éditeurs",
+    publishers: "Éditeur | Éditeurs",
   },
   language: {
     fr: "français",

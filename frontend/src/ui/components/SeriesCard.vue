@@ -13,6 +13,7 @@ const rows = computed(() => {
   const { kind, books } = props.series;
   const { owned, missing } = runsOf(books);
   const authors = authorsOf(books, locale.value);
+  const publishers = publishersOf(books, locale.value);
   return [
     { label: t(`seriesPage.owned.${kind}`), value: read(owned) },
     { label: t(`seriesPage.missing.${kind}`), value: read(missing) },
@@ -21,8 +22,8 @@ const rows = computed(() => {
       value: authors.join(", "),
     },
     {
-      label: t("seriesPage.publishers"),
-      value: publishersOf(books, locale.value).join(", "),
+      label: t("seriesPage.publishers", publishers.length),
+      value: publishers.join(", "),
     },
   ].filter(({ value }) => value !== "");
 });
