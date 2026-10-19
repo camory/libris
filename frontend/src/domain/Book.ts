@@ -60,12 +60,29 @@ export function publishersOf(books: Book[], locale: string): string[] {
 }
 
 export function authorsOf(books: Book[], locale: string): string[] {
+  const spelled = firstSpelling(nameOrder(locale));
   return authorsInOrder(
-    books.flatMap(({ authors }) => authors),
+    booksInOrder(books, locale)
+      .flatMap(({ authors }) => authors)
+      .map(({ name, role }) => ({ name: spelled(name), role })),
     locale,
   )
     .filter(({ roles }) => roles.some((role) => role !== "TRANSLATOR"))
     .map(({ name }) => name);
+}
+
+function firstSpelling(
+  byName: (a: string, b: string) => number,
+): (name: string) => string {
+  const spellings: string[] = [];
+  return (name) => {
+    const spelling = spellings.find((each) => byName(each, name) === 0);
+    if (spelling !== undefined) {
+      return spelling;
+    }
+    spellings.push(name);
+    return name;
+  };
 }
 
 function byTome(a: Book, b: Book): number {

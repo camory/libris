@@ -197,6 +197,20 @@ describe("authorsOf", () => {
       "Didier Conrad",
     ]);
   });
+
+  it("reads two spellings of one name as one author", () => {
+    // Given
+    const books = [
+      album(1, null, [goscinny]),
+      album(2, null, [{ name: "Rene goscinny", role: "WRITER" }]),
+    ];
+
+    // When
+    const authors = authorsOf(books, "fr");
+
+    // Then
+    expect(authors).toEqual(["René Goscinny"]);
+  });
 });
 
 const goscinny: SourceAuthor = { name: "René Goscinny", role: "WRITER" };
