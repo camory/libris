@@ -30,6 +30,20 @@ describe("runsOf", () => {
     // Then
     expect(runs).toEqual({ owned: [{ first: 1, last: 1 }], missing: [] });
   });
+
+  it("fills no tome for an edition without one", () => {
+    // Given
+    const books = [tome(2), tome(null)];
+
+    // When
+    const runs = runsOf(books);
+
+    // Then
+    expect(runs).toEqual({
+      owned: [{ first: 2, last: 2 }],
+      missing: [{ first: 1, last: 1 }],
+    });
+  });
 });
 
 function tome(volumeNumber: number | null): Book {
