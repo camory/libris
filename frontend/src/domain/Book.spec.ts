@@ -100,6 +100,17 @@ describe("publishersOf", () => {
     // Then
     expect(publishers).toEqual(["Éditions Albert René", "Hachette", "Orion"]);
   });
+
+  it("adds no publisher for an edition without one", () => {
+    // Given
+    const books = [album(1, null, []), album(2, "Hachette", [])];
+
+    // When
+    const publishers = publishersOf(books, "fr");
+
+    // Then
+    expect(publishers).toEqual(["Hachette"]);
+  });
 });
 
 function tome(volumeNumber: number | null, title: string): Book {
