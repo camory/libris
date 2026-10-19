@@ -4,6 +4,7 @@ import CatalogueView from "./views/catalogue/CatalogueView.vue";
 import HomeView from "./views/home/HomeView.vue";
 import IsbnView from "./views/isbn/IsbnView.vue";
 import SeriesView from "./views/series/SeriesView.vue";
+import SeriesPageView from "./views/seriesPage/SeriesPageView.vue";
 
 export function createLibrisRouter() {
   return createRouter({
@@ -22,6 +23,7 @@ export function createLibrisRouter() {
         children: [
           { path: "", component: CatalogueView },
           { path: "series", component: SeriesView },
+          { path: "series/:id", component: SeriesPageView, props: true },
         ],
       },
     ],
