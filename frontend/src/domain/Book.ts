@@ -43,9 +43,9 @@ export function booksAndGapsInOrder(
 }
 
 export function publishersOf(books: Book[], locale: string): string[] {
-  return [...new Set(books.map(({ publisher }) => publisher))].filter(
-    (publisher) => publisher !== null,
-  );
+  return [...new Set(books.map(({ publisher }) => publisher))]
+    .filter((publisher) => publisher !== null)
+    .sort(nameOrder(locale));
 }
 
 function byTome(a: Book, b: Book): number {

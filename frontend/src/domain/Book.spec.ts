@@ -85,6 +85,21 @@ describe("publishersOf", () => {
     // Then
     expect(publishers).toEqual(["Hachette", "Orion"]);
   });
+
+  it("sorts the publishers by name, ignoring case and accents", () => {
+    // Given
+    const books = [
+      album(1, "Orion", []),
+      album(2, "Hachette", []),
+      album(3, "Éditions Albert René", []),
+    ];
+
+    // When
+    const publishers = publishersOf(books, "fr");
+
+    // Then
+    expect(publishers).toEqual(["Éditions Albert René", "Hachette", "Orion"]);
+  });
 });
 
 function tome(volumeNumber: number | null, title: string): Book {
