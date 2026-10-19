@@ -116,6 +116,7 @@ const fr = {
     },
   },
   seriesPage: {
+    hint: "{count} dans vos bibliothèques.",
     notFound: "Série introuvable.",
   },
   language: {

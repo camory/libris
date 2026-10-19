@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { CircleAlert } from "@lucide/vue";
-import { inject, watch } from "vue";
+import { computed, inject, watch } from "vue";
 import { useI18n } from "vue-i18n";
 import { seriesApiKey } from "../../../application/SeriesApi";
 import { useFindCatalogueSeries } from "../../../application/useFindCatalogueSeries";
@@ -13,6 +13,16 @@ const props = defineProps<{ id: string }>();
 
 const { t } = useI18n();
 const { state, find } = useFindCatalogueSeries(inject(seriesApiKey)!);
+
+const hint = computed(() => {
+  if (state.value.status !== "found") {
+    return "";
+  }
+  const { kind, volumeCount } = state.value.series;
+  return t("seriesPage.hint", {
+    count: t(`series.count.${kind}`, { count: volumeCount }, volumeCount),
+  });
+});
 
 watch(
   () => props.id,
@@ -42,6 +52,7 @@ watch(
     <template v-else-if="state.status === 'found'">
       <header class="pt-5 pb-3">
         <h1 class="text-page-title">{{ state.series.name }}</h1>
+        <p class="text-body text-muted">{{ hint }}</p>
       </header>
     </template>
     <p v-else class="flex items-start gap-2 pt-5 text-body text-danger">

@@ -151,6 +151,21 @@ describe("SeriesPageView", () => {
     ).toEqual(["Astérix"]);
   });
 
+  it("says how many albums the reader's bookshelves hold", async () => {
+    // Given
+    const wrapper = mountSeriesPageView(asterixFound);
+
+    // When
+    await flushPromises();
+
+    // Then
+    expect(
+      within(wrapper.element as HTMLElement).getByText(
+        "2 albums dans vos bibliothèques.",
+      ),
+    ).toBeDefined();
+  });
+
   function seen(wrapper: ReturnType<typeof mountSeriesPageView>) {
     return {
       title: wrapper.findAllComponents(PageTitleSkeleton).length,
