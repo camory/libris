@@ -39,6 +39,11 @@ watch(
         <CatalogueRowSkeleton v-for="row in 5" :key="row" />
       </div>
     </template>
+    <template v-else-if="state.status === 'found'">
+      <header class="pt-5 pb-3">
+        <h1 class="text-page-title">{{ state.series.name }}</h1>
+      </header>
+    </template>
     <p v-else class="flex items-start gap-2 pt-5 text-body text-danger">
       <CircleAlert :size="22" class="shrink-0" />
       <span>{{ t("seriesPage.notFound") }}</span>

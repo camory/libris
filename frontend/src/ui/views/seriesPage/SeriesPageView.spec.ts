@@ -1,4 +1,5 @@
 import { CircleAlert } from "@lucide/vue";
+import { within } from "@testing-library/dom";
 import { flushPromises, mount } from "@vue/test-utils";
 import { describe, expect, it } from "vitest";
 import {
@@ -6,7 +7,8 @@ import {
   type FindSeriesAnswer,
   type SeriesApi,
 } from "../../../application/SeriesApi";
-import type { Series } from "../../../domain/Series";
+import type { Series, SeriesWithBooks } from "../../../domain/Series";
+import { asterixEtSesAmis, asterixLeGaulois } from "../../../fixture/Books";
 import { FakeSeriesApi } from "../../../fixture/FakeSeriesApi";
 import { normalised } from "../../../fixture/normalised";
 import CatalogueRowSkeleton from "../../components/CatalogueRowSkeleton.vue";
@@ -18,6 +20,17 @@ import SeriesPageView from "./SeriesPageView.vue";
 
 const asterixId = "7c8d9e0f-1a2b-4c3d-8e4f-5a6b7c8d9e0f";
 const tintinId = "3e4f5a6b-7c8d-4e9f-8a0b-1c2d3e4f5a6b";
+
+const asterix: SeriesWithBooks = {
+  id: asterixId,
+  name: "Astérix",
+  volumeCount: 2,
+  coverUrl: null,
+  kind: "BD",
+  books: [asterixEtSesAmis, asterixLeGaulois],
+};
+
+const asterixFound: FindSeriesAnswer = { outcome: "found", series: asterix };
 
 const noSuchSeries: FindSeriesAnswer = {
   outcome: "problem",
@@ -121,6 +134,21 @@ describe("SeriesPageView", () => {
 
     // Then
     expect(libris.asked).toEqual([asterixId, asterixId]);
+  });
+
+  it("titles the page with the series' name", async () => {
+    // Given
+    const wrapper = mountSeriesPageView(asterixFound);
+
+    // When
+    await flushPromises();
+
+    // Then
+    expect(
+      within(wrapper.element as HTMLElement)
+        .getAllByRole("heading")
+        .map(({ textContent }) => textContent),
+    ).toEqual(["Astérix"]);
   });
 
   function seen(wrapper: ReturnType<typeof mountSeriesPageView>) {
