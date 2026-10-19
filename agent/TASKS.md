@@ -102,7 +102,7 @@ scenario to the page. No other task touches the contract (D04).
       The frontend's walking skeleton, the thinnest scenario; realises S5;
       un-skips the frontend tests of S5, both cases.
 
-- [ ] T104 Frontend: the reader opens a series.
+- [x] T104 Frontend: the reader opens a series.
       A row of the series list is a link to its page, the whole row, no
       chevron; the home page's bookshelf rows lose theirs (U03, U07). The
       page's title is the series' name, its hint the count then *dans vos

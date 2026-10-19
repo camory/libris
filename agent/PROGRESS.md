@@ -162,9 +162,21 @@ Format:
 - Left over: T104 adds `found` to the composable and the page; T108 the
   failure and any other problem type.
 
-## 2026-10-19 — T104 The reader opens a series — handoff
-- Done: steps 1 to 12, one commit each. Start with step 13 (drop `BookshelfRow`'s chevron and its case), then 14 (S1 un-skipped, guard).
-- S1 was un-skipped and its red read before any unit test (*Unable to find role="heading" and name "Astérix"*), then put back skipped, uncommitted, so its un-skip stays step 14, as in T103.
-- Guards: step 4, mutation the title compared only when both editions have a tome, red *expected [ 'Le Livre d\'or', …(1) ] to deeply equal [ 'Astérix et ses amis', …(1) ]*; step 6, `catalogue.volume.BD` read *Tome {volume}*, red *Unable to find an element with the text: Album 1*. Both reverted.
-- Decided: `booksInOrder` reads a missing tome as `Infinity`, and `byTome` answers 0 for two equal tomes so two without a tome reach the title (`Infinity - Infinity` is `NaN`). The hint is `seriesPage.hint` filled with `series.count.<kind>`, in a `computed` of the view.
-- Deviation: `SeriesRow`'s root is now its `RouterLink`, and `within(root)` searches descendants only, so the spec's `show` builds its `screen` on `wrapper.element.parentElement`; no case's assertion changed.
+## 2026-10-19 — T104 The reader opens a series — done
+- Did: a series row is a link to `/catalogue/series/{id}`, which shows the
+  series' name, *N albums dans vos bibliothèques.* and its editions in the
+  order a shelf reads, each overlined with its tome alone; no chevron left.
+- Decided: `booksInOrder` reads a missing tome as `Infinity`, and `byTome`
+  answers 0 for two equal tomes, since `Infinity - Infinity` is `NaN` and
+  two editions without a tome must reach the title. The hint is
+  `seriesPage.hint` filled with `series.count.<kind>`, in a `computed` of
+  the view. `SeriesRow`'s root is its `RouterLink`, wrapping the row: it
+  holds no control, so no stretched cover is needed.
+- Deviations from the brief: `SeriesRow.spec.ts`'s `show` builds its
+  `screen` on `wrapper.element.parentElement`, since `within(root)` searches
+  descendants only and the root is now the link; no assertion changed. S1
+  was un-skipped and its red read before any unit test, then put back
+  skipped, uncommitted, so its un-skip stayed step 14, as in T103. The run
+  handed off after step 12 and a second run finished it.
+- Left over: T105 the card of owned tomes and the missing rows; T106 the
+  authors and publishers; T107 the band; T108 the failure.
