@@ -55,6 +55,8 @@ import fr.amory.libris.library.application.WelcomeReader
 import fr.amory.libris.library.application.catalogue.BrowseCatalogue
 import fr.amory.libris.library.application.catalogue.CataloguePage
 import fr.amory.libris.library.application.catalogue.CatalogueSeries
+import fr.amory.libris.library.application.catalogue.FindCatalogueSeries
+import fr.amory.libris.library.application.catalogue.FindCatalogueSeriesResult
 import fr.amory.libris.library.application.catalogue.HeldEdition
 import fr.amory.libris.library.application.catalogue.ListCatalogueSeries
 import fr.amory.libris.library.application.lookup.CopyOnBookshelf
@@ -104,6 +106,7 @@ import java.util.UUID
     AddMemberToBookshelf::class,
     ChooseDefaultBookshelf::class,
     ListCatalogueSeries::class,
+    FindCatalogueSeries::class,
   ],
 )
 @Suppress("LongParameterList")
@@ -121,8 +124,9 @@ class ApiContractTest @Autowired constructor(
   private val listReaders: ListReaders,
   private val addMemberToBookshelf: AddMemberToBookshelf,
   private val chooseDefaultBookshelf: ChooseDefaultBookshelf,
-  private val listCatalogueSeries: ListCatalogueSeries) {
-  @ContracteerTest(openApiDoc = "https://raw.githubusercontent.com/camory/libris-api/v0.12.1/openapi.yaml")
+  private val listCatalogueSeries: ListCatalogueSeries,
+  private val findCatalogueSeries: FindCatalogueSeries) {
+  @ContracteerTest(openApiDoc = "https://raw.githubusercontent.com/camory/libris-api/v0.13.0/openapi.yaml")
   fun `the API matches the contract`() {
     contracteerIsWelcomed()
     isbnLookupsAnswer()
@@ -136,6 +140,7 @@ class ApiContractTest @Autowired constructor(
     addingAMemberAnswers()
     choosingTheDefaultAnswers()
     seriesAnswer()
+    findingASeriesAnswers()
   }
 
   private fun contracteerIsWelcomed() {
@@ -209,7 +214,14 @@ class ApiContractTest @Autowired constructor(
 
   private fun seriesAnswer() {
     given(listCatalogueSeries(ReaderId(eq(CONTRACTEER.id.value) ?: CONTRACTEER.id.value)))
-      .willReturn(listOf(CatalogueSeries("Astérix", 1, ASTERIX_1_COVER, BD)))
+      .willReturn(listOf(ASTERIX_IN_MY_CATALOGUE))
+  }
+
+  private fun findingASeriesAnswers() {
+    val contracteer = ReaderId(eq(CONTRACTEER.id.value) ?: CONTRACTEER.id.value)
+    given(findCatalogueSeries(contracteer, SeriesId(any() ?: NOT_IN_MY_CATALOGUE.value)))
+      .willReturn(FindCatalogueSeriesResult.Found(ASTERIX_IN_MY_CATALOGUE, listOf(ASTERIX_1_HELD)))
+    given(findCatalogueSeries(CONTRACTEER.id, NOT_IN_MY_CATALOGUE)).willReturn(FindCatalogueSeriesResult.NoSuchSeries)
   }
 
   private fun noCopy(answer: EditionLookupResult) =
@@ -303,7 +315,11 @@ private val NEW_ONE_PIECE_1 = NewEdition(
 
 private val NOT_MINE = bookshelfId("9e8d7c6b-5a4f-4e3d-8c2b-1a0f9e8d7c6b")
 
+private val NOT_IN_MY_CATALOGUE = SeriesId(UUID.fromString("5b6c7d8e-9f0a-4b1c-8d2e-3f4a5b6c7d8e"))
+
 private val ASTERIX = Series(SeriesId.new(), "Astérix")
+
+private val ASTERIX_IN_MY_CATALOGUE = CatalogueSeries(ASTERIX.id, "Astérix", 1, ASTERIX_1_COVER, BD)
 
 private val ASTERIX_1_HELD = HeldEdition(
   edition = Edition(

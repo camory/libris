@@ -23,6 +23,7 @@ import fr.amory.libris.library.fixture.CatalogueEditionsAnswering
 import fr.amory.libris.library.fixture.CopiesInMemory
 import fr.amory.libris.library.fixture.bookshelfOf
 import fr.amory.libris.library.fixture.copyOn
+import io.kotest.matchers.collections.shouldContainExactlyInAnyOrder
 import io.kotest.matchers.shouldBe
 import org.junit.jupiter.api.Test
 
@@ -65,7 +66,7 @@ class ListCatalogueSeriesTest {
     val series = listCatalogueSeries(lea)
 
     // Then
-    series shouldBe listOf(CatalogueSeries("One piece", 2, null, MANGA))
+    series shouldBe listOf(CatalogueSeries(ONE_PIECE.id, "One piece", 2, null, MANGA))
   }
 
   @Test
@@ -79,7 +80,7 @@ class ListCatalogueSeriesTest {
     val series = listCatalogueSeries(lea)
 
     // Then
-    series shouldBe listOf(CatalogueSeries("Astérix", 2, null, BD))
+    series shouldBe listOf(CatalogueSeries(ASTERIX.id, "Astérix", 2, null, BD))
   }
 
   @Test
@@ -93,7 +94,7 @@ class ListCatalogueSeriesTest {
     val series = listCatalogueSeries(lea)
 
     // Then
-    series shouldBe listOf(CatalogueSeries("Lastman", 2, null, null))
+    series shouldBe listOf(CatalogueSeries(LASTMAN.id, "Lastman", 2, null, null))
   }
 
   @Test
@@ -107,7 +108,7 @@ class ListCatalogueSeriesTest {
     val series = listCatalogueSeries(lea)
 
     // Then
-    series shouldBe listOf(CatalogueSeries("Blacksad", 2, BLACKSAD_1_COVER, BD))
+    series shouldBe listOf(CatalogueSeries(BLACKSAD.id, "Blacksad", 2, BLACKSAD_1_COVER, BD))
   }
 
   @Test
@@ -121,7 +122,24 @@ class ListCatalogueSeriesTest {
     val series = listCatalogueSeries(lea)
 
     // Then
-    series shouldBe listOf(CatalogueSeries("Naruto", 2, null, MANGA))
+    series shouldBe listOf(CatalogueSeries(NARUTO.id, "Naruto", 2, null, MANGA))
+  }
+
+  @Test
+  fun `each series answers the id of its series`() {
+    // Given
+    val leasBookshelf = bookshelfOf("Bibliothèque de Léa", Membership(lea, OWNER))
+    copies.insert(copyOn(leasBookshelf, ROMANCE_DAWN.id))
+    copies.insert(copyOn(leasBookshelf, ASTERIX_LE_GAULOIS.id))
+
+    // When
+    val series = listCatalogueSeries(lea)
+
+    // Then
+    series.map { it.id to it.name } shouldContainExactlyInAnyOrder listOf(
+      ONE_PIECE.id to "One piece",
+      ASTERIX.id to "Astérix",
+    )
   }
 
   private fun bookshelfOf(name: String, vararg memberships: Membership): Bookshelf =

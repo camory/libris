@@ -110,3 +110,19 @@ Format:
   as they are.
 - Deviations from the brief: none.
 - Left over: nothing new.
+
+## 2026-10-18 — T101 The series page on v0.13.0, no such series — done
+- Did: the backend pins `v0.13.0`; `GET /api/v1/series/{id}` is served by
+  `SeriesController` through `FindCatalogueSeries`, which answers
+  `NoSuchSeries` to every reader; each series of the list answers its id.
+- Decided: `ApiContractTest`'s two series stubs share one fixture,
+  `ASTERIX_IN_MY_CATALOGUE`, the series list's answer and the `Found` of
+  the find, so the id step 5 adds is written once and the stub line stays
+  within detekt's length.
+- Deviations from the brief: the generated `200` of the new operation
+  stayed red after step 3 and went green in step 5: `SeriesWithBooks` is
+  `Series` plus `books`, and `Series` requires the `id` that
+  `CatalogueSeries` gains in step 5, so `SeriesWithBooksResponse` gains its
+  `id` there, beside `SeriesResponse`'s.
+- Left over: T102 finds the series and its books behind the same use
+  case, and removes the `@Suppress("UnusedParameter")` of its `invoke`.
