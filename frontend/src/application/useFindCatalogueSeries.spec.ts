@@ -66,6 +66,22 @@ describe("useFindCatalogueSeries", () => {
     // Then
     expect(state.value).toEqual({ status: "unavailable" });
   });
+
+  it("reads another problem as no answer", async () => {
+    // Given
+    const { state, find } = useFindCatalogueSeries(
+      new FakeSeriesApi([], {
+        outcome: "problem",
+        type: "/problems/conflict",
+      }),
+    );
+
+    // When
+    await find(asterixId);
+
+    // Then
+    expect(state.value).toEqual({ status: "unavailable" });
+  });
 });
 
 const asterixId = "4f60718a-b2c3-4d4e-8f60-718293a4b5c6";

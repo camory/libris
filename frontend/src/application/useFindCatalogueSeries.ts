@@ -1,6 +1,6 @@
 import { ref, type Ref } from "vue";
 import type { SeriesWithBooks } from "../domain/Series";
-import type { SeriesApi } from "./SeriesApi";
+import type { FindSeriesAnswer, SeriesApi } from "./SeriesApi";
 
 export type FoundSeriesState =
   | { status: "loading" }
@@ -17,15 +17,23 @@ export function useFindCatalogueSeries(seriesApi: SeriesApi): {
   async function find(id: string) {
     state.value = { status: "loading" };
     try {
-      const answer = await seriesApi.find(id);
-      state.value =
-        answer.outcome === "found"
-          ? { status: "found", series: answer.series }
-          : { status: "notFound" };
+      state.value = stateOf(await seriesApi.find(id));
     } catch {
       state.value = { status: "unavailable" };
     }
   }
 
   return { state, find };
+}
+
+function stateOf(answer: FindSeriesAnswer): FoundSeriesState {
+  if (answer.outcome === "found")
+    return { status: "found", series: answer.series };
+  switch (answer.type) {
+    case "/problems/not-found":
+    case "/problems/validation":
+      return { status: "notFound" };
+    default:
+      return { status: "unavailable" };
+  }
 }
