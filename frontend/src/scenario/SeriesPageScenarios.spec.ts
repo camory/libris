@@ -192,7 +192,7 @@ describe("Series page", () => {
     );
   });
 
-  it.skip("S4 The band of a series", async () => {
+  it("S4 The band of a series", async () => {
     // Given
     const libris = librisAnswers(withCover);
 
@@ -208,7 +208,7 @@ describe("Series page", () => {
     );
   });
 
-  it.skip("S4 The band of a series, no cover", async () => {
+  it("S4 The band of a series, no cover", async () => {
     // Given
     const libris = librisAnswers(asterix);
 
@@ -220,7 +220,7 @@ describe("Series page", () => {
     expect(bandOf(screen)).toBeNull();
   });
 
-  it.skip("S4 The band of a series, a cover that does not load", async () => {
+  it("S4 The band of a series, a cover that does not load", async () => {
     // Given
     const screen = open(
       `/catalogue/series/${withCover.id}`,

@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { CircleAlert } from "@lucide/vue";
-import { computed, inject, watch } from "vue";
+import { computed, inject, ref, watch } from "vue";
 import { useI18n } from "vue-i18n";
 import { seriesApiKey } from "../../../application/SeriesApi";
 import { useFindCatalogueSeries } from "../../../application/useFindCatalogueSeries";
@@ -17,6 +17,15 @@ const props = defineProps<{ id: string }>();
 
 const { t, locale } = useI18n();
 const { state, find } = useFindCatalogueSeries(inject(seriesApiKey)!);
+
+const failedCover = ref<string | null>(null);
+
+const band = computed(() =>
+  state.value.status === "found" &&
+  state.value.series.coverUrl !== failedCover.value
+    ? state.value.series.coverUrl
+    : null,
+);
 
 const hint = computed(() => {
   if (state.value.status !== "found") {
@@ -60,7 +69,14 @@ watch(
       </div>
     </template>
     <template v-else-if="state.status === 'found'">
-      <header class="pt-5 pb-3">
+      <img
+        v-if="band"
+        :src="band"
+        :alt="t('series.cover', { name: state.series.name })"
+        class="-mx-5 h-32.5 w-[calc(100%+2.5rem)] max-w-none object-cover object-top"
+        @error="failedCover = band"
+      />
+      <header class="pb-3" :class="band ? 'pt-3' : 'pt-5'">
         <h1 class="text-page-title">{{ state.series.name }}</h1>
         <p class="text-body text-muted">{{ hint }}</p>
       </header>

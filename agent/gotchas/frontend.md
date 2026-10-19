@@ -413,3 +413,10 @@ Read whole by a run that changes `frontend/`, after `every-run.md`.
   gap, where an `mt-5` on the next block would stay. The sandbox has no
   browser (no Chromium, no Playwright), so a run cannot look at the running
   app: a layout check goes to the PR as left to Tophe.
+- A block drawn across the content's 20 of side padding, the series page's
+  band, keeps the padding on `<main>` and gives itself `-mx-5` and
+  `w-[calc(100%+2.5rem)]`; an `img` also needs `max-w-none`, since
+  Tailwind's preflight caps it at `max-width: 100%`. The preflight already
+  makes an `img` `display: block` (`node_modules/tailwindcss/preflight.css`),
+  so `block` on it repeats it. The image's name is `series.cover`, which
+  `SeriesRow` reads too.
