@@ -4,6 +4,7 @@ import fr.amory.libris.bibliography.domain.Contributions
 import fr.amory.libris.bibliography.domain.Kind.BD
 import fr.amory.libris.bibliography.domain.Kind.MANGA
 import fr.amory.libris.bibliography.domain.SeriesEntry
+import fr.amory.libris.bibliography.domain.cover.CoverName
 import fr.amory.libris.bibliography.domain.edition.Edition
 import fr.amory.libris.bibliography.domain.edition.EditionId
 import fr.amory.libris.bibliography.domain.series.Series
@@ -44,10 +45,9 @@ class FindCatalogueSeriesTest {
   private val seriesRepository = SeriesInMemory().also { repository ->
     listOf(ONE_PIECE, ASTERIX).forEach { repository.findOrInsert(it) }
   }
-  private val listCatalogueSeries =
-    ListCatalogueSeries(CatalogueEditionsAnswering(), bookshelves, copies, editions, seriesRepository)
+  private val catalogueEditions = CatalogueEditionsAnswering(firstOfEachSeries = setOf(ROMANCE_DAWN.id))
   private val findCatalogueSeries =
-    FindCatalogueSeries(listCatalogueSeries, bookshelves, copies, editions, seriesRepository)
+    FindCatalogueSeries(catalogueEditions, bookshelves, copies, editions, seriesRepository)
 
   @Test
   fun `a series of the reader's catalogue is found with what the series list answers for it`() {
@@ -61,7 +61,8 @@ class FindCatalogueSeriesTest {
     val result = findCatalogueSeries(lea, ONE_PIECE.id)
 
     // Then
-    result.shouldBeInstanceOf<Found>().series shouldBe CatalogueSeries(ONE_PIECE.id, "One piece", 2, null, MANGA)
+    result.shouldBeInstanceOf<Found>().series shouldBe
+      CatalogueSeries(ONE_PIECE.id, "One piece", 2, ROMANCE_DAWN_COVER, MANGA)
   }
 
   @Test
@@ -142,6 +143,8 @@ private val ONE_PIECE = Series(SeriesId.new(), "One piece")
 
 private val ASTERIX = Series(SeriesId.new(), "Astérix")
 
+private val ROMANCE_DAWN_COVER = CoverName("3c5e7a9d0f2b4d6e8a1c3f5b7d9e0a2c4f6b8d1e3a5c7f9b0d2e4a6c8f1b3d5e")
+
 private val ROMANCE_DAWN = Edition(
   id = EditionId.new(),
   isbn = null,
@@ -156,7 +159,7 @@ private val ROMANCE_DAWN = Edition(
   language = null,
   pageCount = null,
   summary = null,
-  coverName = null,
+  coverName = ROMANCE_DAWN_COVER,
 )
 
 private val BAGGY = ROMANCE_DAWN.copy(

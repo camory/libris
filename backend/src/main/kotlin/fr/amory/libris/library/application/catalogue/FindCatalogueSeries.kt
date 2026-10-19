@@ -7,32 +7,33 @@ import fr.amory.libris.library.application.catalogue.FindCatalogueSeriesResult.F
 import fr.amory.libris.library.application.catalogue.FindCatalogueSeriesResult.NoSuchSeries
 import fr.amory.libris.library.application.lookup.CopyOnBookshelf
 import fr.amory.libris.library.domain.bookshelf.BookshelfRepository
+import fr.amory.libris.library.domain.copy.CatalogueEditions
 import fr.amory.libris.library.domain.copy.CopyRepository
 import fr.amory.libris.library.domain.reader.ReaderId
 import org.springframework.stereotype.Service
 
 @Service
 class FindCatalogueSeries(
-  private val listCatalogueSeries: ListCatalogueSeries,
+  private val catalogueEditions: CatalogueEditions,
   private val bookshelves: BookshelfRepository,
   private val copies: CopyRepository,
   private val editions: EditionRepository,
   private val seriesRepository: SeriesRepository) {
   operator fun invoke(readerId: ReaderId, seriesId: SeriesId): FindCatalogueSeriesResult {
-    val catalogueSeries = listCatalogueSeries(readerId).find { it.id == seriesId } ?: return NoSuchSeries
-    return Found(catalogueSeries, booksOf(readerId, seriesId))
-  }
-
-  private fun booksOf(readerId: ReaderId, seriesId: SeriesId): List<HeldEdition> {
-    val series = checkNotNull(seriesRepository.findById(seriesId))
-    val readersBookshelves = bookshelves.findByMember(readerId).associateBy { it.id }
+    val readersBookshelves = bookshelves
+      .findByMember(readerId)
+      .associateBy { it.id }
     val copiesByEditionId = copies
       .findByBookshelfIds(readersBookshelves.keys.toList())
       .groupBy { it.editionId }
-    return editions
+    val seriesEditions = editions
       .findByIds(copiesByEditionId.keys.toList())
       .filter { it.seriesVolume?.seriesId == seriesId }
-      .map { edition ->
+    if (seriesEditions.isEmpty()) return NoSuchSeries
+    val series = checkNotNull(seriesRepository.findById(seriesId))
+    return Found(
+      catalogueSeriesOf(series, seriesEditions, catalogueEditions.findFirstOfEachSeries(readerId)),
+      seriesEditions.map { edition ->
         HeldEdition(
           edition,
           edition.seriesVolume?.entryIn(series),
@@ -40,6 +41,7 @@ class FindCatalogueSeries(
             CopyOnBookshelf(copy.id, copy.bookshelfId, readersBookshelves.getValue(copy.bookshelfId).name.value)
           },
         )
-      }
+      },
+    )
   }
 }
