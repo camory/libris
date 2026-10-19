@@ -18,3 +18,11 @@ export interface Book {
   coverUrl: string | null;
   copies: Copy[];
 }
+
+export function booksInOrder(books: Book[], locale: string): Book[] {
+  return [...books].sort((a, b) => tomeOf(a) - tomeOf(b));
+}
+
+function tomeOf(book: Book): number {
+  return book.series?.volumeNumber ?? 0;
+}
