@@ -200,3 +200,20 @@ Format:
   own, the scenario's, over the whole card or row.
 - Left over: T106 adds the authors and the publishers to `SeriesCard`;
   T107 the band; T108 the failure.
+
+## 2026-10-19 — T106 The authors and the publishers — done
+- Did: the series page's card reads *Auteur(s)* and *Éditeur(s)* after the
+  tomes' rows, each name once, translators left out, and is not drawn when
+  no row is left; `authorsOf` and `publishersOf` in `Book.ts`; S3 runs.
+- Decided: one helper, `firstSpelling`, maps each name to the first
+  spelling the collator calls equal, over the books in `booksInOrder`; the
+  authors then go through `authorsInOrder`, which joins their roles and
+  sorts them, so steps 9 and 11 were guards. The 20 between card and list
+  is the `gap-5` of a flex column holding both in `SeriesPageView`, so a
+  card that draws nothing takes the space with it, no view rule.
+- Deviations from the brief: S3 was un-skipped and its red read before any
+  unit test (*expected … to contain 'Auteurs Jean-Yves Ferri, …'*), then
+  put back skipped, uncommitted, so its un-skip stayed step 17, as in T103
+  to T105. The running-app check of the spacing could not be made: the
+  sandbox has no browser; it is left to Tophe on the Pixel.
+- Left over: T107 the band; T108 the failure.
