@@ -101,7 +101,13 @@ watch(
     </template>
     <p v-else class="flex items-start gap-2 pt-5 text-body text-danger">
       <CircleAlert :size="22" class="shrink-0" />
-      <span>{{ t("seriesPage.notFound") }}</span>
+      <span>{{
+        t(
+          state.status === "unavailable"
+            ? "seriesPage.error"
+            : "seriesPage.notFound",
+        )
+      }}</span>
     </p>
   </main>
 </template>
