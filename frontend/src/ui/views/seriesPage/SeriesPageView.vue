@@ -10,6 +10,7 @@ import CatalogueRowSkeleton from "../../components/CatalogueRowSkeleton.vue";
 import FieldRowSkeleton from "../../components/FieldRowSkeleton.vue";
 import PageHintSkeleton from "../../components/PageHintSkeleton.vue";
 import PageTitleSkeleton from "../../components/PageTitleSkeleton.vue";
+import SeriesCard from "../../components/SeriesCard.vue";
 
 const props = defineProps<{ id: string }>();
 
@@ -62,8 +63,9 @@ watch(
         <h1 class="text-page-title">{{ state.series.name }}</h1>
         <p class="text-body text-muted">{{ hint }}</p>
       </header>
+      <SeriesCard :series="state.series" />
       <ul
-        class="divide-y divide-border overflow-hidden rounded-[14px] border border-border bg-surface"
+        class="mt-5 divide-y divide-border overflow-hidden rounded-[14px] border border-border bg-surface"
       >
         <li v-for="book in booksOnTheShelf" :key="book.id">
           <CatalogueRow :book="book" without-series-name />

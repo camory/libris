@@ -184,6 +184,24 @@ describe("SeriesPageView", () => {
     ]);
   });
 
+  it("shows the albums owned between the header and the editions", async () => {
+    // Given
+    const wrapper = mountSeriesPageView(asterixFound);
+
+    // When
+    await flushPromises();
+
+    // Then
+    const text = normalised(wrapper.element);
+    const positions = [
+      "2 albums dans vos bibliothèques.",
+      "Albums possédés",
+      "Astérix le Gaulois",
+    ].map((part) => text.indexOf(part));
+    expect(positions).not.toContain(-1);
+    expect(positions).toEqual([...positions].sort((a, b) => a - b));
+  });
+
   function seen(wrapper: ReturnType<typeof mountSeriesPageView>) {
     return {
       title: wrapper.findAllComponents(PageTitleSkeleton).length,
