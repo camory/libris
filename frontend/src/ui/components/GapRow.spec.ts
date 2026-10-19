@@ -21,6 +21,14 @@ describe("GapRow", () => {
     // Then
     expect(words(wrapper.element)).toBe("Tome 4 Manquant");
   });
+
+  it("says album for a BD", () => {
+    // When
+    const wrapper = show({ first: 3, last: 3 }, "BD");
+
+    // Then
+    expect(words(wrapper.element)).toBe("Album 3 Manquant");
+  });
 });
 
 function show(gap: Run, kind: Kind | null) {

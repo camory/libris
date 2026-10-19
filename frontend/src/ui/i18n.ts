@@ -131,7 +131,12 @@ const fr = {
       null: "Tomes manquants",
     },
     run: "{first} | {first}, {last} | {first} à {last}",
-    gap: "Tome {run} | Tomes {run}",
+    gap: {
+      BOOK: "Tome {run} | Tomes {run}",
+      BD: "Album {run} | Albums {run}",
+      MANGA: "Tome {run} | Tomes {run}",
+      null: "Tome {run} | Tomes {run}",
+    },
     gapHint: "Manquant | Manquants",
   },
   language: {

@@ -13,7 +13,7 @@ const tomes = computed(() => props.gap.last - props.gap.first + 1);
 const name = computed(() => {
   const { first, last } = props.gap;
   return t(
-    "seriesPage.gap",
+    `seriesPage.gap.${props.kind}`,
     { run: t("seriesPage.run", { first, last }, last - first) },
     tomes.value,
   );
