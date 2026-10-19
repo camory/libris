@@ -10,6 +10,15 @@ describe("booksInOrder", () => {
       ).map(({ title }) => title),
     ).toEqual(["Tome 1", "Tome 2", "Tome 10"]);
   });
+
+  it("puts an edition without a tome after the numbered ones", () => {
+    expect(
+      booksInOrder(
+        [tome(null, "Astérix et ses amis"), tome(2, "La Serpe d'or")],
+        "fr",
+      ).map(({ title }) => title),
+    ).toEqual(["La Serpe d'or", "Astérix et ses amis"]);
+  });
 });
 
 function tome(volumeNumber: number | null, title: string): Book {

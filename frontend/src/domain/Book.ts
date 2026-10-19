@@ -24,5 +24,5 @@ export function booksInOrder(books: Book[], locale: string): Book[] {
 }
 
 function tomeOf(book: Book): number {
-  return book.series?.volumeNumber ?? 0;
+  return book.series?.volumeNumber ?? Infinity;
 }
