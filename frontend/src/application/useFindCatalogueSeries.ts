@@ -5,7 +5,8 @@ import type { SeriesApi } from "./SeriesApi";
 export type FoundSeriesState =
   | { status: "loading" }
   | { status: "found"; series: SeriesWithBooks }
-  | { status: "notFound" };
+  | { status: "notFound" }
+  | { status: "unavailable" };
 
 export function useFindCatalogueSeries(seriesApi: SeriesApi): {
   state: Ref<FoundSeriesState>;
@@ -15,11 +16,15 @@ export function useFindCatalogueSeries(seriesApi: SeriesApi): {
 
   async function find(id: string) {
     state.value = { status: "loading" };
-    const answer = await seriesApi.find(id);
-    state.value =
-      answer.outcome === "found"
-        ? { status: "found", series: answer.series }
-        : { status: "notFound" };
+    try {
+      const answer = await seriesApi.find(id);
+      state.value =
+        answer.outcome === "found"
+          ? { status: "found", series: answer.series }
+          : { status: "notFound" };
+    } catch {
+      state.value = { status: "unavailable" };
+    }
   }
 
   return { state, find };

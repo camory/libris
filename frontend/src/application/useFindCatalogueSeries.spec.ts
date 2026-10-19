@@ -53,6 +53,19 @@ describe("useFindCatalogueSeries", () => {
     // Then
     expect(state.value).toEqual({ status: "notFound" });
   });
+
+  it("is unavailable when Libris does not answer", async () => {
+    // Given
+    const { state, find } = useFindCatalogueSeries(
+      new FakeSeriesApi([], new TypeError("Failed to fetch")),
+    );
+
+    // When
+    await find(asterixId);
+
+    // Then
+    expect(state.value).toEqual({ status: "unavailable" });
+  });
 });
 
 const asterixId = "4f60718a-b2c3-4d4e-8f60-718293a4b5c6";
