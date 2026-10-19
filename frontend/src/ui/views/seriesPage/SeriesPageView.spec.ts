@@ -2,6 +2,7 @@ import { CircleAlert } from "@lucide/vue";
 import { within } from "@testing-library/dom";
 import { flushPromises, mount } from "@vue/test-utils";
 import { describe, expect, it } from "vitest";
+import { nextTick } from "vue";
 import {
   seriesApiKey,
   type FindSeriesAnswer,
@@ -202,6 +203,27 @@ describe("SeriesPageView", () => {
 
     // Then
     expect(bandOf(wrapper, "Astérix")).toBeNull();
+  });
+
+  it("draws no band once its cover fails to load", async () => {
+    // Given
+    const wrapper = mountSeriesPageView({
+      outcome: "found",
+      series: { ...asterix, coverUrl: asterixCover },
+    });
+    await flushPromises();
+
+    // When
+    bandOf(wrapper, "Astérix")?.dispatchEvent(new Event("error"));
+    await nextTick();
+
+    // Then
+    expect(bandOf(wrapper, "Astérix")).toBeNull();
+    expect(
+      within(wrapper.element as HTMLElement).getByRole("heading", {
+        name: "Astérix",
+      }),
+    ).toBeDefined();
   });
 
   it("says how many albums the reader's bookshelves hold", async () => {
