@@ -17,6 +17,7 @@ describe("FetchSeriesApi", () => {
     expect(series.length).toBeGreaterThan(0);
     for (const each of series) {
       expect(each).toEqual({
+        id: expect.any(String),
         name: expect.any(String),
         volumeCount: expect.any(Number),
         coverUrl: aStringOrNull,

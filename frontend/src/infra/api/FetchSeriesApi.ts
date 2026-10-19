@@ -3,6 +3,7 @@ import type { Series } from "../../domain/Series";
 import type { Kind } from "../../domain/SourceEdition";
 
 interface SeriesResponse {
+  id: string;
   name: string;
   volumeCount: number;
   coverUrl: string | null;
@@ -21,6 +22,7 @@ export class FetchSeriesApi implements SeriesApi {
     }
     const body = (await response.json()) as SeriesResponse[];
     return body.map((series) => ({
+      id: series.id,
       name: series.name,
       volumeCount: series.volumeCount,
       coverUrl: series.coverUrl,
