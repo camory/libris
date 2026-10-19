@@ -218,8 +218,9 @@ it needs it: one operation and one schema are added.
   the series sits on a bookshelf the reader belongs to. Key
   `404_NOT_IN_MY_CATALOGUE`.
 
-The series stays a value of the edition (D12): the id is its name's row,
-and the answer is read across the editions, never an aggregate. The runs,
+The series is an aggregate of the bibliography (D12): the id is its
+`SeriesId`, and the books are read across the editions that refer to it,
+the series holding no list of them. The runs,
 the gaps, the authors and the publishers are the screen's, derived from
 the books.
 
