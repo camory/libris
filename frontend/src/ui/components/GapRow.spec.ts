@@ -29,6 +29,14 @@ describe("GapRow", () => {
     // Then
     expect(words(wrapper.element)).toBe("Album 3 Manquant");
   });
+
+  it("says tome when the editions differ in kind", () => {
+    // When
+    const wrapper = show({ first: 4, last: 4 }, null);
+
+    // Then
+    expect(words(wrapper.element)).toBe("Tome 4 Manquant");
+  });
 });
 
 function show(gap: Run, kind: Kind | null) {
