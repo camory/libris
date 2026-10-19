@@ -22,6 +22,22 @@ describe("useFindCatalogueSeries", () => {
       { status: "notFound" },
     ]);
   });
+
+  it("says there is no such series when the id is not one", async () => {
+    // Given
+    const { state, find } = useFindCatalogueSeries(
+      new FakeSeriesApi([], {
+        outcome: "problem",
+        type: "/problems/validation",
+      }),
+    );
+
+    // When
+    await find("tintin");
+
+    // Then
+    expect(state.value).toEqual({ status: "notFound" });
+  });
 });
 
 const asterixId = "4f60718a-b2c3-4d4e-8f60-718293a4b5c6";
