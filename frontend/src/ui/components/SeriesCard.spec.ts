@@ -19,6 +19,19 @@ describe("SeriesCard", () => {
       "Tomes possédés 1, 3 Tomes manquants 2",
     );
   });
+
+  it("reads a run of two as both", () => {
+    // Given
+    const series = owning("MANGA", [1, 2, 5, 6]);
+
+    // When
+    const wrapper = show(series);
+
+    // Then
+    expect(words(wrapper.element)).toBe(
+      "Tomes possédés 1, 2, 5, 6 Tomes manquants 3, 4",
+    );
+  });
 });
 
 function show(series: SeriesWithBooks) {

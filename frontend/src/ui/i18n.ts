@@ -120,7 +120,7 @@ const fr = {
     notFound: "Série introuvable.",
     owned: "Tomes possédés",
     missing: "Tomes manquants",
-    run: "{first}",
+    run: "{first} | {first}, {last}",
   },
   language: {
     fr: "français",

@@ -17,7 +17,11 @@ const rows = computed(() => {
 });
 
 function read(runs: Run[]): string {
-  return runs.map(({ first }) => t("seriesPage.run", { first })).join(", ");
+  return runs
+    .map(({ first, last }) =>
+      t("seriesPage.run", { first, last }, last - first + 1),
+    )
+    .join(", ");
 }
 </script>
 
