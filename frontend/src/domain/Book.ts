@@ -63,7 +63,9 @@ export function authorsOf(books: Book[], locale: string): string[] {
   return authorsInOrder(
     books.flatMap(({ authors }) => authors),
     locale,
-  ).map(({ name }) => name);
+  )
+    .filter(({ roles }) => roles.some((role) => role !== "TRANSLATOR"))
+    .map(({ name }) => name);
 }
 
 function byTome(a: Book, b: Book): number {

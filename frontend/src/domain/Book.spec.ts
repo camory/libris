@@ -6,7 +6,7 @@ import {
   publishersOf,
   type Book,
 } from "./Book";
-import type { SourceAuthor } from "./SourceEdition";
+import type { AuthorRole, SourceAuthor } from "./SourceEdition";
 
 describe("booksInOrder", () => {
   it("sorts the editions by tome", () => {
@@ -150,10 +150,25 @@ describe("authorsOf", () => {
     // Then
     expect(authors).toEqual(["René Goscinny", "Albert Uderzo"]);
   });
+
+  it("leaves out an author who only translated", () => {
+    // Given
+    const books = [album(1, null, [goscinny, bell("TRANSLATOR")])];
+
+    // When
+    const authors = authorsOf(books, "fr");
+
+    // Then
+    expect(authors).toEqual(["René Goscinny"]);
+  });
 });
 
 const goscinny: SourceAuthor = { name: "René Goscinny", role: "WRITER" };
 const uderzo: SourceAuthor = { name: "Albert Uderzo", role: "ARTIST" };
+
+function bell(role: AuthorRole): SourceAuthor {
+  return { name: "Anthea Bell", role };
+}
 
 function tome(volumeNumber: number | null, title: string): Book {
   return {
