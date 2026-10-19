@@ -19,47 +19,6 @@ import PageTitleSkeleton from "../../components/PageTitleSkeleton.vue";
 import { createLibrisI18n } from "../../i18n";
 import SeriesPageView from "./SeriesPageView.vue";
 
-const asterixId = "7c8d9e0f-1a2b-4c3d-8e4f-5a6b7c8d9e0f";
-const tintinId = "3e4f5a6b-7c8d-4e9f-8a0b-1c2d3e4f5a6b";
-
-const asterix: SeriesWithBooks = {
-  id: asterixId,
-  name: "Astérix",
-  volumeCount: 2,
-  coverUrl: null,
-  kind: "BD",
-  books: [asterixEtSesAmis, asterixLeGaulois],
-};
-
-const asterixCover =
-  "/api/v1/covers/5e2b7f0c9d1a4e3b8c6f2a7d0e9b1c4f5a8d3e6b2c7f0a9d4e1b8c5f2a7d0e9b";
-
-const tintinCover =
-  "/api/v1/covers/9a4c1e7b3d0f6a2c8e5b1d4f7a0c3e6b9d2f5a8c1e4b7d0a3f6c9e2b5d8a1c4f";
-
-const asterixFound: FindSeriesAnswer = { outcome: "found", series: asterix };
-
-const asterixWithAGap: FindSeriesAnswer = {
-  outcome: "found",
-  series: {
-    ...asterix,
-    books: [
-      {
-        ...asterixLeGaulois,
-        id: "8d9e0f1a-2b3c-4d4e-9f5a-6b7c8d9e0f1a",
-        title: "Astérix et les Goths",
-        series: { name: "Astérix", volumeNumber: 3 },
-      },
-      asterixLeGaulois,
-    ],
-  },
-};
-
-const noSuchSeries: FindSeriesAnswer = {
-  outcome: "problem",
-  type: "/problems/not-found",
-};
-
 const mountSeriesPageView = (
   found: FindSeriesAnswer | SeriesApi,
   id = asterixId,
@@ -356,3 +315,44 @@ class LibrisAnsweringById implements SeriesApi {
     );
   }
 }
+
+const asterixId = "7c8d9e0f-1a2b-4c3d-8e4f-5a6b7c8d9e0f";
+const tintinId = "3e4f5a6b-7c8d-4e9f-8a0b-1c2d3e4f5a6b";
+
+const asterix: SeriesWithBooks = {
+  id: asterixId,
+  name: "Astérix",
+  volumeCount: 2,
+  coverUrl: null,
+  kind: "BD",
+  books: [asterixEtSesAmis, asterixLeGaulois],
+};
+
+const asterixCover =
+  "/api/v1/covers/5e2b7f0c9d1a4e3b8c6f2a7d0e9b1c4f5a8d3e6b2c7f0a9d4e1b8c5f2a7d0e9b";
+
+const tintinCover =
+  "/api/v1/covers/9a4c1e7b3d0f6a2c8e5b1d4f7a0c3e6b9d2f5a8c1e4b7d0a3f6c9e2b5d8a1c4f";
+
+const asterixFound: FindSeriesAnswer = { outcome: "found", series: asterix };
+
+const asterixWithAGap: FindSeriesAnswer = {
+  outcome: "found",
+  series: {
+    ...asterix,
+    books: [
+      {
+        ...asterixLeGaulois,
+        id: "8d9e0f1a-2b3c-4d4e-9f5a-6b7c8d9e0f1a",
+        title: "Astérix et les Goths",
+        series: { name: "Astérix", volumeNumber: 3 },
+      },
+      asterixLeGaulois,
+    ],
+  },
+};
+
+const noSuchSeries: FindSeriesAnswer = {
+  outcome: "problem",
+  type: "/problems/not-found",
+};
