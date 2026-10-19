@@ -464,3 +464,10 @@
   true when a cover arrives late through the awaited covers, when an
   edition is corrected or moves to another series, and when the lowest
   tome has no cover or the series only untomed editions.
+- Backend: series and authors are unique on `LOWER(name)` (`V003`), so
+  *Hergé* and *Herge* are two rows, where PRD §3 now matches a name
+  whatever its capitalisation and its accents, as the series page's card
+  already does (Tophe, 2026-10-19, on T106). Open before a task: the
+  folded unique index and the migration that brings it, which spelling
+  stays when rows already stored fold to one, and what the editions
+  pointing at the others then point at.
