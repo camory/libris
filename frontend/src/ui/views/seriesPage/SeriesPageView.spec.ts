@@ -30,6 +30,9 @@ const asterix: SeriesWithBooks = {
   books: [asterixEtSesAmis, asterixLeGaulois],
 };
 
+const asterixCover =
+  "/api/v1/covers/5e2b7f0c9d1a4e3b8c6f2a7d0e9b1c4f5a8d3e6b2c7f0a9d4e1b8c5f2a7d0e9b";
+
 const asterixFound: FindSeriesAnswer = { outcome: "found", series: asterix };
 
 const asterixWithAGap: FindSeriesAnswer = {
@@ -165,6 +168,29 @@ describe("SeriesPageView", () => {
         .getAllByRole("heading")
         .map(({ textContent }) => textContent),
     ).toEqual(["Astérix"]);
+  });
+
+  it("opens with the series' cover above its name", async () => {
+    // Given
+    const wrapper = mountSeriesPageView({
+      outcome: "found",
+      series: { ...asterix, coverUrl: asterixCover },
+    });
+
+    // When
+    await flushPromises();
+
+    // Then
+    const page = within(wrapper.element as HTMLElement);
+    const bands = page.queryAllByRole("img", { name: "Couverture de Astérix" });
+    expect(bands.map((band) => band.getAttribute("src"))).toEqual([
+      asterixCover,
+    ]);
+    expect(
+      bands[0]?.compareDocumentPosition(
+        page.getByRole("heading", { name: "Astérix" }),
+      ),
+    ).toBe(Node.DOCUMENT_POSITION_FOLLOWING);
   });
 
   it("says how many albums the reader's bookshelves hold", async () => {

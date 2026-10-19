@@ -60,7 +60,13 @@ watch(
       </div>
     </template>
     <template v-else-if="state.status === 'found'">
-      <header class="pt-5 pb-3">
+      <img
+        v-if="state.series.coverUrl"
+        :src="state.series.coverUrl"
+        :alt="t('series.cover', { name: state.series.name })"
+        class="-mx-5 block h-32.5 w-[calc(100%+2.5rem)] max-w-none object-cover object-top"
+      />
+      <header class="pb-3" :class="state.series.coverUrl ? 'pt-3' : 'pt-5'">
         <h1 class="text-page-title">{{ state.series.name }}</h1>
         <p class="text-body text-muted">{{ hint }}</p>
       </header>
