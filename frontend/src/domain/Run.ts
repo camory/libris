@@ -6,18 +6,26 @@ export interface Run {
 }
 
 export function runsOf(books: Book[]): { owned: Run[]; missing: Run[] } {
-  const tomes = [
-    ...new Set(books.flatMap((book) => book.series?.volumeNumber ?? [])),
-  ].sort((a, b) => a - b);
-  const highest = tomes.at(-1) ?? 0;
-  const missing: Run[] = [];
-  for (let tome = 1; tome <= highest; tome++) {
-    if (!tomes.includes(tome)) {
-      missing.push({ first: tome, last: tome });
+  const owned = new Set(
+    books.flatMap((book) => book.series?.volumeNumber ?? []),
+  );
+  const highest = Math.max(0, ...owned);
+  const upToHighest = Array.from({ length: highest }, (_, i) => i + 1);
+  return {
+    owned: runsAmong(upToHighest.filter((tome) => owned.has(tome))),
+    missing: runsAmong(upToHighest.filter((tome) => !owned.has(tome))),
+  };
+}
+
+function runsAmong(tomesInOrder: number[]): Run[] {
+  const runs: Run[] = [];
+  for (const tome of tomesInOrder) {
+    const last = runs.at(-1);
+    if (last?.last === tome - 1) {
+      last.last = tome;
+    } else {
+      runs.push({ first: tome, last: tome });
     }
   }
-  return {
-    owned: tomes.map((tome) => ({ first: tome, last: tome })),
-    missing,
-  };
+  return runs;
 }

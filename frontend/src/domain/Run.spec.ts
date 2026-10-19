@@ -44,6 +44,26 @@ describe("runsOf", () => {
       missing: [{ first: 1, last: 1 }],
     });
   });
+
+  it("joins consecutive tomes in one run", () => {
+    // Given
+    const books = [tome(3), tome(4), tome(5), tome(9)];
+
+    // When
+    const runs = runsOf(books);
+
+    // Then
+    expect(runs).toEqual({
+      owned: [
+        { first: 3, last: 5 },
+        { first: 9, last: 9 },
+      ],
+      missing: [
+        { first: 1, last: 2 },
+        { first: 6, last: 8 },
+      ],
+    });
+  });
 });
 
 function tome(volumeNumber: number | null): Book {
