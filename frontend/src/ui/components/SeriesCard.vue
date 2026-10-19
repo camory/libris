@@ -39,6 +39,7 @@ function read(runs: Run[]): string {
 
 <template>
   <div
+    v-if="rows.length > 0"
     class="divide-y divide-border overflow-hidden rounded-[14px] border border-border bg-surface"
   >
     <div

@@ -134,6 +134,17 @@ describe("SeriesCard", () => {
       "Albums possédés 1, 2 Éditeur Hachette",
     );
   });
+
+  it("draws nothing when no row is left", () => {
+    // Given
+    const series = owning("BD", [null]);
+
+    // When
+    const wrapper = show(series);
+
+    // Then
+    expect(wrapper.find("*").exists()).toBe(false);
+  });
 });
 
 const goscinny: SourceAuthor = { name: "René Goscinny", role: "WRITER" };
@@ -158,7 +169,7 @@ function words(element: Element) {
 
 function owning(
   kind: Kind | null,
-  tomes: number[],
+  tomes: (number | null)[],
   authors: SourceAuthor[] = [],
   publishers: string[] = [],
 ): SeriesWithBooks {
@@ -176,7 +187,7 @@ function owning(
 
 function book(
   kind: Kind,
-  volumeNumber: number,
+  volumeNumber: number | null,
   authors: SourceAuthor[],
   publisher: string | null,
 ): Book {

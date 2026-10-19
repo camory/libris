@@ -64,22 +64,24 @@ watch(
         <h1 class="text-page-title">{{ state.series.name }}</h1>
         <p class="text-body text-muted">{{ hint }}</p>
       </header>
-      <SeriesCard :series="state.series" />
-      <ul
-        class="mt-5 divide-y divide-border overflow-hidden rounded-[14px] border border-border bg-surface"
-      >
-        <li
-          v-for="each in booksAndGaps"
-          :key="'book' in each ? each.book.id : `gap ${each.gap.first}`"
+      <div class="flex flex-col gap-5">
+        <SeriesCard :series="state.series" />
+        <ul
+          class="divide-y divide-border overflow-hidden rounded-[14px] border border-border bg-surface"
         >
-          <CatalogueRow
-            v-if="'book' in each"
-            :book="each.book"
-            without-series-name
-          />
-          <GapRow v-else :gap="each.gap" :kind="state.series.kind" />
-        </li>
-      </ul>
+          <li
+            v-for="each in booksAndGaps"
+            :key="'book' in each ? each.book.id : `gap ${each.gap.first}`"
+          >
+            <CatalogueRow
+              v-if="'book' in each"
+              :book="each.book"
+              without-series-name
+            />
+            <GapRow v-else :gap="each.gap" :kind="state.series.kind" />
+          </li>
+        </ul>
+      </div>
     </template>
     <p v-else class="flex items-start gap-2 pt-5 text-body text-danger">
       <CircleAlert :size="22" class="shrink-0" />
