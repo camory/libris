@@ -69,6 +69,19 @@ describe("SeriesCard", () => {
       "Albums possédés 1, 3 Albums manquants 2",
     );
   });
+
+  it("says tomes when the editions differ in kind", () => {
+    // Given
+    const series = owning(null, [1, 3]);
+
+    // When
+    const wrapper = show(series);
+
+    // Then
+    expect(words(wrapper.element)).toBe(
+      "Tomes possédés 1, 3 Tomes manquants 2",
+    );
+  });
 });
 
 function show(series: SeriesWithBooks) {
