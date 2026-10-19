@@ -180,3 +180,23 @@ Format:
   handed off after step 12 and a second run finished it.
 - Left over: T105 the card of owned tomes and the missing rows; T106 the
   authors and publishers; T107 the band; T108 the failure.
+
+## 2026-10-19 — T105 The owned tomes and the gaps — done
+- Did: the series page reads, in a card under its header, the tomes or
+  albums owned and missing as runs (*1 à 25, 36, 37, 50*), and lists a row
+  per run of missing tomes in its place among the editions; S2 runs.
+- Decided: `booksAndGapsInOrder` keys each gap by the tome after it,
+  `last + 1`, and places it before the first edition of that tome, so two
+  editions of one tome get one gap and an edition without a tome none.
+  `runsOf` reads only the tomes 1 to the highest, so the owned and the
+  missing runs come from one walk. The card's rows are padded 14 in a
+  divided card, the loading card's box, rather than the 7 of
+  `SourceEditionCard`'s rows, so nothing jumps; the row of a gap keeps
+  `CatalogueRow`'s 48 by 74 cover block, dashed.
+- Deviations from the brief: S2 was un-skipped and its red read before any
+  unit test (*expected [] to deeply equal [ …(2) ]*), then put back
+  skipped, uncommitted, so its un-skip stayed step 19, as in T103 and T104.
+  The component specs read their rows through a `words` helper of their
+  own, the scenario's, over the whole card or row.
+- Left over: T106 adds the authors and the publishers to `SeriesCard`;
+  T107 the band; T108 the failure.

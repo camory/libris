@@ -114,7 +114,7 @@ scenario to the page. No other task touches the contract (D04).
       BD, none without a tome, leading nowhere (U02, U08). Unit test of the
       order. Realises S1; un-skips the frontend test of S1.
 
-- [ ] T105 Frontend: the owned tomes and the gaps.
+- [x] T105 Frontend: the owned tomes and the gaps.
       Under the header, a card of field rows (U06): *Tomes possédés*, the
       runs owned, and *Tomes manquants*, the runs missing from 1 to the
       highest tome owned, no row when none is; *Albums* for a BD. A run of
