@@ -118,6 +118,9 @@ const fr = {
   seriesPage: {
     hint: "{count} dans vos bibliothèques.",
     notFound: "Série introuvable.",
+    owned: "Tomes possédés",
+    missing: "Tomes manquants",
+    run: "{first}",
   },
   language: {
     fr: "français",
