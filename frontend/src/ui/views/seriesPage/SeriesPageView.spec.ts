@@ -323,15 +323,6 @@ describe("SeriesPageView", () => {
     ]);
   });
 
-  function bandsOf(
-    wrapper: ReturnType<typeof mountSeriesPageView>,
-    name: string,
-  ) {
-    return within(wrapper.element as HTMLElement).queryAllByRole("img", {
-      name: `Couverture de ${name}`,
-    });
-  }
-
   function seen(wrapper: ReturnType<typeof mountSeriesPageView>) {
     return {
       title: wrapper.findAllComponents(PageTitleSkeleton).length,
@@ -339,6 +330,15 @@ describe("SeriesPageView", () => {
       fields: wrapper.findAllComponents(FieldRowSkeleton).length,
       rows: wrapper.findAllComponents(CatalogueRowSkeleton).length,
     };
+  }
+
+  function bandsOf(
+    wrapper: ReturnType<typeof mountSeriesPageView>,
+    name: string,
+  ) {
+    return within(wrapper.element as HTMLElement).queryAllByRole("img", {
+      name: `Couverture de ${name}`,
+    });
   }
 });
 
