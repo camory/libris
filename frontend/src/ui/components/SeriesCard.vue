@@ -13,7 +13,7 @@ const rows = computed(() => {
   return [
     { label: t("seriesPage.owned"), value: read(owned) },
     { label: t("seriesPage.missing"), value: read(missing) },
-  ];
+  ].filter(({ value }) => value !== "");
 });
 
 function read(runs: Run[]): string {

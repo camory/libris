@@ -45,6 +45,17 @@ describe("SeriesCard", () => {
       "Tomes possédés 1 à 3, 7 Tomes manquants 4 à 6",
     );
   });
+
+  it("has no missing row when no tome is missing", () => {
+    // Given
+    const series = owning("MANGA", [1, 2]);
+
+    // When
+    const wrapper = show(series);
+
+    // Then
+    expect(words(wrapper.element)).toBe("Tomes possédés 1, 2");
+  });
 });
 
 function show(series: SeriesWithBooks) {
