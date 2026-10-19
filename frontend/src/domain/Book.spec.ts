@@ -19,6 +19,15 @@ describe("booksInOrder", () => {
       ).map(({ title }) => title),
     ).toEqual(["La Serpe d'or", "Astérix et ses amis"]);
   });
+
+  it("sorts the editions of one tome by title, ignoring case and accents", () => {
+    expect(
+      booksInOrder(
+        [tome(1, "Asterix the Gaul"), tome(1, "Astérix le Gaulois")],
+        "fr",
+      ).map(({ title }) => title),
+    ).toEqual(["Astérix le Gaulois", "Asterix the Gaul"]);
+  });
 });
 
 function tome(volumeNumber: number | null, title: string): Book {
