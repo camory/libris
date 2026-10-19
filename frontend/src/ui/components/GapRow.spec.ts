@@ -13,6 +13,14 @@ describe("GapRow", () => {
     // Then
     expect(words(wrapper.element)).toBe("Tomes 26 à 35 Manquants");
   });
+
+  it("names a missing tome alone", () => {
+    // When
+    const wrapper = show({ first: 4, last: 4 }, "MANGA");
+
+    // Then
+    expect(words(wrapper.element)).toBe("Tome 4 Manquant");
+  });
 });
 
 function show(gap: Run, kind: Kind | null) {

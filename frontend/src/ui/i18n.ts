@@ -131,8 +131,8 @@ const fr = {
       null: "Tomes manquants",
     },
     run: "{first} | {first}, {last} | {first} à {last}",
-    gap: "Tomes {run}",
-    gapHint: "Manquants",
+    gap: "Tome {run} | Tomes {run}",
+    gapHint: "Manquant | Manquants",
   },
   language: {
     fr: "français",

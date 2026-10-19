@@ -8,11 +8,15 @@ const props = defineProps<{ gap: Run; kind: Kind | null }>();
 
 const { t } = useI18n();
 
+const tomes = computed(() => props.gap.last - props.gap.first + 1);
+
 const name = computed(() => {
   const { first, last } = props.gap;
-  return t("seriesPage.gap", {
-    run: t("seriesPage.run", { first, last }, last - first),
-  });
+  return t(
+    "seriesPage.gap",
+    { run: t("seriesPage.run", { first, last }, last - first) },
+    tomes.value,
+  );
 });
 </script>
 
@@ -24,7 +28,7 @@ const name = computed(() => {
     <div class="flex min-w-0 flex-col gap-1.5">
       <p class="text-row-title text-muted">{{ name }}</p>
       {{ " " }}
-      <p class="text-body text-muted">{{ t("seriesPage.gapHint") }}</p>
+      <p class="text-body text-muted">{{ t("seriesPage.gapHint", tomes) }}</p>
     </div>
   </div>
 </template>
