@@ -146,7 +146,7 @@ scenario to the page. No other task touches the contract (D04).
       the height and the spacing are checked by hand on the Pixel.
       Realises S4; un-skips the frontend tests of S4, its three cases.
 
-- [ ] T108 Frontend: Libris unavailable on a series.
+- [x] T108 Frontend: Libris unavailable on a series.
       When the series does not come: no band, no title, *Erreur lors du
       chargement, veuillez réessayer plus tard.* with the alert icon as
       the screen's one message, nothing of the series shown; every word
