@@ -407,3 +407,9 @@ Read whole by a run that changes `frontend/`, after `every-run.md`.
   body. A case about the focus mounts with `attachTo: document.body` and
   calls `wrapper.unmount()` at its end (`NewBookshelfRow`'s *takes the focus
   when it opens*).
+- A block that may draw nothing sits with the block after it in a
+  `flex flex-col gap-5` parent (`SeriesPageView`'s card and list): a
+  component whose root is `v-if`'d away renders a comment, which takes no
+  gap, where an `mt-5` on the next block would stay. The sandbox has no
+  browser (no Chromium, no Playwright), so a run cannot look at the running
+  app: a layout check goes to the PR as left to Tophe.

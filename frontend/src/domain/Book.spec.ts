@@ -1,5 +1,12 @@
 import { describe, expect, it } from "vitest";
-import { booksAndGapsInOrder, booksInOrder, type Book } from "./Book";
+import {
+  authorsOf,
+  booksAndGapsInOrder,
+  booksInOrder,
+  publishersOf,
+  type Book,
+} from "./Book";
+import type { AuthorRole, SourceAuthor } from "./SourceEdition";
 
 describe("booksInOrder", () => {
   it("sorts the editions by tome", () => {
@@ -64,6 +71,169 @@ describe("booksAndGapsInOrder", () => {
   });
 });
 
+describe("publishersOf", () => {
+  it("names each publisher once", () => {
+    // Given
+    const books = [
+      album(1, "Hachette", []),
+      album(2, "Hachette", []),
+      album(3, "Orion", []),
+    ];
+
+    // When
+    const publishers = publishersOf(books, "fr");
+
+    // Then
+    expect(publishers).toEqual(["Hachette", "Orion"]);
+  });
+
+  it("sorts the publishers by name, ignoring case and accents", () => {
+    // Given
+    const books = [
+      album(1, "Orion", []),
+      album(2, "Hachette", []),
+      album(3, "Éditions Albert René", []),
+    ];
+
+    // When
+    const publishers = publishersOf(books, "fr");
+
+    // Then
+    expect(publishers).toEqual(["Éditions Albert René", "Hachette", "Orion"]);
+  });
+
+  it("adds no publisher for an edition without one", () => {
+    // Given
+    const books = [album(1, null, []), album(2, "Hachette", [])];
+
+    // When
+    const publishers = publishersOf(books, "fr");
+
+    // Then
+    expect(publishers).toEqual(["Hachette"]);
+  });
+
+  it("reads two spellings of one publisher as one", () => {
+    // Given
+    const books = [album(1, "Hachette", []), album(2, "HACHETTE", [])];
+
+    // When
+    const publishers = publishersOf(books, "fr");
+
+    // Then
+    expect(publishers).toEqual(["Hachette"]);
+  });
+
+  it("spells a publisher as the first edition a shelf reads", () => {
+    // Given
+    const books = [album(2, "hachette", []), album(1, "Hachette", [])];
+
+    // When
+    const publishers = publishersOf(books, "fr");
+
+    // Then
+    expect(publishers).toEqual(["Hachette"]);
+  });
+});
+
+describe("authorsOf", () => {
+  it("names each author of the editions once", () => {
+    // Given
+    const books = [
+      album(1, null, [goscinny, uderzo]),
+      album(2, null, [goscinny, uderzo]),
+    ];
+
+    // When
+    const authors = authorsOf(books, "fr");
+
+    // Then
+    expect(authors).toEqual(["René Goscinny", "Albert Uderzo"]);
+  });
+
+  it("leaves out an author who only translated", () => {
+    // Given
+    const books = [album(1, null, [goscinny, bell("TRANSLATOR")])];
+
+    // When
+    const authors = authorsOf(books, "fr");
+
+    // Then
+    expect(authors).toEqual(["René Goscinny"]);
+  });
+
+  it("keeps an author who translated an edition and wrote another", () => {
+    // Given
+    const books = [
+      album(1, null, [bell("TRANSLATOR")]),
+      album(2, null, [bell("WRITER")]),
+    ];
+
+    // When
+    const authors = authorsOf(books, "fr");
+
+    // Then
+    expect(authors).toEqual(["Anthea Bell"]);
+  });
+
+  it("sorts the authors by their first role, then by name", () => {
+    // Given
+    const books = [
+      album(2, null, [uderzo, goscinny]),
+      album(37, null, [
+        { name: "Didier Conrad", role: "ARTIST" },
+        { name: "Jean-Yves Ferri", role: "WRITER" },
+      ]),
+    ];
+
+    // When
+    const authors = authorsOf(books, "fr");
+
+    // Then
+    expect(authors).toEqual([
+      "Jean-Yves Ferri",
+      "René Goscinny",
+      "Albert Uderzo",
+      "Didier Conrad",
+    ]);
+  });
+
+  it("reads two spellings of one name as one author", () => {
+    // Given
+    const books = [
+      album(1, null, [goscinny]),
+      album(2, null, [{ name: "Rene goscinny", role: "WRITER" }]),
+    ];
+
+    // When
+    const authors = authorsOf(books, "fr");
+
+    // Then
+    expect(authors).toEqual(["René Goscinny"]);
+  });
+
+  it("spells an author as the first edition a shelf reads", () => {
+    // Given
+    const books = [
+      album(2, null, [{ name: "Rene goscinny", role: "WRITER" }]),
+      album(1, null, [goscinny]),
+    ];
+
+    // When
+    const authors = authorsOf(books, "fr");
+
+    // Then
+    expect(authors).toEqual(["René Goscinny"]);
+  });
+});
+
+const goscinny: SourceAuthor = { name: "René Goscinny", role: "WRITER" };
+const uderzo: SourceAuthor = { name: "Albert Uderzo", role: "ARTIST" };
+
+function bell(role: AuthorRole): SourceAuthor {
+  return { name: "Anthea Bell", role };
+}
+
 function tome(volumeNumber: number | null, title: string): Book {
   return {
     id: crypto.randomUUID(),
@@ -82,4 +252,12 @@ function tome(volumeNumber: number | null, title: string): Book {
     coverUrl: null,
     copies: [],
   };
+}
+
+function album(
+  volumeNumber: number,
+  publisher: string | null,
+  authors: SourceAuthor[],
+): Book {
+  return { ...tome(volumeNumber, `Album ${volumeNumber}`), publisher, authors };
 }

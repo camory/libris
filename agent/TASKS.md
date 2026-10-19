@@ -126,7 +126,7 @@ scenario to the page. No other task touches the contract (D04).
       U08). Unit tests of the runs and the gaps, one per case of the spec.
       Realises S2; un-skips the frontend tests of S2, its three cases.
 
-- [ ] T106 Frontend: the authors and the publishers.
+- [x] T106 Frontend: the authors and the publishers.
       The card gains *Auteur*, or *Auteurs* for more than one: the series'
       authors once each, an author who only translated left out, by first
       role then by name as the card orders them (U06); and *Éditeur* or

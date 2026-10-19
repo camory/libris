@@ -130,7 +130,8 @@ notes),
 - Editions are shared by the household and matched by ISBN: scanning a known
   ISBN reaches the existing edition, it never creates a second one.
 - Series, Author and Tag are matched by name: a name typed or returned by a
-  lookup lands on the existing one, whatever its capitalisation.
+  lookup lands on the existing one, whatever its capitalisation and its
+  accents.
 - An Author is linked to an edition once per role; an author who wrote and
   drew has two links. When a lookup gives no role, the role is `WRITER`.
 - The kind is prefilled by the lookup like the other fields. The BnF record

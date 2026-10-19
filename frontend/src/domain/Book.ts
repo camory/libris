@@ -1,7 +1,12 @@
 import type { Copy } from "./Copy";
 import { nameOrder } from "./nameOrder";
 import { runsOf, type Run } from "./Run";
-import type { Kind, SourceAuthor, SourceSeries } from "./SourceEdition";
+import {
+  authorsInOrder,
+  type Kind,
+  type SourceAuthor,
+  type SourceSeries,
+} from "./SourceEdition";
 
 export interface Book {
   id: string;
@@ -40,6 +45,42 @@ export function booksAndGapsInOrder(
     gapBefore.delete(tomeOf(book));
     return gap === undefined ? [{ book }] : [{ gap }, { book }];
   });
+}
+
+export function publishersOf(books: Book[], locale: string): string[] {
+  const byName = nameOrder(locale);
+  const spelled = firstSpelling(byName);
+  const publishers = booksInOrder(books, locale)
+    .map(({ publisher }) => publisher)
+    .filter((publisher) => publisher !== null)
+    .map(spelled);
+  return [...new Set(publishers)].sort(byName);
+}
+
+export function authorsOf(books: Book[], locale: string): string[] {
+  const spelled = firstSpelling(nameOrder(locale));
+  return authorsInOrder(
+    booksInOrder(books, locale)
+      .flatMap(({ authors }) => authors)
+      .map(({ name, role }) => ({ name: spelled(name), role })),
+    locale,
+  )
+    .filter(({ roles }) => roles.some((role) => role !== "TRANSLATOR"))
+    .map(({ name }) => name);
+}
+
+function firstSpelling(
+  byName: (a: string, b: string) => number,
+): (name: string) => string {
+  const spellings: string[] = [];
+  return (name) => {
+    const spelling = spellings.find((each) => byName(each, name) === 0);
+    if (spelling !== undefined) {
+      return spelling;
+    }
+    spellings.push(name);
+    return name;
+  };
 }
 
 function byTome(a: Book, b: Book): number {
