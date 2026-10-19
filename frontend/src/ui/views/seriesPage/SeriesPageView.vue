@@ -4,6 +4,8 @@ import { computed, inject, watch } from "vue";
 import { useI18n } from "vue-i18n";
 import { seriesApiKey } from "../../../application/SeriesApi";
 import { useFindCatalogueSeries } from "../../../application/useFindCatalogueSeries";
+import { booksInOrder } from "../../../domain/Book";
+import CatalogueRow from "../../components/CatalogueRow.vue";
 import CatalogueRowSkeleton from "../../components/CatalogueRowSkeleton.vue";
 import FieldRowSkeleton from "../../components/FieldRowSkeleton.vue";
 import PageHintSkeleton from "../../components/PageHintSkeleton.vue";
@@ -11,7 +13,7 @@ import PageTitleSkeleton from "../../components/PageTitleSkeleton.vue";
 
 const props = defineProps<{ id: string }>();
 
-const { t } = useI18n();
+const { t, locale } = useI18n();
 const { state, find } = useFindCatalogueSeries(inject(seriesApiKey)!);
 
 const hint = computed(() => {
@@ -23,6 +25,12 @@ const hint = computed(() => {
     count: t(`series.count.${kind}`, { count: volumeCount }, volumeCount),
   });
 });
+
+const booksOnTheShelf = computed(() =>
+  state.value.status === "found"
+    ? booksInOrder(state.value.series.books, locale.value)
+    : [],
+);
 
 watch(
   () => props.id,
@@ -54,6 +62,13 @@ watch(
         <h1 class="text-page-title">{{ state.series.name }}</h1>
         <p class="text-body text-muted">{{ hint }}</p>
       </header>
+      <ul
+        class="divide-y divide-border overflow-hidden rounded-[14px] border border-border bg-surface"
+      >
+        <li v-for="book in booksOnTheShelf" :key="book.id">
+          <CatalogueRow :book="book" without-series-name />
+        </li>
+      </ul>
     </template>
     <p v-else class="flex items-start gap-2 pt-5 text-body text-danger">
       <CircleAlert :size="22" class="shrink-0" />

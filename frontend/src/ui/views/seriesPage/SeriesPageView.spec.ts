@@ -166,6 +166,24 @@ describe("SeriesPageView", () => {
     ).toBeDefined();
   });
 
+  it("lists the editions in the order a shelf reads", async () => {
+    // Given
+    const wrapper = mountSeriesPageView(asterixFound);
+
+    // When
+    await flushPromises();
+
+    // Then
+    expect(
+      within(wrapper.element as HTMLElement)
+        .queryAllByRole("listitem")
+        .map(normalised),
+    ).toEqual([
+      "Album 1 Astérix le Gaulois René Goscinny, Albert Uderzo Bibliothèque de Léa",
+      "Astérix et ses amis René Goscinny, Albert Uderzo Salon",
+    ]);
+  });
+
   function seen(wrapper: ReturnType<typeof mountSeriesPageView>) {
     return {
       title: wrapper.findAllComponents(PageTitleSkeleton).length,
