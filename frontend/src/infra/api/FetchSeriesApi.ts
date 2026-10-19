@@ -37,9 +37,12 @@ export class FetchSeriesApi implements SeriesApi {
   }
 
   async find(id: string): Promise<FindSeriesAnswer> {
-    const response = await fetch(`${this.baseUrl}/api/v1/series/${id}`, {
-      headers: { Accept: "application/json, application/problem+json" },
-    });
+    const response = await fetch(
+      `${this.baseUrl}/api/v1/series/${encodeURIComponent(id)}`,
+      {
+        headers: { Accept: "application/json, application/problem+json" },
+      },
+    );
     if (response.status !== 200) return problemOf(response, problems);
     const body = (await response.json()) as SeriesWithBooksResponse;
     return {
