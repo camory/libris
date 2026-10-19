@@ -141,3 +141,12 @@ Format:
   of the reader's editions is of the series. Its first case gains a cover,
   a guard against the find passing a wrong first-of-each-series.
 - Left over: nothing new; T103 moves the frontend once T102 is deployed.
+
+## 2026-10-19 — T103 The series page on v0.13.0, no such series — handoff
+- Done: steps 1 to 9 (pin, ids, `find` with its four cases, `bookOf`, the fold, `useFindCatalogueSeries`). Start with step 10, `SeriesPageView.spec.ts`.
+- S5 was un-skipped before any unit test, its red read (*Unable to find an element with the text: Série introuvable.*), then put back skipped, uncommitted: its un-skip and green stay step 15, as the brief orders.
+- Deviation: `aBook` moved to `EditionShapes.ts` before step 3's red, since that case uses it; `bookOf.ts` written in step 3's green, `FetchCatalogueApi` moved onto it in its own refactor commit.
+- Decided: step 8's green reads any answer as `notFound` (`await find` then set), so step 9 is a true guard; `find` does not reset to `loading`, no case asks it yet.
+- Guard step 9: mutation `notFound` only for `/problems/not-found` (else `loading` stays); red `- "status": "notFound" + "status": "loading"` on *says there is no such series when the id is not one*; reverted.
+- Mock facts (for the gotchas at finish): `GET /series/{id}` answers `404` to `5b6c7d8e-…`, `400` with a random `type` to `not-a-uuid`, an empty `404` to an unencoded `a/b`.
+- Gotchas still to rewrite at finish: every-run `additionalProperties` item, frontend mock item and `Series.id is optional` item.
