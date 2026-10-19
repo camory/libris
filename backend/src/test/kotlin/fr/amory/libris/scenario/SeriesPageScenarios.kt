@@ -13,7 +13,6 @@ import fr.amory.libris.scenario.dsl.series
 import fr.amory.libris.scenario.dsl.unknownSeries
 import io.kotest.matchers.collections.shouldContainExactlyInAnyOrder
 import io.kotest.matchers.shouldBe
-import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 
@@ -21,7 +20,6 @@ import org.springframework.beans.factory.annotation.Autowired
 class SeriesPageScenarios @Autowired constructor(private val libris: Libris) {
 
   @Test
-  @Disabled("series page")
   fun `S1 The reader opens a series`() {
     // Given
     val lea = libris.reader("lea", "Léa")
