@@ -1,9 +1,6 @@
 package fr.amory.libris.library.application.catalogue
 
-import fr.amory.libris.bibliography.domain.edition.Edition
-import fr.amory.libris.bibliography.domain.edition.EditionId
 import fr.amory.libris.bibliography.domain.edition.EditionRepository
-import fr.amory.libris.bibliography.domain.series.Series
 import fr.amory.libris.bibliography.domain.series.SeriesRepository
 import fr.amory.libris.library.domain.bookshelf.BookshelfRepository
 import fr.amory.libris.library.domain.copy.CatalogueEditions
@@ -30,16 +27,7 @@ class ListCatalogueSeries(
       .findByIds(editionsBySeriesId.keys.toList())
       .associateBy { it.id }
     return editionsBySeriesId.map { (seriesId, seriesEditions) ->
-      seriesOf(seriesById.getValue(seriesId), seriesEditions, firstOfEachSeries)
+      catalogueSeriesOf(seriesById.getValue(seriesId), seriesEditions, firstOfEachSeries)
     }
   }
-
-  private fun seriesOf(series: Series, seriesEditions: List<Edition>, firstOfEachSeries: Set<EditionId>) =
-    CatalogueSeries(
-      series.id,
-      series.name,
-      seriesEditions.size,
-      coverName = seriesEditions.firstOrNull { it.id in firstOfEachSeries }?.coverName,
-      kind = seriesEditions.map { it.kind }.distinct().singleOrNull(),
-    )
 }
