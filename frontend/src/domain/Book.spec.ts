@@ -1,5 +1,11 @@
 import { describe, expect, it } from "vitest";
-import { booksAndGapsInOrder, booksInOrder, type Book } from "./Book";
+import {
+  booksAndGapsInOrder,
+  booksInOrder,
+  publishersOf,
+  type Book,
+} from "./Book";
+import type { SourceAuthor } from "./SourceEdition";
 
 describe("booksInOrder", () => {
   it("sorts the editions by tome", () => {
@@ -64,6 +70,23 @@ describe("booksAndGapsInOrder", () => {
   });
 });
 
+describe("publishersOf", () => {
+  it("names each publisher once", () => {
+    // Given
+    const books = [
+      album(1, "Hachette", []),
+      album(2, "Hachette", []),
+      album(3, "Orion", []),
+    ];
+
+    // When
+    const publishers = publishersOf(books, "fr");
+
+    // Then
+    expect(publishers).toEqual(["Hachette", "Orion"]);
+  });
+});
+
 function tome(volumeNumber: number | null, title: string): Book {
   return {
     id: crypto.randomUUID(),
@@ -82,4 +105,12 @@ function tome(volumeNumber: number | null, title: string): Book {
     coverUrl: null,
     copies: [],
   };
+}
+
+function album(
+  volumeNumber: number,
+  publisher: string | null,
+  authors: SourceAuthor[],
+): Book {
+  return { ...tome(volumeNumber, `Album ${volumeNumber}`), publisher, authors };
 }

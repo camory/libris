@@ -42,6 +42,12 @@ export function booksAndGapsInOrder(
   });
 }
 
+export function publishersOf(books: Book[], locale: string): string[] {
+  return [...new Set(books.map(({ publisher }) => publisher))].filter(
+    (publisher) => publisher !== null,
+  );
+}
+
 function byTome(a: Book, b: Book): number {
   if (tomeOf(a) === tomeOf(b)) {
     return 0;
