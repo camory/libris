@@ -76,7 +76,7 @@ describe("Series page", () => {
     vi.unstubAllGlobals();
   });
 
-  it.skip("S1 The reader opens a series", async () => {
+  it("S1 The reader opens a series", async () => {
     // Given
     const screen = open("/catalogue/series", librisAnswers(asterix));
     await screen.findByText("Astérix");
