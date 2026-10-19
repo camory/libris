@@ -255,3 +255,21 @@ Format:
 - Deviations from the brief: none.
 - Left over: the crop, the 130, the full width and the 12 above the header
   to Tophe on the Pixel; T108 the failure.
+
+## 2026-10-19 — T108 Libris unavailable on a series — done
+- Did: the series page says *Erreur lors du chargement, veuillez réessayer
+  plus tard.* with the alert icon, alone, when the find rejects or answers a
+  problem other than S5's two; S6 runs. Every state of the spec is drawn.
+- Decided: `useFindCatalogueSeries` takes `useFindBookshelf`'s shape, a
+  `try` around the find and a `stateOf` switching on the problem's `type`.
+  The view picks its sentence through one computed, `failure`, as
+  `BookshelfView` does, under the same `<p>`, icon and place as the
+  not-found one: the brief left that choice open, and one paragraph keeps
+  the two messages from drifting apart.
+- Deviations from the brief: S6 was un-skipped and its red read before any
+  unit test (*Unable to find an element with the text: Erreur lors du
+  chargement…*, with an unhandled `TypeError: Failed to fetch`), then put
+  back skipped, uncommitted, so its un-skip stayed step 4, as in T103 to
+  T107.
+- Left over: nothing of the spec's screens; the *Done* of `series-page` is
+  Tophe's, on the Pixel.

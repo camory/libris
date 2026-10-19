@@ -116,6 +116,7 @@ const fr = {
     },
   },
   seriesPage: {
+    error: "Erreur lors du chargement, veuillez réessayer plus tard.",
     hint: "{count} dans vos bibliothèques.",
     notFound: "Série introuvable.",
     owned: {
