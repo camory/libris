@@ -18,7 +18,7 @@ const overline = computed(() => {
     return null;
   }
   if (series.volumeNumber === null) {
-    return series.name;
+    return props.withoutSeriesName ? null : series.name;
   }
   if (props.withoutSeriesName) {
     return t(`catalogue.volume.${props.book.kind}`, {

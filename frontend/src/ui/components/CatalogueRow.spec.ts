@@ -56,6 +56,14 @@ describe("CatalogueRow", () => {
     expect(screen.getByText("Album 1")).toBeDefined();
   });
 
+  it("shows no overline for an edition without a tome in its series", () => {
+    // When
+    const { wrapper } = show(asterixEtSesAmis, { withoutSeriesName: true });
+
+    // Then
+    expect(normalised(wrapper.element)).toMatch(/^Astérix et ses amis/);
+  });
+
   it("shows the series alone when the edition has no tome", () => {
     // When
     const { screen } = show(asterixEtSesAmis);
