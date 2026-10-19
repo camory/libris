@@ -3,6 +3,7 @@ package fr.amory.libris.library.application.catalogue
 import fr.amory.libris.bibliography.domain.Contributions
 import fr.amory.libris.bibliography.domain.Kind.BD
 import fr.amory.libris.bibliography.domain.Kind.MANGA
+import fr.amory.libris.bibliography.domain.SeriesEntry
 import fr.amory.libris.bibliography.domain.edition.Edition
 import fr.amory.libris.bibliography.domain.edition.EditionId
 import fr.amory.libris.bibliography.domain.series.Series
@@ -11,6 +12,7 @@ import fr.amory.libris.bibliography.domain.series.SeriesVolume
 import fr.amory.libris.bibliography.fixture.EditionsInMemory
 import fr.amory.libris.bibliography.fixture.SeriesInMemory
 import fr.amory.libris.library.application.catalogue.FindCatalogueSeriesResult.Found
+import fr.amory.libris.library.application.lookup.CopyOnBookshelf
 import fr.amory.libris.library.domain.bookshelf.Bookshelf
 import fr.amory.libris.library.domain.bookshelf.BookshelfId
 import fr.amory.libris.library.domain.bookshelf.BookshelfName
@@ -40,7 +42,8 @@ class FindCatalogueSeriesTest {
   }
   private val listCatalogueSeries =
     ListCatalogueSeries(CatalogueEditionsAnswering(), bookshelves, copies, editions, seriesRepository)
-  private val findCatalogueSeries = FindCatalogueSeries(listCatalogueSeries)
+  private val findCatalogueSeries =
+    FindCatalogueSeries(listCatalogueSeries, bookshelves, copies, editions, seriesRepository)
 
   @Test
   fun `a series of the reader's catalogue is found with what the series list answers for it`() {
@@ -55,6 +58,26 @@ class FindCatalogueSeriesTest {
 
     // Then
     result.shouldBeInstanceOf<Found>().series shouldBe CatalogueSeries(ONE_PIECE.id, "One piece", 2, null, MANGA)
+  }
+
+  @Test
+  fun `the series answers its editions on the reader's bookshelves, no other series'`() {
+    // Given
+    val leasBookshelf = bookshelfOf("Bibliothèque de Léa", Membership(lea, OWNER))
+    val copy = copyOn(leasBookshelf, ROMANCE_DAWN.id).also { copies.insert(it) }
+    copies.insert(copyOn(leasBookshelf, ASTERIX_LE_GAULOIS.id))
+
+    // When
+    val result = findCatalogueSeries(lea, ONE_PIECE.id)
+
+    // Then
+    result.shouldBeInstanceOf<Found>().books shouldBe listOf(
+      HeldEdition(
+        ROMANCE_DAWN,
+        SeriesEntry("One piece", 1),
+        listOf(CopyOnBookshelf(copy.id, leasBookshelf.id, "Bibliothèque de Léa")),
+      ),
+    )
   }
 
   private fun bookshelfOf(name: String, vararg memberships: Membership): Bookshelf =
