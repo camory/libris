@@ -238,7 +238,7 @@ describe("Series page", () => {
     expect(screen.getByRole("heading", { name: "Astérix" })).toBeDefined();
   });
 
-  it.skip.each([
+  it.each([
     {
       case: "Libris answers no such series",
       address: "/catalogue/series/7c8d9e0f-1a2b-4c3d-8e4f-5a6b7c8d9e0f",
