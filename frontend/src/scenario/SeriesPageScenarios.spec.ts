@@ -7,10 +7,6 @@ import {
 import { afterEach, describe, expect, it, vi } from "vitest";
 import type { App } from "vue";
 import type { SeriesApi } from "../application/SeriesApi";
-import {
-  seriesPageApiKey,
-  type SeriesPageApi,
-} from "../application/SeriesPageApi";
 import { createLibrisApp } from "../createLibrisApp";
 import type { Book } from "../domain/Book";
 import type { SeriesWithBooks } from "../domain/Series";
@@ -30,7 +26,6 @@ import { FakeIsbnApi } from "../fixture/FakeIsbnApi";
 import { FakeMeApi } from "../fixture/FakeMeApi";
 import { FakeReadersApi } from "../fixture/FakeReadersApi";
 import { FakeSeriesApi } from "../fixture/FakeSeriesApi";
-import { FakeSeriesPageApi } from "../fixture/FakeSeriesPageApi";
 import { lea } from "../fixture/Readers";
 
 type Screen = BoundFunctions<typeof queries>;
@@ -83,10 +78,7 @@ describe("Series page", () => {
 
   it.skip("S1 The reader opens a series", async () => {
     // Given
-    const screen = open("/catalogue/series", {
-      list: librisLists(asterix),
-      page: librisAnswers(asterix),
-    });
+    const screen = open("/catalogue/series", librisAnswers(asterix));
     await screen.findByText("Astérix");
 
     // When
@@ -150,7 +142,7 @@ describe("Series page", () => {
       const libris = librisAnswers(owned);
 
       // When
-      const screen = open(`/catalogue/series/${owned.id}`, { page: libris });
+      const screen = open(`/catalogue/series/${owned.id}`, libris);
 
       // Then
       await screen.findByRole("heading", { name: owned.name });
@@ -190,7 +182,7 @@ describe("Series page", () => {
     const libris = librisAnswers(editions);
 
     // When
-    const screen = open(`/catalogue/series/${editions.id}`, { page: libris });
+    const screen = open(`/catalogue/series/${editions.id}`, libris);
 
     // Then
     await screen.findByRole("heading", { name: "Astérix" });
@@ -205,7 +197,7 @@ describe("Series page", () => {
     const libris = librisAnswers(withCover);
 
     // When
-    const screen = open(`/catalogue/series/${withCover.id}`, { page: libris });
+    const screen = open(`/catalogue/series/${withCover.id}`, libris);
 
     // Then
     const name = await screen.findByRole("heading", { name: "Astérix" });
@@ -221,7 +213,7 @@ describe("Series page", () => {
     const libris = librisAnswers(asterix);
 
     // When
-    const screen = open(`/catalogue/series/${asterix.id}`, { page: libris });
+    const screen = open(`/catalogue/series/${asterix.id}`, libris);
 
     // Then
     await screen.findByRole("heading", { name: "Astérix" });
@@ -230,9 +222,10 @@ describe("Series page", () => {
 
   it.skip("S4 The band of a series, a cover that does not load", async () => {
     // Given
-    const screen = open(`/catalogue/series/${withCover.id}`, {
-      page: librisAnswers(withCover),
-    });
+    const screen = open(
+      `/catalogue/series/${withCover.id}`,
+      librisAnswers(withCover),
+    );
     await screen.findByRole("heading", { name: "Astérix" });
 
     // When
@@ -245,7 +238,7 @@ describe("Series page", () => {
     expect(screen.getByRole("heading", { name: "Astérix" })).toBeDefined();
   });
 
-  it.skip.each([
+  it.each([
     {
       case: "Libris answers no such series",
       address: "/catalogue/series/7c8d9e0f-1a2b-4c3d-8e4f-5a6b7c8d9e0f",
@@ -261,7 +254,7 @@ describe("Series page", () => {
     const libris = librisRefuses(problem);
 
     // When
-    const screen = open(address, { page: libris });
+    const screen = open(address, libris);
 
     // Then
     await screen.findByText("Série introuvable.");
@@ -275,7 +268,7 @@ describe("Series page", () => {
     const libris = librisDoesNotAnswer();
 
     // When
-    const screen = open(`/catalogue/series/${asterix.id}`, { page: libris });
+    const screen = open(`/catalogue/series/${asterix.id}`, libris);
 
     // Then
     await screen.findByText(
@@ -352,26 +345,19 @@ describe("Series page", () => {
     return Array.from({ length: last - first + 1 }, (_, i) => first + i);
   }
 
-  function librisLists(series: SeriesWithBooks): SeriesApi {
-    return new FakeSeriesApi([series]);
+  function librisAnswers(series: SeriesWithBooks): SeriesApi {
+    return new FakeSeriesApi([series], { outcome: "found", series });
   }
 
-  function librisAnswers(series: SeriesWithBooks): SeriesPageApi {
-    return new FakeSeriesPageApi({ outcome: "found", series });
+  function librisRefuses(problem: string): SeriesApi {
+    return new FakeSeriesApi([], { outcome: "problem", type: problem });
   }
 
-  function librisRefuses(problem: string): SeriesPageApi {
-    return new FakeSeriesPageApi({ outcome: "problem", type: problem });
+  function librisDoesNotAnswer(): SeriesApi {
+    return new FakeSeriesApi([], new TypeError("Failed to fetch"));
   }
 
-  function librisDoesNotAnswer(): SeriesPageApi {
-    return new FakeSeriesPageApi(new TypeError("Failed to fetch"));
-  }
-
-  function open(
-    path: string,
-    world: { list?: SeriesApi; page: SeriesPageApi },
-  ) {
+  function open(path: string, series: SeriesApi) {
     vi.stubGlobal(
       "IntersectionObserver",
       class {
@@ -396,11 +382,10 @@ describe("Series page", () => {
         catalogueApi: new FakeCatalogueApi([]),
         bookshelvesApi: new FakeBookshelvesApi({ memberships: [] }),
         readersApi: new FakeReadersApi([]),
-        seriesApi: world.list ?? new FakeSeriesApi([]),
+        seriesApi: series,
       },
       "sha-abc1234",
     );
-    app.provide(seriesPageApiKey, world.page);
     app.mount(host);
     return within(host);
   }

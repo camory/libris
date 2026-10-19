@@ -3,7 +3,7 @@ import { nameOrder } from "./nameOrder";
 import type { Kind } from "./SourceEdition";
 
 export interface Series {
-  id?: string;
+  id: string;
   name: string;
   volumeCount: number;
   coverUrl: string | null;
@@ -11,7 +11,6 @@ export interface Series {
 }
 
 export interface SeriesWithBooks extends Series {
-  id: string;
   books: Book[];
 }
 

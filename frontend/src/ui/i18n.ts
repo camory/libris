@@ -110,6 +110,9 @@ const fr = {
       null: "{count} tome | {count} tomes",
     },
   },
+  seriesPage: {
+    notFound: "Série introuvable.",
+  },
   language: {
     fr: "français",
   },

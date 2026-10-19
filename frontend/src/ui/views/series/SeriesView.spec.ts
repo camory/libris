@@ -83,6 +83,7 @@ describe("SeriesView", () => {
         asks += 1;
         return Promise.resolve([]);
       },
+      find: () => Promise.reject(new Error("no find in this case")),
     };
     open(seriesApi).wrapper.unmount();
     await flushPromises();
@@ -175,6 +176,7 @@ describe("SeriesView", () => {
 });
 
 const onePiece: Series = {
+  id: "1a2b3c4d-5e6f-4a7b-8c9d-0e1f2a3b4c5d",
   name: "One piece",
   volumeCount: 3,
   coverUrl: null,
@@ -182,6 +184,7 @@ const onePiece: Series = {
 };
 
 const asterix: Series = {
+  id: "4d5e6f7a-8b9c-4d0e-9f1a-3b4c5d6e7f80",
   name: "Astérix",
   volumeCount: 6,
   coverUrl: null,

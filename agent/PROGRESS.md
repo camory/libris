@@ -141,3 +141,23 @@ Format:
   of the reader's editions is of the series. Its first case gains a cover,
   a guard against the find passing a wrong first-of-each-series.
 - Left over: nothing new; T103 moves the frontend once T102 is deployed.
+
+## 2026-10-19 — T103 The series page on v0.13.0, no such series — done
+- Did: the frontend pins `v0.13.0`; a series carries its id and the series
+  port finds one by id, `SeriesPageApi` folded into it; `/catalogue/series/{id}`
+  shows its skeletons, then *Série introuvable.*; S5 runs, both cases.
+- Decided: `useFindCatalogueSeries` reads any answer as `notFound` until T104
+  brings `found`, so step 9 is a guard; its `find` resets to `loading`
+  first (fix-up). The view asks through a `watch` on `id`
+  with `immediate`, as the brief's step 12 asks. `PageHintSkeleton` is a 14
+  bar in a 20 line, `FieldRowSkeleton` two 14 bars at the ends of a card
+  row, padded 14.
+- Deviations from the brief: `aBook` moved to `EditionShapes.ts` before step
+  3's red, which uses it; `bookOf.ts` written in step 3's green and
+  `FetchCatalogueApi` moved onto it in its own refactor commit. S5 was
+  un-skipped and its red read before any unit test (*Unable to find an
+  element with the text: Série introuvable.*), then put back skipped,
+  uncommitted, so its un-skip stays step 15. The run handed off after step
+  9 and a second run finished it.
+- Left over: T104 adds `found` to the composable and the page; T108 the
+  failure and any other problem type.

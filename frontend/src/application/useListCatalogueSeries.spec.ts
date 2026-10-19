@@ -46,6 +46,7 @@ describe("useListCatalogueSeries", () => {
 });
 
 const onePiece: Series = {
+  id: "1a2b3c4d-5e6f-4a7b-8c9d-0e1f2a3b4c5d",
   name: "One piece",
   volumeCount: 3,
   coverUrl: null,

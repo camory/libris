@@ -126,6 +126,7 @@ describe("SeriesRow", () => {
 });
 
 const asterix: Series = {
+  id: "4d5e6f7a-8b9c-4d0e-9f1a-3b4c5d6e7f80",
   name: "Astérix",
   volumeCount: 6,
   coverUrl:
