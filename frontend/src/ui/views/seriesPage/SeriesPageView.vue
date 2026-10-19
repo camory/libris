@@ -73,7 +73,7 @@ watch(
         v-if="band"
         :src="band"
         :alt="t('series.cover', { name: state.series.name })"
-        class="-mx-5 block h-32.5 w-[calc(100%+2.5rem)] max-w-none object-cover object-top"
+        class="-mx-5 h-32.5 w-[calc(100%+2.5rem)] max-w-none object-cover object-top"
         @error="failedCover = band"
       />
       <header class="pb-3" :class="band ? 'pt-3' : 'pt-5'">
