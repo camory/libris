@@ -34,6 +34,9 @@ const asterix: SeriesWithBooks = {
 const asterixCover =
   "/api/v1/covers/5e2b7f0c9d1a4e3b8c6f2a7d0e9b1c4f5a8d3e6b2c7f0a9d4e1b8c5f2a7d0e9b";
 
+const tintinCover =
+  "/api/v1/covers/9a4c1e7b3d0f6a2c8e5b1d4f7a0c3e6b9d2f5a8c1e4b7d0a3f6c9e2b5d8a1c4f";
+
 const asterixFound: FindSeriesAnswer = { outcome: "found", series: asterix };
 
 const asterixWithAGap: FindSeriesAnswer = {
@@ -82,6 +85,21 @@ class LibrisRecordingAsks implements SeriesApi {
   find(id: string): Promise<FindSeriesAnswer> {
     this.asked.push(id);
     return Promise.resolve(noSuchSeries);
+  }
+}
+
+class LibrisAnsweringById implements SeriesApi {
+  constructor(private readonly series: SeriesWithBooks[]) {}
+
+  owned(): Promise<Series[]> {
+    return Promise.resolve([]);
+  }
+
+  find(id: string): Promise<FindSeriesAnswer> {
+    const found = this.series.find((each) => each.id === id);
+    return Promise.resolve(
+      found ? { outcome: "found", series: found } : noSuchSeries,
+    );
   }
 }
 
@@ -224,6 +242,31 @@ describe("SeriesPageView", () => {
         name: "Astérix",
       }),
     ).toBeDefined();
+  });
+
+  it("shows the band of a series that comes after one whose cover failed", async () => {
+    // Given
+    const wrapper = mountSeriesPageView(
+      new LibrisAnsweringById([
+        { ...asterix, coverUrl: asterixCover },
+        { ...asterix, id: tintinId, name: "Tintin", coverUrl: tintinCover },
+      ]),
+      asterixId,
+    );
+    await flushPromises();
+    bandOf(wrapper, "Astérix")?.dispatchEvent(new Event("error"));
+    await nextTick();
+
+    // When
+    await wrapper.setProps({ id: tintinId });
+    await flushPromises();
+
+    // Then
+    expect(
+      within(wrapper.element as HTMLElement)
+        .queryAllByRole("img", { name: "Couverture de Tintin" })
+        .map((band) => band.getAttribute("src")),
+    ).toEqual([tintinCover]);
   });
 
   it("says how many albums the reader's bookshelves hold", async () => {

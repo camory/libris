@@ -18,10 +18,11 @@ const props = defineProps<{ id: string }>();
 const { t, locale } = useI18n();
 const { state, find } = useFindCatalogueSeries(inject(seriesApiKey)!);
 
-const coverFailed = ref(false);
+const failedCover = ref<string | null>(null);
 
 const band = computed(() =>
-  state.value.status === "found" && !coverFailed.value
+  state.value.status === "found" &&
+  state.value.series.coverUrl !== failedCover.value
     ? state.value.series.coverUrl
     : null,
 );
@@ -73,7 +74,7 @@ watch(
         :src="band"
         :alt="t('series.cover', { name: state.series.name })"
         class="-mx-5 block h-32.5 w-[calc(100%+2.5rem)] max-w-none object-cover object-top"
-        @error="coverFailed = true"
+        @error="failedCover = band"
       />
       <header class="pb-3" :class="band ? 'pt-3' : 'pt-5'">
         <h1 class="text-page-title">{{ state.series.name }}</h1>
