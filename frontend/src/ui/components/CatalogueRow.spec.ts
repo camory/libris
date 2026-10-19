@@ -48,6 +48,14 @@ describe("CatalogueRow", () => {
     expect(screen.getByText("Tome 1")).toBeDefined();
   });
 
+  it("says album alone for a BD in its series", () => {
+    // When
+    const { screen } = show(asterixLeGaulois, { withoutSeriesName: true });
+
+    // Then
+    expect(screen.getByText("Album 1")).toBeDefined();
+  });
+
   it("shows the series alone when the edition has no tome", () => {
     // When
     const { screen } = show(asterixEtSesAmis);
