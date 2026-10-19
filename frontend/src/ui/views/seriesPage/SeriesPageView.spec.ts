@@ -185,14 +185,15 @@ describe("SeriesPageView", () => {
     await flushPromises();
 
     // Then
-    const page = within(wrapper.element as HTMLElement);
-    const bands = page.queryAllByRole("img", { name: "Couverture de Astérix" });
+    const bands = bandsOf(wrapper, "Astérix");
     expect(bands.map((band) => band.getAttribute("src"))).toEqual([
       asterixCover,
     ]);
     expect(
       bands[0]?.compareDocumentPosition(
-        page.getByRole("heading", { name: "Astérix" }),
+        within(wrapper.element as HTMLElement).getByRole("heading", {
+          name: "Astérix",
+        }),
       ),
     ).toBe(Node.DOCUMENT_POSITION_FOLLOWING);
   });
@@ -205,7 +206,7 @@ describe("SeriesPageView", () => {
     await flushPromises();
 
     // Then
-    expect(bandOf(wrapper, "Astérix")).toBeNull();
+    expect(bandsOf(wrapper, "Astérix")).toEqual([]);
   });
 
   it("draws no band once its cover fails to load", async () => {
@@ -217,11 +218,11 @@ describe("SeriesPageView", () => {
     await flushPromises();
 
     // When
-    bandOf(wrapper, "Astérix")?.dispatchEvent(new Event("error"));
+    bandsOf(wrapper, "Astérix")[0]?.dispatchEvent(new Event("error"));
     await nextTick();
 
     // Then
-    expect(bandOf(wrapper, "Astérix")).toBeNull();
+    expect(bandsOf(wrapper, "Astérix")).toEqual([]);
     expect(
       within(wrapper.element as HTMLElement).getByRole("heading", {
         name: "Astérix",
@@ -239,7 +240,7 @@ describe("SeriesPageView", () => {
       asterixId,
     );
     await flushPromises();
-    bandOf(wrapper, "Astérix")?.dispatchEvent(new Event("error"));
+    bandsOf(wrapper, "Astérix")[0]?.dispatchEvent(new Event("error"));
     await nextTick();
 
     // When
@@ -248,9 +249,7 @@ describe("SeriesPageView", () => {
 
     // Then
     expect(
-      within(wrapper.element as HTMLElement)
-        .queryAllByRole("img", { name: "Couverture de Tintin" })
-        .map((band) => band.getAttribute("src")),
+      bandsOf(wrapper, "Tintin").map((band) => band.getAttribute("src")),
     ).toEqual([tintinCover]);
   });
 
@@ -324,11 +323,11 @@ describe("SeriesPageView", () => {
     ]);
   });
 
-  function bandOf(
+  function bandsOf(
     wrapper: ReturnType<typeof mountSeriesPageView>,
     name: string,
   ) {
-    return within(wrapper.element as HTMLElement).queryByRole("img", {
+    return within(wrapper.element as HTMLElement).queryAllByRole("img", {
       name: `Couverture de ${name}`,
     });
   }
