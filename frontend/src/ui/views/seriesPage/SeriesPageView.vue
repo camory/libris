@@ -1,5 +1,7 @@
 <script setup lang="ts">
+import { CircleAlert } from "@lucide/vue";
 import { inject } from "vue";
+import { useI18n } from "vue-i18n";
 import { seriesApiKey } from "../../../application/SeriesApi";
 import { useFindCatalogueSeries } from "../../../application/useFindCatalogueSeries";
 import CatalogueRowSkeleton from "../../components/CatalogueRowSkeleton.vue";
@@ -9,6 +11,7 @@ import PageTitleSkeleton from "../../components/PageTitleSkeleton.vue";
 
 const props = defineProps<{ id: string }>();
 
+const { t } = useI18n();
 const { state, find } = useFindCatalogueSeries(inject(seriesApiKey)!);
 
 void find(props.id);
@@ -32,5 +35,9 @@ void find(props.id);
         <CatalogueRowSkeleton v-for="row in 5" :key="row" />
       </div>
     </template>
+    <p v-else class="flex items-start gap-2 pt-5 text-body text-danger">
+      <CircleAlert :size="22" class="shrink-0" />
+      <span>{{ t("seriesPage.notFound") }}</span>
+    </p>
   </main>
 </template>

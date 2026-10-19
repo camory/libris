@@ -1,3 +1,4 @@
+import { CircleAlert } from "@lucide/vue";
 import { flushPromises, mount } from "@vue/test-utils";
 import { describe, expect, it } from "vitest";
 import {
@@ -5,6 +6,7 @@ import {
   type FindSeriesAnswer,
 } from "../../../application/SeriesApi";
 import { FakeSeriesApi } from "../../../fixture/FakeSeriesApi";
+import { normalised } from "../../../fixture/normalised";
 import CatalogueRowSkeleton from "../../components/CatalogueRowSkeleton.vue";
 import FieldRowSkeleton from "../../components/FieldRowSkeleton.vue";
 import PageHintSkeleton from "../../components/PageHintSkeleton.vue";
@@ -42,6 +44,18 @@ describe("SeriesPageView", () => {
       { title: 1, hint: 1, fields: 2, rows: 5 },
       { title: 0, hint: 0, fields: 0, rows: 0 },
     ]);
+  });
+
+  it("says there is no such series, alone", async () => {
+    // Given
+    const wrapper = mountSeriesPageView(noSuchSeries);
+
+    // When
+    await flushPromises();
+
+    // Then
+    expect(normalised(wrapper.element)).toBe("Série introuvable.");
+    expect(wrapper.findAllComponents(CircleAlert)).toHaveLength(1);
   });
 
   function seen(wrapper: ReturnType<typeof mountSeriesPageView>) {
