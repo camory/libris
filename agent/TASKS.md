@@ -137,7 +137,7 @@ scenario to the page. No other task touches the contract (D04).
       publisher, no card.
       Realises S3; un-skips the frontend test of S3.
 
-- [ ] T107 Frontend: the band of a series.
+- [x] T107 Frontend: the band of a series.
       Above the header, the series' cover as a band (U03): cropped from
       its top, the column's full width, 130 tall, named *Couverture de*
       and the series' name; the header 12 under it in place of 20, and

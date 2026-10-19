@@ -217,3 +217,25 @@ Format:
   to T105. The running-app check of the spacing could not be made: the
   sandbox has no browser; it is left to Tophe on the Pixel.
 - Left over: T107 the band; T108 the failure.
+
+## 2026-10-19 — T107 The band of a series — done
+- Did: the series page opens with the series' cover as a band above its
+  name, named *Couverture de* and the series' name, and draws none when the
+  series has no cover or its cover fails to load; S4 runs, its three cases.
+- Decided: the band is an `img` of `SeriesPageView` itself, as the brief
+  chose. It crosses the content's 20 of side padding with `-mx-5` and a
+  width of `calc(100% + 2.5rem)` on the image, `max-w-none` lifting the
+  preflight's `max-width: 100%`; the padding stays on `<main>`, so the
+  blocks under the band are untouched. The view remembers the cover URL
+  that failed rather than a flag, so the next series' own cover shows
+  (step 4); the header's top padding reads the same `band` computed, 12
+  under a band and 20 without.
+- Deviations from the brief: S4 was un-skipped and its red read before any
+  unit test (*expected undefined to be '/api/v1/covers/…'* and *Unable to
+  find … "Couverture de Astérix"*; *no cover* was already green), then put
+  back skipped, uncommitted, so its un-skip stayed step 5, as in T103 to
+  T106. Step 1 drew the band under the condition of a cover, so step 2 is
+  the guard the brief names.
+- Left over: the crop, the 130, the full width and the 12 above the header
+  are left to Tophe on the Pixel, the sandbox having no browser; T108 the
+  failure.
