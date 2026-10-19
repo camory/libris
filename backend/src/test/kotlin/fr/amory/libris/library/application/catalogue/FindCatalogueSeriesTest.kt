@@ -18,18 +18,21 @@ import fr.amory.libris.library.domain.bookshelf.BookshelfId
 import fr.amory.libris.library.domain.bookshelf.BookshelfName
 import fr.amory.libris.library.domain.bookshelf.Membership
 import fr.amory.libris.library.domain.bookshelf.MembershipRole.OWNER
+import fr.amory.libris.library.domain.bookshelf.MembershipRole.VIEWER
 import fr.amory.libris.library.domain.reader.ReaderId
 import fr.amory.libris.library.fixture.BookshelvesInMemory
 import fr.amory.libris.library.fixture.CatalogueEditionsAnswering
 import fr.amory.libris.library.fixture.CopiesInMemory
 import fr.amory.libris.library.fixture.bookshelfOf
 import fr.amory.libris.library.fixture.copyOn
+import io.kotest.matchers.collections.shouldContainExactlyInAnyOrder
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.types.shouldBeInstanceOf
 import org.junit.jupiter.api.Test
 
 class FindCatalogueSeriesTest {
   private val lea = ReaderId.new()
+  private val sam = ReaderId.new()
   private val bookshelves = BookshelvesInMemory()
   private val copies = CopiesInMemory()
   private val editions = EditionsInMemory().also {
@@ -77,6 +80,24 @@ class FindCatalogueSeriesTest {
         SeriesEntry("One piece", 1),
         listOf(CopyOnBookshelf(copy.id, leasBookshelf.id, "Bibliothèque de Léa")),
       ),
+    )
+  }
+
+  @Test
+  fun `an edition on two of the reader's bookshelves is one book with both copies`() {
+    // Given
+    val leasBookshelf = bookshelfOf("Bibliothèque de Léa", Membership(lea, OWNER))
+    val salon = bookshelfOf("Salon", Membership(sam, OWNER), Membership(lea, VIEWER))
+    val leasCopy = copyOn(leasBookshelf, ROMANCE_DAWN.id).also { copies.insert(it) }
+    val salonsCopy = copyOn(salon, ROMANCE_DAWN.id).also { copies.insert(it) }
+
+    // When
+    val result = findCatalogueSeries(lea, ONE_PIECE.id)
+
+    // Then
+    result.shouldBeInstanceOf<Found>().books.single().copies shouldContainExactlyInAnyOrder listOf(
+      CopyOnBookshelf(leasCopy.id, leasBookshelf.id, "Bibliothèque de Léa"),
+      CopyOnBookshelf(salonsCopy.id, salon.id, "Salon"),
     )
   }
 
