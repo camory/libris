@@ -132,7 +132,9 @@ scenario to the page. No other task touches the contract (D04).
       role then by name as the card orders them (U06); and *Éditeur* or
       *Éditeurs*: each publisher once, by name. Both ignore case and
       accents, an author the same one by name (PRD §3), no row when none
-      is left. Unit tests of the authors and of the publishers.
+      is left. Unit tests of the authors and of the publishers. With no
+      row at all, as for editions with no tome, no author and no
+      publisher, no card.
       Realises S3; un-skips the frontend test of S3.
 
 - [ ] T107 Frontend: the band of a series.
