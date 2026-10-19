@@ -20,7 +20,10 @@ const count = computed(() =>
 </script>
 
 <template>
-  <div class="flex items-center gap-3.5 p-3.5">
+  <RouterLink
+    :to="`/catalogue/series/${series.id}`"
+    class="flex items-center gap-3.5 p-3.5"
+  >
     <div
       class="flex h-18.5 w-12 shrink-0 items-center justify-center rounded-md bg-border"
     >
@@ -37,5 +40,5 @@ const count = computed(() =>
       <p class="text-row-title">{{ series.name }}</p>
       <p class="text-body text-muted">{{ count }}</p>
     </div>
-  </div>
+  </RouterLink>
 </template>
