@@ -1,0 +1,33 @@
+import { mount } from "@vue/test-utils";
+import { describe, expect, it } from "vitest";
+import type { Run } from "../../domain/Run";
+import type { Kind } from "../../domain/SourceEdition";
+import { createLibrisI18n } from "../i18n";
+import GapRow from "./GapRow.vue";
+
+describe("GapRow", () => {
+  it("names a run of missing tomes", () => {
+    // When
+    const wrapper = show({ first: 26, last: 35 }, "MANGA");
+
+    // Then
+    expect(words(wrapper.element)).toBe("Tomes 26 à 35 Manquants");
+  });
+});
+
+function show(gap: Run, kind: Kind | null) {
+  return mount(GapRow, {
+    props: { gap, kind },
+    global: { plugins: [createLibrisI18n()] },
+  });
+}
+
+function words(element: Element) {
+  const texts = document.createTreeWalker(element, NodeFilter.SHOW_TEXT);
+  const words: string[] = [];
+  while (texts.nextNode()) {
+    const text = texts.currentNode.textContent?.trim();
+    if (text) words.push(text);
+  }
+  return words.join(" ");
+}
