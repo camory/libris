@@ -49,14 +49,12 @@ export function booksAndGapsInOrder(
 
 export function publishersOf(books: Book[], locale: string): string[] {
   const byName = nameOrder(locale);
-  return booksInOrder(books, locale)
+  const spelled = firstSpelling(byName);
+  const publishers = booksInOrder(books, locale)
     .map(({ publisher }) => publisher)
     .filter((publisher) => publisher !== null)
-    .sort(byName)
-    .filter(
-      (publisher, i, sorted) =>
-        i === 0 || byName(sorted[i - 1], publisher) !== 0,
-    );
+    .map(spelled);
+  return [...new Set(publishers)].sort(byName);
 }
 
 export function authorsOf(books: Book[], locale: string): string[] {
