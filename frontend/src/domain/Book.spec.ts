@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import {
+  authorsOf,
   booksAndGapsInOrder,
   booksInOrder,
   publishersOf,
@@ -134,6 +135,25 @@ describe("publishersOf", () => {
     expect(publishers).toEqual(["Hachette"]);
   });
 });
+
+describe("authorsOf", () => {
+  it("names each author of the editions once", () => {
+    // Given
+    const books = [
+      album(1, null, [goscinny, uderzo]),
+      album(2, null, [goscinny, uderzo]),
+    ];
+
+    // When
+    const authors = authorsOf(books, "fr");
+
+    // Then
+    expect(authors).toEqual(["René Goscinny", "Albert Uderzo"]);
+  });
+});
+
+const goscinny: SourceAuthor = { name: "René Goscinny", role: "WRITER" };
+const uderzo: SourceAuthor = { name: "Albert Uderzo", role: "ARTIST" };
 
 function tome(volumeNumber: number | null, title: string): Book {
   return {

@@ -1,7 +1,12 @@
 import type { Copy } from "./Copy";
 import { nameOrder } from "./nameOrder";
 import { runsOf, type Run } from "./Run";
-import type { Kind, SourceAuthor, SourceSeries } from "./SourceEdition";
+import {
+  authorsInOrder,
+  type Kind,
+  type SourceAuthor,
+  type SourceSeries,
+} from "./SourceEdition";
 
 export interface Book {
   id: string;
@@ -52,6 +57,13 @@ export function publishersOf(books: Book[], locale: string): string[] {
       (publisher, i, sorted) =>
         i === 0 || byName(sorted[i - 1], publisher) !== 0,
     );
+}
+
+export function authorsOf(books: Book[], locale: string): string[] {
+  return authorsInOrder(
+    books.flatMap(({ authors }) => authors),
+    locale,
+  ).map(({ name }) => name);
 }
 
 function byTome(a: Book, b: Book): number {
