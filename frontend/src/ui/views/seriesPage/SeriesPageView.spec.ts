@@ -88,21 +88,6 @@ class LibrisRecordingAsks implements SeriesApi {
   }
 }
 
-class LibrisAnsweringById implements SeriesApi {
-  constructor(private readonly series: SeriesWithBooks[]) {}
-
-  owned(): Promise<Series[]> {
-    return Promise.resolve([]);
-  }
-
-  find(id: string): Promise<FindSeriesAnswer> {
-    const found = this.series.find((each) => each.id === id);
-    return Promise.resolve(
-      found ? { outcome: "found", series: found } : noSuchSeries,
-    );
-  }
-}
-
 describe("SeriesPageView", () => {
   it("shows skeletons while the series comes", async () => {
     // Given
@@ -357,3 +342,18 @@ describe("SeriesPageView", () => {
     };
   }
 });
+
+class LibrisAnsweringById implements SeriesApi {
+  constructor(private readonly series: SeriesWithBooks[]) {}
+
+  owned(): Promise<Series[]> {
+    return Promise.resolve([]);
+  }
+
+  find(id: string): Promise<FindSeriesAnswer> {
+    const found = this.series.find((each) => each.id === id);
+    return Promise.resolve(
+      found ? { outcome: "found", series: found } : noSuchSeries,
+    );
+  }
+}
