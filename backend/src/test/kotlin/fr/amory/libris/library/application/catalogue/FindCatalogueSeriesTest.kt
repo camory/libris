@@ -101,6 +101,23 @@ class FindCatalogueSeriesTest {
     )
   }
 
+  @Test
+  fun `a copy on a bookshelf the reader does not belong to is left out`() {
+    // Given
+    val leasBookshelf = bookshelfOf("Bibliothèque de Léa", Membership(lea, OWNER))
+    val samsBookshelf = bookshelfOf("Bibliothèque de Sam", Membership(sam, OWNER))
+    val leasCopy = copyOn(leasBookshelf, ROMANCE_DAWN.id).also { copies.insert(it) }
+    copies.insert(copyOn(samsBookshelf, ROMANCE_DAWN.id))
+
+    // When
+    val result = findCatalogueSeries(lea, ONE_PIECE.id)
+
+    // Then
+    result.shouldBeInstanceOf<Found>().books.single().copies shouldBe listOf(
+      CopyOnBookshelf(leasCopy.id, leasBookshelf.id, "Bibliothèque de Léa"),
+    )
+  }
+
   private fun bookshelfOf(name: String, vararg memberships: Membership): Bookshelf =
     bookshelfOf(BookshelfId.new(), BookshelfName(name), memberships.toList()).also { bookshelves.insert(it) }
 }
