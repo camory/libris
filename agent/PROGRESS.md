@@ -126,3 +126,18 @@ Format:
   `id` there, beside `SeriesResponse`'s.
 - Left over: T102 finds the series and its books behind the same use
   case, and removes the `@Suppress("UnusedParameter")` of its `invoke`.
+
+## 2026-10-19 — T102 The reader opens a series — done
+- Did: `FindCatalogueSeries` answers the series of the reader's catalogue,
+  the summary the series list answers for it, with its editions on the
+  reader's bookshelves, each with its copies there; S1 runs.
+- Decided: the books come from the reader's copies grouped by edition id,
+  so steps 4 and 5 were guards, not reds; S1 went green at step 3.
+- Deviations from the brief: Tophe's fix-up after review. The find no
+  longer calls `ListCatalogueSeries`, which read the reader's bookshelves,
+  copies and editions a second time (9 queries, now 5): the summary rule
+  is `catalogueSeriesOf`, an `internal` function beside `CatalogueSeries`
+  that both use cases call, and the find answers `NoSuchSeries` when none
+  of the reader's editions is of the series. Its first case gains a cover,
+  a guard against the find passing a wrong first-of-each-series.
+- Left over: nothing new; T103 moves the frontend once T102 is deployed.

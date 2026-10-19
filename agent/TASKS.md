@@ -77,7 +77,7 @@ scenario to the page. No other task touches the contract (D04).
       D11). The backend's walking skeleton, the thinnest scenario;
       realises S5; un-skips the backend tests of S5, both cases.
 
-- [ ] T102 Backend: the reader opens a series.
+- [x] T102 Backend: the reader opens a series.
       Libris answers the series of that id with its editions on a
       bookshelf the reader belongs to, each once and no other, each a
       `Book` with its copies on those bookshelves, in no promised order,
