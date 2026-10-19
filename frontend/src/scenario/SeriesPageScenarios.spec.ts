@@ -151,7 +151,7 @@ describe("Series page", () => {
     },
   );
 
-  it.skip("S3 The authors and the publishers", async () => {
+  it("S3 The authors and the publishers", async () => {
     // Given
     const editions: SeriesWithBooks = {
       id: "6b7c8d9e-0f1a-4b2c-9d3e-4f5a6b7c8d9e",
