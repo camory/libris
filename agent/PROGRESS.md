@@ -126,3 +126,16 @@ Format:
   `id` there, beside `SeriesResponse`'s.
 - Left over: T102 finds the series and its books behind the same use
   case, and removes the `@Suppress("UnusedParameter")` of its `invoke`.
+
+## 2026-10-19 — T102 The reader opens a series — done
+- Did: `FindCatalogueSeries` answers the series of the reader's catalogue,
+  the summary `ListCatalogueSeries` answers for its id, with its editions
+  on the reader's bookshelves, each with its copies there; S1 runs.
+- Decided: the series whose name enters each book is read with
+  `checkNotNull(seriesRepository.findById(seriesId))`, since the list has
+  just answered that series. The books come from the reader's copies grouped
+  by edition id, so steps 4 and 5 were guards, not reds; S1 went green at
+  step 3. The `invoke` answers `NoSuchSeries` through an elvis on the list's
+  find, its one early return.
+- Deviations from the brief: none.
+- Left over: nothing new; T103 moves the frontend once T102 is deployed.
