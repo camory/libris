@@ -263,7 +263,7 @@ describe("Series page", () => {
     expect(screen.queryAllByRole("listitem")).toEqual([]);
   });
 
-  it.skip("S6 Libris unavailable", async () => {
+  it("S6 Libris unavailable", async () => {
     // Given
     const libris = librisDoesNotAnswer();
 
