@@ -44,7 +44,7 @@ export function booksAndGapsInOrder(
 
 export function publishersOf(books: Book[], locale: string): string[] {
   const byName = nameOrder(locale);
-  return books
+  return booksInOrder(books, locale)
     .map(({ publisher }) => publisher)
     .filter((publisher) => publisher !== null)
     .sort(byName)

@@ -122,6 +122,17 @@ describe("publishersOf", () => {
     // Then
     expect(publishers).toEqual(["Hachette"]);
   });
+
+  it("spells a publisher as the first edition a shelf reads", () => {
+    // Given
+    const books = [album(2, "hachette", []), album(1, "Hachette", [])];
+
+    // When
+    const publishers = publishersOf(books, "fr");
+
+    // Then
+    expect(publishers).toEqual(["Hachette"]);
+  });
 });
 
 function tome(volumeNumber: number | null, title: string): Book {
