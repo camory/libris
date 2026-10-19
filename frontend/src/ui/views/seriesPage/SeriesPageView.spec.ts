@@ -94,6 +94,20 @@ describe("SeriesPageView", () => {
     expect(libris.asked).toEqual([asterixId, tintinId]);
   });
 
+  it("asks the series on each arrival", async () => {
+    // Given
+    const libris = new LibrisRecordingAsks();
+    mountSeriesPageView(libris, asterixId).unmount();
+    await flushPromises();
+
+    // When
+    mountSeriesPageView(libris, asterixId);
+    await flushPromises();
+
+    // Then
+    expect(libris.asked).toEqual([asterixId, asterixId]);
+  });
+
   function seen(wrapper: ReturnType<typeof mountSeriesPageView>) {
     return {
       title: wrapper.findAllComponents(PageTitleSkeleton).length,
