@@ -6,7 +6,7 @@ missing between them, who made them and who published them: the gaps of
 §4.5, "missing 4, 7", read from the sofa. Now, because the series list is
 done and leads nowhere, and the series details, the total published and
 the completion, start from this page.
-**Status:** draft
+**Status:** done 2026-10-20
 
 ## Scenarios
 
@@ -232,6 +232,8 @@ band; go back with the phone's button and land on the series list; tap
 *Dragon Quest*, owning tome 30, and read *1 à 29* missing. On the second
 account of the family, paste the address of *Tintin*'s page and read
 *Série introuvable.* The other cases are the tests' to show.
+
+Checked by Tophe on the Pixel, recorded on 2026-10-20.
 
 ## Tasks
 
