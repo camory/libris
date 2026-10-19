@@ -96,6 +96,11 @@ const fr = {
       BD: "{name} · album {volume}",
       MANGA: "{name} · tome {volume}",
     },
+    volume: {
+      BOOK: "Tome {volume}",
+      BD: "Album {volume}",
+      MANGA: "Tome {volume}",
+    },
     copies: "{bookshelf} | {bookshelf} · {count} exemplaires",
     cover: "Couverture de {title}",
   },

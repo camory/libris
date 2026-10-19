@@ -40,6 +40,14 @@ describe("CatalogueRow", () => {
     expect(screen.getByText("Astérix · album 1")).toBeDefined();
   });
 
+  it("shows the tome alone over the title in its series", () => {
+    // When
+    const { screen } = show(romanceDawn, { withoutSeriesName: true });
+
+    // Then
+    expect(screen.getByText("Tome 1")).toBeDefined();
+  });
+
   it("shows the series alone when the edition has no tome", () => {
     // When
     const { screen } = show(asterixEtSesAmis);
@@ -176,9 +184,9 @@ describe("CatalogueRow", () => {
     );
   });
 
-  function show(book: Book) {
+  function show(book: Book, { withoutSeriesName = false } = {}) {
     const wrapper = mount(CatalogueRow, {
-      props: { book },
+      props: { book, withoutSeriesName },
       global: { plugins: [createLibrisI18n()] },
     });
     return { wrapper, screen: within(wrapper.element as HTMLElement) };

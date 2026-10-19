@@ -6,7 +6,7 @@ import type { Book } from "../../domain/Book";
 import { bookshelvesHolding } from "../../domain/Copy";
 import { authorsInOrder } from "../../domain/SourceEdition";
 
-const props = defineProps<{ book: Book }>();
+const props = defineProps<{ book: Book; withoutSeriesName?: boolean }>();
 
 const { t, locale } = useI18n();
 
@@ -19,6 +19,11 @@ const overline = computed(() => {
   }
   if (series.volumeNumber === null) {
     return series.name;
+  }
+  if (props.withoutSeriesName) {
+    return t(`catalogue.volume.${props.book.kind}`, {
+      volume: series.volumeNumber,
+    });
   }
   return t(`catalogue.series.${props.book.kind}`, {
     name: series.name,
