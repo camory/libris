@@ -6,7 +6,7 @@ missing between them, who made them and who published them: the gaps of
 §4.5, "missing 4, 7", read from the sofa. Now, because the series list is
 done and leads nowhere, and the series details, the total published and
 the completion, start from this page.
-**Status:** draft
+**Status:** done 2026-10-20
 
 ## Scenarios
 
@@ -218,10 +218,10 @@ it needs it: one operation and one schema are added.
   the series sits on a bookshelf the reader belongs to. Key
   `404_NOT_IN_MY_CATALOGUE`.
 
-The series stays a value of the edition (D12): the id is its name's row,
-and the answer is read across the editions, never an aggregate. The runs,
-the gaps, the authors and the publishers are the screen's, derived from
-the books.
+The series is an aggregate of the bibliography (D12): the id is its
+`SeriesId`, and the books are read across the editions that refer to it,
+the series holding no list of them. The runs, the gaps, the authors and
+the publishers are the screen's, derived from the books.
 
 ## Done
 
@@ -232,6 +232,8 @@ band; go back with the phone's button and land on the series list; tap
 *Dragon Quest*, owning tome 30, and read *1 à 29* missing. On the second
 account of the family, paste the address of *Tintin*'s page and read
 *Série introuvable.* The other cases are the tests' to show.
+
+Checked by Tophe on the Pixel, recorded on 2026-10-20.
 
 ## Tasks
 

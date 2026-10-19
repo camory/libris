@@ -16,151 +16,6 @@
 >
 > Follow-ups and ideas go to `agent/PROPOSED.md`, never here.
 
-## Series aggregate — docs/ARCHITECTURE.md
-
-The series becomes an aggregate of the bibliography (D12, #285) before
-the series page addresses it by id. Two backend refactors, no behaviour
-changed: the bibliography first takes the edition an ouvrage adds, then
-the series' name gains an aggregate there. No task touches the contract
-or the frontend.
-
-- [x] T109 Backend: the bibliography holds the edition an ouvrage adds.
-      A use case of the bibliography, `HoldEdition`, answers the edition
-      the house holds for a `NewEdition`: the one of its ISBN when the
-      house has it, else a new one, inserted with the cover it awaits
-      from the chosen source, in a transaction of its own that the add's
-      transaction joins (PRD §3, D02, D12). `NewBook` becomes that
-      `NewEdition` of the bibliography. `AddBookToBookshelf` keeps the
-      bookshelf's rules and the copy, calls `HoldEdition` inside its
-      transaction, and wakes the worker after it, as today; it loses
-      `EditionRepository` and `AwaitedCoverRepository`, and its
-      `@Suppress("LongParameterList")`. The edition cases of
-      `AddBookToBookshelfTest` move to `HoldEditionTest`. No behaviour
-      changes: every scenario test and the contract verification stay
-      green, untouched.
-
-- [x] T110 Backend: the series, an aggregate of the bibliography.
-      `Series(id, name)` and `SeriesId` in `bibliography.domain.series`,
-      with `SeriesRepository`, whose `findOrInsert(series)` answers the
-      series stored under that name, matched ignoring case (PRD §3, D12).
-      An edition refers to its series by a `SeriesVolume(seriesId,
-      volumeNumber)`; `SeriesEntry(name, volumeNumber)` stays what a
-      source or the reader says. `HoldEdition` finds or inserts the series
-      of a new edition's name and keeps the series the repository
-      answers; `JdbcEditionRepository` writes and reads only the edition's
-      `series_id`. Each answer that names a series reads the series
-      through `SeriesRepository`: the lookup of an ISBN the house holds,
-      the catalogue's page and the series list (D12). The schema is
-      unchanged. No behaviour changes: every scenario test and the
-      contract verification stay green, untouched.
-
-## Series page — specs/series-page.md
-
-Contract: release `v0.13.0` of `camory/libris-api`, after `v0.12.1`: one
-operation added, a series of the reader's catalogue with its editions,
-and one schema, `SeriesWithBooks`; `Series` gains its `id`, required. An
-operation and a response field are added, so the backend goes first. Its
-pin moves once, in T101, the thinnest answer that serves the operation;
-T102 finds the series, red on S1's scenario test. The frontend pin moves
-from `v0.12.1` in T103, once T102 is deployed; T104 to T108 each add one
-scenario to the page. No other task touches the contract (D04).
-
-- [x] T101 Backend: the series page on `v0.13.0`, no such series.
-      `ApiContractTest` pins `v0.13.0`, the backend's one bump (D04).
-      Each series of the series list answers its `id`, the `SeriesId` of
-      the bibliography's series (D12). Libris serves a series by its id and
-      answers every reader that there is no such series, `404`
-      `/problems/not-found`, until T102 finds it; an id that is not one
-      is `400` `/problems/validation`. Contracteer verifies the new
-      operation's cases, `404_NOT_IN_MY_CATALOGUE` and the generated ones,
-      and the series list with its id, every other answer unchanged (D07,
-      D11). The backend's walking skeleton, the thinnest scenario;
-      realises S5; un-skips the backend tests of S5, both cases.
-
-- [x] T102 Backend: the reader opens a series.
-      Libris answers the series of that id with its editions on a
-      bookshelf the reader belongs to, each once and no other, each a
-      `Book` with its copies on those bookshelves, in no promised order,
-      the screen sorting them (D11). Its name, count, cover and kind are
-      those the series list answers for it, by the same rules (series-list
-      S2, S3). A series none of whose editions sits on the reader's
-      bookshelves stays no such series. A read across both contexts, the
-      series read through `SeriesRepository` (D02, D12).
-      Realises S1 and keeps S5; un-skips the backend test of S1.
-
-- [x] T103 Frontend: the series page on `v0.13.0`, no such series.
-      Precondition (human): T102 deployed (D04).
-      `vitest.global-setup.ts` pins `v0.13.0`, the frontend's one bump; a
-      series carries its `id`, required, and the series port gains the
-      find by id, its client tested against `contracteer mock` on every
-      response the operation declares; the page's interim port and fake
-      fold into it, the scenario files changing for that and the id alone,
-      as #282 records (D04, D07). `/catalogue/series/{id}`, under the
-      catalogue, asks the series on each arrival: the spec's loading
-      skeletons, then for no such series or an id that is not one *Série
-      introuvable.* as the screen's one message, no title (U03, U05, U08).
-      The frontend's walking skeleton, the thinnest scenario; realises S5;
-      un-skips the frontend tests of S5, both cases.
-
-- [x] T104 Frontend: the reader opens a series.
-      A row of the series list is a link to its page, the whole row, no
-      chevron; the home page's bookshelf rows lose theirs (U03, U07). The
-      page's title is the series' name, its hint the count then *dans vos
-      bibliothèques.* (*3 albums dans vos bibliothèques.*); then the
-      catalogue's block of its editions in the order a shelf reads, by
-      tome, an edition without a tome after the numbered ones, then by
-      title, ignoring case and accents, whatever the answer's order (D11);
-      each the catalogue's row, its overline *Tome 23* or *Album 23* for a
-      BD, none without a tome, leading nowhere (U02, U08). Unit test of the
-      order. Realises S1; un-skips the frontend test of S1.
-
-- [x] T105 Frontend: the owned tomes and the gaps.
-      Under the header, a card of field rows (U06): *Tomes possédés*, the
-      runs owned, and *Tomes manquants*, the runs missing from 1 to the
-      highest tome owned, no row when none is; *Albums* for a BD. A run of
-      three or more reads as its ends (*26 à 35*), of two as both (*4,
-      5*), a tome alone as itself; an edition without a tome fills none,
-      two of one tome fill it once. Among the editions, in its place, a
-      row per missing run on `bg`, a dashed `muted` outline for its cover,
-      *Tomes 26 à 35* over *Manquants*, *Tome 4* over *Manquant* (U02,
-      U08). Unit tests of the runs and the gaps, one per case of the spec.
-      Realises S2; un-skips the frontend tests of S2, its three cases.
-
-- [x] T106 Frontend: the authors and the publishers.
-      The card gains *Auteur*, or *Auteurs* for more than one: the series'
-      authors once each, an author who only translated left out, by first
-      role then by name as the card orders them (U06); and *Éditeur* or
-      *Éditeurs*: each publisher once, by name. Both ignore case and
-      accents, an author the same one by name (PRD §3), no row when none
-      is left. Unit tests of the authors and of the publishers. With no
-      row at all, as for editions with no tome, no author and no
-      publisher, no card.
-      Realises S3; un-skips the frontend test of S3.
-
-- [x] T107 Frontend: the band of a series.
-      Above the header, the series' cover as a band (U03): cropped from
-      its top, the column's full width, 130 tall, named *Couverture de*
-      and the series' name; the header 12 under it in place of 20, and
-      the card right after the header's 12, with no other space. No band
-      when the series has no cover or its cover does not load. The crop,
-      the height and the spacing are checked by hand on the Pixel.
-      Realises S4; un-skips the frontend tests of S4, its three cases.
-
-- [x] T108 Frontend: Libris unavailable on a series.
-      When the series does not come: no band, no title, *Erreur lors du
-      chargement, veuillez réessayer plus tard.* with the alert icon as
-      the screen's one message, nothing of the series shown; every word
-      from the `fr` catalogue (U05, U07, U08).
-      Realises S6; un-skips the frontend test of S6.
-
-*Done (Tophe, on the Pixel, from the installed app on staging): in
-Catalogue, Séries, tap Tintin, owning tomes 20 and 21; read Tomes manquants
-1 à 19, the run of missing tomes as the first row, and the cover of tome 20
-as the band; go back with the phone's button and land on the series list;
-tap Dragon Quest, owning tome 30, and read 1 à 29 missing. On the second
-account of the family, paste the address of Tintin's page and read Série
-introuvable.*
-
 ## Done
 
 - Phase 0 — Foundations, T001 to T012, done 2026-09-10 with `v0.1.3` on the
@@ -223,6 +78,16 @@ introuvable.*
 - Icons, T100, done 2026-10-16, `docs/DESIGN.md`: every icon is Lucide's,
   from `@lucide/vue`, at the size and colour the hand-drawn one had, the
   hand-drawn files deleted; checked on the Pixel on staging.
+- Series aggregate, T109 to T110, done 2026-10-18, `docs/ARCHITECTURE.md`:
+  the bibliography holds the edition an ouvrage adds, `HoldEdition`, and
+  the series is an aggregate there, `Series(id, name)`, found or inserted
+  by its name; no behaviour changed. Deployed on staging.
+- Series page, T101 to T108, done 2026-10-19, `specs/series-page.md`: a
+  series of the series list opens on its page, the band of its lowest
+  tome's cover, the owned tomes or albums in runs and the missing ones,
+  its authors and publishers, the reader's editions with the gaps between
+  them; no such series and Libris unavailable each say so alone; checked
+  on the Pixel from the installed app on staging.
 
 ## Questions for the human
 
