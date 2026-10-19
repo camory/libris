@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ChevronRight, CircleAlert, Star } from "@lucide/vue";
+import { CircleAlert, Star } from "@lucide/vue";
 import { computed } from "vue";
 import { useI18n } from "vue-i18n";
 import type { Membership } from "../../domain/Membership";
@@ -57,7 +57,6 @@ const role = computed(() => {
           <Star v-else />
         </button>
       </template>
-      <ChevronRight class="mr-3.5 shrink-0 text-muted" />
     </div>
     {{ " " }}
     <p

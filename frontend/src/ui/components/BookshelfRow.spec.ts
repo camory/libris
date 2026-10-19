@@ -1,5 +1,5 @@
 import { fireEvent, within } from "@testing-library/dom";
-import { ChevronRight, Star } from "@lucide/vue";
+import { Star } from "@lucide/vue";
 import { mount } from "@vue/test-utils";
 import { afterEach, describe, expect, it } from "vitest";
 import type { Membership } from "../../domain/Membership";
@@ -47,14 +47,6 @@ describe("BookshelfRow", () => {
     expect(within(row).getByRole("link").getAttribute("href")).toBe(
       `/bibliotheques/${salon.id}`,
     );
-  });
-
-  it("ends with a chevron", async () => {
-    // When
-    const wrapper = await mountRow({ bookshelf: salon, role: "OWNER" }, false);
-
-    // Then
-    expect(wrapper.findComponent(ChevronRight).exists()).toBe(true);
   });
 
   it("offers to make an owned bookshelf the default", async () => {
