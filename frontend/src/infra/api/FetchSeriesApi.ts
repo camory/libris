@@ -17,7 +17,10 @@ interface SeriesWithBooksResponse extends SeriesResponse {
   books: BookResponse[];
 }
 
-const problems = new Map([[404, "/problems/not-found"]]);
+const problems = new Map([
+  [400, "/problems/validation"],
+  [404, "/problems/not-found"],
+]);
 
 export class FetchSeriesApi implements SeriesApi {
   constructor(private readonly baseUrl: string) {}

@@ -79,6 +79,20 @@ describe("FetchSeriesApi", () => {
     // Then
     expect(answer).toEqual({ outcome: "problem", type: "/problems/not-found" });
   });
+
+  it("answers a problem when the id is not one", async () => {
+    // Given
+    const api = new FetchSeriesApi(inject("mockBaseUrl"));
+
+    // When
+    const answer = await api.find("not-a-uuid");
+
+    // Then
+    expect(answer).toEqual({
+      outcome: "problem",
+      type: "/problems/validation",
+    });
+  });
 });
 
 const aStringOrNull = expect.toSatisfy(
