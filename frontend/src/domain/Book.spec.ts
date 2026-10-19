@@ -161,6 +161,20 @@ describe("authorsOf", () => {
     // Then
     expect(authors).toEqual(["René Goscinny"]);
   });
+
+  it("keeps an author who translated an edition and wrote another", () => {
+    // Given
+    const books = [
+      album(1, null, [bell("TRANSLATOR")]),
+      album(2, null, [bell("WRITER")]),
+    ];
+
+    // When
+    const authors = authorsOf(books, "fr");
+
+    // Then
+    expect(authors).toEqual(["Anthea Bell"]);
+  });
 });
 
 const goscinny: SourceAuthor = { name: "René Goscinny", role: "WRITER" };
