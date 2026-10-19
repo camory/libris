@@ -88,7 +88,7 @@ scenario to the page. No other task touches the contract (D04).
       series read through `SeriesRepository` (D02, D12).
       Realises S1 and keeps S5; un-skips the backend test of S1.
 
-- [ ] T103 Frontend: the series page on `v0.13.0`, no such series.
+- [x] T103 Frontend: the series page on `v0.13.0`, no such series.
       Precondition (human): T102 deployed (D04).
       `vitest.global-setup.ts` pins `v0.13.0`, the frontend's one bump; a
       series carries its `id`, required, and the series port gains the

@@ -142,11 +142,22 @@ Format:
   a guard against the find passing a wrong first-of-each-series.
 - Left over: nothing new; T103 moves the frontend once T102 is deployed.
 
-## 2026-10-19 — T103 The series page on v0.13.0, no such series — handoff
-- Done: steps 1 to 9 (pin, ids, `find` with its four cases, `bookOf`, the fold, `useFindCatalogueSeries`). Start with step 10, `SeriesPageView.spec.ts`.
-- S5 was un-skipped before any unit test, its red read (*Unable to find an element with the text: Série introuvable.*), then put back skipped, uncommitted: its un-skip and green stay step 15, as the brief orders.
-- Deviation: `aBook` moved to `EditionShapes.ts` before step 3's red, since that case uses it; `bookOf.ts` written in step 3's green, `FetchCatalogueApi` moved onto it in its own refactor commit.
-- Decided: step 8's green reads any answer as `notFound` (`await find` then set), so step 9 is a true guard; `find` does not reset to `loading`, no case asks it yet.
-- Guard step 9: mutation `notFound` only for `/problems/not-found` (else `loading` stays); red `- "status": "notFound" + "status": "loading"` on *says there is no such series when the id is not one*; reverted.
-- Mock facts (for the gotchas at finish): `GET /series/{id}` answers `404` to `5b6c7d8e-…`, `400` with a random `type` to `not-a-uuid`, an empty `404` to an unencoded `a/b`.
-- Gotchas still to rewrite at finish: every-run `additionalProperties` item, frontend mock item and `Series.id is optional` item.
+## 2026-10-19 — T103 The series page on v0.13.0, no such series — done
+- Did: the frontend pins `v0.13.0`; a series carries its id and the series
+  port finds one by id, `SeriesPageApi` folded into it; `/catalogue/series/{id}`
+  shows its skeletons, then *Série introuvable.*; S5 runs, both cases.
+- Decided: `useFindCatalogueSeries` reads any answer as `notFound` until T104
+  brings `found`, so step 9 is a guard; its `find` does not reset to
+  `loading`, no case asks it yet. The view asks through a `watch` on `id`
+  with `immediate`, as the brief's step 12 asks. `PageHintSkeleton` is a 14
+  bar in a 20 line, `FieldRowSkeleton` two 14 bars at the ends of a card
+  row, padded 14.
+- Deviations from the brief: `aBook` moved to `EditionShapes.ts` before step
+  3's red, which uses it; `bookOf.ts` written in step 3's green and
+  `FetchCatalogueApi` moved onto it in its own refactor commit. S5 was
+  un-skipped and its red read before any unit test (*Unable to find an
+  element with the text: Série introuvable.*), then put back skipped,
+  uncommitted, so its un-skip stays step 15. The run handed off after step
+  9 and a second run finished it.
+- Left over: T104 adds `found` to the composable and the page; T108 the
+  failure and any other problem type.
