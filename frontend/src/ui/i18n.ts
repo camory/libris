@@ -138,6 +138,7 @@ const fr = {
       null: "Tome {run} | Tomes {run}",
     },
     gapHint: "Manquant | Manquants",
+    authors: "Auteurs",
   },
   language: {
     fr: "français",

@@ -2,7 +2,7 @@ import { mount } from "@vue/test-utils";
 import { describe, expect, it } from "vitest";
 import type { Book } from "../../domain/Book";
 import type { SeriesWithBooks } from "../../domain/Series";
-import type { Kind } from "../../domain/SourceEdition";
+import type { Kind, SourceAuthor } from "../../domain/SourceEdition";
 import { createLibrisI18n } from "../i18n";
 import SeriesCard from "./SeriesCard.vue";
 
@@ -82,7 +82,23 @@ describe("SeriesCard", () => {
       "Tomes possédés 1, 3 Tomes manquants 2",
     );
   });
+
+  it("names the authors of the series", () => {
+    // Given
+    const series = owning("BD", [1, 2], [goscinny, uderzo]);
+
+    // When
+    const wrapper = show(series);
+
+    // Then
+    expect(words(wrapper.element)).toBe(
+      "Albums possédés 1, 2 Auteurs René Goscinny, Albert Uderzo",
+    );
+  });
 });
+
+const goscinny: SourceAuthor = { name: "René Goscinny", role: "WRITER" };
+const uderzo: SourceAuthor = { name: "Albert Uderzo", role: "ARTIST" };
 
 function show(series: SeriesWithBooks) {
   return mount(SeriesCard, {
@@ -101,28 +117,40 @@ function words(element: Element) {
   return words.join(" ");
 }
 
-function owning(kind: Kind | null, tomes: number[]): SeriesWithBooks {
+function owning(
+  kind: Kind | null,
+  tomes: number[],
+  authors: SourceAuthor[] = [],
+  publishers: string[] = [],
+): SeriesWithBooks {
   return {
     id: "5a6b7c8d-9e0f-4a1b-8c2d-3e4f5a6b7c8d",
     name: "One piece",
     volumeCount: tomes.length,
     coverUrl: null,
     kind,
-    books: tomes.map((tome) => book(kind ?? "MANGA", tome)),
+    books: tomes.map((tome, i) =>
+      book(kind ?? "MANGA", tome, authors, publishers[i] ?? null),
+    ),
   };
 }
 
-function book(kind: Kind, volumeNumber: number): Book {
+function book(
+  kind: Kind,
+  volumeNumber: number,
+  authors: SourceAuthor[],
+  publisher: string | null,
+): Book {
   return {
     id: crypto.randomUUID(),
     isbn13: null,
     kind,
     title: `One piece ${volumeNumber}`,
     subtitle: null,
-    authors: [],
+    authors,
     series: { name: "One piece", volumeNumber },
     collection: null,
-    publisher: null,
+    publisher,
     publicationYear: null,
     language: null,
     pageCount: null,
