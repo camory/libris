@@ -1,6 +1,7 @@
 import { createRouter, createWebHistory } from "vue-router";
 import BookshelfView from "./views/bookshelf/BookshelfView.vue";
 import CatalogueView from "./views/catalogue/CatalogueView.vue";
+import EditionPageView from "./views/editionPage/EditionPageView.vue";
 import HomeView from "./views/home/HomeView.vue";
 import IsbnView from "./views/isbn/IsbnView.vue";
 import SeriesView from "./views/series/SeriesView.vue";
@@ -24,6 +25,7 @@ export function createLibrisRouter() {
           { path: "", component: CatalogueView },
           { path: "series", component: SeriesView },
           { path: "series/:id", component: SeriesPageView, props: true },
+          { path: "ouvrages/:id", component: EditionPageView, props: true },
         ],
       },
     ],
