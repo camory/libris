@@ -30,9 +30,12 @@ export class FetchCatalogueApi implements CatalogueApi {
   }
 
   async find(id: string): Promise<FindBookAnswer> {
-    const response = await fetch(`${this.baseUrl}/api/v1/books/${id}`, {
-      headers: { Accept: "application/json, application/problem+json" },
-    });
+    const response = await fetch(
+      `${this.baseUrl}/api/v1/books/${encodeURIComponent(id)}`,
+      {
+        headers: { Accept: "application/json, application/problem+json" },
+      },
+    );
     if (response.status !== 200) return problemOf(response, problems);
     const body = (await response.json()) as BookResponse;
     return { outcome: "found", book: bookOf(body) };

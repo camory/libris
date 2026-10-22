@@ -90,4 +90,18 @@ describe("FetchCatalogueApi", () => {
       type: "/problems/validation",
     });
   });
+
+  it("answers a problem when the id holds a slash", async () => {
+    // Given
+    const api = new FetchCatalogueApi(inject("mockBaseUrl"));
+
+    // When
+    const answer = await api.find("a/b");
+
+    // Then
+    expect(answer).toEqual({
+      outcome: "problem",
+      type: "/problems/validation",
+    });
+  });
 });
