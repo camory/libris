@@ -23,6 +23,12 @@ const covers = computed<CoverCandidate[]>(() => {
   const coverUrl = state.value.status === "found" && state.value.book.coverUrl;
   return coverUrl ? [{ source: "Libris", url: coverUrl }] : [];
 });
+
+const failure = computed(() =>
+  state.value.status === "unavailable"
+    ? t("editionPage.error")
+    : t("editionPage.notFound"),
+);
 </script>
 
 <template>
@@ -38,7 +44,7 @@ const covers = computed<CoverCandidate[]>(() => {
     />
     <p v-else class="flex items-start gap-2 text-body text-danger">
       <CircleAlert :size="22" class="shrink-0" />
-      <span>{{ t("editionPage.notFound") }}</span>
+      <span>{{ failure }}</span>
     </p>
   </main>
 </template>
