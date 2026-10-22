@@ -1,3 +1,4 @@
+import { CircleAlert } from "@lucide/vue";
 import { flushPromises, mount } from "@vue/test-utils";
 import { describe, expect, it } from "vitest";
 import {
@@ -6,6 +7,7 @@ import {
 } from "../../../application/CatalogueApi";
 import { asterixLeGaulois } from "../../../fixture/Books";
 import { FakeCatalogueApi } from "../../../fixture/FakeCatalogueApi";
+import { normalised } from "../../../fixture/normalised";
 import HeldEditionCardSkeleton from "../../components/HeldEditionCardSkeleton.vue";
 import PageTitleSkeleton from "../../components/PageTitleSkeleton.vue";
 import { createLibrisI18n } from "../../i18n";
@@ -37,6 +39,18 @@ describe("EditionPageView", () => {
       { card: 1, title: 0 },
       { card: 0, title: 0 },
     ]);
+  });
+
+  it("says there is no such ouvrage, alone", async () => {
+    // Given
+    const wrapper = mountEditionPageView(noSuchOuvrage);
+
+    // When
+    await flushPromises();
+
+    // Then
+    expect(normalised(wrapper.element)).toBe("Ouvrage introuvable.");
+    expect(wrapper.findAllComponents(CircleAlert)).toHaveLength(1);
   });
 });
 
