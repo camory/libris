@@ -11,6 +11,7 @@ const props = defineProps<{
   copies: Copy[];
   covers: CoverCandidate[];
   held: boolean;
+  pageTitle?: boolean;
 }>();
 
 const emit = defineEmits<{ coverSource: [source: string | null] }>();
@@ -148,7 +149,9 @@ const rows = computed(() => {
           {{ overline }}
         </p>
         {{ " " }}
-        <h2 class="text-card-title">{{ edition.title }}</h2>
+        <component :is="pageTitle ? 'h1' : 'h2'" class="text-card-title">
+          {{ edition.title }}
+        </component>
         <p v-if="edition.subtitle" class="text-lead text-muted">
           {{ edition.subtitle }}
         </p>

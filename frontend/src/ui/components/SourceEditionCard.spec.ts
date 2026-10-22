@@ -96,6 +96,27 @@ describe("SourceEditionCard", () => {
     ]);
   });
 
+  it("heads the page when its title is the page's", () => {
+    // When
+    const card = within(
+      mount(SourceEditionCard, {
+        props: {
+          edition: onePiece1,
+          copies: [],
+          covers: [],
+          held: false,
+          pageTitle: true,
+        },
+        global: { plugins: [createLibrisI18n()] },
+      }).element as HTMLElement,
+    );
+
+    // Then
+    expect(card.getAllByRole("heading")).toEqual([
+      card.getByRole("heading", { level: 1, name: "Romance dawn" }),
+    ]);
+  });
+
   it("shows the volume of a BD as an album", () => {
     // When
     const card = show(asterix1);
