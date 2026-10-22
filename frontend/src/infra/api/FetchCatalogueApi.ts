@@ -1,5 +1,8 @@
-import type { BookPage, CatalogueApi } from "../../application/CatalogueApi";
-import type { FindBookAnswer } from "../../application/EditionPageApi";
+import type {
+  BookPage,
+  CatalogueApi,
+  FindBookAnswer,
+} from "../../application/CatalogueApi";
 import { bookOf, type BookResponse } from "./bookOf";
 import { problemOf } from "./problemOf";
 
