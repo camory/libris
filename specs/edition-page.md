@@ -146,3 +146,9 @@ account of the family, paste the address of tome 20's page and read
 *Ouvrage introuvable.* The other cases are the tests' to show.
 
 ## Tasks
+
+- T111 — S2, the backend on `v0.14.0` — backend
+- T112 — S1 — backend
+- T113 — S2, the frontend on `v0.14.0` — frontend
+- T114 — S1 — frontend
+- T115 — S3 — frontend
