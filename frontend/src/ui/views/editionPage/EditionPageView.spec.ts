@@ -84,6 +84,20 @@ describe("EditionPageView", () => {
     // Then
     expect(libris.asked).toEqual([asterixLeGaulois.id, asterixEtSesAmis.id]);
   });
+
+  it("asks the ouvrage on each arrival", async () => {
+    // Given
+    const libris = new LibrisRecordingAsks();
+    mountEditionPageView(libris).unmount();
+    await flushPromises();
+
+    // When
+    mountEditionPageView(libris);
+    await flushPromises();
+
+    // Then
+    expect(libris.asked).toEqual([asterixLeGaulois.id, asterixLeGaulois.id]);
+  });
 });
 
 function seen(wrapper: ReturnType<typeof mountEditionPageView>) {
