@@ -23,4 +23,20 @@ describe("useFindCatalogueEdition", () => {
       { status: "notFound" },
     ]);
   });
+
+  it("says there is no such ouvrage when the id is not one", async () => {
+    // Given
+    const { state, find } = useFindCatalogueEdition(
+      new FakeCatalogueApi([], {
+        outcome: "problem",
+        type: "/problems/validation",
+      }),
+    );
+
+    // When
+    await find("asterix");
+
+    // Then
+    expect(state.value).toEqual({ status: "notFound" });
+  });
 });
