@@ -27,7 +27,7 @@ ouvrage, red on S1's scenario test. The frontend pin moves from `v0.13.0`
 in T113, once T112 is deployed; T114 and T115 each add one scenario to
 the page. No other task touches the contract (D04).
 
-- [ ] T111 Backend: the edition page on `v0.14.0`, no such ouvrage.
+- [x] T111 Backend: the edition page on `v0.14.0`, no such ouvrage.
       `ApiContractTest` pins `v0.14.0`, the backend's one bump (D04).
       Libris serves an edition by its id and answers every reader that
       there is no such ouvrage, `404` `/problems/not-found`, until T112
