@@ -13,7 +13,6 @@ import fr.amory.libris.scenario.dsl.opens
 import fr.amory.libris.scenario.dsl.unknownBook
 import io.kotest.matchers.collections.shouldContainExactlyInAnyOrder
 import io.kotest.matchers.shouldBe
-import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 
@@ -21,7 +20,6 @@ import org.springframework.beans.factory.annotation.Autowired
 class EditionPageScenarios @Autowired constructor(private val libris: Libris) {
 
   @Test
-  @Disabled("edition page")
   fun `S1 The reader opens an ouvrage`() {
     // Given
     val lea = libris.reader("lea", "Léa")
