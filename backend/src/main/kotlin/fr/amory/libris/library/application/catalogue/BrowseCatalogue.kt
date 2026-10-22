@@ -36,9 +36,9 @@ class BrowseCatalogue(
         HeldEdition(
           edition,
           edition.seriesVolume?.let { volume -> seriesById[volume.seriesId]?.let(volume::entryIn) },
-          copiesByEdition.getValue(editionId).map { copy ->
-            CopyOnBookshelf(copy.id, copy.bookshelfId, readersBookshelves.getValue(copy.bookshelfId).name.value)
-          },
+          copiesByEdition
+            .getValue(editionId)
+            .map { CopyOnBookshelf.of(it, readersBookshelves.getValue(it.bookshelfId)) },
         )
       },
       page.next,

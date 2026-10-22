@@ -35,7 +35,7 @@ class FindCatalogueEdition(
     return copies
       .findByEditionId(editionId)
       .filter { it.bookshelfId in readersBookshelves }
-      .map { CopyOnBookshelf(it.id, it.bookshelfId, readersBookshelves.getValue(it.bookshelfId).name.value) }
+      .map { CopyOnBookshelf.of(it, readersBookshelves.getValue(it.bookshelfId)) }
   }
 
   private fun seriesEntryOf(edition: Edition): SeriesEntry? =
