@@ -104,9 +104,10 @@ U06), then in `muted` the bookshelves of the reader holding a copy, by
 name, ignoring case and accents, separated by commas, each followed by *· 2
 exemplaires* when it holds more than one (*Bibliothèque de Christophe · 2
 exemplaires, Salon*). The rows are in the
-order of the answer; the screen sorts nothing. A row leads nowhere yet: the
-edition page comes with its own spec. The screen asks the first page anew
-on each arrival, so an ouvrage added a moment ago is there.
+order of the answer; the screen sorts nothing. A row leads to its
+ouvrage's page (`specs/edition-page.md`), the whole row a link, with no
+chevron. The screen asks the first page anew on each arrival, so an
+ouvrage added a moment ago is there.
 
 States:
 

@@ -177,7 +177,8 @@ Top to bottom on a phone, everything but the tab bar scrolling together:
   A row is the catalogue's row (`specs/catalogue.md`) with the overline
   *Tome 23*, or *Album 23* for a BD, and no overline for an edition
   without a tome; the title, the authors and the bookshelves as there. A
-  row leads nowhere: the edition page comes with its own spec.
+  row leads to its ouvrage's page (`specs/edition-page.md`), the whole
+  row a link, with no chevron.
   Among the rows, in its place, one row per run of missing tomes, on
   `bg`: a dashed outline in `muted` where the cover stands, empty, and at
   its right the run in the row title step, in `muted`, *Tomes 26 à 35* or
