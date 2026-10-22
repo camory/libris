@@ -24,10 +24,12 @@ import fr.amory.libris.library.fixture.CopiesInMemory
 import fr.amory.libris.library.fixture.bookshelfOf
 import fr.amory.libris.library.fixture.copyOn
 import io.kotest.matchers.shouldBe
+import io.kotest.matchers.types.shouldBeInstanceOf
 import org.junit.jupiter.api.Test
 
 class FindCatalogueEditionTest {
   private val lea = ReaderId.new()
+  private val sam = ReaderId.new()
   private val bookshelves = BookshelvesInMemory()
   private val copies = CopiesInMemory()
   private val editions = EditionsInMemory().also {
@@ -56,6 +58,23 @@ class FindCatalogueEditionTest {
         SeriesEntry("Astérix", 1),
         listOf(CopyOnBookshelf(copy.id, leasBookshelf.id, "Bibliothèque de Léa")),
       ),
+    )
+  }
+
+  @Test
+  fun `a copy on a bookshelf the reader does not belong to is left out`() {
+    // Given
+    val leasBookshelf = bookshelfOf("Bibliothèque de Léa", Membership(lea, OWNER))
+    val samsBookshelf = bookshelfOf("Bibliothèque de Sam", Membership(sam, OWNER))
+    val leasCopy = copyOn(leasBookshelf, ASTERIX_LE_GAULOIS.id).also { copies.insert(it) }
+    copies.insert(copyOn(samsBookshelf, ASTERIX_LE_GAULOIS.id))
+
+    // When
+    val result = findCatalogueEdition(lea, ASTERIX_LE_GAULOIS.id)
+
+    // Then
+    result.shouldBeInstanceOf<Found>().held.copies shouldBe listOf(
+      CopyOnBookshelf(leasCopy.id, leasBookshelf.id, "Bibliothèque de Léa"),
     )
   }
 
