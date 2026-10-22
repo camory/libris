@@ -144,12 +144,11 @@ const rows = computed(() => {
       </div>
 
       <div class="flex min-w-0 flex-col gap-1.5">
-        <h2 class="flex flex-col gap-1.5 text-card-title">
-          <span v-if="overline" class="text-overline uppercase text-accent">
-            {{ overline }}
-          </span>
-          {{ edition.title }}
-        </h2>
+        <p v-if="overline" class="text-overline uppercase text-accent">
+          {{ overline }}
+        </p>
+        {{ " " }}
+        <h2 class="text-card-title">{{ edition.title }}</h2>
         <p v-if="edition.subtitle" class="text-lead text-muted">
           {{ edition.subtitle }}
         </p>

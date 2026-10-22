@@ -86,6 +86,16 @@ describe("SourceEditionCard", () => {
     expect(card).toContain("à l'aube d'une grande aventure");
   });
 
+  it("names its heading after the title alone, the overline above it", () => {
+    // When
+    const card = screen(onePiece1);
+
+    // Then
+    expect(card.getAllByRole("heading")).toEqual([
+      card.getByRole("heading", { level: 2, name: "Romance dawn" }),
+    ]);
+  });
+
   it("shows the volume of a BD as an album", () => {
     // When
     const card = show(asterix1);
