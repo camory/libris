@@ -8,7 +8,10 @@ interface BookPageResponse {
   next: string | null;
 }
 
-const problems = new Map([[404, "/problems/not-found"]]);
+const problems = new Map([
+  [400, "/problems/validation"],
+  [404, "/problems/not-found"],
+]);
 
 export class FetchCatalogueApi implements CatalogueApi {
   constructor(private readonly baseUrl: string) {}
