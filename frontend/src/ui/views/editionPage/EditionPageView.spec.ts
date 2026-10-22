@@ -3,9 +3,11 @@ import { flushPromises, mount } from "@vue/test-utils";
 import { describe, expect, it } from "vitest";
 import {
   catalogueApiKey,
+  type BookPage,
+  type CatalogueApi,
   type FindBookAnswer,
 } from "../../../application/CatalogueApi";
-import { asterixLeGaulois } from "../../../fixture/Books";
+import { asterixEtSesAmis, asterixLeGaulois } from "../../../fixture/Books";
 import { FakeCatalogueApi } from "../../../fixture/FakeCatalogueApi";
 import { normalised } from "../../../fixture/normalised";
 import HeldEditionCardSkeleton from "../../components/HeldEditionCardSkeleton.vue";
@@ -14,16 +16,32 @@ import { createLibrisI18n } from "../../i18n";
 import EditionPageView from "./EditionPageView.vue";
 
 const mountEditionPageView = (
-  found: FindBookAnswer,
+  found: FindBookAnswer | CatalogueApi,
   id = asterixLeGaulois.id,
 ) =>
   mount(EditionPageView, {
     props: { id },
     global: {
       plugins: [createLibrisI18n()],
-      provide: { [catalogueApiKey]: new FakeCatalogueApi([], found) },
+      provide: {
+        [catalogueApiKey]:
+          "outcome" in found ? new FakeCatalogueApi([], found) : found,
+      },
     },
   });
+
+class LibrisRecordingAsks implements CatalogueApi {
+  readonly asked: string[] = [];
+
+  browse(): Promise<BookPage> {
+    return Promise.resolve({ books: [], next: null });
+  }
+
+  find(id: string): Promise<FindBookAnswer> {
+    this.asked.push(id);
+    return Promise.resolve(noSuchOuvrage);
+  }
+}
 
 describe("EditionPageView", () => {
   it("shows the card's skeleton while the ouvrage comes, no title", async () => {
@@ -51,6 +69,20 @@ describe("EditionPageView", () => {
     // Then
     expect(normalised(wrapper.element)).toBe("Ouvrage introuvable.");
     expect(wrapper.findAllComponents(CircleAlert)).toHaveLength(1);
+  });
+
+  it("asks the ouvrage of each id it is given", async () => {
+    // Given
+    const libris = new LibrisRecordingAsks();
+    const wrapper = mountEditionPageView(libris, asterixLeGaulois.id);
+    await flushPromises();
+
+    // When
+    await wrapper.setProps({ id: asterixEtSesAmis.id });
+    await flushPromises();
+
+    // Then
+    expect(libris.asked).toEqual([asterixLeGaulois.id, asterixEtSesAmis.id]);
   });
 });
 

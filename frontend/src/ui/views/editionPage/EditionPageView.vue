@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { CircleAlert } from "@lucide/vue";
-import { inject } from "vue";
+import { inject, watch } from "vue";
 import { useI18n } from "vue-i18n";
 import { catalogueApiKey } from "../../../application/CatalogueApi";
 import { useFindCatalogueEdition } from "../../../application/useFindCatalogueEdition";
@@ -11,7 +11,11 @@ const props = defineProps<{ id: string }>();
 const { t } = useI18n();
 const { state, find } = useFindCatalogueEdition(inject(catalogueApiKey)!);
 
-void find(props.id);
+watch(
+  () => props.id,
+  (id) => void find(id),
+  { immediate: true },
+);
 </script>
 
 <template>
