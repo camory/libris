@@ -471,3 +471,9 @@
   folded unique index and the migration that brings it, which spelling
   stays when rows already stored fold to one, and what the editions
   pointing at the others then point at.
+- Backend: `FindCatalogueEdition` is the third use case of
+  `library.application.catalogue` to map the reader's copies of an edition
+  to `CopyOnBookshelf` with their bookshelf's name, beside `BrowseCatalogue`
+  and `FindCatalogueSeries`, and the second to read a `SeriesEntry` through
+  `SeriesVolume.entryIn` over `seriesRepository`; a shared function of the
+  package would hold both (found 2026-10-22 by T112).
