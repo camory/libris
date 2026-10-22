@@ -91,9 +91,12 @@ describe("SourceEditionCard", () => {
     const card = screen(onePiece1);
 
     // Then
-    expect(card.getAllByRole("heading")).toEqual([
-      card.getByRole("heading", { level: 2, name: "Romance dawn" }),
-    ]);
+    const heading = card.getByRole("heading", {
+      level: 2,
+      name: "Romance dawn",
+    });
+    expect(card.getAllByRole("heading")).toEqual([heading]);
+    expect(precedes(card.getByText("One piece · tome 1"), heading)).toBe(true);
   });
 
   it("heads the page when its title is the page's", () => {
