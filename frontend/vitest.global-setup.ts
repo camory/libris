@@ -8,7 +8,7 @@ export default async function setup(project: TestProject) {
     "contracteer",
     [
       "mock",
-      "https://raw.githubusercontent.com/camory/libris-api/v0.13.0/openapi.yaml",
+      "https://raw.githubusercontent.com/camory/libris-api/v0.14.0/openapi.yaml",
       "-p",
       String(port),
     ],
