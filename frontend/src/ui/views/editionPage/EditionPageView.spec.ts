@@ -1,4 +1,5 @@
 import { CircleAlert } from "@lucide/vue";
+import { within } from "@testing-library/dom";
 import { flushPromises, mount } from "@vue/test-utils";
 import { describe, expect, it } from "vitest";
 import {
@@ -69,6 +70,23 @@ describe("EditionPageView", () => {
     // Then
     expect(normalised(wrapper.element)).toBe("Ouvrage introuvable.");
     expect(wrapper.findAllComponents(CircleAlert)).toHaveLength(1);
+  });
+
+  it("shows the ouvrage's card, its title the page's h1", async () => {
+    // Given
+    const wrapper = mountEditionPageView({
+      outcome: "found",
+      book: asterixLeGaulois,
+    });
+
+    // When
+    await flushPromises();
+
+    // Then
+    const screen = within(wrapper.element as HTMLElement);
+    expect(screen.getAllByRole("heading")).toEqual([
+      screen.getByRole("heading", { level: 1, name: "Astérix le Gaulois" }),
+    ]);
   });
 
   it("asks the ouvrage of each id it is given", async () => {

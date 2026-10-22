@@ -2,12 +2,13 @@
 import { BookOpen } from "@lucide/vue";
 import { computed, ref, watch } from "vue";
 import { useI18n } from "vue-i18n";
+import type { Book } from "../../domain/Book";
 import { bookshelvesHolding, type Copy } from "../../domain/Copy";
 import type { CoverCandidate } from "../../domain/Cover";
 import { authorsInOrder, type SourceEdition } from "../../domain/SourceEdition";
 
 const props = defineProps<{
-  edition: SourceEdition;
+  edition: SourceEdition | Book;
   copies: Copy[];
   covers: CoverCandidate[];
   held: boolean;
