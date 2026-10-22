@@ -142,6 +142,9 @@ const fr = {
     authors: "Auteur | Auteurs",
     publishers: "Éditeur | Éditeurs",
   },
+  editionPage: {
+    notFound: "Ouvrage introuvable.",
+  },
   language: {
     fr: "français",
   },

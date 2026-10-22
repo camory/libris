@@ -6,8 +6,12 @@ export interface BookPage {
   next: string | null;
 }
 
+export type FindBookAnswer =
+  { outcome: "found"; book: Book } | { outcome: "problem"; type: string };
+
 export interface CatalogueApi {
   browse(after: string | null): Promise<BookPage>;
+  find(id: string): Promise<FindBookAnswer>;
 }
 
 export const catalogueApiKey: InjectionKey<CatalogueApi> =

@@ -98,3 +98,20 @@ Format:
 - Deviations from the brief: none.
 - Left over: the `CopyOnBookshelf` mapping, now in three use cases of the
   package, in `agent/PROPOSED.md`; T113 to T115 on the frontend.
+
+## 2026-10-22 — T113 The edition page on v0.14.0, no such ouvrage — done
+- Did: the frontend pins `v0.14.0`; `CatalogueApi` gains `find(id)`, its
+  client tested against the mock on `200`, `404` and `400`, the interim
+  `EditionPageApi` folded into it; `/catalogue/ouvrages/{id}` shows the
+  card's skeleton, then *Ouvrage introuvable.*; both S2 cases run and pass.
+- Decided: `HeldEditionCardSkeleton` repeats `SourceEditionCardSkeleton`'s
+  top part rather than a third component shared for nine lines. Two runs,
+  the first handing off after step 10.
+- Deviations from the brief: S2's un-skip came first, as the implementer
+  rule asks (red read: *Unable to find … Ouvrage introuvable.*), not last
+  as the brief's step 14; its mutation ran once green. `CatalogueView.spec.ts`
+  gains one line, a `find` on the `CatalogueApi` it builds by hand, or
+  `vue-tsc` refuses it after the fold, so the stat criterion on
+  `ui/views/catalogue` holds for everything but that line.
+- Left over: T114 shows the found ouvrage, T115 the failure; the shape of
+  the skeleton against `1-loading.jpg` is Tophe's to check on the phone.

@@ -48,7 +48,7 @@ the page. No other task touches the contract (D04).
       it, through a use case the controller calls (D02, D12).
       Realises S1 and keeps S2; un-skips the backend test of S1.
 
-- [ ] T113 Frontend: the edition page on `v0.14.0`, no such ouvrage.
+- [x] T113 Frontend: the edition page on `v0.14.0`, no such ouvrage.
       Precondition (human): T112 deployed (D04).
       `vitest.global-setup.ts` pins `v0.14.0`, the frontend's one bump; the
       catalogue's port gains the find by id, its client tested against

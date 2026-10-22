@@ -235,6 +235,7 @@ describe("CatalogueView", () => {
         after === null
           ? Promise.resolve(firstPage())
           : new Promise<BookPage>(() => {}),
+      find: () => Promise.reject(Error("no find in this case")),
     });
     await flushPromises();
 

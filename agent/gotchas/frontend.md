@@ -22,7 +22,7 @@ Read whole by a run that changes `frontend/`, after `every-run.md`.
   an `afterEach`, or the contract case passes only by running first.
 - `vitest.global-setup.ts` starts `contracteer mock` on port 9099 over the
   contract the frontend pins, a `raw.githubusercontent.com` URL of
-  `camory/libris-api` (`v0.13.0` since T103); it starts in about four seconds
+  `camory/libris-api` (`v0.14.0` since T113); it starts in about four seconds
   and logs `Contracteer mock server started on port 9099` last, and the
   setup resolves on that line and kills the process in its teardown. The
   mock generates values, so an `infra/api` spec asserts shape and types,
@@ -64,11 +64,15 @@ Read whole by a run that changes `frontend/`, after `every-run.md`.
   never none (T096). `GET /series/{id}` answers `404` for
   `5b6c7d8e-9f0a-4b1c-8d2e-3f4a5b6c7d8e`, `400` for `not-a-uuid` and
   `a%2Fb`, and a generated `200` of one or two books in 30 tries, never none
-  (T103). `FetchIsbnApi`, `FetchBookshelfApi`, `FetchBookshelvesApi` and
-  `FetchSeriesApi`'s find hand a non-2xx answer to `infra/api/problemOf`, which maps the statuses the
+  (T103). `GET /books/{id}` answers `404` for
+  `3e4f5a6b-7c8d-4e9f-a0b1-c2d3e4f5a6b7`, `400` for `not-a-uuid` and
+  `a%2Fb`, and a generated `200` of one or two copies in 30 tries, never
+  none (T113). `FetchIsbnApi`, `FetchBookshelfApi`, `FetchBookshelvesApi`,
+  `FetchSeriesApi`'s find and `FetchCatalogueApi`'s find hand a non-2xx
+  answer to `infra/api/problemOf`, which maps the statuses the
   contract names (400, 404, 409 for the creation and the add of a member, 400 and
-  404 for the choice of the default and the find of a series,
-  and 503 for the lookup)
+  404 for the choice of the default and the finds of a series and of an
+  ouvrage, and 503 for the lookup)
   to the `/problems/…`
   slugs only when the `Content-Type` is `application/problem+json`, and
   reads the body's `type` otherwise: a proxy's `text/plain` 404 or 503 then
@@ -83,10 +87,11 @@ Read whole by a run that changes `frontend/`, after `every-run.md`.
 - A fixture may import `domain` and `application` only, so a shared
   app-over-fakes builder cannot live in `src/fixture`: each scenario file
   keeps its own `open()`, naming the ports its spec varies.
-- `EditionPageApi` stands apart from `CatalogueApi`, provided by
-  `EditionPageScenarios`' `open()` through `app.provide`, only until the
-  edition page task bumps the pin to `v0.14.0`: that task folds `find` into
-  `CatalogueApi` with its client, `EditionPageApi` and its fake gone.
+- A port that gains a method reds `vue-tsc` on every object literal typed
+  as that port, specs included: `CatalogueView.spec.ts` builds a
+  `CatalogueApi` by hand, so `find` reached it when the port gained it
+  (T113). `npx vue-tsc --build` from `frontend/` lists them in seconds,
+  before the gate.
 - A fake built with `Promise.reject(...)` in a Given is an unhandled
   rejection by the time the When awaits it: the test passes, and Vitest
   reports an *Unhandled Rejection* that fails the run (measured 2026-09-25).

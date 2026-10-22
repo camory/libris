@@ -54,4 +54,54 @@ describe("FetchCatalogueApi", () => {
     // Then
     await expect(page).rejects.toThrow();
   });
+
+  it("finds the ouvrage with its copies", async () => {
+    // Given
+    const api = new FetchCatalogueApi(inject("mockBaseUrl"));
+
+    // When
+    const answer = await api.find("1c2f3e4d-5a6b-4c7d-9e8f-0a1b2c3d4e5f");
+
+    // Then
+    expect(answer).toEqual({ outcome: "found", book: aBook });
+  });
+
+  it("answers a problem when no copy is on the reader's bookshelves", async () => {
+    // Given
+    const api = new FetchCatalogueApi(inject("mockBaseUrl"));
+
+    // When
+    const answer = await api.find("3e4f5a6b-7c8d-4e9f-a0b1-c2d3e4f5a6b7");
+
+    // Then
+    expect(answer).toEqual({ outcome: "problem", type: "/problems/not-found" });
+  });
+
+  it("answers a problem when the id is not one", async () => {
+    // Given
+    const api = new FetchCatalogueApi(inject("mockBaseUrl"));
+
+    // When
+    const answer = await api.find("not-a-uuid");
+
+    // Then
+    expect(answer).toEqual({
+      outcome: "problem",
+      type: "/problems/validation",
+    });
+  });
+
+  it("answers a problem when the id holds a slash", async () => {
+    // Given
+    const api = new FetchCatalogueApi(inject("mockBaseUrl"));
+
+    // When
+    const answer = await api.find("a/b");
+
+    // Then
+    expect(answer).toEqual({
+      outcome: "problem",
+      type: "/problems/validation",
+    });
+  });
 });

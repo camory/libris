@@ -7,10 +7,6 @@ import {
 import { afterEach, describe, expect, it, vi } from "vitest";
 import type { App } from "vue";
 import type { CatalogueApi } from "../application/CatalogueApi";
-import {
-  editionPageApiKey,
-  type EditionPageApi,
-} from "../application/EditionPageApi";
 import type { SeriesApi } from "../application/SeriesApi";
 import { createLibrisApp } from "../createLibrisApp";
 import type { Book } from "../domain/Book";
@@ -21,7 +17,6 @@ import { FakeBarcodeScanner } from "../fixture/FakeBarcodeScanner";
 import { FakeBookshelfApi } from "../fixture/FakeBookshelfApi";
 import { FakeBookshelvesApi } from "../fixture/FakeBookshelvesApi";
 import { FakeCatalogueApi } from "../fixture/FakeCatalogueApi";
-import { FakeEditionPageApi } from "../fixture/FakeEditionPageApi";
 import { FakeIsbnApi } from "../fixture/FakeIsbnApi";
 import { FakeMeApi } from "../fixture/FakeMeApi";
 import { FakeReadersApi } from "../fixture/FakeReadersApi";
@@ -73,8 +68,7 @@ describe("Edition page", () => {
   ])("S1 The reader opens an ouvrage, $case", async ({ address }) => {
     // Given
     const screen = open(address, {
-      edition: librisAnswers(held),
-      catalogue: new FakeCatalogueApi([{ books: [held], next: null }]),
+      catalogue: librisAnswers(held),
       series: new FakeSeriesApi([asterix], {
         outcome: "found",
         series: asterix,
@@ -98,7 +92,7 @@ describe("Edition page", () => {
     ]);
   });
 
-  it.skip.each([
+  it.each([
     {
       case: "Libris answers no such ouvrage",
       address: "/catalogue/ouvrages/3e4f5a6b-7c8d-4e9f-a0b1-c2d3e4f5a6b7",
@@ -111,10 +105,10 @@ describe("Edition page", () => {
     },
   ])("S2 No such ouvrage, $case", async ({ address, problem }) => {
     // Given
-    const edition = librisRefuses(problem);
+    const catalogue = librisRefuses(problem);
 
     // When
-    const screen = open(address, { edition });
+    const screen = open(address, { catalogue });
 
     // Then
     await screen.findByText("Ouvrage introuvable.");
@@ -124,10 +118,10 @@ describe("Edition page", () => {
 
   it.skip("S3 Libris unavailable", async () => {
     // Given
-    const edition = librisDoesNotAnswer();
+    const catalogue = librisDoesNotAnswer();
 
     // When
-    const screen = open(`/catalogue/ouvrages/${held.id}`, { edition });
+    const screen = open(`/catalogue/ouvrages/${held.id}`, { catalogue });
 
     // Then
     await screen.findByText(
@@ -137,25 +131,24 @@ describe("Edition page", () => {
     expect(rows(screen)).toEqual([]);
   });
 
-  function librisAnswers(book: Book): EditionPageApi {
-    return new FakeEditionPageApi({ outcome: "found", book });
+  function librisAnswers(book: Book): CatalogueApi {
+    return new FakeCatalogueApi([{ books: [book], next: null }], {
+      outcome: "found",
+      book,
+    });
   }
 
-  function librisRefuses(problem: string): EditionPageApi {
-    return new FakeEditionPageApi({ outcome: "problem", type: problem });
+  function librisRefuses(problem: string): CatalogueApi {
+    return new FakeCatalogueApi([], { outcome: "problem", type: problem });
   }
 
-  function librisDoesNotAnswer(): EditionPageApi {
-    return new FakeEditionPageApi(new TypeError("Failed to fetch"));
+  function librisDoesNotAnswer(): CatalogueApi {
+    return new FakeCatalogueApi([], new TypeError("Failed to fetch"));
   }
 
   function open(
     path: string,
-    world: {
-      edition: EditionPageApi;
-      catalogue?: CatalogueApi;
-      series?: SeriesApi;
-    },
+    world: { catalogue: CatalogueApi; series?: SeriesApi },
   ) {
     vi.stubGlobal(
       "IntersectionObserver",
@@ -178,14 +171,13 @@ describe("Edition page", () => {
         ),
         barcodeScanner: new FakeBarcodeScanner(false),
         appUpdate: new FakeAppUpdate(),
-        catalogueApi: world.catalogue ?? new FakeCatalogueApi([]),
+        catalogueApi: world.catalogue,
         bookshelvesApi: new FakeBookshelvesApi({ memberships: [] }),
         readersApi: new FakeReadersApi([]),
         seriesApi: world.series ?? new FakeSeriesApi([]),
       },
       "sha-abc1234",
     );
-    app.provide(editionPageApiKey, world.edition);
     app.mount(host);
     return within(host);
   }

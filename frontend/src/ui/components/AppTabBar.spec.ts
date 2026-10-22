@@ -91,6 +91,18 @@ describe("AppTabBar", () => {
     );
   });
 
+  it("marks Catalogue as the screen shown on an ouvrage's page", async () => {
+    // When
+    const { screen } = await open(
+      "/catalogue/ouvrages/6f1d2c3b-4a59-4e6f-8b70-1c2d3e4f5a61",
+    );
+
+    // Then
+    expect(screen.getByRole("link", { current: "page" })).toBe(
+      screen.getByRole("link", { name: "Catalogue" }),
+    );
+  });
+
   it("shows a house for Accueil, a barcode for Ajouter and spines for Catalogue", async () => {
     // When
     const { wrapper } = await open("/");
