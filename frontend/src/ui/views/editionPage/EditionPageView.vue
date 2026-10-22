@@ -1,9 +1,10 @@
 <script setup lang="ts">
 import { CircleAlert } from "@lucide/vue";
-import { inject, watch } from "vue";
+import { computed, inject, watch } from "vue";
 import { useI18n } from "vue-i18n";
 import { catalogueApiKey } from "../../../application/CatalogueApi";
 import { useFindCatalogueEdition } from "../../../application/useFindCatalogueEdition";
+import type { CoverCandidate } from "../../../domain/Cover";
 import HeldEditionCardSkeleton from "../../components/HeldEditionCardSkeleton.vue";
 import SourceEditionCard from "../../components/SourceEditionCard.vue";
 
@@ -17,6 +18,11 @@ watch(
   (id) => void find(id),
   { immediate: true },
 );
+
+const covers = computed<CoverCandidate[]>(() => {
+  const coverUrl = state.value.status === "found" && state.value.book.coverUrl;
+  return coverUrl ? [{ source: "Libris", url: coverUrl }] : [];
+});
 </script>
 
 <template>
@@ -26,7 +32,7 @@ watch(
       v-else-if="state.status === 'found'"
       :edition="state.book"
       :copies="state.book.copies"
-      :covers="[]"
+      :covers="covers"
       held
       page-title
     />

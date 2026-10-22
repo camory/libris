@@ -8,7 +8,11 @@ import {
   type CatalogueApi,
   type FindBookAnswer,
 } from "../../../application/CatalogueApi";
-import { asterixEtSesAmis, asterixLeGaulois } from "../../../fixture/Books";
+import {
+  asterixEtSesAmis,
+  asterixLeGaulois,
+  romanceDawn,
+} from "../../../fixture/Books";
 import { FakeCatalogueApi } from "../../../fixture/FakeCatalogueApi";
 import { normalised } from "../../../fixture/normalised";
 import HeldEditionCardSkeleton from "../../components/HeldEditionCardSkeleton.vue";
@@ -87,6 +91,25 @@ describe("EditionPageView", () => {
     expect(screen.getAllByRole("heading")).toEqual([
       screen.getByRole("heading", { level: 1, name: "Astérix le Gaulois" }),
     ]);
+  });
+
+  it("shows the stored cover as the house's, with no button", async () => {
+    // Given
+    const wrapper = mountEditionPageView(
+      { outcome: "found", book: romanceDawn },
+      romanceDawn.id,
+    );
+
+    // When
+    await flushPromises();
+
+    // Then
+    const screen = within(wrapper.element as HTMLElement);
+    const cover = screen.getByRole("img", {
+      name: "Couverture de Romance dawn",
+    });
+    expect(cover.getAttribute("src")).toBe(romanceDawn.coverUrl);
+    expect(screen.queryAllByRole("button")).toEqual([]);
   });
 
   it("asks the ouvrage of each id it is given", async () => {
