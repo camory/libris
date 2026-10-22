@@ -5,7 +5,8 @@ import type { CatalogueApi } from "./CatalogueApi";
 export type FoundEditionState =
   | { status: "loading" }
   | { status: "found"; book: Book }
-  | { status: "notFound" };
+  | { status: "notFound" }
+  | { status: "unavailable" };
 
 export function useFindCatalogueEdition(catalogueApi: CatalogueApi): {
   state: Ref<FoundEditionState>;
@@ -15,11 +16,15 @@ export function useFindCatalogueEdition(catalogueApi: CatalogueApi): {
 
   async function find(id: string) {
     state.value = { status: "loading" };
-    const answer = await catalogueApi.find(id);
-    state.value =
-      answer.outcome === "found"
-        ? { status: "found", book: answer.book }
-        : { status: "notFound" };
+    try {
+      const answer = await catalogueApi.find(id);
+      state.value =
+        answer.outcome === "found"
+          ? { status: "found", book: answer.book }
+          : { status: "notFound" };
+    } catch {
+      state.value = { status: "unavailable" };
+    }
   }
 
   return { state, find };
