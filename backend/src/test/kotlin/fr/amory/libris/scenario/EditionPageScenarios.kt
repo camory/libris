@@ -56,7 +56,6 @@ class EditionPageScenarios @Autowired constructor(private val libris: Libris) {
   }
 
   @Test
-  @Disabled("edition page")
   fun `S2 No such ouvrage, one only on bookshelves the reader does not belong to`() {
     // Given
     val lea = libris.reader("lea", "Léa")
