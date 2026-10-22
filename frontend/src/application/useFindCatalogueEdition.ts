@@ -10,6 +10,7 @@ export function useFindCatalogueEdition(catalogueApi: CatalogueApi): {
   const state = ref<FoundEditionState>({ status: "loading" });
 
   async function find(id: string) {
+    state.value = { status: "loading" };
     await catalogueApi.find(id);
     state.value = { status: "notFound" };
   }

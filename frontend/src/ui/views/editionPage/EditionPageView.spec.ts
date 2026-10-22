@@ -85,6 +85,21 @@ describe("EditionPageView", () => {
     expect(libris.asked).toEqual([asterixLeGaulois.id, asterixEtSesAmis.id]);
   });
 
+  it("shows the card's skeleton again while another ouvrage comes", async () => {
+    // Given
+    const wrapper = mountEditionPageView(noSuchOuvrage, asterixLeGaulois.id);
+    await flushPromises();
+
+    // When
+    await wrapper.setProps({ id: asterixEtSesAmis.id });
+    const during = seen(wrapper);
+    await flushPromises();
+
+    // Then
+    expect(during).toEqual({ card: 1, title: 0 });
+    expect(normalised(wrapper.element)).toBe("Ouvrage introuvable.");
+  });
+
   it("asks the ouvrage on each arrival", async () => {
     // Given
     const libris = new LibrisRecordingAsks();
