@@ -1,4 +1,4 @@
-import { CircleAlert } from "@lucide/vue";
+import { BookOpen, CircleAlert } from "@lucide/vue";
 import { within } from "@testing-library/dom";
 import { flushPromises, mount } from "@vue/test-utils";
 import { describe, expect, it } from "vitest";
@@ -110,6 +110,23 @@ describe("EditionPageView", () => {
     });
     expect(cover.getAttribute("src")).toBe(romanceDawn.coverUrl);
     expect(screen.queryAllByRole("button")).toEqual([]);
+  });
+
+  it("shows the stand-in when no cover is stored", async () => {
+    // Given
+    const wrapper = mountEditionPageView({
+      outcome: "found",
+      book: asterixLeGaulois,
+    });
+
+    // When
+    await flushPromises();
+
+    // Then
+    expect(
+      within(wrapper.element as HTMLElement).queryAllByRole("img"),
+    ).toEqual([]);
+    expect(wrapper.findAllComponents(BookOpen)).toHaveLength(2);
   });
 
   it("asks the ouvrage of each id it is given", async () => {
