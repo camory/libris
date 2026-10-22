@@ -209,6 +209,20 @@ describe("CatalogueRow", () => {
     );
   });
 
+  it("leads to its ouvrage's page, the whole row", async () => {
+    // When
+    const { screen } = await show(romanceDawn);
+
+    // Then
+    const link = screen.getByRole("link");
+    expect(link.getAttribute("href")).toBe(
+      `/catalogue/ouvrages/${romanceDawn.id}`,
+    );
+    expect(normalised(link)).toBe(
+      "One piece · tome 1 Romance dawn Eiichirō Oda Bibliothèque de Léa · 2 exemplaires, Salon",
+    );
+  });
+
   async function show(book: Book, { withoutSeriesName = false } = {}) {
     const router = createLibrisRouter();
     await router.push("/catalogue");
