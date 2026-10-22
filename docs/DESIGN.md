@@ -59,6 +59,9 @@ no job fits is added here, not improvised in a component. Weight carries the
 hierarchy; colour (`text`, `muted`, `accent`) carries the role; size does the
 rest.
 
+An ouvrage's screen has no page title: the card title of its card is the
+screen's `h1`, the overline outside it.
+
 ### U03 — Page: header, content, tab bar
 Every screen is one column, designed at 390 px wide and read top to bottom.
 The shell that holds it, the update banner, the content and the tab bar, is
@@ -76,6 +79,8 @@ viewport unit:
    there is no picture or it does not load. Under a band the header has 12
    above it in place of 20, and the first block of the content follows the
    header's 12 with no other space.
+   A screen about one ouvrage has no header: its card is the first block
+   of the content, 20 under its top.
 2. **Content**: the blocks of the screen, 20 apart, 20 of side padding, on
    `bg`. A block may have a label above it, the `label` step in `muted`,
    naming the block as a label names a field (*Mes bibliothèques*). At the
@@ -291,9 +296,10 @@ saisissez l'ISBN.*) and without one when they are labels or messages of a
 few words (*ISBN*, *ISBN invalide*, *Chercher*). The reader is addressed as
 *vous*. An action in progress ends with an ellipsis (*Recherche en
 cours…*). A title names the thing done on the screen, in the infinitive with
-its object: *Ajouter un ouvrage*. Three screens take a proper name instead:
+its object: *Ajouter un ouvrage*. Four screens take a proper name instead:
 the home page, *Libris*, the application's name, a bookshelf's screen, the
-bookshelf's name, and a series' screen, the series' name. Typography is
+bookshelf's name, a series' screen, the series' name, and an ouvrage's
+screen, the ouvrage's title. Typography is
 French: the non-breaking space before `:`, `;` and `?`, guillemets « » for quotes, the middle dot
 ` · ` to join two facts on one line (*One piece · tome 1*).
 
