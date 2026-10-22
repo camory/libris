@@ -134,3 +134,16 @@ Format:
   `specs/series-page.md` saying a row leads nowhere, waiting for Tophe in
   `agent/TASKS.md`; the back button and the layout against `2-shown.jpg`
   and `3-shown-sparse.jpg`, Tophe's on the Pixel; T115 the failure.
+
+## 2026-10-22 — T115 Libris unavailable on an ouvrage — done
+- Did: `useFindCatalogueEdition` reads a rejected find, and any problem but
+  `/problems/not-found` and `/problems/validation`, as `unavailable`; the
+  ouvrage's page then says *Erreur lors du chargement, veuillez réessayer
+  plus tard.* alone, with its alert; S3 runs and passes, S1 and S2 green.
+- Decided: the view picks its sentence through a `failure` computed, as
+  `SeriesPageView` does, so one `<p>` holds both messages; the composable
+  takes `useFindCatalogueSeries`'s `stateOf` shape.
+- Deviations from the brief: none. S3's red was read before step 1, then
+  put back skipped, uncommitted, as the brief allows.
+- Left over: nothing of this spec's frontend; the layout against
+  `5-unavailable.jpg` is Tophe's to check on the phone.

@@ -76,7 +76,7 @@ the page. No other task touches the contract (D04).
       checked by hand on the Pixel. Realises S1; un-skips the frontend
       tests of S1, both cases.
 
-- [ ] T115 Frontend: Libris unavailable on an ouvrage.
+- [x] T115 Frontend: Libris unavailable on an ouvrage.
       When the ouvrage does not come: no title, *Erreur lors du
       chargement, veuillez réessayer plus tard.* with the alert icon as
       the screen's one message, nothing of the ouvrage shown; every word
