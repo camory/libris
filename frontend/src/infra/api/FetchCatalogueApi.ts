@@ -1,11 +1,14 @@
 import type { BookPage, CatalogueApi } from "../../application/CatalogueApi";
 import type { FindBookAnswer } from "../../application/EditionPageApi";
 import { bookOf, type BookResponse } from "./bookOf";
+import { problemOf } from "./problemOf";
 
 interface BookPageResponse {
   books: BookResponse[];
   next: string | null;
 }
+
+const problems = new Map([[404, "/problems/not-found"]]);
 
 export class FetchCatalogueApi implements CatalogueApi {
   constructor(private readonly baseUrl: string) {}
@@ -27,6 +30,7 @@ export class FetchCatalogueApi implements CatalogueApi {
     const response = await fetch(`${this.baseUrl}/api/v1/books/${id}`, {
       headers: { Accept: "application/json, application/problem+json" },
     });
+    if (response.status !== 200) return problemOf(response, problems);
     const body = (await response.json()) as BookResponse;
     return { outcome: "found", book: bookOf(body) };
   }

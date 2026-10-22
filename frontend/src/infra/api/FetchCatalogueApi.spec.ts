@@ -65,4 +65,15 @@ describe("FetchCatalogueApi", () => {
     // Then
     expect(answer).toEqual({ outcome: "found", book: aBook });
   });
+
+  it("answers a problem when no copy is on the reader's bookshelves", async () => {
+    // Given
+    const api = new FetchCatalogueApi(inject("mockBaseUrl"));
+
+    // When
+    const answer = await api.find("3e4f5a6b-7c8d-4e9f-a0b1-c2d3e4f5a6b7");
+
+    // Then
+    expect(answer).toEqual({ outcome: "problem", type: "/problems/not-found" });
+  });
 });
