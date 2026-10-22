@@ -12,6 +12,7 @@ import fr.amory.libris.library.application.ListReaderBookshelves
 import fr.amory.libris.library.application.ListReaders
 import fr.amory.libris.library.application.WelcomeReader
 import fr.amory.libris.library.application.catalogue.BrowseCatalogue
+import fr.amory.libris.library.application.catalogue.FindCatalogueEdition
 import fr.amory.libris.library.application.catalogue.FindCatalogueSeries
 import fr.amory.libris.library.application.catalogue.ListCatalogueSeries
 import fr.amory.libris.library.application.lookup.LookupIsbnForReader
@@ -41,6 +42,7 @@ import org.springframework.test.web.servlet.client.RestTestClient
     ChooseDefaultBookshelf::class,
     ListCatalogueSeries::class,
     FindCatalogueSeries::class,
+    FindCatalogueEdition::class,
   ],
 )
 class SecurityConfigTest @Autowired constructor(
