@@ -18,11 +18,13 @@ import fr.amory.libris.library.domain.bookshelf.BookshelfId
 import fr.amory.libris.library.domain.bookshelf.BookshelfName
 import fr.amory.libris.library.domain.bookshelf.Membership
 import fr.amory.libris.library.domain.bookshelf.MembershipRole.OWNER
+import fr.amory.libris.library.domain.bookshelf.MembershipRole.VIEWER
 import fr.amory.libris.library.domain.reader.ReaderId
 import fr.amory.libris.library.fixture.BookshelvesInMemory
 import fr.amory.libris.library.fixture.CopiesInMemory
 import fr.amory.libris.library.fixture.bookshelfOf
 import fr.amory.libris.library.fixture.copyOn
+import io.kotest.matchers.collections.shouldContainExactlyInAnyOrder
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.types.shouldBeInstanceOf
 import org.junit.jupiter.api.Test
@@ -75,6 +77,24 @@ class FindCatalogueEditionTest {
     // Then
     result.shouldBeInstanceOf<Found>().held.copies shouldBe listOf(
       CopyOnBookshelf(leasCopy.id, leasBookshelf.id, "Bibliothèque de Léa"),
+    )
+  }
+
+  @Test
+  fun `an edition on two of the reader's bookshelves answers both copies`() {
+    // Given
+    val leasBookshelf = bookshelfOf("Bibliothèque de Léa", Membership(lea, OWNER))
+    val salon = bookshelfOf("Salon", Membership(sam, OWNER), Membership(lea, VIEWER))
+    val leasCopy = copyOn(leasBookshelf, ASTERIX_LE_GAULOIS.id).also { copies.insert(it) }
+    val salonsCopy = copyOn(salon, ASTERIX_LE_GAULOIS.id).also { copies.insert(it) }
+
+    // When
+    val result = findCatalogueEdition(lea, ASTERIX_LE_GAULOIS.id)
+
+    // Then
+    result.shouldBeInstanceOf<Found>().held.copies shouldContainExactlyInAnyOrder listOf(
+      CopyOnBookshelf(leasCopy.id, leasBookshelf.id, "Bibliothèque de Léa"),
+      CopyOnBookshelf(salonsCopy.id, salon.id, "Salon"),
     )
   }
 
