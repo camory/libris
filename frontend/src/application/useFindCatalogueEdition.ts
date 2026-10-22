@@ -1,6 +1,6 @@
 import { ref, type Ref } from "vue";
 import type { Book } from "../domain/Book";
-import type { CatalogueApi } from "./CatalogueApi";
+import type { CatalogueApi, FindBookAnswer } from "./CatalogueApi";
 
 export type FoundEditionState =
   | { status: "loading" }
@@ -17,15 +17,22 @@ export function useFindCatalogueEdition(catalogueApi: CatalogueApi): {
   async function find(id: string) {
     state.value = { status: "loading" };
     try {
-      const answer = await catalogueApi.find(id);
-      state.value =
-        answer.outcome === "found"
-          ? { status: "found", book: answer.book }
-          : { status: "notFound" };
+      state.value = stateOf(await catalogueApi.find(id));
     } catch {
       state.value = { status: "unavailable" };
     }
   }
 
   return { state, find };
+}
+
+function stateOf(answer: FindBookAnswer): FoundEditionState {
+  if (answer.outcome === "found") return { status: "found", book: answer.book };
+  switch (answer.type) {
+    case "/problems/not-found":
+    case "/problems/validation":
+      return { status: "notFound" };
+    default:
+      return { status: "unavailable" };
+  }
 }
