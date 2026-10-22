@@ -197,7 +197,8 @@ Read whole by a run that changes `frontend/`, after `every-run.md`.
   stored cover as the one candidate `{ source: "Libris", url }`, `held`,
   `page-title`. Its spec's `card()`, `show()` and `screen()` default to no
   candidate and `held` false, so a case counting the rows' `BookOpen`s
-  passes a candidate, or the stand-in adds one. `getAllByRole("img", { hidden: true
+  passes a candidate, or the stand-in adds one; `card()` and `screen()`
+  take `pageTitle` fifth. `getAllByRole("img", { hidden: true
   })` reaches every candidate's image, in the answer's order.
 - jsdom clears its computed-style cache only when the tree is attached to
   the document, and every component spec and scenario mounts detached: an

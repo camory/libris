@@ -101,18 +101,7 @@ describe("SourceEditionCard", () => {
 
   it("heads the page when its title is the page's", () => {
     // When
-    const card = within(
-      mount(SourceEditionCard, {
-        props: {
-          edition: onePiece1,
-          copies: [],
-          covers: [],
-          held: false,
-          pageTitle: true,
-        },
-        global: { plugins: [createLibrisI18n()] },
-      }).element as HTMLElement,
-    );
+    const card = screen(onePiece1, [], [], false, true);
 
     // Then
     expect(card.getAllByRole("heading")).toEqual([
@@ -783,8 +772,11 @@ describe("SourceEditionCard", () => {
     copies: Copy[] = [],
     covers: CoverCandidate[] = [],
     held = false,
+    pageTitle = false,
   ) {
-    return within(card(edition, copies, covers, held).element as HTMLElement);
+    return within(
+      card(edition, copies, covers, held, pageTitle).element as HTMLElement,
+    );
   }
 
   function card(
@@ -792,9 +784,10 @@ describe("SourceEditionCard", () => {
     copies: Copy[] = [],
     covers: CoverCandidate[] = [],
     held = false,
+    pageTitle = false,
   ) {
     return mount(SourceEditionCard, {
-      props: { edition, copies, covers, held },
+      props: { edition, copies, covers, held, pageTitle },
       global: { plugins: [createLibrisI18n()] },
     });
   }
