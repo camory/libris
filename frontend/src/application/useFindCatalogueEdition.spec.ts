@@ -4,6 +4,19 @@ import { FakeCatalogueApi } from "../fixture/FakeCatalogueApi";
 import { useFindCatalogueEdition } from "./useFindCatalogueEdition";
 
 describe("useFindCatalogueEdition", () => {
+  it("answers the ouvrage Libris found", async () => {
+    // Given
+    const { state, find } = useFindCatalogueEdition(
+      new FakeCatalogueApi([], { outcome: "found", book: asterixLeGaulois }),
+    );
+
+    // When
+    await find(asterixLeGaulois.id);
+
+    // Then
+    expect(state.value).toEqual({ status: "found", book: asterixLeGaulois });
+  });
+
   it("says there is no such ouvrage when Libris answers none", async () => {
     // Given
     const { state, find } = useFindCatalogueEdition(
