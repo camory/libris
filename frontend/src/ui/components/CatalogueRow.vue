@@ -47,7 +47,7 @@ const bookshelves = computed(() =>
 </script>
 
 <template>
-  <div class="flex gap-3.5 p-3.5">
+  <RouterLink :to="`/catalogue/ouvrages/${book.id}`" class="flex gap-3.5 p-3.5">
     <div
       class="flex h-18.5 w-12 shrink-0 items-center justify-center rounded-md bg-border"
     >
@@ -71,5 +71,5 @@ const bookshelves = computed(() =>
       {{ " " }}
       <p class="text-body text-muted">{{ bookshelves }}</p>
     </div>
-  </div>
+  </RouterLink>
 </template>

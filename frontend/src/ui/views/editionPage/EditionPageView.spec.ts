@@ -1,4 +1,5 @@
-import { CircleAlert } from "@lucide/vue";
+import { BookOpen, CircleAlert } from "@lucide/vue";
+import { within } from "@testing-library/dom";
 import { flushPromises, mount } from "@vue/test-utils";
 import { describe, expect, it } from "vitest";
 import {
@@ -7,7 +8,11 @@ import {
   type CatalogueApi,
   type FindBookAnswer,
 } from "../../../application/CatalogueApi";
-import { asterixEtSesAmis, asterixLeGaulois } from "../../../fixture/Books";
+import {
+  asterixEtSesAmis,
+  asterixLeGaulois,
+  romanceDawn,
+} from "../../../fixture/Books";
 import { FakeCatalogueApi } from "../../../fixture/FakeCatalogueApi";
 import { normalised } from "../../../fixture/normalised";
 import HeldEditionCardSkeleton from "../../components/HeldEditionCardSkeleton.vue";
@@ -69,6 +74,59 @@ describe("EditionPageView", () => {
     // Then
     expect(normalised(wrapper.element)).toBe("Ouvrage introuvable.");
     expect(wrapper.findAllComponents(CircleAlert)).toHaveLength(1);
+  });
+
+  it("shows the ouvrage's card, its title the page's h1", async () => {
+    // Given
+    const wrapper = mountEditionPageView({
+      outcome: "found",
+      book: asterixLeGaulois,
+    });
+
+    // When
+    await flushPromises();
+
+    // Then
+    const screen = within(wrapper.element as HTMLElement);
+    expect(screen.getAllByRole("heading")).toEqual([
+      screen.getByRole("heading", { level: 1, name: "Astérix le Gaulois" }),
+    ]);
+  });
+
+  it("shows the stored cover as the house's, with no button", async () => {
+    // Given
+    const wrapper = mountEditionPageView(
+      { outcome: "found", book: romanceDawn },
+      romanceDawn.id,
+    );
+
+    // When
+    await flushPromises();
+
+    // Then
+    const screen = within(wrapper.element as HTMLElement);
+    const cover = screen.getByRole("img", {
+      name: "Couverture de Romance dawn",
+    });
+    expect(cover.getAttribute("src")).toBe(romanceDawn.coverUrl);
+    expect(screen.queryAllByRole("button")).toEqual([]);
+  });
+
+  it("shows the stand-in when no cover is stored", async () => {
+    // Given
+    const wrapper = mountEditionPageView({
+      outcome: "found",
+      book: asterixLeGaulois,
+    });
+
+    // When
+    await flushPromises();
+
+    // Then
+    expect(
+      within(wrapper.element as HTMLElement).queryAllByRole("img"),
+    ).toEqual([]);
+    expect(wrapper.findAllComponents(BookOpen)).toHaveLength(2);
   });
 
   it("asks the ouvrage of each id it is given", async () => {

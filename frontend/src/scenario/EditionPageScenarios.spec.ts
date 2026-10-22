@@ -59,7 +59,7 @@ describe("Edition page", () => {
     vi.unstubAllGlobals();
   });
 
-  it.skip.each([
+  it.each([
     { case: "from a row of the catalogue", address: "/catalogue" },
     {
       case: "from a row of a series' page",

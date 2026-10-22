@@ -17,6 +17,7 @@ import FieldRowSkeleton from "../../components/FieldRowSkeleton.vue";
 import PageHintSkeleton from "../../components/PageHintSkeleton.vue";
 import PageTitleSkeleton from "../../components/PageTitleSkeleton.vue";
 import { createLibrisI18n } from "../../i18n";
+import { createLibrisRouter } from "../../router";
 import SeriesPageView from "./SeriesPageView.vue";
 
 const mountSeriesPageView = (
@@ -26,7 +27,7 @@ const mountSeriesPageView = (
   mount(SeriesPageView, {
     props: { id },
     global: {
-      plugins: [createLibrisI18n()],
+      plugins: [createLibrisI18n(), createLibrisRouter()],
       provide: {
         [seriesApiKey]:
           "outcome" in found ? new FakeSeriesApi([], found) : found,

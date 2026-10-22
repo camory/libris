@@ -158,7 +158,7 @@ describe("CatalogueView", () => {
     expect(within(second!).getByText("Astérix le Gaulois")).toBeDefined();
   });
 
-  it("offers nothing to follow on a row", async () => {
+  it("offers each row as one link, and no button", async () => {
     // Given
     const { screen } = open(
       new FakeCatalogueApi([
@@ -171,7 +171,12 @@ describe("CatalogueView", () => {
 
     // Then
     const list = within(screen.getByRole("list"));
-    expect(list.queryAllByRole("link")).toEqual([]);
+    expect(
+      list.queryAllByRole("link").map((link) => link.getAttribute("href")),
+    ).toEqual([
+      `/catalogue/ouvrages/${asterixLeGaulois.id}`,
+      `/catalogue/ouvrages/${romanceDawn.id}`,
+    ]);
     expect(list.queryAllByRole("button")).toEqual([]);
   });
 

@@ -86,6 +86,29 @@ describe("SourceEditionCard", () => {
     expect(card).toContain("à l'aube d'une grande aventure");
   });
 
+  it("names its heading after the title alone, the overline above it", () => {
+    // When
+    const card = screen(onePiece1);
+
+    // Then
+    const heading = card.getByRole("heading", {
+      level: 2,
+      name: "Romance dawn",
+    });
+    expect(card.getAllByRole("heading")).toEqual([heading]);
+    expect(precedes(card.getByText("One piece · tome 1"), heading)).toBe(true);
+  });
+
+  it("heads the page when its title is the page's", () => {
+    // When
+    const card = screen(onePiece1, [], [], false, true);
+
+    // Then
+    expect(card.getAllByRole("heading")).toEqual([
+      card.getByRole("heading", { level: 1, name: "Romance dawn" }),
+    ]);
+  });
+
   it("shows the volume of a BD as an album", () => {
     // When
     const card = show(asterix1);
@@ -749,8 +772,11 @@ describe("SourceEditionCard", () => {
     copies: Copy[] = [],
     covers: CoverCandidate[] = [],
     held = false,
+    pageTitle = false,
   ) {
-    return within(card(edition, copies, covers, held).element as HTMLElement);
+    return within(
+      card(edition, copies, covers, held, pageTitle).element as HTMLElement,
+    );
   }
 
   function card(
@@ -758,9 +784,10 @@ describe("SourceEditionCard", () => {
     copies: Copy[] = [],
     covers: CoverCandidate[] = [],
     held = false,
+    pageTitle = false,
   ) {
     return mount(SourceEditionCard, {
-      props: { edition, copies, covers, held },
+      props: { edition, copies, covers, held, pageTitle },
       global: { plugins: [createLibrisI18n()] },
     });
   }

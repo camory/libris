@@ -471,3 +471,11 @@
   folded unique index and the migration that brings it, which spelling
   stays when rows already stored fold to one, and what the editions
   pointing at the others then point at.
+- Frontend: `SourceEditionCard` takes a cover as candidates plus `held`, so
+  `EditionPageView` passes the stored cover as the one candidate
+  `{ source: "Libris", url }`, a name it writes itself and nothing reads,
+  copied from the lookup's answer for a held edition (`IsbnController`,
+  *S10* of `specs/covers.md`). One prop could say either "held, this
+  picture or none" or "these candidates", and the stored cover would carry
+  no source (Tophe, 2026-10-22, on T114). Open before a task: whether the
+  lookup's held answer keeps its candidate in the contract.

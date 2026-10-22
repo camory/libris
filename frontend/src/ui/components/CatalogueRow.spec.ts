@@ -1,7 +1,7 @@
 import { BookOpen } from "@lucide/vue";
 import { within } from "@testing-library/dom";
 import { mount } from "@vue/test-utils";
-import { describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it } from "vitest";
 import { nextTick } from "vue";
 import type { Book } from "../../domain/Book";
 import {
@@ -13,82 +13,91 @@ import {
 } from "../../fixture/Books";
 import { normalised } from "../../fixture/normalised";
 import { createLibrisI18n } from "../i18n";
+import { createLibrisRouter } from "../router";
 import CatalogueRow from "./CatalogueRow.vue";
 
 describe("CatalogueRow", () => {
-  it("shows the title", () => {
+  afterEach(() => {
+    window.history.replaceState(null, "", "/");
+  });
+
+  it("shows the title", async () => {
     // When
-    const { screen } = show(romanceDawn);
+    const { screen } = await show(romanceDawn);
 
     // Then
     expect(screen.getByText("Romance dawn")).toBeDefined();
   });
 
-  it("shows the series and the tome over the title", () => {
+  it("shows the series and the tome over the title", async () => {
     // When
-    const { screen } = show(romanceDawn);
+    const { screen } = await show(romanceDawn);
 
     // Then
     expect(screen.getByText("One piece · tome 1")).toBeDefined();
   });
 
-  it("says album for a BD", () => {
+  it("says album for a BD", async () => {
     // When
-    const { screen } = show(asterixLeGaulois);
+    const { screen } = await show(asterixLeGaulois);
 
     // Then
     expect(screen.getByText("Astérix · album 1")).toBeDefined();
   });
 
-  it("shows the tome alone over the title in its series", () => {
+  it("shows the tome alone over the title in its series", async () => {
     // When
-    const { screen } = show(romanceDawn, { withoutSeriesName: true });
+    const { screen } = await show(romanceDawn, { withoutSeriesName: true });
 
     // Then
     expect(screen.getByText("Tome 1")).toBeDefined();
   });
 
-  it("says album alone for a BD in its series", () => {
+  it("says album alone for a BD in its series", async () => {
     // When
-    const { screen } = show(asterixLeGaulois, { withoutSeriesName: true });
+    const { screen } = await show(asterixLeGaulois, {
+      withoutSeriesName: true,
+    });
 
     // Then
     expect(screen.getByText("Album 1")).toBeDefined();
   });
 
-  it("shows no overline for an edition without a tome in its series", () => {
+  it("shows no overline for an edition without a tome in its series", async () => {
     // When
-    const { wrapper } = show(asterixEtSesAmis, { withoutSeriesName: true });
+    const { wrapper } = await show(asterixEtSesAmis, {
+      withoutSeriesName: true,
+    });
 
     // Then
     expect(normalised(wrapper.element)).toMatch(/^Astérix et ses amis/);
   });
 
-  it("shows the series alone when the edition has no tome", () => {
+  it("shows the series alone when the edition has no tome", async () => {
     // When
-    const { screen } = show(asterixEtSesAmis);
+    const { screen } = await show(asterixEtSesAmis);
 
     // Then
     expect(screen.getByText("Astérix")).toBeDefined();
   });
 
-  it("shows no overline when the edition has no series", () => {
+  it("shows no overline when the edition has no series", async () => {
     // When
-    const { wrapper } = show(lePetitPrince);
+    const { wrapper } = await show(lePetitPrince);
 
     // Then
     expect(normalised(wrapper.element)).toMatch(/^Le Petit Prince/);
   });
 
-  it("names the authors on one line, separated by commas", () => {
+  it("names the authors on one line, separated by commas", async () => {
     // When
-    const { screen } = show(asterixLeGaulois);
+    const { screen } = await show(asterixLeGaulois);
 
     // Then
     expect(screen.getByText("René Goscinny, Albert Uderzo")).toBeDefined();
   });
 
-  it("names its authors in the order of the card", () => {
+  it("names its authors in the order of the card", async () => {
     // Given
     const drawnFirst: Book = {
       ...asterixLeGaulois,
@@ -99,21 +108,21 @@ describe("CatalogueRow", () => {
     };
 
     // When
-    const { screen } = show(drawnFirst);
+    const { screen } = await show(drawnFirst);
 
     // Then
     expect(screen.getByText("René Goscinny, Albert Uderzo")).toBeDefined();
   });
 
-  it("names an author of two roles once", () => {
+  it("names an author of two roles once", async () => {
     // When
-    const { screen } = show(romanceDawn);
+    const { screen } = await show(romanceDawn);
 
     // Then
     expect(screen.getByText("Eiichirō Oda")).toBeDefined();
   });
 
-  it("lists the bookshelves holding a copy, separated by commas", () => {
+  it("lists the bookshelves holding a copy, separated by commas", async () => {
     // Given
     const onTwoBookshelves: Book = {
       ...asterixLeGaulois,
@@ -124,13 +133,13 @@ describe("CatalogueRow", () => {
     };
 
     // When
-    const { screen } = show(onTwoBookshelves);
+    const { screen } = await show(onTwoBookshelves);
 
     // Then
     expect(screen.getByText("Bibliothèque de Léa, Salon")).toBeDefined();
   });
 
-  it("lists its bookshelves by name", () => {
+  it("lists its bookshelves by name", async () => {
     // Given
     const onSalonFirst: Book = {
       ...asterixLeGaulois,
@@ -141,15 +150,15 @@ describe("CatalogueRow", () => {
     };
 
     // When
-    const { screen } = show(onSalonFirst);
+    const { screen } = await show(onSalonFirst);
 
     // Then
     expect(screen.getByText("Bibliothèque de Léa, Salon")).toBeDefined();
   });
 
-  it("counts the copies of a bookshelf holding more than one", () => {
+  it("counts the copies of a bookshelf holding more than one", async () => {
     // When
-    const { screen } = show(romanceDawn);
+    const { screen } = await show(romanceDawn);
 
     // Then
     expect(
@@ -157,9 +166,9 @@ describe("CatalogueRow", () => {
     ).toBeDefined();
   });
 
-  it("shows the cover, named after the ouvrage", () => {
+  it("shows the cover, named after the ouvrage", async () => {
     // When
-    const { screen } = show(romanceDawn);
+    const { screen } = await show(romanceDawn);
 
     // Then
     const cover = screen.getByRole("img", {
@@ -168,9 +177,9 @@ describe("CatalogueRow", () => {
     expect(cover.getAttribute("src")).toBe(romanceDawn.coverUrl);
   });
 
-  it("shows a book icon when the edition has no cover", () => {
+  it("shows a book icon when the edition has no cover", async () => {
     // When
-    const { wrapper, screen } = show(lePetitPrince);
+    const { wrapper, screen } = await show(lePetitPrince);
 
     // Then
     expect(screen.queryByRole("img")).toBeNull();
@@ -179,7 +188,7 @@ describe("CatalogueRow", () => {
 
   it("shows a book icon when the cover does not load", async () => {
     // Given
-    const { wrapper, screen } = show(romanceDawn);
+    const { wrapper, screen } = await show(romanceDawn);
 
     // When
     screen.getByRole("img").dispatchEvent(new Event("error"));
@@ -190,9 +199,9 @@ describe("CatalogueRow", () => {
     expect(wrapper.findAllComponents(BookOpen)).toHaveLength(1);
   });
 
-  it("reads its parts separated by one space", () => {
+  it("reads its parts separated by one space", async () => {
     // When
-    const { wrapper } = show(romanceDawn);
+    const { wrapper } = await show(romanceDawn);
 
     // Then
     expect(normalised(wrapper.element)).toBe(
@@ -200,11 +209,31 @@ describe("CatalogueRow", () => {
     );
   });
 
-  function show(book: Book, { withoutSeriesName = false } = {}) {
+  it("leads to its ouvrage's page, the whole row", async () => {
+    // When
+    const { screen } = await show(romanceDawn);
+
+    // Then
+    const link = screen.getByRole("link");
+    expect(link.getAttribute("href")).toBe(
+      `/catalogue/ouvrages/${romanceDawn.id}`,
+    );
+    expect(normalised(link)).toBe(
+      "One piece · tome 1 Romance dawn Eiichirō Oda Bibliothèque de Léa · 2 exemplaires, Salon",
+    );
+  });
+
+  async function show(book: Book, { withoutSeriesName = false } = {}) {
+    const router = createLibrisRouter();
+    await router.push("/catalogue");
+    await router.isReady();
     const wrapper = mount(CatalogueRow, {
       props: { book, withoutSeriesName },
-      global: { plugins: [createLibrisI18n()] },
+      global: { plugins: [createLibrisI18n(), router] },
     });
-    return { wrapper, screen: within(wrapper.element as HTMLElement) };
+    return {
+      wrapper,
+      screen: within(wrapper.element.parentElement as HTMLElement),
+    };
   }
 });

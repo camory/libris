@@ -152,12 +152,12 @@ Read whole by a run that changes `frontend/`, after `every-run.md`.
   (`CollectionShonen manga`, `tome 1Romance dawn`). Assert the order of the
   parts by their positions in the normalised text, or query with
   `@testing-library/dom`, whose default matcher reads an element's own text
-  nodes only. Whitespace beside an interpolation survives as one space, which
-  is what gives `SourceEditionCard`'s heading the boundary
-  `FastEntryScenarios`' `/One piece\D{0,12}1\b/` asks for.
-  Between block parts that must read apart, `CatalogueRow` writes an
-  interpolated `{{ " " }}` on its own line; it survives the compiler and, in
-  a flex container, renders nothing. A literal space between two `<span>`s
+  nodes only. Between block parts that must read apart, `CatalogueRow` and
+  `SourceEditionCard` (its overline `<p>` and its heading, since T114) write
+  an interpolated `{{ " " }}` on its own line; it survives the compiler and,
+  in a flex container, renders nothing. Dropping the card's reds four cases
+  of `KindScenarios` and `FastEntryScenarios`, whose `/One piece\D{0,12}1\b/`
+  reads *tome 1Romance* otherwise. A literal space between two `<span>`s
   does not last: Prettier moves each span to its own line and Vue then
   drops the space.
 - The colour roles and the type steps of `docs/DESIGN.md` are Tailwind theme
@@ -188,11 +188,17 @@ Read whole by a run that changes `frontend/`, after `every-run.md`.
   conversion, no throw.
 - `SourceEditionCard` keeps one `img` per candidate of the lookup's
   `covers`, the shown one alone accessible, and the stand-in `BookOpen`
-  when none is left; its props are `edition`, `copies`, `covers` and
-  `held`, required, the dots' row and the name drawn only when `held` is
-  false. Its spec's `card()`, `show()` and `screen()` default to no
+  when none is left; its props are `edition` (a `SourceEdition` or a
+  `Book`, whose `isbn13` may be `null`), `copies`, `covers` and `held`,
+  required, the dots' row and the name drawn only when `held` is false, and
+  `pageTitle`, optional, which makes its heading the `h1` instead of the
+  `h2`; the heading is named after the title alone, the overline outside
+  it. Its callers are `IsbnView` and `EditionPageView`, which passes the
+  stored cover as the one candidate `{ source: "Libris", url }`, `held`,
+  `page-title`. Its spec's `card()`, `show()` and `screen()` default to no
   candidate and `held` false, so a case counting the rows' `BookOpen`s
-  passes a candidate, or the stand-in adds one. `getAllByRole("img", { hidden: true
+  passes a candidate, or the stand-in adds one; `card()` and `screen()`
+  take `pageTitle` fifth. `getAllByRole("img", { hidden: true
   })` reaches every candidate's image, in the answer's order.
 - jsdom clears its computed-style cache only when the tree is attached to
   the document, and every component spec and scenario mounts detached: an
@@ -398,8 +404,10 @@ Read whole by a run that changes `frontend/`, after `every-run.md`.
   pulls it back under the cover, so it is `relative` too. jsdom
   neither lays out nor hit-tests, so no spec sees the cover: it is checked
   on the running app. A series list row holds no control, so `SeriesRow`'s
-  root is its `RouterLink` itself; `within(wrapper.element)` then misses
-  the link, since it searches descendants only, and its spec queries from
+  root is its `RouterLink` itself, and so is `CatalogueRow`'s since T114:
+  every spec mounting either, or a view that draws one (`CatalogueView`,
+  `SeriesPageView`, `SeriesView`), mounts a router; `within(wrapper.element)` then misses
+  the link, since it searches descendants only, and their specs query from
   the root's parent.
 - A spec's subclass of a fixture fake (`LibrisNotAnswering`,
   `LibrisAnsweringInTurn`) cannot declare a private member of the same name

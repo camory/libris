@@ -2,15 +2,17 @@
 import { BookOpen } from "@lucide/vue";
 import { computed, ref, watch } from "vue";
 import { useI18n } from "vue-i18n";
+import type { Book } from "../../domain/Book";
 import { bookshelvesHolding, type Copy } from "../../domain/Copy";
 import type { CoverCandidate } from "../../domain/Cover";
 import { authorsInOrder, type SourceEdition } from "../../domain/SourceEdition";
 
 const props = defineProps<{
-  edition: SourceEdition;
+  edition: SourceEdition | Book;
   copies: Copy[];
   covers: CoverCandidate[];
   held: boolean;
+  pageTitle?: boolean;
 }>();
 
 const emit = defineEmits<{ coverSource: [source: string | null] }>();
@@ -144,12 +146,13 @@ const rows = computed(() => {
       </div>
 
       <div class="flex min-w-0 flex-col gap-1.5">
-        <h2 class="flex flex-col gap-1.5 text-card-title">
-          <span v-if="overline" class="text-overline uppercase text-accent">
-            {{ overline }}
-          </span>
+        <p v-if="overline" class="text-overline uppercase text-accent">
+          {{ overline }}
+        </p>
+        {{ " " }}
+        <component :is="pageTitle ? 'h1' : 'h2'" class="text-card-title">
           {{ edition.title }}
-        </h2>
+        </component>
         <p v-if="edition.subtitle" class="text-lead text-muted">
           {{ edition.subtitle }}
         </p>

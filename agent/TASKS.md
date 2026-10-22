@@ -63,7 +63,7 @@ the page. No other task touches the contract (D04).
       The frontend's walking skeleton, the thinnest scenario; realises S2;
       un-skips the frontend tests of S2, both cases.
 
-- [ ] T114 Frontend: the reader opens an ouvrage.
+- [x] T114 Frontend: the reader opens an ouvrage.
       A row of the catalogue and a row of a series' page are each a link
       to their ouvrage's page, the whole row, no chevron (U03). The page
       has no header: its first block, 20 under the top of the content, is

@@ -1,7 +1,11 @@
 import { ref, type Ref } from "vue";
+import type { Book } from "../domain/Book";
 import type { CatalogueApi } from "./CatalogueApi";
 
-export type FoundEditionState = { status: "loading" } | { status: "notFound" };
+export type FoundEditionState =
+  | { status: "loading" }
+  | { status: "found"; book: Book }
+  | { status: "notFound" };
 
 export function useFindCatalogueEdition(catalogueApi: CatalogueApi): {
   state: Ref<FoundEditionState>;
@@ -11,8 +15,11 @@ export function useFindCatalogueEdition(catalogueApi: CatalogueApi): {
 
   async function find(id: string) {
     state.value = { status: "loading" };
-    await catalogueApi.find(id);
-    state.value = { status: "notFound" };
+    const answer = await catalogueApi.find(id);
+    state.value =
+      answer.outcome === "found"
+        ? { status: "found", book: answer.book }
+        : { status: "notFound" };
   }
 
   return { state, find };
