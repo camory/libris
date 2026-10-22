@@ -1,4 +1,5 @@
 import type { BookPage, CatalogueApi } from "../../application/CatalogueApi";
+import type { FindBookAnswer } from "../../application/EditionPageApi";
 import { bookOf, type BookResponse } from "./bookOf";
 
 interface BookPageResponse {
@@ -20,5 +21,13 @@ export class FetchCatalogueApi implements CatalogueApi {
     }
     const body = (await response.json()) as BookPageResponse;
     return { books: body.books.map(bookOf), next: body.next };
+  }
+
+  async find(id: string): Promise<FindBookAnswer> {
+    const response = await fetch(`${this.baseUrl}/api/v1/books/${id}`, {
+      headers: { Accept: "application/json, application/problem+json" },
+    });
+    const body = (await response.json()) as BookResponse;
+    return { outcome: "found", book: bookOf(body) };
   }
 }

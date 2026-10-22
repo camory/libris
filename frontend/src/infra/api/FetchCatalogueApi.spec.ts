@@ -54,4 +54,15 @@ describe("FetchCatalogueApi", () => {
     // Then
     await expect(page).rejects.toThrow();
   });
+
+  it("finds the ouvrage with its copies", async () => {
+    // Given
+    const api = new FetchCatalogueApi(inject("mockBaseUrl"));
+
+    // When
+    const answer = await api.find("1c2f3e4d-5a6b-4c7d-9e8f-0a1b2c3d4e5f");
+
+    // Then
+    expect(answer).toEqual({ outcome: "found", book: aBook });
+  });
 });
