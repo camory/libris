@@ -12,6 +12,7 @@ import fr.amory.libris.bibliography.domain.series.SeriesVolume
 import fr.amory.libris.bibliography.fixture.EditionsInMemory
 import fr.amory.libris.bibliography.fixture.SeriesInMemory
 import fr.amory.libris.library.application.catalogue.FindCatalogueEditionResult.Found
+import fr.amory.libris.library.application.catalogue.FindCatalogueEditionResult.NoSuchEdition
 import fr.amory.libris.library.application.lookup.CopyOnBookshelf
 import fr.amory.libris.library.domain.bookshelf.Bookshelf
 import fr.amory.libris.library.domain.bookshelf.BookshelfId
@@ -96,6 +97,21 @@ class FindCatalogueEditionTest {
       CopyOnBookshelf(leasCopy.id, leasBookshelf.id, "Bibliothèque de Léa"),
       CopyOnBookshelf(salonsCopy.id, salon.id, "Salon"),
     )
+  }
+
+  @Test
+  fun `an edition only on bookshelves the reader does not belong to is no such edition`() {
+    // Given
+    val samsBookshelf = bookshelfOf("Bibliothèque de Sam", Membership(sam, OWNER))
+    val leasBookshelf = bookshelfOf("Bibliothèque de Léa", Membership(lea, OWNER))
+    copies.insert(copyOn(samsBookshelf, ASTERIX_LE_GAULOIS.id))
+    copies.insert(copyOn(leasBookshelf, ROMANCE_DAWN.id))
+
+    // When
+    val result = findCatalogueEdition(lea, ASTERIX_LE_GAULOIS.id)
+
+    // Then
+    result shouldBe NoSuchEdition
   }
 
   private fun bookshelfOf(name: String, vararg memberships: Membership): Bookshelf =
