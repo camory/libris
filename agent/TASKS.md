@@ -16,6 +16,80 @@
 >
 > Follow-ups and ideas go to `agent/PROPOSED.md`, never here.
 
+## Edition page — specs/edition-page.md
+
+Contract: release `v0.14.0` of `camory/libris-api`, after `v0.13.0`: one
+operation added, an edition of the reader's catalogue with its copies on
+their bookshelves, answered as the catalogue's `Book`; no schema changes.
+An operation is added, so the backend goes first. Its pin moves once, in
+T111, the thinnest answer that serves the operation; T112 finds the
+ouvrage, red on S1's scenario test. The frontend pin moves from `v0.13.0`
+in T113, once T112 is deployed; T114 and T115 each add one scenario to
+the page. No other task touches the contract (D04).
+
+- [ ] T111 Backend: the edition page on `v0.14.0`, no such ouvrage.
+      `ApiContractTest` pins `v0.14.0`, the backend's one bump (D04).
+      Libris serves an edition by its id and answers every reader that
+      there is no such ouvrage, `404` `/problems/not-found`, until T112
+      finds it; an id that is not one is `400` `/problems/validation`.
+      Contracteer verifies the new operation's cases,
+      `404_NOT_IN_MY_CATALOGUE` and the generated ones, every other answer
+      unchanged (D07, D11). The backend's walking skeleton, the thinnest
+      scenario; realises S2; un-skips the backend tests of S2, both cases.
+
+- [ ] T112 Backend: the reader opens an ouvrage.
+      Libris answers the edition of that id as the catalogue answers it, a
+      `Book`, with its copies on the bookshelves the reader belongs to, at
+      least one, and no other copy, each with its bookshelf's name, in no
+      promised order (D11); its series and tome as the catalogue reads
+      them. An edition none of whose copies sits on a bookshelf of the
+      reader's stays no such ouvrage. A read across both contexts: the
+      bibliography answers the edition, the library its copies on top of
+      it, through a use case the controller calls (D02, D12).
+      Realises S1 and keeps S2; un-skips the backend test of S1.
+
+- [ ] T113 Frontend: the edition page on `v0.14.0`, no such ouvrage.
+      Precondition (human): T112 deployed (D04).
+      `vitest.global-setup.ts` pins `v0.14.0`, the frontend's one bump; the
+      catalogue's port gains the find by id, its client tested against
+      `contracteer mock` on every response the operation declares, `200`,
+      `400` and `404`; the page's interim port and fake fold into it, the
+      scenario file changing for that alone, as #301 records (D04, D07).
+      `/catalogue/ouvrages/{id}`, under the catalogue with its tab current,
+      asks the ouvrage on each arrival: no title and the card's skeleton,
+      its top part, one bookshelf row and three field rows; then for no
+      such ouvrage or an id that is not one *Ouvrage introuvable.* with the
+      alert icon as the screen's one message, no title (U03, U05, U08).
+      The frontend's walking skeleton, the thinnest scenario; realises S2;
+      un-skips the frontend tests of S2, both cases.
+
+- [ ] T114 Frontend: the reader opens an ouvrage.
+      A row of the catalogue and a row of a series' page are each a link
+      to their ouvrage's page, the whole row, no chevron (U03). The page
+      has no header: its first block, 20 under the top of the content, is
+      the card as it shows an edition the house holds, the stored cover or
+      its stand-in, neither dots nor a source name, no button under it
+      (U06); its card title the screen's `h1`, the overline outside it
+      (U02, U08); its rows *Dans* each bookshelf of the reader holding a
+      copy, with the count past one; its field rows and its summary. The
+      lookup's card reads as before. Going back with the phone's button is
+      checked by hand on the Pixel. Realises S1; un-skips the frontend
+      tests of S1, both cases.
+
+- [ ] T115 Frontend: Libris unavailable on an ouvrage.
+      When the ouvrage does not come: no title, *Erreur lors du
+      chargement, veuillez réessayer plus tard.* with the alert icon as
+      the screen's one message, nothing of the ouvrage shown; every word
+      from the `fr` catalogue (U05, U07, U08).
+      Realises S3; un-skips the frontend test of S3.
+
+*Done (Tophe, on the Pixel, from the installed app on staging): in
+Catalogue, tap One Piece tome 1 and read its card, its title at the top and
+the bookshelves holding it; go back with the phone's button and land on the
+catalogue; in Séries, tap Tintin, then tome 20, and read its card. On the
+second account of the family, paste the address of tome 20's page and read
+Ouvrage introuvable.*
+
 ## Done
 
 - Phase 0 — Foundations, T001 to T012, done 2026-09-10 with `v0.1.3` on the
@@ -91,10 +165,11 @@
 
 ## Questions for the human
 
-- **No spec yet**, so nothing is planned for them: PRD §4.1 beyond the add
-  and the listing — viewing and editing an edition, removing a copy, the
-  filters and sorts of the list, the edition page — §4.2 search, §4.3
-  beyond creating a bookshelf, adding a member and choosing the default —
+- **No spec yet**, so nothing is planned for them: PRD §4.1 beyond the add,
+  the listing and the edition page — editing an edition, removing a copy,
+  the filters and sorts of the list, and on the edition page the link to
+  its series and its tags — §4.2 search, §4.3 beyond creating a
+  bookshelf, adding a member and choosing the default —
   removing a member, changing a member's role, adding to a bookshelf other
   than the default, moving and lending a copy, its condition and
   acquisition date — §4.4 reading, §4.5 beyond the series list and the
@@ -114,3 +189,10 @@
   `404`, which the card's own ouvrage and the reader's default bookshelf
   should never draw. T039 reads either as a failure and T040 shows the S5
   sentence for every failure; say if a refusal should read otherwise.
+- **The sentences that say a row leads nowhere.** `specs/catalogue.md`
+  ("A row leads nowhere yet") and `specs/series-page.md` ("row leads
+  nowhere: the edition page comes with its own spec") stop being true with
+  T114, and #299 says the task that makes the rows links rewrites them. A
+  headless run edits no spec but its *Tasks* section, so T114 leaves them
+  as they are; say if it should rewrite them, or rewrite them with the
+  phase's *Done*.
