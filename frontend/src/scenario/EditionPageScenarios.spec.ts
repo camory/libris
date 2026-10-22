@@ -98,7 +98,7 @@ describe("Edition page", () => {
     ]);
   });
 
-  it.skip.each([
+  it.each([
     {
       case: "Libris answers no such ouvrage",
       address: "/catalogue/ouvrages/3e4f5a6b-7c8d-4e9f-a0b1-c2d3e4f5a6b7",
