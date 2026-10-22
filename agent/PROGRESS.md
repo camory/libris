@@ -82,3 +82,19 @@ Format:
 - Left over: T112 finds the edition behind the same use case, result type
   and controller method, and removes the `@Suppress("UnusedParameter")`
   on `FindCatalogueEdition.invoke`; `S1` stays skipped for it.
+
+## 2026-10-22 — T112 The reader opens an ouvrage — done
+- Did: `FindCatalogueEdition` takes `bookshelves`, `copies`, `editions` and
+  `seriesRepository` and finds the edition with its series entry and the
+  reader's copies of it, or `NoSuchEdition`; S1 of `EditionPageScenarios`
+  runs and passes, both S2 cases stay green.
+- Decided: the reader's bookshelves are read with `findByMember`, as
+  `BrowseCatalogue` and `FindCatalogueSeries` do, rather than `findById`
+  per copy with `hasMember`: one query, and the map gives each copy its
+  bookshelf's name. The copies are read first and `NoSuchEdition` answered
+  before the edition is read, so an edition the reader cannot see is never
+  read. Step 2's green kept only the reader's copies, since
+  `NoSuchEdition` needs them, so step 3 is a guard, not a red.
+- Deviations from the brief: none.
+- Left over: the `CopyOnBookshelf` mapping, now in three use cases of the
+  package, in `agent/PROPOSED.md`; T113 to T115 on the frontend.

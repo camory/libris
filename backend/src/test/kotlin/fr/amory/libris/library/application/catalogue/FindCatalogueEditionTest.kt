@@ -1,0 +1,147 @@
+package fr.amory.libris.library.application.catalogue
+
+import fr.amory.libris.bibliography.domain.Contributions
+import fr.amory.libris.bibliography.domain.Kind.BD
+import fr.amory.libris.bibliography.domain.Kind.MANGA
+import fr.amory.libris.bibliography.domain.SeriesEntry
+import fr.amory.libris.bibliography.domain.edition.Edition
+import fr.amory.libris.bibliography.domain.edition.EditionId
+import fr.amory.libris.bibliography.domain.series.Series
+import fr.amory.libris.bibliography.domain.series.SeriesId
+import fr.amory.libris.bibliography.domain.series.SeriesVolume
+import fr.amory.libris.bibliography.fixture.EditionsInMemory
+import fr.amory.libris.bibliography.fixture.SeriesInMemory
+import fr.amory.libris.library.application.catalogue.FindCatalogueEditionResult.Found
+import fr.amory.libris.library.application.catalogue.FindCatalogueEditionResult.NoSuchEdition
+import fr.amory.libris.library.application.lookup.CopyOnBookshelf
+import fr.amory.libris.library.domain.bookshelf.Bookshelf
+import fr.amory.libris.library.domain.bookshelf.BookshelfId
+import fr.amory.libris.library.domain.bookshelf.BookshelfName
+import fr.amory.libris.library.domain.bookshelf.Membership
+import fr.amory.libris.library.domain.bookshelf.MembershipRole.OWNER
+import fr.amory.libris.library.domain.bookshelf.MembershipRole.VIEWER
+import fr.amory.libris.library.domain.reader.ReaderId
+import fr.amory.libris.library.fixture.BookshelvesInMemory
+import fr.amory.libris.library.fixture.CopiesInMemory
+import fr.amory.libris.library.fixture.bookshelfOf
+import fr.amory.libris.library.fixture.copyOn
+import io.kotest.matchers.collections.shouldContainExactlyInAnyOrder
+import io.kotest.matchers.shouldBe
+import io.kotest.matchers.types.shouldBeInstanceOf
+import org.junit.jupiter.api.Test
+
+class FindCatalogueEditionTest {
+  private val lea = ReaderId.new()
+  private val sam = ReaderId.new()
+  private val bookshelves = BookshelvesInMemory()
+  private val copies = CopiesInMemory()
+  private val editions = EditionsInMemory().also {
+    it.insert(ASTERIX_LE_GAULOIS)
+    it.insert(ROMANCE_DAWN)
+  }
+  private val seriesRepository = SeriesInMemory().also { repository ->
+    listOf(ASTERIX, ONE_PIECE).forEach { repository.findOrInsert(it) }
+  }
+  private val findCatalogueEdition = FindCatalogueEdition(bookshelves, copies, editions, seriesRepository)
+
+  @Test
+  fun `an edition of the reader's catalogue is found with its series and its copies`() {
+    // Given
+    val leasBookshelf = bookshelfOf("Bibliothèque de Léa", Membership(lea, OWNER))
+    copies.insert(copyOn(leasBookshelf, ROMANCE_DAWN.id))
+    val copy = copyOn(leasBookshelf, ASTERIX_LE_GAULOIS.id).also { copies.insert(it) }
+
+    // When
+    val result = findCatalogueEdition(lea, ASTERIX_LE_GAULOIS.id)
+
+    // Then
+    result shouldBe Found(
+      HeldEdition(
+        ASTERIX_LE_GAULOIS,
+        SeriesEntry("Astérix", 1),
+        listOf(CopyOnBookshelf(copy.id, leasBookshelf.id, "Bibliothèque de Léa")),
+      ),
+    )
+  }
+
+  @Test
+  fun `a copy on a bookshelf the reader does not belong to is left out`() {
+    // Given
+    val leasBookshelf = bookshelfOf("Bibliothèque de Léa", Membership(lea, OWNER))
+    val samsBookshelf = bookshelfOf("Bibliothèque de Sam", Membership(sam, OWNER))
+    val leasCopy = copyOn(leasBookshelf, ASTERIX_LE_GAULOIS.id).also { copies.insert(it) }
+    copies.insert(copyOn(samsBookshelf, ASTERIX_LE_GAULOIS.id))
+
+    // When
+    val result = findCatalogueEdition(lea, ASTERIX_LE_GAULOIS.id)
+
+    // Then
+    result.shouldBeInstanceOf<Found>().held.copies shouldBe listOf(
+      CopyOnBookshelf(leasCopy.id, leasBookshelf.id, "Bibliothèque de Léa"),
+    )
+  }
+
+  @Test
+  fun `an edition on two of the reader's bookshelves answers both copies`() {
+    // Given
+    val leasBookshelf = bookshelfOf("Bibliothèque de Léa", Membership(lea, OWNER))
+    val salon = bookshelfOf("Salon", Membership(sam, OWNER), Membership(lea, VIEWER))
+    val leasCopy = copyOn(leasBookshelf, ASTERIX_LE_GAULOIS.id).also { copies.insert(it) }
+    val salonsCopy = copyOn(salon, ASTERIX_LE_GAULOIS.id).also { copies.insert(it) }
+
+    // When
+    val result = findCatalogueEdition(lea, ASTERIX_LE_GAULOIS.id)
+
+    // Then
+    result.shouldBeInstanceOf<Found>().held.copies shouldContainExactlyInAnyOrder listOf(
+      CopyOnBookshelf(leasCopy.id, leasBookshelf.id, "Bibliothèque de Léa"),
+      CopyOnBookshelf(salonsCopy.id, salon.id, "Salon"),
+    )
+  }
+
+  @Test
+  fun `an edition only on bookshelves the reader does not belong to is no such edition`() {
+    // Given
+    val samsBookshelf = bookshelfOf("Bibliothèque de Sam", Membership(sam, OWNER))
+    val leasBookshelf = bookshelfOf("Bibliothèque de Léa", Membership(lea, OWNER))
+    copies.insert(copyOn(samsBookshelf, ASTERIX_LE_GAULOIS.id))
+    copies.insert(copyOn(leasBookshelf, ROMANCE_DAWN.id))
+
+    // When
+    val result = findCatalogueEdition(lea, ASTERIX_LE_GAULOIS.id)
+
+    // Then
+    result shouldBe NoSuchEdition
+  }
+
+  private fun bookshelfOf(name: String, vararg memberships: Membership): Bookshelf =
+    bookshelfOf(BookshelfId.new(), BookshelfName(name), memberships.toList()).also { bookshelves.insert(it) }
+}
+
+private val ASTERIX = Series(SeriesId.new(), "Astérix")
+
+private val ONE_PIECE = Series(SeriesId.new(), "One piece")
+
+private val ASTERIX_LE_GAULOIS = Edition(
+  id = EditionId.new(),
+  isbn = null,
+  kind = BD,
+  title = "Astérix le Gaulois",
+  subtitle = null,
+  contributions = Contributions.of(emptyList()),
+  seriesVolume = SeriesVolume(ASTERIX.id, 1),
+  collection = null,
+  publisher = null,
+  publicationYear = null,
+  language = null,
+  pageCount = null,
+  summary = null,
+  coverName = null,
+)
+
+private val ROMANCE_DAWN = ASTERIX_LE_GAULOIS.copy(
+  id = EditionId.new(),
+  kind = MANGA,
+  title = "Romance dawn",
+  seriesVolume = SeriesVolume(ONE_PIECE.id, 1),
+)

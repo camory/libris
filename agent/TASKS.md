@@ -37,7 +37,7 @@ the page. No other task touches the contract (D04).
       unchanged (D07, D11). The backend's walking skeleton, the thinnest
       scenario; realises S2; un-skips the backend tests of S2, both cases.
 
-- [ ] T112 Backend: the reader opens an ouvrage.
+- [x] T112 Backend: the reader opens an ouvrage.
       Libris answers the edition of that id as the catalogue answers it, a
       `Book`, with its copies on the bookshelves the reader belongs to, at
       least one, and no other copy, each with its bookshelf's name, in no
