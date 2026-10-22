@@ -71,3 +71,14 @@ Format:
   and `agent/archive/progress-series-page.md`, as the phases before them did.
 - Left over: the backlog is empty; the next feature, the series details,
   needs its spec, written with Tophe.
+
+## 2026-10-22 — T111 The edition page on v0.14.0, no such ouvrage — done
+- Did: the backend pins `v0.14.0`; `CatalogueController.find` serves
+  `GET /api/v1/books/{id}` through `FindCatalogueEdition`, which answers
+  `NoSuchEdition` to every reader until T112; both S2 cases run and pass.
+- Decided: nothing the brief left open; the steps ran in its order, one
+  commit each, `ApiContractTest` going from 38 to 41 cases.
+- Deviations from the brief: none.
+- Left over: T112 finds the edition behind the same use case, result type
+  and controller method, and removes the `@Suppress("UnusedParameter")`
+  on `FindCatalogueEdition.invoke`; `S1` stays skipped for it.
