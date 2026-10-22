@@ -116,11 +116,21 @@ Format:
 - Left over: T114 shows the found ouvrage, T115 the failure; the shape of
   the skeleton against `1-loading.jpg` is Tophe's to check on the phone.
 
-## 2026-10-22 — T114 The reader opens an ouvrage — handoff
-- Done: steps 1 to 9, one commit each; S1's two cases green, S2's green, S3 skipped; `npm test` green on 9 steps' tree.
-- Start with: the self-review of `git diff main...HEAD`, then the gotchas the brief lists (whitespace item: the overline is now a `<p>` sibling before the heading, kept apart by `{{ " " }}` on its own line; `SourceEditionCard` props: `pageTitle`, a `Book` as `edition`, the page its second caller; stretched-link item: `CatalogueRow`'s root is its `RouterLink`), the tick, the diary entry and the PR.
-- Decided: the heading level through `<component :is="pageTitle ? 'h1' : 'h2'">`; the view builds the one `Libris` candidate in a `computed` from `book.coverUrl`; step 3's case mounts inline with `pageTitle`, the spec's positional `card()` helpers left as they are.
-- Guard (step 7): mutation `book.coverUrl ?? ""` whatever it holds, red read `expected [ <img src …(3)></img> ] to deeply equal []`, reverted.
-- Also checked: dropping the card's `{{ " " }}` reds 4 cases of `KindScenarios`/`FastEntryScenarios`, so the boundary is load-bearing.
-- Deviations: none. Step 9's first expectation listed the links in the wrong order; the catalogue keeps the answer's order (Astérix, then Romance dawn), corrected before commit.
-- Criteria diffs checked: `frontend/src/scenario` shows only the un-skip; the stat over isbn, backend, docs, specs, package files, infra, fixture, CatalogueApi, i18n and router answers nothing.
+## 2026-10-22 — T114 The reader opens an ouvrage — done
+- Did: a catalogue row, on the catalogue and on a series' page, is one
+  `RouterLink` to `/catalogue/ouvrages/{id}`; the page draws the lookup's
+  card over the found `Book`, its title the `h1`, the stored cover or the
+  stand-in, `held`; both S1 cases run and pass, S2 green, S3 skipped.
+- Decided: the heading level through `<component :is>` over `pageTitle`;
+  the view builds the one `Libris` candidate in a `computed` from
+  `book.coverUrl`; step 3's case mounts inline with `pageTitle`, the
+  spec's positional `card()` helpers left as they are. Two runs, the first
+  handing off after step 9, the second doing the self-review, the gotchas
+  and the PR.
+- Deviations from the brief: none. Step 9's first expectation listed the
+  links in the wrong order; the catalogue keeps the answer's order
+  (Astérix, then Romance dawn), corrected before its commit.
+- Left over: the sentences of `specs/catalogue.md` and
+  `specs/series-page.md` saying a row leads nowhere, waiting for Tophe in
+  `agent/TASKS.md`; the back button and the layout against `2-shown.jpg`
+  and `3-shown-sparse.jpg`, Tophe's on the Pixel; T115 the failure.
