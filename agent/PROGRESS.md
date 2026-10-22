@@ -98,3 +98,12 @@ Format:
 - Deviations from the brief: none.
 - Left over: the `CopyOnBookshelf` mapping, now in three use cases of the
   package, in `agent/PROPOSED.md`; T113 to T115 on the frontend.
+
+## 2026-10-22 — T113 The edition page on v0.14.0, no such ouvrage — handoff
+- Done: steps 1 to 10, one commit each; the S2 un-skip came first (implementer rule: scenario red read before any unit test, *Unable to find … Ouvrage introuvable.*), so both S2 cases stay red until step 13: the only red tests of the gate.
+- Next: step 11 (*asks the ouvrage of each id it is given*), then 12, 13, then the gate (S2 green), self-review, gotchas, PR.
+- Deviation: the brief's step 14 guard became the first cycle (rule above); its mutation (nothing drawn for `notFound`) is still to run once green.
+- Deviation: `CatalogueView.spec.ts` gains one line, a `find` on its object literal typed `CatalogueApi`, or `vue-tsc` refuses it after the fold; the stat criterion on `ui/views/catalogue` cannot hold literally.
+- Decided: `HeldEditionCardSkeleton` repeats `SourceEditionCardSkeleton`'s top part rather than sharing a third component for nine lines.
+- Guard step 8: mutation `notFound` for `/problems/not-found` alone; red `expected { status: 'loading' } to deeply equal { status: 'notFound' }`; reverted.
+- Learned: the mock answers `GET /books/{id}`: a random problem `type` with `400` for `not-a-uuid`, an empty `404` for an unencoded `a/b` (`Unexpected end of JSON input`), as the brief said.
