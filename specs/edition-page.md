@@ -6,7 +6,7 @@ their bookshelves its copies sit: the edition page of §4.1, the shelf to
 look on read from the sofa. Now, because the catalogue and the series'
 page list ouvrages that lead nowhere, and editing an ouvrage and removing
 a copy start from this page.
-**Status:** draft
+**Status:** done 2026-10-23
 
 ## Scenarios
 
@@ -144,6 +144,7 @@ holding it; go back with the phone's button and land on the catalogue; in
 *Séries*, tap *Tintin*, then tome 20, and read its card. On the second
 account of the family, paste the address of tome 20's page and read
 *Ouvrage introuvable.* The other cases are the tests' to show.
+Checked by Tophe on staging, recorded on 2026-10-23.
 
 ## Tasks
 

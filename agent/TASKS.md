@@ -16,80 +16,6 @@
 >
 > Follow-ups and ideas go to `agent/PROPOSED.md`, never here.
 
-## Edition page — specs/edition-page.md
-
-Contract: release `v0.14.0` of `camory/libris-api`, after `v0.13.0`: one
-operation added, an edition of the reader's catalogue with its copies on
-their bookshelves, answered as the catalogue's `Book`; no schema changes.
-An operation is added, so the backend goes first. Its pin moves once, in
-T111, the thinnest answer that serves the operation; T112 finds the
-ouvrage, red on S1's scenario test. The frontend pin moves from `v0.13.0`
-in T113, once T112 is deployed; T114 and T115 each add one scenario to
-the page. No other task touches the contract (D04).
-
-- [x] T111 Backend: the edition page on `v0.14.0`, no such ouvrage.
-      `ApiContractTest` pins `v0.14.0`, the backend's one bump (D04).
-      Libris serves an edition by its id and answers every reader that
-      there is no such ouvrage, `404` `/problems/not-found`, until T112
-      finds it; an id that is not one is `400` `/problems/validation`.
-      Contracteer verifies the new operation's cases,
-      `404_NOT_IN_MY_CATALOGUE` and the generated ones, every other answer
-      unchanged (D07, D11). The backend's walking skeleton, the thinnest
-      scenario; realises S2; un-skips the backend tests of S2, both cases.
-
-- [x] T112 Backend: the reader opens an ouvrage.
-      Libris answers the edition of that id as the catalogue answers it, a
-      `Book`, with its copies on the bookshelves the reader belongs to, at
-      least one, and no other copy, each with its bookshelf's name, in no
-      promised order (D11); its series and tome as the catalogue reads
-      them. An edition none of whose copies sits on a bookshelf of the
-      reader's stays no such ouvrage. A read across both contexts: the
-      bibliography answers the edition, the library its copies on top of
-      it, through a use case the controller calls (D02, D12).
-      Realises S1 and keeps S2; un-skips the backend test of S1.
-
-- [x] T113 Frontend: the edition page on `v0.14.0`, no such ouvrage.
-      Precondition (human): T112 deployed (D04).
-      `vitest.global-setup.ts` pins `v0.14.0`, the frontend's one bump; the
-      catalogue's port gains the find by id, its client tested against
-      `contracteer mock` on every response the operation declares, `200`,
-      `400` and `404`; the page's interim port and fake fold into it, the
-      scenario file changing for that alone, as #301 records (D04, D07).
-      `/catalogue/ouvrages/{id}`, under the catalogue with its tab current,
-      asks the ouvrage on each arrival: no title and the card's skeleton,
-      its top part, one bookshelf row and three field rows; then for no
-      such ouvrage or an id that is not one *Ouvrage introuvable.* with the
-      alert icon as the screen's one message, no title (U03, U05, U08).
-      The frontend's walking skeleton, the thinnest scenario; realises S2;
-      un-skips the frontend tests of S2, both cases.
-
-- [x] T114 Frontend: the reader opens an ouvrage.
-      A row of the catalogue and a row of a series' page are each a link
-      to their ouvrage's page, the whole row, no chevron (U03). The page
-      has no header: its first block, 20 under the top of the content, is
-      the card as it shows an edition the house holds, the stored cover or
-      its stand-in, neither dots nor a source name, no button under it
-      (U06); its card title the screen's `h1`, the overline outside it
-      (U02, U08); its rows *Dans* each bookshelf of the reader holding a
-      copy, with the count past one; its field rows and its summary. The
-      lookup's card reads as before. Going back with the phone's button is
-      checked by hand on the Pixel. Realises S1; un-skips the frontend
-      tests of S1, both cases.
-
-- [x] T115 Frontend: Libris unavailable on an ouvrage.
-      When the ouvrage does not come: no title, *Erreur lors du
-      chargement, veuillez réessayer plus tard.* with the alert icon as
-      the screen's one message, nothing of the ouvrage shown; every word
-      from the `fr` catalogue (U05, U07, U08).
-      Realises S3; un-skips the frontend test of S3.
-
-*Done (Tophe, on the Pixel, from the installed app on staging): in
-Catalogue, tap One Piece tome 1 and read its card, its title at the top and
-the bookshelves holding it; go back with the phone's button and land on the
-catalogue; in Séries, tap Tintin, then tome 20, and read its card. On the
-second account of the family, paste the address of tome 20's page and read
-Ouvrage introuvable.*
-
 ## Done
 
 - Phase 0 — Foundations, T001 to T012, done 2026-09-10 with `v0.1.3` on the
@@ -162,6 +88,11 @@ Ouvrage introuvable.*
   its authors and publishers, the reader's editions with the gaps between
   them; no such series and Libris unavailable each say so alone; checked
   on the Pixel from the installed app on staging.
+- Edition page, T111 to T115, done 2026-10-22, `specs/edition-page.md`:
+  a row of the catalogue or of a series' page opens on its ouvrage's
+  page, the card of an edition the house holds, its title the screen's
+  heading, the reader's bookshelves holding a copy; no such ouvrage and
+  Libris unavailable each say so alone; checked on staging.
 
 ## Questions for the human
 
