@@ -76,6 +76,22 @@ describe("EditionPageView", () => {
     expect(wrapper.findAllComponents(CircleAlert)).toHaveLength(1);
   });
 
+  it("says to try again later when Libris does not answer, alone", async () => {
+    // Given
+    const wrapper = mountEditionPageView(
+      new FakeCatalogueApi([], new TypeError("Failed to fetch")),
+    );
+
+    // When
+    await flushPromises();
+
+    // Then
+    expect(normalised(wrapper.element)).toBe(
+      "Erreur lors du chargement, veuillez réessayer plus tard.",
+    );
+    expect(wrapper.findAllComponents(CircleAlert)).toHaveLength(1);
+  });
+
   it("shows the ouvrage's card, its title the page's h1", async () => {
     // Given
     const wrapper = mountEditionPageView({

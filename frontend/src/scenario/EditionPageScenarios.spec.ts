@@ -116,7 +116,7 @@ describe("Edition page", () => {
     expect(rows(screen)).toEqual([]);
   });
 
-  it.skip("S3 Libris unavailable", async () => {
+  it("S3 Libris unavailable", async () => {
     // Given
     const catalogue = librisDoesNotAnswer();
 

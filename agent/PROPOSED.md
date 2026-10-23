@@ -479,3 +479,11 @@
   picture or none" or "these candidates", and the stored cover would carry
   no source (Tophe, 2026-10-22, on T114). Open before a task: whether the
   lookup's held answer keeps its candidate in the contract.
+- Frontend: `useFindBookshelf`, `useFindCatalogueSeries` and
+  `useFindCatalogueEdition` each map a find's answer the same way, a
+  rejection or any problem but `/problems/not-found` and
+  `/problems/validation` to `unavailable`, the two to `notFound`; and
+  `SeriesPageView` and `EditionPageView` each pick their failure's words
+  with the same `computed` (Duplicated Code, three copies since T115).
+  One mapping of a find's problem to the screen's state could serve the
+  three (found by the reviewer on T115, Tophe 2026-10-23).

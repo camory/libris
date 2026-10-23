@@ -52,4 +52,33 @@ describe("useFindCatalogueEdition", () => {
     // Then
     expect(state.value).toEqual({ status: "notFound" });
   });
+
+  it("is unavailable when Libris does not answer", async () => {
+    // Given
+    const { state, find } = useFindCatalogueEdition(
+      new FakeCatalogueApi([], new TypeError("Failed to fetch")),
+    );
+
+    // When
+    await find(asterixLeGaulois.id);
+
+    // Then
+    expect(state.value).toEqual({ status: "unavailable" });
+  });
+
+  it("reads another problem as no answer", async () => {
+    // Given
+    const { state, find } = useFindCatalogueEdition(
+      new FakeCatalogueApi([], {
+        outcome: "problem",
+        type: "/problems/conflict",
+      }),
+    );
+
+    // When
+    await find(asterixLeGaulois.id);
+
+    // Then
+    expect(state.value).toEqual({ status: "unavailable" });
+  });
 });

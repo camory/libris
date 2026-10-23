@@ -143,6 +143,7 @@ const fr = {
     publishers: "Éditeur | Éditeurs",
   },
   editionPage: {
+    error: "Erreur lors du chargement, veuillez réessayer plus tard.",
     notFound: "Ouvrage introuvable.",
   },
   language: {
