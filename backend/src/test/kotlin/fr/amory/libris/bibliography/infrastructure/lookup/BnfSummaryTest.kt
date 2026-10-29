@@ -14,4 +14,9 @@ class BnfSummaryTest {
     summaryOf("Fran&#231;ais &amp; Fran&#xE7;ais&nbsp;: l&apos;eau &quot;vive&quot; &lt;3&gt;") shouldBe
       "Français & Français : l'eau \"vive\" <3>"
   }
+
+  @Test
+  fun `a decoded lower-than sign is text, not markup`() {
+    summaryOf("Moins de 10 &lt;b&gt; ici") shouldBe "Moins de 10 <b> ici"
+  }
 }
