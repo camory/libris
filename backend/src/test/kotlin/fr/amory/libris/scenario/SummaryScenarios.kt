@@ -20,7 +20,6 @@ import java.util.UUID
 class SummaryScenarios @Autowired constructor(libris: Libris, private val bnf: BnfStubs) {
   private val lea = libris.reader("lea", "Léa")
 
-  @Disabled("summary")
   @ParameterizedTest(name = "S1 The BnF gives a summary, {argumentSetName}")
   @FieldSource("SUMMARIES")
   fun `S1 The BnF gives a summary`(isbn: String, summary: String) {
