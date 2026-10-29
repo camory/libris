@@ -171,10 +171,3 @@ BnF record carries a summary, and read it on its page.*
   `404`, which the card's own ouvrage and the reader's default bookshelf
   should never draw. T039 reads either as a failure and T040 shows the S5
   sentence for every failure; say if a refusal should read otherwise.
-- **The short summary of the *Done*.** The summary's mockup draws its
-  short state with *Ça roule !*, 9782747012744, but the BnF query Libris
-  sends finds no record for it (`agent/PROPOSED.md`, 2026-10-29), so
-  scanning it on the Pixel shows no summary at all, short or not. The
-  *Done*'s "a book whose summary is short" needs another ISBN, one the
-  BnF finds by `bib.isbn`; no task widens the query, since the spec does
-  not ask for it.
