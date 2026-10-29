@@ -25,6 +25,10 @@ true; the diary keeps the date it was found.
 - `pkill -f` or `pgrep -af` with a pattern that appears in the tool call's
   own command line kills or matches the call itself (exit 144). Match on
   something else, or stop the process from what started it.
+- The Write and Edit tools turn a `\u00A0` escape written in a Kotlin or
+  TypeScript string into the literal non-breaking space, invisible in a
+  diff (seen 2026-10-29). Write such a string through a shell heredoc or
+  a script, and check with `grep -c $'\xC2\xA0' <file>`.
 - `git checkout <file>` reverts to the last commit, not to the working tree:
   commit the cycle before a mutation check.
 - `gh pr edit N --body-file <file>` updates a body (it worked on

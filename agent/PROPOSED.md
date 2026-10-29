@@ -487,3 +487,8 @@
   with the same `computed` (Duplicated Code, three copies since T115).
   One mapping of a find's problem to the screen's state could serve the
   three (found by the reviewer on T115, Tophe 2026-10-23).
+- 2026-10-29 — Backend: `summaryOf` decodes a numeric reference with
+  `Character.toString`, which throws on a code point past U+10FFFF
+  (`&#1114112;`) and `toInt` on more digits than an `Int` holds, so such a
+  330 would fail the BnF lookup instead of leaving the reference as written
+  (found by the implementer on T116; no record has shown one).
