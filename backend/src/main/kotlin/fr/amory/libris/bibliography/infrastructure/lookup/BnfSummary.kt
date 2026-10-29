@@ -1,12 +1,14 @@
 package fr.amory.libris.bibliography.infrastructure.lookup
 
+private val PARAGRAPH_BREAK = Regex("</p><p(?:\\s[^>]*)?>")
 private val TAG = Regex("<[^>]*>")
 private val ENTITY = Regex("&(?:#(\\d+)|#[xX](\\p{XDigit}+)|(amp|lt|gt|quot|apos|nbsp));")
-private val NAMED = mapOf("amp" to "&", "lt" to "<", "gt" to ">", "quot" to "\"", "apos" to "'", "nbsp" to " ")
+private val NAMED = mapOf("amp" to "&", "lt" to "<", "gt" to ">", "quot" to "\"", "apos" to "'", "nbsp" to "\u00A0")
 private const val HEXADECIMAL = 16
 
 internal fun summaryOf(description: String?): String? =
   description
+    ?.replace(PARAGRAPH_BREAK, "\n")
     ?.replace(TAG, "")
     ?.replace(ENTITY) { characterOf(it) }
 
