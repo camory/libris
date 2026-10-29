@@ -23,8 +23,13 @@ internal fun summaryOf(description: String?): String? =
 private fun characterOf(entity: MatchResult): String {
   val (decimal, hexadecimal, name) = entity.destructured
   return when {
-    decimal.isNotEmpty()     -> Character.toString(decimal.toInt())
-    hexadecimal.isNotEmpty() -> Character.toString(hexadecimal.toInt(HEXADECIMAL))
+    decimal.isNotEmpty()     -> characterAt(decimal.toIntOrNull()) ?: entity.value
+    hexadecimal.isNotEmpty() -> characterAt(hexadecimal.toIntOrNull(HEXADECIMAL)) ?: entity.value
     else                     -> NAMED.getValue(name)
   }
 }
+
+private fun characterAt(codePoint: Int?): String? =
+  codePoint
+    ?.takeIf { Character.isValidCodePoint(it) }
+    ?.let { Character.toString(it) }
