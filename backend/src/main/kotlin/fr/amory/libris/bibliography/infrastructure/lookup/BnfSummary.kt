@@ -15,6 +15,7 @@ internal fun summaryOf(description: String?): String? =
     ?.replace(ENTITY) { characterOf(it) }
     ?.replace(LINE_FEEDS, "\n")
     ?.replace(SPACES, " ")
+    ?.trim()
 
 private fun characterOf(entity: MatchResult): String {
   val (decimal, hexadecimal, name) = entity.destructured

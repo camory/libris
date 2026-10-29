@@ -44,4 +44,9 @@ class BnfSummaryTest {
   fun `a lone non-breaking space is kept`() {
     summaryOf("leurre ? Une") shouldBe "leurre ? Une"
   }
+
+  @Test
+  fun `the summary is trimmed`() {
+    summaryOf("\n <p> Un </p>\n ") shouldBe "Un"
+  }
 }
