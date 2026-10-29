@@ -174,7 +174,8 @@ with it.
 
 **Text button.** A verb in the infinitive, `button` step, `accent`, no
 border, no background, 44 tall, 12 of side padding. It lives in a banner
-(U09) and nowhere else: on a screen the action is the primary button.
+(U09) and under a card's folded summary (U06), nowhere else: on a screen
+the action is the primary button.
 
 **Dot.** A choice among a few pictures, under the picture (U06): a button 44
 tall and 32 wide, no border, no background, the dot drawn 8 across in its
@@ -243,8 +244,11 @@ Middle part: one row per field, `body`, the label at the left in
 padding, a `border` hairline above each row: *Collection*, *Éditeur*,
 *Année*, *Langue*, *Pages*, *ISBN*, in that order. A field with no value has
 no row; a card never says *inconnu*. Then the summary, when there is one,
-as a paragraph in `body`, `text`, line-height 1.4, as long as it is. The
-summary is the card's last part.
+one paragraph per line, in `body`, `text`, line-height 1.4, 8 between two
+paragraphs. Past six lines it is folded: the sixth ends on an ellipsis,
+and a text button, *Lire la suite*, sits right under it, its word on the
+summary's left edge; a tap shows the whole summary and the button goes,
+for good. The summary is the card's last part.
 
 **Covers.** When the card is given candidate covers, a row of dots sits
 under the cover block, centred, in the order of the answer. There is one dot
