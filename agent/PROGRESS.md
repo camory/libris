@@ -100,3 +100,18 @@ Format:
   since the cycle's commit was already made.
 - Left over: the stored editions' summaries (T117), the card's paragraphs
   and fold (T118); the numeric reference above, in `agent/PROPOSED.md`.
+
+## 2026-10-29 — T116 The BnF gives a summary — reworked
+- Did: a numeric reference of the 330 that names no code point
+  (`&#1114112;`, `&#99999999999;`, `&#x123456789;`) stays as written instead
+  of throwing out of the BnF lookup; whitespace between `</p>` and `<p>` is
+  a line feed, as an adjacent pair is.
+- Decided: the reviewer's verdict of 2026-10-29 found the brief's "every
+  numeric reference decoded" unmet on references past U+10FFFF or past an
+  `Int`; they stay as written, as an unknown named entity does, and the
+  `agent/PROPOSED.md` item filed for it is gone. Its suggestion on
+  `</p> <p>` was applied, since S1 calls any paragraph end followed by a
+  new paragraph a line break. Its history remark asked nothing.
+- Deviations from the brief: none.
+- Left over: a decoded `&#0;` or lone surrogate would reach PostgreSQL,
+  in `agent/PROPOSED.md`.
