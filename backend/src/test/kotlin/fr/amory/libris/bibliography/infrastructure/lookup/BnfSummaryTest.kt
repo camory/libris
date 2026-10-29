@@ -49,4 +49,9 @@ class BnfSummaryTest {
   fun `the summary is trimmed`() {
     summaryOf("\n <p> Un </p>\n ") shouldBe "Un"
   }
+
+  @Test
+  fun `a space is put after a mark glued to a capital`() {
+    summaryOf("pain.DÉCOUVREZ Oui!Non?Peut-être…Enfin") shouldBe "pain. DÉCOUVREZ Oui! Non? Peut-être… Enfin"
+  }
 }
