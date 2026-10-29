@@ -29,4 +29,9 @@ class BnfSummaryTest {
   fun `a markup line break is a line feed`() {
     summaryOf("Un<br/>Deux<br>Trois<br />Quatre") shouldBe "Un\nDeux\nTrois\nQuatre"
   }
+
+  @Test
+  fun `a run of line breaks is one line feed`() {
+    summaryOf("<p>Un</p>\n<p>Deux<br/><br/>Trois\n\nQuatre</p>") shouldBe "Un\nDeux\nTrois\nQuatre"
+  }
 }
