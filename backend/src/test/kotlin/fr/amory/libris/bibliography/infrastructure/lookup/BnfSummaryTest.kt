@@ -54,4 +54,9 @@ class BnfSummaryTest {
   fun `a space is put after a mark glued to a capital`() {
     summaryOf("pain.DÉCOUVREZ Oui!Non?Peut-être…Enfin") shouldBe "pain. DÉCOUVREZ Oui! Non? Peut-être… Enfin"
   }
+
+  @Test
+  fun `a space is put after a mark glued to a bullet`() {
+    summaryOf("ÉTAPE.• LES épi...• LES") shouldBe "ÉTAPE. • LES épi... • LES"
+  }
 }
