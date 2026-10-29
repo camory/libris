@@ -25,7 +25,7 @@ lookup first, T116; T117 fills the stored editions with that same reading.
 The frontend's one task, T118, draws the card's summary from the line feeds
 it already receives.
 
-- [ ] T116 Backend: the BnF gives a summary.
+- [x] T116 Backend: the BnF gives a summary.
       The bibliography's BnF source answers the summary of its record's
       field 330 `$a`, cleaned as S1 lists, each clause its own unit test:
       markup dropped and its entities decoded; a paragraph end, a markup

@@ -43,7 +43,7 @@ internal fun UnimarcRecord.previewFor(isbn: Isbn): EditionPreview? =
       publicationYear = publicationYearOf(value("100", "a"), publication?.value("d")),
       language = LANGUAGES[value("101", "a")],
       pageCount = pageCountOf(value("215", "a")),
-      summary = null,
+      summary = summaryOf(value("330", "a")),
     )
   }
 
