@@ -34,4 +34,9 @@ class BnfSummaryTest {
   fun `a run of line breaks is one line feed`() {
     summaryOf("<p>Un</p>\n<p>Deux<br/><br/>Trois\n\nQuatre</p>") shouldBe "Un\nDeux\nTrois\nQuatre"
   }
+
+  @Test
+  fun `a run of spaces is one space`() {
+    summaryOf("épi...  Issu   d'une") shouldBe "épi... Issu d'une"
+  }
 }
