@@ -140,7 +140,7 @@ class BnfSourceTest {
         publicationYear = 2026,
         language = "fr",
         pageCount = 348,
-        summary = null,
+        summary = APOTHICAIRE_SUMMARY,
       ),
       CoverCandidate(BNF, APOTHICAIRE_COVER),
     )
@@ -376,6 +376,20 @@ class BnfSourceTest {
       "https://catalogue.bnf.fr/couverture?&appName=NE&idArk=ark:/12148/cb46810645h&couverture=1"
     const val APOTHICAIRE_COVER =
       "https://catalogue.bnf.fr/couverture?&appName=NE&idArk=ark:/12148/cb48801192z&couverture=1"
+    const val APOTHICAIRE_SUMMARY =
+      "Une jeune apothicaire face aux arcanes du pouvoir impérial La capitale ne parle plus que " +
+      "de go depuis que Lacan a publié un livre sur ce jeu. On dit même que le stratège va " +
+      "organiser un tournoi ouvert à tous et qu'il est prêt à exaucer le vSu le plus cher de " +
+      "celui qui réussira à le battre. La rumeur est parvenue aux oreilles de Jinshi, qui compte " +
+      "bien en profiter. Mais loin de cette agitation, dans les coulisses du pouvoir, " +
+      "l'inquiétude ne cesse de croître. Le prince impérial a reçu des rapports alarmants faisant " +
+      "état de récoltes dévastées par une invasion de criquets. Avec l'aide précieuse de Mao Mao, " +
+      "toujours aussi accaparée par les affaires de la cour, arrivera-t-il à endiguer ce fléau ? " +
+      "Découvrez la face cachée du saint des saints de la cité impériale ! Dans ce monde de " +
+      "femmes régi par les hommes, Mao Mao aura besoin de toute sa sagacité et de tout son savoir " +
+      "pour démêler les intrigues de cour... Phénoménal succès de librairie au Japon désormais " +
+      "adapté pour le petit écran, ce roman permet de découvrir une période de l'histoire " +
+      "fascinante et une héroïne incroyablement attachante."
     const val BLANK_NAMES = "9782723489898"
     val CONTRIBUTOR_AND_SERIES_WITHOUT_A_NAME = """
             <srw:searchRetrieveResponse xmlns:srw="http://www.loc.gov/zing/srw/">
