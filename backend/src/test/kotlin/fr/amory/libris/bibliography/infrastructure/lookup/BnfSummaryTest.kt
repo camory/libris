@@ -64,4 +64,9 @@ class BnfSummaryTest {
   fun `a mark followed by a lower-case letter or a digit stays glued`() {
     summaryOf("version 2.0.1 sur bnf.fr") shouldBe "version 2.0.1 sur bnf.fr"
   }
+
+  @Test
+  fun `a summary that cleans to nothing is none`() {
+    summaryOf("<p> </p><br/>") shouldBe null
+  }
 }

@@ -18,6 +18,7 @@ internal fun summaryOf(description: String?): String? =
     ?.replace(SPACES, " ")
     ?.replace(GLUED_SENTENCE, "$1 $2")
     ?.trim()
+    ?.ifEmpty { null }
 
 private fun characterOf(entity: MatchResult): String {
   val (decimal, hexadecimal, name) = entity.destructured
