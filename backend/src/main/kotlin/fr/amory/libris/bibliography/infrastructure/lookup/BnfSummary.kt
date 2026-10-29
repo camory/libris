@@ -1,6 +1,6 @@
 package fr.amory.libris.bibliography.infrastructure.lookup
 
-private val LINE_BREAK = Regex("</p><p(?:\\s[^>]*)?>|<br\\s*/?>")
+private val LINE_BREAK = Regex("</p>\\s*<p(?:\\s[^>]*)?>|<br\\s*/?>")
 private val TAG = Regex("<[^>]*>")
 private val ENTITY = Regex("&(?:#(\\d+)|#[xX](\\p{XDigit}+)|(amp|lt|gt|quot|apos|nbsp));")
 private val NAMED = mapOf("amp" to "&", "lt" to "<", "gt" to ">", "quot" to "\"", "apos" to "'", "nbsp" to "\u00A0")

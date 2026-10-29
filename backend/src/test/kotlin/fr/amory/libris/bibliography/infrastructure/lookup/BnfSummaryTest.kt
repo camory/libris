@@ -31,6 +31,11 @@ class BnfSummaryTest {
   }
 
   @Test
+  fun `a paragraph end followed by spaces and a new paragraph is a line feed`() {
+    summaryOf("<p>Un</p> <p>Deux</p>") shouldBe "Un\nDeux"
+  }
+
+  @Test
   fun `a markup line break is a line feed`() {
     summaryOf("Un<br/>Deux<br>Trois<br />Quatre") shouldBe "Un\nDeux\nTrois\nQuatre"
   }
