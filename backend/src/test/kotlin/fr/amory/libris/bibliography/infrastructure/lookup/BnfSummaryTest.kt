@@ -37,12 +37,12 @@ class BnfSummaryTest {
 
   @Test
   fun `a run of spaces is one space`() {
-    summaryOf("épi...  Issu   d'une") shouldBe "épi... Issu d'une"
+    summaryOf("épi...\u00A0 Issu   d'une") shouldBe "épi... Issu d'une"
   }
 
   @Test
   fun `a lone non-breaking space is kept`() {
-    summaryOf("leurre ? Une") shouldBe "leurre ? Une"
+    summaryOf("leurre\u00A0? Une") shouldBe "leurre\u00A0? Une"
   }
 
   @Test
