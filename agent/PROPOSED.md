@@ -487,9 +487,3 @@
   with the same `computed` (Duplicated Code, three copies since T115).
   One mapping of a find's problem to the screen's state could serve the
   three (found by the reviewer on T115, Tophe 2026-10-23).
-- Backend: the BnF query of `BnfSource`, `bib.isbn all` on the ISBN-13
-  and the ISBN-10, finds no record for *Ça roule !* (Tom-Tom et Nana 31,
-  9782747012744), which `bib.ean all "9782747012744"` finds, with its
-  summary. How many ISBNs the BnF indexes under `bib.ean` alone is to
-  measure before adding it to the query (found 2026-10-29 while drawing
-  the summary mockups).
