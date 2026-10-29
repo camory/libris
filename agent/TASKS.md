@@ -16,6 +16,57 @@
 >
 > Follow-ups and ideas go to `agent/PROPOSED.md`, never here.
 
+## Summary — specs/summary.md
+
+Contract: no release. `IsbnLookup` and `Book` carry `summary`, a string or
+`null`, since the bookshelf spec, so no task bumps a pin and no task waits
+on another side's deploy (D04). The backend reads the summary on the
+lookup first, T116; T117 fills the stored editions with that same reading.
+The frontend's one task, T118, draws the card's summary from the line feeds
+it already receives.
+
+- [ ] T116 Backend: the BnF gives a summary.
+      The bibliography's BnF source answers the summary of its record's
+      field 330 `$a`, cleaned as S1 lists, each clause its own unit test:
+      markup dropped and its entities decoded; a paragraph end, a markup
+      line break or a line feed, or a run of them, one line feed; a run of
+      spaces one space, a lone non-breaking space kept; trimmed; a space
+      after `.`, `!`, `?` or `…` glued to a capital or `•`. A summary that
+      cleans to nothing is `null`; Open Library still answers none, and the
+      BnF's own defects stay as they come. No length limit.
+      Realises S1; un-skips the backend test of S1, both cases (D02, D07).
+
+- [ ] T117 Backend: stored editions gain their summary.
+      At start, every stored edition with an ISBN and no summary asks the
+      BnF alone once and keeps the summary it gives, cleaned as T116 cleans
+      it; an edition without an ISBN, or with a summary, is not asked and
+      stays as it was. The BnF having none or failing leaves the edition
+      without one, is never asked again, and never refuses the start. A
+      Kotlin migration in the numbering of the SQL files, through the
+      lookup port the application already uses (D02, D11).
+      Realises S4; un-skips the backend tests of S4, its three cases.
+
+- [ ] T118 Frontend: the summary in paragraphs, folded.
+      The card, on the lookup and on the ouvrage's page alike, shows the
+      summary one paragraph per line of its text, 8 between two
+      paragraphs, still its last part (U06). Past six lines it stops on an
+      ellipsis with the text button *Lire la suite* right under it, its
+      word on the summary's left edge, from the `fr` catalogue; a tap shows
+      the whole summary and the button goes for as long as the card is on
+      screen, no *Réduire* (U04, U06, U08). Six lines or fewer show whole,
+      no button. Realises S2 and S3; un-skips the frontend tests of S2,
+      both screens. S3 has no scenario test (#311): its proof is the card's
+      component test of the tap showing the whole summary and removing the
+      button, and the fold at six lines and its absence for a short summary
+      are checked by hand on the Pixel.
+
+*Done (Tophe, on the Pixel, from the installed app on staging): scan Mont
+Tombe, 9782344008980, and read its summary in paragraphs, cut after six
+lines on …, Lire la suite under it; tap it and read the whole summary, the
+button gone; scan a book whose summary is short and read it whole, with no
+button. Open an ouvrage of the catalogue stored before the release whose
+BnF record carries a summary, and read it on its page.*
+
 ## Done
 
 - Phase 0 — Foundations, T001 to T012, done 2026-09-10 with `v0.1.3` on the
@@ -120,10 +171,10 @@
   `404`, which the card's own ouvrage and the reader's default bookshelf
   should never draw. T039 reads either as a failure and T040 shows the S5
   sentence for every failure; say if a refusal should read otherwise.
-- **The sentences that say a row leads nowhere.** `specs/catalogue.md`
-  ("A row leads nowhere yet") and `specs/series-page.md` ("row leads
-  nowhere: the edition page comes with its own spec") stop being true with
-  T114, and #299 says the task that makes the rows links rewrites them. A
-  headless run edits no spec but its *Tasks* section, so T114 leaves them
-  as they are; say if it should rewrite them, or rewrite them with the
-  phase's *Done*.
+- **The short summary of the *Done*.** The summary's mockup draws its
+  short state with *Ça roule !*, 9782747012744, but the BnF query Libris
+  sends finds no record for it (`agent/PROPOSED.md`, 2026-10-29), so
+  scanning it on the Pixel shows no summary at all, short or not. The
+  *Done*'s "a book whose summary is short" needs another ISBN, one the
+  BnF finds by `bib.isbn`; no task widens the query, since the spec does
+  not ask for it.

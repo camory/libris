@@ -152,3 +152,7 @@ no button. Open an ouvrage of the catalogue stored before the release
 whose BnF record carries a summary, and read it on its page.
 
 ## Tasks
+
+- T116 — S1 — backend
+- T117 — S4 — backend
+- T118 — S2, S3 — frontend
