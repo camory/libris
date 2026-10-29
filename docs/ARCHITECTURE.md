@@ -47,6 +47,10 @@ skips itself while its application does not exist.
 Spring Boot, Kotlin, JDK 25, one Gradle module. Persistence with
 **Spring JDBC** (`JdbcClient`, hand-written SQL; no Spring Data, no JPA, no
 Exposed, no jOOQ). Migrations with **Flyway**, SQL files, never `ddl-auto`.
+A migration that fills existing rows from a source is a Kotlin
+`JavaMigration` in the numbering of the SQL files: it reaches the source
+through the port the application already uses, takes what the source fails
+on as no answer, and never refuses the start.
 
 Packages under `fr.amory.libris`: one per bounded context, `bibliography`
 (what an edition is and where it is looked up) and `library` (who reads,
@@ -565,7 +569,8 @@ Schema
 - ISBN-13 / EAN stored normalised: thirteen digits, no separators, validated
   on input.
 - Flyway files `V001__short_description.sql`, three digits, never edited once
-  merged.
+  merged; `V013__short_description`, a Kotlin class, for a migration that
+  fills rows from a source.
 - No optimistic locking in v1.
 
 API shapes
