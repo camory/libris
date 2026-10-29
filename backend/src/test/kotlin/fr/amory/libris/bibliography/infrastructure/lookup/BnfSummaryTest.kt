@@ -39,4 +39,9 @@ class BnfSummaryTest {
   fun `a run of spaces is one space`() {
     summaryOf("épi...  Issu   d'une") shouldBe "épi... Issu d'une"
   }
+
+  @Test
+  fun `a lone non-breaking space is kept`() {
+    summaryOf("leurre ? Une") shouldBe "leurre ? Une"
+  }
 }
