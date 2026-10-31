@@ -418,6 +418,21 @@ describe("SourceEditionCard", () => {
     expect(card.queryByRole("button", { name: "Lire la suite" })).toBeNull();
   });
 
+  it("shows the whole summary and takes Lire la suite away once tapped", async () => {
+    // Given
+    summaryMeasures({ scrollHeight: 240, clientHeight: 118 });
+    const card = screen({ ...onePiece1, summary: lines.join("\n") });
+    await nextTick();
+
+    // When
+    card.getByRole("button", { name: "Lire la suite" }).click();
+    await nextTick();
+
+    // Then
+    expect(card.queryByRole("button", { name: "Lire la suite" })).toBeNull();
+    expect(summaryParagraphs(card)).toEqual(lines);
+  });
+
   it("shows the first cover the sources offer, named after the ouvrage", () => {
     // When
     const covers = screen(

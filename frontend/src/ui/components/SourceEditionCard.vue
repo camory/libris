@@ -97,10 +97,11 @@ const rows = computed(() => {
 });
 
 const summary = useTemplateRef("summary");
-const folded = ref(false);
+const overflows = ref(false);
+const unfolded = ref(false);
 onMounted(() => {
   const block = summary.value;
-  folded.value = block !== null && block.scrollHeight > block.clientHeight;
+  overflows.value = block !== null && block.scrollHeight > block.clientHeight;
 });
 </script>
 
@@ -210,15 +211,20 @@ onMounted(() => {
     </div>
 
     <div v-if="edition.summary">
-      <div ref="summary" class="line-clamp-6 space-y-2 text-body">
+      <div
+        ref="summary"
+        class="space-y-2 text-body"
+        :class="{ 'line-clamp-6': !unfolded }"
+      >
         <p v-for="(line, index) in edition.summary.split('\n')" :key="index">
           {{ line }}
         </p>
       </div>
       <button
-        v-if="folded"
+        v-if="overflows && !unfolded"
         type="button"
         class="-ml-3 h-11 px-3 text-button text-accent"
+        @click="unfolded = true"
       >
         {{ t("isbn.card.readMore") }}
       </button>
