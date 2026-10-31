@@ -46,7 +46,7 @@ it already receives.
       lookup port the application already uses (D02, D11).
       Realises S4; un-skips the backend tests of S4, its three cases.
 
-- [ ] T118 Frontend: the summary in paragraphs, folded.
+- [x] T118 Frontend: the summary in paragraphs, folded.
       The card, on the lookup and on the ouvrage's page alike, shows the
       summary one paragraph per line of its text, 8 between two
       paragraphs, still its last part (U06). Past six lines it stops on an
