@@ -4,6 +4,7 @@ import fr.amory.libris.bibliography.domain.Isbn
 import fr.amory.libris.bibliography.domain.lookup.EditionLookup
 import fr.amory.libris.bibliography.domain.lookup.EditionSource.BNF
 import fr.amory.libris.bibliography.domain.lookup.EditionSourceAnswer.Known
+import io.github.oshai.kotlinlogging.KotlinLogging
 import org.flywaydb.core.api.migration.BaseJavaMigration
 import org.flywaydb.core.api.migration.Context
 import org.springframework.jdbc.core.simple.JdbcClient
@@ -25,6 +26,8 @@ private const val UPDATE_SUMMARY =
 @Component
 @Suppress("ClassNaming")
 class V013__summary_for_stored_editions(private val editionLookups: List<EditionLookup>) : BaseJavaMigration() {
+  private val logger = KotlinLogging.logger {}
+
   override fun migrate(context: Context) {
     val jdbcClient = JdbcClient.create(SingleConnectionDataSource(context.connection, true))
     val bnf = editionLookups.single { it.source == BNF }
@@ -35,10 +38,19 @@ class V013__summary_for_stored_editions(private val editionLookups: List<Edition
       .forEach { edition ->
         Isbn
           .of(edition.isbn13)
-          ?.let { (bnf.answerFor(it) as? Known)?.preview?.summary }
+          ?.let { summaryFor(it, bnf) }
           ?.let { jdbcClient.sql(UPDATE_SUMMARY).param("summary", it).param("id", edition.id).update() }
       }
   }
+
+  @Suppress("TooGenericExceptionCaught")
+  private fun summaryFor(isbn: Isbn, bnf: EditionLookup): String? =
+    try {
+      (bnf.answerFor(isbn) as? Known)?.preview?.summary
+    } catch (e: Exception) {
+      logger.warn(e) { "Asking the summary of ${isbn.digits} failed" }
+      null
+    }
 
   private data class StoredEdition(val id: UUID, val isbn13: String)
 }

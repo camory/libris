@@ -1,11 +1,14 @@
 package fr.amory.libris.bibliography.infrastructure.persistence
 
+import fr.amory.libris.bibliography.domain.Isbn
 import fr.amory.libris.bibliography.domain.lookup.EditionLookup
 import fr.amory.libris.bibliography.domain.lookup.EditionSource.BNF
 import fr.amory.libris.bibliography.domain.lookup.EditionSource.OPEN_LIBRARY
+import fr.amory.libris.bibliography.domain.lookup.EditionSourceAnswer
 import fr.amory.libris.bibliography.domain.lookup.EditionSourceAnswer.Known
 import fr.amory.libris.bibliography.fixture.A_PREVIEW
 import fr.amory.libris.bibliography.fixture.LookupAnswering
+import fr.amory.libris.bibliography.fixture.isbnOf
 import fr.amory.libris.fixture.JdbcSliceTest
 import io.kotest.matchers.shouldBe
 import org.flywaydb.core.api.configuration.Configuration
@@ -66,6 +69,21 @@ class V013__summary_for_stored_editionsTest @Autowired constructor(
     openLibrary.asked shouldBe emptyList()
   }
 
+  @Test
+  fun `the BnF throwing for the first of two editions, the second gains its summary`() {
+    // Given
+    val montTombe = editionStored(MONT_TOMBE)
+    val larousse = editionStored(LAROUSSE_DU_PAIN)
+    val bnf = LookupThrowingFor(isbnOf(MONT_TOMBE), Known(A_PREVIEW.copy(summary = "Du pain."), null))
+
+    // When
+    migrationOver(bnf)
+
+    // Then
+    summaryOf(montTombe) shouldBe null
+    summaryOf(larousse) shouldBe "Du pain."
+  }
+
   private fun migrationOver(vararg lookups: EditionLookup) {
     val context = MigrationContext(DataSourceUtils.getConnection(dataSource))
     V013__summary_for_stored_editions(lookups.toList()).migrate(context)
@@ -94,6 +112,16 @@ class V013__summary_for_stored_editionsTest @Autowired constructor(
 
     override fun getConnection(): Connection = connection
   }
+
+  private class LookupThrowingFor(private val failing: Isbn, private val answer: EditionSourceAnswer) : EditionLookup {
+    override val source = BNF
+
+    override fun answerFor(isbn: Isbn): EditionSourceAnswer {
+      check(isbn != failing) { "The record of ${isbn.digits} cannot be read" }
+      return answer
+    }
+  }
 }
 
 private const val MONT_TOMBE = "9782344008980"
+private const val LAROUSSE_DU_PAIN = "9782035973689"
