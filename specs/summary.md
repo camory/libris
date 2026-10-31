@@ -6,7 +6,7 @@ that the card stays short until the reader asks for the rest. Now,
 because the contract and the card have carried a summary since the
 bookshelf spec and the BnF mapping has never filled it, and because the
 edition form that follows this spec shows the summary as a field.
-**Status:** draft
+**Status:** done 2026-10-31
 
 ## Scenarios
 
@@ -150,6 +150,7 @@ on *…*, *Lire la suite* under it; tap it and read the whole summary, the
 button gone; scan a book whose summary is short and read it whole, with
 no button. Open an ouvrage of the catalogue stored before the release
 whose BnF record carries a summary, and read it on its page.
+Checked by Tophe on staging, recorded on 2026-10-31.
 
 ## Tasks
 
