@@ -108,9 +108,11 @@ class V013__summary_for_stored_editionsTest @Autowired constructor(
       .single()
 
   private class MigrationContext(private val connection: Connection) : Context {
-    override fun getConfiguration(): Configuration = FluentConfiguration()
+    override fun getConfiguration(): Configuration =
+      FluentConfiguration()
 
-    override fun getConnection(): Connection = connection
+    override fun getConnection(): Connection =
+      connection
   }
 
   private class LookupThrowingFor(private val failing: Isbn, private val answer: EditionSourceAnswer) : EditionLookup {
