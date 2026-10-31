@@ -49,6 +49,8 @@ class V013__summary_for_stored_editions(editionLookups: List<EditionLookup>) : B
       }
   }
 
+  private data class StoredEdition(val id: UUID, val isbn13: String)
+
   @Suppress("TooGenericExceptionCaught")
   private fun summaryFor(isbn: Isbn): String? =
     try {
@@ -57,6 +59,4 @@ class V013__summary_for_stored_editions(editionLookups: List<EditionLookup>) : B
       logger.warn(e) { "Asking the summary of ${isbn.digits} failed" }
       null
     }
-
-  private data class StoredEdition(val id: UUID, val isbn13: String)
 }
