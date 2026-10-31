@@ -25,12 +25,12 @@ private const val UPDATE_SUMMARY =
 
 @Component
 @Suppress("ClassNaming")
-class V013__summary_for_stored_editions(private val editionLookups: List<EditionLookup>) : BaseJavaMigration() {
+class V013__summary_for_stored_editions(editionLookups: List<EditionLookup>) : BaseJavaMigration() {
+  private val bnf = editionLookups.single { it.source == BNF }
   private val logger = KotlinLogging.logger {}
 
   override fun migrate(context: Context) {
     val jdbcClient = JdbcClient.create(SingleConnectionDataSource(context.connection, true))
-    val bnf = editionLookups.single { it.source == BNF }
     jdbcClient
       .sql(SELECT_EDITIONS_WITHOUT_SUMMARY)
       .query { rs, _ -> StoredEdition(rs.getObject("id", UUID::class.java), rs.getString("isbn13")) }
@@ -38,13 +38,19 @@ class V013__summary_for_stored_editions(private val editionLookups: List<Edition
       .forEach { edition ->
         Isbn
           .of(edition.isbn13)
-          ?.let { summaryFor(it, bnf) }
-          ?.let { jdbcClient.sql(UPDATE_SUMMARY).param("summary", it).param("id", edition.id).update() }
+          ?.let { summaryFor(it) }
+          ?.let {
+            jdbcClient
+              .sql(UPDATE_SUMMARY)
+              .param("summary", it)
+              .param("id", edition.id)
+              .update()
+          }
       }
   }
 
   @Suppress("TooGenericExceptionCaught")
-  private fun summaryFor(isbn: Isbn, bnf: EditionLookup): String? =
+  private fun summaryFor(isbn: Isbn): String? =
     try {
       (bnf.answerFor(isbn) as? Known)?.preview?.summary
     } catch (e: Exception) {
