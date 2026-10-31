@@ -202,6 +202,10 @@ const rows = computed(() => {
       </div>
     </div>
 
-    <p v-if="edition.summary" class="text-body">{{ edition.summary }}</p>
+    <div v-if="edition.summary" class="space-y-2 text-body">
+      <p v-for="(line, index) in edition.summary.split('\n')" :key="index">
+        {{ line }}
+      </p>
+    </div>
   </article>
 </template>

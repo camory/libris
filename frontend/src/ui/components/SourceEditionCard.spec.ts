@@ -75,6 +75,12 @@ const libris: CoverCandidate = {
   url: "/api/v1/covers/5b1c2a4f0e6d8a9b3c7e1f2d4a6b8c0e9f1a3b5c7d9e0f2a4b6c8d0e1f3a5b7c",
 };
 
+const lines = [
+  "Le Mont Saint-Michel à l'origine de l'Apocalypse",
+  "Depuis des siècles, le Mont Saint-Michel est la source de nombreuses légendes.",
+  "Des druides celtes au crâne de l'évêque Aubert en passant par la forêt de Scissy, le lieutenant Clotilde Dumont pensait avoir tout entendu en prenant son poste à la gendarmerie du Mont… Mais ses idées sont vite chamboulées lorsque, suite à un éboulement, un mystérieux sanctuaire est mis à jour.",
+];
+
 describe("SourceEditionCard", () => {
   it("shows the series and the volume, the title and the subtitle", () => {
     // When
@@ -371,6 +377,14 @@ describe("SourceEditionCard", () => {
     // Then
     expect(card).toContain(summary);
     expect(show(onePiece1)).not.toContain(summary);
+  });
+
+  it("gives each line of the summary a paragraph of its own", () => {
+    // When
+    const card = screen({ ...onePiece1, summary: lines.join("\n") });
+
+    // Then
+    expect(summaryParagraphs(card)).toEqual(lines);
   });
 
   it("shows the first cover the sources offer, named after the ouvrage", () => {
@@ -735,6 +749,13 @@ describe("SourceEditionCard", () => {
     expect(positions).toEqual([...positions].sort((a, b) => a - b));
     expect(card.match(/Dans/g)).toHaveLength(1);
   });
+
+  function summaryParagraphs(card: ReturnType<typeof screen>) {
+    return card
+      .getAllByRole("paragraph")
+      .map((paragraph) => paragraph.textContent?.trim() ?? "")
+      .filter((text) => lines.includes(text));
+  }
 
   function precedes(first: Node, second: Node) {
     return Boolean(
