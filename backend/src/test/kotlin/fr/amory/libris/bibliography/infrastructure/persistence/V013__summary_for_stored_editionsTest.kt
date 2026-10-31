@@ -89,7 +89,7 @@ class V013__summary_for_stored_editionsTest @Autowired constructor(
     V013__summary_for_stored_editions(lookups.toList()).migrate(context)
   }
 
-  private fun editionStored(isbn13: String?, summary: String? = null): UUID =
+  private fun editionStored(isbn13: String, summary: String? = null): UUID =
     UUID.randomUUID().also { id ->
       jdbcClient
         .sql("INSERT INTO edition (id, isbn13, kind, title, summary) VALUES (:id, :isbn13, 'BOOK', 'Stocké', :summary)")
