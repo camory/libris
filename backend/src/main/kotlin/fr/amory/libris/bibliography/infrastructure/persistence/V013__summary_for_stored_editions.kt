@@ -2,6 +2,7 @@ package fr.amory.libris.bibliography.infrastructure.persistence
 
 import fr.amory.libris.bibliography.domain.Isbn
 import fr.amory.libris.bibliography.domain.lookup.EditionLookup
+import fr.amory.libris.bibliography.domain.lookup.EditionSource.BNF
 import fr.amory.libris.bibliography.domain.lookup.EditionSourceAnswer.Known
 import org.flywaydb.core.api.migration.BaseJavaMigration
 import org.flywaydb.core.api.migration.Context
@@ -26,7 +27,7 @@ private const val UPDATE_SUMMARY =
 class V013__summary_for_stored_editions(private val editionLookups: List<EditionLookup>) : BaseJavaMigration() {
   override fun migrate(context: Context) {
     val jdbcClient = JdbcClient.create(SingleConnectionDataSource(context.connection, true))
-    val bnf = editionLookups.single()
+    val bnf = editionLookups.single { it.source == BNF }
     jdbcClient
       .sql(SELECT_EDITIONS_WITHOUT_SUMMARY)
       .query { rs, _ -> StoredEdition(rs.getObject("id", UUID::class.java), rs.getString("isbn13")) }

@@ -1,6 +1,8 @@
 package fr.amory.libris.bibliography.infrastructure.persistence
 
 import fr.amory.libris.bibliography.domain.lookup.EditionLookup
+import fr.amory.libris.bibliography.domain.lookup.EditionSource.BNF
+import fr.amory.libris.bibliography.domain.lookup.EditionSource.OPEN_LIBRARY
 import fr.amory.libris.bibliography.domain.lookup.EditionSourceAnswer.Known
 import fr.amory.libris.bibliography.fixture.A_PREVIEW
 import fr.amory.libris.bibliography.fixture.LookupAnswering
@@ -47,6 +49,21 @@ class V013__summary_for_stored_editionsTest @Autowired constructor(
     // Then
     summaryOf(montTombe) shouldBe "Le résumé déjà là."
     bnf.asked shouldBe emptyList()
+  }
+
+  @Test
+  fun `Open Library is not asked`() {
+    // Given
+    val montTombe = editionStored(MONT_TOMBE)
+    val openLibrary = LookupAnswering(Known(A_PREVIEW.copy(summary = "Selon Open Library."), null), OPEN_LIBRARY)
+    val bnf = LookupAnswering(Known(A_PREVIEW.copy(summary = "Selon la BnF."), null), BNF)
+
+    // When
+    migrationOver(openLibrary, bnf)
+
+    // Then
+    summaryOf(montTombe) shouldBe "Selon la BnF."
+    openLibrary.asked shouldBe emptyList()
   }
 
   private fun migrationOver(vararg lookups: EditionLookup) {
