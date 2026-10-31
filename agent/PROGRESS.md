@@ -80,3 +80,38 @@ Format:
   the phases before it did.
 - Left over: the backlog is empty; the next feature needs its spec, written
   with Tophe.
+
+## 2026-10-29 — T116 The BnF gives a summary — done
+- Did: the BnF source answers the summary of its record's 330 `$a`,
+  cleaned by `summaryOf` in `BnfSummary.kt`; S1's two scenario cases run
+  and pass, and the provisional record's summary comes verbatim.
+- Decided: the markup is dropped before its entities are decoded, so step 5
+  was a guard, not a red. A line break is `</p>` directly followed by a
+  `<p>` with or without attributes (`<p(?:\s[^>]*)?>`, so `<pre>` is not
+  one), or `<br>` with any spaces before an optional `/`. The run of line
+  feeds is collapsed after decoding, then the run of spaces, then the
+  glued marks, then the trim: no clause's output feeds an earlier one.
+  Step 10 was a guard too. A numeric reference outside Unicode would throw;
+  left to `agent/PROPOSED.md`, no record has shown one.
+- Deviations from the brief: *Mont Tombe* went green at step 7, not 13: its
+  summary needs only markup, line breaks and entities, so the brief's
+  "both cases green at step 13" held for *Le Larousse du Pain* alone. One
+  `style:` commit after step 2 re-indents the new constant detekt refused,
+  since the cycle's commit was already made.
+- Left over: the stored editions' summaries (T117), the card's paragraphs
+  and fold (T118); the numeric reference above, in `agent/PROPOSED.md`.
+
+## 2026-10-29 — T116 The BnF gives a summary — reworked
+- Did: a numeric reference of the 330 that names no code point
+  (`&#1114112;`, `&#99999999999;`, `&#x123456789;`) stays as written instead
+  of throwing out of the BnF lookup; whitespace between `</p>` and `<p>` is
+  a line feed, as an adjacent pair is.
+- Decided: the reviewer's verdict of 2026-10-29 found the brief's "every
+  numeric reference decoded" unmet on references past U+10FFFF or past an
+  `Int`; they stay as written, as an unknown named entity does, and the
+  `agent/PROPOSED.md` item filed for it is gone. Its suggestion on
+  `</p> <p>` was applied, since S1 calls any paragraph end followed by a
+  new paragraph a line break. Its history remark asked nothing.
+- Deviations from the brief: none.
+- Left over: a decoded `&#0;` or lone surrogate would reach PostgreSQL,
+  in `agent/PROPOSED.md`.
