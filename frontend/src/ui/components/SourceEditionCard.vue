@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { BookOpen } from "@lucide/vue";
-import { computed, ref, watch } from "vue";
+import { computed, onMounted, ref, useTemplateRef, watch } from "vue";
 import { useI18n } from "vue-i18n";
 import type { Book } from "../../domain/Book";
 import { bookshelvesHolding, type Copy } from "../../domain/Copy";
@@ -94,6 +94,13 @@ const rows = computed(() => {
     { label: "isbn", value: edition.isbn13 },
   ];
   return fields.filter((field) => field.value !== null);
+});
+
+const summary = useTemplateRef("summary");
+const folded = ref(false);
+onMounted(() => {
+  const block = summary.value;
+  folded.value = block !== null && block.scrollHeight > block.clientHeight;
 });
 </script>
 
@@ -202,10 +209,19 @@ const rows = computed(() => {
       </div>
     </div>
 
-    <div v-if="edition.summary" class="space-y-2 text-body">
-      <p v-for="(line, index) in edition.summary.split('\n')" :key="index">
-        {{ line }}
-      </p>
+    <div v-if="edition.summary">
+      <div ref="summary" class="line-clamp-6 space-y-2 text-body">
+        <p v-for="(line, index) in edition.summary.split('\n')" :key="index">
+          {{ line }}
+        </p>
+      </div>
+      <button
+        v-if="folded"
+        type="button"
+        class="-ml-3 h-11 px-3 text-button text-accent"
+      >
+        {{ t("isbn.card.readMore") }}
+      </button>
     </div>
   </article>
 </template>

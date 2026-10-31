@@ -1,7 +1,7 @@
 import { BookOpen } from "@lucide/vue";
 import { within } from "@testing-library/dom";
 import { mount } from "@vue/test-utils";
-import { describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it } from "vitest";
 import { nextTick } from "vue";
 import type { Copy } from "../../domain/Copy";
 import type { CoverCandidate } from "../../domain/Cover";
@@ -82,6 +82,11 @@ const lines = [
 ];
 
 describe("SourceEditionCard", () => {
+  afterEach(() => {
+    Reflect.deleteProperty(HTMLElement.prototype, "scrollHeight");
+    Reflect.deleteProperty(HTMLElement.prototype, "clientHeight");
+  });
+
   it("shows the series and the volume, the title and the subtitle", () => {
     // When
     const card = show(onePiece1);
@@ -385,6 +390,20 @@ describe("SourceEditionCard", () => {
 
     // Then
     expect(summaryParagraphs(card)).toEqual(lines);
+  });
+
+  it("offers Lire la suite under a summary past six lines", async () => {
+    // Given
+    summaryMeasures({ scrollHeight: 240, clientHeight: 118 });
+
+    // When
+    const card = screen({ ...onePiece1, summary: lines.join("\n") });
+    await nextTick();
+
+    // Then
+    expect(card.getAllByRole("button", { name: "Lire la suite" })).toHaveLength(
+      1,
+    );
   });
 
   it("shows the first cover the sources offer, named after the ouvrage", () => {
@@ -749,6 +768,18 @@ describe("SourceEditionCard", () => {
     expect(positions).toEqual([...positions].sort((a, b) => a - b));
     expect(card.match(/Dans/g)).toHaveLength(1);
   });
+
+  function summaryMeasures(measures: {
+    scrollHeight: number;
+    clientHeight: number;
+  }) {
+    for (const [name, value] of Object.entries(measures)) {
+      Object.defineProperty(HTMLElement.prototype, name, {
+        configurable: true,
+        get: () => value,
+      });
+    }
+  }
 
   function summaryParagraphs(card: ReturnType<typeof screen>) {
     return card
