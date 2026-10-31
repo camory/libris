@@ -10,11 +10,12 @@ import org.springframework.jdbc.datasource.SingleConnectionDataSource
 import org.springframework.stereotype.Component
 import java.util.UUID
 
-private const val SELECT_EDITIONS_WITH_AN_ISBN =
+private const val SELECT_EDITIONS_WITHOUT_SUMMARY =
   """
     SELECT edition.id, edition.isbn13
     FROM edition
     WHERE edition.isbn13 IS NOT NULL
+      AND edition.summary IS NULL
     """
 
 private const val UPDATE_SUMMARY =
@@ -27,7 +28,7 @@ class V013__summary_for_stored_editions(private val editionLookups: List<Edition
     val jdbcClient = JdbcClient.create(SingleConnectionDataSource(context.connection, true))
     val bnf = editionLookups.single()
     jdbcClient
-      .sql(SELECT_EDITIONS_WITH_AN_ISBN)
+      .sql(SELECT_EDITIONS_WITHOUT_SUMMARY)
       .query { rs, _ -> StoredEdition(rs.getObject("id", UUID::class.java), rs.getString("isbn13")) }
       .list()
       .forEach { edition ->

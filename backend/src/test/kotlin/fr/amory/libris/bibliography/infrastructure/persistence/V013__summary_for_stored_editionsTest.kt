@@ -35,6 +35,20 @@ class V013__summary_for_stored_editionsTest @Autowired constructor(
     summaryOf(montTombe) shouldBe "Un mont, une tombe."
   }
 
+  @Test
+  fun `an edition with a summary is not asked`() {
+    // Given
+    val montTombe = editionStored(MONT_TOMBE, summary = "Le résumé déjà là.")
+    val bnf = LookupAnswering(Known(A_PREVIEW.copy(summary = "Un mont, une tombe."), null))
+
+    // When
+    migrationOver(bnf)
+
+    // Then
+    summaryOf(montTombe) shouldBe "Le résumé déjà là."
+    bnf.asked shouldBe emptyList()
+  }
+
   private fun migrationOver(vararg lookups: EditionLookup) {
     val context = MigrationContext(DataSourceUtils.getConnection(dataSource))
     V013__summary_for_stored_editions(lookups.toList()).migrate(context)
