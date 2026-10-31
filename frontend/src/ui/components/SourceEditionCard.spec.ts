@@ -406,6 +406,18 @@ describe("SourceEditionCard", () => {
     );
   });
 
+  it("offers no Lire la suite under a summary that fits", async () => {
+    // Given
+    summaryMeasures({ scrollHeight: 118, clientHeight: 118 });
+
+    // When
+    const card = screen({ ...onePiece1, summary: lines.join("\n") });
+    await nextTick();
+
+    // Then
+    expect(card.queryByRole("button", { name: "Lire la suite" })).toBeNull();
+  });
+
   it("shows the first cover the sources offer, named after the ouvrage", () => {
     // When
     const covers = screen(
