@@ -356,7 +356,12 @@ Read whole by a run that changes `backend/`, after `every-run.md`.
   Its slice test calls `migrate` with a `Context` of its own whose
   connection is `DataSourceUtils.getConnection(dataSource)`, the test's
   transaction. A JDBC slice context, which holds no such bean, still starts
-  on a database where a scenario applied `V013` (measured 2026-10-31).
+  on a database where a scenario applied `V013` (measured 2026-10-31), only
+  while `V013` is the highest version: Flyway reads an applied migration
+  above every resolved one as *future*, which it ignores by default. Once a
+  higher version exists, the slice resolves no `V013` and reads the applied
+  one as *missing*, which fails validation at start, before `FreshSchema`
+  cleans (reasoned from Flyway's defaults, not measured).
 - A source's mapping never throws on the text a source sends: what it
   cannot read stays as written or is left out. An exception that leaves a
   source fails the whole lookup, the other sources' answers included, and

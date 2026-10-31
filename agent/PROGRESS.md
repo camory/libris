@@ -134,3 +134,16 @@ Format:
 - Left over: with the BnF down, the start waits up to
   `LIBRIS_SOURCE_TIMEOUT` per stored edition, once; for Tophe's staging
   check, said in the PR. The card's paragraphs and fold (T118).
+
+## 2026-10-31 — T117 Stored editions gain their summary — reworked
+- Did: `StoredEdition` sits between `migrate` and `summaryFor`, and the
+  test's `editionStored` above `migrationOver`, each below its first user
+  in the order it is reached; the `backend.md` item on the slice context
+  says it holds only while `V013` is the highest version.
+- Decided: the reviewer's verdict of 2026-10-31 asked for the two moves,
+  which the brief's D10 already required. Its suggestion was applied: the
+  gotcha is narrowed, and the trap the next migration meets is in
+  `agent/PROPOSED.md`, reasoned from Flyway's defaults, not measured.
+- Deviations from the brief: none.
+- Left over: the next migration's slice-context trap, in
+  `agent/PROPOSED.md`.
