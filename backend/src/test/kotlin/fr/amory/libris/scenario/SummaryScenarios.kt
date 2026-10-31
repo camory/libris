@@ -6,7 +6,6 @@ import fr.amory.libris.scenario.dsl.asks
 import io.kotest.matchers.shouldBe
 import org.flywaydb.core.Flyway
 import org.flywaydb.core.api.MigrationVersion
-import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.Arguments.argumentSet
@@ -49,7 +48,6 @@ class StoredSummaryScenarios @Autowired constructor(
   private val db: JdbcClient,
   private val bnf: BnfStubs) {
 
-  @Disabled("summary")
   @Test
   fun `S4 Stored editions gain their summary, the BnF gives one`() {
     // Given
@@ -68,7 +66,6 @@ class StoredSummaryScenarios @Autowired constructor(
     summaryOf(withoutIsbn) shouldBe null
   }
 
-  @Disabled("summary")
   @Test
   fun `S4 Stored editions gain their summary, the BnF has none`() {
     // Given
@@ -82,7 +79,6 @@ class StoredSummaryScenarios @Autowired constructor(
     summaryOf(onePiece) shouldBe null
   }
 
-  @Disabled("summary")
   @Test
   fun `S4 Stored editions gain their summary, the BnF fails`() {
     // Given

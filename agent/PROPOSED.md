@@ -487,3 +487,12 @@
   with the same `computed` (Duplicated Code, three copies since T115).
   One mapping of a find's problem to the screen's state could serve the
   three (found by the reviewer on T115, Tophe 2026-10-23).
+- Backend: the first migration after `V013` (a `V014` SQL file or Kotlin
+  class) puts a resolved version above the Kotlin migration, so a JDBC
+  slice context, which holds no `V013` bean, would read the `V013` a
+  scenario applied as *missing* and fail Flyway's validation at start,
+  before `FreshSchema` cleans; every slice class run after a scenario on
+  the same database would then fail whole. Reasoned from Flyway's defaults
+  (`ignoreMigrationPatterns` `*:future`, `validateOnMigrate`), not
+  measured. The brief that adds the next migration checks that case and
+  says how the slice meets it (found by the reviewer on T117, 2026-10-31).

@@ -344,6 +344,24 @@ Read whole by a run that changes `backend/`, after `every-run.md`.
   `</p>` then `<p…>`, with or without whitespace between them. Mont Tombe
   (9782344008980) and Le Larousse du Pain (9782035973689) are the
   recordings with a 330 worth cleaning; 9782371025219's needs none.
+- A migration that reaches a source is a Kotlin class named as the SQL
+  files, `V013__summary_for_stored_editions` extending `BaseJavaMigration`
+  (which reads version and description from the name), with
+  `@Suppress("ClassNaming")` on it and on its test; a `@Component` of
+  `bibliography.infrastructure.persistence`, since Flyway's own scan builds
+  without arguments and Spring Boot hands every `JavaMigration` bean to
+  Flyway with its ports injected. Its SQL runs on `context.connection`,
+  through `JdbcClient.create(SingleConnectionDataSource(context.connection,
+  true))`, never a `JdbcClient` or `DataSource` bean (they wait for Flyway).
+  Its slice test calls `migrate` with a `Context` of its own whose
+  connection is `DataSourceUtils.getConnection(dataSource)`, the test's
+  transaction. A JDBC slice context, which holds no such bean, still starts
+  on a database where a scenario applied `V013` (measured 2026-10-31), only
+  while `V013` is the highest version: Flyway reads an applied migration
+  above every resolved one as *future*, which it ignores by default. Once a
+  higher version exists, the slice resolves no `V013` and reads the applied
+  one as *missing*, which fails validation at start, before `FreshSchema`
+  cleans (reasoned from Flyway's defaults, not measured).
 - A source's mapping never throws on the text a source sends: what it
   cannot read stays as written or is left out. An exception that leaves a
   source fails the whole lookup, the other sources' answers included, and
