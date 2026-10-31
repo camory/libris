@@ -67,7 +67,6 @@ class StoredSummaryScenarios @Autowired constructor(
     summaryOf(withoutIsbn) shouldBe null
   }
 
-  @Disabled("summary")
   @Test
   fun `S4 Stored editions gain their summary, the BnF has none`() {
     // Given
