@@ -21,6 +21,11 @@ class BnfSummaryTest {
   }
 
   @Test
+  fun `a numeric reference to a character no text can store stays as written`() {
+    summaryOf("&#0; &#x0; &#xD800; &#57343;") shouldBe "&#0; &#x0; &#xD800; &#57343;"
+  }
+
+  @Test
   fun `a decoded lower-than sign is text, not markup`() {
     summaryOf("Moins de 10 &lt;b&gt; ici") shouldBe "Moins de 10 <b> ici"
   }

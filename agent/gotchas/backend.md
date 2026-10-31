@@ -337,12 +337,17 @@ Read whole by a run that changes `backend/`, after `every-run.md`.
   written (`&amp;`, `&nbsp;`, `&#231;`). `summaryOf`, in `BnfSummary.kt`,
   is the one cleaning: markup dropped before its entities are decoded, and
   only `&amp;`, `&lt;`, `&gt;`, `&quot;`, `&apos;`, `&nbsp;` and numeric
-  references decoded; any other named entity, and a numeric reference that
-  names no code point (`&#1114112;`, more digits than an `Int`), stays as
-  written, so no text of the BnF makes it throw. A paragraph break is
+  references decoded; any other named entity, a numeric reference that
+  names no code point (`&#1114112;`, more digits than an `Int`), and one
+  that names a character PostgreSQL cannot store (`&#0;`, a surrogate
+  `&#xD800;`), stays as written. A paragraph break is
   `</p>` then `<p…>`, with or without whitespace between them. Mont Tombe
   (9782344008980) and Le Larousse du Pain (9782035973689) are the
   recordings with a 330 worth cleaning; 9782371025219's needs none.
+- A source's mapping never throws on the text a source sends: what it
+  cannot read stays as written or is left out. An exception that leaves a
+  source fails the whole lookup, the other sources' answers included, and
+  a migration reading through the same mapping would refuse the start.
 - A name row shared by many parents is inserted or matched in one statement:
   `insert into author (id, name) values (:id, :name) on conflict (lower(name))
   do update set name = author.name returning id`. The conflict target is the

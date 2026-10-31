@@ -487,9 +487,3 @@
   with the same `computed` (Duplicated Code, three copies since T115).
   One mapping of a find's problem to the screen's state could serve the
   three (found by the reviewer on T115, Tophe 2026-10-23).
-- 2026-10-29 — Backend: `summaryOf` decodes every valid code point,
-  `&#0;` and a lone surrogate (`&#xD800;`) included; PostgreSQL's `text`
-  holds no NUL, so such a summary would pass the lookup and fail the add
-  that stores it (found by the implementer on T116's rework; not
-  measured, no record has shown one, and the brief decodes every numeric
-  reference).

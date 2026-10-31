@@ -8,6 +8,7 @@ private val LINE_FEEDS = Regex("\n{2,}")
 private val SPACES = Regex("[ \u00A0]{2,}")
 private val GLUED_SENTENCE = Regex("([.!?\u2026])(\\p{Lu}|\u2022)")
 private const val HEXADECIMAL = 16
+private val SURROGATES = Char.MIN_SURROGATE.code..Char.MAX_SURROGATE.code
 
 internal fun summaryOf(description: String?): String? =
   description
@@ -31,5 +32,5 @@ private fun characterOf(entity: MatchResult): String {
 
 private fun characterAt(codePoint: Int?): String? =
   codePoint
-    ?.takeIf { Character.isValidCodePoint(it) }
+    ?.takeIf { Character.isValidCodePoint(it) && it != 0 && it !in SURROGATES }
     ?.let { Character.toString(it) }
