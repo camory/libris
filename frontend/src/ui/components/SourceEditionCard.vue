@@ -96,11 +96,11 @@ const rows = computed(() => {
   return fields.filter((field) => field.value !== null);
 });
 
-const summary = useTemplateRef("summary");
+const summaryBlock = useTemplateRef("summaryBlock");
 const overflows = ref(false);
 const unfolded = ref(false);
 onMounted(() => {
-  const block = summary.value;
+  const block = summaryBlock.value;
   overflows.value = block !== null && block.scrollHeight > block.clientHeight;
 });
 </script>
@@ -212,7 +212,7 @@ onMounted(() => {
 
     <div v-if="edition.summary">
       <div
-        ref="summary"
+        ref="summaryBlock"
         class="space-y-2 text-body"
         :class="{ 'line-clamp-6': !unfolded }"
       >
