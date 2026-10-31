@@ -84,11 +84,6 @@ class V013__summary_for_stored_editionsTest @Autowired constructor(
     summaryOf(larousse) shouldBe "Du pain."
   }
 
-  private fun migrationOver(vararg lookups: EditionLookup) {
-    val context = MigrationContext(DataSourceUtils.getConnection(dataSource))
-    V013__summary_for_stored_editions(lookups.toList()).migrate(context)
-  }
-
   private fun editionStored(isbn13: String, summary: String? = null): UUID =
     UUID.randomUUID().also { id ->
       jdbcClient
@@ -98,6 +93,11 @@ class V013__summary_for_stored_editionsTest @Autowired constructor(
         .param("summary", summary)
         .update()
     }
+
+  private fun migrationOver(vararg lookups: EditionLookup) {
+    val context = MigrationContext(DataSourceUtils.getConnection(dataSource))
+    V013__summary_for_stored_editions(lookups.toList()).migrate(context)
+  }
 
   private fun summaryOf(edition: UUID): String? =
     jdbcClient
