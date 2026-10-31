@@ -49,7 +49,6 @@ class StoredSummaryScenarios @Autowired constructor(
   private val db: JdbcClient,
   private val bnf: BnfStubs) {
 
-  @Disabled("summary")
   @Test
   fun `S4 Stored editions gain their summary, the BnF gives one`() {
     // Given
