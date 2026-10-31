@@ -115,3 +115,22 @@ Format:
 - Deviations from the brief: none.
 - Left over: a decoded `&#0;` or lone surrogate would reach PostgreSQL,
   in `agent/PROPOSED.md`.
+
+## 2026-10-31 — T117 Stored editions gain their summary — done
+- Did: `V013__summary_for_stored_editions`, the first Kotlin migration, a
+  `@Component` of `bibliography.infrastructure.persistence` that Spring Boot
+  hands to Flyway; S4's three scenario cases run and pass.
+- Decided: its SQL runs through a `JdbcClient` over a
+  `SingleConnectionDataSource` that does not close Flyway's connection. The
+  BnF is found once, at construction, with `single { it.source == BNF }`,
+  as `FetchAwaitedCovers` builds its fetches. A throw of the port is logged
+  `Asking the summary of <isbn> failed` at WARN with the exception. The
+  slice test's `Context` answers a fresh `FluentConfiguration`, which the
+  migration never reads.
+- Deviations from the brief: step 2's green took the single lookup it was
+  given (`editionLookups.single()`), the smallest that passed, so S4's first
+  case went green at step 4, not 3: with two lookups `single()` threw.
+  Steps 3 and 4 were both red.
+- Left over: with the BnF down, the start waits up to
+  `LIBRIS_SOURCE_TIMEOUT` per stored edition, once; for Tophe's staging
+  check, said in the PR. The card's paragraphs and fold (T118).

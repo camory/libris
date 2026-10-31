@@ -36,7 +36,7 @@ it already receives.
       BnF's own defects stay as they come. No length limit.
       Realises S1; un-skips the backend test of S1, both cases (D02, D07).
 
-- [ ] T117 Backend: stored editions gain their summary.
+- [x] T117 Backend: stored editions gain their summary.
       At start, every stored edition with an ISBN and no summary asks the
       BnF alone once and keeps the summary it gives, cleaned as T116 cleans
       it; an edition without an ISBN, or with a summary, is not asked and
