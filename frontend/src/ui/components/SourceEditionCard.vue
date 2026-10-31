@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { BookOpen } from "@lucide/vue";
-import { computed, ref, watch } from "vue";
+import { computed, onMounted, ref, useTemplateRef, watch } from "vue";
 import { useI18n } from "vue-i18n";
 import type { Book } from "../../domain/Book";
 import { bookshelvesHolding, type Copy } from "../../domain/Copy";
@@ -94,6 +94,14 @@ const rows = computed(() => {
     { label: "isbn", value: edition.isbn13 },
   ];
   return fields.filter((field) => field.value !== null);
+});
+
+const summaryBlock = useTemplateRef("summaryBlock");
+const overflows = ref(false);
+const unfolded = ref(false);
+onMounted(() => {
+  const block = summaryBlock.value;
+  overflows.value = block !== null && block.scrollHeight > block.clientHeight;
 });
 </script>
 
@@ -202,6 +210,24 @@ const rows = computed(() => {
       </div>
     </div>
 
-    <p v-if="edition.summary" class="text-body">{{ edition.summary }}</p>
+    <div v-if="edition.summary">
+      <div
+        ref="summaryBlock"
+        class="space-y-2 text-body"
+        :class="{ 'line-clamp-6': !unfolded }"
+      >
+        <p v-for="(line, index) in edition.summary.split('\n')" :key="index">
+          {{ line }}
+        </p>
+      </div>
+      <button
+        v-if="overflows && !unfolded"
+        type="button"
+        class="-ml-3 h-11 px-3 text-button text-accent"
+        @click="unfolded = true"
+      >
+        {{ t("isbn.card.readMore") }}
+      </button>
+    </div>
   </article>
 </template>

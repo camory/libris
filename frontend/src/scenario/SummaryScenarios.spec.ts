@@ -70,7 +70,7 @@ describe("Summary", () => {
     window.history.replaceState(null, "", "/");
   });
 
-  it.skip("S2 A summary in several lines, on the lookup", async () => {
+  it("S2 A summary in several lines, on the lookup", async () => {
     // Given
     const screen = open("/isbn", { isbn: aSourceKnows(montTombe) });
 
@@ -82,7 +82,7 @@ describe("Summary", () => {
     expect(summaryParagraphs(screen)).toEqual(lines);
   });
 
-  it.skip("S2 A summary in several lines, on the ouvrage's page", async () => {
+  it("S2 A summary in several lines, on the ouvrage's page", async () => {
     // Given
     const catalogue = librisAnswers(montTombeHeld);
 

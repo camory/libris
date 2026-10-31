@@ -147,3 +147,21 @@ Format:
 - Deviations from the brief: none.
 - Left over: the next migration's slice-context trap, in
   `agent/PROPOSED.md`.
+
+## 2026-10-31 — T118 The summary in paragraphs, folded — done
+- Did: `SourceEditionCard` draws the summary one `p` per line in a block
+  clamped at six lines, and *Lire la suite* (`isbn.card.readMore`) under it
+  when the block overflows once mounted; a tap lifts the clamp and takes the
+  button away for good. S2's two scenario cases run.
+- Decided: two states in the card, `overflows` (measured in `onMounted`)
+  and `unfolded` (the tap), the clamp bound to the second alone so the
+  measure reads the clamped block. The 8 between paragraphs is `space-y-2`,
+  margins, as the brief advised under the clamp's `-webkit-box`. The
+  button's 12 of padding is pulled outside the summary's left edge with
+  `-ml-3`. The S2 red was read uncommitted before step 1, as the brief
+  allowed; the un-skip was committed last, as step 5.
+- Deviations from the brief: steps 2 to 4 await `nextTick()` after the
+  mount, since the measure lands in `onMounted` and the button on the
+  render after it.
+- Left over: the fold at six lines on …, the button's place, the 8 between
+  paragraphs and the short summary with no button, for Tophe on the Pixel.

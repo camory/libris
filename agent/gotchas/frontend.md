@@ -437,3 +437,12 @@ Read whole by a run that changes `frontend/`, after `every-run.md`.
   makes an `img` `display: block` (`node_modules/tailwindcss/preflight.css`),
   so `block` on it repeats it. The image's name is `series.cover`, which
   `SeriesRow` reads too.
+- jsdom lays nothing out and answers 0 to `scrollHeight` and
+  `clientHeight`, so `SourceEditionCard`'s summary never overflows and
+  never offers *Lire la suite* in a spec unless the case stubs both on
+  `HTMLElement.prototype` with `Object.defineProperty(…, { configurable:
+  true, get: () => n })` before it mounts, and the file's `afterEach`
+  removes them with `Reflect.deleteProperty`, which gives jsdom's back (they
+  live on `Element.prototype`), as `SourceEditionCard.spec.ts` does. The
+  card measures in `onMounted`, so the button is drawn on the next render:
+  the case awaits `nextTick()` after the mount before it looks.

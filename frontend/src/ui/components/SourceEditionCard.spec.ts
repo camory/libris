@@ -1,7 +1,7 @@
 import { BookOpen } from "@lucide/vue";
 import { within } from "@testing-library/dom";
 import { mount } from "@vue/test-utils";
-import { describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it } from "vitest";
 import { nextTick } from "vue";
 import type { Copy } from "../../domain/Copy";
 import type { CoverCandidate } from "../../domain/Cover";
@@ -75,7 +75,18 @@ const libris: CoverCandidate = {
   url: "/api/v1/covers/5b1c2a4f0e6d8a9b3c7e1f2d4a6b8c0e9f1a3b5c7d9e0f2a4b6c8d0e1f3a5b7c",
 };
 
+const lines = [
+  "Le Mont Saint-Michel à l'origine de l'Apocalypse",
+  "Depuis des siècles, le Mont Saint-Michel est la source de nombreuses légendes.",
+  "Des druides celtes au crâne de l'évêque Aubert en passant par la forêt de Scissy, le lieutenant Clotilde Dumont pensait avoir tout entendu en prenant son poste à la gendarmerie du Mont… Mais ses idées sont vite chamboulées lorsque, suite à un éboulement, un mystérieux sanctuaire est mis à jour.",
+];
+
 describe("SourceEditionCard", () => {
+  afterEach(() => {
+    Reflect.deleteProperty(HTMLElement.prototype, "scrollHeight");
+    Reflect.deleteProperty(HTMLElement.prototype, "clientHeight");
+  });
+
   it("shows the series and the volume, the title and the subtitle", () => {
     // When
     const card = show(onePiece1);
@@ -371,6 +382,55 @@ describe("SourceEditionCard", () => {
     // Then
     expect(card).toContain(summary);
     expect(show(onePiece1)).not.toContain(summary);
+  });
+
+  it("gives each line of the summary a paragraph of its own", () => {
+    // When
+    const card = screen({ ...onePiece1, summary: lines.join("\n") });
+
+    // Then
+    expect(summaryParagraphs(card)).toEqual(lines);
+  });
+
+  it("offers Lire la suite under a summary past six lines", async () => {
+    // Given
+    summaryMeasures({ scrollHeight: 240, clientHeight: 118 });
+
+    // When
+    const card = screen({ ...onePiece1, summary: lines.join("\n") });
+    await nextTick();
+
+    // Then
+    expect(card.getAllByRole("button", { name: "Lire la suite" })).toHaveLength(
+      1,
+    );
+  });
+
+  it("offers no Lire la suite under a summary that fits", async () => {
+    // Given
+    summaryMeasures({ scrollHeight: 118, clientHeight: 118 });
+
+    // When
+    const card = screen({ ...onePiece1, summary: lines.join("\n") });
+    await nextTick();
+
+    // Then
+    expect(card.queryByRole("button", { name: "Lire la suite" })).toBeNull();
+  });
+
+  it("shows the whole summary and takes Lire la suite away once tapped", async () => {
+    // Given
+    summaryMeasures({ scrollHeight: 240, clientHeight: 118 });
+    const card = screen({ ...onePiece1, summary: lines.join("\n") });
+    await nextTick();
+
+    // When
+    card.getByRole("button", { name: "Lire la suite" }).click();
+    await nextTick();
+
+    // Then
+    expect(card.queryByRole("button", { name: "Lire la suite" })).toBeNull();
+    expect(summaryParagraphs(card)).toEqual(lines);
   });
 
   it("shows the first cover the sources offer, named after the ouvrage", () => {
@@ -735,6 +795,25 @@ describe("SourceEditionCard", () => {
     expect(positions).toEqual([...positions].sort((a, b) => a - b));
     expect(card.match(/Dans/g)).toHaveLength(1);
   });
+
+  function summaryMeasures(measures: {
+    scrollHeight: number;
+    clientHeight: number;
+  }) {
+    for (const [name, value] of Object.entries(measures)) {
+      Object.defineProperty(HTMLElement.prototype, name, {
+        configurable: true,
+        get: () => value,
+      });
+    }
+  }
+
+  function summaryParagraphs(card: ReturnType<typeof screen>) {
+    return card
+      .getAllByRole("paragraph")
+      .map((paragraph) => paragraph.textContent?.trim() ?? "")
+      .filter((text) => lines.includes(text));
+  }
 
   function precedes(first: Node, second: Node) {
     return Boolean(

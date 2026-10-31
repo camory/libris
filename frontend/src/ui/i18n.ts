@@ -79,6 +79,7 @@ const fr = {
       language: "Langue",
       pages: "Pages",
       isbn: "ISBN",
+      readMore: "Lire la suite",
     },
   },
   catalogue: {
