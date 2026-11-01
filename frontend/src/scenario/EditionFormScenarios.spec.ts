@@ -121,7 +121,7 @@ describe("Edition form", () => {
     ]);
   });
 
-  it.skip("S2 An unknown ISBN opens an empty form", async () => {
+  it("S2 An unknown ISBN opens an empty form", async () => {
     // Given
     const screen = open({ isbn: noSourceKnows() });
 
