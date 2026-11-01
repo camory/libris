@@ -528,6 +528,32 @@ describe("IsbnView", () => {
     ]);
   });
 
+  it("adds the cover the form shows", async () => {
+    // Given
+    const covered: IsbnAnswer = {
+      ...found,
+      covers: [
+        { source: "inventaire.io", url: "https://inventaire.io/img/1" },
+        {
+          source: "Open Library",
+          url: "https://covers.openlibrary.org/b/id/1-L.jpg",
+        },
+      ],
+    };
+    const bookshelfApi = new FakeBookshelfApi(added);
+    const screen = open(new FakeIsbnApi(covered), undefined, bookshelfApi);
+    await ask(screen, "9782723488525");
+    await press(screen, "Couverture Open Library");
+
+    // When
+    await press(screen, "Ajouter à ma bibliothèque");
+
+    // Then
+    expect(bookshelfApi.asked.map(({ coverSource }) => coverSource)).toEqual([
+      "Open Library",
+    ]);
+  });
+
   it("shows the copy it added and offers no more to add", async () => {
     // Given
     const screen = open(
