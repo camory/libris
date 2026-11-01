@@ -110,3 +110,15 @@ Format:
 - Deviations from the brief: none.
 - Left over: authors stay unique on `LOWER(name)` (`agent/PROPOSED.md`);
   T121 moves the frontend onto `v0.15.0` once T120 is deployed.
+
+## 2026-11-01 — T121 The edition form on v0.15.0, an unknown ISBN — handoff
+- Done: steps 1 to 7 of the test plan, one commit each; start with step 8.
+- Read first, before any unit test: S2 un-skipped fails on `Unable to find a
+  label with the text of: Titre`; it was put back to `it.skip` uncommitted,
+  and is un-skipped for good as step 15.
+- Deviation: `FakeSeriesApi`'s third parameter is `seriesNames`, not `names`:
+  a private property named `names` clashes with the method `names()`.
+- Decided: `names()` reads the body with no status check (T126's); the kind
+  is three `sr-only` radios inside their labels, the chosen one styled by
+  `has-checked:`; the component spec reads the radios' order by role queries.
+- No guard run yet (steps 9, 11, 14, 15 are left).
