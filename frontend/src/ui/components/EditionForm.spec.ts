@@ -343,6 +343,19 @@ describe("EditionForm", () => {
     expect(disabledOf(fields)).toEqual(Array(13).fill(true));
   });
 
+  it("takes edits again once the add failed", () => {
+    // When
+    const wrapper = form(onePiece1, [], [], { failed: true });
+
+    // Then
+    expect(wrapper.text()).toContain(
+      "Erreur lors de l'ajout, veuillez réessayer plus tard.",
+    );
+    expect(disabledOf(within(wrapper.element as HTMLElement))).toEqual(
+      Array(13).fill(false),
+    );
+  });
+
   function disabledOf(fields: ReturnType<typeof screen>) {
     return [
       ...fields.getAllByRole<HTMLInputElement>("textbox"),
