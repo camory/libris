@@ -664,6 +664,43 @@ describe("IsbnView", () => {
     ).toHaveLength(1);
   });
 
+  it("keeps on the card the cover it sent, not one tapped while the add runs", async () => {
+    // Given
+    const covered: IsbnAnswer = {
+      ...found,
+      covers: [
+        { source: "inventaire.io", url: "https://inventaire.io/img/1" },
+        {
+          source: "Open Library",
+          url: "https://covers.openlibrary.org/b/id/1-L.jpg",
+        },
+      ],
+    };
+    let land: (answer: AddAnswer) => void = () => {};
+    const screen = open(
+      new FakeIsbnApi(covered),
+      undefined,
+      new FakeBookshelfApi(
+        new Promise<AddAnswer>((resolve) => (land = resolve)),
+      ),
+    );
+    await ask(screen, "9782723488525");
+    await press(screen, "Ajouter à ma bibliothèque");
+    await press(screen, "Couverture Open Library");
+
+    // When
+    land(added);
+    await flushPromises();
+
+    // Then
+    expect(
+      screen
+        .getByRole("img", { name: "Couverture de Romance dawn" })
+        .getAttribute("src"),
+    ).toBe("https://inventaire.io/img/1");
+    expect(screen.getByText("inventaire.io")).toBeDefined();
+  });
+
   it("counts the copy it added beside the one the reader had", async () => {
     // Given
     const screen = open(

@@ -42,8 +42,9 @@ const copies = ref<Copy[]>([]);
 const covers = ref<CoverCandidate[]>([]);
 const coverSource = ref<string | null>(null);
 const sent = ref<SourceEdition>();
+const sentCoverSource = ref<string | null>(null);
 const sentCovers = computed(() =>
-  covers.value.filter(({ source }) => source === coverSource.value),
+  covers.value.filter(({ source }) => source === sentCoverSource.value),
 );
 const shownIsbn13 = computed(
   () => edition.value?.isbn13 ?? unknownIsbn13.value,
@@ -120,7 +121,8 @@ async function search() {
 
 async function send(edition: SourceEdition) {
   sent.value = edition;
-  await addBookToBookshelf.value.add(edition, coverSource.value);
+  sentCoverSource.value = coverSource.value;
+  await addBookToBookshelf.value.add(edition, sentCoverSource.value);
 }
 </script>
 
