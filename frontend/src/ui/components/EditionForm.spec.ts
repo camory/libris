@@ -282,6 +282,57 @@ describe("EditionForm", () => {
     ]);
   });
 
+  it("sends the kind chosen", async () => {
+    // Given
+    const wrapper = form(onePiece1);
+    const screen = within(wrapper.element as HTMLElement);
+    await fireEvent.change(screen.getByRole("radio", { name: "BD" }), {
+      target: { checked: true },
+    });
+
+    // When
+    await fireEvent.click(
+      screen.getByRole("button", { name: "Ajouter à ma bibliothèque" }),
+    );
+
+    // Then
+    expect(wrapper.emitted("add")?.[0]?.[0]).toMatchObject({ kind: "BD" });
+  });
+
+  it("sends an unknown ISBN's digits and no author", async () => {
+    // Given
+    const wrapper = form();
+    const screen = within(wrapper.element as HTMLElement);
+    await fireEvent.input(screen.getByRole("textbox", { name: "Titre" }), {
+      target: { value: "Astérix" },
+    });
+
+    // When
+    await fireEvent.click(
+      screen.getByRole("button", { name: "Ajouter à ma bibliothèque" }),
+    );
+
+    // Then
+    expect(wrapper.emitted("add")).toEqual([
+      [
+        {
+          isbn13: "9782000000006",
+          kind: "BOOK",
+          title: "Astérix",
+          subtitle: null,
+          authors: [],
+          series: null,
+          collection: null,
+          publisher: null,
+          publicationYear: null,
+          language: null,
+          pageCount: null,
+          summary: null,
+        },
+      ],
+    ]);
+  });
+
   function valuesOf(fields: ReturnType<typeof screen>) {
     return fields
       .getAllByRole<HTMLInputElement>("textbox")
