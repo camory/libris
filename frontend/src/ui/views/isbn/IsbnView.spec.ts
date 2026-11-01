@@ -115,6 +115,18 @@ describe("IsbnView", () => {
     ).toBeDefined();
   });
 
+  it("shows the card of an ISBN the house holds", async () => {
+    // Given
+    const screen = open(new FakeIsbnApi(held));
+
+    // When
+    await ask(screen, "9782723488525");
+
+    // Then
+    expect(screen.getByRole("heading", { name: "Romance dawn" })).toBeDefined();
+    expect(screen.queryByRole("textbox", { name: "Titre" })).toBeNull();
+  });
+
   it("says in which bookshelf the reader already has a copy", async () => {
     // Given
     const shelved: IsbnAnswer = {
