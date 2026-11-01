@@ -41,6 +41,7 @@ const held = ref(false);
 const copies = ref<Copy[]>([]);
 const covers = ref<CoverCandidate[]>([]);
 const coverSource = ref<string | null>(null);
+const sent = ref<SourceEdition>();
 const shownIsbn13 = computed(
   () => edition.value?.isbn13 ?? unknownIsbn13.value,
 );
@@ -92,6 +93,7 @@ async function search() {
   copies.value = [];
   covers.value = [];
   addBookToBookshelf.value = useAddBookToBookshelf(meApi, bookshelfApi);
+  sent.value = undefined;
   message.value = undefined;
   const isbn13 = Isbn.of(typed.value)?.digits ?? null;
   if (isbn13 === null) {
@@ -111,6 +113,11 @@ async function search() {
   } else {
     message.value = "isbn.error";
   }
+}
+
+async function send(edition: SourceEdition) {
+  sent.value = edition;
+  await addBookToBookshelf.value.add(edition, coverSource.value);
 }
 </script>
 
@@ -190,7 +197,14 @@ async function search() {
     <SourceEditionCardSkeleton v-if="searching" class="mt-5" />
 
     <div v-else-if="shownIsbn13" class="mt-5 flex flex-col">
-      <template v-if="(held || addState.status === 'added') && edition">
+      <SourceEditionCard
+        v-if="addState.status === 'added' && sent"
+        :edition="sent"
+        :held="held"
+        :copies="shownCopies"
+        :covers="covers"
+      />
+      <template v-else-if="held && edition">
         <SourceEditionCard
           :edition="edition"
           :held="held"
@@ -199,10 +213,9 @@ async function search() {
           @cover-source="coverSource = $event"
         />
         <DockedAdd
-          v-if="addState.status !== 'added'"
           :adding="addState.status === 'adding'"
           :failed="addState.status === 'notAdded'"
-          @add="addBookToBookshelf.add(edition, coverSource)"
+          @add="send(edition)"
         />
       </template>
       <EditionForm
@@ -214,7 +227,7 @@ async function search() {
         :adding="addState.status === 'adding'"
         :failed="addState.status === 'notAdded'"
         @cover-source="coverSource = $event"
-        @add="addBookToBookshelf.add($event, coverSource)"
+        @add="send($event)"
       />
     </div>
 

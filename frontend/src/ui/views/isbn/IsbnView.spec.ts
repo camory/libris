@@ -605,6 +605,30 @@ describe("IsbnView", () => {
     ).toBeNull();
   });
 
+  it("shows the card of the edition it added in place of the form", async () => {
+    // Given
+    const screen = open(
+      new FakeIsbnApi(found),
+      undefined,
+      new FakeBookshelfApi(added),
+    );
+    await ask(screen, "9782723488525");
+    await fireEvent.input(screen.getByRole("textbox", { name: "Titre" }), {
+      target: { value: "Romance Dawn" },
+    });
+
+    // When
+    await press(screen, "Ajouter à ma bibliothèque");
+
+    // Then
+    expect(screen.getByRole("heading", { name: "Romance Dawn" })).toBeDefined();
+    expect(screen.queryByRole("textbox", { name: "Titre" })).toBeNull();
+    expect(
+      screen.queryByRole("button", { name: "Ajouter à ma bibliothèque" }),
+    ).toBeNull();
+    expect(screen.getByText("Dans Bibliothèque de Léa")).toBeDefined();
+  });
+
   it("counts the copy it added beside the one the reader had", async () => {
     // Given
     const screen = open(
