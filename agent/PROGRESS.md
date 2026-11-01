@@ -135,3 +135,15 @@ Format:
   reviewer on T121, Tophe 2026-11-01): T122, which gives the form the
   card's covers and dots, extracts the card's top part they share rather
   than copying the covers a second time.
+
+## 2026-11-01 — T122 A new ISBN opens the form, filled — handoff
+- Done: the un-skip of S1 (commit `test(frontend): un-skip S1 …`), its red
+  read: `findByLabelText("Titre")` times out, the card shows in place of
+  the form. No step of the test plan (1 to 16) is done yet.
+- Start with: step 1, `src/domain/Language.spec.ts`, `languageWord("ja",
+  "fr")`.
+- Decided: the un-skip is a commit of its own, red, since S1 is the last
+  test to go green; nothing else.
+- Guards: none run yet (steps 2, 13, 16 remain).
+- Learned: the brief's grep `language: {\|te(word)` today hits
+  `src/ui/i18n.ts` (`language: { fr: "français" }`) and the card's `te`.
