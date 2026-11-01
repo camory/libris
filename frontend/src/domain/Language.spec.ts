@@ -19,4 +19,8 @@ describe("languageCode", () => {
   it("ignores case and accents", () => {
     expect(languageCode("FRANCAIS", "fr")).toBe("fr");
   });
+
+  it("answers no code for a word naming no language", () => {
+    expect(languageCode("klingon", "fr")).toBeNull();
+  });
 });
