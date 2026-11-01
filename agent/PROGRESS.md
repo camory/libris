@@ -101,3 +101,12 @@ Format:
   reads.
 - Left over: T120 matches a series' name as PRD §3 says; T121 moves the
   frontend onto `v0.15.0` once T120 is deployed.
+
+## 2026-11-01 — T120 A series' name matched as PRD §3 says — done
+- Did: `V014` makes `series_name_unique` ignore case, accents and the
+  spaces at a name's ends, and `JdbcSeriesRepository.findOrInsert`
+  resolves its conflict on it; S5, a series of the house, runs green.
+- Decided: nothing the brief left open.
+- Deviations from the brief: none.
+- Left over: authors stay unique on `LOWER(name)` (`agent/PROPOSED.md`);
+  T121 moves the frontend onto `v0.15.0` once T120 is deployed.

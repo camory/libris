@@ -39,7 +39,7 @@ guard every frontend task.
       answer unchanged (D07). The backend's walking skeleton; realises S7
       on the backend; un-skips the backend test of S7.
 
-- [ ] T120 Backend: a series' name matched as PRD §3 says.
+- [x] T120 Backend: a series' name matched as PRD §3 says.
       An ouvrage added under a series name lands on the series the house
       holds under that name whatever its capitalisation, its accents and
       the spaces at its ends, which keeps its stored spelling; any other
