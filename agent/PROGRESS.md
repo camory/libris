@@ -155,3 +155,41 @@ Format:
   edited, docks the button under the unknown ISBN's form too (the dock is
   drawn only with an `edition` now) and keeps the form open to edits under
   the add's message, which is already in the dock.
+
+## 2026-11-01 — T123 The ouvrage is added as edited — done
+- Did: the add, docked as `DockedAdd` under the form of a lacking or an
+  unknown ISBN and under the held card, sends `editionOf` of the fields
+  (`domain/EditionDraft.ts`), the language read back by `languageCode`;
+  once added the card of the edition sent shows; S5 and S11 run green.
+- Decided: `DockedAdd` is drawn by the form and by the view under the held
+  card; the view keeps the edition sent in `sent` and, once added, draws
+  its card with `sentCovers`, the one candidate whose source it sent;
+  `editionOf`'s `number()` reads through `text()`; the run was split in
+  two by handoffs after steps 5 and 15.
+- Deviations from the brief: step 7's green already drew the card of the
+  answer once added (the form's dock otherwise stayed, redding the view's
+  *shows the copy it added and offers no more to add*), so step 12's red
+  was the heading *Romance Dawn*, not the form staying; covers S3 was red
+  between steps 12 and 13, as the brief foresaw; step 8 picks *BD* by
+  `fireEvent.change`, a click on a detached radio firing no `change`;
+  S11's two cases were green on their un-skip, their guard read at step 15.
+- Left over: the checks by hand on the Pixel (`7-adding.jpg`,
+  `8-added.jpg`, whose card draws no dot nor source's name where ours draws
+  one of each, `9-not-added.jpg`, the dock and its hairline under the form
+  and under the held card); `IsbnView.vue`'s held-card `@add` is the one
+  line no case covers; T124 refuses on the same tap.
+
+## 2026-11-01 — T123 The ouvrage is added as edited — reworked
+- Did: `IsbnView`'s `send` keeps the cover's source it sends in
+  `sentCoverSource`, beside `sent`, and the card after the add filters the
+  candidates on it, no longer on the live `coverSource`; a view case taps
+  another dot while the add runs and reads the cover sent on the card.
+- Decided: the reviewer's verdict of 2026-11-01 (one blocking finding)
+  amended nothing: the card after the add shows the cover the tap sent, as
+  step 13 already asked; its suggestion, steps 8 and 9 in one commit, is
+  reported only, since pushed history is not rewritten.
+- Deviations from the brief: none.
+- Left over: whether the cover's dots count as part of the form while the
+  add runs (the spec's *Adding* says the form accepts nothing) is for the
+  next brief, as the reviewer noted; the checks by hand of the first entry
+  stay Tophe's.

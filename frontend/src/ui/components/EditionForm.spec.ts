@@ -263,6 +263,106 @@ describe("EditionForm", () => {
     expect(text).not.toContain("Dans aucune de vos bibliothèques");
   });
 
+  it("sends the fields as the reader left them", async () => {
+    // Given
+    const wrapper = form(onePiece1);
+    const screen = within(wrapper.element as HTMLElement);
+    await fireEvent.input(screen.getByRole("textbox", { name: "Titre" }), {
+      target: { value: "Romance Dawn" },
+    });
+
+    // When
+    await fireEvent.click(
+      screen.getByRole("button", { name: "Ajouter à ma bibliothèque" }),
+    );
+
+    // Then
+    expect(wrapper.emitted("add")).toEqual([
+      [{ ...onePiece1, title: "Romance Dawn" }],
+    ]);
+  });
+
+  it("sends the kind chosen", async () => {
+    // Given
+    const wrapper = form(onePiece1);
+    const screen = within(wrapper.element as HTMLElement);
+    await fireEvent.change(screen.getByRole("radio", { name: "BD" }), {
+      target: { checked: true },
+    });
+
+    // When
+    await fireEvent.click(
+      screen.getByRole("button", { name: "Ajouter à ma bibliothèque" }),
+    );
+
+    // Then
+    expect(wrapper.emitted("add")?.[0]?.[0]).toMatchObject({ kind: "BD" });
+  });
+
+  it("sends an unknown ISBN's digits and no author", async () => {
+    // Given
+    const wrapper = form();
+    const screen = within(wrapper.element as HTMLElement);
+    await fireEvent.input(screen.getByRole("textbox", { name: "Titre" }), {
+      target: { value: "Astérix" },
+    });
+
+    // When
+    await fireEvent.click(
+      screen.getByRole("button", { name: "Ajouter à ma bibliothèque" }),
+    );
+
+    // Then
+    expect(wrapper.emitted("add")).toEqual([
+      [
+        {
+          isbn13: "9782000000006",
+          kind: "BOOK",
+          title: "Astérix",
+          subtitle: null,
+          authors: [],
+          series: null,
+          collection: null,
+          publisher: null,
+          publicationYear: null,
+          language: null,
+          pageCount: null,
+          summary: null,
+        },
+      ],
+    ]);
+  });
+
+  it("accepts nothing while the add runs", () => {
+    // When
+    const fields = within(
+      form(onePiece1, [], [], { adding: true }).element as HTMLElement,
+    );
+
+    // Then
+    expect(disabledOf(fields)).toEqual(Array(13).fill(true));
+  });
+
+  it("takes edits again once the add failed", () => {
+    // When
+    const wrapper = form(onePiece1, [], [], { failed: true });
+
+    // Then
+    expect(wrapper.text()).toContain(
+      "Erreur lors de l'ajout, veuillez réessayer plus tard.",
+    );
+    expect(disabledOf(within(wrapper.element as HTMLElement))).toEqual(
+      Array(13).fill(false),
+    );
+  });
+
+  function disabledOf(fields: ReturnType<typeof screen>) {
+    return [
+      ...fields.getAllByRole<HTMLInputElement>("textbox"),
+      ...fields.getAllByRole<HTMLInputElement>("radio"),
+    ].map((field) => field.disabled);
+  }
+
   function valuesOf(fields: ReturnType<typeof screen>) {
     return fields
       .getAllByRole<HTMLInputElement>("textbox")
@@ -289,9 +389,17 @@ describe("EditionForm", () => {
     edition?: SourceEdition,
     copies: Copy[] = [],
     covers: CoverCandidate[] = [],
+    { adding = false, failed = false } = {},
   ) {
     return mount(EditionForm, {
-      props: { isbn13: "9782000000006", edition, copies, covers },
+      props: {
+        isbn13: edition?.isbn13 ?? "9782000000006",
+        edition,
+        copies,
+        covers,
+        adding,
+        failed,
+      },
       global: { plugins: [createLibrisI18n()] },
     });
   }
