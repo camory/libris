@@ -47,6 +47,31 @@ describe("EditionForm", () => {
     expect(named.map((radio) => radio.checked)).toEqual([true, false, false]);
   });
 
+  it("offers the fields from Titre to Résumé, labelled and empty", () => {
+    // When
+    const fields = screen();
+
+    // Then
+    const textboxes = fields.getAllByRole<HTMLInputElement>("textbox");
+    const named = [
+      "Titre",
+      "Sous-titre",
+      "Série",
+      "Tome",
+      "Collection",
+      "Éditeur",
+      "Année",
+      "Langue",
+      "Pages",
+      "Résumé",
+    ].map((name) => fields.getByRole<HTMLInputElement>("textbox", { name }));
+    expect(textboxes).toHaveLength(10);
+    expect(named.map((field) => textboxes.indexOf(field))).toEqual([
+      0, 1, 2, 3, 4, 5, 6, 7, 8, 9,
+    ]);
+    expect(named.map((field) => field.value)).toEqual(Array(10).fill(""));
+  });
+
   function show() {
     return form().text().replace(/\s+/g, " ");
   }

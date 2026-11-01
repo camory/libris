@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { BookOpen } from "@lucide/vue";
-import { ref } from "vue";
+import { reactive, ref, useId } from "vue";
 import { useI18n } from "vue-i18n";
 import type { Kind } from "../../domain/SourceEdition";
 
@@ -10,6 +10,26 @@ const { t } = useI18n();
 
 const kinds: Kind[] = ["BOOK", "BD", "MANGA"];
 const kind = ref<Kind>("BOOK");
+
+const fields = [
+  "title",
+  "subtitle",
+  "series",
+  "volume",
+  "collection",
+  "publisher",
+  "year",
+  "language",
+  "pages",
+  "summary",
+] as const;
+const values = reactive(
+  Object.fromEntries(fields.map((field) => [field, ""])) as Record<
+    (typeof fields)[number],
+    string
+  >,
+);
+const id = useId();
 </script>
 
 <template>
@@ -50,6 +70,18 @@ const kind = ref<Kind>("BOOK");
         />
         {{ t(`isbn.form.kind.${each}`) }}
       </label>
+    </div>
+
+    <div v-for="field in fields" :key="field" class="flex flex-col gap-2">
+      <label class="text-label text-muted" :for="`${id}-${field}`">
+        {{ t(`isbn.form.${field}`) }}
+      </label>
+      <input
+        :id="`${id}-${field}`"
+        v-model="values[field]"
+        type="text"
+        class="h-[50px] w-full rounded-xl border-[1.5px] border-border bg-surface px-3.5 text-field"
+      />
     </div>
   </form>
 </template>
