@@ -9,6 +9,7 @@ import fr.amory.libris.bibliography.application.lookup.EditionLookupResult.Found
 import fr.amory.libris.bibliography.application.lookup.EditionLookupResult.Held
 import fr.amory.libris.bibliography.application.lookup.EditionLookupResult.SourcesUnavailable
 import fr.amory.libris.bibliography.application.lookup.EditionLookupResult.UnknownIsbn
+import fr.amory.libris.bibliography.application.series.ListSeriesNames
 import fr.amory.libris.bibliography.domain.Contribution
 import fr.amory.libris.bibliography.domain.ContributionRole.ARTIST
 import fr.amory.libris.bibliography.domain.ContributionRole.WRITER
@@ -110,6 +111,7 @@ import java.util.UUID
     ListCatalogueSeries::class,
     FindCatalogueSeries::class,
     FindCatalogueEdition::class,
+    ListSeriesNames::class,
   ],
 )
 @Suppress("LongParameterList")
