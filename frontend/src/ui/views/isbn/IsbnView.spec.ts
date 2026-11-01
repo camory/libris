@@ -155,15 +155,16 @@ describe("IsbnView", () => {
     expect(screen.getByText("Romance dawn")).toBeDefined();
   });
 
-  it("says the ISBN is unknown when no source knows it", async () => {
+  it("opens the empty form of the ISBN-13 the rule computes when no source knows it", async () => {
     // Given
     const screen = open(new FakeIsbnApi(unknownIsbn));
 
     // When
-    await ask(screen, "9782000000006");
+    await ask(screen, "978-2-00-000000-6");
 
     // Then
-    expect(screen.getByText("ISBN inconnu")).toBeDefined();
+    expect(screen.getByRole("textbox", { name: "Titre" })).toBeDefined();
+    expect(screen.getByText("9782000000006")).toBeDefined();
   });
 
   it("asks to try again later when no source answered", async () => {
@@ -390,7 +391,6 @@ describe("IsbnView", () => {
       screen.queryByRole("button", { name: "Fermer la caméra" }),
     ).toBeNull();
     expect(screen.queryByText("ISBN invalide")).toBeNull();
-    expect(screen.queryByText("ISBN inconnu")).toBeNull();
     expect(
       screen.queryByText(
         "Erreur lors de la recherche, veuillez réessayer plus tard.",

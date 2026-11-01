@@ -59,7 +59,6 @@ const fr = {
     add: "Ajouter à ma bibliothèque",
     adding: "Ajout en cours…",
     invalid: "ISBN invalide",
-    unknown: "ISBN inconnu",
     error: "Erreur lors de la recherche, veuillez réessayer plus tard.",
     addError: "Erreur lors de l'ajout, veuillez réessayer plus tard.",
     card: {

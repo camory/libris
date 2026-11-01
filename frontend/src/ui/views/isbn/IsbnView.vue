@@ -21,11 +21,9 @@ import type { CoverCandidate } from "../../../domain/Cover";
 import { Isbn } from "../../../domain/Isbn";
 import type { SourceEdition } from "../../../domain/SourceEdition";
 import BusySpinner from "../../components/BusySpinner.vue";
+import EditionForm from "../../components/EditionForm.vue";
 import SourceEditionCard from "../../components/SourceEditionCard.vue";
 import SourceEditionCardSkeleton from "../../components/SourceEditionCardSkeleton.vue";
-
-const messages = new Map([["/problems/not-found", "isbn.unknown"]]);
-const refusals = ["isbn.invalid", "isbn.unknown"];
 
 const { t } = useI18n();
 const isbnApi = inject(isbnApiKey)!;
@@ -35,8 +33,9 @@ const bookshelfApi = inject(bookshelfApiKey)!;
 
 const typed = ref("");
 const message = ref<string>();
-const refused = computed(() => refusals.includes(message.value ?? ""));
+const refused = computed(() => message.value === "isbn.invalid");
 const edition = ref<SourceEdition>();
+const unknownIsbn13 = ref<string>();
 const held = ref(false);
 const copies = ref<Copy[]>([]);
 const covers = ref<CoverCandidate[]>([]);
@@ -85,6 +84,7 @@ async function toggleCamera() {
 
 async function search() {
   edition.value = undefined;
+  unknownIsbn13.value = undefined;
   addBookToBookshelf.value = useAddBookToBookshelf(meApi, bookshelfApi);
   message.value = undefined;
   const isbn13 = Isbn.of(typed.value)?.digits ?? null;
@@ -100,8 +100,10 @@ async function search() {
     held.value = answer.id !== null;
     copies.value = answer.copies;
     covers.value = answer.covers;
+  } else if (answer.type === "/problems/not-found") {
+    unknownIsbn13.value = isbn13;
   } else {
-    message.value = messages.get(answer.type) ?? "isbn.error";
+    message.value = "isbn.error";
   }
 }
 </script>
@@ -207,6 +209,12 @@ async function search() {
         <span>{{ t("isbn.addError") }}</span>
       </p>
     </div>
+
+    <EditionForm
+      v-else-if="unknownIsbn13"
+      :isbn13="unknownIsbn13"
+      class="mt-5"
+    />
 
     <p v-if="message" class="mt-5 flex items-start gap-2 text-body text-danger">
       <CircleAlert :size="22" class="shrink-0" />
