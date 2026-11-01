@@ -89,3 +89,15 @@ Format:
   the phases before it did.
 - Left over: the backlog is empty; the next feature, the edition form,
   needs its spec, written with Tophe.
+
+## 2026-11-01 — T119 The series names on v0.15.0 — done
+- Did: the backend pins `v0.15.0` and serves `GET /api/v1/series-names`,
+  the names of every series of the house, through `ListSeriesNames` in
+  `bibliography.application.series` over `SeriesRepository.findAll`.
+- Decided: nothing the brief left open.
+- Deviations from the brief: the `listSeriesNames` constructor parameter
+  of `ApiContractTest` came with step 6, its first reader, not step 5:
+  detekt's `UnusedPrivateProperty` fails a constructor argument no case
+  reads.
+- Left over: T120 matches a series' name as PRD §3 says; T121 moves the
+  frontend onto `v0.15.0` once T120 is deployed.

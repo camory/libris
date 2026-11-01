@@ -52,7 +52,6 @@ class EditionFormScenarios @Autowired constructor(private val libris: Libris, pr
   }
 
   @Test
-  @Disabled("edition form")
   fun `S7 The series of the house are suggested`() {
     // Given
     val sam = libris.reader("sam", "Sam")

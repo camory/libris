@@ -29,7 +29,7 @@ ISBN the house lacks on the lookup screen. No other task touches the
 contract (D04). The frontend tests of S3 and S4 run green already and
 guard every frontend task.
 
-- [ ] T119 Backend: the series names on `v0.15.0`.
+- [x] T119 Backend: the series names on `v0.15.0`.
       `ApiContractTest` pins `v0.15.0`, the backend's one bump (D04).
       Libris answers the names of every series the house holds, on a
       bookshelf of the reader's or not, each once and none blank, in no

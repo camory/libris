@@ -9,6 +9,7 @@ import fr.amory.libris.bibliography.application.lookup.EditionLookupResult.Found
 import fr.amory.libris.bibliography.application.lookup.EditionLookupResult.Held
 import fr.amory.libris.bibliography.application.lookup.EditionLookupResult.SourcesUnavailable
 import fr.amory.libris.bibliography.application.lookup.EditionLookupResult.UnknownIsbn
+import fr.amory.libris.bibliography.application.series.ListSeriesNames
 import fr.amory.libris.bibliography.domain.Contribution
 import fr.amory.libris.bibliography.domain.ContributionRole.ARTIST
 import fr.amory.libris.bibliography.domain.ContributionRole.WRITER
@@ -110,6 +111,7 @@ import java.util.UUID
     ListCatalogueSeries::class,
     FindCatalogueSeries::class,
     FindCatalogueEdition::class,
+    ListSeriesNames::class,
   ],
 )
 @Suppress("LongParameterList")
@@ -129,8 +131,9 @@ class ApiContractTest @Autowired constructor(
   private val chooseDefaultBookshelf: ChooseDefaultBookshelf,
   private val listCatalogueSeries: ListCatalogueSeries,
   private val findCatalogueSeries: FindCatalogueSeries,
-  private val findCatalogueEdition: FindCatalogueEdition) {
-  @ContracteerTest(openApiDoc = "https://raw.githubusercontent.com/camory/libris-api/v0.14.0/openapi.yaml")
+  private val findCatalogueEdition: FindCatalogueEdition,
+  private val listSeriesNames: ListSeriesNames) {
+  @ContracteerTest(openApiDoc = "https://raw.githubusercontent.com/camory/libris-api/v0.15.0/openapi.yaml")
   fun `the API matches the contract`() {
     contracteerIsWelcomed()
     isbnLookupsAnswer()
@@ -146,6 +149,7 @@ class ApiContractTest @Autowired constructor(
     seriesAnswer()
     findingASeriesAnswers()
     findingABookAnswers()
+    seriesNamesAnswer()
   }
 
   private fun contracteerIsWelcomed() {
@@ -235,6 +239,10 @@ class ApiContractTest @Autowired constructor(
       .willReturn(FindCatalogueEditionResult.Found(ASTERIX_1_HELD))
     given(findCatalogueEdition(CONTRACTEER.id, EDITION_NOT_IN_MY_CATALOGUE))
       .willReturn(FindCatalogueEditionResult.NoSuchEdition)
+  }
+
+  private fun seriesNamesAnswer() {
+    given(listSeriesNames()).willReturn(listOf("Astérix", "One piece"))
   }
 
   private fun noCopy(answer: EditionLookupResult) =

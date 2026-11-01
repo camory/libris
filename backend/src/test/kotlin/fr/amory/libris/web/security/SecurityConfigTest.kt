@@ -1,6 +1,7 @@
 package fr.amory.libris.web.security
 
 import fr.amory.libris.bibliography.application.cover.FindCover
+import fr.amory.libris.bibliography.application.series.ListSeriesNames
 import fr.amory.libris.fixture.WebSliceTest
 import fr.amory.libris.library.application.AddBookToBookshelf
 import fr.amory.libris.library.application.AddMemberToBookshelf
@@ -43,6 +44,7 @@ import org.springframework.test.web.servlet.client.RestTestClient
     ListCatalogueSeries::class,
     FindCatalogueSeries::class,
     FindCatalogueEdition::class,
+    ListSeriesNames::class,
   ],
 )
 class SecurityConfigTest @Autowired constructor(

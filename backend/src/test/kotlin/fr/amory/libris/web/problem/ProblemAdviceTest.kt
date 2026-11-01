@@ -1,6 +1,7 @@
 package fr.amory.libris.web.problem
 
 import fr.amory.libris.bibliography.application.cover.FindCover
+import fr.amory.libris.bibliography.application.series.ListSeriesNames
 import fr.amory.libris.fixture.WebSliceTest
 import fr.amory.libris.library.application.AddBookToBookshelf
 import fr.amory.libris.library.application.AddMemberToBookshelf
@@ -56,6 +57,7 @@ private val TOPHE = readerNamed(
     ListCatalogueSeries::class,
     FindCatalogueSeries::class,
     FindCatalogueEdition::class,
+    ListSeriesNames::class,
   ],
 )
 class ProblemAdviceTest @Autowired constructor(

@@ -1,5 +1,6 @@
 package fr.amory.libris.web.series
 
+import fr.amory.libris.bibliography.application.series.ListSeriesNames
 import fr.amory.libris.bibliography.domain.Kind
 import fr.amory.libris.bibliography.domain.series.SeriesId
 import fr.amory.libris.library.application.catalogue.CatalogueSeries
@@ -25,7 +26,8 @@ import java.util.UUID
 @RestController
 class SeriesController(
   private val listCatalogueSeries: ListCatalogueSeries,
-  private val findCatalogueSeries: FindCatalogueSeries) {
+  private val findCatalogueSeries: FindCatalogueSeries,
+  private val listSeriesNames: ListSeriesNames) {
   @GetMapping("/api/v1/series")
   fun series(@AuthenticationPrincipal reader: Reader): List<SeriesResponse> =
     listCatalogueSeries(reader.id).map { SeriesResponse.from(it) }
@@ -36,6 +38,10 @@ class SeriesController(
       is Found     -> ResponseEntity.status(OK).body(SeriesWithBooksResponse.from(result))
       NoSuchSeries -> problem(NOT_FOUND, NOT_FOUND_PROBLEM).asResponse()
     }
+
+  @GetMapping("/api/v1/series-names")
+  fun names(): List<String> =
+    listSeriesNames()
 }
 
 data class SeriesResponse(
