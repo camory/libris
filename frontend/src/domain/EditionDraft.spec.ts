@@ -25,6 +25,22 @@ describe("editionOf", () => {
     expect(edition).toEqual(onePiece1);
   });
 
+  it("removes the spaces at the ends of each text", () => {
+    // Given
+    const spaced = Object.fromEntries(
+      Object.entries(filled).map(([field, value]) => [
+        field,
+        field === "kind" ? value : `  ${value} `,
+      ]),
+    ) as unknown as EditionDraft;
+
+    // When
+    const edition = read({ ...spaced, summary: " Un.\nDeux. " });
+
+    // Then
+    expect(edition).toEqual({ ...onePiece1, summary: "Un.\nDeux." });
+  });
+
   function read(draft: EditionDraft) {
     return editionOf(onePiece1.isbn13, onePiece1.authors, draft, "fr");
   }

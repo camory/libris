@@ -22,16 +22,17 @@ export function editionOf(
   locale: string,
 ): SourceEdition {
   const language = text(draft.language);
+  const series = text(draft.series);
   return {
     isbn13,
     kind: draft.kind,
-    title: draft.title,
+    title: draft.title.trim(),
     subtitle: text(draft.subtitle),
     authors,
     series:
-      text(draft.series) === null
+      series === null
         ? null
-        : { name: draft.series, volumeNumber: number(draft.volume) },
+        : { name: series, volumeNumber: number(draft.volume) },
     collection: text(draft.collection),
     publisher: text(draft.publisher),
     publicationYear: number(draft.year),
@@ -42,7 +43,8 @@ export function editionOf(
 }
 
 function text(value: string) {
-  return value === "" ? null : value;
+  const trimmed = value.trim();
+  return trimmed === "" ? null : trimmed;
 }
 
 function number(value: string) {
