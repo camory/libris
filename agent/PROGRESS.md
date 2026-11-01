@@ -137,16 +137,19 @@ Format:
   than copying the covers a second time.
 
 ## 2026-11-01 — T122 A new ISBN opens the form, filled — handoff
-- Done: the un-skip of S1 (commit `test(frontend): un-skip S1 …`), its red
-  read: `findByLabelText("Titre")` times out, the card shows in place of
-  the form. No step of the test plan (1 to 16) is done yet.
-- Start with: step 1, `src/domain/Language.spec.ts`, `languageWord("ja",
-  "fr")`.
-- Decided: the un-skip is a commit of its own, red, since S1 is the last
-  test to go green; nothing else.
-- Guards: none run yet (steps 2, 13, 16 remain).
-- Learned: the brief's grep `language: {\|te(word)` today hits
-  `src/ui/i18n.ts` (`language: { fr: "français" }`) and the card's `te`.
-- Gate at handoff: `npm test` red on S1 alone, `Unable to find a label
-  with the text of: Titre`; every other test green. Not pushed: the
-  commits stay on the local branch.
+- Done: steps 1 to 16, S1 green, the self-review of the diff and its tidy
+  (no empty dock after the add; `text()` for the title too); the gotchas
+  rewritten. Start with: *Finish* 1, tick T122, rewrite this entry as the
+  diary entry, then open the PR, after a plain `npm test` on the tree.
+- Decided: parts `CoverChoice`, `AuthorLines`, `BookshelvesHolding`; the
+  view's `shownIsbn13` guards the block and feeds the form; the held card
+  keeps the docked button (spec: card and form both show it); the dock's
+  hairline on an inner `div`, a container query styling descendants only.
+- Deviation: step 12 wired the form's `coverSource`, so step 14 was green at
+  once; its red, `expected [ null ] to deeply equal [ 'Open Library' ]`,
+  read by taking the listener out. Guards: step 2 `fallback: "none"` +
+  `?? ""` → `expected '' to be 'qq'`; step 13 the card off (`false &&`) →
+  no heading *Romance dawn*; step 16 kind always `"BOOK"` → S1 `expected
+  false to be true`. Each reverted. `npm run build` emits `@container
+  scroll-state(stuck:bottom)`. By hand for Tophe: form vs `1-filled.jpg`,
+  dock and hairline, the keyboard over it, on the Pixel.
