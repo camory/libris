@@ -14,3 +14,6 @@ fun Reader.opens(series: Series): Answer<SeriesWithBooks> =
 
 fun Libris.unknownSeries() =
   Series(UUID.randomUUID().toString(), "Inconnue")
+
+fun Reader.seriesNames(): List<String> =
+  libris.get(this, "/api/v1/series-names") { read<List<String>>(it) }.value
