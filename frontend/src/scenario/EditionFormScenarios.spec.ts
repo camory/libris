@@ -168,7 +168,7 @@ describe("Edition form", () => {
     expect(screen.queryByLabelText("Titre")).toBeNull();
   });
 
-  it.skip("S5 The ouvrage is added as edited", async () => {
+  it("S5 The ouvrage is added as edited", async () => {
     // Given
     const add = librisAdds(on(lea.defaultBookshelf));
     const screen = open({ isbn: aSourceKnows(onePiece1), add });
@@ -394,7 +394,7 @@ describe("Edition form", () => {
     expect(add.asked).toEqual([]);
   });
 
-  it.skip.each([
+  it.each([
     {
       case: "the add answers the validation problem",
       add: () =>
