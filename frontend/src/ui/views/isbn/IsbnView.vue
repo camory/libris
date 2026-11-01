@@ -206,14 +206,13 @@ async function search() {
         @cover-source="coverSource = $event"
       />
       <div
-        v-if="edition"
+        v-if="edition && addState.status !== 'added'"
         class="sticky bottom-0 -mx-5 [container-type:scroll-state]"
       >
         <div
           class="flex flex-col gap-2 border-border bg-bg px-5 py-2 [@container_scroll-state(stuck:_bottom)]:border-t"
         >
           <button
-            v-if="addState.status !== 'added'"
             type="button"
             :disabled="addState.status === 'adding'"
             class="flex h-[50px] items-center justify-center gap-2 rounded-xl bg-accent text-button text-white active:bg-accent-pressed disabled:opacity-70"

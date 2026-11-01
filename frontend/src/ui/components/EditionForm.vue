@@ -38,7 +38,7 @@ const fields = [
 const numeric = new Set<string>(["volume", "year", "pages"]);
 const language = answered?.language ?? null;
 const values = reactive<Record<(typeof fields)[number], string>>({
-  title: answered?.title ?? "",
+  title: text(answered?.title),
   subtitle: text(answered?.subtitle),
   series: text(answered?.series?.name),
   volume: text(answered?.series?.volumeNumber),
