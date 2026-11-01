@@ -147,3 +147,6 @@ Format:
 - Guards: none run yet (steps 2, 13, 16 remain).
 - Learned: the brief's grep `language: {\|te(word)` today hits
   `src/ui/i18n.ts` (`language: { fr: "français" }`) and the card's `te`.
+- Gate at handoff: `npm test` red on S1 alone, `Unable to find a label
+  with the text of: Titre`; every other test green. Not pushed: the
+  commits stay on the local branch.
