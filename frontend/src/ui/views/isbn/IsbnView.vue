@@ -21,6 +21,7 @@ import type { CoverCandidate } from "../../../domain/Cover";
 import { Isbn } from "../../../domain/Isbn";
 import type { SourceEdition } from "../../../domain/SourceEdition";
 import BusySpinner from "../../components/BusySpinner.vue";
+import DockedAdd from "../../components/DockedAdd.vue";
 import EditionForm from "../../components/EditionForm.vue";
 import SourceEditionCard from "../../components/SourceEditionCard.vue";
 import SourceEditionCardSkeleton from "../../components/SourceEditionCardSkeleton.vue";
@@ -189,49 +190,32 @@ async function search() {
     <SourceEditionCardSkeleton v-if="searching" class="mt-5" />
 
     <div v-else-if="shownIsbn13" class="mt-5 flex flex-col">
-      <SourceEditionCard
-        v-if="held && edition"
-        :edition="edition"
-        :held="held"
-        :copies="shownCopies"
-        :covers="covers"
-        @cover-source="coverSource = $event"
-      />
+      <template v-if="(held || addState.status === 'added') && edition">
+        <SourceEditionCard
+          :edition="edition"
+          :held="held"
+          :copies="shownCopies"
+          :covers="covers"
+          @cover-source="coverSource = $event"
+        />
+        <DockedAdd
+          v-if="addState.status !== 'added'"
+          :adding="addState.status === 'adding'"
+          :failed="addState.status === 'notAdded'"
+          @add="addBookToBookshelf.add(edition, coverSource)"
+        />
+      </template>
       <EditionForm
         v-else
         :isbn13="shownIsbn13"
         :edition="edition"
         :copies="shownCopies"
         :covers="covers"
+        :adding="addState.status === 'adding'"
+        :failed="addState.status === 'notAdded'"
         @cover-source="coverSource = $event"
+        @add="addBookToBookshelf.add($event, coverSource)"
       />
-      <div
-        v-if="edition && addState.status !== 'added'"
-        class="sticky bottom-0 -mx-5 [container-type:scroll-state]"
-      >
-        <div
-          class="flex flex-col gap-2 border-border bg-bg px-5 py-2 [@container_scroll-state(stuck:_bottom)]:border-t"
-        >
-          <button
-            type="button"
-            :disabled="addState.status === 'adding'"
-            class="flex h-[50px] items-center justify-center gap-2 rounded-xl bg-accent text-button text-white active:bg-accent-pressed disabled:opacity-70"
-            @click="addBookToBookshelf.add(edition, coverSource)"
-          >
-            <BusySpinner v-if="addState.status === 'adding'" class="size-4" />
-            {{
-              addState.status === "adding" ? t("isbn.adding") : t("isbn.add")
-            }}
-          </button>
-          <p
-            v-if="addState.status === 'notAdded'"
-            class="flex items-start gap-2 text-body text-danger"
-          >
-            <CircleAlert :size="22" class="shrink-0" />
-            <span>{{ t("isbn.addError") }}</span>
-          </p>
-        </div>
-      </div>
     </div>
 
     <p v-if="message" class="mt-5 flex items-start gap-2 text-body text-danger">

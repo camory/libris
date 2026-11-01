@@ -263,6 +263,25 @@ describe("EditionForm", () => {
     expect(text).not.toContain("Dans aucune de vos bibliothèques");
   });
 
+  it("sends the fields as the reader left them", async () => {
+    // Given
+    const wrapper = form(onePiece1);
+    const screen = within(wrapper.element as HTMLElement);
+    await fireEvent.input(screen.getByRole("textbox", { name: "Titre" }), {
+      target: { value: "Romance Dawn" },
+    });
+
+    // When
+    await fireEvent.click(
+      screen.getByRole("button", { name: "Ajouter à ma bibliothèque" }),
+    );
+
+    // Then
+    expect(wrapper.emitted("add")).toEqual([
+      [{ ...onePiece1, title: "Romance Dawn" }],
+    ]);
+  });
+
   function valuesOf(fields: ReturnType<typeof screen>) {
     return fields
       .getAllByRole<HTMLInputElement>("textbox")
@@ -289,9 +308,17 @@ describe("EditionForm", () => {
     edition?: SourceEdition,
     copies: Copy[] = [],
     covers: CoverCandidate[] = [],
+    { adding = false, failed = false } = {},
   ) {
     return mount(EditionForm, {
-      props: { isbn13: "9782000000006", edition, copies, covers },
+      props: {
+        isbn13: edition?.isbn13 ?? "9782000000006",
+        edition,
+        copies,
+        covers,
+        adding,
+        failed,
+      },
       global: { plugins: [createLibrisI18n()] },
     });
   }

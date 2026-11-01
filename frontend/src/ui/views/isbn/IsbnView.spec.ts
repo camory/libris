@@ -500,7 +500,7 @@ describe("IsbnView", () => {
     ).toBeDefined();
   });
 
-  it("offers no add without a card", async () => {
+  it("offers the add under the empty form of an unknown ISBN", async () => {
     // Given
     const screen = open(new FakeIsbnApi(unknownIsbn));
 
@@ -509,8 +509,8 @@ describe("IsbnView", () => {
 
     // Then
     expect(
-      screen.queryByRole("button", { name: "Ajouter à ma bibliothèque" }),
-    ).toBeNull();
+      screen.getByRole("button", { name: "Ajouter à ma bibliothèque" }),
+    ).toBeDefined();
   });
 
   it("is busy while the add runs", async () => {
