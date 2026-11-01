@@ -15,4 +15,8 @@ describe("languageCode", () => {
   it("answers the code of a language's word", () => {
     expect(languageCode("japonais", "fr")).toBe("ja");
   });
+
+  it("ignores case and accents", () => {
+    expect(languageCode("FRANCAIS", "fr")).toBe("fr");
+  });
 });

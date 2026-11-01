@@ -1,9 +1,14 @@
+import { nameOrder } from "./nameOrder";
+
 export function languageWord(code: string, locale: string): string {
   return new Intl.DisplayNames([locale], { type: "language" }).of(code) ?? code;
 }
 
 export function languageCode(word: string, locale: string): string | null {
-  return CODES.find((code) => languageWord(code, locale) === word) ?? null;
+  const byName = nameOrder(locale);
+  return (
+    CODES.find((code) => byName(languageWord(code, locale), word) === 0) ?? null
+  );
 }
 
 const CODES = [
