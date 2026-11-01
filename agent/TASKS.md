@@ -49,7 +49,7 @@ guard every frontend task.
       backend test of S5, a series of the house; its first case stays
       green.
 
-- [ ] T121 Frontend: the edition form on `v0.15.0`, an unknown ISBN.
+- [x] T121 Frontend: the edition form on `v0.15.0`, an unknown ISBN.
       Precondition (human): T120 deployed (D04).
       `vitest.global-setup.ts` pins `v0.15.0`, the frontend's one bump; the
       series' port gains the house's series names, its client tested

@@ -22,7 +22,7 @@ Read whole by a run that changes `frontend/`, after `every-run.md`.
   an `afterEach`, or the contract case passes only by running first.
 - `vitest.global-setup.ts` starts `contracteer mock` on port 9099 over the
   contract the frontend pins, a `raw.githubusercontent.com` URL of
-  `camory/libris-api` (`v0.14.0` since T113); it starts in about four seconds
+  `camory/libris-api` (`v0.15.0` since T121); it starts in about four seconds
   and logs `Contracteer mock server started on port 9099` last, and the
   setup resolves on that line and kills the process in its teardown. The
   mock generates values, so an `infra/api` spec asserts shape and types,
@@ -67,7 +67,8 @@ Read whole by a run that changes `frontend/`, after `every-run.md`.
   (T103). `GET /books/{id}` answers `404` for
   `3e4f5a6b-7c8d-4e9f-a0b1-c2d3e4f5a6b7`, `400` for `not-a-uuid` and
   `a%2Fb`, and a generated `200` of one or two copies in 30 tries, never
-  none (T113). `FetchIsbnApi`, `FetchBookshelfApi`, `FetchBookshelvesApi`,
+  none (T113). `GET /series-names` answers a generated `200` of one or two
+  names of one character in 30 tries, never none (T121). `FetchIsbnApi`, `FetchBookshelfApi`, `FetchBookshelvesApi`,
   `FetchSeriesApi`'s find and `FetchCatalogueApi`'s find hand a non-2xx
   answer to `infra/api/problemOf`, which maps the statuses the
   contract names (400, 404, 409 for the creation and the add of a member, 400 and
@@ -87,10 +88,19 @@ Read whole by a run that changes `frontend/`, after `every-run.md`.
 - A fixture may import `domain` and `application` only, so a shared
   app-over-fakes builder cannot live in `src/fixture`: each scenario file
   keeps its own `open()`, naming the ports its spec varies.
-- `SeriesNamesApi` stands apart from `SeriesApi`, provided by
-  `EditionFormScenarios`' `open()` through `app.provide`, only until the
-  edition form task bumps the pin to `v0.15.0`: that task folds `names` into
-  `SeriesApi` with its client, `SeriesNamesApi` and its fake gone.
+- The series' names are `SeriesApi.names()`, and `FakeSeriesApi` takes them
+  third, `string[] | Error`, `[]` by default; a scenario that varies them
+  passes `undefined` second to keep the find's default.
+  `EditionFormScenarios`' `open()` gives `world.names` as its `seriesApi`.
+- `EditionForm` takes the prop `isbn13` alone and holds its text in itself:
+  `kind`, a `values` record for the nine `input`s drawn by one `v-for` over
+  `fields` (`isbn.form.<field>`), and `summary`, a `textarea` of its own
+  after them. Each label points at its box through `for` and an id built
+  on `useId()`; the kinds are three `sr-only` radios inside their labels.
+  The form's *ISBN* is a `<p>`, so `IsbnView.spec.ts`'s `field()` still
+  finds the one `ISBN` textbox. A case that types in a field the mutation
+  makes a `number` input finds it with `getByLabelText`: a role query reds
+  on the `spinbutton` before the value is read.
 - jsdom has no `Element.prototype.scrollIntoView`: `EditionFormScenarios`
   defines it as a no-op for its tests and deletes it after each; a component
   spec that reaches a call to it needs the same.

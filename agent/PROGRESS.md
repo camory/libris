@@ -111,14 +111,22 @@ Format:
 - Left over: authors stay unique on `LOWER(name)` (`agent/PROPOSED.md`);
   T121 moves the frontend onto `v0.15.0` once T120 is deployed.
 
-## 2026-11-01 — T121 The edition form on v0.15.0, an unknown ISBN — handoff
-- Done: steps 1 to 7 of the test plan, one commit each; start with step 8.
-- Read first, before any unit test: S2 un-skipped fails on `Unable to find a
-  label with the text of: Titre`; it was put back to `it.skip` uncommitted,
-  and is un-skipped for good as step 15.
-- Deviation: `FakeSeriesApi`'s third parameter is `seriesNames`, not `names`:
-  a private property named `names` clashes with the method `names()`.
-- Decided: `names()` reads the body with no status check (T126's); the kind
-  is three `sr-only` radios inside their labels, the chosen one styled by
-  `has-checked:`; the component spec reads the radios' order by role queries.
-- No guard run yet (steps 9, 11, 14, 15 are left).
+## 2026-11-01 — T121 The edition form on v0.15.0, an unknown ISBN — done
+- Did: the frontend pins `v0.15.0`; `SeriesApi.names()` replaces the interim
+  `SeriesNamesApi`; an ISBN no source knows opens `EditionForm`, empty, in
+  place of *ISBN inconnu*; S2 runs green.
+- Decided: `names()` reads the body with no status check, the non-`200`
+  being T126's; the kind is three `sr-only` radios inside their labels, the
+  chosen one styled by `has-checked:`; each field's label points at its box
+  through `for` and a `useId()` id; *Résumé* is a `textarea` outside the
+  fields' `v-for`, three lines tall by `min-h-[calc(3lh+27px)]` and growing
+  by `field-sizing-content`.
+- Deviations from the brief: `FakeSeriesApi`'s third parameter is
+  `seriesNames`, a private `names` clashing with the method `names()`;
+  step 13 asserts no absent *ISBN inconnu*, so that the word stays in
+  `EditionFormScenarios.spec.ts` alone as the criteria want; step 11 finds
+  *Pages* by its label, since its mutation, a `number` input, reds a role
+  query before the value.
+- Left over: the checks by hand on the Pixel (the form against
+  `2-empty.jpg`, *Résumé* growing, the numeric keyboard); T122 fills the
+  form of a found ISBN and adds the button.
