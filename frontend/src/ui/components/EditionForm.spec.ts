@@ -2,6 +2,10 @@ import { BookOpen } from "@lucide/vue";
 import { fireEvent, within } from "@testing-library/dom";
 import { mount } from "@vue/test-utils";
 import { describe, expect, it } from "vitest";
+import type { Copy } from "../../domain/Copy";
+import type { CoverCandidate } from "../../domain/Cover";
+import type { SourceEdition } from "../../domain/SourceEdition";
+import { onePiece1 } from "../../fixture/SourceEditions";
 import { createLibrisI18n } from "../i18n";
 import EditionForm from "./EditionForm.vue";
 
@@ -114,17 +118,54 @@ describe("EditionForm", () => {
     expect(summary.value).toBe("Un.\nDeux.");
   });
 
-  function show() {
-    return form().text().replace(/\s+/g, " ");
+  it("holds in each field what Libris answered", () => {
+    // When
+    const fields = screen({ ...onePiece1, summary: "Un.\nDeux." });
+
+    // Then
+    expect(valuesOf(fields)).toEqual([
+      "Romance dawn",
+      "à l'aube d'une grande aventure",
+      "One piece",
+      "1",
+      "Shonen manga",
+      "Glénat",
+      "2013",
+      "français",
+      "203",
+      "Un.\nDeux.",
+    ]);
+  });
+
+  function valuesOf(fields: ReturnType<typeof screen>) {
+    return fields
+      .getAllByRole<HTMLInputElement>("textbox")
+      .map((field) => field.value);
   }
 
-  function screen() {
-    return within(form().element as HTMLElement);
+  function show(
+    edition?: SourceEdition,
+    copies: Copy[] = [],
+    covers: CoverCandidate[] = [],
+  ) {
+    return form(edition, copies, covers).text().replace(/\s+/g, " ");
   }
 
-  function form() {
+  function screen(
+    edition?: SourceEdition,
+    copies: Copy[] = [],
+    covers: CoverCandidate[] = [],
+  ) {
+    return within(form(edition, copies, covers).element as HTMLElement);
+  }
+
+  function form(
+    edition?: SourceEdition,
+    copies: Copy[] = [],
+    covers: CoverCandidate[] = [],
+  ) {
     return mount(EditionForm, {
-      props: { isbn13: "9782000000006" },
+      props: { isbn13: "9782000000006", edition, copies, covers },
       global: { plugins: [createLibrisI18n()] },
     });
   }

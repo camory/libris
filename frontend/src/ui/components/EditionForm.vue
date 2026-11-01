@@ -2,11 +2,19 @@
 import { BookOpen } from "@lucide/vue";
 import { reactive, ref, useId } from "vue";
 import { useI18n } from "vue-i18n";
-import type { Kind } from "../../domain/SourceEdition";
+import type { Copy } from "../../domain/Copy";
+import type { CoverCandidate } from "../../domain/Cover";
+import { languageWord } from "../../domain/Language";
+import type { Kind, SourceEdition } from "../../domain/SourceEdition";
 
-defineProps<{ isbn13: string }>();
+const props = defineProps<{
+  isbn13: string;
+  edition?: SourceEdition;
+  copies: Copy[];
+  covers: CoverCandidate[];
+}>();
 
-const { t } = useI18n();
+const { t, locale } = useI18n();
 
 const kinds: Kind[] = ["BOOK", "BD", "MANGA"];
 const kind = ref<Kind>("BOOK");
@@ -23,13 +31,21 @@ const fields = [
   "pages",
 ] as const;
 const numeric = new Set<string>(["volume", "year", "pages"]);
-const values = reactive(
-  Object.fromEntries(fields.map((field) => [field, ""])) as Record<
-    (typeof fields)[number],
-    string
-  >,
-);
-const summary = ref("");
+const answered = props.edition;
+const values = reactive<Record<(typeof fields)[number], string>>({
+  title: answered ? String(answered.title) : "",
+  subtitle: answered ? String(answered.subtitle) : "",
+  series: answered ? String(answered.series?.name) : "",
+  volume: answered ? String(answered.series?.volumeNumber) : "",
+  collection: answered ? String(answered.collection) : "",
+  publisher: answered ? String(answered.publisher) : "",
+  year: answered ? String(answered.publicationYear) : "",
+  language: answered?.language
+    ? languageWord(answered.language, locale.value)
+    : "",
+  pages: answered ? String(answered.pageCount) : "",
+});
+const summary = ref(answered ? String(answered.summary) : "");
 const id = useId();
 </script>
 

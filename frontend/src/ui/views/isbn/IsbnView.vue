@@ -213,6 +213,8 @@ async function search() {
     <EditionForm
       v-else-if="unknownIsbn13"
       :isbn13="unknownIsbn13"
+      :copies="[]"
+      :covers="[]"
       class="mt-5"
     />
 
