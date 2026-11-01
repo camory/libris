@@ -152,4 +152,6 @@ Format:
 - Left over: the checks by hand on the Pixel (the form against
   `1-filled.jpg`, the dock and its hairline while the form runs under it,
   in place at the end, covered by the keyboard); T123 sends the form as
-  edited and docks the add's message.
+  edited, docks the button under the unknown ISBN's form too (the dock is
+  drawn only with an `edition` now) and keeps the form open to edits under
+  the add's message, which is already in the dock.
