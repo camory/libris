@@ -6,6 +6,7 @@ import type { Copy } from "../../domain/Copy";
 import type { CoverCandidate } from "../../domain/Cover";
 import { languageWord } from "../../domain/Language";
 import type { Kind, SourceEdition } from "../../domain/SourceEdition";
+import AuthorLines from "./AuthorLines.vue";
 
 const props = defineProps<{
   isbn13: string;
@@ -92,18 +93,24 @@ const id = useId();
       </label>
     </div>
 
-    <div v-for="field in fields" :key="field" class="flex flex-col gap-2">
-      <label class="text-label text-muted" :for="`${id}-${field}`">
-        {{ t(`isbn.form.${field}`) }}
-      </label>
-      <input
-        :id="`${id}-${field}`"
-        v-model="values[field]"
-        type="text"
-        :inputmode="numeric.has(field) ? 'numeric' : undefined"
-        class="h-[50px] w-full rounded-xl border-[1.5px] border-border bg-surface px-3.5 text-field"
-      />
-    </div>
+    <template v-for="field in fields" :key="field">
+      <div class="flex flex-col gap-2">
+        <label class="text-label text-muted" :for="`${id}-${field}`">
+          {{ t(`isbn.form.${field}`) }}
+        </label>
+        <input
+          :id="`${id}-${field}`"
+          v-model="values[field]"
+          type="text"
+          :inputmode="numeric.has(field) ? 'numeric' : undefined"
+          class="h-[50px] w-full rounded-xl border-[1.5px] border-border bg-surface px-3.5 text-field"
+        />
+      </div>
+      <div v-if="field === 'volume' && edition" class="flex flex-col gap-2">
+        <p class="text-label text-muted">{{ t("isbn.form.authors") }}</p>
+        <AuthorLines :authors="edition.authors" :kind="edition.kind" />
+      </div>
+    </template>
 
     <div class="flex flex-col gap-2">
       <label class="text-label text-muted" :for="`${id}-summary`">

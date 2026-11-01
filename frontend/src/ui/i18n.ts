@@ -90,6 +90,7 @@ const fr = {
       subtitle: "Sous-titre",
       series: "Série",
       volume: "Tome",
+      authors: "Auteurs",
       collection: "Collection",
       publisher: "Éditeur",
       year: "Année",

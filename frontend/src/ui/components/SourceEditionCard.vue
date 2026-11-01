@@ -6,7 +6,8 @@ import type { Book } from "../../domain/Book";
 import { bookshelvesHolding, type Copy } from "../../domain/Copy";
 import type { CoverCandidate } from "../../domain/Cover";
 import { languageWord } from "../../domain/Language";
-import { authorsInOrder, type SourceEdition } from "../../domain/SourceEdition";
+import type { SourceEdition } from "../../domain/SourceEdition";
+import AuthorLines from "./AuthorLines.vue";
 
 const props = defineProps<{
   edition: SourceEdition | Book;
@@ -55,20 +56,6 @@ const overline = computed(() => {
     name: series.name,
     volume: series.volumeNumber,
   });
-});
-
-const authorLines = computed(() => {
-  const authors = authorsInOrder(props.edition.authors, locale.value);
-  const sets = new Set(authors.map(({ roles }) => roles.join()));
-  if (sets.size === 1) {
-    return [{ name: authors.map(({ name }) => name).join(", "), roles: null }];
-  }
-  return authors.map(({ name, roles }) => ({
-    name,
-    roles: roles
-      .map((role) => t(`role.${props.edition.kind}.${role}`))
-      .join(", "),
-  }));
 });
 
 const bookshelves = computed(() =>
@@ -161,20 +148,7 @@ onMounted(() => {
         <p v-if="edition.subtitle" class="text-lead text-muted">
           {{ edition.subtitle }}
         </p>
-        <template v-for="line in authorLines" :key="line.name">
-          <i18n-t
-            v-if="line.roles"
-            keypath="isbn.card.author"
-            tag="p"
-            class="text-body"
-          >
-            <template #name>{{ line.name }}</template>
-            <template #roles>
-              <span class="text-muted">{{ line.roles }}</span>
-            </template>
-          </i18n-t>
-          <p v-else class="text-body">{{ line.name }}</p>
-        </template>
+        <AuthorLines :authors="edition.authors" :kind="edition.kind" />
       </div>
     </div>
 

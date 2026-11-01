@@ -9,6 +9,16 @@ import { onePiece1 } from "../../fixture/SourceEditions";
 import { createLibrisI18n } from "../i18n";
 import EditionForm from "./EditionForm.vue";
 
+const asterix1: SourceEdition = {
+  ...onePiece1,
+  kind: "BD",
+  title: "Astérix le Gaulois",
+  authors: [
+    { name: "René Goscinny", role: "WRITER" },
+    { name: "Albert Uderzo", role: "ARTIST" },
+  ],
+};
+
 describe("EditionForm", () => {
   it("shows the ISBN under its label", () => {
     // When
@@ -166,6 +176,22 @@ describe("EditionForm", () => {
         .filter((radio) => radio.checked)
         .map((radio) => radio.labels?.[0]?.textContent?.trim()),
     ).toEqual(["Manga"]);
+  });
+
+  it("shows the authors as the card words them", () => {
+    // When
+    const text = show(asterix1);
+
+    // Then
+    const positions = [
+      "Tome",
+      "Auteurs",
+      "René Goscinny · scénario",
+      "Albert Uderzo · dessin",
+      "Collection",
+    ].map((part) => text.indexOf(part));
+    expect(positions).not.toContain(-1);
+    expect(positions).toEqual([...positions].sort((a, b) => a - b));
   });
 
   function valuesOf(fields: ReturnType<typeof screen>) {
