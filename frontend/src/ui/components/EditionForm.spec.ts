@@ -194,6 +194,14 @@ describe("EditionForm", () => {
     expect(positions).toEqual([...positions].sort((a, b) => a - b));
   });
 
+  it("shows no Auteurs when Libris answered none", () => {
+    // When
+    const text = show({ ...onePiece1, authors: [] });
+
+    // Then
+    expect(text).not.toContain("Auteurs");
+  });
+
   function valuesOf(fields: ReturnType<typeof screen>) {
     return fields
       .getAllByRole<HTMLInputElement>("textbox")

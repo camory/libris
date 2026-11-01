@@ -106,7 +106,10 @@ const id = useId();
           class="h-[50px] w-full rounded-xl border-[1.5px] border-border bg-surface px-3.5 text-field"
         />
       </div>
-      <div v-if="field === 'volume' && edition" class="flex flex-col gap-2">
+      <div
+        v-if="field === 'volume' && edition?.authors.length"
+        class="flex flex-col gap-2"
+      >
         <p class="text-label text-muted">{{ t("isbn.form.authors") }}</p>
         <AuthorLines :authors="edition.authors" :kind="edition.kind" />
       </div>
