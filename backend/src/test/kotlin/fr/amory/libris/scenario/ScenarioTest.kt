@@ -5,6 +5,7 @@ import com.github.tomakehurst.wiremock.core.WireMockConfiguration.options
 import fr.amory.libris.bibliography.fixture.BnfStubs
 import fr.amory.libris.bibliography.fixture.InventaireStubs
 import fr.amory.libris.bibliography.fixture.OpenLibraryStubs
+import fr.amory.libris.fixture.CleanSchema
 import fr.amory.libris.fixture.FreshSchema
 import fr.amory.libris.fixture.MutableClock
 import fr.amory.libris.scenario.dsl.Libris
@@ -34,7 +35,7 @@ import java.nio.file.Path
   properties = ["spring.flyway.clean-disabled=false"],
 )
 @AutoConfigureRestTestClient
-@Import(StubbedSources::class)
+@Import(StubbedSources::class, CleanSchema::class)
 @ExtendWith(FreshSchema::class, FreshSources::class)
 annotation class ScenarioTest
 
