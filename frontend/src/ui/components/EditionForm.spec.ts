@@ -72,6 +72,14 @@ describe("EditionForm", () => {
     expect(named.map((field) => field.value)).toEqual(Array(10).fill(""));
   });
 
+  it("shows no placeholder", () => {
+    // When
+    const fields = screen();
+
+    // Then
+    expect(fields.queryAllByPlaceholderText(/./)).toEqual([]);
+  });
+
   function show() {
     return form().text().replace(/\s+/g, " ");
   }
