@@ -12,7 +12,11 @@ import {
   bookshelfApiKey,
   type AddAnswer,
 } from "../../../application/BookshelfApi";
-import { isbnApiKey, type IsbnAnswer } from "../../../application/IsbnApi";
+import {
+  isbnApiKey,
+  type IsbnAnswer,
+  type IsbnApi,
+} from "../../../application/IsbnApi";
 import { meApiKey } from "../../../application/MeApi";
 import { FakeBarcodeScanner } from "../../../fixture/FakeBarcodeScanner";
 import { FakeBookshelfApi } from "../../../fixture/FakeBookshelfApi";
@@ -266,6 +270,30 @@ describe("IsbnView", () => {
     // Then
     expect(screen.getByText("ISBN invalide")).toBeDefined();
     expect(screen.queryByText("Romance dawn")).toBeNull();
+  });
+
+  it("draws the stand-in for an unknown ISBN after an answer with covers", async () => {
+    // Given
+    const answers: IsbnAnswer[] = [
+      {
+        ...found,
+        covers: [
+          { source: "inventaire.io", url: "https://inventaire.io/img/1" },
+        ],
+      },
+      unknownIsbn,
+    ];
+    const inTurn: IsbnApi = {
+      lookUp: () => Promise.resolve(answers.shift()!),
+    };
+    const screen = open(inTurn);
+    await ask(screen, "9782723488525");
+
+    // When
+    await ask(screen, "9782000000006");
+
+    // Then
+    expect(screen.queryByRole("img")).toBeNull();
   });
 
   it("is busy while the lookup runs, over a field that stays editable", async () => {
@@ -682,7 +710,7 @@ describe("IsbnView", () => {
   });
 
   function open(
-    api: FakeIsbnApi,
+    api: IsbnApi,
     scanner?: FakeBarcodeScanner,
     bookshelfApi?: FakeBookshelfApi,
   ) {
@@ -690,7 +718,7 @@ describe("IsbnView", () => {
   }
 
   function mountView(
-    api: FakeIsbnApi,
+    api: IsbnApi,
     scanner: FakeBarcodeScanner = new FakeBarcodeScanner(false),
     bookshelfApi = new FakeBookshelfApi(new Error("no add in this case")),
   ) {

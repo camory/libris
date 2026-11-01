@@ -88,6 +88,8 @@ async function toggleCamera() {
 async function search() {
   edition.value = undefined;
   unknownIsbn13.value = undefined;
+  copies.value = [];
+  covers.value = [];
   addBookToBookshelf.value = useAddBookToBookshelf(meApi, bookshelfApi);
   message.value = undefined;
   const isbn13 = Isbn.of(typed.value)?.digits ?? null;
