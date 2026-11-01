@@ -163,9 +163,6 @@ const fr = {
     error: "Erreur lors du chargement, veuillez réessayer plus tard.",
     notFound: "Ouvrage introuvable.",
   },
-  language: {
-    fr: "français",
-  },
   role: {
     BOOK: {
       WRITER: "texte",

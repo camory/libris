@@ -5,6 +5,7 @@ import { useI18n } from "vue-i18n";
 import type { Book } from "../../domain/Book";
 import { bookshelvesHolding, type Copy } from "../../domain/Copy";
 import type { CoverCandidate } from "../../domain/Cover";
+import { languageWord } from "../../domain/Language";
 import { authorsInOrder, type SourceEdition } from "../../domain/SourceEdition";
 
 const props = defineProps<{
@@ -17,7 +18,7 @@ const props = defineProps<{
 
 const emit = defineEmits<{ coverSource: [source: string | null] }>();
 
-const { t, te, locale } = useI18n();
+const { t, locale } = useI18n();
 
 const failed = ref<number[]>([]);
 const offered = computed(() =>
@@ -74,13 +75,9 @@ const bookshelves = computed(() =>
   bookshelvesHolding(props.copies, locale.value),
 );
 
-const languageWord = computed(() => {
-  const language = props.edition.language;
-  if (language === null) {
-    return null;
-  }
-  const word = `language.${language}`;
-  return te(word) ? t(word) : language;
+const language = computed(() => {
+  const code = props.edition.language;
+  return code === null ? null : languageWord(code, locale.value);
 });
 
 const rows = computed(() => {
@@ -89,7 +86,7 @@ const rows = computed(() => {
     { label: "collection", value: edition.collection },
     { label: "publisher", value: edition.publisher },
     { label: "year", value: edition.publicationYear },
-    { label: "language", value: languageWord.value },
+    { label: "language", value: language.value },
     { label: "pages", value: edition.pageCount },
     { label: "isbn", value: edition.isbn13 },
   ];
