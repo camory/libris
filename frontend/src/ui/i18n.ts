@@ -81,6 +81,13 @@ const fr = {
       isbn: "ISBN",
       readMore: "Lire la suite",
     },
+    form: {
+      kind: {
+        BOOK: "Livre",
+        BD: "BD",
+        MANGA: "Manga",
+      },
+    },
   },
   catalogue: {
     title: "Parcourir le catalogue",
