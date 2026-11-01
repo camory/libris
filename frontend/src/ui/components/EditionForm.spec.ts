@@ -94,9 +94,7 @@ describe("EditionForm", () => {
 
   it("keeps a number as typed", async () => {
     // Given
-    const pages = screen().getByRole<HTMLInputElement>("textbox", {
-      name: "Pages",
-    });
+    const pages = screen().getByLabelText<HTMLInputElement>("Pages");
 
     // When
     await fireEvent.input(pages, { target: { value: "1,5" } });
