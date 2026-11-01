@@ -1,5 +1,5 @@
 import { BookOpen } from "@lucide/vue";
-import { within } from "@testing-library/dom";
+import { fireEvent, within } from "@testing-library/dom";
 import { mount } from "@vue/test-utils";
 import { describe, expect, it } from "vitest";
 import { createLibrisI18n } from "../i18n";
@@ -90,6 +90,19 @@ describe("EditionForm", () => {
       .filter((field) => field.getAttribute("inputmode") === "numeric")
       .map((field) => field.labels?.[0]?.textContent?.trim());
     expect(numeric).toEqual(["Tome", "Année", "Pages"]);
+  });
+
+  it("keeps a number as typed", async () => {
+    // Given
+    const pages = screen().getByRole<HTMLInputElement>("textbox", {
+      name: "Pages",
+    });
+
+    // When
+    await fireEvent.input(pages, { target: { value: "1,5" } });
+
+    // Then
+    expect(pages.value).toBe("1,5");
   });
 
   function show() {
