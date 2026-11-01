@@ -107,6 +107,20 @@ describe("FetchSeriesApi", () => {
       type: "/problems/validation",
     });
   });
+
+  it("answers the names of the house's series", async () => {
+    // Given
+    const api = new FetchSeriesApi(inject("mockBaseUrl"));
+
+    // When
+    const names = await api.names();
+
+    // Then
+    expect(names.length).toBeGreaterThan(0);
+    for (const name of names) {
+      expect(name).toEqual(expect.stringMatching(/./));
+    }
+  });
 });
 
 const aStringOrNull = expect.toSatisfy(

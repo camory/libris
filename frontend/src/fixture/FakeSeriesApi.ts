@@ -9,6 +9,7 @@ export class FakeSeriesApi implements SeriesApi {
     private readonly found: FindSeriesAnswer | Error = new Error(
       "no find in this scenario",
     ),
+    private readonly seriesNames: string[] | Error = [],
   ) {}
 
   owned(): Promise<Series[]> {
@@ -25,5 +26,11 @@ export class FakeSeriesApi implements SeriesApi {
       outcome: "found",
       series: { ...this.found.series, books: [...this.found.series.books] },
     });
+  }
+
+  names(): Promise<string[]> {
+    return this.seriesNames instanceof Error
+      ? Promise.reject(this.seriesNames)
+      : Promise.resolve([...this.seriesNames]);
   }
 }

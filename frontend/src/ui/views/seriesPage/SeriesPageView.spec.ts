@@ -46,6 +46,10 @@ class LibrisRecordingAsks implements SeriesApi {
     this.asked.push(id);
     return Promise.resolve(noSuchSeries);
   }
+
+  names(): Promise<string[]> {
+    return Promise.resolve([]);
+  }
 }
 
 describe("SeriesPageView", () => {
@@ -330,6 +334,10 @@ class LibrisAnsweringById implements SeriesApi {
     return Promise.resolve(
       found ? { outcome: "found", series: found } : noSuchSeries,
     );
+  }
+
+  names(): Promise<string[]> {
+    return Promise.resolve([]);
   }
 }
 

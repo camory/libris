@@ -8,6 +8,7 @@ export type FindSeriesAnswer =
 export interface SeriesApi {
   owned(): Promise<Series[]>;
   find(id: string): Promise<FindSeriesAnswer>;
+  names(): Promise<string[]>;
 }
 
 export const seriesApiKey: InjectionKey<SeriesApi> = Symbol("SeriesApi");

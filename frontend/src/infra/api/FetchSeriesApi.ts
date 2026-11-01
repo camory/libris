@@ -49,6 +49,13 @@ export class FetchSeriesApi implements SeriesApi {
       series: { ...seriesOf(body), books: body.books.map(bookOf) },
     };
   }
+
+  async names(): Promise<string[]> {
+    const response = await fetch(`${this.baseUrl}/api/v1/series-names`, {
+      headers: { Accept: "application/json, application/problem+json" },
+    });
+    return (await response.json()) as string[];
+  }
 }
 
 function seriesOf(series: SeriesResponse): Series {
