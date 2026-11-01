@@ -482,3 +482,11 @@
   with the same `computed` (Duplicated Code, three copies since T115).
   One mapping of a find's problem to the screen's state could serve the
   three (found by the reviewer on T115, Tophe 2026-10-23).
+- Backend: `series_name_unique` (`V014`) trims with `BTRIM(name)`, which
+  removes U+0020 alone, so a tab or a non-breaking space at a name's ends
+  still creates a second series beside the one the house holds (measured
+  with a tab). The form sends nothing of the kind, its `trim()` removing
+  every whitespace; only a direct API caller can. Open before a task:
+  whether "the spaces at its ends" of PRD §3 means every whitespace, and
+  whether the backend then trims the name before it is stored, the index
+  following (found by the reviewer on T120, Tophe 2026-11-01).
