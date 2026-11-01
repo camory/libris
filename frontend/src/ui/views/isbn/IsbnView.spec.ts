@@ -629,6 +629,41 @@ describe("IsbnView", () => {
     expect(screen.getByText("Dans Bibliothèque de Léa")).toBeDefined();
   });
 
+  it("keeps on the card the cover it added", async () => {
+    // Given
+    const covered: IsbnAnswer = {
+      ...found,
+      covers: [
+        { source: "inventaire.io", url: "https://inventaire.io/img/1" },
+        {
+          source: "Open Library",
+          url: "https://covers.openlibrary.org/b/id/1-L.jpg",
+        },
+      ],
+    };
+    const screen = open(
+      new FakeIsbnApi(covered),
+      undefined,
+      new FakeBookshelfApi(added),
+    );
+    await ask(screen, "9782723488525");
+    await press(screen, "Couverture Open Library");
+
+    // When
+    await press(screen, "Ajouter à ma bibliothèque");
+
+    // Then
+    expect(
+      screen
+        .getByRole("img", { name: "Couverture de Romance dawn" })
+        .getAttribute("src"),
+    ).toBe("https://covers.openlibrary.org/b/id/1-L.jpg");
+    expect(screen.getByText("Open Library")).toBeDefined();
+    expect(
+      screen.getAllByRole("button", { name: /^Couverture / }),
+    ).toHaveLength(1);
+  });
+
   it("counts the copy it added beside the one the reader had", async () => {
     // Given
     const screen = open(

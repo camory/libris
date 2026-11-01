@@ -42,6 +42,9 @@ const copies = ref<Copy[]>([]);
 const covers = ref<CoverCandidate[]>([]);
 const coverSource = ref<string | null>(null);
 const sent = ref<SourceEdition>();
+const sentCovers = computed(() =>
+  covers.value.filter(({ source }) => source === coverSource.value),
+);
 const shownIsbn13 = computed(
   () => edition.value?.isbn13 ?? unknownIsbn13.value,
 );
@@ -202,7 +205,7 @@ async function send(edition: SourceEdition) {
         :edition="sent"
         :held="held"
         :copies="shownCopies"
-        :covers="covers"
+        :covers="sentCovers"
       />
       <template v-else-if="held && edition">
         <SourceEditionCard
