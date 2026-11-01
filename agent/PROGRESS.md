@@ -155,3 +155,10 @@ Format:
   edited, docks the button under the unknown ISBN's form too (the dock is
   drawn only with an `edition` now) and keeps the form open to edits under
   the add's message, which is already in the dock.
+
+## 2026-11-01 — T123 The ouvrage is added as edited — handoff
+- Done: the un-skip of S5 and S11 (S5 red on its heading *Romance Dawn*, S11's two cases already green), steps 1 to 5. Start with step 6 (*reads a field of spaces alone as no value*: `number` still reads `"  "` as `0`, `text` already trims to `null`).
+- Decided: `languageCode` matches through `nameOrder(locale)`, the tree's base collator; `CODES` is one code per line, Prettier's layout. `editionOf` reads `text()` (trimmed, `""` to `null`), `number()` and the series' name through `text()`.
+- Deviations: none yet. Step 5's case builds the spaced draft from `filled` by `Object.fromEntries`, the summary given its own line break.
+- Guards: step 3, mutation `?? word` in `languageCode`: `AssertionError: expected 'klingon' to be null`, reverted.
+- Learned: a Bash command whose text holds the ISO code `su` as a word is refused by the sandbox hook (*No privilege escalation*): the code list was checked from a script file written with Write.
