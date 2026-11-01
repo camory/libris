@@ -12,7 +12,11 @@ import {
   bookshelfApiKey,
   type AddAnswer,
 } from "../../../application/BookshelfApi";
-import { isbnApiKey, type IsbnAnswer } from "../../../application/IsbnApi";
+import {
+  isbnApiKey,
+  type IsbnAnswer,
+  type IsbnApi,
+} from "../../../application/IsbnApi";
 import { meApiKey } from "../../../application/MeApi";
 import { FakeBarcodeScanner } from "../../../fixture/FakeBarcodeScanner";
 import { FakeBookshelfApi } from "../../../fixture/FakeBookshelfApi";
@@ -32,6 +36,11 @@ const found: IsbnAnswer = {
   edition: onePiece1,
   copies: [],
   covers: [],
+};
+
+const held: IsbnAnswer = {
+  ...found,
+  id: "8b3f4e5d-6c7a-4b8c-9d0e-1f2a3b4c5d6e",
 };
 
 const onLeasBookshelf: IsbnAnswer = {
@@ -91,7 +100,7 @@ describe("IsbnView", () => {
     expect(api.asked).toEqual([]);
   });
 
-  it("asks for the ISBN-13 the rule computes and shows the card", async () => {
+  it("opens the form of the answer for an ISBN the house lacks", async () => {
     // Given
     const api = new FakeIsbnApi(found);
     const screen = open(api);
@@ -101,8 +110,25 @@ describe("IsbnView", () => {
 
     // Then
     expect(api.asked).toEqual(["9782723488525"]);
-    expect(screen.getByText("Romance dawn")).toBeDefined();
-    expect(screen.getByText("Glénat")).toBeDefined();
+    expect(
+      screen.getByRole<HTMLInputElement>("textbox", { name: "Titre" }).value,
+    ).toBe("Romance dawn");
+    expect(screen.queryByRole("heading", { name: "Romance dawn" })).toBeNull();
+    expect(
+      screen.getByRole("button", { name: "Ajouter à ma bibliothèque" }),
+    ).toBeDefined();
+  });
+
+  it("shows the card of an ISBN the house holds", async () => {
+    // Given
+    const screen = open(new FakeIsbnApi(held));
+
+    // When
+    await ask(screen, "9782723488525");
+
+    // Then
+    expect(screen.getByRole("heading", { name: "Romance dawn" })).toBeDefined();
+    expect(screen.queryByRole("textbox", { name: "Titre" })).toBeNull();
   });
 
   it("says in which bookshelf the reader already has a copy", async () => {
@@ -144,7 +170,7 @@ describe("IsbnView", () => {
 
   it("asks for the ISBN-13 an old ten converts to", async () => {
     // Given
-    const api = new FakeIsbnApi(found);
+    const api = new FakeIsbnApi(held);
     const screen = open(api);
 
     // When
@@ -235,7 +261,7 @@ describe("IsbnView", () => {
 
   it("replaces the answer it showed by the next one", async () => {
     // Given
-    const screen = open(new FakeIsbnApi(found));
+    const screen = open(new FakeIsbnApi(held));
     await ask(screen, "978-2-7234-8852-5");
 
     // When
@@ -244,6 +270,30 @@ describe("IsbnView", () => {
     // Then
     expect(screen.getByText("ISBN invalide")).toBeDefined();
     expect(screen.queryByText("Romance dawn")).toBeNull();
+  });
+
+  it("draws the stand-in for an unknown ISBN after an answer with covers", async () => {
+    // Given
+    const answers: IsbnAnswer[] = [
+      {
+        ...found,
+        covers: [
+          { source: "inventaire.io", url: "https://inventaire.io/img/1" },
+        ],
+      },
+      unknownIsbn,
+    ];
+    const inTurn: IsbnApi = {
+      lookUp: () => Promise.resolve(answers.shift()!),
+    };
+    const screen = open(inTurn);
+    await ask(screen, "9782723488525");
+
+    // When
+    await ask(screen, "9782000000006");
+
+    // Then
+    expect(screen.queryByRole("img")).toBeNull();
   });
 
   it("is busy while the lookup runs, over a field that stays editable", async () => {
@@ -366,7 +416,7 @@ describe("IsbnView", () => {
 
   it("runs the lookup with the first code the camera reads", async () => {
     // Given
-    const api = new FakeIsbnApi(found);
+    const api = new FakeIsbnApi(held);
     const scanner = new FakeBarcodeScanner(true, "9782723488525");
 
     // When
@@ -506,6 +556,32 @@ describe("IsbnView", () => {
     ]);
   });
 
+  it("adds the cover the form shows", async () => {
+    // Given
+    const covered: IsbnAnswer = {
+      ...found,
+      covers: [
+        { source: "inventaire.io", url: "https://inventaire.io/img/1" },
+        {
+          source: "Open Library",
+          url: "https://covers.openlibrary.org/b/id/1-L.jpg",
+        },
+      ],
+    };
+    const bookshelfApi = new FakeBookshelfApi(added);
+    const screen = open(new FakeIsbnApi(covered), undefined, bookshelfApi);
+    await ask(screen, "9782723488525");
+    await press(screen, "Couverture Open Library");
+
+    // When
+    await press(screen, "Ajouter à ma bibliothèque");
+
+    // Then
+    expect(bookshelfApi.asked.map(({ coverSource }) => coverSource)).toEqual([
+      "Open Library",
+    ]);
+  });
+
   it("shows the copy it added and offers no more to add", async () => {
     // Given
     const screen = open(
@@ -634,7 +710,7 @@ describe("IsbnView", () => {
   });
 
   function open(
-    api: FakeIsbnApi,
+    api: IsbnApi,
     scanner?: FakeBarcodeScanner,
     bookshelfApi?: FakeBookshelfApi,
   ) {
@@ -642,7 +718,7 @@ describe("IsbnView", () => {
   }
 
   function mountView(
-    api: FakeIsbnApi,
+    api: IsbnApi,
     scanner: FakeBarcodeScanner = new FakeBarcodeScanner(false),
     bookshelfApi = new FakeBookshelfApi(new Error("no add in this case")),
   ) {

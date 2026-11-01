@@ -1,15 +1,28 @@
 <script setup lang="ts">
-import { BookOpen } from "@lucide/vue";
 import { reactive, ref, useId } from "vue";
 import { useI18n } from "vue-i18n";
-import type { Kind } from "../../domain/SourceEdition";
+import type { Copy } from "../../domain/Copy";
+import type { CoverCandidate } from "../../domain/Cover";
+import { languageWord } from "../../domain/Language";
+import type { Kind, SourceEdition } from "../../domain/SourceEdition";
+import AuthorLines from "./AuthorLines.vue";
+import BookshelvesHolding from "./BookshelvesHolding.vue";
+import CoverChoice from "./CoverChoice.vue";
 
-defineProps<{ isbn13: string }>();
+const props = defineProps<{
+  isbn13: string;
+  edition?: SourceEdition;
+  copies: Copy[];
+  covers: CoverCandidate[];
+}>();
 
-const { t } = useI18n();
+const emit = defineEmits<{ coverSource: [source: string | null] }>();
+
+const { t, locale } = useI18n();
 
 const kinds: Kind[] = ["BOOK", "BD", "MANGA"];
-const kind = ref<Kind>("BOOK");
+const answered = props.edition;
+const kind = ref<Kind>(answered?.kind ?? "BOOK");
 
 const fields = [
   "title",
@@ -23,13 +36,24 @@ const fields = [
   "pages",
 ] as const;
 const numeric = new Set<string>(["volume", "year", "pages"]);
-const values = reactive(
-  Object.fromEntries(fields.map((field) => [field, ""])) as Record<
-    (typeof fields)[number],
-    string
-  >,
-);
-const summary = ref("");
+const language = answered?.language ?? null;
+const values = reactive<Record<(typeof fields)[number], string>>({
+  title: text(answered?.title),
+  subtitle: text(answered?.subtitle),
+  series: text(answered?.series?.name),
+  volume: text(answered?.series?.volumeNumber),
+  collection: text(answered?.collection),
+  publisher: text(answered?.publisher),
+  year: text(answered?.publicationYear),
+  language: language === null ? "" : languageWord(language, locale.value),
+  pages: text(answered?.pageCount),
+});
+const summary = ref(text(answered?.summary));
+
+function text(value: string | number | null | undefined) {
+  return value == null ? "" : String(value);
+}
+
 const id = useId();
 </script>
 
@@ -38,21 +62,19 @@ const id = useId();
     class="flex flex-col gap-3.5 rounded-[14px] border border-border bg-surface p-4"
   >
     <div class="flex gap-3.5">
-      <div
-        class="flex h-[149px] w-24 shrink-0 items-center justify-center rounded-md bg-border"
-      >
-        <BookOpen :size="48" class="shrink-0 text-muted opacity-60" />
-      </div>
+      <CoverChoice
+        :covers="covers"
+        :title="edition?.title ?? ''"
+        :held="false"
+        @cover-source="emit('coverSource', $event)"
+      />
       <div class="flex min-w-0 flex-col gap-1.5">
         <p class="text-label text-muted">{{ t("isbn.card.isbn") }}</p>
         <p class="text-body tabular-nums">{{ isbn13 }}</p>
       </div>
     </div>
 
-    <div class="flex items-center gap-2 text-body font-semibold">
-      <BookOpen :size="22" class="shrink-0" />
-      <p>{{ t("isbn.card.noCopy") }}</p>
-    </div>
+    <BookshelvesHolding :copies="copies" />
 
     <div
       class="flex h-11 rounded-xl border-[1.5px] border-border bg-surface p-0.5"
@@ -73,18 +95,27 @@ const id = useId();
       </label>
     </div>
 
-    <div v-for="field in fields" :key="field" class="flex flex-col gap-2">
-      <label class="text-label text-muted" :for="`${id}-${field}`">
-        {{ t(`isbn.form.${field}`) }}
-      </label>
-      <input
-        :id="`${id}-${field}`"
-        v-model="values[field]"
-        type="text"
-        :inputmode="numeric.has(field) ? 'numeric' : undefined"
-        class="h-[50px] w-full rounded-xl border-[1.5px] border-border bg-surface px-3.5 text-field"
-      />
-    </div>
+    <template v-for="field in fields" :key="field">
+      <div class="flex flex-col gap-2">
+        <label class="text-label text-muted" :for="`${id}-${field}`">
+          {{ t(`isbn.form.${field}`) }}
+        </label>
+        <input
+          :id="`${id}-${field}`"
+          v-model="values[field]"
+          type="text"
+          :inputmode="numeric.has(field) ? 'numeric' : undefined"
+          class="h-[50px] w-full rounded-xl border-[1.5px] border-border bg-surface px-3.5 text-field"
+        />
+      </div>
+      <div
+        v-if="field === 'volume' && edition?.authors.length"
+        class="flex flex-col gap-2"
+      >
+        <p class="text-label text-muted">{{ t("isbn.form.authors") }}</p>
+        <AuthorLines :authors="edition.authors" :kind="edition.kind" />
+      </div>
+    </template>
 
     <div class="flex flex-col gap-2">
       <label class="text-label text-muted" :for="`${id}-summary`">

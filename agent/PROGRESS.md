@@ -135,3 +135,23 @@ Format:
   reviewer on T121, Tophe 2026-11-01): T122, which gives the form the
   card's covers and dots, extracts the card's top part they share rather
   than copying the covers a second time.
+
+## 2026-11-01 — T122 A new ISBN opens the form, filled — done
+- Did: an ISBN the house lacks opens `EditionForm` filled with the answer,
+  its covers, *Auteurs* and bookshelf row, the add docked under it; a
+  language reads as `languageWord` (`domain/Language.ts`); S1 runs green.
+- Decided: the card's three shared parts are `CoverChoice`, `AuthorLines`
+  and `BookshelvesHolding`; `IsbnView`'s `shownIsbn13` (the answer's ISBN or
+  the unknown one) guards the block that holds the card or the form and the
+  dock; a held ISBN's card keeps the docked button, as the spec's S1 note
+  has it; the dock is not drawn once the add is done, so no empty band
+  stays; the run was split in two by a handoff after step 16.
+- Deviations from the brief: step 14 was green on its first run, step 12
+  having already wired the form's `coverSource` to the view; its red was
+  read with the listener taken off and is listed in the PR body.
+- Left over: the checks by hand on the Pixel (the form against
+  `1-filled.jpg`, the dock and its hairline while the form runs under it,
+  in place at the end, covered by the keyboard); T123 sends the form as
+  edited, docks the button under the unknown ISBN's form too (the dock is
+  drawn only with an `edition` now) and keeps the form open to edits under
+  the add's message, which is already in the dock.

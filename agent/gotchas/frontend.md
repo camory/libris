@@ -92,15 +92,21 @@ Read whole by a run that changes `frontend/`, after `every-run.md`.
   third, `string[] | Error`, `[]` by default; a scenario that varies them
   passes `undefined` second to keep the find's default.
   `EditionFormScenarios`' `open()` gives `world.names` as its `seriesApi`.
-- `EditionForm` takes the prop `isbn13` alone and holds its text in itself:
-  `kind`, a `values` record for the nine `input`s drawn by one `v-for` over
-  `fields` (`isbn.form.<field>`), and `summary`, a `textarea` of its own
-  after them. Each label points at its box through `for` and an id built
-  on `useId()`; the kinds are three `sr-only` radios inside their labels.
-  The form's *ISBN* is a `<p>`, so `IsbnView.spec.ts`'s `field()` still
-  finds the one `ISBN` textbox. A case that types in a field the mutation
-  makes a `number` input finds it with `getByLabelText`: a role query reds
-  on the `spinbutton` before the value is read.
+- `EditionForm` takes `isbn13`, `edition` (a `SourceEdition`, absent for
+  an unknown ISBN), `copies` and `covers`, required, and emits
+  `coverSource` as the card does. It fills its text once, at setup: `kind`
+  from `edition.kind`, a `values` record for the nine `input`s drawn by one
+  `v-for` over `fields` (`isbn.form.<field>`), numbers as their digits,
+  `null` as `""`, the language through `languageWord`, and `summary`, a
+  `textarea` of its own after them; a new lookup remounts it through the
+  skeleton. *Auteurs* is drawn after *Tome* inside that `v-for`, only when
+  the answer has authors. Each label points at its box through `for` and
+  an id built on `useId()`; the kinds are three `sr-only` radios inside
+  their labels. The form's *ISBN* is a `<p>`, so `IsbnView.spec.ts`'s
+  `field()` still finds the one `ISBN` textbox. A case that types in a
+  field the mutation makes a `number` input finds it with
+  `getByLabelText`: a role query reds on the `spinbutton` before the value
+  is read.
 - jsdom has no `Element.prototype.scrollIntoView`: `EditionFormScenarios`
   defines it as a no-op for its tests and deletes it after each; a component
   spec that reaches a call to it needs the same.
@@ -203,39 +209,46 @@ Read whole by a run that changes `frontend/`, after `every-run.md`.
   `srcObject` is implemented nowhere in jsdom, so assigning a plain object
   with `getTracks()` to it is an ordinary property assignment: no IDL
   conversion, no throw.
-- `SourceEditionCard` keeps one `img` per candidate of the lookup's
-  `covers`, the shown one alone accessible, and the stand-in `BookOpen`
-  when none is left; its props are `edition` (a `SourceEdition` or a
-  `Book`, whose `isbn13` may be `null`), `copies`, `covers` and `held`,
-  required, the dots' row and the name drawn only when `held` is false, and
-  `pageTitle`, optional, which makes its heading the `h1` instead of the
-  `h2`; the heading is named after the title alone, the overline outside
-  it. Its callers are `IsbnView` and `EditionPageView`, which passes the
-  stored cover as the one candidate `{ source: "Libris", url }`, `held`,
-  `page-title`. Its spec's `card()`, `show()` and `screen()` default to no
-  candidate and `held` false, so a case counting the rows' `BookOpen`s
-  passes a candidate, or the stand-in adds one; `card()` and `screen()`
-  take `pageTitle` fifth. `getAllByRole("img", { hidden: true
-  })` reaches every candidate's image, in the answer's order.
+- `SourceEditionCard` and `EditionForm` draw three parts in common, each a
+  component of `ui/components` with no spec of its own: `CoverChoice`
+  (props `covers`, `title`, `held`, emitting `coverSource`) keeps one `img`
+  per candidate of the lookup's `covers`, the shown one alone accessible,
+  and the stand-in `BookOpen` when none is left, the dots' row and the
+  source's name drawn only when `held` is false; `AuthorLines` (props
+  `authors`, `kind`) and `BookshelvesHolding` (prop `copies`). The card's
+  props are `edition` (a `SourceEdition` or a `Book`, whose `isbn13` may be
+  `null`), `copies`, `covers` and `held`, required, and `pageTitle`,
+  optional, which makes its heading the `h1` instead of the `h2`; the
+  heading is named after the title alone, the overline outside it. Its
+  callers are `IsbnView`, for an ISBN the house holds alone, and
+  `EditionPageView`, which passes the stored cover as the one candidate
+  `{ source: "Libris", url }`, `held`, `page-title`. Its spec's `card()`,
+  `show()` and `screen()` default to no candidate and `held` false, so a
+  case counting the rows' `BookOpen`s passes a candidate, or the stand-in
+  adds one; `card()` and `screen()` take `pageTitle` fifth.
+  `getAllByRole("img", { hidden: true })` reaches every candidate's image,
+  in the answer's order.
 - jsdom clears its computed-style cache only when the tree is attached to
   the document, and every component spec and scenario mounts detached: an
   element whose `hidden` attribute or `v-show` style changes keeps the
   `display` read first, so Testing Library keeps it hidden or visible.
   Toggle what a query must see with `aria-hidden`, which is read as an
   attribute, and hide it on screen with a class, which draws nothing in the
-  specs (`SourceEditionCard`'s images).
+  specs (`CoverChoice`'s images).
 - A component's `emit` called during `setup`, as a `watch` with
   `immediate: true` does, reaches the parent's `@event` listener and
-  Vue Test Utils' `wrapper.emitted()`: `SourceEditionCard` gives out its
-  first `coverSource` that way, with no `onMounted`.
+  Vue Test Utils' `wrapper.emitted()`: `CoverChoice` gives out its first
+  `coverSource` that way, with no `onMounted`, and `SourceEditionCard`
+  and `EditionForm` pass it on.
 - jsdom loads no image: an `<img>` with a `src` fires neither `load` nor
   `error`, whatever the URL, so a test of what a broken cover shows dispatches
   `new Event("error")` on the element itself and awaits `nextTick()`. Vue Test
   Utils' `findComponent(SomeIcon)` is how a rendered icon is asserted: an
   `aria-hidden` SVG carries no text and no role, so no `getBy*` query reaches
-  it. Every `SourceEditionCard` draws `BookOpen` on its bookshelf rows or
-  its absence row, so the cover's stand-in is proven by counting,
-  `findAllComponents(BookOpen)`, never by `exists()`.
+  it. Every `SourceEditionCard` and `EditionForm` draws `BookOpen` on its
+  bookshelf rows or its absence row (`BookshelvesHolding`), so the cover's
+  stand-in is proven by counting, `findAllComponents(BookOpen)`, never by
+  `exists()`.
 - A spec importing a component that does not exist yet fails the whole file
   at load (`Failed to resolve import`, `Tests no tests`), not the one case:
   write the component first, drawing nothing the case asserts, and the red is
@@ -274,11 +287,15 @@ Read whole by a run that changes `frontend/`, after `every-run.md`.
   version or a package name answers pages of changelogs. `git grep -n <text>
   -- frontend` searches the tracked tree alone, which is what a criterion
   about this repository means.
-- A word `SourceEditionCard` displays is asserted in three files, not one:
-  the card's own spec, `IsbnView.spec.ts` (*asks for the ISBN-13 the rule
-  computes and shows the card*) and `FastEntryScenarios.spec.ts`
-  (`showsTheOnePieceCard`). Taking a word off the card reds all three; grep the
-  word over `src/` before calling the change done.
+- A word `SourceEditionCard` displays is asserted in several files, not
+  one: the card's own spec, `IsbnView.spec.ts` (*shows the card of an ISBN
+  the house holds*, over the `held` answer) and `FastEntryScenarios.spec.ts`
+  (`showsTheOnePieceCard`); a word of its three parts (`CoverChoice`,
+  `AuthorLines`, `BookshelvesHolding`) is asserted in `EditionForm.spec.ts`
+  too. Taking a word off the card reds them all; grep the word over `src/`
+  before calling the change done. An ISBN the house lacks (`id: null`)
+  shows the form, whose fields hold their text as values: a `getByText`
+  over a found answer of `id: null` no longer finds the title.
 - The backend denies every non-GET without `X-Requested-With`, and the
   contract does not state the header, so `contracteer mock` answers the same
   without it: a frontend client that sends a `POST`, `PUT` or `DELETE` sets
@@ -362,7 +379,7 @@ Read whole by a run that changes `frontend/`, after `every-run.md`.
   template as a ref still, and the view reads it through a `computed`
   (`addState`). Its function is called on the unwrapped object,
   `@click="addBookToBookshelf.add(edition, coverSource)"`, and `vue-tsc`
-  narrows `edition` there from the enclosing `v-else-if`.
+  narrows `edition` there from the dock's `v-if="edition && …"`.
 - `@typescript-eslint/no-unused-vars` has no `argsIgnorePattern`: an
   `_`-prefixed parameter is still an error, so a cycle whose signature is
   fixed before its body uses the argument leaves `eslint .`, and the gate,
@@ -394,6 +411,20 @@ Read whole by a run that changes `frontend/`, after `every-run.md`.
   count, so *À lire* sorts before *Albums*, and *Øre* equals *Ore*, unlike
   the backend's `BookshelfName` folding. The sandbox's default locale is
   `en-US`: a collator built with no locale is not the screen's.
+- A language is shown as `languageWord(code, locale)`
+  (`src/domain/Language.ts`, `Intl.DisplayNames` of `type: "language"`),
+  the component passing `useI18n().locale.value`: `ja` reads *japonais*,
+  and a code the browser has no word for (`qq`) reads as itself. The
+  catalogue holds no `language` block.
+- The lookup's add is docked: in `IsbnView`, the form (or the card) and the
+  dock share one block, and the dock, the button and its message, is
+  `sticky bottom-0 -mx-5` with `[container-type:scroll-state]`; its inner
+  `div` draws the hairline under the arbitrary variant
+  `[@container_scroll-state(stuck:_bottom)]:border-t`, which Tailwind
+  emits as `@container scroll-state(stuck:bottom)` (read in `dist/assets`
+  after `npm run build`). A container query styles the container's
+  descendants, never the container itself. jsdom lays nothing out: the dock
+  is checked by hand.
 - Icons come from `@lucide/vue` (`1.56.0`), imported by name from the
   package root (`import { Check } from "@lucide/vue"`); it has no sub-path
   exports. An icon given no `aria-label`, `title` or `aria-*` prop renders

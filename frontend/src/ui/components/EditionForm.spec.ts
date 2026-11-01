@@ -2,8 +2,38 @@ import { BookOpen } from "@lucide/vue";
 import { fireEvent, within } from "@testing-library/dom";
 import { mount } from "@vue/test-utils";
 import { describe, expect, it } from "vitest";
+import type { Copy } from "../../domain/Copy";
+import type { CoverCandidate } from "../../domain/Cover";
+import type { SourceEdition } from "../../domain/SourceEdition";
+import { bibliothequeDeLea } from "../../fixture/Books";
+import { onePiece1 } from "../../fixture/SourceEditions";
 import { createLibrisI18n } from "../i18n";
 import EditionForm from "./EditionForm.vue";
+
+const asterix1: SourceEdition = {
+  ...onePiece1,
+  kind: "BD",
+  title: "Astérix le Gaulois",
+  authors: [
+    { name: "René Goscinny", role: "WRITER" },
+    { name: "Albert Uderzo", role: "ARTIST" },
+  ],
+};
+
+const inventaire: CoverCandidate = {
+  source: "inventaire.io",
+  url: "https://inventaire.io/img/entities/1",
+};
+
+const openLibrary: CoverCandidate = {
+  source: "Open Library",
+  url: "https://covers.openlibrary.org/b/id/1-L.jpg",
+};
+
+const onLea: Copy = {
+  id: "6f1d2c3b-4a59-4e6f-8b70-1c2d3e4f5a61",
+  bookshelf: bibliothequeDeLea,
+};
 
 describe("EditionForm", () => {
   it("shows the ISBN under its label", () => {
@@ -114,17 +144,154 @@ describe("EditionForm", () => {
     expect(summary.value).toBe("Un.\nDeux.");
   });
 
-  function show() {
-    return form().text().replace(/\s+/g, " ");
+  it("holds in each field what Libris answered", () => {
+    // When
+    const fields = screen({ ...onePiece1, summary: "Un.\nDeux." });
+
+    // Then
+    expect(valuesOf(fields)).toEqual([
+      "Romance dawn",
+      "à l'aube d'une grande aventure",
+      "One piece",
+      "1",
+      "Shonen manga",
+      "Glénat",
+      "2013",
+      "français",
+      "203",
+      "Un.\nDeux.",
+    ]);
+  });
+
+  it("leaves empty the fields Libris answered nothing for", () => {
+    // When
+    const fields = screen({
+      ...onePiece1,
+      subtitle: null,
+      series: null,
+      collection: null,
+      publisher: null,
+      publicationYear: null,
+      language: null,
+      pageCount: null,
+      summary: null,
+    });
+
+    // Then
+    expect(valuesOf(fields)).toEqual(["Romance dawn", ...Array(9).fill("")]);
+  });
+
+  it("chooses the kind Libris answered", () => {
+    // When
+    const kinds = screen(onePiece1);
+
+    // Then
+    expect(
+      kinds
+        .getAllByRole<HTMLInputElement>("radio")
+        .filter((radio) => radio.checked)
+        .map((radio) => radio.labels?.[0]?.textContent?.trim()),
+    ).toEqual(["Manga"]);
+  });
+
+  it("shows the authors as the card words them", () => {
+    // When
+    const text = show(asterix1);
+
+    // Then
+    const positions = [
+      "Tome",
+      "Auteurs",
+      "René Goscinny · scénario",
+      "Albert Uderzo · dessin",
+      "Collection",
+    ].map((part) => text.indexOf(part));
+    expect(positions).not.toContain(-1);
+    expect(positions).toEqual([...positions].sort((a, b) => a - b));
+  });
+
+  it("shows no Auteurs when Libris answered none", () => {
+    // When
+    const text = show({ ...onePiece1, authors: [] });
+
+    // Then
+    expect(text).not.toContain("Auteurs");
+  });
+
+  it("shows the covers on offer as the card does", () => {
+    // When
+    const covers = screen(onePiece1, [], [inventaire, openLibrary]);
+
+    // Then
+    expect(
+      covers
+        .getByRole("img", { name: "Couverture de Romance dawn" })
+        .getAttribute("src"),
+    ).toBe(inventaire.url);
+    expect(
+      covers
+        .getAllByRole("button", { name: /^Couverture / })
+        .map((dot) => dot.getAttribute("aria-label")),
+    ).toEqual(["Couverture inventaire.io", "Couverture Open Library"]);
+    expect(covers.getByText("inventaire.io")).toBeDefined();
+  });
+
+  it("gives out the source of the cover it shows", async () => {
+    // Given
+    const wrapper = form(onePiece1, [], [inventaire, openLibrary]);
+
+    // When
+    await fireEvent.click(
+      within(wrapper.element as HTMLElement).getByRole("button", {
+        name: "Couverture Open Library",
+      }),
+    );
+
+    // Then
+    expect(wrapper.emitted("coverSource")).toEqual([
+      ["inventaire.io"],
+      ["Open Library"],
+    ]);
+  });
+
+  it("says in which bookshelf the reader has a copy", () => {
+    // When
+    const text = show(onePiece1, [onLea]);
+
+    // Then
+    expect(text).toContain("Dans Bibliothèque de Léa");
+    expect(text).not.toContain("Dans aucune de vos bibliothèques");
+  });
+
+  function valuesOf(fields: ReturnType<typeof screen>) {
+    return fields
+      .getAllByRole<HTMLInputElement>("textbox")
+      .map((field) => field.value);
   }
 
-  function screen() {
-    return within(form().element as HTMLElement);
+  function show(
+    edition?: SourceEdition,
+    copies: Copy[] = [],
+    covers: CoverCandidate[] = [],
+  ) {
+    return form(edition, copies, covers).text().replace(/\s+/g, " ");
   }
 
-  function form() {
+  function screen(
+    edition?: SourceEdition,
+    copies: Copy[] = [],
+    covers: CoverCandidate[] = [],
+  ) {
+    return within(form(edition, copies, covers).element as HTMLElement);
+  }
+
+  function form(
+    edition?: SourceEdition,
+    copies: Copy[] = [],
+    covers: CoverCandidate[] = [],
+  ) {
     return mount(EditionForm, {
-      props: { isbn13: "9782000000006" },
+      props: { isbn13: "9782000000006", edition, copies, covers },
       global: { plugins: [createLibrisI18n()] },
     });
   }

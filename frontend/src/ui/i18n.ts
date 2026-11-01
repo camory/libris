@@ -90,6 +90,7 @@ const fr = {
       subtitle: "Sous-titre",
       series: "Série",
       volume: "Tome",
+      authors: "Auteurs",
       collection: "Collection",
       publisher: "Éditeur",
       year: "Année",
@@ -162,9 +163,6 @@ const fr = {
   editionPage: {
     error: "Erreur lors du chargement, veuillez réessayer plus tard.",
     notFound: "Ouvrage introuvable.",
-  },
-  language: {
-    fr: "français",
   },
   role: {
     BOOK: {

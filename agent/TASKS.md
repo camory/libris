@@ -66,7 +66,7 @@ guard every frontend task.
       yet, T122's. The frontend's walking skeleton; realises S2; un-skips
       the frontend test of S2.
 
-- [ ] T122 Frontend: a new ISBN opens the form, filled.
+- [x] T122 Frontend: a new ISBN opens the form, filled.
       An ISBN the house lacks and a source knows shows the form in place of
       the card: each field holding what Libris answered, its kind chosen,
       its covers with their dots and source as on the card, *Auteurs* read

@@ -84,7 +84,7 @@ describe("Edition form", () => {
     window.history.replaceState(null, "", "/");
   });
 
-  it.skip("S1 A new ISBN opens the form", async () => {
+  it("S1 A new ISBN opens the form", async () => {
     // Given
     const screen = open({
       isbn: aSourceKnows(onePiece1, [inventaire, openLibrary]),

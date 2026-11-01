@@ -682,14 +682,13 @@ describe("SourceEditionCard", () => {
     expect(card).not.toContain("tome");
   });
 
-  it("shows the code of a language the catalogue has no word for", () => {
+  it("says the language in the browser's word", () => {
     // When
-    const card = screen({ ...onePiece1, language: "en" });
+    const card = screen({ ...onePiece1, language: "ja" });
 
     // Then
     expect(card.getByText("Langue")).toBeDefined();
-    expect(card.getByText("en")).toBeDefined();
-    expect(card.queryByText("language.en")).toBeNull();
+    expect(card.getByText("japonais")).toBeDefined();
   });
 
   it("says in which bookshelf the copy is, between the authors and the rows", () => {
