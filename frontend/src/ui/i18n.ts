@@ -59,7 +59,6 @@ const fr = {
     add: "Ajouter à ma bibliothèque",
     adding: "Ajout en cours…",
     invalid: "ISBN invalide",
-    unknown: "ISBN inconnu",
     error: "Erreur lors de la recherche, veuillez réessayer plus tard.",
     addError: "Erreur lors de l'ajout, veuillez réessayer plus tard.",
     card: {
@@ -80,6 +79,23 @@ const fr = {
       pages: "Pages",
       isbn: "ISBN",
       readMore: "Lire la suite",
+    },
+    form: {
+      kind: {
+        BOOK: "Livre",
+        BD: "BD",
+        MANGA: "Manga",
+      },
+      title: "Titre",
+      subtitle: "Sous-titre",
+      series: "Série",
+      volume: "Tome",
+      collection: "Collection",
+      publisher: "Éditeur",
+      year: "Année",
+      language: "Langue",
+      pages: "Pages",
+      summary: "Résumé",
     },
   },
   catalogue: {

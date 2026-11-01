@@ -84,6 +84,7 @@ describe("SeriesView", () => {
         return Promise.resolve([]);
       },
       find: () => Promise.reject(new Error("no find in this case")),
+      names: () => Promise.resolve([]),
     };
     open(seriesApi).wrapper.unmount();
     await flushPromises();

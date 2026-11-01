@@ -110,3 +110,28 @@ Format:
 - Deviations from the brief: none.
 - Left over: authors stay unique on `LOWER(name)` (`agent/PROPOSED.md`);
   T121 moves the frontend onto `v0.15.0` once T120 is deployed.
+
+## 2026-11-01 — T121 The edition form on v0.15.0, an unknown ISBN — done
+- Did: the frontend pins `v0.15.0`; `SeriesApi.names()` replaces the interim
+  `SeriesNamesApi`; an ISBN no source knows opens `EditionForm`, empty, in
+  place of *ISBN inconnu*; S2 runs green.
+- Decided: `names()` reads the body with no status check, the non-`200`
+  being T126's; the kind is three `sr-only` radios inside their labels, the
+  chosen one styled by `has-checked:`; each field's label points at its box
+  through `for` and a `useId()` id; *Résumé* is a `textarea` outside the
+  fields' `v-for`, three lines tall by `min-h-[calc(3lh+27px)]` and growing
+  by `field-sizing-content`.
+- Deviations from the brief: `FakeSeriesApi`'s third parameter is
+  `seriesNames`, a private `names` clashing with the method `names()`;
+  step 13 asserts no absent *ISBN inconnu*, so that the word stays in
+  `EditionFormScenarios.spec.ts` alone as the criteria want; step 11 finds
+  *Pages* by its label, since its mutation, a `number` input, reds a role
+  query before the value.
+- Left over: the checks by hand on the Pixel (the form against
+  `2-empty.jpg`, *Résumé* growing, the numeric keyboard); T122 fills the
+  form of a found ISBN and adds the button. `EditionForm` repeats
+  `SourceEditionCard`'s stand-in and its *Dans aucune de vos
+  bibliothèques* row class for class (Duplicated Code, found by the
+  reviewer on T121, Tophe 2026-11-01): T122, which gives the form the
+  card's covers and dots, extracts the card's top part they share rather
+  than copying the covers a second time.
