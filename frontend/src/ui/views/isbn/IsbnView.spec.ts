@@ -167,6 +167,25 @@ describe("IsbnView", () => {
     expect(screen.getByText("9782000000006")).toBeDefined();
   });
 
+  it("replaces the form and its edits by the next answer", async () => {
+    // Given
+    const screen = open(new FakeIsbnApi(unknownIsbn));
+    await ask(screen, "9782000000006");
+    await fireEvent.input(screen.getByRole("textbox", { name: "Titre" }), {
+      target: { value: "Romance" },
+    });
+
+    // When
+    await ask(screen, "9782723488525");
+
+    // Then
+    expect(
+      screen.getByRole<HTMLInputElement>("textbox", { name: "Titre" }).value,
+    ).toBe("");
+    expect(screen.getByText("9782723488525")).toBeDefined();
+    expect(screen.queryByText("9782000000006")).toBeNull();
+  });
+
   it("asks to try again later when no source answered", async () => {
     // Given
     const screen = open(new FakeIsbnApi(sourcesDown));
