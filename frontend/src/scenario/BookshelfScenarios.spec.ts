@@ -79,7 +79,7 @@ describe("Bookshelf", () => {
       ),
     });
     await ask(screen, "9782723488525");
-    await screen.findByText("Romance dawn");
+    await screen.findByRole("button", { name: "Ajouter à ma bibliothèque" });
     expect(rows(screen)).toEqual(["Dans aucune de vos bibliothèques"]);
 
     // When
@@ -100,7 +100,7 @@ describe("Bookshelf", () => {
       add: librisDoesNotAnswerTheAdd(),
     });
     await ask(screen, "9782723488525");
-    await screen.findByText("Romance dawn");
+    await screen.findByRole("button", { name: "Ajouter à ma bibliothèque" });
 
     // When
     await fireEvent.click(addButton(screen));

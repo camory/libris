@@ -235,7 +235,7 @@ describe("Bookshelves", () => {
     );
     await fireEvent.click(screen.getByRole("link", { name: "Ajouter" }));
     await ask(screen, "9782723488525");
-    await screen.findByText("Romance dawn");
+    await screen.findByRole("button", { name: "Ajouter à ma bibliothèque" });
     await fireEvent.click(
       screen.getByRole("button", { name: "Ajouter à ma bibliothèque" }),
     );

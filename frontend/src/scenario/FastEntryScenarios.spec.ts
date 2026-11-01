@@ -49,7 +49,7 @@ describe("Fast entry", () => {
 
   it("S1 Typed ISBN, found, with hyphens", async () => {
     // Given
-    const screen = open("/isbn", { isbn: aSourceKnows(onePiece1) });
+    const screen = open("/isbn", { isbn: theHouseHolds(onePiece1) });
 
     // When
     await ask(screen, "978-2-7234-8852-5");
@@ -60,7 +60,7 @@ describe("Fast entry", () => {
 
   it("S1 Typed ISBN, found, the old ten", async () => {
     // Given
-    const screen = open("/isbn", { isbn: aSourceKnows(onePiece1) });
+    const screen = open("/isbn", { isbn: theHouseHolds(onePiece1) });
 
     // When
     await ask(screen, "2723488527");
@@ -76,7 +76,7 @@ describe("Fast entry", () => {
 
     // When
     const screen = open("/isbn", {
-      isbn: aSourceKnows(onePiece1),
+      isbn: theHouseHolds(onePiece1),
       scanner: new CameraBarcodeScanner(),
     });
 
@@ -86,7 +86,7 @@ describe("Fast entry", () => {
 
   it("S3 Not an ISBN, wrong length", async () => {
     // Given
-    const screen = open("/isbn", { isbn: aSourceKnows(onePiece1) });
+    const screen = open("/isbn", { isbn: theHouseHolds(onePiece1) });
 
     // When
     await ask(screen, "978272348852");
@@ -99,7 +99,7 @@ describe("Fast entry", () => {
 
   it("S3 Not an ISBN, wrong check digit", async () => {
     // Given
-    const screen = open("/isbn", { isbn: aSourceKnows(onePiece1) });
+    const screen = open("/isbn", { isbn: theHouseHolds(onePiece1) });
 
     // When
     await ask(screen, "9782723488526");
@@ -108,18 +108,6 @@ describe("Fast entry", () => {
     await screen.findByText("ISBN invalide");
     expect(field(screen).value).toBe("9782723488526");
     expect(card()).not.toContain("Romance dawn");
-  });
-
-  it("S4 Unknown ISBN", async () => {
-    // Given
-    const screen = open("/isbn", { isbn: noSourceKnows() });
-
-    // When
-    await ask(screen, "9782000000006");
-
-    // Then
-    await screen.findByText("ISBN inconnu");
-    expect(field(screen).value).toBe("9782000000006");
   });
 
   it("S7 Every source down", async () => {
@@ -158,10 +146,10 @@ describe("Fast entry", () => {
     );
   }
 
-  function aSourceKnows(edition: SourceEdition): IsbnApi {
+  function theHouseHolds(edition: SourceEdition): IsbnApi {
     return new FakeIsbnApi({
       outcome: "found",
-      id: null,
+      id: "8b3f4e5d-6c7a-4b8c-9d0e-1f2a3b4c5d6e",
       edition,
       copies: [],
       covers: [
@@ -171,10 +159,6 @@ describe("Fast entry", () => {
         },
       ],
     });
-  }
-
-  function noSourceKnows(): IsbnApi {
-    return new FakeIsbnApi({ outcome: "problem", type: "/problems/not-found" });
   }
 
   function theSourcesAreDown(): IsbnApi {

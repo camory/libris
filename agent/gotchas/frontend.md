@@ -87,6 +87,13 @@ Read whole by a run that changes `frontend/`, after `every-run.md`.
 - A fixture may import `domain` and `application` only, so a shared
   app-over-fakes builder cannot live in `src/fixture`: each scenario file
   keeps its own `open()`, naming the ports its spec varies.
+- `SeriesNamesApi` stands apart from `SeriesApi`, provided by
+  `EditionFormScenarios`' `open()` through `app.provide`, only until the
+  edition form task bumps the pin to `v0.15.0`: that task folds `names` into
+  `SeriesApi` with its client, `SeriesNamesApi` and its fake gone.
+- jsdom has no `Element.prototype.scrollIntoView`: `EditionFormScenarios`
+  defines it as a no-op for its tests and deletes it after each; a component
+  spec that reaches a call to it needs the same.
 - A port that gains a method reds `vue-tsc` on every object literal typed
   as that port, specs included: `CatalogueView.spec.ts` builds a
   `CatalogueApi` by hand, so `find` reached it when the port gained it
