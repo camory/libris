@@ -53,6 +53,7 @@ const summary = ref(text(answered?.summary));
 function text(value: string | number | null | undefined) {
   return value == null ? "" : String(value);
 }
+
 const id = useId();
 </script>
 
