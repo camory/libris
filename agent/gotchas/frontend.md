@@ -93,8 +93,12 @@ Read whole by a run that changes `frontend/`, after `every-run.md`.
   passes `undefined` second to keep the find's default.
   `EditionFormScenarios`' `open()` gives `world.names` as its `seriesApi`.
 - `EditionForm` takes `isbn13`, `edition` (a `SourceEdition`, absent for
-  an unknown ISBN), `copies` and `covers`, required, and emits
-  `coverSource` as the card does. It fills its text once, at setup: `kind`
+  an unknown ISBN), `copies`, `covers`, `adding` and `failed`, required,
+  emits `coverSource` as the card does, and `add` with the edition its
+  fields read as, `editionOf(isbn13, authors, draft, locale)`
+  (`src/domain/EditionDraft.ts`). Its root is a plain block holding the
+  card-shaped `<form>` then `DockedAdd`. While `adding` its textboxes and
+  radios are `disabled`. It fills its text once, at setup: `kind`
   from `edition.kind`, a `values` record for the nine `input`s drawn by one
   `v-for` over `fields` (`isbn.form.<field>`), numbers as their digits,
   `null` as `""`, the language through `languageWord`, and `summary`, a
@@ -106,7 +110,12 @@ Read whole by a run that changes `frontend/`, after `every-run.md`.
   `field()` still finds the one `ISBN` textbox. A case that types in a
   field the mutation makes a `number` input finds it with
   `getByLabelText`: a role query reds on the `spinbutton` before the value
-  is read.
+  is read. Its spec's `form()` takes `{ adding, failed }` fourth, `false`
+  by default, and gives the edition's own `isbn13` when there is one.
+- On a detached tree a `fireEvent.click` on a radio checks nothing and fires
+  no `change`, so `v-model` keeps the kind: a component spec chooses a kind
+  with `fireEvent.change(radio, { target: { checked: true } })`. The
+  scenarios mount on an attached host, where the click works.
 - jsdom has no `Element.prototype.scrollIntoView`: `EditionFormScenarios`
   defines it as a no-op for its tests and deletes it after each; a component
   spec that reaches a call to it needs the same.
@@ -377,9 +386,10 @@ Read whole by a run that changes `frontend/`, after `every-run.md`.
   `shallowRef`, so that the view can build a fresh one (`IsbnView.vue`'s
   `addBookToBookshelf`, rebuilt on each lookup), exposes its `state` to the
   template as a ref still, and the view reads it through a `computed`
-  (`addState`). Its function is called on the unwrapped object,
-  `@click="addBookToBookshelf.add(edition, coverSource)"`, and `vue-tsc`
-  narrows `edition` there from the dock's `v-if="edition && …"`.
+  (`addState`). Its function is called from the script through `.value`
+  (`send`'s `addBookToBookshelf.value.add(edition, coverSource.value)`),
+  the template's `@add="send(edition)"` narrowed by `vue-tsc` from the
+  `v-else-if="held && edition"` around the held card's dock.
 - `@typescript-eslint/no-unused-vars` has no `argsIgnorePattern`: an
   `_`-prefixed parameter is still an error, so a cycle whose signature is
   fixed before its body uses the argument leaves `eslint .`, and the gate,
@@ -414,17 +424,27 @@ Read whole by a run that changes `frontend/`, after `every-run.md`.
 - A language is shown as `languageWord(code, locale)`
   (`src/domain/Language.ts`, `Intl.DisplayNames` of `type: "language"`),
   the component passing `useI18n().locale.value`: `ja` reads *japonais*,
-  and a code the browser has no word for (`qq`) reads as itself. The
-  catalogue holds no `language` block.
-- The lookup's add is docked: in `IsbnView`, the form (or the card) and the
-  dock share one block, and the dock, the button and its message, is
-  `sticky bottom-0 -mx-5` with `[container-type:scroll-state]`; its inner
+  and a code the browser has no word for (`qq`) reads as itself.
+  `languageCode(word, locale)` reads a word back: the first code of the
+  module's private `CODES`, the 183 codes of ISO 639-1 written out in their
+  order, whose word equals it under `nameOrder(locale)`, `null` for none.
+  The list is never built from two-letter pairs: the browser has words for
+  withdrawn codes (`iw`, `mo`, `in`). The catalogue holds no `language`
+  block.
+- The lookup's add is docked: `DockedAdd` (props `adding`, `failed`,
+  emitting `add`) draws the button, *Ajout en cours…* while `adding`, and
+  the message under it when `failed`. It is drawn in two places: inside
+  `EditionForm`'s root block, after the `<form>`, and in `IsbnView` after
+  the held card, the two sharing the view's `mt-5 flex flex-col` block, so
+  that each dock sticks over the block it closes. Its root is `sticky
+  bottom-0 -mx-5` with `[container-type:scroll-state]`; its inner
   `div` draws the hairline under the arbitrary variant
   `[@container_scroll-state(stuck:_bottom)]:border-t`, which Tailwind
   emits as `@container scroll-state(stuck:bottom)` (read in `dist/assets`
   after `npm run build`). A container query styles the container's
   descendants, never the container itself. jsdom lays nothing out: the dock
-  is checked by hand.
+  is checked by hand. Once added, `IsbnView` draws `SourceEditionCard` of
+  the edition it sent, with the one candidate whose source it sent.
 - Icons come from `@lucide/vue` (`1.56.0`), imported by name from the
   package root (`import { Check } from "@lucide/vue"`); it has no sub-path
   exports. An icon given no `aria-label`, `title` or `aria-*` prop renders

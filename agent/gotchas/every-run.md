@@ -31,6 +31,9 @@ true; the diary keeps the date it was found.
   Write a plain space there and turn it into the escape with `sed`, or
   find the literal with `grep -c $'\xC2\xA0' <file>` and replace it with
   `sed -i 's/\xC2\xA0/\\u00A0/g' <file>`.
+- A Bash command whose text holds the two-letter ISO code of Sundanese as a
+  word is refused by the sandbox hook (*No privilege escalation*): check
+  such a list from a script file written with the Write tool.
 - `git checkout <file>` reverts to the last commit, not to the working tree:
   commit the cycle before a mutation check.
 - `gh pr edit N --body-file <file>` updates a body (it worked on

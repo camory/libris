@@ -156,10 +156,23 @@ Format:
   drawn only with an `edition` now) and keeps the form open to edits under
   the add's message, which is already in the dock.
 
-## 2026-11-01 — T123 The ouvrage is added as edited — handoff
-- Done: the un-skip of S5 and S11 (S5 red on its heading *Romance Dawn*, S11's two cases already green), steps 1 to 5. Start with step 6 (*reads a field of spaces alone as no value*: `number` still reads `"  "` as `0`, `text` already trims to `null`).
-- Decided: `languageCode` matches through `nameOrder(locale)`, the tree's base collator; `CODES` is one code per line, Prettier's layout. `editionOf` reads `text()` (trimmed, `""` to `null`), `number()` and the series' name through `text()`.
-- Deviations: none yet. Step 5's case builds the spaced draft from `filled` by `Object.fromEntries`, the summary given its own line break.
-- Guards: step 3, mutation `?? word` in `languageCode`: `AssertionError: expected 'klingon' to be null`, reverted.
-- Learned: a Bash command whose text holds the ISO code `su` as a word is refused by the sandbox hook (*No privilege escalation*): the code list was checked from a script file written with Write.
-- Gate at handoff: `npm test` red on S5 alone (`Unable to find role="heading" and name "Romance Dawn"`), the cited scenario not yet reached; 567 passed, 14 skipped. Not pushed: the commits wait on the local branch.
+## 2026-11-01 — T123 The ouvrage is added as edited — done
+- Did: the form's button, on the unknown ISBN's form too, sends what its
+  fields read as through `editionOf` (`domain/EditionDraft.ts`), the
+  language back to its code by `languageCode`; S5 and S11 run green.
+- Decided: `DockedAdd` holds the button and its message, drawn by the form
+  and by the view under the held card; the view keeps the edition it sent
+  in `sent` and, once added, draws its card with the one candidate whose
+  source it sent (`sentCovers`); `number()` reads through `text()`, so a
+  field of spaces is `null`; the run was split by a handoff after step 5.
+- Deviations from the brief: step 7's green showed the card of the answer
+  once added, the form's own dock otherwise staying on screen and redding
+  *shows the copy it added and offers no more to add*; step 12's red was
+  then the heading *Romance dawn* where the brief foresaw the form staying.
+  Step 8 chooses *BD* with `fireEvent.change`, a click on a detached radio
+  firing no `change`. S11's two cases were green on their un-skip, before
+  any step: their red is the mutation of step 15.
+- Left over: the checks by hand on the Pixel (`7-adding.jpg`,
+  `8-added.jpg`, which draws no dot nor source's name where the card after
+  the add does, `9-not-added.jpg`, the dock and its hairline under the form
+  and under the held card); T124 refuses the form on the same tap.
