@@ -333,6 +333,23 @@ describe("EditionForm", () => {
     ]);
   });
 
+  it("accepts nothing while the add runs", () => {
+    // When
+    const fields = within(
+      form(onePiece1, [], [], { adding: true }).element as HTMLElement,
+    );
+
+    // Then
+    expect(disabledOf(fields)).toEqual(Array(13).fill(true));
+  });
+
+  function disabledOf(fields: ReturnType<typeof screen>) {
+    return [
+      ...fields.getAllByRole<HTMLInputElement>("textbox"),
+      ...fields.getAllByRole<HTMLInputElement>("radio"),
+    ].map((field) => field.disabled);
+  }
+
   function valuesOf(fields: ReturnType<typeof screen>) {
     return fields
       .getAllByRole<HTMLInputElement>("textbox")

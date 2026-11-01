@@ -109,6 +109,7 @@ function add() {
             type="radio"
             name="kind"
             :value="each"
+            :disabled="adding"
             class="sr-only"
           />
           {{ t(`isbn.form.kind.${each}`) }}
@@ -124,6 +125,7 @@ function add() {
             :id="`${id}-${field}`"
             v-model="values[field]"
             type="text"
+            :disabled="adding"
             :inputmode="numeric.has(field) ? 'numeric' : undefined"
             class="h-[50px] w-full rounded-xl border-[1.5px] border-border bg-surface px-3.5 text-field"
           />
@@ -145,6 +147,7 @@ function add() {
           :id="`${id}-summary`"
           v-model="summary"
           rows="3"
+          :disabled="adding"
           class="field-sizing-content min-h-[calc(3lh+27px)] w-full resize-none rounded-xl border-[1.5px] border-border bg-surface px-3.5 py-3 text-field"
         ></textarea>
       </div>
