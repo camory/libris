@@ -129,4 +129,9 @@ Format:
   query before the value.
 - Left over: the checks by hand on the Pixel (the form against
   `2-empty.jpg`, *Résumé* growing, the numeric keyboard); T122 fills the
-  form of a found ISBN and adds the button.
+  form of a found ISBN and adds the button. `EditionForm` repeats
+  `SourceEditionCard`'s stand-in and its *Dans aucune de vos
+  bibliothèques* row class for class (Duplicated Code, found by the
+  reviewer on T121, Tophe 2026-11-01): T122, which gives the form the
+  card's covers and dots, extracts the card's top part they share rather
+  than copying the covers a second time.
