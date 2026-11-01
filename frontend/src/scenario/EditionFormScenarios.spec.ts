@@ -10,10 +10,7 @@ import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import type { App } from "vue";
 import type { BookshelfApi } from "../application/BookshelfApi";
 import type { IsbnApi } from "../application/IsbnApi";
-import {
-  seriesNamesApiKey,
-  type SeriesNamesApi,
-} from "../application/SeriesNamesApi";
+import type { SeriesApi } from "../application/SeriesApi";
 import { createLibrisApp } from "../createLibrisApp";
 import type { Bookshelf } from "../domain/Bookshelf";
 import type { Copy } from "../domain/Copy";
@@ -28,7 +25,6 @@ import { FakeIsbnApi } from "../fixture/FakeIsbnApi";
 import { FakeMeApi } from "../fixture/FakeMeApi";
 import { FakeReadersApi } from "../fixture/FakeReadersApi";
 import { FakeSeriesApi } from "../fixture/FakeSeriesApi";
-import { FakeSeriesNamesApi } from "../fixture/FakeSeriesNamesApi";
 import { lea } from "../fixture/Readers";
 import { onePiece1, onePiece2 } from "../fixture/SourceEditions";
 
@@ -462,12 +458,12 @@ describe("Edition form", () => {
     });
   }
 
-  function theHouseHoldsTheSeries(...names: string[]): SeriesNamesApi {
-    return new FakeSeriesNamesApi(names);
+  function theHouseHoldsTheSeries(...names: string[]): SeriesApi {
+    return new FakeSeriesApi([], undefined, names);
   }
 
-  function theSeriesNamesAreUnavailable(): SeriesNamesApi {
-    return new FakeSeriesNamesApi(new TypeError("Failed to fetch"));
+  function theSeriesNamesAreUnavailable(): SeriesApi {
+    return new FakeSeriesApi([], undefined, new TypeError("Failed to fetch"));
   }
 
   function on(bookshelf: Bookshelf): Copy {
@@ -480,7 +476,7 @@ describe("Edition form", () => {
 
   async function formOfOnePiece1(world: {
     add?: BookshelfApi;
-    names?: SeriesNamesApi;
+    names?: SeriesApi;
   }) {
     const screen = open({ isbn: aSourceKnows(onePiece1), ...world });
     await ask(screen, "9782723488525");
@@ -491,7 +487,7 @@ describe("Edition form", () => {
   function open(world: {
     isbn: IsbnApi;
     add?: BookshelfApi;
-    names?: SeriesNamesApi;
+    names?: SeriesApi;
   }) {
     window.history.replaceState(null, "", "/isbn");
     app = createLibrisApp(
@@ -506,11 +502,10 @@ describe("Edition form", () => {
         catalogueApi: new FakeCatalogueApi([]),
         bookshelvesApi: new FakeBookshelvesApi({ memberships: [] }),
         readersApi: new FakeReadersApi([]),
-        seriesApi: new FakeSeriesApi([]),
+        seriesApi: world.names ?? new FakeSeriesApi([]),
       },
       "sha-abc1234",
     );
-    app.provide(seriesNamesApiKey, world.names ?? new FakeSeriesNamesApi([]));
     app.mount(host);
     return within(host);
   }
