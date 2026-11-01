@@ -19,6 +19,16 @@ const asterix1: SourceEdition = {
   ],
 };
 
+const inventaire: CoverCandidate = {
+  source: "inventaire.io",
+  url: "https://inventaire.io/img/entities/1",
+};
+
+const openLibrary: CoverCandidate = {
+  source: "Open Library",
+  url: "https://covers.openlibrary.org/b/id/1-L.jpg",
+};
+
 describe("EditionForm", () => {
   it("shows the ISBN under its label", () => {
     // When
@@ -200,6 +210,24 @@ describe("EditionForm", () => {
 
     // Then
     expect(text).not.toContain("Auteurs");
+  });
+
+  it("shows the covers on offer as the card does", () => {
+    // When
+    const covers = screen(onePiece1, [], [inventaire, openLibrary]);
+
+    // Then
+    expect(
+      covers
+        .getByRole("img", { name: "Couverture de Romance dawn" })
+        .getAttribute("src"),
+    ).toBe(inventaire.url);
+    expect(
+      covers
+        .getAllByRole("button", { name: /^Couverture / })
+        .map((dot) => dot.getAttribute("aria-label")),
+    ).toEqual(["Couverture inventaire.io", "Couverture Open Library"]);
+    expect(covers.getByText("inventaire.io")).toBeDefined();
   });
 
   function valuesOf(fields: ReturnType<typeof screen>) {

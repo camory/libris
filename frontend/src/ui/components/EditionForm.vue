@@ -7,6 +7,7 @@ import type { CoverCandidate } from "../../domain/Cover";
 import { languageWord } from "../../domain/Language";
 import type { Kind, SourceEdition } from "../../domain/SourceEdition";
 import AuthorLines from "./AuthorLines.vue";
+import CoverChoice from "./CoverChoice.vue";
 
 const props = defineProps<{
   isbn13: string;
@@ -58,11 +59,11 @@ const id = useId();
     class="flex flex-col gap-3.5 rounded-[14px] border border-border bg-surface p-4"
   >
     <div class="flex gap-3.5">
-      <div
-        class="flex h-[149px] w-24 shrink-0 items-center justify-center rounded-md bg-border"
-      >
-        <BookOpen :size="48" class="shrink-0 text-muted opacity-60" />
-      </div>
+      <CoverChoice
+        :covers="covers"
+        :title="edition?.title ?? ''"
+        :held="false"
+      />
       <div class="flex min-w-0 flex-col gap-1.5">
         <p class="text-label text-muted">{{ t("isbn.card.isbn") }}</p>
         <p class="text-body tabular-nums">{{ isbn13 }}</p>
