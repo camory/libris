@@ -178,15 +178,18 @@ Read whole by a run that changes `backend/`, after `every-run.md`.
   requests write; `FreshSchema` on `JdbcSliceTest` and `ScenarioTest` cleans
   and migrates before each case, so no case meets a row another case wrote
   (JUnit's method order is not alphabetical: *S10* ran before *S1*).
+  `CleanSchema`, in the root `fixture`, imported by `JdbcSliceTest`,
+  `ScenarioTest` and `LibrisApplicationTest`, is a `FlywayMigrationStrategy`
+  that cleans before the migration of the context's start too.
 - The sandbox PostgreSQL survives between runs (tmpfs: gone when the
   container is recreated). Editing a migration the database has already
-  applied (the one of the current task, before its PR is merged) breaks
-  every context start: Flyway validates the checksums and migrates while
-  the context loads, before `FreshSchema` cleans, so every database-backed
-  class fails whole with `initializationError`, `Failed to load
-  ApplicationContext` and `Validate failed: Migrations have failed
-  validation`, and running one slice class alone changes nothing. Restoring
-  the file's bytes is the cheap fix as long as the edited version never
+  applied (the one of the current task, before its PR is merged) breaks no
+  context that imports `CleanSchema`, since it cleans before Flyway
+  validates (T120 edited its `V014` in place, 2026-11-01). A context
+  without it (a new test annotation, or `CleanSchema` dropped) fails whole
+  with `initializationError`, `Failed to load ApplicationContext` and
+  `Validate failed: Migrations have failed validation`. Restoring the
+  file's bytes is the cheap fix as long as the edited version never
   applied. Otherwise forget the row,
   `DELETE FROM flyway_schema_history WHERE version = '003'` (the version is
   zero-padded), and drop its tables. From the host:
@@ -361,13 +364,13 @@ Read whole by a run that changes `backend/`, after `every-run.md`.
   true))`, never a `JdbcClient` or `DataSource` bean (they wait for Flyway).
   Its slice test calls `migrate` with a `Context` of its own whose
   connection is `DataSourceUtils.getConnection(dataSource)`, the test's
-  transaction. A JDBC slice context, which holds no such bean, still starts
-  on a database where a scenario applied `V013` (measured 2026-10-31), only
-  while `V013` is the highest version: Flyway reads an applied migration
-  above every resolved one as *future*, which it ignores by default. Once a
-  higher version exists, the slice resolves no `V013` and reads the applied
-  one as *missing*, which fails validation at start, before `FreshSchema`
-  cleans (reasoned from Flyway's defaults, not measured).
+  transaction. A JDBC slice context holds no such bean, so it resolves no
+  `V013`: without `CleanSchema` it fails at start on a database a scenario
+  migrated (`Detected applied migration not resolved locally: 013`), and a
+  scenario context fails on one a slice migrated (`Detected resolved
+  migration not applied to database: 013`); measured 2026-11-01 with
+  `V014`. `CleanSchema` on both annotations is what lets them share the
+  database.
 - A source's mapping never throws on the text a source sends: what it
   cannot read stays as written or is left out. An exception that leaves a
   source fails the whole lookup, the other sources' answers included, and
@@ -379,15 +382,22 @@ Read whole by a run that changes `backend/`, after `every-run.md`.
   `do update` is what makes `returning` answer the row that already exists,
   where `do nothing` answers no row at all and costs a second statement. The
   row keeps the spelling that created it, so an edition naming it otherwise
-  reads back with that first spelling. `JdbcSeriesRepository.findOrInsert`
-  is that statement with `RETURNING id, name`, answering the stored series
-  whole.
+  reads back with that first spelling. Authors are still unique on
+  `lower(name)`; series since `V014` on `((BTRIM(name)) COLLATE
+  ignoring_case_and_accents)`, so case, accents and the spaces at the ends
+  do not count. `JdbcSeriesRepository.findOrInsert` is that statement with
+  `RETURNING id, name`, answering the stored series whole, its conflict
+  target written as the index's, `((BTRIM(name)) COLLATE
+  ignoring_case_and_accents)`; with the collation inside the inner
+  parentheses it infers no index (`there is no unique or exclusion
+  constraint matching the ON CONFLICT specification`).
 - An edition writes only its `series_id`, which references `series`: a slice
   case inserting an edition with a `seriesVolume` stores its series first,
   hence `JdbcSeriesRepository` in the `@Import` of `JdbcEditionRepositoryTest`
   and `JdbcCatalogueEditionsTest`. A use case reading an edition's series
   name takes `SeriesRepository` (`SeriesInMemory` in `bibliography.fixture`,
-  names matched with `lowercase()`).
+  names matched with `lowercase()` alone, unlike the index: no accents, no
+  trimming).
 - `JdbcClient`'s `query(…)` has `single()`, `optional()` and `list()`, no
   `singleOrNull()`: a finder of one row that may be missing answers
   `.optional().orElse(null)`; `single()` throws
@@ -472,9 +482,9 @@ Read whole by a run that changes `backend/`, after `every-run.md`.
   awaited cover of <isbn> failed` at WARN with the exception. Each run logs
   `Fetching the awaited covers` at INFO. A class logs through kotlin-logging,
   `private val logger = KotlinLogging.logger {}` and `logger.warn(e) { … }`,
-  never SLF4J's `getLogger`. `LibrisApplicationTest` cleans the
-  schema before migrating, since its run at start would ask the real
-  sources for whatever a scenario left awaiting.
+  never SLF4J's `getLogger`. `LibrisApplicationTest` imports
+  `CleanSchema`, which cleans before the start migration, since its run at
+  start would ask the real sources for whatever a scenario left awaiting.
   With no chosen source the run asks inventaire.io, Open Library, then the
   BnF's SRU and covers address, so a scenario counting a source's requests
   resets them after its Given (`BookshelfScenarios`' S4, `aStoredCover`).

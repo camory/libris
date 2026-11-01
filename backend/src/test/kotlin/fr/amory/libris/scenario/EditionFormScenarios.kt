@@ -11,7 +11,6 @@ import fr.amory.libris.scenario.dsl.series
 import fr.amory.libris.scenario.dsl.seriesNames
 import io.kotest.matchers.collections.shouldContainExactlyInAnyOrder
 import io.kotest.matchers.shouldBe
-import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 
@@ -38,7 +37,6 @@ class EditionFormScenarios @Autowired constructor(private val libris: Libris, pr
   }
 
   @Test
-  @Disabled("edition form")
   fun `S5 The ouvrage is added as edited, a series of the house`() {
     // Given
     lea.hasAdded(ASTERIX_LE_GAULOIS, to = lea.defaultBookshelf)

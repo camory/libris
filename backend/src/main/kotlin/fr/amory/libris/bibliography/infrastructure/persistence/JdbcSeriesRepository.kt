@@ -11,7 +11,7 @@ import java.util.UUID
 private const val INSERT_SERIES =
   """
     INSERT INTO series (id, name) VALUES (:id, :name)
-    ON CONFLICT (LOWER(name)) DO UPDATE SET name = series.name
+    ON CONFLICT ((BTRIM(name)) COLLATE ignoring_case_and_accents) DO UPDATE SET name = series.name
     RETURNING id, name
     """
 
