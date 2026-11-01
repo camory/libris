@@ -234,19 +234,21 @@ Read whole by a run that changes `frontend/`, after `every-run.md`.
   `display` read first, so Testing Library keeps it hidden or visible.
   Toggle what a query must see with `aria-hidden`, which is read as an
   attribute, and hide it on screen with a class, which draws nothing in the
-  specs (`SourceEditionCard`'s images).
+  specs (`CoverChoice`'s images).
 - A component's `emit` called during `setup`, as a `watch` with
   `immediate: true` does, reaches the parent's `@event` listener and
-  Vue Test Utils' `wrapper.emitted()`: `SourceEditionCard` gives out its
-  first `coverSource` that way, with no `onMounted`.
+  Vue Test Utils' `wrapper.emitted()`: `CoverChoice` gives out its first
+  `coverSource` that way, with no `onMounted`, and `SourceEditionCard`
+  and `EditionForm` pass it on.
 - jsdom loads no image: an `<img>` with a `src` fires neither `load` nor
   `error`, whatever the URL, so a test of what a broken cover shows dispatches
   `new Event("error")` on the element itself and awaits `nextTick()`. Vue Test
   Utils' `findComponent(SomeIcon)` is how a rendered icon is asserted: an
   `aria-hidden` SVG carries no text and no role, so no `getBy*` query reaches
-  it. Every `SourceEditionCard` draws `BookOpen` on its bookshelf rows or
-  its absence row, so the cover's stand-in is proven by counting,
-  `findAllComponents(BookOpen)`, never by `exists()`.
+  it. Every `SourceEditionCard` and `EditionForm` draws `BookOpen` on its
+  bookshelf rows or its absence row (`BookshelvesHolding`), so the cover's
+  stand-in is proven by counting, `findAllComponents(BookOpen)`, never by
+  `exists()`.
 - A spec importing a component that does not exist yet fails the whole file
   at load (`Failed to resolve import`, `Tests no tests`), not the one case:
   write the component first, drawing nothing the case asserts, and the red is
@@ -377,7 +379,7 @@ Read whole by a run that changes `frontend/`, after `every-run.md`.
   template as a ref still, and the view reads it through a `computed`
   (`addState`). Its function is called on the unwrapped object,
   `@click="addBookToBookshelf.add(edition, coverSource)"`, and `vue-tsc`
-  narrows `edition` there from the enclosing `v-else-if`.
+  narrows `edition` there from the dock's `v-if="edition && …"`.
 - `@typescript-eslint/no-unused-vars` has no `argsIgnorePattern`: an
   `_`-prefixed parameter is still an error, so a cycle whose signature is
   fixed before its body uses the argument leaves `eslint .`, and the gate,
