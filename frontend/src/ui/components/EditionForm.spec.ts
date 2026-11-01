@@ -12,6 +12,14 @@ describe("EditionForm", () => {
     expect(text).toMatch(/ISBN.*9782000000006/);
   });
 
+  it("says no bookshelf of the reader holds a copy", () => {
+    // When
+    const text = show();
+
+    // Then
+    expect(text).toContain("Dans aucune de vos bibliothèques");
+  });
+
   function show() {
     return form().text().replace(/\s+/g, " ");
   }

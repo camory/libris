@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { BookOpen } from "@lucide/vue";
 import { useI18n } from "vue-i18n";
 
 defineProps<{ isbn13: string }>();
@@ -18,6 +19,11 @@ const { t } = useI18n();
         <p class="text-label text-muted">{{ t("isbn.card.isbn") }}</p>
         <p class="text-body tabular-nums">{{ isbn13 }}</p>
       </div>
+    </div>
+
+    <div class="flex items-center gap-2 text-body font-semibold">
+      <BookOpen :size="22" class="shrink-0" />
+      <p>{{ t("isbn.card.noCopy") }}</p>
     </div>
   </form>
 </template>
