@@ -72,7 +72,7 @@ describe("Summary", () => {
 
   it("S2 A summary in several lines, on the lookup", async () => {
     // Given
-    const screen = open("/isbn", { isbn: aSourceKnows(montTombe) });
+    const screen = open("/isbn", { isbn: theHouseHolds(montTombe) });
 
     // When
     await ask(screen, "9782344008980");
@@ -96,10 +96,10 @@ describe("Summary", () => {
     expect(summaryParagraphs(screen)).toEqual(lines);
   });
 
-  function aSourceKnows(edition: SourceEdition): IsbnApi {
+  function theHouseHolds(edition: SourceEdition): IsbnApi {
     return new FakeIsbnApi({
       outcome: "found",
-      id: null,
+      id: montTombeHeld.id,
       edition,
       copies: [],
       covers: [],

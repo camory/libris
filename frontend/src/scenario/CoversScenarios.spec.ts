@@ -69,7 +69,7 @@ describe("Covers", () => {
     await ask(screen, "9782723488525");
 
     // Then
-    await screen.findByText("Romance dawn");
+    await screen.findByRole("button", { name: "Ajouter à ma bibliothèque" });
     expect(coverImage(screen).getAttribute("src")).toBe(inventaire.url);
   });
 
@@ -79,7 +79,7 @@ describe("Covers", () => {
       isbn: theSourcesOffer(onePiece1, [inventaire, openLibrary, bnf]),
     });
     await ask(screen, "9782723488525");
-    await screen.findByText("Romance dawn");
+    await screen.findByRole("button", { name: "Ajouter à ma bibliothèque" });
 
     // When
     await loads(coverImage(screen));
@@ -101,7 +101,7 @@ describe("Covers", () => {
       isbn: theSourcesOffer(onePiece1, [inventaire, openLibrary, bnf]),
     });
     await ask(screen, "9782723488525");
-    await screen.findByText("Romance dawn");
+    await screen.findByRole("button", { name: "Ajouter à ma bibliothèque" });
     await loads(coverImage(screen));
     await loads(coverImage(screen));
     await loads(coverImage(screen));
@@ -123,7 +123,7 @@ describe("Covers", () => {
       isbn: theSourcesOffer(onePiece1, [inventaire, openLibrary, bnf]),
     });
     await ask(screen, "9782723488525");
-    await screen.findByText("Romance dawn");
+    await screen.findByRole("button", { name: "Ajouter à ma bibliothèque" });
 
     // When
     await fails(coverImage(screen));
@@ -144,7 +144,7 @@ describe("Covers", () => {
       isbn: theSourcesOffer(onePiece1, [inventaire, openLibrary, bnf]),
     });
     await ask(screen, "9782723488525");
-    await screen.findByText("Romance dawn");
+    await screen.findByRole("button", { name: "Ajouter à ma bibliothèque" });
 
     // When
     await fails(coverImage(screen));
@@ -166,7 +166,7 @@ describe("Covers", () => {
       add,
     });
     await ask(screen, "9782723488525");
-    await screen.findByText("Romance dawn");
+    await screen.findByRole("button", { name: "Ajouter à ma bibliothèque" });
     await fails(coverImage(screen));
     await loads(coverImage(screen));
 
@@ -188,7 +188,7 @@ describe("Covers", () => {
       add,
     });
     await ask(screen, "9782723488525");
-    await screen.findByText("Romance dawn");
+    await screen.findByRole("button", { name: "Ajouter à ma bibliothèque" });
     await fails(coverImage(screen));
 
     // When

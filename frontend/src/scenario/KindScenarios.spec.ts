@@ -34,7 +34,7 @@ describe("Kind", () => {
 
   it("S1 A manga", async () => {
     // Given
-    const screen = open("/isbn", { isbn: aSourceKnows(onePiece1) });
+    const screen = open("/isbn", { isbn: theHouseHolds(onePiece1) });
 
     // When
     await ask(screen, "9782723488525");
@@ -48,10 +48,10 @@ describe("Kind", () => {
     expect(card).not.toContain("dessin");
   });
 
-  function aSourceKnows(edition: SourceEdition): IsbnApi {
+  function theHouseHolds(edition: SourceEdition): IsbnApi {
     return new FakeIsbnApi({
       outcome: "found",
-      id: null,
+      id: "8b3f4e5d-6c7a-4b8c-9d0e-1f2a3b4c5d6e",
       edition,
       copies: [],
       covers: [],
