@@ -40,6 +40,9 @@ const held = ref(false);
 const copies = ref<Copy[]>([]);
 const covers = ref<CoverCandidate[]>([]);
 const coverSource = ref<string | null>(null);
+const shownIsbn13 = computed(
+  () => edition.value?.isbn13 ?? unknownIsbn13.value,
+);
 const searching = ref(false);
 const addBookToBookshelf = shallowRef(
   useAddBookToBookshelf(meApi, bookshelfApi),
@@ -183,40 +186,52 @@ async function search() {
 
     <SourceEditionCardSkeleton v-if="searching" class="mt-5" />
 
-    <div v-else-if="edition" class="mt-5 flex flex-col gap-2">
+    <div v-else-if="shownIsbn13" class="mt-5 flex flex-col">
       <SourceEditionCard
+        v-if="held && edition"
         :edition="edition"
         :held="held"
         :copies="shownCopies"
         :covers="covers"
         @cover-source="coverSource = $event"
       />
-      <button
-        v-if="addState.status !== 'added'"
-        type="button"
-        :disabled="addState.status === 'adding'"
-        class="flex h-[50px] items-center justify-center gap-2 rounded-xl bg-accent text-button text-white active:bg-accent-pressed disabled:opacity-70"
-        @click="addBookToBookshelf.add(edition, coverSource)"
+      <EditionForm
+        v-else
+        :isbn13="shownIsbn13"
+        :edition="edition"
+        :copies="shownCopies"
+        :covers="covers"
+        @cover-source="coverSource = $event"
+      />
+      <div
+        v-if="edition"
+        class="sticky bottom-0 -mx-5 [container-type:scroll-state]"
       >
-        <BusySpinner v-if="addState.status === 'adding'" class="size-4" />
-        {{ addState.status === "adding" ? t("isbn.adding") : t("isbn.add") }}
-      </button>
-      <p
-        v-if="addState.status === 'notAdded'"
-        class="flex items-start gap-2 text-body text-danger"
-      >
-        <CircleAlert :size="22" class="shrink-0" />
-        <span>{{ t("isbn.addError") }}</span>
-      </p>
+        <div
+          class="flex flex-col gap-2 border-border bg-bg px-5 py-2 [@container_scroll-state(stuck:_bottom)]:border-t"
+        >
+          <button
+            v-if="addState.status !== 'added'"
+            type="button"
+            :disabled="addState.status === 'adding'"
+            class="flex h-[50px] items-center justify-center gap-2 rounded-xl bg-accent text-button text-white active:bg-accent-pressed disabled:opacity-70"
+            @click="addBookToBookshelf.add(edition, coverSource)"
+          >
+            <BusySpinner v-if="addState.status === 'adding'" class="size-4" />
+            {{
+              addState.status === "adding" ? t("isbn.adding") : t("isbn.add")
+            }}
+          </button>
+          <p
+            v-if="addState.status === 'notAdded'"
+            class="flex items-start gap-2 text-body text-danger"
+          >
+            <CircleAlert :size="22" class="shrink-0" />
+            <span>{{ t("isbn.addError") }}</span>
+          </p>
+        </div>
+      </div>
     </div>
-
-    <EditionForm
-      v-else-if="unknownIsbn13"
-      :isbn13="unknownIsbn13"
-      :copies="[]"
-      :covers="[]"
-      class="mt-5"
-    />
 
     <p v-if="message" class="mt-5 flex items-start gap-2 text-body text-danger">
       <CircleAlert :size="22" class="shrink-0" />

@@ -34,6 +34,11 @@ const found: IsbnAnswer = {
   covers: [],
 };
 
+const held: IsbnAnswer = {
+  ...found,
+  id: "8b3f4e5d-6c7a-4b8c-9d0e-1f2a3b4c5d6e",
+};
+
 const onLeasBookshelf: IsbnAnswer = {
   outcome: "found",
   id: null,
@@ -91,7 +96,7 @@ describe("IsbnView", () => {
     expect(api.asked).toEqual([]);
   });
 
-  it("asks for the ISBN-13 the rule computes and shows the card", async () => {
+  it("opens the form of the answer for an ISBN the house lacks", async () => {
     // Given
     const api = new FakeIsbnApi(found);
     const screen = open(api);
@@ -101,8 +106,13 @@ describe("IsbnView", () => {
 
     // Then
     expect(api.asked).toEqual(["9782723488525"]);
-    expect(screen.getByText("Romance dawn")).toBeDefined();
-    expect(screen.getByText("Glénat")).toBeDefined();
+    expect(
+      screen.getByRole<HTMLInputElement>("textbox", { name: "Titre" }).value,
+    ).toBe("Romance dawn");
+    expect(screen.queryByRole("heading", { name: "Romance dawn" })).toBeNull();
+    expect(
+      screen.getByRole("button", { name: "Ajouter à ma bibliothèque" }),
+    ).toBeDefined();
   });
 
   it("says in which bookshelf the reader already has a copy", async () => {
@@ -144,7 +154,7 @@ describe("IsbnView", () => {
 
   it("asks for the ISBN-13 an old ten converts to", async () => {
     // Given
-    const api = new FakeIsbnApi(found);
+    const api = new FakeIsbnApi(held);
     const screen = open(api);
 
     // When
@@ -235,7 +245,7 @@ describe("IsbnView", () => {
 
   it("replaces the answer it showed by the next one", async () => {
     // Given
-    const screen = open(new FakeIsbnApi(found));
+    const screen = open(new FakeIsbnApi(held));
     await ask(screen, "978-2-7234-8852-5");
 
     // When
@@ -366,7 +376,7 @@ describe("IsbnView", () => {
 
   it("runs the lookup with the first code the camera reads", async () => {
     // Given
-    const api = new FakeIsbnApi(found);
+    const api = new FakeIsbnApi(held);
     const scanner = new FakeBarcodeScanner(true, "9782723488525");
 
     // When
