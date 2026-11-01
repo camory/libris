@@ -80,6 +80,18 @@ describe("EditionForm", () => {
     expect(fields.queryAllByPlaceholderText(/./)).toEqual([]);
   });
 
+  it("takes the numeric keyboard for Tome, Année and Pages", () => {
+    // When
+    const fields = screen();
+
+    // Then
+    const numeric = fields
+      .getAllByRole<HTMLInputElement>("textbox")
+      .filter((field) => field.getAttribute("inputmode") === "numeric")
+      .map((field) => field.labels?.[0]?.textContent?.trim());
+    expect(numeric).toEqual(["Tome", "Année", "Pages"]);
+  });
+
   function show() {
     return form().text().replace(/\s+/g, " ");
   }

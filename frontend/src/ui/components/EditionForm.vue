@@ -23,6 +23,7 @@ const fields = [
   "pages",
   "summary",
 ] as const;
+const numeric = new Set<string>(["volume", "year", "pages"]);
 const values = reactive(
   Object.fromEntries(fields.map((field) => [field, ""])) as Record<
     (typeof fields)[number],
@@ -80,6 +81,7 @@ const id = useId();
         :id="`${id}-${field}`"
         v-model="values[field]"
         type="text"
+        :inputmode="numeric.has(field) ? 'numeric' : undefined"
         class="h-[50px] w-full rounded-xl border-[1.5px] border-border bg-surface px-3.5 text-field"
       />
     </div>
