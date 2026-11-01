@@ -162,3 +162,4 @@ Format:
 - Deviations: none yet. Step 5's case builds the spaced draft from `filled` by `Object.fromEntries`, the summary given its own line break.
 - Guards: step 3, mutation `?? word` in `languageCode`: `AssertionError: expected 'klingon' to be null`, reverted.
 - Learned: a Bash command whose text holds the ISO code `su` as a word is refused by the sandbox hook (*No privilege escalation*): the code list was checked from a script file written with Write.
+- Gate at handoff: `npm test` red on S5 alone (`Unable to find role="heading" and name "Romance Dawn"`), the cited scenario not yet reached; 567 passed, 14 skipped. Not pushed: the commits wait on the local branch.
