@@ -60,6 +60,20 @@ class JdbcSeriesRepositoryTest @Autowired constructor(private val seriesReposito
   }
 
   @Test
+  fun `every series stored is found`() {
+    // Given
+    val onePiece = seriesRepository.findOrInsert(Series(SeriesId.new(), "One piece"))
+    val tintin = seriesRepository.findOrInsert(Series(SeriesId.new(), "Tintin"))
+    val naruto = seriesRepository.findOrInsert(Series(SeriesId.new(), "Naruto"))
+
+    // When
+    val found = seriesRepository.findAll()
+
+    // Then
+    found shouldContainExactlyInAnyOrder listOf(onePiece, tintin, naruto)
+  }
+
+  @Test
   fun `no id finds no series`() {
     // Given
     seriesRepository.findOrInsert(Series(SeriesId.new(), "One piece"))

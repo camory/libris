@@ -17,4 +17,7 @@ class SeriesInMemory : SeriesRepository {
 
   override fun findByIds(seriesIds: List<SeriesId>): List<Series> =
     storedSeries.filter { it.id in seriesIds }
+
+  override fun findAll(): List<Series> =
+    stored
 }
