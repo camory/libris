@@ -341,4 +341,12 @@ it; tap *Série*: it comes to the top, its suggestions above the keyboard.
 
 ## Tasks
 
-Filled by the planner.
+- T119 — S7, the backend on `v0.15.0` — backend
+- T120 — S5 — backend
+- T121 — S2, the frontend on `v0.15.0` — frontend
+- T122 — S1, S9 the word of a code, S3 and S4 kept — frontend
+- T123 — S5, S11, S9 the code of a word — frontend
+- T124 — S10 field by field, S9 an unknown word — frontend
+- T125 — S6, S10 a tome without a series — frontend
+- T126 — S7 the suggestions, S8 — frontend
+- T127 — S7 the word in the box, S9 the suggestions — frontend
