@@ -17,7 +17,8 @@ const props = defineProps<{
 const { t, locale } = useI18n();
 
 const kinds: Kind[] = ["BOOK", "BD", "MANGA"];
-const kind = ref<Kind>("BOOK");
+const answered = props.edition;
+const kind = ref<Kind>(answered?.kind ?? "BOOK");
 
 const fields = [
   "title",
@@ -31,7 +32,6 @@ const fields = [
   "pages",
 ] as const;
 const numeric = new Set<string>(["volume", "year", "pages"]);
-const answered = props.edition;
 const language = answered?.language ?? null;
 const values = reactive<Record<(typeof fields)[number], string>>({
   title: answered?.title ?? "",

@@ -155,6 +155,19 @@ describe("EditionForm", () => {
     expect(valuesOf(fields)).toEqual(["Romance dawn", ...Array(9).fill("")]);
   });
 
+  it("chooses the kind Libris answered", () => {
+    // When
+    const kinds = screen(onePiece1);
+
+    // Then
+    expect(
+      kinds
+        .getAllByRole<HTMLInputElement>("radio")
+        .filter((radio) => radio.checked)
+        .map((radio) => radio.labels?.[0]?.textContent?.trim()),
+    ).toEqual(["Manga"]);
+  });
+
   function valuesOf(fields: ReturnType<typeof screen>) {
     return fields
       .getAllByRole<HTMLInputElement>("textbox")
