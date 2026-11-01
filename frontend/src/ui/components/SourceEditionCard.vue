@@ -1,13 +1,13 @@
 <script setup lang="ts">
-import { BookOpen } from "@lucide/vue";
 import { computed, onMounted, ref, useTemplateRef } from "vue";
 import { useI18n } from "vue-i18n";
 import type { Book } from "../../domain/Book";
-import { bookshelvesHolding, type Copy } from "../../domain/Copy";
+import type { Copy } from "../../domain/Copy";
 import type { CoverCandidate } from "../../domain/Cover";
 import { languageWord } from "../../domain/Language";
 import type { SourceEdition } from "../../domain/SourceEdition";
 import AuthorLines from "./AuthorLines.vue";
+import BookshelvesHolding from "./BookshelvesHolding.vue";
 import CoverChoice from "./CoverChoice.vue";
 
 const props = defineProps<{
@@ -35,10 +35,6 @@ const overline = computed(() => {
     volume: series.volumeNumber,
   });
 });
-
-const bookshelves = computed(() =>
-  bookshelvesHolding(props.copies, locale.value),
-);
 
 const language = computed(() => {
   const code = props.edition.language;
@@ -94,23 +90,7 @@ onMounted(() => {
       </div>
     </div>
 
-    <div class="text-body font-semibold">
-      <div
-        v-for="{ bookshelf, count } in bookshelves"
-        :key="bookshelf.id"
-        class="flex items-center gap-2"
-      >
-        <BookOpen :size="22" class="shrink-0" />
-        <i18n-t keypath="isbn.card.copies" :plural="count" tag="p">
-          <template #bookshelf>{{ bookshelf.name }}</template>
-          <template #count>{{ count }}</template>
-        </i18n-t>
-      </div>
-      <div v-if="bookshelves.length === 0" class="flex items-center gap-2">
-        <BookOpen :size="22" class="shrink-0" />
-        <p>{{ t("isbn.card.noCopy") }}</p>
-      </div>
-    </div>
+    <BookshelvesHolding :copies="copies" />
 
     <div>
       <div

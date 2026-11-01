@@ -5,6 +5,7 @@ import { describe, expect, it } from "vitest";
 import type { Copy } from "../../domain/Copy";
 import type { CoverCandidate } from "../../domain/Cover";
 import type { SourceEdition } from "../../domain/SourceEdition";
+import { bibliothequeDeLea } from "../../fixture/Books";
 import { onePiece1 } from "../../fixture/SourceEditions";
 import { createLibrisI18n } from "../i18n";
 import EditionForm from "./EditionForm.vue";
@@ -27,6 +28,11 @@ const inventaire: CoverCandidate = {
 const openLibrary: CoverCandidate = {
   source: "Open Library",
   url: "https://covers.openlibrary.org/b/id/1-L.jpg",
+};
+
+const onLea: Copy = {
+  id: "6f1d2c3b-4a59-4e6f-8b70-1c2d3e4f5a61",
+  bookshelf: bibliothequeDeLea,
 };
 
 describe("EditionForm", () => {
@@ -246,6 +252,15 @@ describe("EditionForm", () => {
       ["inventaire.io"],
       ["Open Library"],
     ]);
+  });
+
+  it("says in which bookshelf the reader has a copy", () => {
+    // When
+    const text = show(onePiece1, [onLea]);
+
+    // Then
+    expect(text).toContain("Dans Bibliothèque de Léa");
+    expect(text).not.toContain("Dans aucune de vos bibliothèques");
   });
 
   function valuesOf(fields: ReturnType<typeof screen>) {

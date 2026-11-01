@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { BookOpen } from "@lucide/vue";
 import { reactive, ref, useId } from "vue";
 import { useI18n } from "vue-i18n";
 import type { Copy } from "../../domain/Copy";
@@ -7,6 +6,7 @@ import type { CoverCandidate } from "../../domain/Cover";
 import { languageWord } from "../../domain/Language";
 import type { Kind, SourceEdition } from "../../domain/SourceEdition";
 import AuthorLines from "./AuthorLines.vue";
+import BookshelvesHolding from "./BookshelvesHolding.vue";
 import CoverChoice from "./CoverChoice.vue";
 
 const props = defineProps<{
@@ -73,10 +73,7 @@ const id = useId();
       </div>
     </div>
 
-    <div class="flex items-center gap-2 text-body font-semibold">
-      <BookOpen :size="22" class="shrink-0" />
-      <p>{{ t("isbn.card.noCopy") }}</p>
-    </div>
+    <BookshelvesHolding :copies="copies" />
 
     <div
       class="flex h-11 rounded-xl border-[1.5px] border-border bg-surface p-0.5"
