@@ -137,6 +137,24 @@ describe("EditionForm", () => {
     ]);
   });
 
+  it("leaves empty the fields Libris answered nothing for", () => {
+    // When
+    const fields = screen({
+      ...onePiece1,
+      subtitle: null,
+      series: null,
+      collection: null,
+      publisher: null,
+      publicationYear: null,
+      language: null,
+      pageCount: null,
+      summary: null,
+    });
+
+    // Then
+    expect(valuesOf(fields)).toEqual(["Romance dawn", ...Array(9).fill("")]);
+  });
+
   function valuesOf(fields: ReturnType<typeof screen>) {
     return fields
       .getAllByRole<HTMLInputElement>("textbox")

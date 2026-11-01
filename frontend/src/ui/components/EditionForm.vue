@@ -32,20 +32,23 @@ const fields = [
 ] as const;
 const numeric = new Set<string>(["volume", "year", "pages"]);
 const answered = props.edition;
+const language = answered?.language ?? null;
 const values = reactive<Record<(typeof fields)[number], string>>({
-  title: answered ? String(answered.title) : "",
-  subtitle: answered ? String(answered.subtitle) : "",
-  series: answered ? String(answered.series?.name) : "",
-  volume: answered ? String(answered.series?.volumeNumber) : "",
-  collection: answered ? String(answered.collection) : "",
-  publisher: answered ? String(answered.publisher) : "",
-  year: answered ? String(answered.publicationYear) : "",
-  language: answered?.language
-    ? languageWord(answered.language, locale.value)
-    : "",
-  pages: answered ? String(answered.pageCount) : "",
+  title: answered?.title ?? "",
+  subtitle: text(answered?.subtitle),
+  series: text(answered?.series?.name),
+  volume: text(answered?.series?.volumeNumber),
+  collection: text(answered?.collection),
+  publisher: text(answered?.publisher),
+  year: text(answered?.publicationYear),
+  language: language === null ? "" : languageWord(language, locale.value),
+  pages: text(answered?.pageCount),
 });
-const summary = ref(answered ? String(answered.summary) : "");
+const summary = ref(text(answered?.summary));
+
+function text(value: string | number | null | undefined) {
+  return value == null ? "" : String(value);
+}
 const id = useId();
 </script>
 
