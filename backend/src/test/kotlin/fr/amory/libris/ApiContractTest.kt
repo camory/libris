@@ -131,7 +131,8 @@ class ApiContractTest @Autowired constructor(
   private val chooseDefaultBookshelf: ChooseDefaultBookshelf,
   private val listCatalogueSeries: ListCatalogueSeries,
   private val findCatalogueSeries: FindCatalogueSeries,
-  private val findCatalogueEdition: FindCatalogueEdition) {
+  private val findCatalogueEdition: FindCatalogueEdition,
+  private val listSeriesNames: ListSeriesNames) {
   @ContracteerTest(openApiDoc = "https://raw.githubusercontent.com/camory/libris-api/v0.15.0/openapi.yaml")
   fun `the API matches the contract`() {
     contracteerIsWelcomed()
@@ -148,6 +149,7 @@ class ApiContractTest @Autowired constructor(
     seriesAnswer()
     findingASeriesAnswers()
     findingABookAnswers()
+    seriesNamesAnswer()
   }
 
   private fun contracteerIsWelcomed() {
@@ -237,6 +239,10 @@ class ApiContractTest @Autowired constructor(
       .willReturn(FindCatalogueEditionResult.Found(ASTERIX_1_HELD))
     given(findCatalogueEdition(CONTRACTEER.id, EDITION_NOT_IN_MY_CATALOGUE))
       .willReturn(FindCatalogueEditionResult.NoSuchEdition)
+  }
+
+  private fun seriesNamesAnswer() {
+    given(listSeriesNames()).willReturn(listOf("Astérix", "One piece"))
   }
 
   private fun noCopy(answer: EditionLookupResult) =
