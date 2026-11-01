@@ -41,6 +41,39 @@ describe("editionOf", () => {
     expect(edition).toEqual({ ...onePiece1, summary: "Un.\nDeux." });
   });
 
+  it("reads a field of spaces alone as no value", () => {
+    // Given
+    const blank: EditionDraft = {
+      kind: "MANGA",
+      title: "Romance dawn",
+      subtitle: "  ",
+      series: " ",
+      volume: "1",
+      collection: "  ",
+      publisher: " ",
+      year: "  ",
+      language: " ",
+      pages: "   ",
+      summary: " \n ",
+    };
+
+    // When
+    const edition = read(blank);
+
+    // Then
+    expect(edition).toEqual({
+      ...onePiece1,
+      subtitle: null,
+      series: null,
+      collection: null,
+      publisher: null,
+      publicationYear: null,
+      language: null,
+      pageCount: null,
+      summary: null,
+    });
+  });
+
   function read(draft: EditionDraft) {
     return editionOf(onePiece1.isbn13, onePiece1.authors, draft, "fr");
   }

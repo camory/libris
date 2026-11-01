@@ -48,5 +48,6 @@ function text(value: string) {
 }
 
 function number(value: string) {
-  return value === "" ? null : Number(value);
+  const digits = text(value);
+  return digits === null ? null : Number(digits);
 }
