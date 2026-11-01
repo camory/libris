@@ -137,19 +137,13 @@ Format:
   than copying the covers a second time.
 
 ## 2026-11-01 — T122 A new ISBN opens the form, filled — handoff
-- Done: steps 1 to 16, S1 green, the self-review of the diff and its tidy
-  (no empty dock after the add; `text()` for the title too); the gotchas
-  rewritten. Start with: *Finish* 1, tick T122, rewrite this entry as the
-  diary entry, then open the PR, after a plain `npm test` on the tree.
-- Decided: parts `CoverChoice`, `AuthorLines`, `BookshelvesHolding`; the
-  view's `shownIsbn13` guards the block and feeds the form; the held card
-  keeps the docked button (spec: card and form both show it); the dock's
-  hairline on an inner `div`, a container query styling descendants only.
-- Deviation: step 12 wired the form's `coverSource`, so step 14 was green at
-  once; its red, `expected [ null ] to deeply equal [ 'Open Library' ]`,
-  read by taking the listener out. Guards: step 2 `fallback: "none"` +
-  `?? ""` → `expected '' to be 'qq'`; step 13 the card off (`false &&`) →
-  no heading *Romance dawn*; step 16 kind always `"BOOK"` → S1 `expected
-  false to be true`. Each reverted. `npm run build` emits `@container
-  scroll-state(stuck:bottom)`. By hand for Tophe: form vs `1-filled.jpg`,
-  dock and hairline, the keyboard over it, on the Pixel.
+- Done: steps 1–16, S1 green, self-review and its tidy, gotchas rewritten.
+  Start with *Finish* 1: tick T122, this entry to a diary entry, the PR.
+- Decided: parts `CoverChoice`, `AuthorLines`, `BookshelvesHolding`; `shownIsbn13`
+  guards the block; the held card keeps the docked button (spec S1 note).
+- Deviation: step 14 green at once, step 12 having wired `coverSource`; red
+  read without the listener: `expected [ null ] to deeply equal [ 'Open Library' ]`.
+- Guards: 2 `fallback: "none"`+`?? ""` → `expected '' to be 'qq'`; 13 card
+  off → no heading *Romance dawn*; 16 kind `"BOOK"` → S1 `expected false to be true`.
+- Learned: `npm run build` emits `@container scroll-state(stuck:bottom)`.
+  By hand for Tophe: form vs `1-filled.jpg`, dock, hairline, keyboard, Pixel.
