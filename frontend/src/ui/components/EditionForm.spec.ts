@@ -1,3 +1,5 @@
+import { BookOpen } from "@lucide/vue";
+import { within } from "@testing-library/dom";
 import { mount } from "@vue/test-utils";
 import { describe, expect, it } from "vitest";
 import { createLibrisI18n } from "../i18n";
@@ -18,6 +20,17 @@ describe("EditionForm", () => {
 
     // Then
     expect(text).toContain("Dans aucune de vos bibliothèques");
+  });
+
+  it("draws the stand-in in place of a cover", () => {
+    // When
+    const wrapper = form();
+
+    // Then
+    expect(wrapper.findAllComponents(BookOpen)).toHaveLength(2);
+    expect(
+      within(wrapper.element as HTMLElement).queryByRole("img"),
+    ).toBeNull();
   });
 
   function show() {

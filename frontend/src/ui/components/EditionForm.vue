@@ -14,7 +14,9 @@ const { t } = useI18n();
     <div class="flex gap-3.5">
       <div
         class="flex h-[149px] w-24 shrink-0 items-center justify-center rounded-md bg-border"
-      ></div>
+      >
+        <BookOpen :size="48" class="shrink-0 text-muted opacity-60" />
+      </div>
       <div class="flex min-w-0 flex-col gap-1.5">
         <p class="text-label text-muted">{{ t("isbn.card.isbn") }}</p>
         <p class="text-body tabular-nums">{{ isbn13 }}</p>
