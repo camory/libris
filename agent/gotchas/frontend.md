@@ -387,7 +387,7 @@ Read whole by a run that changes `frontend/`, after `every-run.md`.
   `addBookToBookshelf`, rebuilt on each lookup), exposes its `state` to the
   template as a ref still, and the view reads it through a `computed`
   (`addState`). Its function is called from the script through `.value`
-  (`send`'s `addBookToBookshelf.value.add(edition, coverSource.value)`),
+  (`send`'s `addBookToBookshelf.value.add(edition, sentCoverSource.value)`),
   the template's `@add="send(edition)"` narrowed by `vue-tsc` from the
   `v-else-if="held && edition"` around the held card's dock.
 - `@typescript-eslint/no-unused-vars` has no `argsIgnorePattern`: an
@@ -444,7 +444,10 @@ Read whole by a run that changes `frontend/`, after `every-run.md`.
   after `npm run build`). A container query styles the container's
   descendants, never the container itself. jsdom lays nothing out: the dock
   is checked by hand. Once added, `IsbnView` draws `SourceEditionCard` of
-  the edition it sent, with the one candidate whose source it sent.
+  the edition it sent, with the one candidate whose source it sent, both
+  kept by `send` on the tap (`sent`, `sentCoverSource`): the cover's dots
+  stay tappable while the add runs and change `coverSource`, so a card
+  built from `coverSource` shows a cover that was never sent.
 - Icons come from `@lucide/vue` (`1.56.0`), imported by name from the
   package root (`import { Check } from "@lucide/vue"`); it has no sub-path
   exports. An icon given no `aria-label`, `title` or `aria-*` prop renders

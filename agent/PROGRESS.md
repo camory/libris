@@ -178,3 +178,18 @@ Format:
   one of each, `9-not-added.jpg`, the dock and its hairline under the form
   and under the held card); `IsbnView.vue`'s held-card `@add` is the one
   line no case covers; T124 refuses on the same tap.
+
+## 2026-11-01 — T123 The ouvrage is added as edited — reworked
+- Did: `IsbnView`'s `send` keeps the cover's source it sends in
+  `sentCoverSource`, beside `sent`, and the card after the add filters the
+  candidates on it, no longer on the live `coverSource`; a view case taps
+  another dot while the add runs and reads the cover sent on the card.
+- Decided: the reviewer's verdict of 2026-11-01 (one blocking finding)
+  amended nothing: the card after the add shows the cover the tap sent, as
+  step 13 already asked; its suggestion, steps 8 and 9 in one commit, is
+  reported only, since pushed history is not rewritten.
+- Deviations from the brief: none.
+- Left over: whether the cover's dots count as part of the form while the
+  add runs (the spec's *Adding* says the form accepts nothing) is for the
+  next brief, as the reviewer noted; the checks by hand of the first entry
+  stay Tophe's.
