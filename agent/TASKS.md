@@ -45,9 +45,9 @@ guard every frontend task.
       the spaces at its ends, which keeps its stored spelling; any other
       name creates a series. The rule is kept atomically where the series
       is found or inserted, the schema's unique index its one
-      implementation (D12). See the question on series the rule makes one.
-      Realises S5 on the backend; un-skips the backend test of S5, a
-      series of the house; its first case stays green.
+      implementation (D12). Realises S5 on the backend; un-skips the
+      backend test of S5, a series of the house; its first case stays
+      green.
 
 - [ ] T121 Frontend: the edition form on `v0.15.0`, an unknown ISBN.
       Precondition (human): T120 deployed (D04).
@@ -257,11 +257,3 @@ suggestions above the keyboard.*
   default answered `400` or `404`, all reachable only by a race with
   another reader. T081, T088 and T084 read such a refusal as no answer and
   show their S9 sentence; say if one should read otherwise.
-- **Series the new match makes one.** T120 matches a series' name
-  whatever its capitalisation, its accents and the spaces at its ends, kept
-  by the schema's unique index (D12). Should staging or production already
-  hold two series that differ only so (*Astérix* and *Asterix*, or a name
-  with a space at its end), that index cannot be built and the backend
-  does not start; the spec does not say which survives, nor where the
-  other's editions go. T120 is planned as if the house holds no such pair:
-  say if it does, and what becomes of them, before T120 runs.
