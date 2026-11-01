@@ -92,6 +92,10 @@ viewport unit:
    link as a whole, with no chevron, and may hold one icon button at its
    right. Header and content scroll together; the tab bar stays put. The home page ends with the
    revision, `label` step, `muted`, one line.
+   While a form shaped like a card (U06) runs under it, the form's primary
+   button stays docked above the tab bar, on `bg`, a `border` hairline over
+   it; at the end of the form it sits back in its place, without the
+   hairline. The keyboard covers it.
 3. **Tab bar**: on `surface` with a `border` hairline above, 48 tall, in
    three equal columns. A tab is its icon alone, drawn at 32, `accent` when
    it is the screen shown and `muted` otherwise; a link, its `aria-label`
@@ -116,12 +120,26 @@ not a second layout.
 **Field.** Its label above it, `label` step, `muted`; then the box, 50 tall,
 full width, `surface`, a 1.5 px `border` outline, radius 12, 14 of side
 padding, the text in the `field` step. The placeholder is an example of a
-valid value in `muted`, never an instruction. The keyboard matches the value:
-numeric for an ISBN. What the reader types stays as typed; the rule that
+valid value in `muted`, never an instruction; the fields of a form shaped
+like a card (U06) have none, so that an empty field reads as empty. The
+keyboard matches the value: numeric for an ISBN. What the reader types stays as typed; the rule that
 reads it lives in the domain, not in the field. A field the answer refuses
-takes a `danger` outline and keeps its text; the message goes under it (U05).
+takes a `danger` outline and keeps its text, and keeps the outline while it
+has the focus; the message goes under it (U05).
 An icon that acts on the field, the scanner, sits inside the box at the
-right, as an icon button.
+right, as an icon button. A word that says what the text is sits there
+too, in `body` semibold, once the box holds text: *Existante* after a
+check in `accent`, or *Nouvelle* in `muted`, for a series.
+A field of several lines, a summary, is three lines tall when empty and
+grows with its text; it keeps the line breaks typed.
+
+**Suggestions.** While a field has the focus and holds text, up to five
+values it may take show in a block of their own 4 under its box, on
+`surface`, a 1.5 `border` outline, radius 12: one row per value, 44 tall,
+in the `field` step, the whole row a button, a `border` hairline between
+two rows, inset 14 each side; the part of the value that matches the text
+in semibold, the rest regular. A tap on one fills the field; the tap, or
+leaving the field, closes them.
 
 **Form in a list.** A block's form is the last row of its list (U03), and
 it has no primary button. Its fields have no label: a placeholder in
@@ -152,6 +170,9 @@ a link to its view, its name in the `button` step; the current one on
 `muted`. The halves sit in a `nav` named after what they switch (*Vue du
 catalogue*), as the tabs of the tab bar are links. The tab opens the first
 view; the address, not the app, remembers the view shown.
+In a form, the segmented choice chooses a value, with no address: as many
+equal parts as values, each a radio, the chosen one on `accent` as the
+current view, with no label.
 
 **Primary button.** One per thing it serves, the field or the card, and
 never two side by side. It is the next step of the screen's flow: *Chercher*
@@ -163,7 +184,8 @@ apart, a 50 square, and shows a glyph alone (U07), white: its `aria-label` is
 the verb, *Chercher*. While its action runs it is busy: the button dims and
 accepts nothing, a white spinner turns, at the left of the label or in the
 place of the glyph, and the label or the `aria-label` becomes the action in
-progress with an ellipsis, *Recherche en cours…*; the field stays editable.
+progress with an ellipsis, *Recherche en cours…*; the field stays editable,
+while the fields of a form look the same and accept nothing.
 It comes back to itself when the answer arrives, whatever the answer is.
 
 **Icon button.** An icon alone, 44 by 44, radius 10, no border, no
@@ -264,13 +286,19 @@ a source.
 A card is presentational: props in, one thing out, the source of the cover
 it shows, none for the stand-in. It shows what it is given
 and decides nothing about it but which of its covers it shows: the one
-tapped, else the first not failed; the words it displays for a role or a
-language come from the `fr` catalogue, keyed by the code the API answers.
+tapped, else the first not failed; the words it displays for a role come
+from the `fr` catalogue, keyed by the code the API answers, and the word of
+a language from the browser, its French name of the ISO 639-1 code.
 When another field of the answer chooses the word, the kind naming a role
 or a volume, the choice lives in the key (`role.MANGA.WRITER`,
 `isbn.card.series.BD`) and every value of that field carries its full set
 of words, so the catalogue reads as the spec's table and the component
 picks an entry and never branches.
+
+**Form card.** A form that edits an ouvrage is shaped like a card: the
+card's block, its top part and its bookshelf row, then the fields (U04),
+14 apart, each with its label; its primary button under it as under the
+card (U03).
 
 ### U07 — Icons: Lucide, inline
 An icon is a Lucide icon from `@lucide/vue`: an inline SVG on a 24 grid,
