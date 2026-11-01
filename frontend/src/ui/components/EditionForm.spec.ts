@@ -103,6 +103,17 @@ describe("EditionForm", () => {
     expect(pages.value).toBe("1,5");
   });
 
+  it("keeps the line breaks typed in Résumé", async () => {
+    // Given
+    const summary = screen().getByLabelText<HTMLTextAreaElement>("Résumé");
+
+    // When
+    await fireEvent.input(summary, { target: { value: "Un.\nDeux." } });
+
+    // Then
+    expect(summary.value).toBe("Un.\nDeux.");
+  });
+
   function show() {
     return form().text().replace(/\s+/g, " ");
   }

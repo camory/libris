@@ -21,7 +21,6 @@ const fields = [
   "year",
   "language",
   "pages",
-  "summary",
 ] as const;
 const numeric = new Set<string>(["volume", "year", "pages"]);
 const values = reactive(
@@ -30,6 +29,7 @@ const values = reactive(
     string
   >,
 );
+const summary = ref("");
 const id = useId();
 </script>
 
@@ -84,6 +84,18 @@ const id = useId();
         :inputmode="numeric.has(field) ? 'numeric' : undefined"
         class="h-[50px] w-full rounded-xl border-[1.5px] border-border bg-surface px-3.5 text-field"
       />
+    </div>
+
+    <div class="flex flex-col gap-2">
+      <label class="text-label text-muted" :for="`${id}-summary`">
+        {{ t("isbn.form.summary") }}
+      </label>
+      <textarea
+        :id="`${id}-summary`"
+        v-model="summary"
+        rows="3"
+        class="field-sizing-content min-h-[calc(3lh+27px)] w-full resize-none rounded-xl border-[1.5px] border-border bg-surface px-3.5 py-3 text-field"
+      ></textarea>
     </div>
   </form>
 </template>
