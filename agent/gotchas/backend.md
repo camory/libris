@@ -302,6 +302,12 @@ Read whole by a run that changes `backend/`, after `every-run.md`.
   scenarios through the `restTestClient` bean of `StubbedSources` as a
   default header. That bean replaces the autoconfigured client, so a
   `RestTestClientBuilderCustomizer` would not reach it.
+- In `ApiContractTest` an unstubbed use case answering a `List` answers
+  Mockito's empty list, so a generated case of an array answer passes on
+  `[]` and checks no item. Stubbed with items, the verifier checks each
+  item's `minLength` and `pattern` and the array's `uniqueItems` (a name
+  answered twice: `Array contains duplicate items but uniqueItems is true`,
+  Contracteer on `v0.15.0`, 2026-11-01).
 - In `ApiContractTest` an exception nothing answers shows as `403`, not
   `500`: `FixedReaderHeaders` is a filter registered for the `REQUEST`
   dispatch only, so the error dispatch to `/error` arrives without the

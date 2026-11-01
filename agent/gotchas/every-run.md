@@ -107,7 +107,7 @@ true; the diary keeps the date it was found.
   `backend/build/test-results/test/TEST-fr.amory.libris.ApiContractTest.xml`:
   read it there after the gate, never count by hand.
 - No schema of the contract says `additionalProperties: false` since
-  `v0.11.0`; the backend pins `v0.14.0` since T111, the frontend
+  `v0.11.0`; the backend pins `v0.15.0` since T119, the frontend
   `v0.14.0` since T113, so no verifier refuses an extra field in any
   answer. The
   keyword cannot sit on a branch of an `allOf` anyway: the standard applies
