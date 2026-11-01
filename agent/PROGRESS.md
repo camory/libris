@@ -156,23 +156,9 @@ Format:
   drawn only with an `edition` now) and keeps the form open to edits under
   the add's message, which is already in the dock.
 
-## 2026-11-01 — T123 The ouvrage is added as edited — done
-- Did: the form's button, on the unknown ISBN's form too, sends what its
-  fields read as through `editionOf` (`domain/EditionDraft.ts`), the
-  language back to its code by `languageCode`; S5 and S11 run green.
-- Decided: `DockedAdd` holds the button and its message, drawn by the form
-  and by the view under the held card; the view keeps the edition it sent
-  in `sent` and, once added, draws its card with the one candidate whose
-  source it sent (`sentCovers`); `number()` reads through `text()`, so a
-  field of spaces is `null`; the run was split by a handoff after step 5.
-- Deviations from the brief: step 7's green showed the card of the answer
-  once added, the form's own dock otherwise staying on screen and redding
-  *shows the copy it added and offers no more to add*; step 12's red was
-  then the heading *Romance dawn* where the brief foresaw the form staying.
-  Step 8 chooses *BD* with `fireEvent.change`, a click on a detached radio
-  firing no `change`. S11's two cases were green on their un-skip, before
-  any step: their red is the mutation of step 15.
-- Left over: the checks by hand on the Pixel (`7-adding.jpg`,
-  `8-added.jpg`, which draws no dot nor source's name where the card after
-  the add does, `9-not-added.jpg`, the dock and its hairline under the form
-  and under the held card); T124 refuses the form on the same tap.
+## 2026-11-01 — T123 The ouvrage is added as edited — handoff
+- Done: steps 1 to 15, the gotchas rewritten, the self-review of `git diff main...HEAD` (it changed nothing); `npm test` green, 576 passed, 14 skipped. Start with the finish: tick T123, rewrite this entry as the diary entry, open the PR.
+- Decided: `DockedAdd` drawn by the form and by the view under the held card; the view keeps the edition sent in `sent` and, once added, draws its card with `sentCovers`, the one candidate whose source it sent; `number()` reads through `text()`.
+- Deviations: step 7's green drew the card of the answer once added (the form's dock otherwise stayed, redding *shows the copy it added and offers no more to add*), so step 12's red was the heading *Romance dawn*, not the form staying; covers S3 was red between steps 12 and 13, as the brief foresaw. Step 8 picks *BD* by `fireEvent.change`: a click on a detached radio fires no `change`. S11's two cases were green on their un-skip, before any step.
+- Guards: step 3 `?? word`: `expected 'klingon' to be null`. Step 8 `kind: props.edition!.kind`: `expected { … } to match object { kind: 'BD' }` (`MANGA` received). Step 9 `props.edition!.authors`: `TypeError: Cannot read properties of undefined (reading 'authors')`. Step 11 `disabled` on `adding || failed`: `expected [ true, … ] to deeply equal [ false, … ]`. Step 14, the form emitting `props.edition!`: S5 `Unable to find role="heading" and name "Romance Dawn"`. Step 15, the same `disabled` mutation: both S11 cases `expected true to be false`. All reverted.
+- Left over for the PR body: the checks by hand on the Pixel (`7-adding.jpg`; `8-added.jpg`, whose card draws no dot nor source's name where ours draws one of each; `9-not-added.jpg`; the dock and its hairline under the form and under the held card); `IsbnView.vue`'s held-card `@add` is the one line no case covers.
