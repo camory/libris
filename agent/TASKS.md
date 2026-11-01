@@ -63,7 +63,7 @@ guard every frontend task.
       *Résumé* empty, each labelled, no placeholder; *Tome*, *Année* and
       *Pages* on the numeric keyboard, keeping the text as typed; *Résumé*
       of several lines, growing, checked by hand (U04, U06, U08). No button
-      yet, T123's. The frontend's walking skeleton; realises S2; un-skips
+      yet, T122's. The frontend's walking skeleton; realises S2; un-skips
       the frontend test of S2.
 
 - [ ] T122 Frontend: a new ISBN opens the form, filled.
