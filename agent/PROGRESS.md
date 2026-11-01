@@ -136,14 +136,20 @@ Format:
   card's covers and dots, extracts the card's top part they share rather
   than copying the covers a second time.
 
-## 2026-11-01 — T122 A new ISBN opens the form, filled — handoff
-- Done: steps 1–16, S1 green, self-review and its tidy, gotchas rewritten.
-  Start with *Finish* 1: tick T122, this entry to a diary entry, the PR.
-- Decided: parts `CoverChoice`, `AuthorLines`, `BookshelvesHolding`; `shownIsbn13`
-  guards the block; the held card keeps the docked button (spec S1 note).
-- Deviation: step 14 green at once, step 12 having wired `coverSource`; red
-  read without the listener: `expected [ null ] to deeply equal [ 'Open Library' ]`.
-- Guards: 2 `fallback: "none"`+`?? ""` → `expected '' to be 'qq'`; 13 card
-  off → no heading *Romance dawn*; 16 kind `"BOOK"` → S1 `expected false to be true`.
-- Learned: `npm run build` emits `@container scroll-state(stuck:bottom)`.
-  By hand for Tophe: form vs `1-filled.jpg`, dock, hairline, keyboard, Pixel.
+## 2026-11-01 — T122 A new ISBN opens the form, filled — done
+- Did: an ISBN the house lacks opens `EditionForm` filled with the answer,
+  its covers, *Auteurs* and bookshelf row, the add docked under it; a
+  language reads as `languageWord` (`domain/Language.ts`); S1 runs green.
+- Decided: the card's three shared parts are `CoverChoice`, `AuthorLines`
+  and `BookshelvesHolding`; `IsbnView`'s `shownIsbn13` (the answer's ISBN or
+  the unknown one) guards the block that holds the card or the form and the
+  dock; a held ISBN's card keeps the docked button, as the spec's S1 note
+  has it; the dock is not drawn once the add is done, so no empty band
+  stays; the run was split in two by a handoff after step 16.
+- Deviations from the brief: step 14 was green on its first run, step 12
+  having already wired the form's `coverSource` to the view; its red was
+  read with the listener taken off and is listed in the PR body.
+- Left over: the checks by hand on the Pixel (the form against
+  `1-filled.jpg`, the dock and its hairline while the form runs under it,
+  in place at the end, covered by the keyboard); T123 sends the form as
+  edited and docks the add's message.
