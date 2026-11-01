@@ -16,6 +16,8 @@ const props = defineProps<{
   covers: CoverCandidate[];
 }>();
 
+const emit = defineEmits<{ coverSource: [source: string | null] }>();
+
 const { t, locale } = useI18n();
 
 const kinds: Kind[] = ["BOOK", "BD", "MANGA"];
@@ -63,6 +65,7 @@ const id = useId();
         :covers="covers"
         :title="edition?.title ?? ''"
         :held="false"
+        @cover-source="emit('coverSource', $event)"
       />
       <div class="flex min-w-0 flex-col gap-1.5">
         <p class="text-label text-muted">{{ t("isbn.card.isbn") }}</p>

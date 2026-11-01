@@ -230,6 +230,24 @@ describe("EditionForm", () => {
     expect(covers.getByText("inventaire.io")).toBeDefined();
   });
 
+  it("gives out the source of the cover it shows", async () => {
+    // Given
+    const wrapper = form(onePiece1, [], [inventaire, openLibrary]);
+
+    // When
+    await fireEvent.click(
+      within(wrapper.element as HTMLElement).getByRole("button", {
+        name: "Couverture Open Library",
+      }),
+    );
+
+    // Then
+    expect(wrapper.emitted("coverSource")).toEqual([
+      ["inventaire.io"],
+      ["Open Library"],
+    ]);
+  });
+
   function valuesOf(fields: ReturnType<typeof screen>) {
     return fields
       .getAllByRole<HTMLInputElement>("textbox")
