@@ -556,6 +556,29 @@ describe("IsbnView", () => {
     ]);
   });
 
+  it("adds the ouvrage of the card of an ISBN the house holds", async () => {
+    // Given
+    const bookshelfApi = new FakeBookshelfApi(added);
+    const screen = open(new FakeIsbnApi(held), undefined, bookshelfApi);
+    await ask(screen, "9782723488525");
+
+    // When
+    await press(screen, "Ajouter à ma bibliothèque");
+
+    // Then
+    expect(bookshelfApi.asked).toEqual([
+      {
+        bookshelfId: lea.defaultBookshelf.id,
+        edition: onePiece1,
+        coverSource: null,
+      },
+    ]);
+    expect(screen.getByText("Dans Bibliothèque de Léa")).toBeDefined();
+    expect(
+      screen.queryByRole("button", { name: "Ajouter à ma bibliothèque" }),
+    ).toBeNull();
+  });
+
   it("adds the cover the form shows", async () => {
     // Given
     const covered: IsbnAnswer = {
