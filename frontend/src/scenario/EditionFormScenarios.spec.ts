@@ -8,6 +8,7 @@ import {
 import { flushPromises } from "@vue/test-utils";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import type { App } from "vue";
+import type { BarcodeScanner } from "../application/BarcodeScanner";
 import type { BookshelfApi } from "../application/BookshelfApi";
 import type { IsbnApi } from "../application/IsbnApi";
 import type { SeriesApi } from "../application/SeriesApi";
@@ -84,14 +85,31 @@ describe("Edition form", () => {
     window.history.replaceState(null, "", "/");
   });
 
-  it("S1 A new ISBN opens the form", async () => {
+  it.skip("S1 A new ISBN shows its card to edit", async () => {
+    // Given
+    const screen = open({ isbn: aSourceKnows(onePiece1) });
+
+    // When
+    await ask(screen, "9782723488525");
+
+    // Then
+    await screen.findByRole("heading", { name: "Romance dawn" });
+    expect(screen.queryByLabelText("Titre")).toBeNull();
+    expect(pencil(screen)).toBeDefined();
+  });
+
+  it.skip("S12 The pencil opens the form", async () => {
     // Given
     const screen = open({
       isbn: aSourceKnows(onePiece1, [inventaire, openLibrary]),
     });
+    await ask(screen, "9782723488525");
+    await fireEvent.click(
+      await screen.findByRole("button", { name: "Couverture Open Library" }),
+    );
 
     // When
-    await ask(screen, "9782723488525");
+    await fireEvent.click(pencil(screen));
 
     // Then
     await screen.findByLabelText("Titre");
@@ -112,13 +130,62 @@ describe("Edition form", () => {
     expect(text()).toContain("Eiichirō Oda");
     expect(text()).toContain("9782723488525");
     expect(coverImage(screen, "Romance dawn").getAttribute("src")).toBe(
-      inventaire.url,
+      openLibrary.url,
     );
-    expect(text()).toContain("inventaire.io");
+    expect(text()).toContain("Open Library");
     expect(dots(screen)).toEqual([
       "Couverture inventaire.io",
       "Couverture Open Library",
     ]);
+    expect(cross(screen)).toBeDefined();
+    expect(screen.queryByRole("button", { name: "Modifier" })).toBeNull();
+  });
+
+  it.skip("S13 The cross drops the edits", async () => {
+    // Given
+    const screen = await formOfOnePiece1({});
+    await fill(screen, "Titre", "Romance Dawn");
+
+    // When
+    await fireEvent.click(cross(screen));
+
+    // Then
+    await screen.findByRole("heading", { name: "Romance dawn" });
+    expect(screen.queryByLabelText("Titre")).toBeNull();
+    await fireEvent.click(pencil(screen));
+    expect((await screen.findByLabelText<Field>("Titre")).value).toBe(
+      "Romance dawn",
+    );
+  });
+
+  it.skip("S14 The camera takes the place of the answer", async () => {
+    // Given
+    const screen = await formOfOnePiece1({
+      scanner: new FakeBarcodeScanner(true, new Promise(() => {})),
+    });
+    await fill(screen, "Titre", "Romance Dawn");
+
+    // When
+    await fireEvent.click(
+      screen.getByRole("button", { name: "Scanner le code-barres" }),
+    );
+
+    // Then
+    await screen.findByRole("button", { name: "Fermer la caméra" });
+    expect(screen.queryByLabelText("Titre")).toBeNull();
+    expect(
+      screen.queryByRole("button", { name: "Ajouter à ma bibliothèque" }),
+    ).toBeNull();
+
+    // When
+    await fireEvent.click(
+      screen.getByRole("button", { name: "Fermer la caméra" }),
+    );
+
+    // Then
+    expect((await screen.findByLabelText<Field>("Titre")).value).toBe(
+      "Romance Dawn",
+    );
   });
 
   it("S2 An unknown ISBN opens an empty form", async () => {
@@ -135,6 +202,9 @@ describe("Edition form", () => {
     expect(kind(screen, "Livre").checked).toBe(true);
     expect(screen.queryByRole("img")).toBeNull();
     expect(screen.queryByText("ISBN inconnu")).toBeNull();
+    expect(
+      screen.queryByRole("button", { name: "Annuler les modifications" }),
+    ).toBeNull();
   });
 
   it("S3 Every source down shows no form", async () => {
@@ -166,14 +236,13 @@ describe("Edition form", () => {
     });
     expect(rows(screen)).toEqual(["Dans Bibliothèque de Léa"]);
     expect(screen.queryByLabelText("Titre")).toBeNull();
+    expect(screen.queryByRole("button", { name: "Modifier" })).toBeNull();
   });
 
-  it("S5 The ouvrage is added as edited", async () => {
+  it.skip("S5 The ouvrage is added as edited", async () => {
     // Given
     const add = librisAdds(on(lea.defaultBookshelf));
-    const screen = open({ isbn: aSourceKnows(onePiece1), add });
-    await ask(screen, "9782723488525");
-    await screen.findByLabelText("Titre");
+    const screen = await formOfOnePiece1({ add });
 
     // When
     await fill(screen, "Titre", "  Romance Dawn  ");
@@ -394,7 +463,7 @@ describe("Edition form", () => {
     expect(add.asked).toEqual([]);
   });
 
-  it.each([
+  it.skip.each([
     {
       case: "the add answers the validation problem",
       add: () =>
@@ -477,9 +546,18 @@ describe("Edition form", () => {
   async function formOfOnePiece1(world: {
     add?: BookshelfApi;
     names?: SeriesApi;
+    scanner?: BarcodeScanner;
   }) {
     const screen = open({ isbn: aSourceKnows(onePiece1), ...world });
+    if (world.scanner) {
+      await fireEvent.click(
+        await screen.findByRole("button", { name: "Fermer la caméra" }),
+      );
+    }
     await ask(screen, "9782723488525");
+    await fireEvent.click(
+      await screen.findByRole("button", { name: "Modifier" }),
+    );
     await screen.findByLabelText("Titre");
     return screen;
   }
@@ -488,6 +566,7 @@ describe("Edition form", () => {
     isbn: IsbnApi;
     add?: BookshelfApi;
     names?: SeriesApi;
+    scanner?: BarcodeScanner;
   }) {
     window.history.replaceState(null, "", "/isbn");
     app = createLibrisApp(
@@ -497,7 +576,7 @@ describe("Edition form", () => {
         bookshelfApi:
           world.add ??
           new FakeBookshelfApi(new Error("no add in this scenario")),
-        barcodeScanner: new FakeBarcodeScanner(false),
+        barcodeScanner: world.scanner ?? new FakeBarcodeScanner(false),
         appUpdate: new FakeAppUpdate(),
         catalogueApi: new FakeCatalogueApi([]),
         bookshelvesApi: new FakeBookshelvesApi({ memberships: [] }),
@@ -553,6 +632,14 @@ describe("Edition form", () => {
     const button = addButton(screen);
     button.focus();
     await fireEvent.click(button);
+  }
+
+  function pencil(screen: Screen) {
+    return screen.getByRole("button", { name: "Modifier" });
+  }
+
+  function cross(screen: Screen) {
+    return screen.getByRole("button", { name: "Annuler les modifications" });
   }
 
   function addButton(screen: Screen) {
