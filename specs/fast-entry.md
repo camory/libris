@@ -142,7 +142,8 @@ States:
 - **Ready**: nothing under the field.
 - **Camera open** (S2): the icon turns into a cross; the camera view, with
   corner brackets, fills the space between the field and the tab bar,
-  centred. The camera opens by itself on arrival when the browser has a
+  centred, in place of the card or the form under the field, which shows
+  again as left when the camera closes (edition-form S14). The camera opens by itself on arrival when the browser has a
   detector and the reader allowed it; *Ready* is the screen without a
   detector, after a refused camera or after the cross. The first EAN-13 read
   closes it and runs the lookup; the cross closes it.

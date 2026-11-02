@@ -1,37 +1,36 @@
 # Edition form
 
 **Why:** PRD §4.7 and §4.1. A reader who scans an ouvrage the house lacks
-reads what the sources know as a form, corrects or completes it, a title
-the BnF spells oddly, a series it leaves out, a summary it lacks, and adds
-the ouvrage as they wrote it; an ISBN no source knows is no longer a dead
-end. Now, because the sources' answer is stored as it comes and nothing
+reads what the sources know on its card and, when it is wrong or short,
+opens it as a form, corrects or completes it, a title the BnF spells
+oddly, a series it leaves out, a summary it lacks, and adds the ouvrage as
+they wrote it; an ISBN no source knows is no longer a dead end. Now, because the sources' answer is stored as it comes and nothing
 lets the family fix it before it lands on every copy's card.
 **Status:** draft
 
 ## Scenarios
 
-The form replaces the card of an ISBN the house lacks, on the lookup
-screen, and nowhere else: an ISBN the house holds shows its card as
-today, and editing an edition the house already holds is a later spec,
+The form opens from the card of an ISBN the house lacks, on the lookup
+screen, and nowhere else; an ISBN no source knows opens it at once, having
+no card. An ISBN the house holds shows its card as today, with no pencil, and editing an edition the house already holds is a later spec,
 since one edit changes the card of every copy. The authors are shown, not
 edited: editing them is a spec of its own. An ouvrage with no ISBN, a
 summary from Open Library and a link to a bookshop are not in this spec.
 
-**S1 A new ISBN opens the form** · frontend
+**S1 A new ISBN shows its card to edit** · frontend
 
 ```gherkin
 Given an ISBN the house lacks and a source knows
 
 When the reader asks for it
 
-Then the form shows in place of the card
-	And each field holds what Libris answered
-	And the kind Libris answered is chosen
-	And the covers on offer show as on the card
+Then its card shows, and no form
+	And the card carries the pencil Modifier
 ```
 
-Proof: frontend scenario test over the fakes, the lookup answering
-`ONE_PIECE_1`.
+The reader who finds the card right adds it from there, as bookshelf S2
+says, without opening the form. Proof: frontend scenario test over the
+fakes, the lookup answering `ONE_PIECE_1`.
 
 The frontend scenario tests of other specs that read the card of an ISBN
 the house lacks move with this one: fast-entry S1 to S3, kind S1 and
@@ -50,9 +49,11 @@ When the reader asks for it
 Then the form shows with its ISBN and every field empty
 	And the kind Livre is chosen
 	And the cover is the stand-in
+	And no cross shows
 ```
 
-No message: the empty form says that nothing is known. The frontend half
+No message: the empty form says that nothing is known. No cross, there
+being no card to go back to. The frontend half
 of fast-entry S4, the message *ISBN inconnu*, retires with this
 scenario; the backend still answers the not-found problem. Proof: frontend
 scenario test over the fakes, the lookup answering the not-found problem.
@@ -80,6 +81,7 @@ Given an edition the house holds
 When the reader asks for its ISBN
 
 Then its card shows, as bookshelf S4 says, and no form
+	And no pencil shows
 ```
 
 Proof: frontend scenario test over the fakes, the lookup answering
@@ -232,6 +234,59 @@ Then the screen says to try again later, as bookshelf S5 does
 Two cases: the add answers the validation problem, the add fails. Proof:
 frontend scenario test over the fakes, one per case.
 
+**S12 The pencil opens the form** · frontend
+
+```gherkin
+Given the card of an ISBN the house lacks
+
+When the reader taps the pencil
+
+Then the form shows in place of the card
+	And each field holds what Libris answered
+	And the kind Libris answered is chosen
+	And the covers on offer show as on the card
+	And the pencil has become the cross Annuler les modifications
+```
+
+The cover shown on the card stays shown in the form. Proof: frontend
+scenario test over the fakes, the lookup answering `ONE_PIECE_1`.
+
+**S13 The cross drops the edits** · frontend
+
+```gherkin
+Given the form opened from a card, its fields changed
+
+When the reader taps the cross
+
+Then the card shows again as Libris answered it, with its pencil
+	And a tap on the pencil shows the form as Libris answered it
+```
+
+No confirmation: the edits go with the tap. The cover shown stays shown,
+it being no field. Proof: frontend scenario test over the fakes, the
+lookup answering `ONE_PIECE_1`, the title changed then dropped.
+
+**S14 The camera takes the place of the answer** · frontend
+
+```gherkin
+Given a card or a form under the ISBN field
+
+When the reader opens the camera
+
+Then the camera view shows in its place, as large as on arrival
+	And the card or the form shows no more, nor its button
+
+When the reader closes the camera
+
+Then the card or the form shows again as the reader left it, its edits kept
+```
+
+A barcode read closes the camera and runs its lookup, whose answer
+replaces the form, its edits lost, as fast-entry S2 says. Proof: frontend
+scenario test over the fakes, the form's title changed, the camera opened
+then closed, the title still changed; the view's size needs the layout:
+checked by hand on the Pixel.
+
 ## Screen
 
 Mockups: <https://claude.ai/artifact/Lemu6WMwey6CpSPkZE2MvC>, one artboard
@@ -239,6 +294,15 @@ per state below, exported as `specs/edition-form/<n>-<state>.jpg` in the
 same order. No route of its own: the lookup screen of
 `specs/fast-entry.md`, route `/isbn`; while the lookup runs, the card's
 skeleton shows as today, whether a card or a form follows.
+
+The card of an ISBN the house lacks carries the pencil, an icon button
+(U04), `aria-label` *Modifier*, in the top right corner of its top part,
+the text at its left ending 8 before it. The form takes the card's place
+and the pencil becomes a cross in the same corner, `aria-label` *Annuler
+les modifications*; the form of an ISBN no source knows has none. While the
+camera is open, its view takes the place of the card or the form and of
+their button, and fills the space between the field and the tab bar as on
+arrival.
 
 The form is one block shaped like a card (U06), under the ISBN field,
 and the button *Ajouter à ma bibliothèque* under it as under the card.
@@ -249,7 +313,7 @@ inside the block:
 
 - Top part, side by side: the cover at the left, with its dots and its
   source's name as on the card; at its right the label *ISBN* and the
-  ISBN-13 under it.
+  ISBN-13 under it; in the top right corner, the cross.
 - The row *Dans aucune de vos bibliothèques*, as on the card.
 - Then the fields, 14 apart, each with its label (U04) and no
   placeholder, so that an empty field reads as empty:
@@ -289,17 +353,22 @@ under the button, docked with it.
 chooses a value in a form, in as many parts as values, without addresses;
 the fields of a form shaped like a card have no placeholder;
 a field of several lines, growing; a word inside a field's box at the
-right; suggestions under a field, a block of up to five rows, the matched
+right; the icon buttons *Modifier* and *Annuler les modifications*; suggestions under a field, a block of up to five rows, the matched
 part in semibold; a refused field keeps its `danger` outline while
 focused; in U03, the button of a form stays docked above the tab bar
-while the form runs under it; in U06, the language's word comes from the
-browser, not the `fr` catalogue; a form shaped like a card, its fields 14
-apart.
+while the form runs under it; in U05, the camera sheet takes the place of
+the answer while open; in U06, the language's word comes from the
+browser, not the `fr` catalogue; a card may carry one icon button in the
+top right corner of its top part, given by the screen that shows it; a form
+shaped like a card, its fields 14 apart, the cross in that corner when it
+opened from a card.
 
 States:
 
-- **Filled** (S1): *One Piece* 1, every field filled, Manga chosen,
-  *Existante* in *Série*.
+- **Card** (S1): *One Piece* 1, the card with its pencil, *Dans aucune de
+  vos bibliothèques* and the button.
+- **Filled** (S12): *One Piece* 1, every field filled, Manga chosen,
+  *Existante* in *Série*, the cross in the corner.
 - **Empty** (S2): an unknown ISBN, Livre chosen, the stand-in, every
   field empty, no *Auteurs*.
 - **BD** (S6): the form with BD chosen, *Album*, the roles in BD words.
@@ -328,10 +397,14 @@ is unchanged, the form submitting the same `NewBook`, `language` its ISO
 ## Done
 
 On the Pixel, from the installed app on staging: scan a book the house
-lacks and read its form, filled; change its title, type the first letters
-of a series the house holds and tap its suggestion, read *Existante*;
+lacks and read its card; tap the pencil and read its form, filled; change
+its title, tap the cross and read the card as it was; tap the pencil again
+and read the form as answered. Change its title, open the camera and see
+it as large as on arrival, close it and read the form as left, its title
+changed; type the first letters of a series the house holds and tap its
+suggestion, read *Existante*;
 add it, the card shows the new title and *Dans Bibliothèque de
-Christophe*; scan it again, the card, with the new title. Type an ISBN no
+Christophe*; scan it again, the card, with the new title and no pencil. Type an ISBN no
 source knows, read the empty form, add it with no title, read *Titre
 manquant* on a focused field scrolled into view; type a volume number
 alone, read *Tome sans série*. Type *jap* in *Langue* and tap *japonais*.
