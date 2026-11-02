@@ -54,6 +54,8 @@ const addBookToBookshelf = shallowRef(
   useAddBookToBookshelf(meApi, bookshelfApi),
 );
 const addState = computed(() => addBookToBookshelf.value.state.value);
+const adding = computed(() => addState.value.status === "adding");
+const failed = computed(() => addState.value.status === "notAdded");
 const shownCopies = computed(() =>
   addState.value.status === "added"
     ? [...copies.value, addState.value.copy]
@@ -218,8 +220,8 @@ async function send(edition: SourceEdition) {
           @cover-source="coverSource = $event"
         />
         <DockedAdd
-          :adding="addState.status === 'adding'"
-          :failed="addState.status === 'notAdded'"
+          :adding="adding"
+          :failed="failed"
           @add="send(edition)"
         />
       </template>
@@ -229,8 +231,8 @@ async function send(edition: SourceEdition) {
         :edition="edition"
         :copies="shownCopies"
         :covers="covers"
-        :adding="addState.status === 'adding'"
-        :failed="addState.status === 'notAdded'"
+        :adding="adding"
+        :failed="failed"
         @cover-source="coverSource = $event"
         @add="send($event)"
       />
