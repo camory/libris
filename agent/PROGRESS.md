@@ -193,3 +193,13 @@ Format:
   add runs (the spec's *Adding* says the form accepts nothing) is for the
   next brief, as the reviewer noted; the checks by hand of the first entry
   stay Tophe's.
+
+## 2026-11-02 — T123 The ouvrage is added as edited — fix-ups
+- Did (Tophe's review): a view case adds from the card of an ISBN the house
+  holds, reaching the held card's `@add`, which no case reached; `IsbnView`
+  reads `adding` and `failed` once; the form's cover dots are `disabled`
+  while the add runs (`CoverChoice`'s optional `disabled`).
+- Decided: the dots are part of the form, which accepts nothing while the
+  add runs (the spec's *Adding*), answering the rework's left over; a held
+  card draws no dots.
+- Left over: the checks by hand of the first entry stay Tophe's.
