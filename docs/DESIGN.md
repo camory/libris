@@ -191,8 +191,8 @@ It comes back to itself when the answer arrives, whatever the answer is.
 **Icon button.** An icon alone, 44 by 44, radius 10, no border, no
 background, `accent`; always an `aria-label` that names the action in
 French, *Scanner le code-barres*, *Fermer la caméra*. An icon button that
-toggles a state changes its icon, the barcode becomes a cross, and its label
-with it.
+toggles a state changes its icon, the barcode becomes a cross, the pencil
+*Modifier* the cross *Annuler les modifications*, and its label with it.
 
 **Text button.** A verb in the infinitive, `button` step, `accent`, no
 border, no background, 44 tall, 12 of side padding. It lives in a banner
@@ -238,7 +238,9 @@ the field is simply empty.
 
 No toast: an answer stays where it landed until the next one replaces it,
 and it never floats over the page. The camera sheet is a block of the
-content, under the field, not a layer over the page.
+content, under the field, not a layer over the page; while open it takes
+the place of the answer under the field, which shows again as left when
+it closes.
 
 ### U06 — Cards
 **Card.** A card shows one thing the app knows, an ouvrage: `surface`, a
@@ -271,6 +273,9 @@ paragraphs. Past six lines it is folded: the sixth ends on an ellipsis,
 and a text button, *Lire la suite*, sits right under it, its word on the
 summary's left edge; a tap shows the whole summary and the button goes,
 for good. The summary is the card's last part.
+A card may carry one icon button (U04) in the top right corner of its top
+part, the text at its left ending 8 before it: the screen that shows the
+card gives it, and the card does not know what it does.
 
 **Covers.** When the card is given candidate covers, a row of dots sits
 under the cover block, centred, in the order of the answer. There is one dot
@@ -298,7 +303,8 @@ picks an entry and never branches.
 **Form card.** A form that edits an ouvrage is shaped like a card: the
 card's block, its top part and its bookshelf row, then the fields (U04),
 14 apart, each with its label; its primary button under it as under the
-card (U03).
+card (U03). A form opened from a card's pencil takes the card's place,
+and the pencil becomes the cross in the same corner.
 
 ### U07 — Icons: Lucide, inline
 An icon is a Lucide icon from `@lucide/vue`: an inline SVG on a 24 grid,
