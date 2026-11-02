@@ -81,7 +81,7 @@ guard every frontend task.
       and S4, a held ISBN's card and no form when the sources are down;
       un-skips the frontend test of S1.
 
-- [ ] T123 Frontend: the ouvrage is added as edited.
+- [x] T123 Frontend: the ouvrage is added as edited.
       The button, on the unknown ISBN's form too, sends the form as the
       reader left it: each text without the spaces at its ends, a field of
       spaces alone as no value, the numbers as numbers, the language as the
