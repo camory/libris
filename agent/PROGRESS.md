@@ -201,5 +201,7 @@ Format:
   while the add runs (`CoverChoice`'s optional `disabled`).
 - Decided: the dots are part of the form, which accepts nothing while the
   add runs (the spec's *Adding*), answering the rework's left over; a held
-  card draws no dots.
+  card draws no dots. The card after the add keeps the sent cover's one
+  dot and its source's name, as covers *Added* and U06 say;
+  `8-added.jpg` leaves them out.
 - Left over: the checks by hand of the first entry stay Tophe's.
