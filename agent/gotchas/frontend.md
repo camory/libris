@@ -220,7 +220,8 @@ Read whole by a run that changes `frontend/`, after `every-run.md`.
   conversion, no throw.
 - `SourceEditionCard` and `EditionForm` draw three parts in common, each a
   component of `ui/components` with no spec of its own: `CoverChoice`
-  (props `covers`, `title`, `held`, emitting `coverSource`) keeps one `img`
+  (props `covers`, `title`, `held`, and `disabled`, optional, which
+  disables its dots; emitting `coverSource`) keeps one `img`
   per candidate of the lookup's `covers`, the shown one alone accessible,
   and the stand-in `BookOpen` when none is left, the dots' row and the
   source's name drawn only when `held` is false; `AuthorLines` (props
@@ -445,9 +446,8 @@ Read whole by a run that changes `frontend/`, after `every-run.md`.
   descendants, never the container itself. jsdom lays nothing out: the dock
   is checked by hand. Once added, `IsbnView` draws `SourceEditionCard` of
   the edition it sent, with the one candidate whose source it sent, both
-  kept by `send` on the tap (`sent`, `sentCoverSource`): the cover's dots
-  stay tappable while the add runs and change `coverSource`, so a card
-  built from `coverSource` shows a cover that was never sent.
+  kept by `send` on the tap (`sent`, `sentCoverSource`); the form's dots
+  are disabled while the add runs.
 - Icons come from `@lucide/vue` (`1.56.0`), imported by name from the
   package root (`import { Check } from "@lucide/vue"`); it has no sub-path
   exports. An icon given no `aria-label`, `title` or `aria-*` prop renders

@@ -8,6 +8,7 @@ const props = defineProps<{
   covers: CoverCandidate[];
   title: string;
   held: boolean;
+  disabled?: boolean;
 }>();
 
 const emit = defineEmits<{ coverSource: [source: string | null] }>();
@@ -66,6 +67,7 @@ function isShown(index: number) {
         type="button"
         :aria-label="t('isbn.card.coverSource', { source: cover.source })"
         :aria-pressed="isShown(index)"
+        :disabled="disabled"
         class="relative -my-3 flex h-11 w-8 items-center justify-center"
         @click="tapped = index"
       >

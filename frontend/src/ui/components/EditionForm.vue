@@ -86,6 +86,7 @@ function add() {
           :covers="covers"
           :title="edition?.title ?? ''"
           :held="false"
+          :disabled="adding"
           @cover-source="emit('coverSource', $event)"
         />
         <div class="flex min-w-0 flex-col gap-1.5">

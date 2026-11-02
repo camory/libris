@@ -336,23 +336,26 @@ describe("EditionForm", () => {
   it("accepts nothing while the add runs", () => {
     // When
     const fields = within(
-      form(onePiece1, [], [], { adding: true }).element as HTMLElement,
+      form(onePiece1, [], [inventaire, openLibrary], { adding: true })
+        .element as HTMLElement,
     );
 
     // Then
-    expect(disabledOf(fields)).toEqual(Array(13).fill(true));
+    expect(disabledOf(fields)).toEqual(Array(15).fill(true));
   });
 
   it("takes edits again once the add failed", () => {
     // When
-    const wrapper = form(onePiece1, [], [], { failed: true });
+    const wrapper = form(onePiece1, [], [inventaire, openLibrary], {
+      failed: true,
+    });
 
     // Then
     expect(wrapper.text()).toContain(
       "Erreur lors de l'ajout, veuillez réessayer plus tard.",
     );
     expect(disabledOf(within(wrapper.element as HTMLElement))).toEqual(
-      Array(13).fill(false),
+      Array(15).fill(false),
     );
   });
 
@@ -360,6 +363,9 @@ describe("EditionForm", () => {
     return [
       ...fields.getAllByRole<HTMLInputElement>("textbox"),
       ...fields.getAllByRole<HTMLInputElement>("radio"),
+      ...fields.getAllByRole<HTMLButtonElement>("button", {
+        name: /^Couverture /,
+      }),
     ].map((field) => field.disabled);
   }
 
