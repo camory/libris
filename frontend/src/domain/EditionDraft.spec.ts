@@ -136,6 +136,29 @@ describe("refusalsOf", () => {
     expect(refusals).toEqual({ language: "unknownLanguage" });
   });
 
+  it("refuses no field left empty", () => {
+    // Given
+    const blank: EditionDraft = {
+      kind: "MANGA",
+      title: "Romance dawn",
+      subtitle: "",
+      series: " ",
+      volume: "",
+      collection: "  ",
+      publisher: "",
+      year: "  ",
+      language: "",
+      pages: " ",
+      summary: "",
+    };
+
+    // When
+    const refusals = check(blank);
+
+    // Then
+    expect(refusals).toEqual({});
+  });
+
   function check(draft: EditionDraft) {
     return refusalsOf(draft, "fr");
   }

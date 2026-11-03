@@ -52,9 +52,13 @@ export function refusalsOf(draft: EditionDraft, locale: string): Refusals {
   const refusals: Refusals = {};
   if (text(draft.title) === null) refusals.title = "missing";
   for (const field of ["volume", "year", "pages"] as const) {
-    if (!isWholeNumber(draft[field])) refusals[field] = "invalidNumber";
+    const number = text(draft[field]);
+    if (number !== null && !isWholeNumber(number)) {
+      refusals[field] = "invalidNumber";
+    }
   }
-  if (languageCode(draft.language, locale) === null) {
+  const language = text(draft.language);
+  if (language !== null && languageCode(language, locale) === null) {
     refusals.language = "unknownLanguage";
   }
   return refusals;
