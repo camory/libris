@@ -159,6 +159,20 @@ describe("refusalsOf", () => {
     expect(refusals).toEqual({});
   });
 
+  it("refuses nothing in a draft as Libris answered it", () => {
+    // When
+    const refusals = check({
+      ...filled,
+      volume: " 1 ",
+      year: " 2013 ",
+      pages: " 203 ",
+      language: " français ",
+    });
+
+    // Then
+    expect(refusals).toEqual({});
+  });
+
   function check(draft: EditionDraft) {
     return refusalsOf(draft, "fr");
   }
