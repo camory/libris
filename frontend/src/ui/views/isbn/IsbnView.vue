@@ -101,6 +101,7 @@ async function search() {
   covers.value = [];
   addBookToBookshelf.value = useAddBookToBookshelf(meApi, bookshelfApi);
   sent.value = undefined;
+  editing.value = false;
   message.value = undefined;
   const isbn13 = Isbn.of(typed.value)?.digits ?? null;
   if (isbn13 === null) {

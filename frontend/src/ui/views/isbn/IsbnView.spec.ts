@@ -201,6 +201,20 @@ describe("IsbnView", () => {
     ).toBe("https://covers.openlibrary.org/b/id/1-L.jpg");
   });
 
+  it("shows the card of the next answer, not the form", async () => {
+    // Given
+    const screen = open(new FakeIsbnApi(found));
+    await ask(screen, "9782723488525");
+    await press(screen, "Modifier");
+
+    // When
+    await ask(screen, "9782723488525");
+
+    // Then
+    expect(screen.getByRole("heading", { name: "Romance dawn" })).toBeDefined();
+    expect(screen.queryByRole("textbox", { name: "Titre" })).toBeNull();
+  });
+
   it("shows the card of an ISBN the house holds", async () => {
     // Given
     const screen = open(new FakeIsbnApi(held));
