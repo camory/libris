@@ -295,7 +295,7 @@ describe("Edition form", () => {
     expect(field(screen, "Série").value).toBe(" PIE ");
   });
 
-  it.skip("S7 The series of the house are suggested, a tap", async () => {
+  it("S7 The series of the house are suggested, a tap", async () => {
     // Given
     const screen = await formOfOnePiece1({
       names: theHouseHoldsTheSeries(...houseSeries),
@@ -312,7 +312,7 @@ describe("Edition form", () => {
     await screen.findByText("Existante");
   });
 
-  it.skip("S7 The series of the house are suggested, Existante", async () => {
+  it("S7 The series of the house are suggested, Existante", async () => {
     // Given
     const screen = await formOfOnePiece1({
       names: theHouseHoldsTheSeries(...houseSeries),
@@ -327,7 +327,7 @@ describe("Edition form", () => {
     expect(field(screen, "Série").value).toBe(" one PIÉCE ");
   });
 
-  it.skip("S7 The series of the house are suggested, Nouvelle", async () => {
+  it("S7 The series of the house are suggested, Nouvelle", async () => {
     // Given
     const screen = await formOfOnePiece1({
       names: theHouseHoldsTheSeries(...houseSeries),
