@@ -329,10 +329,12 @@ Read whole by a run that changes `frontend/`, after `every-run.md`.
   unfolded summary), while any switch between branches mounts the new one
   and prunes the old, built afresh on the pencil, the cross and the add; a
   lookup unmounts the whole block through the skeleton. A `:max` above 1,
-  or an `include`/`exclude` that keeps one component out of the cache,
-  lets the cross's form come back on the next pencil with its edits (S13
-  reds). The block wrapping it stays mounted while the camera is open and
-  drops its `mt-5` then, so nothing of it draws under the camera.
+  or an `include`/`exclude` that keeps the card out of the cache, lets the
+  cross's form come back on the next pencil with its edits (S13 reds) and
+  builds the card afresh when the camera closes; one that keeps the form
+  out builds the form afresh then (S14 reds). The block wrapping it stays
+  mounted while the camera is open and drops its `mt-5` then, so nothing
+  of it draws under the camera.
 - The backend denies every non-GET without `X-Requested-With`, and the
   contract does not state the header, so `contracteer mock` answers the same
   without it: a frontend client that sends a `POST`, `PUT` or `DELETE` sets
