@@ -101,6 +101,7 @@ const fr = {
       summary: "Résumé",
       refusal: {
         missing: "Titre manquant",
+        invalidNumber: "Nombre invalide",
       },
     },
   },

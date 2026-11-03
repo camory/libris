@@ -414,6 +414,24 @@ describe("EditionForm", () => {
     ).toBe("true");
   });
 
+  it("says Nombre invalide under the refused number", async () => {
+    // Given
+    const wrapper = form(onePiece1);
+    const screen = within(wrapper.element as HTMLElement);
+    await typeIn(screen, "Année", "deux mille");
+
+    // When
+    await tapAdd(screen);
+
+    // Then
+    expect(wrapper.text()).toMatch(/Année.*Nombre invalide.*Langue/s);
+    expect(
+      screen
+        .getByRole("textbox", { name: "Année" })
+        .getAttribute("aria-invalid"),
+    ).toBe("true");
+  });
+
   function disabledOf(fields: ReturnType<typeof screen>) {
     return [
       ...fields.getAllByRole<HTMLInputElement>("textbox"),
