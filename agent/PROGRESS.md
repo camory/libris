@@ -205,3 +205,12 @@ Format:
   dot and its source's name, as covers *Added* and U06 say;
   `8-added.jpg` leaves them out.
 - Left over: the checks by hand of the first entry stay Tophe's.
+
+## 2026-11-03 — T128 The card first, its pencil opens the form — handoff
+- Done: the un-skip (S1, S5, S11 both cases, S12, S13; its red read, all six on the missing card or *Modifier*), then steps 1 to 5, one commit each. Start with step 6 (the cross).
+- Gate at handoff, red on cited scenarios not yet reached only: S12 (the form shows inventaire.io, not the cover tapped: steps 8, 9) and S13 (no *Annuler les modifications*: step 6); S1, S5 and S11 green. Not pushed, the gate being red.
+- Decided: the slot `corner` sits beside the text column in a `flex min-w-0 flex-1 gap-2` wrapper of the top part (card and form), the text column `flex-1`; `CoverChoice`'s `tapped` starts on `covers.findIndex` of `shownSource`, `null` when none matches; the spec helpers take `{ corner, shownSource }` last (`card()`, `screen()` sixth, `form()` in its options object).
+- View so far: `editing` ref; `EditionForm` on `v-else-if="editing || !edition"`, else the card and `DockedAdd`, the card given the pencil (`isbn.edit`, Lucide `Pencil`, 22) in `#corner` when `!held`; the lookup does not reset `editing` yet (step 10), no `isbn.cancelEdit` yet.
+- Step 5 also re-greened *shows the card of the edition it added in place of the form* (Modifier pressed in its Given) and renamed *adds the cover the card shows*, as the brief says.
+- No guard reached yet: steps 12 to 19's mutations are all still to run.
+- Deviations: none so far.
