@@ -285,3 +285,11 @@ Format:
   `4-bd.jpg`, *Tome sans série* under *Tome* against `7-refused.jpg`); the
   series' and the language's suggestions, S7 and S8, are T126's and
   T127's.
+
+## 2026-11-03 — T126 The series of the house suggested — handoff
+- Done: steps 0 to 17 (S7 *the suggestions* un-skipped, its red read: no row). Next: step 18, `IsbnView`.
+- Decided: `suggestionsFor` folds each character (NFD, marks dropped, lower case), cuts on the name's own characters, a mark-only character joining the one before; `useListSeriesNames`' `catch` sets `names` to `[]`; the form keeps `seriesFocused` (focus/blur) and `chosen` (tap, reset on input), handlers `focused`, `left`, `typed`, `choose`, `nameOf`; the scroll goes through `boxes.series`.
+- Prop `seriesNames` is required: `vue-tsc` reds `IsbnView.vue` until step 18 passes it.
+- Mutations: step 13's no-submit check, the row made `type="submit"`: red, `submitted` called once. Steps 7 and 15 were red on their first run, no guard.
+- Learned: nothing beyond the brief.
+- Red at handoff: the gate's `vue-tsc` (`IsbnView.vue`, missing `seriesNames`) and S7 *the suggestions*, the cited scenario, not yet reached.
