@@ -83,6 +83,7 @@ function text(value: string | number | null | undefined) {
 function focused(field: (typeof fields)[number]) {
   if (field !== "series") return;
   seriesFocused.value = true;
+  chosen.value = false;
   boxes.series?.scrollIntoView?.({ block: "start" });
 }
 

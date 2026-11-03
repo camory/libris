@@ -726,6 +726,22 @@ describe("EditionForm", () => {
     expect(suggestions(fields)).toEqual([]);
   });
 
+  it("offers them again when Série takes the focus anew", async () => {
+    // Given
+    const fields = screen(onePiece1, [], [], { seriesNames: houseSeries });
+    const series = fields.getByRole("textbox", { name: "Série" });
+    await fireEvent.focus(series);
+    await typeIn(fields, "Série", "one pi");
+    await fireEvent.click(fields.getByRole("button", { name: "One piece" }));
+    await fireEvent.blur(series);
+
+    // When
+    await fireEvent.focus(series);
+
+    // Then
+    expect(suggestions(fields)).toEqual(["One piece"]);
+  });
+
   it("keeps the focus in Série while a row is pressed", async () => {
     // Given
     const fields = screen(onePiece1, [], [], { seriesNames: houseSeries });
