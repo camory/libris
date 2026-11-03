@@ -419,6 +419,8 @@ it; tap *Série*: it comes to the top, its suggestions above the keyboard.
 - T121 — S2, the frontend on `v0.15.0` — frontend
 - T122 — S1, S9 the word of a code, S3 and S4 kept — frontend
 - T123 — S5, S11, S9 the code of a word — frontend
+- T128 — S1, S12, S13, S5 and S11 behind the pencil — frontend
+- T129 — S14 — frontend
 - T124 — S10 field by field, S9 an unknown word — frontend
 - T125 — S6, S10 a tome without a series — frontend
 - T126 — S7 the suggestions, S8 — frontend

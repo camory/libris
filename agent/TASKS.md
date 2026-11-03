@@ -24,10 +24,14 @@ add is unchanged, the form sending the same `NewBook`, its language the
 ISO 639-1 code. An operation is added, so the backend goes first: its pin
 moves in T119 with the operation, and T120 matches a series' name as PRD
 §3 says. The frontend pin moves in T121, once T120 is deployed; each task
-after it adds one scenario to the form, which replaces the card of an
-ISBN the house lacks on the lookup screen. No other task touches the
-contract (D04). The frontend tests of S3 and S4 run green already and
-guard every frontend task.
+after it adds one scenario to the form. Since the spec's revision of
+2026-11-03 (#326), an ISBN the house lacks shows its card first and the
+form opens from its pencil; T128 puts T122's and T123's form behind
+that pencil before any field rule, every later scenario test reaching the
+form through it (#327), and T129 gives the camera the answer's place. No
+other task touches the contract
+(D04). The frontend tests of S2, S3 and S4 run green already and guard
+every frontend task.
 
 - [x] T119 Backend: the series names on `v0.15.0`.
       `ApiContractTest` pins `v0.15.0`, the backend's one bump (D04).
@@ -94,6 +98,28 @@ guard every frontend task.
       open to edits (U05). Realises S5 and S11; un-skips the frontend tests
       of S5 and of S11, both cases.
 
+- [ ] T128 Frontend: the card first, its pencil opens the form.
+      An ISBN the house lacks and a source knows shows its card, its button
+      adding it as answered, with the pencil *Modifier* in its top part's
+      top right corner, given by the screen (U04, U06); bookshelf S2 and
+      S5, bookshelves S7 and covers S1 to S3 stay green. The pencil shows
+      the form in its place, filled as answered, the shown cover kept, the
+      pencil become the cross *Annuler les modifications*, which shows the
+      card as answered again, with no confirmation. A held ISBN's card, the
+      card after an add and the unknown ISBN's form carry neither (S2, S4).
+      Realises S1, S12 and S13; un-skips the frontend tests of S1, S12 and
+      S13, and those of S5 and S11, both cases, skipped again by #327.
+
+- [ ] T129 Frontend: the camera takes the place of the answer.
+      While the camera is open, its view takes the place of the card or
+      the form under the ISBN field and of their button, filling the space
+      between the field and the tab bar as on arrival, checked by hand
+      (U03, U05); closed, the card or the form shows again as the reader
+      left it, its edits and its shown cover kept. A barcode read still
+      replaces the form with its lookup's answer, as fast-entry S2 says.
+      The card's case proven by the lookup screen's component test.
+      Realises S14; un-skips the frontend test of S14.
+
 - [ ] T124 Frontend: a refused field.
       On the add's tap, and not before, each field the domain refuses takes
       the `danger` outline, kept while it has the focus, and its message
@@ -141,10 +167,14 @@ guard every frontend task.
       and Nouvelle; S8 stays green.
 
 *Done (Tophe, on the Pixel, from the installed app on staging): scan a book
-the house lacks and read its form, filled; change its title, type the first
-letters of a series the house holds and tap its suggestion, read Existante;
-add it, the card shows the new title and Dans Bibliothèque de Christophe;
-scan it again, the card, with the new title. Type an ISBN no source knows,
+the house lacks and read its card; tap the pencil and read its form,
+filled; change its title, tap the cross and read the card as it was; tap
+the pencil again and read the form as answered. Change its title, open the
+camera and see it as large as on arrival, close it and read the form as
+left, its title changed; type the first letters of a series the house holds
+and tap its suggestion, read Existante; add it, the card shows the new
+title and Dans Bibliothèque de Christophe; scan it again, the card, with
+the new title and no pencil. Type an ISBN no source knows,
 read the empty form, add it with no title, read Titre manquant on a focused
 field scrolled into view; type a volume number alone, read Tome sans série.
 Type jap in Langue and tap japonais. Type a summary of several lines and
