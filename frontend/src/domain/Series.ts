@@ -26,8 +26,6 @@ export function seriesNameStatus(
   names: string[] | null,
   locale: string,
 ): SeriesNameStatus | null {
-  const text = typed.toLocaleLowerCase(locale);
-  return names?.some((name) => name.toLocaleLowerCase(locale) === text)
-    ? "existing"
-    : "new";
+  const byName = nameOrder(locale);
+  return names?.some((name) => byName(name, typed) === 0) ? "existing" : "new";
 }

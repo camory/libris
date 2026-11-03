@@ -19,6 +19,10 @@ describe("seriesNameStatus", () => {
   it("says existing for a name of the house, ignoring case", () => {
     expect(seriesNameStatus("ONE PIECE", names, "fr")).toBe("existing");
   });
+
+  it("ignores the accents", () => {
+    expect(seriesNameStatus("asterix", names, "fr")).toBe("existing");
+  });
 });
 
 const onePiece: Series = {
