@@ -667,6 +667,20 @@ describe("SourceEditionCard", () => {
     expect(labels(card)).toEqual(["Couverture Libris"]);
   });
 
+  it("draws the button the screen gives in its corner", () => {
+    // When
+    const wrapper = card(onePiece1, [], [], false, false, {
+      corner: '<button type="button">Agir</button>',
+    });
+
+    // Then
+    expect(
+      within(wrapper.element as HTMLElement).getByRole("button", {
+        name: "Agir",
+      }),
+    ).toBeDefined();
+  });
+
   it("shows the série alone when the sources gave it no tome", () => {
     // Given
     const standalone: SourceEdition = {
@@ -863,9 +877,11 @@ describe("SourceEditionCard", () => {
     covers: CoverCandidate[] = [],
     held = false,
     pageTitle = false,
+    { corner }: { corner?: string } = {},
   ) {
     return mount(SourceEditionCard, {
       props: { edition, copies, covers, held, pageTitle },
+      slots: corner === undefined ? {} : { corner },
       global: { plugins: [createLibrisI18n()] },
     });
   }
