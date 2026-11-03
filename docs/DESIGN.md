@@ -291,9 +291,10 @@ a source.
 A card is presentational: props in, one thing out, the source of the cover
 it shows, none for the stand-in. It shows what it is given
 and decides nothing about it but which of its covers it shows: the one
-tapped, else the first not failed; the words it displays for a role come
-from the `fr` catalogue, keyed by the code the API answers, and the word of
-a language from the browser, its French name of the ISO 639-1 code.
+tapped, else the one the screen names, else the first not failed; the
+words it displays for a role come from the `fr` catalogue, keyed by the
+code the API answers, and the word of a language from the browser, its
+French name of the ISO 639-1 code.
 When another field of the answer chooses the word, the kind naming a role
 or a volume, the choice lives in the key (`role.MANGA.WRITER`,
 `isbn.card.series.BD`) and every value of that field carries its full set
@@ -316,7 +317,7 @@ rows of a card (U06), the stand-in of a row's missing cover and the glyph
 of a button (U04), 32 on the tab bar, 48 for an empty state (U05). A component
 imports the icon it shows under its Lucide name: `House`, `ScanBarcode`,
 `Library`, `BookOpen`, `CircleAlert`, `Search`, `RefreshCw`, `CirclePlus`,
-`Check`, `Star`, `Crown`, `X`. No hand-drawn icon, no icon font.
+`Check`, `Star`, `Crown`, `Pencil`, `X`. No hand-drawn icon, no icon font.
 
 An icon next to a word is decoration: `aria-hidden`, the word carries the
 meaning. An icon alone is a button (U04) or a tab (U03) and carries its
