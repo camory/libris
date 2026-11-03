@@ -12,7 +12,7 @@ export function languageCode(word: string, locale: string): string | null {
 }
 
 export function languageWords(locale: string): string[] {
-  return CODES.map((code) => languageWord(code, locale));
+  return [...new Set(CODES.map((code) => languageWord(code, locale)))];
 }
 
 const CODES = [

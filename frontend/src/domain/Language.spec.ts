@@ -31,4 +31,10 @@ describe("languageWords", () => {
       expect.arrayContaining(["japonais", "anglais"]),
     );
   });
+
+  it("answers each word once", () => {
+    expect(languageWords("fr").filter((word) => word === "akan")).toEqual([
+      "akan",
+    ]);
+  });
 });
