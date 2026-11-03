@@ -31,6 +31,10 @@ describe("seriesNameStatus", () => {
   it("says nothing for a blank text", () => {
     expect(seriesNameStatus("   ", names, "fr")).toBeNull();
   });
+
+  it("says nothing while the names are unknown", () => {
+    expect(seriesNameStatus("One piece", null, "fr")).toBeNull();
+  });
 });
 
 const onePiece: Series = {
