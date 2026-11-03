@@ -535,6 +535,24 @@ describe("EditionForm", () => {
     ).toBe("true");
   });
 
+  it("sends the form once the refused field is mended", async () => {
+    // Given
+    const wrapper = form(onePiece1);
+    const screen = within(wrapper.element as HTMLElement);
+    await typeIn(screen, "Titre", "");
+    await tapAdd(screen);
+    await typeIn(screen, "Titre", "Romance Dawn");
+
+    // When
+    await tapAdd(screen);
+
+    // Then
+    expect(wrapper.emitted("add")).toEqual([
+      [{ ...onePiece1, title: "Romance Dawn" }],
+    ]);
+    expect(wrapper.text()).not.toContain("Titre manquant");
+  });
+
   function disabledOf(fields: ReturnType<typeof screen>) {
     return [
       ...fields.getAllByRole<HTMLInputElement>("textbox"),
