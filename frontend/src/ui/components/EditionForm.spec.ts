@@ -1,7 +1,7 @@
 import { BookOpen } from "@lucide/vue";
 import { fireEvent, within } from "@testing-library/dom";
 import { mount } from "@vue/test-utils";
-import { describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 import type { Copy } from "../../domain/Copy";
 import type { CoverCandidate } from "../../domain/Cover";
 import type { SourceEdition } from "../../domain/SourceEdition";
@@ -36,6 +36,10 @@ const onLea: Copy = {
 };
 
 describe("EditionForm", () => {
+  afterEach(() => {
+    Reflect.deleteProperty(HTMLElement.prototype, "scrollIntoView");
+  });
+
   it("shows the ISBN under its label", () => {
     // When
     const text = show();
@@ -486,6 +490,30 @@ describe("EditionForm", () => {
       screen.getByRole("textbox", { name: "Titre" }),
     );
     wrapper.unmount();
+  });
+
+  it("brings the first refused field into view", async () => {
+    // Given
+    const scrollIntoView = vi.fn();
+    Object.defineProperty(HTMLElement.prototype, "scrollIntoView", {
+      configurable: true,
+      value: scrollIntoView,
+    });
+    const wrapper = form(onePiece1);
+    const screen = within(wrapper.element as HTMLElement);
+    await typeIn(screen, "Titre", "");
+    await typeIn(screen, "Pages", "0");
+
+    // When
+    await tapAdd(screen);
+
+    // Then
+    expect(scrollIntoView).toHaveBeenCalledExactlyOnceWith({
+      block: "center",
+    });
+    expect(scrollIntoView.mock.contexts[0]).toBe(
+      screen.getByRole("textbox", { name: "Titre" }),
+    );
   });
 
   function disabledOf(fields: ReturnType<typeof screen>) {

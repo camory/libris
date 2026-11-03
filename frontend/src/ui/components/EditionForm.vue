@@ -84,6 +84,7 @@ function add() {
   const first = fields.find((field) => refusals.value[field]);
   if (first) {
     boxes[first]?.focus();
+    boxes[first]?.scrollIntoView?.({ block: "center" });
     return;
   }
   emit(
