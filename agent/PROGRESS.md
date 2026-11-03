@@ -304,3 +304,17 @@ Format:
   part against `5-series-suggested.jpg`; *Série* brought to the top, its rows
   above the keyboard); a names answer that lands after a newer one, in
   `agent/PROPOSED.md`; S7's *a tap*, *Existante* and *Nouvelle* are T127's.
+
+## 2026-11-03 — T126 The series of the house suggested — reworked
+- Did: `suggestionsFor` folds the typed text one character at a time, as it
+  folds the names, so *ΟΔΟΣ* typed finds *ΟΔΟΣ*; a new focus on *Série*
+  offers the rows again after a tap; `nameOf` lives beside `Suggestion`.
+- Decided: the reviewer's verdict of 2026-11-03 settled it, amending
+  nothing: its blocking finding is the brief's *Contains, folded character
+  by character*, unmet for the text; its suggestions were applied, `chosen`
+  reset on focus, as the backlog line's "while the field has the focus and
+  holds text" reads; the first run's PROGRESS claim "folds each character"
+  was true of the names only, and is now true of both.
+- Deviations from the brief: none.
+- Left over: the commit subjects of 73 characters stay, history is not
+  rewritten; the checks by hand of the first run, unchanged.

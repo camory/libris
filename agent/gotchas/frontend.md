@@ -134,8 +134,9 @@ Read whole by a run that changes `frontend/`, after `every-run.md`.
   order, reaching the box through a function `:ref` into `boxes`. Under
   *Série*, while it has the focus (`seriesFocused`, set on `focus` and
   cleared on `blur`) and no row has been tapped since the last keystroke
-  (`chosen`), it draws `suggestionsFor(values.series, seriesNames, locale)`
-  (`src/domain/Suggestion.ts`) as `type="button"` rows of three spans,
+  or focus (`chosen`), it draws `suggestionsFor(values.series,
+  seriesNames, locale)` (`src/domain/Suggestion.ts`, with `nameOf`, the
+  three parts joined) as `type="button"` rows of three spans,
   `before`, `matched` in `font-semibold`, `after`; a row's `mousedown` is
   prevented so the box keeps the focus, and *Série*'s `focus` calls
   `scrollIntoView({ block: "start" })` on it. Its spec's `form()` takes
@@ -473,6 +474,11 @@ Read whole by a run that changes `frontend/`, after `every-run.md`.
   a text whose parts carry no space at their edges (`"one pi"`), or reads
   the rows' `textContent`, as `EditionForm.spec.ts`' `suggestions()` and
   the scenarios do.
+- `toLocaleLowerCase` reads a capital sigma by its context: at the end of
+  a word in a string it gives `ς`, alone it gives `σ`, so *ΟΔΟΣ* folded
+  whole differs from *ΟΔΟΣ* folded letter by letter. `suggestionsFor` folds
+  the text and the names alike, one character at a time (`foldsOf`); a
+  new rule that compares folded texts folds both sides the same way.
 - jsdom has no `IntersectionObserver`: every spec that mounts
   `CatalogueView`, directly or through the router on `/catalogue`, stubs it
   with `vi.stubGlobal` or fails on `ReferenceError: IntersectionObserver is
