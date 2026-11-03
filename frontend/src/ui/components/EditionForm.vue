@@ -81,7 +81,9 @@ function text(value: string | number | null | undefined) {
 }
 
 function focused(field: (typeof fields)[number]) {
-  if (field === "series") seriesFocused.value = true;
+  if (field !== "series") return;
+  seriesFocused.value = true;
+  boxes.series?.scrollIntoView?.({ block: "start" });
 }
 
 function left(field: (typeof fields)[number]) {

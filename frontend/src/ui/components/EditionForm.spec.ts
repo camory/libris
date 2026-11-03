@@ -741,6 +741,24 @@ describe("EditionForm", () => {
     expect(moved).toBe(false);
   });
 
+  it("brings Série to the top when it takes the focus", async () => {
+    // Given
+    const scrollIntoView = vi.fn();
+    Object.defineProperty(HTMLElement.prototype, "scrollIntoView", {
+      configurable: true,
+      value: scrollIntoView,
+    });
+    const fields = screen(onePiece1, [], [], { seriesNames: houseSeries });
+    const series = fields.getByRole("textbox", { name: "Série" });
+
+    // When
+    await fireEvent.focus(series);
+
+    // Then
+    expect(scrollIntoView).toHaveBeenCalledExactlyOnceWith({ block: "start" });
+    expect(scrollIntoView.mock.contexts[0]).toBe(series);
+  });
+
   function suggestions(fields: ReturnType<typeof screen>) {
     return fields
       .queryAllByRole("button")
