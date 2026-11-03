@@ -13,7 +13,7 @@ import {
 } from "../../domain/EditionDraft";
 import { languageWord } from "../../domain/Language";
 import type { Kind, SourceEdition } from "../../domain/SourceEdition";
-import { suggestionsFor } from "../../domain/Suggestion";
+import { suggestionsFor, type Suggestion } from "../../domain/Suggestion";
 import AuthorLines from "./AuthorLines.vue";
 import BookshelvesHolding from "./BookshelvesHolding.vue";
 import CoverChoice from "./CoverChoice.vue";
@@ -86,6 +86,10 @@ function focused(field: (typeof fields)[number]) {
 function choose(name: string) {
   values.series = name;
   suggesting.value = false;
+}
+
+function nameOf(suggestion: Suggestion) {
+  return suggestion.before + suggestion.matched + suggestion.after;
 }
 
 function labelOf(field: (typeof fields)[number]) {
@@ -191,13 +195,9 @@ function add() {
           >
             <button
               v-for="suggestion in suggestions"
-              :key="suggestion.before + suggestion.matched + suggestion.after"
+              :key="nameOf(suggestion)"
               type="button"
-              @click="
-                choose(
-                  suggestion.before + suggestion.matched + suggestion.after,
-                )
-              "
+              @click="choose(nameOf(suggestion))"
               class="mx-3.5 h-11 text-left text-field"
             >
               <span>{{ suggestion.before }}</span>
