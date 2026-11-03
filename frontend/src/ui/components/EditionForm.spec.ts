@@ -800,6 +800,15 @@ describe("EditionForm", () => {
     expect(wrapper.findAllComponents(Check)).toHaveLength(0);
   });
 
+  it("says no word while the names are unknown", () => {
+    // When
+    const fields = screen(onePiece1, [], [], { seriesNames: null });
+
+    // Then
+    expect(fields.queryByText("Existante")).toBeNull();
+    expect(fields.queryByText("Nouvelle")).toBeNull();
+  });
+
   function suggestions(fields: ReturnType<typeof screen>) {
     return fields
       .queryAllByRole("button")
