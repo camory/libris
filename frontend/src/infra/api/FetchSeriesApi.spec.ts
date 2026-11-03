@@ -121,6 +121,22 @@ describe("FetchSeriesApi", () => {
       expect(name).toEqual(expect.stringMatching(/./));
     }
   });
+
+  it("fails when Libris answers anything but the names", async () => {
+    // Given
+    const api = new FetchSeriesApi("http://libris.invalid");
+    vi.stubGlobal("fetch", () =>
+      Promise.resolve(
+        new Response(JSON.stringify({ status: 500 }), { status: 500 }),
+      ),
+    );
+
+    // When
+    const names = api.names();
+
+    // Then
+    await expect(names).rejects.toThrow("The series names answered 500");
+  });
 });
 
 const aStringOrNull = expect.toSatisfy(
