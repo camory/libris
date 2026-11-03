@@ -104,6 +104,14 @@ describe("refusalsOf", () => {
     expect(refusals).toEqual({ volume: "invalidNumber" });
   });
 
+  it("refuses a year in words", () => {
+    // When
+    const refusals = check({ ...filled, year: "deux mille" });
+
+    // Then
+    expect(refusals).toEqual({ year: "invalidNumber" });
+  });
+
   function check(draft: EditionDraft) {
     return refusalsOf(draft, "fr");
   }

@@ -52,6 +52,7 @@ export function refusalsOf(draft: EditionDraft, locale: string): Refusals {
   const refusals: Refusals = {};
   if (text(draft.title) === null) refusals.title = "missing";
   if (!isWholeNumber(draft.volume)) refusals.volume = "invalidNumber";
+  if (!isWholeNumber(draft.year)) refusals.year = "invalidNumber";
   return refusals;
 }
 
