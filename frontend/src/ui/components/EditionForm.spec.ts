@@ -516,6 +516,25 @@ describe("EditionForm", () => {
     );
   });
 
+  it("keeps a refusal until the next tap", async () => {
+    // Given
+    const wrapper = form(onePiece1);
+    const screen = within(wrapper.element as HTMLElement);
+    await typeIn(screen, "Titre", "");
+    await tapAdd(screen);
+
+    // When
+    await typeIn(screen, "Titre", "Romance Dawn");
+
+    // Then
+    expect(wrapper.text()).toContain("Titre manquant");
+    expect(
+      screen
+        .getByRole("textbox", { name: "Titre" })
+        .getAttribute("aria-invalid"),
+    ).toBe("true");
+  });
+
   function disabledOf(fields: ReturnType<typeof screen>) {
     return [
       ...fields.getAllByRole<HTMLInputElement>("textbox"),
