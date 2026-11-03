@@ -152,6 +152,14 @@ describe("refusalsOf", () => {
     expect(refusals).toEqual({ volume: "withoutSeries" });
   });
 
+  it("refuses as no number a volume that is not one, series or not", () => {
+    // When
+    const refusals = check({ ...filled, volume: "0", series: "" });
+
+    // Then
+    expect(refusals).toEqual({ volume: "invalidNumber" });
+  });
+
   it("refuses no field left empty", () => {
     // Given
     const blank: EditionDraft = {
