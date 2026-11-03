@@ -42,6 +42,16 @@ export function editionOf(
   };
 }
 
+export type Refusal = "missing" | "invalidNumber" | "unknownLanguage";
+
+export type Refusals = Partial<
+  Record<Exclude<keyof EditionDraft, "kind" | "summary">, Refusal>
+>;
+
+export function refusalsOf(draft: EditionDraft, locale: string): Refusals {
+  return draft.title === "" ? { title: "missing" } : {};
+}
+
 function text(value: string) {
   const trimmed = value.trim();
   return trimmed === "" ? null : trimmed;

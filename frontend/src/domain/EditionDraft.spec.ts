@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { onePiece1 } from "../fixture/SourceEditions";
-import { editionOf, type EditionDraft } from "./EditionDraft";
+import { editionOf, refusalsOf, type EditionDraft } from "./EditionDraft";
 
 const filled: EditionDraft = {
   kind: "MANGA",
@@ -76,5 +76,19 @@ describe("editionOf", () => {
 
   function read(draft: EditionDraft) {
     return editionOf(onePiece1.isbn13, onePiece1.authors, draft, "fr");
+  }
+});
+
+describe("refusalsOf", () => {
+  it("refuses an empty title", () => {
+    // When
+    const refusals = check({ ...filled, title: "" });
+
+    // Then
+    expect(refusals).toEqual({ title: "missing" });
+  });
+
+  function check(draft: EditionDraft) {
+    return refusalsOf(draft, "fr");
   }
 });
