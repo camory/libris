@@ -58,6 +58,12 @@ describe("suggestionsFor", () => {
   it("suggests nothing for a blank text", () => {
     expect(suggestionsFor("   ", ["One piece"], "fr")).toEqual([]);
   });
+
+  it("keeps an accent written as a mark of its own in its part", () => {
+    expect(suggestionsFor("pieg", ["Pie\u0300ge"], "fr")).toEqual([
+      { before: "", matched: "Pie\u0300g", after: "e" },
+    ]);
+  });
 });
 
 function nameOf(suggestion: Suggestion) {
