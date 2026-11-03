@@ -612,6 +612,30 @@ describe("IsbnView", () => {
     expect(screen.getByRole("button", { name: "Modifier" })).toBeDefined();
   });
 
+  it("replaces the form by the answer of the code the camera reads", async () => {
+    // Given
+    const screen = open(
+      new FakeIsbnApi(found),
+      new FakeBarcodeScanner(true, "9782723488525"),
+    );
+    await flushPromises();
+    await press(screen, "Modifier");
+    await fireEvent.input(screen.getByRole("textbox", { name: "Titre" }), {
+      target: { value: "Romance Dawn" },
+    });
+
+    // When
+    await press(screen, "Scanner le code-barres");
+
+    // Then
+    expect(screen.getByRole("heading", { name: "Romance dawn" })).toBeDefined();
+    expect(screen.queryByRole("textbox", { name: "Titre" })).toBeNull();
+    await press(screen, "Modifier");
+    expect(
+      screen.getByRole<HTMLInputElement>("textbox", { name: "Titre" }).value,
+    ).toBe("Romance dawn");
+  });
+
   it("says nothing when the reader refuses the camera", async () => {
     // Given
     const scanner = new FakeBarcodeScanner(true, null);
