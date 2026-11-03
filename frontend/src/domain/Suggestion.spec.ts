@@ -13,4 +13,10 @@ describe("suggestionsFor", () => {
       { before: "É", matched: "pié", after: "s" },
     ]);
   });
+
+  it("ignores the spaces at the text's ends", () => {
+    expect(suggestionsFor(" pie ", ["One piece"], "fr")).toEqual([
+      { before: "One ", matched: "pie", after: "ce" },
+    ]);
+  });
 });

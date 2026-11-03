@@ -9,7 +9,7 @@ export function suggestionsFor(
   names: string[],
   locale: string,
 ): Suggestion[] {
-  const text = folded(typed, locale);
+  const text = folded(typed.trim(), locale);
   return names.flatMap((name) => {
     const start = folded(name, locale).indexOf(text);
     if (start < 0) return [];
