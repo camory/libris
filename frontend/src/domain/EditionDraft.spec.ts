@@ -173,6 +173,23 @@ describe("refusalsOf", () => {
     expect(refusals).toEqual({});
   });
 
+  it("answers every refused field", () => {
+    // When
+    const refusals = check({
+      ...filled,
+      title: "",
+      year: "0",
+      language: "elfique",
+    });
+
+    // Then
+    expect(refusals).toEqual({
+      title: "missing",
+      year: "invalidNumber",
+      language: "unknownLanguage",
+    });
+  });
+
   function check(draft: EditionDraft) {
     return refusalsOf(draft, "fr");
   }
