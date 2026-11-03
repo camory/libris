@@ -560,6 +560,24 @@ describe("IsbnView", () => {
     expect(scanner.readsInto).toHaveLength(2);
   });
 
+  it("gives the camera the place of the card", async () => {
+    // Given
+    const screen = await answeredUnderClosedCamera(new FakeIsbnApi(found));
+
+    // When
+    await press(screen, "Scanner le code-barres");
+
+    // Then
+    expect(
+      screen.getByRole("button", { name: "Fermer la caméra" }),
+    ).toBeDefined();
+    expect(screen.queryByRole("heading", { name: "Romance dawn" })).toBeNull();
+    expect(screen.queryByRole("button", { name: "Modifier" })).toBeNull();
+    expect(
+      screen.queryByRole("button", { name: "Ajouter à ma bibliothèque" }),
+    ).toBeNull();
+  });
+
   it("says nothing when the reader refuses the camera", async () => {
     // Given
     const scanner = new FakeBarcodeScanner(true, null);
@@ -977,6 +995,14 @@ describe("IsbnView", () => {
     bookshelfApi?: FakeBookshelfApi,
   ) {
     return within(mountView(api, scanner, bookshelfApi).element as HTMLElement);
+  }
+
+  async function answeredUnderClosedCamera(api: IsbnApi) {
+    const screen = open(api, new FakeBarcodeScanner(true, neverRead));
+    await flushPromises();
+    await press(screen, "Fermer la caméra");
+    await ask(screen, "9782723488525");
+    return screen;
   }
 
   function mountView(

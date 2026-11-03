@@ -206,7 +206,7 @@ async function send(edition: SourceEdition) {
 
     <SourceEditionCardSkeleton v-if="searching" class="mt-5" />
 
-    <div v-else-if="shownIsbn13" class="mt-5 flex flex-col">
+    <div v-else-if="shownIsbn13 && !scanning" class="mt-5 flex flex-col">
       <SourceEditionCard
         v-if="addState.status === 'added' && sent"
         :edition="sent"
