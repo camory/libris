@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { suggestionsFor, type Suggestion } from "./Suggestion";
+import { nameOf, suggestionsFor } from "./Suggestion";
 
 describe("suggestionsFor", () => {
   it("suggests the names that contain the text, ignoring case", () => {
@@ -75,7 +75,3 @@ describe("suggestionsFor", () => {
     ).toEqual([{ before: "", matched: "\u039f\u0394\u039f\u03a3", after: "" }]);
   });
 });
-
-function nameOf(suggestion: Suggestion) {
-  return suggestion.before + suggestion.matched + suggestion.after;
-}

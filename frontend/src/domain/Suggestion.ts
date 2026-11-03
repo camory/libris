@@ -6,6 +6,10 @@ export interface Suggestion {
   after: string;
 }
 
+export function nameOf(suggestion: Suggestion) {
+  return suggestion.before + suggestion.matched + suggestion.after;
+}
+
 export function suggestionsFor(
   typed: string,
   names: string[],

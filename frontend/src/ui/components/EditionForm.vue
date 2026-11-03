@@ -13,7 +13,7 @@ import {
 } from "../../domain/EditionDraft";
 import { languageWord } from "../../domain/Language";
 import type { Kind, SourceEdition } from "../../domain/SourceEdition";
-import { suggestionsFor, type Suggestion } from "../../domain/Suggestion";
+import { nameOf, suggestionsFor } from "../../domain/Suggestion";
 import AuthorLines from "./AuthorLines.vue";
 import BookshelvesHolding from "./BookshelvesHolding.vue";
 import CoverChoice from "./CoverChoice.vue";
@@ -98,10 +98,6 @@ function typed(field: (typeof fields)[number]) {
 function choose(name: string) {
   values.series = name;
   chosen.value = true;
-}
-
-function nameOf(suggestion: Suggestion) {
-  return suggestion.before + suggestion.matched + suggestion.after;
 }
 
 function labelOf(field: (typeof fields)[number]) {
