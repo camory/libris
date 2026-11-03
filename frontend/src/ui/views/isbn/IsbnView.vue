@@ -99,6 +99,7 @@ async function search() {
   unknownIsbn13.value = undefined;
   copies.value = [];
   covers.value = [];
+  coverSource.value = null;
   addBookToBookshelf.value = useAddBookToBookshelf(meApi, bookshelfApi);
   sent.value = undefined;
   editing.value = false;

@@ -215,6 +215,23 @@ describe("IsbnView", () => {
     expect(screen.queryByRole("textbox", { name: "Titre" })).toBeNull();
   });
 
+  it("shows the first cover of the next answer", async () => {
+    // Given
+    const screen = open(new FakeIsbnApi(covered));
+    await ask(screen, "9782723488525");
+    await press(screen, "Couverture Open Library");
+
+    // When
+    await ask(screen, "9782723488525");
+
+    // Then
+    expect(
+      screen
+        .getByRole("img", { name: "Couverture de Romance dawn" })
+        .getAttribute("src"),
+    ).toBe("https://inventaire.io/img/1");
+  });
+
   it("shows the card of an ISBN the house holds", async () => {
     // Given
     const screen = open(new FakeIsbnApi(held));
