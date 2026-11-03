@@ -102,6 +102,7 @@ const fr = {
       refusal: {
         missing: "Titre manquant",
         invalidNumber: "Nombre invalide",
+        unknownLanguage: "Langue inconnue",
       },
     },
   },

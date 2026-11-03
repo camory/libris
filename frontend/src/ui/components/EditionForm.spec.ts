@@ -432,6 +432,24 @@ describe("EditionForm", () => {
     ).toBe("true");
   });
 
+  it("says Langue inconnue under a word naming no language", async () => {
+    // Given
+    const wrapper = form(onePiece1);
+    const screen = within(wrapper.element as HTMLElement);
+    await typeIn(screen, "Langue", "elfique");
+
+    // When
+    await tapAdd(screen);
+
+    // Then
+    expect(wrapper.text()).toContain("Langue inconnue");
+    expect(
+      screen
+        .getByRole("textbox", { name: "Langue" })
+        .getAttribute("aria-invalid"),
+    ).toBe("true");
+  });
+
   function disabledOf(fields: ReturnType<typeof screen>) {
     return [
       ...fields.getAllByRole<HTMLInputElement>("textbox"),
