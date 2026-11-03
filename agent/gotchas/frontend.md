@@ -476,9 +476,11 @@ Read whole by a run that changes `frontend/`, after `every-run.md`.
   the scenarios do.
 - `toLocaleLowerCase` reads a capital sigma by its context: at the end of
   a word in a string it gives `ς`, alone it gives `σ`, so *ΟΔΟΣ* folded
-  whole differs from *ΟΔΟΣ* folded letter by letter. `suggestionsFor` folds
-  the text and the names alike, one character at a time (`foldsOf`); a
-  new rule that compares folded texts folds both sides the same way.
+  whole differs from *ΟΔΟΣ* folded letter by letter. Lower-casing alone
+  also keeps a written `ς` apart from `σ`. `suggestionsFor` folds the text
+  and the names alike, one character at a time (`foldsOf`), each through
+  `toLocaleUpperCase` then `toLocaleLowerCase`, which joins `ς` and `σ`; a
+  new rule that ignores case folds both sides that way.
 - jsdom has no `IntersectionObserver`: every spec that mounts
   `CatalogueView`, directly or through the router on `/catalogue`, stubs it
   with `vi.stubGlobal` or fails on `ReferenceError: IntersectionObserver is
