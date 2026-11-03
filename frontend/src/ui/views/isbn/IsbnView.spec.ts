@@ -38,6 +38,17 @@ const found: IsbnAnswer = {
   covers: [],
 };
 
+const covered: IsbnAnswer = {
+  ...found,
+  covers: [
+    { source: "inventaire.io", url: "https://inventaire.io/img/1" },
+    {
+      source: "Open Library",
+      url: "https://covers.openlibrary.org/b/id/1-L.jpg",
+    },
+  ],
+};
+
 const held: IsbnAnswer = {
   ...found,
   id: "8b3f4e5d-6c7a-4b8c-9d0e-1f2a3b4c5d6e",
@@ -153,6 +164,23 @@ describe("IsbnView", () => {
     expect(screen.getByRole("heading", { name: "Romance dawn" })).toBeDefined();
     expect(screen.queryByRole("textbox", { name: "Titre" })).toBeNull();
     expect(screen.getByRole("button", { name: "Modifier" })).toBeDefined();
+  });
+
+  it("keeps in the form the cover shown on the card", async () => {
+    // Given
+    const screen = open(new FakeIsbnApi(covered));
+    await ask(screen, "9782723488525");
+    await press(screen, "Couverture Open Library");
+
+    // When
+    await press(screen, "Modifier");
+
+    // Then
+    expect(
+      screen
+        .getByRole("img", { name: "Couverture de Romance dawn" })
+        .getAttribute("src"),
+    ).toBe("https://covers.openlibrary.org/b/id/1-L.jpg");
   });
 
   it("shows the card of an ISBN the house holds", async () => {

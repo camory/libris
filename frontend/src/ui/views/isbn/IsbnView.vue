@@ -218,6 +218,7 @@ async function send(edition: SourceEdition) {
         :edition="edition"
         :copies="shownCopies"
         :covers="covers"
+        :shown-source="coverSource"
         :adding="adding"
         :failed="failed"
         @cover-source="coverSource = $event"
