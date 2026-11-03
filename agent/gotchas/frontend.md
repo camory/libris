@@ -104,19 +104,25 @@ Read whole by a run that changes `frontend/`, after `every-run.md`.
   `v-for` over `fields` (`isbn.form.<field>`), numbers as their digits,
   `null` as `""`, the language through `languageWord`, and `summary`, a
   `textarea` of its own after them; the camera keeps it, edits included,
-  and a new lookup remounts it through the skeleton. *Auteurs* is drawn after *Tome* inside that `v-for`, only when
-  the answer has authors. Each label points at its box through `for` and
-  an id built on `useId()`; the kinds are three `sr-only` radios inside
-  their labels. The form's *ISBN* is a `<p>`, so `IsbnView.spec.ts`'s
-  `field()` still finds the one `ISBN` textbox. A case that types in a
-  field the mutation makes a `number` input finds it with
-  `getByLabelText`: a role query reds on the `spinbutton` before the value
-  is read. On the add's tap it asks `refusalsOf(draft, locale)` (beside
-  `editionOf`, a `Refusals` record from a text field to `missing`,
-  `invalidNumber` or `unknownLanguage`) and emits `add` only when it answers
-  none; otherwise it keeps that answer until the next tap, marks each refused
-  box `aria-invalid="true"` (outlined through `aria-invalid:border-danger`),
-  draws `isbn.form.refusal.<code>` under it, and focuses then
+  and a new lookup remounts it through the skeleton. *Auteurs* is drawn
+  after *Tome* inside that `v-for`, only when the answer has authors,
+  `AuthorLines` given the chosen `kind`, not the answer's. The volume's
+  label is `isbn.form.volume.<kind>` (*Album* for a BD), built with the
+  chosen kind, as `withoutSeries`' words are. Each label points at its
+  box through `for` and an id built on `useId()`; the kinds are three
+  `sr-only` radios inside their labels. The form's *ISBN* is a `<p>`, so
+  `IsbnView.spec.ts`'s `field()` still finds the one `ISBN` textbox. A
+  case that types in a field the mutation makes a `number` input finds
+  it with `getByLabelText`: a role query reds on the `spinbutton` before
+  the value is read. On the add's tap it asks `refusalsOf(draft, locale)`
+  (beside `editionOf`, a `Refusals` record from a text field to
+  `missing`, `invalidNumber`, `unknownLanguage` or `withoutSeries`, a
+  volume number with a blank series, `invalidNumber` winning over it)
+  and emits `add` only when it answers none; otherwise it keeps that
+  answer until the next tap, marks each refused box `aria-invalid="true"`
+  (outlined through `aria-invalid:border-danger`), draws
+  `isbn.form.refusal.<code>` under it (`withoutSeries.<kind>`, in the
+  kind chosen now, not at the tap), and focuses then
   `scrollIntoView({ block: "center" })`s the first refused in its `fields`
   order, reaching the box through a function `:ref` into `boxes`. Its
   spec's `form()` takes `{ adding, failed, corner, shownSource, attachTo }`

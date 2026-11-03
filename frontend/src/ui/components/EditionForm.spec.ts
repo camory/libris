@@ -198,13 +198,43 @@ describe("EditionForm", () => {
     ).toEqual(["Manga"]);
   });
 
+  it("names the volume field Album for a BD", async () => {
+    // Given
+    const fields = screen();
+
+    // When
+    await fireEvent.change(fields.getByRole("radio", { name: "BD" }), {
+      target: { checked: true },
+    });
+
+    // Then
+    expect(fields.getByRole("textbox", { name: "Album" })).toBeDefined();
+    expect(fields.queryByRole("textbox", { name: "Tome" })).toBeNull();
+  });
+
+  it("names it Tome again for a Manga", async () => {
+    // Given
+    const fields = screen();
+    await fireEvent.change(fields.getByRole("radio", { name: "BD" }), {
+      target: { checked: true },
+    });
+
+    // When
+    await fireEvent.change(fields.getByRole("radio", { name: "Manga" }), {
+      target: { checked: true },
+    });
+
+    // Then
+    expect(fields.getByRole("textbox", { name: "Tome" })).toBeDefined();
+  });
+
   it("shows the authors as the card words them", () => {
     // When
     const text = show(asterix1);
 
     // Then
     const positions = [
-      "Tome",
+      "Album",
       "Auteurs",
       "René Goscinny · scénario",
       "Albert Uderzo · dessin",
@@ -212,6 +242,23 @@ describe("EditionForm", () => {
     ].map((part) => text.indexOf(part));
     expect(positions).not.toContain(-1);
     expect(positions).toEqual([...positions].sort((a, b) => a - b));
+  });
+
+  it("words the authors' roles in the chosen kind", async () => {
+    // Given
+    const wrapper = form({ ...asterix1, kind: "BOOK" });
+    const fields = within(wrapper.element as HTMLElement);
+
+    // When
+    await fireEvent.change(fields.getByRole("radio", { name: "BD" }), {
+      target: { checked: true },
+    });
+
+    // Then
+    const text = wrapper.text().replace(/\s+/g, " ");
+    expect(text).toContain("René Goscinny · scénario");
+    expect(text).toContain("Albert Uderzo · dessin");
+    expect(text).not.toContain("texte");
   });
 
   it("shows no Auteurs when Libris answered none", () => {
@@ -426,6 +473,56 @@ describe("EditionForm", () => {
     // Then
     expect(wrapper.text()).toMatch(/Année.*Nombre invalide.*Langue/s);
     expect(isRefused(screen, "Année")).toBe(true);
+  });
+
+  it("says Tome sans série under a volume number with no series", async () => {
+    // Given
+    const wrapper = form({ ...onePiece1, kind: "BOOK" });
+    const screen = within(wrapper.element as HTMLElement);
+    await typeIn(screen, "Série", "");
+
+    // When
+    await tapAdd(screen);
+
+    // Then
+    expect(wrapper.emitted("add")).toBeUndefined();
+    expect(wrapper.text()).toMatch(/Tome.*Tome sans série.*Auteurs/s);
+    expect(isRefused(screen, "Tome")).toBe(true);
+  });
+
+  it("says Album sans série for a BD", async () => {
+    // Given
+    const wrapper = form(onePiece1);
+    const screen = within(wrapper.element as HTMLElement);
+    await fireEvent.change(screen.getByRole("radio", { name: "BD" }), {
+      target: { checked: true },
+    });
+    await typeIn(screen, "Série", "");
+
+    // When
+    await tapAdd(screen);
+
+    // Then
+    expect(wrapper.text()).toContain("Album sans série");
+    expect(isRefused(screen, "Album")).toBe(true);
+  });
+
+  it("rewords a refusal shown when the kind changes", async () => {
+    // Given
+    const wrapper = form(onePiece1);
+    const screen = within(wrapper.element as HTMLElement);
+    await typeIn(screen, "Série", "");
+    await tapAdd(screen);
+
+    // When
+    await fireEvent.change(screen.getByRole("radio", { name: "BD" }), {
+      target: { checked: true },
+    });
+
+    // Then
+    expect(wrapper.text()).toContain("Album sans série");
+    expect(wrapper.text()).not.toContain("Tome sans série");
+    expect(wrapper.emitted("add")).toBeUndefined();
   });
 
   it("says Langue inconnue under a word naming no language", async () => {

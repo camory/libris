@@ -411,7 +411,7 @@ describe("Edition form", () => {
     expect(add.asked).toEqual([]);
   });
 
-  it.skip("S10 A refused form, Tome sans série", async () => {
+  it("S10 A refused form, Tome sans série", async () => {
     // Given
     const add = librisAdds(on(lea.defaultBookshelf));
     const screen = await formOfOnePiece1({ add });
@@ -427,7 +427,7 @@ describe("Edition form", () => {
     expect(add.asked).toEqual([]);
   });
 
-  it.skip("S10 A refused form, Album sans série", async () => {
+  it("S10 A refused form, Album sans série", async () => {
     // Given
     const add = librisAdds(on(lea.defaultBookshelf));
     const screen = await formOfOnePiece1({ add });
@@ -444,7 +444,7 @@ describe("Edition form", () => {
     expect(add.asked).toEqual([]);
   });
 
-  it.skip("S10 A refused form, two fields refused", async () => {
+  it("S10 A refused form, two fields refused", async () => {
     // Given
     const add = librisAdds(on(lea.defaultBookshelf));
     const screen = await formOfOnePiece1({ add });

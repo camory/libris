@@ -267,3 +267,21 @@ Format:
   focused; the refused field scrolled to the middle, clear of the dock);
   `aria-describedby` and a shared message component, in
   `agent/PROPOSED.md`; S10's three other cases are T125's.
+
+## 2026-11-03 — T125 The kind's words, and a tome without a series — done
+- Did: choosing a kind in the edition form names its volume field (*Album*
+  for a BD, *Tome* otherwise) and words the authors' roles in that kind; a
+  volume number with no series is refused, *Tome sans série* or *Album sans
+  série*; S10's last three cases run green.
+- Decided: `refusalsOf` sets `withoutSeries` before the number check, which
+  then overwrites it, so `invalidNumber` wins with no extra condition; the
+  form builds its keys in two small functions, `labelOf(field)` and
+  `messageOf(refusal)`, which branch on the field and the code, never on
+  the kind, the kind entering the key as is.
+- Deviations from the brief: none in the approach; the subject of the
+  step 2 commit runs to 73 characters, left as it is since history is not
+  rewritten.
+- Left over: the checks by hand on the Pixel (the BD form against
+  `4-bd.jpg`, *Tome sans série* under *Tome* against `7-refused.jpg`); the
+  series' and the language's suggestions, S7 and S8, are T126's and
+  T127's.

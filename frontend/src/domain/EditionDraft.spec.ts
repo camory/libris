@@ -136,6 +136,30 @@ describe("refusalsOf", () => {
     expect(refusals).toEqual({ language: "unknownLanguage" });
   });
 
+  it("refuses a volume number with no series", () => {
+    // When
+    const refusals = check({ ...filled, series: "" });
+
+    // Then
+    expect(refusals).toEqual({ volume: "withoutSeries" });
+  });
+
+  it("refuses a volume number with a series of spaces alone", () => {
+    // When
+    const refusals = check({ ...filled, series: "   " });
+
+    // Then
+    expect(refusals).toEqual({ volume: "withoutSeries" });
+  });
+
+  it("refuses as no number a volume that is not one, series or not", () => {
+    // When
+    const refusals = check({ ...filled, volume: "0", series: "" });
+
+    // Then
+    expect(refusals).toEqual({ volume: "invalidNumber" });
+  });
+
   it("refuses no field left empty", () => {
     // Given
     const blank: EditionDraft = {

@@ -8,6 +8,7 @@ import {
   editionOf,
   refusalsOf,
   type EditionDraft,
+  type Refusal,
   type Refusals,
 } from "../../domain/EditionDraft";
 import { languageWord } from "../../domain/Language";
@@ -68,6 +69,18 @@ const summary = ref(text(answered?.summary));
 
 function text(value: string | number | null | undefined) {
   return value == null ? "" : String(value);
+}
+
+function labelOf(field: (typeof fields)[number]) {
+  return field === "volume"
+    ? `isbn.form.volume.${kind.value}`
+    : `isbn.form.${field}`;
+}
+
+function messageOf(refusal: Refusal) {
+  return refusal === "withoutSeries"
+    ? `isbn.form.refusal.withoutSeries.${kind.value}`
+    : `isbn.form.refusal.${refusal}`;
 }
 
 const id = useId();
@@ -142,7 +155,7 @@ function add() {
       <template v-for="field in fields" :key="field">
         <div class="flex flex-col gap-2">
           <label class="text-label text-muted" :for="`${id}-${field}`">
-            {{ t(`isbn.form.${field}`) }}
+            {{ t(labelOf(field)) }}
           </label>
           <input
             :id="`${id}-${field}`"
@@ -159,7 +172,7 @@ function add() {
             class="flex items-start gap-2 text-body text-danger"
           >
             <CircleAlert :size="22" class="shrink-0" />
-            <span>{{ t(`isbn.form.refusal.${refusals[field]}`) }}</span>
+            <span>{{ t(messageOf(refusals[field])) }}</span>
           </p>
         </div>
         <div
@@ -167,7 +180,7 @@ function add() {
           class="flex flex-col gap-2"
         >
           <p class="text-label text-muted">{{ t("isbn.form.authors") }}</p>
-          <AuthorLines :authors="edition.authors" :kind="edition.kind" />
+          <AuthorLines :authors="edition.authors" :kind="kind" />
         </div>
       </template>
 
