@@ -54,6 +54,9 @@ export function refusalsOf(draft: EditionDraft, locale: string): Refusals {
   for (const field of ["volume", "year", "pages"] as const) {
     if (!isWholeNumber(draft[field])) refusals[field] = "invalidNumber";
   }
+  if (languageCode(draft.language, locale) === null) {
+    refusals.language = "unknownLanguage";
+  }
   return refusals;
 }
 

@@ -128,6 +128,14 @@ describe("refusalsOf", () => {
     expect(refusals).toEqual({ pages: "invalidNumber" });
   });
 
+  it("refuses a word that names no language", () => {
+    // When
+    const refusals = check({ ...filled, language: "elfique" });
+
+    // Then
+    expect(refusals).toEqual({ language: "unknownLanguage" });
+  });
+
   function check(draft: EditionDraft) {
     return refusalsOf(draft, "fr");
   }
