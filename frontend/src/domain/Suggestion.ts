@@ -1,3 +1,5 @@
+import { nameOrder } from "./nameOrder";
+
 export interface Suggestion {
   before: string;
   matched: string;
@@ -10,7 +12,7 @@ export function suggestionsFor(
   locale: string,
 ): Suggestion[] {
   const text = folded(typed.trim(), locale);
-  return names.flatMap((name) => {
+  return [...names].sort(nameOrder(locale)).flatMap((name) => {
     const start = folded(name, locale).indexOf(text);
     if (start < 0) return [];
     const end = start + text.length;
@@ -25,8 +27,5 @@ export function suggestionsFor(
 }
 
 function folded(text: string, locale: string) {
-  return text
-    .normalize("NFD")
-    .replace(/\p{M}/gu, "")
-    .toLocaleLowerCase(locale);
+  return text.normalize("NFD").replace(/\p{M}/gu, "").toLocaleLowerCase(locale);
 }

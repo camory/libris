@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { suggestionsFor } from "./Suggestion";
+import { suggestionsFor, type Suggestion } from "./Suggestion";
 
 describe("suggestionsFor", () => {
   it("suggests the names that contain the text, ignoring case", () => {
@@ -19,4 +19,18 @@ describe("suggestionsFor", () => {
       { before: "One ", matched: "pie", after: "ce" },
     ]);
   });
+
+  it("sorts them by name in the reader's language", () => {
+    expect(
+      suggestionsFor(
+        "pi",
+        ["Pièces détachées", "Épiés", "One piece"],
+        "fr",
+      ).map(nameOf),
+    ).toEqual(["Épiés", "One piece", "Pièces détachées"]);
+  });
 });
+
+function nameOf(suggestion: Suggestion) {
+  return suggestion.before + suggestion.matched + suggestion.after;
+}
