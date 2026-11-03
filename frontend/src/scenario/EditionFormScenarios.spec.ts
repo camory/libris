@@ -358,7 +358,7 @@ describe("Edition form", () => {
     expect(field(screen, "Série").value).toBe("One pie");
   });
 
-  it.skip.each([
+  it.each([
     {
       case: "an empty title",
       label: "Titre",
