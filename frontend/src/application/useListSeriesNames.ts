@@ -11,7 +11,7 @@ export function useListSeriesNames(seriesApi: SeriesApi): {
     try {
       names.value = await seriesApi.names();
     } catch {
-      names.value = [];
+      names.value = null;
     }
   }
 
