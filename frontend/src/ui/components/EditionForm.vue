@@ -114,8 +114,8 @@ function typed(field: Field) {
   if (field === suggesting.value) chosen.value = false;
 }
 
-function choose(name: string) {
-  values.series = name;
+function choose(field: Field, name: string) {
+  values[field] = name;
   chosen.value = true;
 }
 
@@ -245,7 +245,7 @@ function add() {
               :key="nameOf(suggestion)"
               type="button"
               @mousedown.prevent
-              @click="choose(nameOf(suggestion))"
+              @click="choose(field, nameOf(suggestion))"
               class="mx-3.5 h-11 text-left text-field"
             >
               <span>{{ suggestion.before }}</span>

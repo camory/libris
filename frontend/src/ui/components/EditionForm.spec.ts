@@ -827,6 +827,22 @@ describe("EditionForm", () => {
     ]);
   });
 
+  it("fills Langue with the tapped word and closes them", async () => {
+    // Given
+    const fields = screen();
+    await fireEvent.focus(fields.getByRole("textbox", { name: "Langue" }));
+    await typeIn(fields, "Langue", "jap");
+
+    // When
+    await fireEvent.click(fields.getByRole("button", { name: "japonais" }));
+
+    // Then
+    expect(
+      fields.getByRole<HTMLInputElement>("textbox", { name: "Langue" }).value,
+    ).toBe("japonais");
+    expect(suggestions(fields)).toEqual([]);
+  });
+
   function suggestions(fields: ReturnType<typeof screen>) {
     return fields
       .queryAllByRole("button")
