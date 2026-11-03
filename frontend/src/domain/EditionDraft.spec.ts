@@ -112,6 +112,14 @@ describe("refusalsOf", () => {
     expect(refusals).toEqual({ year: "invalidNumber" });
   });
 
+  it("refuses a page count with a decimal", () => {
+    // When
+    const refusals = check({ ...filled, pages: "1,5" });
+
+    // Then
+    expect(refusals).toEqual({ pages: "invalidNumber" });
+  });
+
   function check(draft: EditionDraft) {
     return refusalsOf(draft, "fr");
   }
