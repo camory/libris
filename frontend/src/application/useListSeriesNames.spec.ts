@@ -14,7 +14,7 @@ describe("useListSeriesNames", () => {
     await list();
 
     // Then
-    expect(before).toEqual([]);
+    expect(before).toBeNull();
     expect(names.value).toEqual(["One piece", "Astérix"]);
   });
 

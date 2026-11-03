@@ -2,10 +2,10 @@ import { ref, type Ref } from "vue";
 import type { SeriesApi } from "./SeriesApi";
 
 export function useListSeriesNames(seriesApi: SeriesApi): {
-  names: Ref<string[]>;
+  names: Ref<string[] | null>;
   list: () => Promise<void>;
 } {
-  const names = ref<string[]>([]);
+  const names = ref<string[] | null>(null);
 
   async function list() {
     try {

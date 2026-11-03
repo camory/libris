@@ -27,7 +27,7 @@ const props = defineProps<{
   adding: boolean;
   failed: boolean;
   shownSource?: string | null;
-  seriesNames: string[];
+  seriesNames: string[] | null;
 }>();
 
 const emit = defineEmits<{
@@ -72,7 +72,7 @@ const seriesFocused = ref(false);
 const chosen = ref(false);
 const suggestions = computed(() =>
   seriesFocused.value && !chosen.value
-    ? suggestionsFor(values.series, props.seriesNames, locale.value)
+    ? suggestionsFor(values.series, props.seriesNames ?? [], locale.value)
     : [],
 );
 
