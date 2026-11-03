@@ -241,6 +241,7 @@ async function send(edition: SourceEdition) {
           :held="held"
           :copies="shownCopies"
           :covers="covers"
+          :shown-source="coverSource"
           @cover-source="coverSource = $event"
         >
           <template v-if="!held" #corner>

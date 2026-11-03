@@ -183,6 +183,24 @@ describe("IsbnView", () => {
     ).toBe("https://covers.openlibrary.org/b/id/1-L.jpg");
   });
 
+  it("keeps on the card the cover shown in the form", async () => {
+    // Given
+    const screen = open(new FakeIsbnApi(covered));
+    await ask(screen, "9782723488525");
+    await press(screen, "Modifier");
+    await press(screen, "Couverture Open Library");
+
+    // When
+    await press(screen, "Annuler les modifications");
+
+    // Then
+    expect(
+      screen
+        .getByRole("img", { name: "Couverture de Romance dawn" })
+        .getAttribute("src"),
+    ).toBe("https://covers.openlibrary.org/b/id/1-L.jpg");
+  });
+
   it("shows the card of an ISBN the house holds", async () => {
     // Given
     const screen = open(new FakeIsbnApi(held));
