@@ -726,6 +726,21 @@ describe("EditionForm", () => {
     expect(suggestions(fields)).toEqual([]);
   });
 
+  it("keeps the focus in Série while a row is pressed", async () => {
+    // Given
+    const fields = screen(onePiece1, [], [], { seriesNames: houseSeries });
+    await fireEvent.focus(fields.getByRole("textbox", { name: "Série" }));
+    await typeIn(fields, "Série", "one pi");
+
+    // When
+    const moved = fireEvent.mouseDown(
+      fields.getByRole("button", { name: "One piece" }),
+    );
+
+    // Then
+    expect(moved).toBe(false);
+  });
+
   function suggestions(fields: ReturnType<typeof screen>) {
     return fields
       .queryAllByRole("button")

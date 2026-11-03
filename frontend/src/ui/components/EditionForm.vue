@@ -208,6 +208,7 @@ function add() {
               v-for="suggestion in suggestions"
               :key="nameOf(suggestion)"
               type="button"
+              @mousedown.prevent
               @click="choose(nameOf(suggestion))"
               class="mx-3.5 h-11 text-left text-field"
             >
