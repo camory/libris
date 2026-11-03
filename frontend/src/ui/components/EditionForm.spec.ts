@@ -698,6 +698,20 @@ describe("EditionForm", () => {
     wrapper.unmount();
   });
 
+  it("offers them again on the next keystroke", async () => {
+    // Given
+    const fields = screen(onePiece1, [], [], { seriesNames: houseSeries });
+    await fireEvent.focus(fields.getByRole("textbox", { name: "Série" }));
+    await typeIn(fields, "Série", "one pi");
+    await fireEvent.click(fields.getByRole("button", { name: "One piece" }));
+
+    // When
+    await typeIn(fields, "Série", "pi");
+
+    // Then
+    expect(suggestions(fields)).toHaveLength(5);
+  });
+
   function suggestions(fields: ReturnType<typeof screen>) {
     return fields
       .queryAllByRole("button")

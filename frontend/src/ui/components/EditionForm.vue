@@ -68,9 +68,10 @@ const values = reactive<Record<(typeof fields)[number], string>>({
   pages: text(answered?.pageCount),
 });
 const summary = ref(text(answered?.summary));
-const suggesting = ref(false);
+const seriesFocused = ref(false);
+const chosen = ref(false);
 const suggestions = computed(() =>
-  suggesting.value
+  seriesFocused.value && !chosen.value
     ? suggestionsFor(values.series, props.seriesNames, locale.value)
     : [],
 );
@@ -80,12 +81,16 @@ function text(value: string | number | null | undefined) {
 }
 
 function focused(field: (typeof fields)[number]) {
-  if (field === "series") suggesting.value = true;
+  if (field === "series") seriesFocused.value = true;
+}
+
+function typed(field: (typeof fields)[number]) {
+  if (field === "series") chosen.value = false;
 }
 
 function choose(name: string) {
   values.series = name;
-  suggesting.value = false;
+  chosen.value = true;
 }
 
 function nameOf(suggestion: Suggestion) {
@@ -187,6 +192,7 @@ function add() {
             :inputmode="numeric.has(field) ? 'numeric' : undefined"
             :aria-invalid="refusals[field] ? 'true' : undefined"
             @focus="focused(field)"
+            @input="typed(field)"
             class="h-[50px] w-full rounded-xl border-[1.5px] border-border bg-surface px-3.5 text-field aria-invalid:border-danger"
           />
           <div
