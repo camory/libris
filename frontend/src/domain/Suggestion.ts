@@ -9,9 +9,9 @@ export function suggestionsFor(
   names: string[],
   locale: string,
 ): Suggestion[] {
-  const text = typed.toLocaleLowerCase(locale);
+  const text = folded(typed, locale);
   return names.flatMap((name) => {
-    const start = name.toLocaleLowerCase(locale).indexOf(text);
+    const start = folded(name, locale).indexOf(text);
     if (start < 0) return [];
     const end = start + text.length;
     return [
@@ -22,4 +22,11 @@ export function suggestionsFor(
       },
     ];
   });
+}
+
+function folded(text: string, locale: string) {
+  return text
+    .normalize("NFD")
+    .replace(/\p{M}/gu, "")
+    .toLocaleLowerCase(locale);
 }

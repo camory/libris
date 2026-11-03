@@ -7,4 +7,10 @@ describe("suggestionsFor", () => {
       { before: "One ", matched: "pie", after: "ce" },
     ]);
   });
+
+  it("ignores the accents", () => {
+    expect(suggestionsFor("pie", ["Épiés"], "fr")).toEqual([
+      { before: "É", matched: "pié", after: "s" },
+    ]);
+  });
 });
