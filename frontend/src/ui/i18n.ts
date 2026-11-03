@@ -107,6 +107,7 @@ const fr = {
         missing: "Titre manquant",
         invalidNumber: "Nombre invalide",
         unknownLanguage: "Langue inconnue",
+        withoutSeries: "Tome sans série",
       },
     },
   },

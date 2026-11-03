@@ -475,6 +475,21 @@ describe("EditionForm", () => {
     expect(isRefused(screen, "Année")).toBe(true);
   });
 
+  it("says Tome sans série under a volume number with no series", async () => {
+    // Given
+    const wrapper = form({ ...onePiece1, kind: "BOOK" });
+    const screen = within(wrapper.element as HTMLElement);
+    await typeIn(screen, "Série", "");
+
+    // When
+    await tapAdd(screen);
+
+    // Then
+    expect(wrapper.emitted("add")).toBeUndefined();
+    expect(wrapper.text()).toMatch(/Tome.*Tome sans série.*Auteurs/s);
+    expect(isRefused(screen, "Tome")).toBe(true);
+  });
+
   it("says Langue inconnue under a word naming no language", async () => {
     // Given
     const wrapper = form(onePiece1);
