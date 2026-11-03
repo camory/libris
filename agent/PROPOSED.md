@@ -509,3 +509,8 @@
   (`DockedAdd`, `EditionForm`, `IsbnView`, `HomeView`…); one component of
   `ui/components` would draw it once (found on T124, out of its scope:
   `ui/views` is outside its footprint).
+- 2026-11-03 Frontend: `EditionForm` and `ReaderChoice` call
+  `scrollIntoView?.(…)` only because jsdom lacks it; a vitest `setupFiles`
+  entry defining it as a no-op on `Element.prototype` would let both call
+  it plainly, the two gotchas on jsdom's missing `scrollIntoView` rewritten
+  as one (found on T124's review, Tophe).
