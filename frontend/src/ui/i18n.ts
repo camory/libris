@@ -91,6 +91,9 @@ const fr = {
       title: "Titre",
       subtitle: "Sous-titre",
       series: "Série",
+      seriesNameStatus: {
+        existing: "Existante",
+      },
       volume: {
         BOOK: "Tome",
         BD: "Album",

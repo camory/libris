@@ -1,4 +1,4 @@
-import { BookOpen } from "@lucide/vue";
+import { BookOpen, Check } from "@lucide/vue";
 import { fireEvent, within } from "@testing-library/dom";
 import { mount } from "@vue/test-utils";
 import { afterEach, describe, expect, it, vi } from "vitest";
@@ -775,6 +775,17 @@ describe("EditionForm", () => {
     expect(scrollIntoView.mock.contexts[0]).toBe(series);
   });
 
+  it("says Existante in Série for a series of the house", () => {
+    // When
+    const wrapper = form(onePiece1, [], [], { seriesNames: houseSeries });
+
+    // Then
+    const fields = within(wrapper.element as HTMLElement);
+    expect(fields.getByText("Existante")).toBeTruthy();
+    expect(wrapper.findAllComponents(Check)).toHaveLength(1);
+    expect(fields.queryByText("Nouvelle")).toBeNull();
+  });
+
   function suggestions(fields: ReturnType<typeof screen>) {
     return fields
       .queryAllByRole("button")
@@ -851,14 +862,14 @@ describe("EditionForm", () => {
       corner,
       shownSource,
       attachTo,
-      seriesNames = [],
+      seriesNames = null,
     }: {
       adding?: boolean;
       failed?: boolean;
       corner?: string;
       shownSource?: string;
       attachTo?: HTMLElement;
-      seriesNames?: string[];
+      seriesNames?: string[] | null;
     } = {},
   ) {
     return mount(EditionForm, {

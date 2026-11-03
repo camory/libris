@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { CircleAlert } from "@lucide/vue";
+import { Check, CircleAlert } from "@lucide/vue";
 import { computed, reactive, ref, useId } from "vue";
 import { useI18n } from "vue-i18n";
 import type { Copy } from "../../domain/Copy";
@@ -12,6 +12,7 @@ import {
   type Refusals,
 } from "../../domain/EditionDraft";
 import { languageWord } from "../../domain/Language";
+import { seriesNameStatus } from "../../domain/Series";
 import type { Kind, SourceEdition } from "../../domain/SourceEdition";
 import { nameOf, suggestionsFor } from "../../domain/Suggestion";
 import AuthorLines from "./AuthorLines.vue";
@@ -74,6 +75,10 @@ const suggestions = computed(() =>
   seriesFocused.value && !chosen.value
     ? suggestionsFor(values.series, props.seriesNames ?? [], locale.value)
     : [],
+);
+
+const seriesStatus = computed(() =>
+  seriesNameStatus(values.series, props.seriesNames, locale.value),
 );
 
 function text(value: string | number | null | undefined) {
@@ -186,20 +191,29 @@ function add() {
           <label class="text-label text-muted" :for="`${id}-${field}`">
             {{ t(labelOf(field)) }}
           </label>
-          <input
-            :id="`${id}-${field}`"
-            :ref="(box) => (boxes[field] = box as HTMLInputElement)"
-            v-model="values[field]"
-            type="text"
-            :disabled="adding"
-            :inputmode="numeric.has(field) ? 'numeric' : undefined"
-            :aria-invalid="refusals[field] ? 'true' : undefined"
-            @focus="focused(field)"
-            @blur="left(field)"
-            @input="typed(field)"
-            class="h-[50px] w-full rounded-xl border-[1.5px] border-border bg-surface px-3.5 text-field aria-invalid:border-danger"
-            :class="{ 'scroll-mt-28': field === 'series' }"
-          />
+          <div class="relative">
+            <input
+              :id="`${id}-${field}`"
+              :ref="(box) => (boxes[field] = box as HTMLInputElement)"
+              v-model="values[field]"
+              type="text"
+              :disabled="adding"
+              :inputmode="numeric.has(field) ? 'numeric' : undefined"
+              :aria-invalid="refusals[field] ? 'true' : undefined"
+              @focus="focused(field)"
+              @blur="left(field)"
+              @input="typed(field)"
+              class="h-[50px] w-full rounded-xl border-[1.5px] border-border bg-surface px-3.5 text-field aria-invalid:border-danger"
+              :class="{ 'scroll-mt-28': field === 'series' }"
+            />
+            <span
+              v-if="field === 'series' && seriesStatus"
+              class="pointer-events-none absolute inset-y-0 right-3.5 flex items-center gap-2 text-body font-semibold text-accent"
+            >
+              <Check :size="22" class="shrink-0" />
+              {{ t(`isbn.form.seriesNameStatus.${seriesStatus}`) }}
+            </span>
+          </div>
           <div
             v-if="field === 'series' && suggestions.length"
             class="-mt-1 flex flex-col divide-y divide-border rounded-xl border-[1.5px] border-border bg-surface"
