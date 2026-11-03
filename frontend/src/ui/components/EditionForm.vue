@@ -198,6 +198,7 @@ function add() {
             @blur="left(field)"
             @input="typed(field)"
             class="h-[50px] w-full rounded-xl border-[1.5px] border-border bg-surface px-3.5 text-field aria-invalid:border-danger"
+            :class="{ 'scroll-mt-28': field === 'series' }"
           />
           <div
             v-if="field === 'series' && suggestions.length"
