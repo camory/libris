@@ -130,7 +130,7 @@ green already and guard every frontend task.
       the `fr` catalogue (U08). Realises S10 field by field; un-skips the
       frontend test of S10 field by field, its six cases.
 
-- [ ] T125 Frontend: the kind's words, and a tome without a series.
+- [x] T125 Frontend: the kind's words, and a tome without a series.
       Choosing a kind rewords the form: *Album* for a BD, *Tome* for Livre
       and Manga, the authors' roles in the kind's words, keyed by the kind
       as the card's (U06), proven by the form's component test. A volume
