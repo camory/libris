@@ -198,13 +198,27 @@ describe("EditionForm", () => {
     ).toEqual(["Manga"]);
   });
 
+  it("names the volume field Album for a BD", async () => {
+    // Given
+    const fields = screen();
+
+    // When
+    await fireEvent.change(fields.getByRole("radio", { name: "BD" }), {
+      target: { checked: true },
+    });
+
+    // Then
+    expect(fields.getByRole("textbox", { name: "Album" })).toBeDefined();
+    expect(fields.queryByRole("textbox", { name: "Tome" })).toBeNull();
+  });
+
   it("shows the authors as the card words them", () => {
     // When
     const text = show(asterix1);
 
     // Then
     const positions = [
-      "Tome",
+      "Album",
       "Auteurs",
       "René Goscinny · scénario",
       "Albert Uderzo · dessin",

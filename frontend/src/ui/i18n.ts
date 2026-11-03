@@ -91,7 +91,11 @@ const fr = {
       title: "Titre",
       subtitle: "Sous-titre",
       series: "Série",
-      volume: "Tome",
+      volume: {
+        BOOK: "Tome",
+        BD: "Album",
+        MANGA: "Tome",
+      },
       authors: "Auteurs",
       collection: "Collection",
       publisher: "Éditeur",

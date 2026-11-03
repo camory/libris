@@ -70,6 +70,12 @@ function text(value: string | number | null | undefined) {
   return value == null ? "" : String(value);
 }
 
+function labelOf(field: (typeof fields)[number]) {
+  return field === "volume"
+    ? `isbn.form.volume.${kind.value}`
+    : `isbn.form.${field}`;
+}
+
 const id = useId();
 const refusals = ref<Refusals>({});
 const boxes: Partial<Record<(typeof fields)[number], HTMLInputElement>> = {};
@@ -142,7 +148,7 @@ function add() {
       <template v-for="field in fields" :key="field">
         <div class="flex flex-col gap-2">
           <label class="text-label text-muted" :for="`${id}-${field}`">
-            {{ t(`isbn.form.${field}`) }}
+            {{ t(labelOf(field)) }}
           </label>
           <input
             :id="`${id}-${field}`"
