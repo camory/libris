@@ -110,6 +110,9 @@ async function toggleCamera() {
 }
 
 async function search() {
+  if (scanning.value) {
+    barcodeScanner.stop();
+  }
   edition.value = undefined;
   unknownIsbn13.value = undefined;
   copies.value = [];

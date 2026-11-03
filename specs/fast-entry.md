@@ -146,7 +146,8 @@ States:
   again as left when the camera closes (edition-form S14). The camera opens by itself on arrival when the browser has a
   detector and the reader allowed it; *Ready* is the screen without a
   detector, after a refused camera or after the cross. The first EAN-13 read
-  closes it and runs the lookup; the cross closes it.
+  closes it and runs the lookup, as *Chercher* does with the typed text; the
+  cross closes it.
 - **Searching**: a spinner takes the place of the button's glyph, its label
   reads *Recherche en cours…* and it accepts nothing; a grey placeholder of
   the card takes its place below.
