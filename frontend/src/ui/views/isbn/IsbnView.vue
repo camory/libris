@@ -64,6 +64,15 @@ const shownCopies = computed(() =>
     : copies.value,
 );
 const scanning = ref(false);
+const answerShown = computed(() => {
+  if (scanning.value) {
+    return null;
+  }
+  if (addState.value.status === "added" && sent.value) {
+    return "added";
+  }
+  return editing.value || !edition.value ? "form" : "card";
+});
 const canScan = ref(false);
 const camera = useTemplateRef<HTMLVideoElement>("camera");
 
@@ -206,38 +215,43 @@ async function send(edition: SourceEdition) {
 
     <SourceEditionCardSkeleton v-if="searching" class="mt-5" />
 
-    <div v-else-if="shownIsbn13" class="mt-5 flex flex-col">
-      <SourceEditionCard
-        v-if="addState.status === 'added' && sent"
-        :edition="sent"
-        :held="held"
-        :copies="shownCopies"
-        :covers="sentCovers"
-      />
-      <EditionForm
-        v-else-if="editing || !edition"
-        :isbn13="shownIsbn13"
-        :edition="edition"
-        :copies="shownCopies"
-        :covers="covers"
-        :shown-source="coverSource"
-        :adding="adding"
-        :failed="failed"
-        @cover-source="coverSource = $event"
-        @add="send($event)"
-      >
-        <template v-if="editing" #corner>
-          <IconButton
-            :label="t('isbn.cancelEdit')"
-            :disabled="adding"
-            @click="editing = false"
-          >
-            <X :size="22" class="shrink-0" />
-          </IconButton>
-        </template>
-      </EditionForm>
-      <template v-else>
+    <div
+      v-else-if="shownIsbn13"
+      class="flex flex-col"
+      :class="{ 'mt-5': !scanning }"
+    >
+      <KeepAlive :max="1">
         <SourceEditionCard
+          v-if="answerShown === 'added' && sent"
+          :edition="sent"
+          :held="held"
+          :copies="shownCopies"
+          :covers="sentCovers"
+        />
+        <EditionForm
+          v-else-if="answerShown === 'form'"
+          :isbn13="shownIsbn13"
+          :edition="edition"
+          :copies="shownCopies"
+          :covers="covers"
+          :shown-source="coverSource"
+          :adding="adding"
+          :failed="failed"
+          @cover-source="coverSource = $event"
+          @add="send($event)"
+        >
+          <template v-if="editing" #corner>
+            <IconButton
+              :label="t('isbn.cancelEdit')"
+              :disabled="adding"
+              @click="editing = false"
+            >
+              <X :size="22" class="shrink-0" />
+            </IconButton>
+          </template>
+        </EditionForm>
+        <SourceEditionCard
+          v-else-if="answerShown === 'card' && edition"
           :edition="edition"
           :held="held"
           :copies="shownCopies"
@@ -256,8 +270,13 @@ async function send(edition: SourceEdition) {
             </IconButton>
           </template>
         </SourceEditionCard>
-        <DockedAdd :adding="adding" :failed="failed" @add="send(edition)" />
-      </template>
+      </KeepAlive>
+      <DockedAdd
+        v-if="answerShown === 'card' && edition"
+        :adding="adding"
+        :failed="failed"
+        @add="send(edition)"
+      />
     </div>
 
     <p v-if="message" class="mt-5 flex items-start gap-2 text-body text-danger">

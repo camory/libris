@@ -6,7 +6,7 @@ import {
 } from "@testing-library/dom";
 import { Search, X } from "@lucide/vue";
 import { flushPromises, mount } from "@vue/test-utils";
-import { describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it } from "vitest";
 import { barcodeScannerKey } from "../../../application/BarcodeScanner";
 import {
   bookshelfApiKey,
@@ -49,6 +49,14 @@ const covered: IsbnAnswer = {
   ],
 };
 
+const summarised: IsbnAnswer = {
+  ...covered,
+  edition: {
+    ...onePiece1,
+    summary: "Luffy prend la mer pour devenir le roi des pirates.",
+  },
+};
+
 const held: IsbnAnswer = {
   ...found,
   id: "8b3f4e5d-6c7a-4b8c-9d0e-1f2a3b4c5d6e",
@@ -88,6 +96,11 @@ const added: AddAnswer = {
 const neverRead = new Promise<string | null>(() => {});
 
 describe("IsbnView", () => {
+  afterEach(() => {
+    Reflect.deleteProperty(HTMLElement.prototype, "scrollHeight");
+    Reflect.deleteProperty(HTMLElement.prototype, "clientHeight");
+  });
+
   it("renders the title and the hint", () => {
     const screen = open(new FakeIsbnApi(unknownIsbn));
 
@@ -560,6 +573,69 @@ describe("IsbnView", () => {
     expect(scanner.readsInto).toHaveLength(2);
   });
 
+  it("gives the camera the place of the card", async () => {
+    // Given
+    const screen = await answeredUnderClosedCamera(new FakeIsbnApi(found));
+
+    // When
+    await press(screen, "Scanner le code-barres");
+
+    // Then
+    expect(
+      screen.getByRole("button", { name: "Fermer la caméra" }),
+    ).toBeDefined();
+    expect(screen.queryByRole("heading", { name: "Romance dawn" })).toBeNull();
+    expect(screen.queryByRole("button", { name: "Modifier" })).toBeNull();
+    expect(
+      screen.queryByRole("button", { name: "Ajouter à ma bibliothèque" }),
+    ).toBeNull();
+  });
+
+  it("shows the card again as left when the camera closes", async () => {
+    // Given
+    summaryMeasures({ scrollHeight: 240, clientHeight: 118 });
+    const screen = await answeredUnderClosedCamera(new FakeIsbnApi(summarised));
+    await press(screen, "Couverture Open Library");
+    await press(screen, "Lire la suite");
+    await press(screen, "Scanner le code-barres");
+
+    // When
+    await press(screen, "Fermer la caméra");
+
+    // Then
+    expect(
+      screen
+        .getByRole("img", { name: "Couverture de Romance dawn" })
+        .getAttribute("src"),
+    ).toBe("https://covers.openlibrary.org/b/id/1-L.jpg");
+    expect(screen.queryByRole("button", { name: "Lire la suite" })).toBeNull();
+    expect(screen.getByRole("button", { name: "Modifier" })).toBeDefined();
+  });
+
+  it("replaces the form by the answer of the code the camera reads", async () => {
+    // Given
+    const screen = open(
+      new FakeIsbnApi(found),
+      new FakeBarcodeScanner(true, "9782723488525"),
+    );
+    await flushPromises();
+    await press(screen, "Modifier");
+    await fireEvent.input(screen.getByRole("textbox", { name: "Titre" }), {
+      target: { value: "Romance Dawn" },
+    });
+
+    // When
+    await press(screen, "Scanner le code-barres");
+
+    // Then
+    expect(screen.getByRole("heading", { name: "Romance dawn" })).toBeDefined();
+    expect(screen.queryByRole("textbox", { name: "Titre" })).toBeNull();
+    await press(screen, "Modifier");
+    expect(
+      screen.getByRole<HTMLInputElement>("textbox", { name: "Titre" }).value,
+    ).toBe("Romance dawn");
+  });
+
   it("says nothing when the reader refuses the camera", async () => {
     // Given
     const scanner = new FakeBarcodeScanner(true, null);
@@ -979,6 +1055,14 @@ describe("IsbnView", () => {
     return within(mountView(api, scanner, bookshelfApi).element as HTMLElement);
   }
 
+  async function answeredUnderClosedCamera(api: IsbnApi) {
+    const screen = open(api, new FakeBarcodeScanner(true, neverRead));
+    await flushPromises();
+    await press(screen, "Fermer la caméra");
+    await ask(screen, "9782723488525");
+    return screen;
+  }
+
   function mountView(
     api: IsbnApi,
     scanner: FakeBarcodeScanner = new FakeBarcodeScanner(false),
@@ -995,6 +1079,18 @@ describe("IsbnView", () => {
         },
       },
     });
+  }
+
+  function summaryMeasures(measures: {
+    scrollHeight: number;
+    clientHeight: number;
+  }) {
+    for (const [name, value] of Object.entries(measures)) {
+      Object.defineProperty(HTMLElement.prototype, name, {
+        configurable: true,
+        get: () => value,
+      });
+    }
   }
 
   async function ask(screen: Screen, text: string) {

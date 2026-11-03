@@ -158,7 +158,7 @@ describe("Edition form", () => {
     );
   });
 
-  it.skip("S14 The camera takes the place of the answer", async () => {
+  it("S14 The camera takes the place of the answer", async () => {
     // Given
     const screen = await formOfOnePiece1({
       scanner: new FakeBarcodeScanner(true, new Promise(() => {})),

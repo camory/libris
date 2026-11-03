@@ -226,3 +226,24 @@ Format:
   the card's pencil and dots accept nothing while the add runs, in
   `agent/PROPOSED.md`; the two `DESIGN` amendments proposed in the PR
   body; S14 and the camera taking the answer's place are T129's.
+
+## 2026-11-03 — T129 The camera takes the place of the answer — done
+- Did: while the camera is open on the lookup screen it alone fills the
+  space under the ISBN field; closed, the card or the form shows again as
+  the reader left it, edits, tapped cover and unfolded summary kept; S14
+  runs green.
+- Decided: `<KeepAlive :max="1">` around the answer's `v-if` chain, so
+  that the camera, which leaves no component, only deactivates the one
+  shown, while every other switch (pencil, cross, add) mounts the next
+  and prunes the cached one; the chain reads a computed `answerShown`,
+  `null` while scanning; the view's dock moved after the `KeepAlive`,
+  drawn with the card alone; the block keeps its place while the camera is
+  open and drops its `mt-5` then.
+- Deviations from the brief: S14 un-skipped and its red read (the form
+  under the camera) before step 1, as the implementer's rules order; the
+  step 3 mutation (`include="EditionForm"`) also reds S13, since a card
+  kept out of the cache never prunes the form.
+- Left over: the checks by hand on the Pixel (the camera as large over a
+  card or a form as on arrival, nothing under it; the card or the form
+  back in place on the cross, the dock under it); the message and the
+  skeleton while the camera is open, in `agent/PROPOSED.md`.
