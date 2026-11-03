@@ -490,3 +490,8 @@
   whether "the spaces at its ends" of PRD §3 means every whitespace, and
   whether the backend then trims the name before it is stored, the index
   following (found by the reviewer on T120, Tophe 2026-11-01).
+- 2026-11-03 Frontend: `IconButton` draws the icon button of U04 in
+  `IsbnView` alone; `HomeView`, `BookshelfView`, `ReaderChoice`,
+  `BookshelfRow` and `NewBookshelfRow` still write its box by hand, some
+  with a margin, `relative` or `text-muted` of their own. Move them onto
+  it, one refactor, their tests unchanged (found on T128's fix-ups, Tophe).

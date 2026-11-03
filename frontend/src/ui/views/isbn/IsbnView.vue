@@ -23,6 +23,7 @@ import type { SourceEdition } from "../../../domain/SourceEdition";
 import BusySpinner from "../../components/BusySpinner.vue";
 import DockedAdd from "../../components/DockedAdd.vue";
 import EditionForm from "../../components/EditionForm.vue";
+import IconButton from "../../components/IconButton.vue";
 import SourceEditionCard from "../../components/SourceEditionCard.vue";
 import SourceEditionCardSkeleton from "../../components/SourceEditionCardSkeleton.vue";
 
@@ -153,16 +154,15 @@ async function send(edition: SourceEdition) {
             class="h-[50px] w-full rounded-xl border-[1.5px] bg-surface pr-13 pl-3.5 text-field tabular-nums placeholder:text-muted"
             :class="refused ? 'border-danger' : 'border-border'"
           />
-          <button
+          <IconButton
             v-if="canScan"
-            type="button"
-            :aria-label="scanning ? t('isbn.closeCamera') : t('isbn.scan')"
-            class="absolute top-1/2 right-[3px] flex size-11 -translate-y-1/2 items-center justify-center rounded-[10px] text-accent"
+            :label="scanning ? t('isbn.closeCamera') : t('isbn.scan')"
+            class="absolute top-1/2 right-[3px] -translate-y-1/2"
             @click="toggleCamera"
           >
             <X v-if="scanning" :size="22" class="shrink-0" />
             <ScanBarcode v-else :size="22" class="shrink-0" />
-          </button>
+          </IconButton>
         </div>
         <button
           type="button"
@@ -227,15 +227,13 @@ async function send(edition: SourceEdition) {
         @add="send($event)"
       >
         <template v-if="editing" #corner>
-          <button
-            type="button"
-            :aria-label="t('isbn.cancelEdit')"
+          <IconButton
+            :label="t('isbn.cancelEdit')"
             :disabled="adding"
-            class="flex size-11 shrink-0 items-center justify-center rounded-[10px] text-accent"
             @click="editing = false"
           >
             <X :size="22" class="shrink-0" />
-          </button>
+          </IconButton>
         </template>
       </EditionForm>
       <template v-else>
@@ -249,15 +247,13 @@ async function send(edition: SourceEdition) {
           @cover-source="coverSource = $event"
         >
           <template v-if="!held" #corner>
-            <button
-              type="button"
-              :aria-label="t('isbn.edit')"
-            :disabled="adding"
-              class="flex size-11 shrink-0 items-center justify-center rounded-[10px] text-accent"
+            <IconButton
+              :label="t('isbn.edit')"
+              :disabled="adding"
               @click="editing = true"
             >
               <Pencil :size="22" class="shrink-0" />
-            </button>
+            </IconButton>
           </template>
         </SourceEditionCard>
         <DockedAdd :adding="adding" :failed="failed" @add="send(edition)" />

@@ -239,7 +239,9 @@ Read whole by a run that changes `frontend/`, after `every-run.md`.
   `IsbnView` fills it with the pencil *Modifier* on the card of an ISBN
   the house lacks and the cross *Annuler les modifications* on the form
   that pencil opens (`editing`), both disabled while `adding`, as the
-  card's dots. Its
+  card's dots, each an `IconButton` (prop `label`, the icon in its
+  default slot, `class`, `disabled` and `@click` falling through to its
+  `button`), as the camera's toggle. Its
   callers are `IsbnView`, for every found answer, and
   `EditionPageView`, which passes the stored cover as the one candidate
   `{ source: "Libris", url }`, `held`, `page-title`. Its spec's `card()`,
