@@ -36,6 +36,9 @@ true; the diary keeps the date it was found.
   such a list from a script file written with the Write tool.
 - `git checkout <file>` reverts to the last commit, not to the working tree:
   commit the cycle before a mutation check.
+- A commit subject over 72 characters is a review finding, and a subject
+  naming the field and the message runs past it: count before the push
+  with `git log --format=%s origin/main.. | awk 'length > 72'`.
 - `gh pr edit N --body-file <file>` updates a body (it worked on
   2026-10-19); it once failed here with a GraphQL error about classic
   Projects, and then `gh api -X PATCH repos/camory/libris/pulls/N -F
