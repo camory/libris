@@ -857,6 +857,35 @@ describe("EditionForm", () => {
     expect(suggestions(fields)).toEqual([]);
   });
 
+  it("says no word in Langue", async () => {
+    // Given
+    const fields = screen(onePiece1, [], [], { seriesNames: houseSeries });
+    await typeIn(fields, "Série", "");
+
+    // When
+    await typeIn(fields, "Langue", "japonais");
+
+    // Then
+    expect(fields.queryByText("Existante")).toBeNull();
+    expect(fields.queryByText("Nouvelle")).toBeNull();
+  });
+
+  it("does not scroll Langue on focus", async () => {
+    // Given
+    const scrollIntoView = vi.fn();
+    Object.defineProperty(HTMLElement.prototype, "scrollIntoView", {
+      configurable: true,
+      value: scrollIntoView,
+    });
+    const fields = screen(onePiece1, [], [], { seriesNames: houseSeries });
+
+    // When
+    await fireEvent.focus(fields.getByRole("textbox", { name: "Langue" }));
+
+    // Then
+    expect(scrollIntoView).not.toHaveBeenCalled();
+  });
+
   function suggestions(fields: ReturnType<typeof screen>) {
     return fields
       .queryAllByRole("button")
