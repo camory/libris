@@ -212,6 +212,22 @@ describe("EditionForm", () => {
     expect(fields.queryByRole("textbox", { name: "Tome" })).toBeNull();
   });
 
+  it("names it Tome again for a Manga", async () => {
+    // Given
+    const fields = screen();
+    await fireEvent.change(fields.getByRole("radio", { name: "BD" }), {
+      target: { checked: true },
+    });
+
+    // When
+    await fireEvent.change(fields.getByRole("radio", { name: "Manga" }), {
+      target: { checked: true },
+    });
+
+    // Then
+    expect(fields.getByRole("textbox", { name: "Tome" })).toBeDefined();
+  });
+
   it("shows the authors as the card words them", () => {
     // When
     const text = show(asterix1);
