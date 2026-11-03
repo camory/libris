@@ -84,6 +84,10 @@ function focused(field: (typeof fields)[number]) {
   if (field === "series") seriesFocused.value = true;
 }
 
+function left(field: (typeof fields)[number]) {
+  if (field === "series") seriesFocused.value = false;
+}
+
 function typed(field: (typeof fields)[number]) {
   if (field === "series") chosen.value = false;
 }
@@ -192,6 +196,7 @@ function add() {
             :inputmode="numeric.has(field) ? 'numeric' : undefined"
             :aria-invalid="refusals[field] ? 'true' : undefined"
             @focus="focused(field)"
+            @blur="left(field)"
             @input="typed(field)"
             class="h-[50px] w-full rounded-xl border-[1.5px] border-border bg-surface px-3.5 text-field aria-invalid:border-danger"
           />

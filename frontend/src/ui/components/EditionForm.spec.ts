@@ -712,6 +712,20 @@ describe("EditionForm", () => {
     expect(suggestions(fields)).toHaveLength(5);
   });
 
+  it("closes them when Série is left", async () => {
+    // Given
+    const fields = screen(onePiece1, [], [], { seriesNames: houseSeries });
+    const series = fields.getByRole("textbox", { name: "Série" });
+    await fireEvent.focus(series);
+    await typeIn(fields, "Série", "pie");
+
+    // When
+    await fireEvent.blur(series);
+
+    // Then
+    expect(suggestions(fields)).toEqual([]);
+  });
+
   function suggestions(fields: ReturnType<typeof screen>) {
     return fields
       .queryAllByRole("button")
