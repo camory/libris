@@ -1,11 +1,19 @@
 import { describe, expect, it } from "vitest";
-import { seriesInOrder, type Series } from "./Series";
+import { seriesInOrder, seriesNameStatus, type Series } from "./Series";
 
 describe("seriesInOrder", () => {
   it("sorts the series by name, ignoring case and accents", () => {
     expect(
       seriesInOrder([onePiece, emileEtMargot, dragonQuest, asterix], "fr"),
     ).toEqual([asterix, dragonQuest, emileEtMargot, onePiece]);
+  });
+});
+
+describe("seriesNameStatus", () => {
+  const names = ["One piece", "Astérix"];
+
+  it("says new for a name the house does not hold", () => {
+    expect(seriesNameStatus("One pie", names, "fr")).toBe("new");
   });
 });
 

@@ -18,3 +18,13 @@ export function seriesInOrder(series: Series[], locale: string): Series[] {
   const byName = nameOrder(locale);
   return [...series].sort((a, b) => byName(a.name, b.name));
 }
+
+export type SeriesNameStatus = "existing" | "new";
+
+export function seriesNameStatus(
+  typed: string,
+  names: string[] | null,
+  locale: string,
+): SeriesNameStatus | null {
+  return "new";
+}
