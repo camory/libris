@@ -51,9 +51,9 @@ export type Refusals = Partial<
 export function refusalsOf(draft: EditionDraft, locale: string): Refusals {
   const refusals: Refusals = {};
   if (text(draft.title) === null) refusals.title = "missing";
-  if (!isWholeNumber(draft.volume)) refusals.volume = "invalidNumber";
-  if (!isWholeNumber(draft.year)) refusals.year = "invalidNumber";
-  if (!isWholeNumber(draft.pages)) refusals.pages = "invalidNumber";
+  for (const field of ["volume", "year", "pages"] as const) {
+    if (!isWholeNumber(draft[field])) refusals[field] = "invalidNumber";
+  }
   return refusals;
 }
 
