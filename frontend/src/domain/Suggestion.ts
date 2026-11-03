@@ -34,6 +34,7 @@ function folded(character: string, locale: string) {
   return character
     .normalize("NFD")
     .replace(/\p{M}/gu, "")
+    .toLocaleUpperCase(locale)
     .toLocaleLowerCase(locale);
 }
 

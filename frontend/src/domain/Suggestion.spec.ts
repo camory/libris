@@ -70,4 +70,10 @@ describe("suggestionsFor", () => {
       { before: "", matched: "ΟΔΟΣ", after: "" },
     ]);
   });
+
+  it("folds a final sigma as a sigma", () => {
+    expect(suggestionsFor("ΟΔΟΣ", ["Οδός"], "fr")).toEqual([
+      { before: "", matched: "Οδός", after: "" },
+    ]);
+  });
 });
