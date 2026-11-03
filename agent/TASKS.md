@@ -26,12 +26,11 @@ moves in T119 with the operation, and T120 matches a series' name as PRD
 §3 says. The frontend pin moves in T121, once T120 is deployed; each task
 after it adds one scenario to the form. Since the spec's revision of
 2026-11-03 (#326), an ISBN the house lacks shows its card first and the
-form opens from its pencil; T128 puts T122's and T123's form behind
-that pencil before any field rule, every later scenario test reaching the
-form through it (#327), and T129 gives the camera the answer's place. No
-other task touches the contract
-(D04). The frontend tests of S2, S3 and S4 run green already and guard
-every frontend task.
+form opens from its pencil; T128 puts T122's and T123's form behind that
+pencil before any field rule, every later scenario test reaching the form
+through it (#327), and T129 gives the camera the answer's place. No other
+task touches the contract (D04). The frontend tests of S2, S3 and S4 run
+green already and guard every frontend task.
 
 - [x] T119 Backend: the series names on `v0.15.0`.
       `ApiContractTest` pins `v0.15.0`, the backend's one bump (D04).
