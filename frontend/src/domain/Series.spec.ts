@@ -23,6 +23,10 @@ describe("seriesNameStatus", () => {
   it("ignores the accents", () => {
     expect(seriesNameStatus("asterix", names, "fr")).toBe("existing");
   });
+
+  it("ignores the spaces at the text's ends", () => {
+    expect(seriesNameStatus(" one piece ", names, "fr")).toBe("existing");
+  });
 });
 
 const onePiece: Series = {
