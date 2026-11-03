@@ -228,6 +228,7 @@ async function send(edition: SourceEdition) {
             type="button"
             :aria-label="t('isbn.cancelEdit')"
             class="flex size-11 shrink-0 items-center justify-center rounded-[10px] text-accent"
+            @click="editing = false"
           >
             <X :size="22" class="shrink-0" />
           </button>

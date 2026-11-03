@@ -137,6 +137,24 @@ describe("IsbnView", () => {
     expect(screen.queryByRole("button", { name: "Modifier" })).toBeNull();
   });
 
+  it("shows the card as answered again from the cross", async () => {
+    // Given
+    const screen = open(new FakeIsbnApi(found));
+    await ask(screen, "9782723488525");
+    await press(screen, "Modifier");
+    await fireEvent.input(screen.getByRole("textbox", { name: "Titre" }), {
+      target: { value: "Romance Dawn" },
+    });
+
+    // When
+    await press(screen, "Annuler les modifications");
+
+    // Then
+    expect(screen.getByRole("heading", { name: "Romance dawn" })).toBeDefined();
+    expect(screen.queryByRole("textbox", { name: "Titre" })).toBeNull();
+    expect(screen.getByRole("button", { name: "Modifier" })).toBeDefined();
+  });
+
   it("shows the card of an ISBN the house holds", async () => {
     // Given
     const screen = open(new FakeIsbnApi(held));
