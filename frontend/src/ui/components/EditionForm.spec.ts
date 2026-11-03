@@ -490,6 +490,23 @@ describe("EditionForm", () => {
     expect(isRefused(screen, "Tome")).toBe(true);
   });
 
+  it("says Album sans série for a BD", async () => {
+    // Given
+    const wrapper = form(onePiece1);
+    const screen = within(wrapper.element as HTMLElement);
+    await fireEvent.change(screen.getByRole("radio", { name: "BD" }), {
+      target: { checked: true },
+    });
+    await typeIn(screen, "Série", "");
+
+    // When
+    await tapAdd(screen);
+
+    // Then
+    expect(wrapper.text()).toContain("Album sans série");
+    expect(isRefused(screen, "Album")).toBe(true);
+  });
+
   it("says Langue inconnue under a word naming no language", async () => {
     // Given
     const wrapper = form(onePiece1);

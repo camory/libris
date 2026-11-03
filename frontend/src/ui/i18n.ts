@@ -107,7 +107,11 @@ const fr = {
         missing: "Titre manquant",
         invalidNumber: "Nombre invalide",
         unknownLanguage: "Langue inconnue",
-        withoutSeries: "Tome sans série",
+        withoutSeries: {
+          BOOK: "Tome sans série",
+          BD: "Album sans série",
+          MANGA: "Tome sans série",
+        },
       },
     },
   },

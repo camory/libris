@@ -8,6 +8,7 @@ import {
   editionOf,
   refusalsOf,
   type EditionDraft,
+  type Refusal,
   type Refusals,
 } from "../../domain/EditionDraft";
 import { languageWord } from "../../domain/Language";
@@ -74,6 +75,12 @@ function labelOf(field: (typeof fields)[number]) {
   return field === "volume"
     ? `isbn.form.volume.${kind.value}`
     : `isbn.form.${field}`;
+}
+
+function messageOf(refusal: Refusal) {
+  return refusal === "withoutSeries"
+    ? `isbn.form.refusal.withoutSeries.${kind.value}`
+    : `isbn.form.refusal.${refusal}`;
 }
 
 const id = useId();
@@ -165,7 +172,7 @@ function add() {
             class="flex items-start gap-2 text-body text-danger"
           >
             <CircleAlert :size="22" class="shrink-0" />
-            <span>{{ t(`isbn.form.refusal.${refusals[field]}`) }}</span>
+            <span>{{ t(messageOf(refusals[field])) }}</span>
           </p>
         </div>
         <div
