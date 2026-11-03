@@ -756,6 +756,22 @@ describe("IsbnView", () => {
     expect(screen.getByText("Dans Bibliothèque de Léa")).toBeDefined();
   });
 
+  it("offers no pencil on the card it added", async () => {
+    // Given
+    const screen = open(
+      new FakeIsbnApi(found),
+      undefined,
+      new FakeBookshelfApi(added),
+    );
+    await ask(screen, "9782723488525");
+
+    // When
+    await press(screen, "Ajouter à ma bibliothèque");
+
+    // Then
+    expect(screen.queryByRole("button", { name: "Modifier" })).toBeNull();
+  });
+
   it("keeps on the card the cover it added", async () => {
     // Given
     const screen = open(
