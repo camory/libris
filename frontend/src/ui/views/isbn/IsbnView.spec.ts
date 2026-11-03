@@ -118,6 +118,25 @@ describe("IsbnView", () => {
     ).toBeDefined();
   });
 
+  it("opens the form of the answer from the pencil, the pencil become the cross", async () => {
+    // Given
+    const screen = open(new FakeIsbnApi(found));
+    await ask(screen, "9782723488525");
+
+    // When
+    await press(screen, "Modifier");
+
+    // Then
+    expect(
+      screen.getByRole<HTMLInputElement>("textbox", { name: "Titre" }).value,
+    ).toBe("Romance dawn");
+    expect(screen.queryByRole("heading", { name: "Romance dawn" })).toBeNull();
+    expect(
+      screen.getByRole("button", { name: "Annuler les modifications" }),
+    ).toBeDefined();
+    expect(screen.queryByRole("button", { name: "Modifier" })).toBeNull();
+  });
+
   it("shows the card of an ISBN the house holds", async () => {
     // Given
     const screen = open(new FakeIsbnApi(held));

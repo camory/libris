@@ -222,7 +222,17 @@ async function send(edition: SourceEdition) {
         :failed="failed"
         @cover-source="coverSource = $event"
         @add="send($event)"
-      />
+      >
+        <template v-if="editing" #corner>
+          <button
+            type="button"
+            :aria-label="t('isbn.cancelEdit')"
+            class="flex size-11 shrink-0 items-center justify-center rounded-[10px] text-accent"
+          >
+            <X :size="22" class="shrink-0" />
+          </button>
+        </template>
+      </EditionForm>
       <template v-else>
         <SourceEditionCard
           :edition="edition"
