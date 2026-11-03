@@ -30,6 +30,17 @@ const openLibrary: CoverCandidate = {
   url: "https://covers.openlibrary.org/b/id/1-L.jpg",
 };
 
+const houseSeries = [
+  "Pierrot",
+  "Spirou et Fantasio",
+  "Piège",
+  "One piece",
+  "Les Pieds Nickelés",
+  "Astérix",
+  "Épiés",
+  "Pièces détachées",
+];
+
 const onLea: Copy = {
   id: "6f1d2c3b-4a59-4e6f-8b70-1c2d3e4f5a61",
   bookshelf: bibliothequeDeLea,
@@ -634,6 +645,31 @@ describe("EditionForm", () => {
     expect(wrapper.text()).not.toContain("Titre manquant");
   });
 
+  it("suggests under Série the names that contain the text", async () => {
+    // Given
+    const fields = screen(onePiece1, [], [], { seriesNames: houseSeries });
+    await fireEvent.focus(fields.getByRole("textbox", { name: "Série" }));
+
+    // When
+    await typeIn(fields, "Série", "pie");
+
+    // Then
+    expect(suggestions(fields)).toEqual([
+      "Épiés",
+      "Les Pieds Nickelés",
+      "One piece",
+      "Pièces détachées",
+      "Piège",
+    ]);
+  });
+
+  function suggestions(fields: ReturnType<typeof screen>) {
+    return fields
+      .queryAllByRole("button")
+      .map((button) => button.textContent?.trim() ?? "")
+      .filter((name) => name !== "Ajouter à ma bibliothèque");
+  }
+
   function disabledOf(fields: ReturnType<typeof screen>) {
     return [
       ...fields.getAllByRole<HTMLInputElement>("textbox"),
@@ -686,8 +722,11 @@ describe("EditionForm", () => {
     edition?: SourceEdition,
     copies: Copy[] = [],
     covers: CoverCandidate[] = [],
+    options: Parameters<typeof form>[3] = {},
   ) {
-    return within(form(edition, copies, covers).element as HTMLElement);
+    return within(
+      form(edition, copies, covers, options).element as HTMLElement,
+    );
   }
 
   function form(
@@ -700,12 +739,14 @@ describe("EditionForm", () => {
       corner,
       shownSource,
       attachTo,
+      seriesNames = [],
     }: {
       adding?: boolean;
       failed?: boolean;
       corner?: string;
       shownSource?: string;
       attachTo?: HTMLElement;
+      seriesNames?: string[];
     } = {},
   ) {
     return mount(EditionForm, {
@@ -717,6 +758,7 @@ describe("EditionForm", () => {
         adding,
         failed,
         shownSource,
+        seriesNames,
       },
       slots: corner === undefined ? {} : { corner },
       global: { plugins: [createLibrisI18n()] },

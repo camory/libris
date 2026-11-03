@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { CircleAlert } from "@lucide/vue";
-import { reactive, ref, useId } from "vue";
+import { computed, reactive, ref, useId } from "vue";
 import { useI18n } from "vue-i18n";
 import type { Copy } from "../../domain/Copy";
 import type { CoverCandidate } from "../../domain/Cover";
@@ -13,6 +13,7 @@ import {
 } from "../../domain/EditionDraft";
 import { languageWord } from "../../domain/Language";
 import type { Kind, SourceEdition } from "../../domain/SourceEdition";
+import { suggestionsFor } from "../../domain/Suggestion";
 import AuthorLines from "./AuthorLines.vue";
 import BookshelvesHolding from "./BookshelvesHolding.vue";
 import CoverChoice from "./CoverChoice.vue";
@@ -26,6 +27,7 @@ const props = defineProps<{
   adding: boolean;
   failed: boolean;
   shownSource?: string | null;
+  seriesNames: string[];
 }>();
 
 const emit = defineEmits<{
@@ -66,6 +68,9 @@ const values = reactive<Record<(typeof fields)[number], string>>({
   pages: text(answered?.pageCount),
 });
 const summary = ref(text(answered?.summary));
+const suggestions = computed(() =>
+  suggestionsFor(values.series, props.seriesNames, locale.value),
+);
 
 function text(value: string | number | null | undefined) {
   return value == null ? "" : String(value);
@@ -167,6 +172,21 @@ function add() {
             :aria-invalid="refusals[field] ? 'true' : undefined"
             class="h-[50px] w-full rounded-xl border-[1.5px] border-border bg-surface px-3.5 text-field aria-invalid:border-danger"
           />
+          <div
+            v-if="field === 'series' && suggestions.length"
+            class="-mt-1 flex flex-col divide-y divide-border rounded-xl border-[1.5px] border-border bg-surface"
+          >
+            <button
+              v-for="suggestion in suggestions"
+              :key="suggestion.before + suggestion.matched + suggestion.after"
+              type="button"
+              class="mx-3.5 h-11 text-left text-field"
+            >
+              <span>{{ suggestion.before }}</span>
+              <span class="font-semibold">{{ suggestion.matched }}</span>
+              <span>{{ suggestion.after }}</span>
+            </button>
+          </div>
           <p
             v-if="refusals[field]"
             class="flex items-start gap-2 text-body text-danger"
