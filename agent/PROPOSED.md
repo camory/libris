@@ -514,3 +514,7 @@
   entry defining it as a no-op on `Element.prototype` would let both call
   it plainly, the two gotchas on jsdom's missing `scrollIntoView` rewritten
   as one (found on T124's review, Tophe).
+- 2026-11-03 Frontend: `IsbnView` asks the series names on each lookup and
+  keeps whatever answer lands last, so on a slow network an older answer can
+  replace a newer one; keeping only the answer to the latest request would
+  rule that out (found on T126).

@@ -286,10 +286,21 @@ Format:
   series' and the language's suggestions, S7 and S8, are T126's and
   T127's.
 
-## 2026-11-03 — T126 The series of the house suggested — handoff
-- Done: steps 0 to 17 (S7 *the suggestions* un-skipped, its red read: no row). Next: step 18, `IsbnView`.
-- Decided: `suggestionsFor` folds each character (NFD, marks dropped, lower case), cuts on the name's own characters, a mark-only character joining the one before; `useListSeriesNames`' `catch` sets `names` to `[]`; the form keeps `seriesFocused` (focus/blur) and `chosen` (tap, reset on input), handlers `focused`, `left`, `typed`, `choose`, `nameOf`; the scroll goes through `boxes.series`.
-- Prop `seriesNames` is required: `vue-tsc` reds `IsbnView.vue` until step 18 passes it.
-- Mutations: step 13's no-submit check, the row made `type="submit"`: red, `submitted` called once. Steps 7 and 15 were red on their first run, no guard.
-- Learned: nothing beyond the brief.
-- Red at handoff: the gate's `vue-tsc` (`IsbnView.vue`, missing `seriesNames`) and S7 *the suggestions*, the cited scenario, not yet reached.
+## 2026-11-03 — T126 The series of the house suggested — done
+- Did: `suggestionsFor(typed, names, locale)` finds the house's series names
+  that contain the text; `EditionForm` shows up to five under *Série* while it
+  has the focus, a tap fills it; `IsbnView` asks the names for each lookup.
+- Decided: `suggestionsFor` folds each character (NFD, marks dropped, lower
+  case) and cuts on the name's own characters, so a mark that stands alone
+  stays with the letter before it; `useListSeriesNames`' `catch` sets `names` to
+  `[]`; the form keeps `seriesFocused` (focus and blur) and `chosen` (set by a
+  tap, reset by the next keystroke); the scroll goes through `boxes.series`;
+  `IsbnView` calls `list()` without awaiting it once the ISBN is accepted,
+  just before the lookup, so the names arrive while the lookup runs.
+- Deviations from the brief: step 18 types `"one pi"`, not `"pie"`. Testing
+  Library trims each span of a row when it names the button, so *One* + *pie*
+  + *ce* reads *Onepiece*.
+- Left over: the checks by hand on the Pixel (the rows and their semibold
+  part against `5-series-suggested.jpg`; *Série* brought to the top, its rows
+  above the keyboard); a names answer that lands after a newer one, in
+  `agent/PROPOSED.md`; S7's *a tap*, *Existante* and *Nouvelle* are T127's.

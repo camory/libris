@@ -141,7 +141,7 @@ green already and guard every frontend task.
       frontend tests of S10 *Tome sans série*, *Album sans série* and two
       fields refused.
 
-- [ ] T126 Frontend: the series of the house suggested.
+- [x] T126 Frontend: the series of the house suggested.
       The form asks Libris for the house's series names; while the series'
       field has the focus and holds text, up to five names that contain it,
       ignoring case, accents and the spaces at its ends, sorted by name in

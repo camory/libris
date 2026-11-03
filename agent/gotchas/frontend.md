@@ -92,8 +92,15 @@ Read whole by a run that changes `frontend/`, after `every-run.md`.
   third, `string[] | Error`, `[]` by default; a scenario that varies them
   passes `undefined` second to keep the find's default.
   `EditionFormScenarios`' `open()` gives `world.names` as its `seriesApi`.
+  `FetchSeriesApi.names()` rejects any answer but `200`. `IsbnView` holds
+  them through `useListSeriesNames(seriesApi)` (`names`, `[]` until
+  answered and when Libris does not answer; `list()` never rejects), calls
+  `list()` unawaited on each accepted lookup and passes `names` to the form
+  as `seriesNames`. `IsbnView.spec.ts`' `mountView` and `open` take a
+  `seriesApi` fourth, `new FakeSeriesApi([])` by default.
 - `EditionForm` takes `isbn13`, `edition` (a `SourceEdition`, absent for
-  an unknown ISBN), `copies`, `covers`, `adding` and `failed`, required,
+  an unknown ISBN), `copies`, `covers`, `adding`, `failed` and
+  `seriesNames`, required,
   `shownSource`, optional, as the card's, and the named slot `corner` as
   the card's, emits `coverSource` as the card does, and `add` with the edition its
   fields read as, `editionOf(isbn13, authors, draft, locale)`
@@ -124,9 +131,16 @@ Read whole by a run that changes `frontend/`, after `every-run.md`.
   `isbn.form.refusal.<code>` under it (`withoutSeries.<kind>`, in the
   kind chosen now, not at the tap), and focuses then
   `scrollIntoView({ block: "center" })`s the first refused in its `fields`
-  order, reaching the box through a function `:ref` into `boxes`. Its
-  spec's `form()` takes `{ adding, failed, corner, shownSource, attachTo }`
-  fourth, `false` and none by default, and gives the edition's own
+  order, reaching the box through a function `:ref` into `boxes`. Under
+  *Série*, while it has the focus (`seriesFocused`, set on `focus` and
+  cleared on `blur`) and no row has been tapped since the last keystroke
+  (`chosen`), it draws `suggestionsFor(values.series, seriesNames, locale)`
+  (`src/domain/Suggestion.ts`) as `type="button"` rows of three spans,
+  `before`, `matched` in `font-semibold`, `after`; a row's `mousedown` is
+  prevented so the box keeps the focus, and *Série*'s `focus` calls
+  `scrollIntoView({ block: "start" })` on it. Its spec's `form()` takes
+  `{ adding, failed, corner, shownSource, attachTo, seriesNames }` fourth,
+  `false` and none by default, and gives the edition's own
   `isbn13` when there is one; the focus case passes `attachTo:
   document.body` and unmounts at its end, and the file's `afterEach`
   deletes a `scrollIntoView` a case defined.
@@ -453,6 +467,12 @@ Read whole by a run that changes `frontend/`, after `every-run.md`.
   case to the next of the same spec file and reddens unrelated cases; run
   the guard's case alone (`npx vitest run <file> -t "<name>"`) to read its
   own red.
+- Testing Library's accessible name trims each inline child of a button:
+  a suggestion row *One * + *pie* + *ce* is named *Onepiece*, though its
+  `textContent` reads *One piece*. A case that queries a row by name types
+  a text whose parts carry no space at their edges (`"one pi"`), or reads
+  the rows' `textContent`, as `EditionForm.spec.ts`' `suggestions()` and
+  the scenarios do.
 - jsdom has no `IntersectionObserver`: every spec that mounts
   `CatalogueView`, directly or through the router on `/catalogue`, stubs it
   with `vi.stubGlobal` or fails on `ReferenceError: IntersectionObserver is
