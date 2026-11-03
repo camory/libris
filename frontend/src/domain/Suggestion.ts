@@ -11,7 +11,7 @@ export function suggestionsFor(
   names: string[],
   locale: string,
 ): Suggestion[] {
-  const text = folded(typed.trim(), locale);
+  const text = foldsOf(typed.trim(), locale).join("");
   if (text === "") return [];
   return [...names]
     .sort(nameOrder(locale))
@@ -22,13 +22,24 @@ export function suggestionsFor(
     .slice(0, 5);
 }
 
+function foldsOf(text: string, locale: string) {
+  return Array.from(text).map((character) => folded(character, locale));
+}
+
+function folded(character: string, locale: string) {
+  return character
+    .normalize("NFD")
+    .replace(/\p{M}/gu, "")
+    .toLocaleLowerCase(locale);
+}
+
 function suggestionOf(
   name: string,
   text: string,
   locale: string,
 ): Suggestion | null {
   const characters = Array.from(name);
-  const folds = characters.map((character) => folded(character, locale));
+  const folds = foldsOf(name, locale);
   const start = folds.join("").indexOf(text);
   if (start < 0) return null;
   const ends = folds.map(
@@ -45,8 +56,4 @@ function suggestionOf(
     matched: characters.slice(first, last).join(""),
     after: characters.slice(last).join(""),
   };
-}
-
-function folded(text: string, locale: string) {
-  return text.normalize("NFD").replace(/\p{M}/gu, "").toLocaleLowerCase(locale);
 }

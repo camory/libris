@@ -64,6 +64,16 @@ describe("suggestionsFor", () => {
       { before: "", matched: "Pie\u0300g", after: "e" },
     ]);
   });
+
+  it("folds the text as it folds the name, character by character", () => {
+    expect(
+      suggestionsFor(
+        "\u039f\u0394\u039f\u03a3",
+        ["\u039f\u0394\u039f\u03a3"],
+        "fr",
+      ),
+    ).toEqual([{ before: "", matched: "\u039f\u0394\u039f\u03a3", after: "" }]);
+  });
 });
 
 function nameOf(suggestion: Suggestion) {
