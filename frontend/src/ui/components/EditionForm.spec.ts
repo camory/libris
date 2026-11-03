@@ -236,6 +236,28 @@ describe("EditionForm", () => {
     expect(covers.getByText("inventaire.io")).toBeDefined();
   });
 
+  it("shows first the cover the screen names", () => {
+    // When
+    const covers = within(
+      form(onePiece1, [], [inventaire, openLibrary], {
+        shownSource: "Open Library",
+      }).element as HTMLElement,
+    );
+
+    // Then
+    expect(
+      covers
+        .getByRole("img", { name: "Couverture de Romance dawn" })
+        .getAttribute("src"),
+    ).toBe(openLibrary.url);
+    expect(
+      covers
+        .getAllByRole("button", { name: /^Couverture / })
+        .map((dot) => dot.getAttribute("aria-pressed")),
+    ).toEqual(["false", "true"]);
+    expect(covers.getByText("Open Library")).toBeDefined();
+  });
+
   it("gives out the source of the cover it shows", async () => {
     // Given
     const wrapper = form(onePiece1, [], [inventaire, openLibrary]);
@@ -252,6 +274,20 @@ describe("EditionForm", () => {
       ["inventaire.io"],
       ["Open Library"],
     ]);
+  });
+
+  it("draws the button the screen gives in its corner", () => {
+    // When
+    const wrapper = form(onePiece1, [], [], {
+      corner: '<button type="button">Agir</button>',
+    });
+
+    // Then
+    expect(
+      within(wrapper.element as HTMLElement).getByRole("button", {
+        name: "Agir",
+      }),
+    ).toBeDefined();
   });
 
   it("says in which bookshelf the reader has a copy", () => {
@@ -395,7 +431,17 @@ describe("EditionForm", () => {
     edition?: SourceEdition,
     copies: Copy[] = [],
     covers: CoverCandidate[] = [],
-    { adding = false, failed = false } = {},
+    {
+      adding = false,
+      failed = false,
+      corner,
+      shownSource,
+    }: {
+      adding?: boolean;
+      failed?: boolean;
+      corner?: string;
+      shownSource?: string;
+    } = {},
   ) {
     return mount(EditionForm, {
       props: {
@@ -405,7 +451,9 @@ describe("EditionForm", () => {
         covers,
         adding,
         failed,
+        shownSource,
       },
+      slots: corner === undefined ? {} : { corner },
       global: { plugins: [createLibrisI18n()] },
     });
   }

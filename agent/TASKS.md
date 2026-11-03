@@ -97,7 +97,7 @@ green already and guard every frontend task.
       open to edits (U05). Realises S5 and S11; un-skips the frontend tests
       of S5 and of S11, both cases.
 
-- [ ] T128 Frontend: the card first, its pencil opens the form.
+- [x] T128 Frontend: the card first, its pencil opens the form.
       An ISBN the house lacks and a source knows shows its card, its button
       adding it as answered, with the pencil *Modifier* in its top part's
       top right corner, given by the screen (U04, U06); bookshelf S2 and

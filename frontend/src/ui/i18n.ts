@@ -55,6 +55,8 @@ const fr = {
     search: "Chercher",
     scan: "Scanner le code-barres",
     closeCamera: "Fermer la caméra",
+    edit: "Modifier",
+    cancelEdit: "Annuler les modifications",
     searching: "Recherche en cours…",
     add: "Ajouter à ma bibliothèque",
     adding: "Ajout en cours…",

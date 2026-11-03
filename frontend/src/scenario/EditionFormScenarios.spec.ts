@@ -85,7 +85,7 @@ describe("Edition form", () => {
     window.history.replaceState(null, "", "/");
   });
 
-  it.skip("S1 A new ISBN shows its card to edit", async () => {
+  it("S1 A new ISBN shows its card to edit", async () => {
     // Given
     const screen = open({ isbn: aSourceKnows(onePiece1) });
 
@@ -98,7 +98,7 @@ describe("Edition form", () => {
     expect(pencil(screen)).toBeDefined();
   });
 
-  it.skip("S12 The pencil opens the form", async () => {
+  it("S12 The pencil opens the form", async () => {
     // Given
     const screen = open({
       isbn: aSourceKnows(onePiece1, [inventaire, openLibrary]),
@@ -141,7 +141,7 @@ describe("Edition form", () => {
     expect(screen.queryByRole("button", { name: "Modifier" })).toBeNull();
   });
 
-  it.skip("S13 The cross drops the edits", async () => {
+  it("S13 The cross drops the edits", async () => {
     // Given
     const screen = await formOfOnePiece1({});
     await fill(screen, "Titre", "Romance Dawn");
@@ -239,7 +239,7 @@ describe("Edition form", () => {
     expect(screen.queryByRole("button", { name: "Modifier" })).toBeNull();
   });
 
-  it.skip("S5 The ouvrage is added as edited", async () => {
+  it("S5 The ouvrage is added as edited", async () => {
     // Given
     const add = librisAdds(on(lea.defaultBookshelf));
     const screen = await formOfOnePiece1({ add });
@@ -463,7 +463,7 @@ describe("Edition form", () => {
     expect(add.asked).toEqual([]);
   });
 
-  it.skip.each([
+  it.each([
     {
       case: "the add answers the validation problem",
       add: () =>

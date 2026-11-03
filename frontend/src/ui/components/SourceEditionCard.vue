@@ -16,9 +16,13 @@ const props = defineProps<{
   covers: CoverCandidate[];
   held: boolean;
   pageTitle?: boolean;
+  shownSource?: string | null;
+  disabled?: boolean;
 }>();
 
 const emit = defineEmits<{ coverSource: [source: string | null] }>();
+
+defineSlots<{ corner?: () => unknown }>();
 
 const { t, locale } = useI18n();
 
@@ -72,21 +76,26 @@ onMounted(() => {
         :covers="covers"
         :title="edition.title"
         :held="held"
+        :disabled="disabled"
+        :shown-source="shownSource"
         @cover-source="emit('coverSource', $event)"
       />
 
-      <div class="flex min-w-0 flex-col gap-1.5">
-        <p v-if="overline" class="text-overline uppercase text-accent">
-          {{ overline }}
-        </p>
-        {{ " " }}
-        <component :is="pageTitle ? 'h1' : 'h2'" class="text-card-title">
-          {{ edition.title }}
-        </component>
-        <p v-if="edition.subtitle" class="text-lead text-muted">
-          {{ edition.subtitle }}
-        </p>
-        <AuthorLines :authors="edition.authors" :kind="edition.kind" />
+      <div class="flex min-w-0 flex-1 gap-2">
+        <div class="flex min-w-0 flex-1 flex-col gap-1.5">
+          <p v-if="overline" class="text-overline uppercase text-accent">
+            {{ overline }}
+          </p>
+          {{ " " }}
+          <component :is="pageTitle ? 'h1' : 'h2'" class="text-card-title">
+            {{ edition.title }}
+          </component>
+          <p v-if="edition.subtitle" class="text-lead text-muted">
+            {{ edition.subtitle }}
+          </p>
+          <AuthorLines :authors="edition.authors" :kind="edition.kind" />
+        </div>
+        <slot name="corner" />
       </div>
     </div>
 

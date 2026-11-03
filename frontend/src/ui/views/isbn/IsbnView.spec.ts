@@ -38,6 +38,17 @@ const found: IsbnAnswer = {
   covers: [],
 };
 
+const covered: IsbnAnswer = {
+  ...found,
+  covers: [
+    { source: "inventaire.io", url: "https://inventaire.io/img/1" },
+    {
+      source: "Open Library",
+      url: "https://covers.openlibrary.org/b/id/1-L.jpg",
+    },
+  ],
+};
+
 const held: IsbnAnswer = {
   ...found,
   id: "8b3f4e5d-6c7a-4b8c-9d0e-1f2a3b4c5d6e",
@@ -100,7 +111,7 @@ describe("IsbnView", () => {
     expect(api.asked).toEqual([]);
   });
 
-  it("opens the form of the answer for an ISBN the house lacks", async () => {
+  it("shows the card of an ISBN the house lacks, with its pencil", async () => {
     // Given
     const api = new FakeIsbnApi(found);
     const screen = open(api);
@@ -110,13 +121,115 @@ describe("IsbnView", () => {
 
     // Then
     expect(api.asked).toEqual(["9782723488525"]);
+    expect(screen.getByRole("heading", { name: "Romance dawn" })).toBeDefined();
+    expect(screen.queryByRole("textbox", { name: "Titre" })).toBeNull();
+    expect(screen.getByRole("button", { name: "Modifier" })).toBeDefined();
+    expect(
+      screen.getByRole("button", { name: "Ajouter à ma bibliothèque" }),
+    ).toBeDefined();
+  });
+
+  it("opens the form of the answer from the pencil, the pencil become the cross", async () => {
+    // Given
+    const screen = open(new FakeIsbnApi(found));
+    await ask(screen, "9782723488525");
+
+    // When
+    await press(screen, "Modifier");
+
+    // Then
     expect(
       screen.getByRole<HTMLInputElement>("textbox", { name: "Titre" }).value,
     ).toBe("Romance dawn");
     expect(screen.queryByRole("heading", { name: "Romance dawn" })).toBeNull();
     expect(
-      screen.getByRole("button", { name: "Ajouter à ma bibliothèque" }),
+      screen.getByRole("button", { name: "Annuler les modifications" }),
     ).toBeDefined();
+    expect(screen.queryByRole("button", { name: "Modifier" })).toBeNull();
+  });
+
+  it("shows the card as answered again from the cross", async () => {
+    // Given
+    const screen = open(new FakeIsbnApi(found));
+    await ask(screen, "9782723488525");
+    await press(screen, "Modifier");
+    await fireEvent.input(screen.getByRole("textbox", { name: "Titre" }), {
+      target: { value: "Romance Dawn" },
+    });
+
+    // When
+    await press(screen, "Annuler les modifications");
+
+    // Then
+    expect(screen.getByRole("heading", { name: "Romance dawn" })).toBeDefined();
+    expect(screen.queryByRole("textbox", { name: "Titre" })).toBeNull();
+    expect(screen.getByRole("button", { name: "Modifier" })).toBeDefined();
+  });
+
+  it("keeps in the form the cover shown on the card", async () => {
+    // Given
+    const screen = open(new FakeIsbnApi(covered));
+    await ask(screen, "9782723488525");
+    await press(screen, "Couverture Open Library");
+
+    // When
+    await press(screen, "Modifier");
+
+    // Then
+    expect(
+      screen
+        .getByRole("img", { name: "Couverture de Romance dawn" })
+        .getAttribute("src"),
+    ).toBe("https://covers.openlibrary.org/b/id/1-L.jpg");
+  });
+
+  it("keeps on the card the cover shown in the form", async () => {
+    // Given
+    const screen = open(new FakeIsbnApi(covered));
+    await ask(screen, "9782723488525");
+    await press(screen, "Modifier");
+    await press(screen, "Couverture Open Library");
+
+    // When
+    await press(screen, "Annuler les modifications");
+
+    // Then
+    expect(
+      screen
+        .getByRole("img", { name: "Couverture de Romance dawn" })
+        .getAttribute("src"),
+    ).toBe("https://covers.openlibrary.org/b/id/1-L.jpg");
+  });
+
+  it("shows the card of the next answer, not the form", async () => {
+    // Given
+    const screen = open(new FakeIsbnApi(found));
+    await ask(screen, "9782723488525");
+    await press(screen, "Modifier");
+
+    // When
+    await ask(screen, "9782723488525");
+
+    // Then
+    expect(screen.getByRole("heading", { name: "Romance dawn" })).toBeDefined();
+    expect(screen.queryByRole("textbox", { name: "Titre" })).toBeNull();
+  });
+
+  it("shows the first cover of the next answer", async () => {
+    // Given
+    const screen = open(new FakeIsbnApi(covered));
+    await ask(screen, "9782723488525");
+    await press(screen, "Couverture Open Library");
+
+    // When
+    await ask(screen, "9782723488525");
+
+    // Then
+    expect(
+      screen
+        .getByRole("img", { name: "Couverture de Romance dawn" })
+        .getAttribute("src"),
+    ).toBe("https://inventaire.io/img/1");
   });
 
   it("shows the card of an ISBN the house holds", async () => {
@@ -537,6 +650,49 @@ describe("IsbnView", () => {
     ).toBeNull();
   });
 
+  it("accepts nothing on the card while the add runs", async () => {
+    // Given
+    const screen = open(
+      new FakeIsbnApi(covered),
+      undefined,
+      new FakeBookshelfApi(new Promise<AddAnswer>(() => {})),
+    );
+    await ask(screen, "9782723488525");
+
+    // When
+    await press(screen, "Ajouter à ma bibliothèque");
+
+    // Then
+    expect(
+      screen
+        .getAllByRole<HTMLButtonElement>("button", {
+          name: /^Modifier$|^Couverture /,
+        })
+        .map((button) => button.disabled),
+    ).toEqual([true, true, true]);
+  });
+
+  it("accepts no cross on the form while the add runs", async () => {
+    // Given
+    const screen = open(
+      new FakeIsbnApi(found),
+      undefined,
+      new FakeBookshelfApi(new Promise<AddAnswer>(() => {})),
+    );
+    await ask(screen, "9782723488525");
+    await press(screen, "Modifier");
+
+    // When
+    await press(screen, "Ajouter à ma bibliothèque");
+
+    // Then
+    expect(
+      screen.getByRole<HTMLButtonElement>("button", {
+        name: "Annuler les modifications",
+      }).disabled,
+    ).toBe(true);
+  });
+
   it("adds the ouvrage of the card to the reader's default bookshelf", async () => {
     // Given
     const bookshelfApi = new FakeBookshelfApi(added);
@@ -579,18 +735,8 @@ describe("IsbnView", () => {
     ).toBeNull();
   });
 
-  it("adds the cover the form shows", async () => {
+  it("adds the cover the card shows", async () => {
     // Given
-    const covered: IsbnAnswer = {
-      ...found,
-      covers: [
-        { source: "inventaire.io", url: "https://inventaire.io/img/1" },
-        {
-          source: "Open Library",
-          url: "https://covers.openlibrary.org/b/id/1-L.jpg",
-        },
-      ],
-    };
     const bookshelfApi = new FakeBookshelfApi(added);
     const screen = open(new FakeIsbnApi(covered), undefined, bookshelfApi);
     await ask(screen, "9782723488525");
@@ -636,6 +782,7 @@ describe("IsbnView", () => {
       new FakeBookshelfApi(added),
     );
     await ask(screen, "9782723488525");
+    await press(screen, "Modifier");
     await fireEvent.input(screen.getByRole("textbox", { name: "Titre" }), {
       target: { value: "Romance Dawn" },
     });
@@ -652,18 +799,24 @@ describe("IsbnView", () => {
     expect(screen.getByText("Dans Bibliothèque de Léa")).toBeDefined();
   });
 
+  it("offers no pencil on the card it added", async () => {
+    // Given
+    const screen = open(
+      new FakeIsbnApi(found),
+      undefined,
+      new FakeBookshelfApi(added),
+    );
+    await ask(screen, "9782723488525");
+
+    // When
+    await press(screen, "Ajouter à ma bibliothèque");
+
+    // Then
+    expect(screen.queryByRole("button", { name: "Modifier" })).toBeNull();
+  });
+
   it("keeps on the card the cover it added", async () => {
     // Given
-    const covered: IsbnAnswer = {
-      ...found,
-      covers: [
-        { source: "inventaire.io", url: "https://inventaire.io/img/1" },
-        {
-          source: "Open Library",
-          url: "https://covers.openlibrary.org/b/id/1-L.jpg",
-        },
-      ],
-    };
     const screen = open(
       new FakeIsbnApi(covered),
       undefined,
@@ -689,16 +842,6 @@ describe("IsbnView", () => {
 
   it("keeps on the card the cover it sent, not one tapped while the add runs", async () => {
     // Given
-    const covered: IsbnAnswer = {
-      ...found,
-      covers: [
-        { source: "inventaire.io", url: "https://inventaire.io/img/1" },
-        {
-          source: "Open Library",
-          url: "https://covers.openlibrary.org/b/id/1-L.jpg",
-        },
-      ],
-    };
     let land: (answer: AddAnswer) => void = () => {};
     const screen = open(
       new FakeIsbnApi(covered),

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { CircleAlert, ScanBarcode, Search, X } from "@lucide/vue";
+import { CircleAlert, Pencil, ScanBarcode, Search, X } from "@lucide/vue";
 import {
   computed,
   inject,
@@ -23,6 +23,7 @@ import type { SourceEdition } from "../../../domain/SourceEdition";
 import BusySpinner from "../../components/BusySpinner.vue";
 import DockedAdd from "../../components/DockedAdd.vue";
 import EditionForm from "../../components/EditionForm.vue";
+import IconButton from "../../components/IconButton.vue";
 import SourceEditionCard from "../../components/SourceEditionCard.vue";
 import SourceEditionCardSkeleton from "../../components/SourceEditionCardSkeleton.vue";
 
@@ -38,6 +39,7 @@ const refused = computed(() => message.value === "isbn.invalid");
 const edition = ref<SourceEdition>();
 const unknownIsbn13 = ref<string>();
 const held = ref(false);
+const editing = ref(false);
 const copies = ref<Copy[]>([]);
 const covers = ref<CoverCandidate[]>([]);
 const coverSource = ref<string | null>(null);
@@ -98,8 +100,10 @@ async function search() {
   unknownIsbn13.value = undefined;
   copies.value = [];
   covers.value = [];
+  coverSource.value = null;
   addBookToBookshelf.value = useAddBookToBookshelf(meApi, bookshelfApi);
   sent.value = undefined;
+  editing.value = false;
   message.value = undefined;
   const isbn13 = Isbn.of(typed.value)?.digits ?? null;
   if (isbn13 === null) {
@@ -150,16 +154,15 @@ async function send(edition: SourceEdition) {
             class="h-[50px] w-full rounded-xl border-[1.5px] bg-surface pr-13 pl-3.5 text-field tabular-nums placeholder:text-muted"
             :class="refused ? 'border-danger' : 'border-border'"
           />
-          <button
+          <IconButton
             v-if="canScan"
-            type="button"
-            :aria-label="scanning ? t('isbn.closeCamera') : t('isbn.scan')"
-            class="absolute top-1/2 right-[3px] flex size-11 -translate-y-1/2 items-center justify-center rounded-[10px] text-accent"
+            :label="scanning ? t('isbn.closeCamera') : t('isbn.scan')"
+            class="absolute top-1/2 right-[3px] -translate-y-1/2"
             @click="toggleCamera"
           >
             <X v-if="scanning" :size="22" class="shrink-0" />
             <ScanBarcode v-else :size="22" class="shrink-0" />
-          </button>
+          </IconButton>
         </div>
         <button
           type="button"
@@ -211,31 +214,50 @@ async function send(edition: SourceEdition) {
         :copies="shownCopies"
         :covers="sentCovers"
       />
-      <template v-else-if="held && edition">
+      <EditionForm
+        v-else-if="editing || !edition"
+        :isbn13="shownIsbn13"
+        :edition="edition"
+        :copies="shownCopies"
+        :covers="covers"
+        :shown-source="coverSource"
+        :adding="adding"
+        :failed="failed"
+        @cover-source="coverSource = $event"
+        @add="send($event)"
+      >
+        <template v-if="editing" #corner>
+          <IconButton
+            :label="t('isbn.cancelEdit')"
+            :disabled="adding"
+            @click="editing = false"
+          >
+            <X :size="22" class="shrink-0" />
+          </IconButton>
+        </template>
+      </EditionForm>
+      <template v-else>
         <SourceEditionCard
           :edition="edition"
           :held="held"
           :copies="shownCopies"
           :covers="covers"
+          :shown-source="coverSource"
+          :disabled="adding"
           @cover-source="coverSource = $event"
-        />
-        <DockedAdd
-          :adding="adding"
-          :failed="failed"
-          @add="send(edition)"
-        />
+        >
+          <template v-if="!held" #corner>
+            <IconButton
+              :label="t('isbn.edit')"
+              :disabled="adding"
+              @click="editing = true"
+            >
+              <Pencil :size="22" class="shrink-0" />
+            </IconButton>
+          </template>
+        </SourceEditionCard>
+        <DockedAdd :adding="adding" :failed="failed" @add="send(edition)" />
       </template>
-      <EditionForm
-        v-else
-        :isbn13="shownIsbn13"
-        :edition="edition"
-        :copies="shownCopies"
-        :covers="covers"
-        :adding="adding"
-        :failed="failed"
-        @cover-source="coverSource = $event"
-        @add="send($event)"
-      />
     </div>
 
     <p v-if="message" class="mt-5 flex items-start gap-2 text-body text-danger">

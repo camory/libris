@@ -205,3 +205,24 @@ Format:
   dot and its source's name, as covers *Added* and U06 say;
   `8-added.jpg` leaves them out.
 - Left over: the checks by hand of the first entry stay Tophe's.
+
+## 2026-11-03 — T128 The card first, its pencil opens the form — done
+- Did: an ISBN the house lacks shows its card and its docked add first; the
+  pencil *Modifier* in the card's corner opens the form as answered, the
+  cross *Annuler les modifications* shows the card again; S1, S5, S11,
+  S12 and S13 run green.
+- Decided: the slot `corner` sits beside the text column of the top part in
+  a `flex min-w-0 flex-1 gap-2` wrapper, card and form alike;
+  `CoverChoice`'s `tapped` starts on the candidate whose source
+  `shownSource` names, none when no candidate matches; the view holds
+  `editing`, the cross drawn only when it is set, and a lookup clears
+  `editing` and `coverSource`; the view's spec shares one answer with two
+  covers (`covered`), its three local copies dropped in a refactor; the
+  run was split in two by a handoff after step 5.
+- Deviations from the brief: none.
+- Left over: the checks by hand on the Pixel (the card and its pencil
+  against `1-card.jpg`, the form and its cross against `2-filled.jpg`, the
+  8 between the text and the corner, the dock under the card); whether
+  the card's pencil and dots accept nothing while the add runs, in
+  `agent/PROPOSED.md`; the two `DESIGN` amendments proposed in the PR
+  body; S14 and the camera taking the answer's place are T129's.

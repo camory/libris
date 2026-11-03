@@ -667,6 +667,49 @@ describe("SourceEditionCard", () => {
     expect(labels(card)).toEqual(["Couverture Libris"]);
   });
 
+  it("draws the button the screen gives in its corner", () => {
+    // When
+    const wrapper = card(onePiece1, [], [], false, false, {
+      corner: '<button type="button">Agir</button>',
+    });
+
+    // Then
+    expect(
+      within(wrapper.element as HTMLElement).getByRole("button", {
+        name: "Agir",
+      }),
+    ).toBeDefined();
+  });
+
+  it("shows first the cover the screen names", () => {
+    // When
+    const card = screen(
+      onePiece1,
+      [],
+      [inventaire, openLibrary],
+      false,
+      false,
+      {
+        shownSource: "Open Library",
+      },
+    );
+
+    // Then
+    expect(card.getByRole("img").getAttribute("src")).toBe(openLibrary.url);
+    expect(pressed(card)).toEqual(["false", "true"]);
+    expect(card.getByText("Open Library")).toBeDefined();
+  });
+
+  it("accepts no tap on its dots while disabled", () => {
+    // When
+    const card = screen(onePiece1, [], [inventaire, openLibrary], false, false, {
+      disabled: true,
+    });
+
+    // Then
+    expect(dots(card).map((dot) => dot.disabled)).toEqual([true, true]);
+  });
+
   it("shows the série alone when the sources gave it no tome", () => {
     // Given
     const standalone: SourceEdition = {
@@ -821,7 +864,7 @@ describe("SourceEditionCard", () => {
   }
 
   function dots(card: ReturnType<typeof screen>) {
-    return card.queryAllByRole("button", { name: /^Couverture / });
+    return card.queryAllByRole<HTMLButtonElement>("button", { name: /^Couverture / });
   }
 
   function labels(card: ReturnType<typeof screen>) {
@@ -851,9 +894,11 @@ describe("SourceEditionCard", () => {
     covers: CoverCandidate[] = [],
     held = false,
     pageTitle = false,
+    options: { corner?: string; shownSource?: string; disabled?: boolean } = {},
   ) {
     return within(
-      card(edition, copies, covers, held, pageTitle).element as HTMLElement,
+      card(edition, copies, covers, held, pageTitle, options)
+        .element as HTMLElement,
     );
   }
 
@@ -863,9 +908,15 @@ describe("SourceEditionCard", () => {
     covers: CoverCandidate[] = [],
     held = false,
     pageTitle = false,
+    {
+      corner,
+      shownSource,
+      disabled,
+    }: { corner?: string; shownSource?: string; disabled?: boolean } = {},
   ) {
     return mount(SourceEditionCard, {
-      props: { edition, copies, covers, held, pageTitle },
+      props: { edition, copies, covers, held, pageTitle, shownSource, disabled },
+      slots: corner === undefined ? {} : { corner },
       global: { plugins: [createLibrisI18n()] },
     });
   }
