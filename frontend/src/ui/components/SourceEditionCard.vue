@@ -16,6 +16,7 @@ const props = defineProps<{
   covers: CoverCandidate[];
   held: boolean;
   pageTitle?: boolean;
+  shownSource?: string | null;
 }>();
 
 const emit = defineEmits<{ coverSource: [source: string | null] }>();
@@ -74,6 +75,7 @@ onMounted(() => {
         :covers="covers"
         :title="edition.title"
         :held="held"
+        :shown-source="shownSource"
         @cover-source="emit('coverSource', $event)"
       />
 

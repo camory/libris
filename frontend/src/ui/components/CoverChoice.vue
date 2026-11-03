@@ -9,6 +9,7 @@ const props = defineProps<{
   title: string;
   held: boolean;
   disabled?: boolean;
+  shownSource?: string | null;
 }>();
 
 const emit = defineEmits<{ coverSource: [source: string | null] }>();
@@ -21,7 +22,10 @@ const offered = computed(() =>
     .map((cover, index) => ({ cover, index }))
     .filter(({ index }) => !failed.value.includes(index)),
 );
-const tapped = ref<number | null>(null);
+const named = props.covers.findIndex(
+  ({ source }) => source === props.shownSource,
+);
+const tapped = ref<number | null>(named === -1 ? null : named);
 const shown = computed(
   () =>
     offered.value.find(({ index }) => index === tapped.value) ??

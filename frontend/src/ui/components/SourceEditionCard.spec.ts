@@ -681,6 +681,25 @@ describe("SourceEditionCard", () => {
     ).toBeDefined();
   });
 
+  it("shows first the cover the screen names", () => {
+    // When
+    const card = screen(
+      onePiece1,
+      [],
+      [inventaire, openLibrary],
+      false,
+      false,
+      {
+        shownSource: "Open Library",
+      },
+    );
+
+    // Then
+    expect(card.getByRole("img").getAttribute("src")).toBe(openLibrary.url);
+    expect(pressed(card)).toEqual(["false", "true"]);
+    expect(card.getByText("Open Library")).toBeDefined();
+  });
+
   it("shows the série alone when the sources gave it no tome", () => {
     // Given
     const standalone: SourceEdition = {
@@ -865,9 +884,11 @@ describe("SourceEditionCard", () => {
     covers: CoverCandidate[] = [],
     held = false,
     pageTitle = false,
+    options: { corner?: string; shownSource?: string } = {},
   ) {
     return within(
-      card(edition, copies, covers, held, pageTitle).element as HTMLElement,
+      card(edition, copies, covers, held, pageTitle, options)
+        .element as HTMLElement,
     );
   }
 
@@ -877,10 +898,10 @@ describe("SourceEditionCard", () => {
     covers: CoverCandidate[] = [],
     held = false,
     pageTitle = false,
-    { corner }: { corner?: string } = {},
+    { corner, shownSource }: { corner?: string; shownSource?: string } = {},
   ) {
     return mount(SourceEditionCard, {
-      props: { edition, copies, covers, held, pageTitle },
+      props: { edition, copies, covers, held, pageTitle, shownSource },
       slots: corner === undefined ? {} : { corner },
       global: { plugins: [createLibrisI18n()] },
     });
