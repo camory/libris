@@ -66,12 +66,8 @@ describe("suggestionsFor", () => {
   });
 
   it("folds the text as it folds the name, character by character", () => {
-    expect(
-      suggestionsFor(
-        "\u039f\u0394\u039f\u03a3",
-        ["\u039f\u0394\u039f\u03a3"],
-        "fr",
-      ),
-    ).toEqual([{ before: "", matched: "\u039f\u0394\u039f\u03a3", after: "" }]);
+    expect(suggestionsFor("ΟΔΟΣ", ["ΟΔΟΣ"], "fr")).toEqual([
+      { before: "", matched: "ΟΔΟΣ", after: "" },
+    ]);
   });
 });
