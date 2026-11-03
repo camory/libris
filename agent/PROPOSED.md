@@ -518,3 +518,8 @@
   keeps whatever answer lands last, so on a slow network an older answer can
   replace a newer one; keeping only the answer to the latest request would
   rule that out (found on T126).
+- 2026-11-03 Frontend: `suggestionsFor` strips accents through NFD, which
+  also splits a Hangul syllable into its jamo, so `하` finds *한국* with
+  *한* in semibold; worth a decision before T127 reuses the rule for the
+  language: keep it (it helps while a Korean IME composes) or recompose
+  what NFD split but the marks (found on T126's review).
