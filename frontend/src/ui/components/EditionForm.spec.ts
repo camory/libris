@@ -30,6 +30,17 @@ const openLibrary: CoverCandidate = {
   url: "https://covers.openlibrary.org/b/id/1-L.jpg",
 };
 
+const houseSeries = [
+  "Pierrot",
+  "Spirou et Fantasio",
+  "Piège",
+  "One piece",
+  "Les Pieds Nickelés",
+  "Astérix",
+  "Épiés",
+  "Pièces détachées",
+];
+
 const onLea: Copy = {
   id: "6f1d2c3b-4a59-4e6f-8b70-1c2d3e4f5a61",
   bookshelf: bibliothequeDeLea,
@@ -634,6 +645,143 @@ describe("EditionForm", () => {
     expect(wrapper.text()).not.toContain("Titre manquant");
   });
 
+  it("suggests under Série the names that contain the text", async () => {
+    // Given
+    const fields = screen(onePiece1, [], [], { seriesNames: houseSeries });
+    await fireEvent.focus(fields.getByRole("textbox", { name: "Série" }));
+
+    // When
+    await typeIn(fields, "Série", "pie");
+
+    // Then
+    expect(suggestions(fields)).toEqual([
+      "Épiés",
+      "Les Pieds Nickelés",
+      "One piece",
+      "Pièces détachées",
+      "Piège",
+    ]);
+  });
+
+  it("suggests nothing while Série has not the focus", async () => {
+    // Given
+    const fields = screen(onePiece1, [], [], { seriesNames: houseSeries });
+
+    // When
+    await typeIn(fields, "Série", "pie");
+
+    // Then
+    expect(suggestions(fields)).toEqual([]);
+  });
+
+  it("fills Série with the tapped name and closes them", async () => {
+    // Given
+    const wrapper = form(onePiece1, [], [], {
+      seriesNames: houseSeries,
+      attachTo: document.body,
+    });
+    const fields = within(wrapper.element as HTMLElement);
+    const submitted = vi.fn((event: Event) => event.preventDefault());
+    wrapper.element.addEventListener("submit", submitted);
+    await fireEvent.focus(fields.getByRole("textbox", { name: "Série" }));
+    await typeIn(fields, "Série", "one pi");
+
+    // When
+    await fireEvent.click(fields.getByRole("button", { name: "One piece" }));
+
+    // Then
+    expect(
+      fields.getByRole<HTMLInputElement>("textbox", { name: "Série" }).value,
+    ).toBe("One piece");
+    expect(suggestions(fields)).toEqual([]);
+    expect(submitted).not.toHaveBeenCalled();
+    wrapper.unmount();
+  });
+
+  it("offers them again on the next keystroke", async () => {
+    // Given
+    const fields = screen(onePiece1, [], [], { seriesNames: houseSeries });
+    await fireEvent.focus(fields.getByRole("textbox", { name: "Série" }));
+    await typeIn(fields, "Série", "one pi");
+    await fireEvent.click(fields.getByRole("button", { name: "One piece" }));
+
+    // When
+    await typeIn(fields, "Série", "pi");
+
+    // Then
+    expect(suggestions(fields)).toHaveLength(5);
+  });
+
+  it("closes them when Série is left", async () => {
+    // Given
+    const fields = screen(onePiece1, [], [], { seriesNames: houseSeries });
+    const series = fields.getByRole("textbox", { name: "Série" });
+    await fireEvent.focus(series);
+    await typeIn(fields, "Série", "pie");
+
+    // When
+    await fireEvent.blur(series);
+
+    // Then
+    expect(suggestions(fields)).toEqual([]);
+  });
+
+  it("offers them again when Série takes the focus anew", async () => {
+    // Given
+    const fields = screen(onePiece1, [], [], { seriesNames: houseSeries });
+    const series = fields.getByRole("textbox", { name: "Série" });
+    await fireEvent.focus(series);
+    await typeIn(fields, "Série", "one pi");
+    await fireEvent.click(fields.getByRole("button", { name: "One piece" }));
+    await fireEvent.blur(series);
+
+    // When
+    await fireEvent.focus(series);
+
+    // Then
+    expect(suggestions(fields)).toEqual(["One piece"]);
+  });
+
+  it("keeps the focus in Série while a row is pressed", async () => {
+    // Given
+    const fields = screen(onePiece1, [], [], { seriesNames: houseSeries });
+    await fireEvent.focus(fields.getByRole("textbox", { name: "Série" }));
+    await typeIn(fields, "Série", "one pi");
+
+    // When
+    const moved = fireEvent.mouseDown(
+      fields.getByRole("button", { name: "One piece" }),
+    );
+
+    // Then
+    expect(moved).toBe(false);
+  });
+
+  it("brings Série to the top when it takes the focus", async () => {
+    // Given
+    const scrollIntoView = vi.fn();
+    Object.defineProperty(HTMLElement.prototype, "scrollIntoView", {
+      configurable: true,
+      value: scrollIntoView,
+    });
+    const fields = screen(onePiece1, [], [], { seriesNames: houseSeries });
+    const series = fields.getByRole("textbox", { name: "Série" });
+
+    // When
+    await fireEvent.focus(series);
+
+    // Then
+    expect(scrollIntoView).toHaveBeenCalledExactlyOnceWith({ block: "start" });
+    expect(scrollIntoView.mock.contexts[0]).toBe(series);
+  });
+
+  function suggestions(fields: ReturnType<typeof screen>) {
+    return fields
+      .queryAllByRole("button")
+      .map((button) => button.textContent?.trim() ?? "")
+      .filter((name) => name !== "Ajouter à ma bibliothèque");
+  }
+
   function disabledOf(fields: ReturnType<typeof screen>) {
     return [
       ...fields.getAllByRole<HTMLInputElement>("textbox"),
@@ -686,8 +834,11 @@ describe("EditionForm", () => {
     edition?: SourceEdition,
     copies: Copy[] = [],
     covers: CoverCandidate[] = [],
+    options: Parameters<typeof form>[3] = {},
   ) {
-    return within(form(edition, copies, covers).element as HTMLElement);
+    return within(
+      form(edition, copies, covers, options).element as HTMLElement,
+    );
   }
 
   function form(
@@ -700,12 +851,14 @@ describe("EditionForm", () => {
       corner,
       shownSource,
       attachTo,
+      seriesNames = [],
     }: {
       adding?: boolean;
       failed?: boolean;
       corner?: string;
       shownSource?: string;
       attachTo?: HTMLElement;
+      seriesNames?: string[];
     } = {},
   ) {
     return mount(EditionForm, {
@@ -717,6 +870,7 @@ describe("EditionForm", () => {
         adding,
         failed,
         shownSource,
+        seriesNames,
       },
       slots: corner === undefined ? {} : { corner },
       global: { plugins: [createLibrisI18n()] },

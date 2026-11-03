@@ -285,3 +285,36 @@ Format:
   `4-bd.jpg`, *Tome sans série* under *Tome* against `7-refused.jpg`); the
   series' and the language's suggestions, S7 and S8, are T126's and
   T127's.
+
+## 2026-11-03 — T126 The series of the house suggested — done
+- Did: `suggestionsFor(typed, names, locale)` finds the house's series names
+  that contain the text; `EditionForm` shows up to five under *Série* while it
+  has the focus, a tap fills it; `IsbnView` asks the names for each lookup.
+- Decided: `suggestionsFor` folds each character (NFD, marks dropped, lower
+  case) and cuts on the name's own characters, so a mark that stands alone
+  stays with the letter before it; `useListSeriesNames`' `catch` sets `names` to
+  `[]`; the form keeps `seriesFocused` (focus and blur) and `chosen` (set by a
+  tap, reset by the next keystroke); the scroll goes through `boxes.series`;
+  `IsbnView` calls `list()` without awaiting it once the ISBN is accepted,
+  just before the lookup, so the names arrive while the lookup runs.
+- Deviations from the brief: step 18 types `"one pi"`, not `"pie"`. Testing
+  Library trims each span of a row when it names the button, so *One* + *pie*
+  + *ce* reads *Onepiece*.
+- Left over: the checks by hand on the Pixel (the rows and their semibold
+  part against `5-series-suggested.jpg`; *Série* brought to the top, its rows
+  above the keyboard); a names answer that lands after a newer one, in
+  `agent/PROPOSED.md`; S7's *a tap*, *Existante* and *Nouvelle* are T127's.
+
+## 2026-11-03 — T126 The series of the house suggested — reworked
+- Did: `suggestionsFor` folds the typed text one character at a time, as it
+  folds the names, so *ΟΔΟΣ* typed finds *ΟΔΟΣ*; a new focus on *Série*
+  offers the rows again after a tap; `nameOf` lives beside `Suggestion`.
+- Decided: the reviewer's verdict of 2026-11-03 settled it, amending
+  nothing: its blocking finding is the brief's *Contains, folded character
+  by character*, unmet for the text; its suggestions were applied, `chosen`
+  reset on focus, as the backlog line's "while the field has the focus and
+  holds text" reads; the first run's PROGRESS claim "folds each character"
+  was true of the names only, and is now true of both.
+- Deviations from the brief: none.
+- Left over: the commit subjects of 73 characters stay, history is not
+  rewritten; the checks by hand of the first run, unchanged.

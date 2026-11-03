@@ -141,7 +141,7 @@ green already and guard every frontend task.
       frontend tests of S10 *Tome sans série*, *Album sans série* and two
       fields refused.
 
-- [ ] T126 Frontend: the series of the house suggested.
+- [x] T126 Frontend: the series of the house suggested.
       The form asks Libris for the house's series names; while the series'
       field has the focus and holds text, up to five names that contain it,
       ignoring case, accents and the spaces at its ends, sorted by name in
@@ -152,7 +152,8 @@ green already and guard every frontend task.
       without them. The matching rule unit tested; the field brought to the
       top of what the keyboard leaves visible on focus, checked by hand.
       Realises S7's suggestions and S8; un-skips the frontend tests of S7,
-      the suggestions and a tap, and of S8.
+      the suggestions, and of S8; S7's tap, which ends on *Existante*, is
+      T127's.
 
 - [ ] T127 Frontend: Existante or Nouvelle, and the language suggested.
       Once the series' field holds text, its box says *Existante* after a
@@ -163,7 +164,7 @@ green already and guard every frontend task.
       of a language that contain the text, ignoring case and accents, with
       no word in its box, proven by its component test. Realises S7's word
       and S9's suggestions; un-skips the frontend tests of S7, Existante
-      and Nouvelle; S8 stays green.
+      and Nouvelle, and a tap, left by T126; S8 stays green.
 
 *Done (Tophe, on the Pixel, from the installed app on staging): scan a book
 the house lacks and read its card; tap the pencil and read its form,

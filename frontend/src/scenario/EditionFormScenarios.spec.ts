@@ -273,7 +273,7 @@ describe("Edition form", () => {
     ).toBeNull();
   });
 
-  it.skip("S7 The series of the house are suggested, the suggestions", async () => {
+  it("S7 The series of the house are suggested, the suggestions", async () => {
     // Given
     const screen = await formOfOnePiece1({
       names: theHouseHoldsTheSeries(...houseSeries),
@@ -341,7 +341,7 @@ describe("Edition form", () => {
     expect(screen.queryByText("Existante")).toBeNull();
   });
 
-  it.skip("S8 No suggestions when the names fail", async () => {
+  it("S8 No suggestions when the names fail", async () => {
     // Given
     const screen = await formOfOnePiece1({
       names: theSeriesNamesAreUnavailable(),

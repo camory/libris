@@ -18,10 +18,12 @@ import {
   type IsbnApi,
 } from "../../../application/IsbnApi";
 import { meApiKey } from "../../../application/MeApi";
+import { seriesApiKey, type SeriesApi } from "../../../application/SeriesApi";
 import { FakeBarcodeScanner } from "../../../fixture/FakeBarcodeScanner";
 import { FakeBookshelfApi } from "../../../fixture/FakeBookshelfApi";
 import { FakeIsbnApi } from "../../../fixture/FakeIsbnApi";
 import { FakeMeApi } from "../../../fixture/FakeMeApi";
+import { FakeSeriesApi } from "../../../fixture/FakeSeriesApi";
 import { lea } from "../../../fixture/Readers";
 import { onePiece1 } from "../../../fixture/SourceEditions";
 import BusySpinner from "../../components/BusySpinner.vue";
@@ -159,6 +161,44 @@ describe("IsbnView", () => {
       screen.getByRole("button", { name: "Annuler les modifications" }),
     ).toBeDefined();
     expect(screen.queryByRole("button", { name: "Modifier" })).toBeNull();
+  });
+
+  it("suggests the series Libris answers in the form", async () => {
+    // Given
+    const screen = open(
+      new FakeIsbnApi(found),
+      undefined,
+      undefined,
+      new FakeSeriesApi([], undefined, ["One piece"]),
+    );
+    await ask(screen, "9782723488525");
+    await press(screen, "Modifier");
+
+    // When
+    await typeInSeries(screen, "one pi");
+
+    // Then
+    expect(screen.getByRole("button", { name: "One piece" })).toBeDefined();
+  });
+
+  it("asks the names again for the next lookup's form", async () => {
+    // Given
+    const screen = open(
+      new FakeIsbnApi(found),
+      undefined,
+      undefined,
+      new SeriesNamesInTurn([["One piece"], ["One piece", "Pierrot"]]),
+    );
+    await ask(screen, "9782723488525");
+    await press(screen, "Modifier");
+
+    // When
+    await ask(screen, "9782723488525");
+    await press(screen, "Modifier");
+    await typeInSeries(screen, "pie");
+
+    // Then
+    expect(screen.getByRole("button", { name: "Pierrot" })).toBeDefined();
   });
 
   it("shows the card as answered again from the cross", async () => {
@@ -1051,8 +1091,11 @@ describe("IsbnView", () => {
     api: IsbnApi,
     scanner?: FakeBarcodeScanner,
     bookshelfApi?: FakeBookshelfApi,
+    seriesApi?: SeriesApi,
   ) {
-    return within(mountView(api, scanner, bookshelfApi).element as HTMLElement);
+    return within(
+      mountView(api, scanner, bookshelfApi, seriesApi).element as HTMLElement,
+    );
   }
 
   async function answeredUnderClosedCamera(api: IsbnApi) {
@@ -1067,6 +1110,7 @@ describe("IsbnView", () => {
     api: IsbnApi,
     scanner: FakeBarcodeScanner = new FakeBarcodeScanner(false),
     bookshelfApi = new FakeBookshelfApi(new Error("no add in this case")),
+    seriesApi: SeriesApi = new FakeSeriesApi([]),
   ) {
     return mount(IsbnView, {
       global: {
@@ -1076,6 +1120,7 @@ describe("IsbnView", () => {
           [barcodeScannerKey]: scanner,
           [meApiKey]: new FakeMeApi(lea),
           [bookshelfApiKey]: bookshelfApi,
+          [seriesApiKey]: seriesApi,
         },
       },
     });
@@ -1103,7 +1148,24 @@ describe("IsbnView", () => {
     await flushPromises();
   }
 
+  async function typeInSeries(screen: Screen, text: string) {
+    const series = screen.getByRole("textbox", { name: "Série" });
+    await fireEvent.focus(series);
+    await fireEvent.input(series, { target: { value: text } });
+    await flushPromises();
+  }
+
   function field(screen: Screen) {
     return screen.getByRole<HTMLInputElement>("textbox", { name: "ISBN" });
   }
 });
+
+class SeriesNamesInTurn extends FakeSeriesApi {
+  constructor(private readonly turns: string[][]) {
+    super([]);
+  }
+
+  override names(): Promise<string[]> {
+    return Promise.resolve(this.turns.shift() ?? []);
+  }
+}

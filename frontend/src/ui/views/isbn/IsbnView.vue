@@ -15,7 +15,9 @@ import { barcodeScannerKey } from "../../../application/BarcodeScanner";
 import { bookshelfApiKey } from "../../../application/BookshelfApi";
 import { isbnApiKey } from "../../../application/IsbnApi";
 import { meApiKey } from "../../../application/MeApi";
+import { seriesApiKey } from "../../../application/SeriesApi";
 import { useAddBookToBookshelf } from "../../../application/useAddBookToBookshelf";
+import { useListSeriesNames } from "../../../application/useListSeriesNames";
 import type { Copy } from "../../../domain/Copy";
 import type { CoverCandidate } from "../../../domain/Cover";
 import { Isbn } from "../../../domain/Isbn";
@@ -32,6 +34,9 @@ const isbnApi = inject(isbnApiKey)!;
 const barcodeScanner = inject(barcodeScannerKey)!;
 const meApi = inject(meApiKey)!;
 const bookshelfApi = inject(bookshelfApiKey)!;
+const { names: seriesNames, list: listSeriesNames } = useListSeriesNames(
+  inject(seriesApiKey)!,
+);
 
 const typed = ref("");
 const message = ref<string>();
@@ -119,6 +124,7 @@ async function search() {
     message.value = "isbn.invalid";
     return;
   }
+  void listSeriesNames();
   searching.value = true;
   const answer = await isbnApi.lookUp(isbn13);
   searching.value = false;
@@ -237,6 +243,7 @@ async function send(edition: SourceEdition) {
           :shown-source="coverSource"
           :adding="adding"
           :failed="failed"
+          :series-names="seriesNames"
           @cover-source="coverSource = $event"
           @add="send($event)"
         >

@@ -31,6 +31,10 @@ true; the diary keeps the date it was found.
   Write a plain space there and turn it into the escape with `sed`, or
   find the literal with `grep -c $'\xC2\xA0' <file>` and replace it with
   `sed -i 's/\xC2\xA0/\\u00A0/g' <file>`.
+- The other way round, Greek letters typed in an Edit arrived in the file
+  as their backslash-u escapes (seen 2026-11-03), while a Write and a Bash
+  heredoc kept them. Check with `od -c`; a script that builds the letters
+  from their code points (Python's `chr(0x3a3)`) puts them back.
 - A Bash command whose text holds the two-letter ISO code of Sundanese as a
   word is refused by the sandbox hook (*No privilege escalation*): check
   such a list from a script file written with the Write tool.
