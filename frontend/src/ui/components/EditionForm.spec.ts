@@ -395,6 +395,25 @@ describe("EditionForm", () => {
     );
   });
 
+  it("sends nothing while the title is missing", async () => {
+    // Given
+    const wrapper = form(onePiece1);
+    const screen = within(wrapper.element as HTMLElement);
+    await typeIn(screen, "Titre", "");
+
+    // When
+    await tapAdd(screen);
+
+    // Then
+    expect(wrapper.emitted("add")).toBeUndefined();
+    expect(wrapper.text()).toContain("Titre manquant");
+    expect(
+      screen
+        .getByRole("textbox", { name: "Titre" })
+        .getAttribute("aria-invalid"),
+    ).toBe("true");
+  });
+
   function disabledOf(fields: ReturnType<typeof screen>) {
     return [
       ...fields.getAllByRole<HTMLInputElement>("textbox"),
@@ -403,6 +422,22 @@ describe("EditionForm", () => {
         name: /^Couverture /,
       }),
     ].map((field) => field.disabled);
+  }
+
+  async function typeIn(
+    fields: ReturnType<typeof screen>,
+    label: string,
+    text: string,
+  ) {
+    await fireEvent.input(fields.getByRole("textbox", { name: label }), {
+      target: { value: text },
+    });
+  }
+
+  async function tapAdd(fields: ReturnType<typeof screen>) {
+    await fireEvent.click(
+      fields.getByRole("button", { name: "Ajouter à ma bibliothèque" }),
+    );
   }
 
   function valuesOf(fields: ReturnType<typeof screen>) {
