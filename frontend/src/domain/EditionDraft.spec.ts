@@ -120,6 +120,14 @@ describe("refusalsOf", () => {
     expect(refusals).toEqual({ pages: "invalidNumber" });
   });
 
+  it("refuses a number not written in digits", () => {
+    // When
+    const refusals = check({ ...filled, pages: "1e3" });
+
+    // Then
+    expect(refusals).toEqual({ pages: "invalidNumber" });
+  });
+
   function check(draft: EditionDraft) {
     return refusalsOf(draft, "fr");
   }
