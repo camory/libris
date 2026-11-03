@@ -82,7 +82,6 @@ const canScan = ref(false);
 const camera = useTemplateRef<HTMLVideoElement>("camera");
 
 onMounted(async () => {
-  await listSeriesNames();
   canScan.value = await barcodeScanner.isAvailable();
   if (canScan.value) {
     await openCamera();
@@ -125,6 +124,7 @@ async function search() {
     message.value = "isbn.invalid";
     return;
   }
+  void listSeriesNames();
   searching.value = true;
   const answer = await isbnApi.lookUp(isbn13);
   searching.value = false;

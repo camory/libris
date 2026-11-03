@@ -181,6 +181,26 @@ describe("IsbnView", () => {
     expect(screen.getByRole("button", { name: "One piece" })).toBeDefined();
   });
 
+  it("asks the names again for the next lookup's form", async () => {
+    // Given
+    const screen = open(
+      new FakeIsbnApi(found),
+      undefined,
+      undefined,
+      new SeriesNamesInTurn([["One piece"], ["One piece", "Pierrot"]]),
+    );
+    await ask(screen, "9782723488525");
+    await press(screen, "Modifier");
+
+    // When
+    await ask(screen, "9782723488525");
+    await press(screen, "Modifier");
+    await typeInSeries(screen, "pie");
+
+    // Then
+    expect(screen.getByRole("button", { name: "Pierrot" })).toBeDefined();
+  });
+
   it("shows the card as answered again from the cross", async () => {
     // Given
     const screen = open(new FakeIsbnApi(found));
@@ -1139,3 +1159,13 @@ describe("IsbnView", () => {
     return screen.getByRole<HTMLInputElement>("textbox", { name: "ISBN" });
   }
 });
+
+class SeriesNamesInTurn extends FakeSeriesApi {
+  constructor(private readonly turns: string[][]) {
+    super([]);
+  }
+
+  override names(): Promise<string[]> {
+    return Promise.resolve(this.turns.shift() ?? []);
+  }
+}
