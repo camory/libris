@@ -273,7 +273,7 @@ describe("Edition form", () => {
     ).toBeNull();
   });
 
-  it.skip("S7 The series of the house are suggested, the suggestions", async () => {
+  it("S7 The series of the house are suggested, the suggestions", async () => {
     // Given
     const screen = await formOfOnePiece1({
       names: theHouseHoldsTheSeries(...houseSeries),
