@@ -107,7 +107,7 @@ function focused(field: Field) {
 }
 
 function left(field: Field) {
-  if (field === "series") suggesting.value = null;
+  if (field === suggesting.value) suggesting.value = null;
 }
 
 function typed(field: Field) {

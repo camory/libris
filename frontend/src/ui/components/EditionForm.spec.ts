@@ -843,6 +843,20 @@ describe("EditionForm", () => {
     expect(suggestions(fields)).toEqual([]);
   });
 
+  it("closes them when Langue is left", async () => {
+    // Given
+    const fields = screen();
+    const language = fields.getByRole("textbox", { name: "Langue" });
+    await fireEvent.focus(language);
+    await typeIn(fields, "Langue", "jap");
+
+    // When
+    await fireEvent.blur(language);
+
+    // Then
+    expect(suggestions(fields)).toEqual([]);
+  });
+
   function suggestions(fields: ReturnType<typeof screen>) {
     return fields
       .queryAllByRole("button")
