@@ -12,6 +12,7 @@ export function suggestionsFor(
   locale: string,
 ): Suggestion[] {
   const text = folded(typed.trim(), locale);
+  if (text === "") return [];
   return [...names]
     .sort(nameOrder(locale))
     .flatMap((name) => {

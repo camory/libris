@@ -54,6 +54,10 @@ describe("suggestionsFor", () => {
       "Piège",
     ]);
   });
+
+  it("suggests nothing for a blank text", () => {
+    expect(suggestionsFor("   ", ["One piece"], "fr")).toEqual([]);
+  });
 });
 
 function nameOf(suggestion: Suggestion) {
