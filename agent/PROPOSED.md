@@ -500,3 +500,12 @@
   it, and so does the skeleton of a lookup typed meanwhile; whether the
   camera takes their place too, as it does the card's and the form's, is
   for Tophe and the spec (found on T129, out of its scope).
+- 2026-11-03 Frontend: a refused field of the edition form is not linked
+  to its message (`aria-describedby`); no document asks it, so a screen
+  reader hears *invalide* without the reason until Tophe decides it (found
+  on T124, out of its scope).
+- 2026-11-03 Frontend: the message of U05, the round alert icon at 22 and
+  the words in `danger`, is drawn by hand in twelve components and views
+  (`DockedAdd`, `EditionForm`, `IsbnView`, `HomeView`…); one component of
+  `ui/components` would draw it once (found on T124, out of its scope:
+  `ui/views` is outside its footprint).
