@@ -103,8 +103,8 @@ Read whole by a run that changes `frontend/`, after `every-run.md`.
   from `edition.kind`, a `values` record for the nine `input`s drawn by one
   `v-for` over `fields` (`isbn.form.<field>`), numbers as their digits,
   `null` as `""`, the language through `languageWord`, and `summary`, a
-  `textarea` of its own after them; a new lookup remounts it through the
-  skeleton. *Auteurs* is drawn after *Tome* inside that `v-for`, only when
+  `textarea` of its own after them; the camera keeps it, edits included,
+  and a new lookup remounts it through the skeleton. *Auteurs* is drawn after *Tome* inside that `v-for`, only when
   the answer has authors. Each label points at its box through `for` and
   an id built on `useId()`; the kinds are three `sr-only` radios inside
   their labels. The form's *ISBN* is a `<p>`, so `IsbnView.spec.ts`'s
@@ -322,6 +322,17 @@ Read whole by a run that changes `frontend/`, after `every-run.md`.
   on the card and no longer once the pencil is pressed. The form is
   remounted on each pencil, and the view keeps `coverSource` across the
   switch, handing it to each as `shownSource`; a lookup forgets both.
+  `IsbnView` draws the answer, the added card, the form or the card, as a
+  `v-if` chain on `answerShown` (`null` while `scanning`) inside
+  `<KeepAlive :max="1">`: the camera leaves no component there, so the one
+  shown is deactivated and comes back as left (edits, tapped cover,
+  unfolded summary), while any switch between branches mounts the new one
+  and prunes the old, built afresh on the pencil, the cross and the add; a
+  lookup unmounts the whole block through the skeleton. A `:max` above 1,
+  or an `include`/`exclude` that keeps one component out of the cache,
+  lets the cross's form come back on the next pencil with its edits (S13
+  reds). The block wrapping it stays mounted while the camera is open and
+  drops its `mt-5` then, so nothing of it draws under the camera.
 - The backend denies every non-GET without `X-Requested-With`, and the
   contract does not state the header, so `contracteer mock` answers the same
   without it: a frontend client that sends a `POST`, `PUT` or `DELETE` sets
@@ -406,8 +417,8 @@ Read whole by a run that changes `frontend/`, after `every-run.md`.
   (`addState`). Its function is called from the script through `.value`
   (`send`'s `addBookToBookshelf.value.add(edition, sentCoverSource.value)`),
   the template's `@add="send(edition)"` narrowed by `vue-tsc` to a
-  defined `edition` in the `v-else` that follows the form's
-  `v-else-if="editing || !edition"`.
+  defined `edition` by the dock's own `v-if="answerShown === 'card' &&
+  edition"`.
 - `@typescript-eslint/no-unused-vars` has no `argsIgnorePattern`: an
   `_`-prefixed parameter is still an error, so a cycle whose signature is
   fixed before its body uses the argument leaves `eslint .`, and the gate,
@@ -453,8 +464,10 @@ Read whole by a run that changes `frontend/`, after `every-run.md`.
   emitting `add`) draws the button, *Ajout en cours…* while `adding`, and
   the message under it when `failed`. It is drawn in two places: inside
   `EditionForm`'s root block, after the `<form>`, and in `IsbnView` after
-  the card of every found answer, the two sharing the view's `mt-5 flex flex-col` block, so
-  that each dock sticks over the block it closes. Its root is `sticky
+  the card of every found answer, the two sharing the view's `flex flex-col`
+  block, so that each dock sticks over the block it closes; the view's dock
+  sits after the `KeepAlive`, which caches one component and no fragment,
+  and is not drawn while the camera is open. Its root is `sticky
   bottom-0 -mx-5` with `[container-type:scroll-state]`; its inner
   `div` draws the hairline under the arbitrary variant
   `[@container_scroll-state(stuck:_bottom)]:border-t`, which Tailwind

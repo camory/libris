@@ -495,3 +495,7 @@
   `BookshelfRow` and `NewBookshelfRow` still write its box by hand, some
   with a margin, `relative` or `text-muted` of their own. Move them onto
   it, one refactor, their tests unchanged (found on T128's fix-ups, Tophe).
+- 2026-11-03 Frontend: while the camera is open, the message under the
+  field (*ISBN invalide*, *Erreur lors de la recherche…*) still draws under
+  it; whether the camera takes its place too, as it does the card's and the
+  form's, is for Tophe and the spec (found on T129, out of its scope).

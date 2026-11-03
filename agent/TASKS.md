@@ -109,7 +109,7 @@ green already and guard every frontend task.
       Realises S1, S12 and S13; un-skips the frontend tests of S1, S12 and
       S13, and those of S5 and S11, both cases, skipped again by #327.
 
-- [ ] T129 Frontend: the camera takes the place of the answer.
+- [x] T129 Frontend: the camera takes the place of the answer.
       While the camera is open, its view takes the place of the card or
       the form under the ISBN field and of their button, filling the space
       between the field and the tab bar as on arrival, checked by hand
