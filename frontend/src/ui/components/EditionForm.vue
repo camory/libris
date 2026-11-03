@@ -72,6 +72,7 @@ function text(value: string | number | null | undefined) {
 
 const id = useId();
 const refusals = ref<Refusals>({});
+const boxes: Partial<Record<(typeof fields)[number], HTMLInputElement>> = {};
 
 function add() {
   const draft: EditionDraft = {
@@ -80,7 +81,11 @@ function add() {
     summary: summary.value,
   };
   refusals.value = refusalsOf(draft, locale.value);
-  if (Object.keys(refusals.value).length > 0) return;
+  const first = fields.find((field) => refusals.value[field]);
+  if (first) {
+    boxes[first]?.focus();
+    return;
+  }
   emit(
     "add",
     editionOf(props.isbn13, answered?.authors ?? [], draft, locale.value),
@@ -140,6 +145,7 @@ function add() {
           </label>
           <input
             :id="`${id}-${field}`"
+            :ref="(box) => (boxes[field] = box as HTMLInputElement)"
             v-model="values[field]"
             type="text"
             :disabled="adding"

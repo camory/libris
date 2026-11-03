@@ -467,6 +467,27 @@ describe("EditionForm", () => {
     ).toEqual([]);
   });
 
+  it("focuses the first refused field", async () => {
+    // Given
+    const wrapper = form(onePiece1, [], [], { attachTo: document.body });
+    const screen = within(wrapper.element as HTMLElement);
+    await typeIn(screen, "Titre", "");
+    await typeIn(screen, "Pages", "0");
+    const button = screen.getByRole("button", {
+      name: "Ajouter à ma bibliothèque",
+    });
+    button.focus();
+
+    // When
+    await fireEvent.click(button);
+
+    // Then
+    expect(document.activeElement).toBe(
+      screen.getByRole("textbox", { name: "Titre" }),
+    );
+    wrapper.unmount();
+  });
+
   function disabledOf(fields: ReturnType<typeof screen>) {
     return [
       ...fields.getAllByRole<HTMLInputElement>("textbox"),
@@ -524,11 +545,13 @@ describe("EditionForm", () => {
       failed = false,
       corner,
       shownSource,
+      attachTo,
     }: {
       adding?: boolean;
       failed?: boolean;
       corner?: string;
       shownSource?: string;
+      attachTo?: HTMLElement;
     } = {},
   ) {
     return mount(EditionForm, {
@@ -543,6 +566,7 @@ describe("EditionForm", () => {
       },
       slots: corner === undefined ? {} : { corner },
       global: { plugins: [createLibrisI18n()] },
+      attachTo,
     });
   }
 });
