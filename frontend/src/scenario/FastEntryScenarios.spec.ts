@@ -69,6 +69,24 @@ describe("Fast entry", () => {
     await showsTheOnePieceCard(screen);
   });
 
+  it("S1 Typed ISBN, found, the camera open", async () => {
+    // Given
+    const screen = open("/isbn", {
+      isbn: theHouseHolds(onePiece1),
+      scanner: new FakeBarcodeScanner(true, new Promise(() => {})),
+    });
+    await screen.findByRole("button", { name: "Fermer la caméra" });
+
+    // When
+    await ask(screen, "9782723488525");
+
+    // Then
+    await showsTheOnePieceCard(screen);
+    expect(
+      screen.getByRole("button", { name: "Scanner le code-barres" }),
+    ).toBeDefined();
+  });
+
   it("S2 Scanned barcode", async () => {
     // Given
     cameraAllowed();
