@@ -27,6 +27,10 @@ describe("seriesNameStatus", () => {
   it("ignores the spaces at the text's ends", () => {
     expect(seriesNameStatus(" one piece ", names, "fr")).toBe("existing");
   });
+
+  it("says nothing for a blank text", () => {
+    expect(seriesNameStatus("   ", names, "fr")).toBeNull();
+  });
 });
 
 const onePiece: Series = {
