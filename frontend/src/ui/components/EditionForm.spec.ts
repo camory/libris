@@ -244,6 +244,23 @@ describe("EditionForm", () => {
     expect(positions).toEqual([...positions].sort((a, b) => a - b));
   });
 
+  it("words the authors' roles in the chosen kind", async () => {
+    // Given
+    const wrapper = form({ ...asterix1, kind: "BOOK" });
+    const fields = within(wrapper.element as HTMLElement);
+
+    // When
+    await fireEvent.change(fields.getByRole("radio", { name: "BD" }), {
+      target: { checked: true },
+    });
+
+    // Then
+    const text = wrapper.text().replace(/\s+/g, " ");
+    expect(text).toContain("René Goscinny · scénario");
+    expect(text).toContain("Albert Uderzo · dessin");
+    expect(text).not.toContain("texte");
+  });
+
   it("shows no Auteurs when Libris answered none", () => {
     // When
     const text = show({ ...onePiece1, authors: [] });

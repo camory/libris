@@ -173,7 +173,7 @@ function add() {
           class="flex flex-col gap-2"
         >
           <p class="text-label text-muted">{{ t("isbn.form.authors") }}</p>
-          <AuthorLines :authors="edition.authors" :kind="edition.kind" />
+          <AuthorLines :authors="edition.authors" :kind="kind" />
         </div>
       </template>
 
