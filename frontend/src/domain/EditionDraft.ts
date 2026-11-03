@@ -52,8 +52,8 @@ export function refusalsOf(draft: EditionDraft, locale: string): Refusals {
   const refusals: Refusals = {};
   if (text(draft.title) === null) refusals.title = "missing";
   for (const field of ["volume", "year", "pages"] as const) {
-    const number = text(draft[field]);
-    if (number !== null && !isWholeNumber(number)) {
+    const digits = text(draft[field]);
+    if (digits !== null && !isWholeNumber(digits)) {
       refusals[field] = "invalidNumber";
     }
   }
