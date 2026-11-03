@@ -17,4 +17,18 @@ describe("useListSeriesNames", () => {
     expect(before).toEqual([]);
     expect(names.value).toEqual(["One piece", "Astérix"]);
   });
+
+  it("holds none when Libris does not answer", async () => {
+    // Given
+    const { names, list } = useListSeriesNames(
+      new FakeSeriesApi([], undefined, new TypeError("Failed to fetch")),
+    );
+
+    // When
+    const listed = list();
+
+    // Then
+    await expect(listed).resolves.toBeUndefined();
+    expect(names.value).toEqual([]);
+  });
 });

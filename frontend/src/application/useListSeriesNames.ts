@@ -8,7 +8,11 @@ export function useListSeriesNames(seriesApi: SeriesApi): {
   const names = ref<string[]>([]);
 
   async function list() {
-    names.value = await seriesApi.names();
+    try {
+      names.value = await seriesApi.names();
+    } catch {
+      names.value = [];
+    }
   }
 
   return { names, list };
