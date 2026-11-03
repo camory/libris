@@ -88,6 +88,14 @@ describe("refusalsOf", () => {
     expect(refusals).toEqual({ title: "missing" });
   });
 
+  it("refuses a title of spaces alone", () => {
+    // When
+    const refusals = check({ ...filled, title: "   " });
+
+    // Then
+    expect(refusals).toEqual({ title: "missing" });
+  });
+
   function check(draft: EditionDraft) {
     return refusalsOf(draft, "fr");
   }

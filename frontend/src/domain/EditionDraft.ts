@@ -49,7 +49,7 @@ export type Refusals = Partial<
 >;
 
 export function refusalsOf(draft: EditionDraft, locale: string): Refusals {
-  return draft.title === "" ? { title: "missing" } : {};
+  return text(draft.title) === null ? { title: "missing" } : {};
 }
 
 function text(value: string) {
