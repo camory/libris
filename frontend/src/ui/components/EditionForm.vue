@@ -11,7 +11,7 @@ import {
   type Refusal,
   type Refusals,
 } from "../../domain/EditionDraft";
-import { languageWord } from "../../domain/Language";
+import { languageWord, languageWords } from "../../domain/Language";
 import { seriesNameStatus, type SeriesNameStatus } from "../../domain/Series";
 import type { Kind, SourceEdition } from "../../domain/SourceEdition";
 import { nameOf, suggestionsFor } from "../../domain/Suggestion";
@@ -55,6 +55,7 @@ const fields = [
   "language",
   "pages",
 ] as const;
+type Field = (typeof fields)[number];
 const numeric = new Set<string>(["volume", "year", "pages"]);
 const language = answered?.language ?? null;
 const values = reactive<Record<(typeof fields)[number], string>>({
@@ -69,13 +70,18 @@ const values = reactive<Record<(typeof fields)[number], string>>({
   pages: text(answered?.pageCount),
 });
 const summary = ref(text(answered?.summary));
-const seriesFocused = ref(false);
+const offered = computed<Partial<Record<Field, string[]>>>(() => ({
+  series: props.seriesNames ?? [],
+  language: languageWords(locale.value),
+}));
+const suggesting = ref<Field | null>(null);
 const chosen = ref(false);
-const suggestions = computed(() =>
-  seriesFocused.value && !chosen.value
-    ? suggestionsFor(values.series, props.seriesNames ?? [], locale.value)
-    : [],
-);
+const suggestions = computed(() => {
+  const field = suggesting.value;
+  return field && !chosen.value
+    ? suggestionsFor(values[field], offered.value[field] ?? [], locale.value)
+    : [];
+});
 
 const seriesStatus = computed(() =>
   seriesNameStatus(values.series, props.seriesNames, locale.value),
@@ -93,19 +99,19 @@ function text(value: string | number | null | undefined) {
   return value == null ? "" : String(value);
 }
 
-function focused(field: (typeof fields)[number]) {
-  if (field !== "series") return;
-  seriesFocused.value = true;
+function focused(field: Field) {
+  if (!offered.value[field]) return;
+  suggesting.value = field;
   chosen.value = false;
-  boxes.series?.scrollIntoView?.({ block: "start" });
+  if (field === "series") boxes.series?.scrollIntoView?.({ block: "start" });
 }
 
-function left(field: (typeof fields)[number]) {
-  if (field === "series") seriesFocused.value = false;
+function left(field: Field) {
+  if (field === "series") suggesting.value = null;
 }
 
-function typed(field: (typeof fields)[number]) {
-  if (field === "series") chosen.value = false;
+function typed(field: Field) {
+  if (field === suggesting.value) chosen.value = false;
 }
 
 function choose(name: string) {
@@ -231,7 +237,7 @@ function add() {
             </span>
           </div>
           <div
-            v-if="field === 'series' && suggestions.length"
+            v-if="field === suggesting && suggestions.length"
             class="-mt-1 flex flex-col divide-y divide-border rounded-xl border-[1.5px] border-border bg-surface"
           >
             <button

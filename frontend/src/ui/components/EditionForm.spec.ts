@@ -809,6 +809,24 @@ describe("EditionForm", () => {
     expect(fields.queryByText("Nouvelle")).toBeNull();
   });
 
+  it("suggests under Langue the words that contain the text", async () => {
+    // Given
+    const fields = screen();
+    await fireEvent.focus(fields.getByRole("textbox", { name: "Langue" }));
+
+    // When
+    await typeIn(fields, "Langue", "AN");
+
+    // Then
+    expect(suggestions(fields)).toEqual([
+      "afrikaans",
+      "akan",
+      "albanais",
+      "allemand",
+      "anglais",
+    ]);
+  });
+
   function suggestions(fields: ReturnType<typeof screen>) {
     return fields
       .queryAllByRole("button")
