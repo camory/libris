@@ -650,6 +650,49 @@ describe("IsbnView", () => {
     ).toBeNull();
   });
 
+  it("accepts nothing on the card while the add runs", async () => {
+    // Given
+    const screen = open(
+      new FakeIsbnApi(covered),
+      undefined,
+      new FakeBookshelfApi(new Promise<AddAnswer>(() => {})),
+    );
+    await ask(screen, "9782723488525");
+
+    // When
+    await press(screen, "Ajouter à ma bibliothèque");
+
+    // Then
+    expect(
+      screen
+        .getAllByRole<HTMLButtonElement>("button", {
+          name: /^Modifier$|^Couverture /,
+        })
+        .map((button) => button.disabled),
+    ).toEqual([true, true, true]);
+  });
+
+  it("accepts no cross on the form while the add runs", async () => {
+    // Given
+    const screen = open(
+      new FakeIsbnApi(found),
+      undefined,
+      new FakeBookshelfApi(new Promise<AddAnswer>(() => {})),
+    );
+    await ask(screen, "9782723488525");
+    await press(screen, "Modifier");
+
+    // When
+    await press(screen, "Ajouter à ma bibliothèque");
+
+    // Then
+    expect(
+      screen.getByRole<HTMLButtonElement>("button", {
+        name: "Annuler les modifications",
+      }).disabled,
+    ).toBe(true);
+  });
+
   it("adds the ouvrage of the card to the reader's default bookshelf", async () => {
     // Given
     const bookshelfApi = new FakeBookshelfApi(added);

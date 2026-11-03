@@ -232,20 +232,21 @@ Read whole by a run that changes `frontend/`, after `every-run.md`.
   props are `edition` (a `SourceEdition` or a `Book`, whose `isbn13` may be
   `null`), `copies`, `covers` and `held`, required, `pageTitle`,
   optional, which makes its heading the `h1` instead of the `h2`, and
-  `shownSource`, optional, passed to `CoverChoice`; the
+  `shownSource` and `disabled`, optional, passed to `CoverChoice`; the
   heading is named after the title alone, the overline outside it. The
   named slot `corner`, card and form alike, is drawn at the right of the
   top part's text column, inside a `flex min-w-0 flex-1 gap-2` wrapper;
   `IsbnView` fills it with the pencil *Modifier* on the card of an ISBN
   the house lacks and the cross *Annuler les modifications* on the form
-  that pencil opens (`editing`). Its
+  that pencil opens (`editing`), both disabled while `adding`, as the
+  card's dots. Its
   callers are `IsbnView`, for every found answer, and
   `EditionPageView`, which passes the stored cover as the one candidate
   `{ source: "Libris", url }`, `held`, `page-title`. Its spec's `card()`,
   `show()` and `screen()` default to no candidate and `held` false, so a
   case counting the rows' `BookOpen`s passes a candidate, or the stand-in
   adds one; `card()` and `screen()` take `pageTitle` fifth and
-  `{ corner, shownSource }` sixth.
+  `{ corner, shownSource, disabled }` sixth.
   `getAllByRole("img", { hidden: true })` reaches every candidate's image,
   in the answer's order.
 - jsdom clears its computed-style cache only when the tree is attached to

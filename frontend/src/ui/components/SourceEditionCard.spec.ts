@@ -700,6 +700,16 @@ describe("SourceEditionCard", () => {
     expect(card.getByText("Open Library")).toBeDefined();
   });
 
+  it("accepts no tap on its dots while disabled", () => {
+    // When
+    const card = screen(onePiece1, [], [inventaire, openLibrary], false, false, {
+      disabled: true,
+    });
+
+    // Then
+    expect(dots(card).map((dot) => dot.disabled)).toEqual([true, true]);
+  });
+
   it("shows the série alone when the sources gave it no tome", () => {
     // Given
     const standalone: SourceEdition = {
@@ -854,7 +864,7 @@ describe("SourceEditionCard", () => {
   }
 
   function dots(card: ReturnType<typeof screen>) {
-    return card.queryAllByRole("button", { name: /^Couverture / });
+    return card.queryAllByRole<HTMLButtonElement>("button", { name: /^Couverture / });
   }
 
   function labels(card: ReturnType<typeof screen>) {
@@ -884,7 +894,7 @@ describe("SourceEditionCard", () => {
     covers: CoverCandidate[] = [],
     held = false,
     pageTitle = false,
-    options: { corner?: string; shownSource?: string } = {},
+    options: { corner?: string; shownSource?: string; disabled?: boolean } = {},
   ) {
     return within(
       card(edition, copies, covers, held, pageTitle, options)
@@ -898,10 +908,14 @@ describe("SourceEditionCard", () => {
     covers: CoverCandidate[] = [],
     held = false,
     pageTitle = false,
-    { corner, shownSource }: { corner?: string; shownSource?: string } = {},
+    {
+      corner,
+      shownSource,
+      disabled,
+    }: { corner?: string; shownSource?: string; disabled?: boolean } = {},
   ) {
     return mount(SourceEditionCard, {
-      props: { edition, copies, covers, held, pageTitle, shownSource },
+      props: { edition, copies, covers, held, pageTitle, shownSource, disabled },
       slots: corner === undefined ? {} : { corner },
       global: { plugins: [createLibrisI18n()] },
     });

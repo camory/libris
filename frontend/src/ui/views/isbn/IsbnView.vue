@@ -230,6 +230,7 @@ async function send(edition: SourceEdition) {
           <button
             type="button"
             :aria-label="t('isbn.cancelEdit')"
+            :disabled="adding"
             class="flex size-11 shrink-0 items-center justify-center rounded-[10px] text-accent"
             @click="editing = false"
           >
@@ -244,12 +245,14 @@ async function send(edition: SourceEdition) {
           :copies="shownCopies"
           :covers="covers"
           :shown-source="coverSource"
+          :disabled="adding"
           @cover-source="coverSource = $event"
         >
           <template v-if="!held" #corner>
             <button
               type="button"
               :aria-label="t('isbn.edit')"
+            :disabled="adding"
               class="flex size-11 shrink-0 items-center justify-center rounded-[10px] text-accent"
               @click="editing = true"
             >

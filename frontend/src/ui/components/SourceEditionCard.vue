@@ -17,6 +17,7 @@ const props = defineProps<{
   held: boolean;
   pageTitle?: boolean;
   shownSource?: string | null;
+  disabled?: boolean;
 }>();
 
 const emit = defineEmits<{ coverSource: [source: string | null] }>();
@@ -75,6 +76,7 @@ onMounted(() => {
         :covers="covers"
         :title="edition.title"
         :held="held"
+        :disabled="disabled"
         :shown-source="shownSource"
         @cover-source="emit('coverSource', $event)"
       />

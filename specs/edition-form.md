@@ -379,7 +379,7 @@ States:
   série* under *Tome*, the title focused.
 - **Adding** (S5, bookshelf S2): the button reads *Ajout en cours…* with
   its spinner, and the card or the form above it accepts nothing, its
-  pencil and its cover's dots included.
+  pencil or its cross and its cover's dots included.
 - **Added** (S5): the card of the fields sent, with *Dans Bibliothèque de
   Léa*, the form and the button gone. The card is the confirmation.
 - **Not added** (S11): *Erreur lors de l'ajout, veuillez réessayer plus
