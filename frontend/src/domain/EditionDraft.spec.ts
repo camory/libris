@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { onePiece1 } from "../fixture/SourceEditions";
-import { editionOf, type EditionDraft } from "./EditionDraft";
+import { editionOf, refusalsOf, type EditionDraft } from "./EditionDraft";
 
 const filled: EditionDraft = {
   kind: "MANGA",
@@ -76,5 +76,121 @@ describe("editionOf", () => {
 
   function read(draft: EditionDraft) {
     return editionOf(onePiece1.isbn13, onePiece1.authors, draft, "fr");
+  }
+});
+
+describe("refusalsOf", () => {
+  it("refuses an empty title", () => {
+    // When
+    const refusals = check({ ...filled, title: "" });
+
+    // Then
+    expect(refusals).toEqual({ title: "missing" });
+  });
+
+  it("refuses a title of spaces alone", () => {
+    // When
+    const refusals = check({ ...filled, title: "   " });
+
+    // Then
+    expect(refusals).toEqual({ title: "missing" });
+  });
+
+  it("refuses a volume number of 0", () => {
+    // When
+    const refusals = check({ ...filled, volume: "0" });
+
+    // Then
+    expect(refusals).toEqual({ volume: "invalidNumber" });
+  });
+
+  it("refuses a year in words", () => {
+    // When
+    const refusals = check({ ...filled, year: "deux mille" });
+
+    // Then
+    expect(refusals).toEqual({ year: "invalidNumber" });
+  });
+
+  it("refuses a page count with a decimal", () => {
+    // When
+    const refusals = check({ ...filled, pages: "1,5" });
+
+    // Then
+    expect(refusals).toEqual({ pages: "invalidNumber" });
+  });
+
+  it("refuses a number not written in digits", () => {
+    // When
+    const refusals = check({ ...filled, pages: "1e3" });
+
+    // Then
+    expect(refusals).toEqual({ pages: "invalidNumber" });
+  });
+
+  it("refuses a word that names no language", () => {
+    // When
+    const refusals = check({ ...filled, language: "elfique" });
+
+    // Then
+    expect(refusals).toEqual({ language: "unknownLanguage" });
+  });
+
+  it("refuses no field left empty", () => {
+    // Given
+    const blank: EditionDraft = {
+      kind: "MANGA",
+      title: "Romance dawn",
+      subtitle: "",
+      series: " ",
+      volume: "",
+      collection: "  ",
+      publisher: "",
+      year: "  ",
+      language: "",
+      pages: " ",
+      summary: "",
+    };
+
+    // When
+    const refusals = check(blank);
+
+    // Then
+    expect(refusals).toEqual({});
+  });
+
+  it("refuses nothing in a draft as Libris answered it", () => {
+    // When
+    const refusals = check({
+      ...filled,
+      volume: " 1 ",
+      year: " 2013 ",
+      pages: " 203 ",
+      language: " français ",
+    });
+
+    // Then
+    expect(refusals).toEqual({});
+  });
+
+  it("answers every refused field", () => {
+    // When
+    const refusals = check({
+      ...filled,
+      title: "",
+      year: "0",
+      language: "elfique",
+    });
+
+    // Then
+    expect(refusals).toEqual({
+      title: "missing",
+      year: "invalidNumber",
+      language: "unknownLanguage",
+    });
+  });
+
+  function check(draft: EditionDraft) {
+    return refusalsOf(draft, "fr");
   }
 });

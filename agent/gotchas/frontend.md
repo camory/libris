@@ -111,9 +111,19 @@ Read whole by a run that changes `frontend/`, after `every-run.md`.
   `field()` still finds the one `ISBN` textbox. A case that types in a
   field the mutation makes a `number` input finds it with
   `getByLabelText`: a role query reds on the `spinbutton` before the value
-  is read. Its spec's `form()` takes `{ adding, failed, corner, shownSource }`
+  is read. On the add's tap it asks `refusalsOf(draft, locale)` (beside
+  `editionOf`, a `Refusals` record from a text field to `missing`,
+  `invalidNumber` or `unknownLanguage`) and emits `add` only when it answers
+  none; otherwise it keeps that answer until the next tap, marks each refused
+  box `aria-invalid="true"` (outlined through `aria-invalid:border-danger`),
+  draws `isbn.form.refusal.<code>` under it, and focuses then
+  `scrollIntoView({ block: "center" })`s the first refused in its `fields`
+  order, reaching the box through a function `:ref` into `boxes`. Its
+  spec's `form()` takes `{ adding, failed, corner, shownSource, attachTo }`
   fourth, `false` and none by default, and gives the edition's own
-  `isbn13` when there is one.
+  `isbn13` when there is one; the focus case passes `attachTo:
+  document.body` and unmounts at its end, and the file's `afterEach`
+  deletes a `scrollIntoView` a case defined.
 - On a detached tree a `fireEvent.click` on a radio checks nothing and fires
   no `change`, so `v-model` keeps the kind: a component spec chooses a kind
   with `fireEvent.change(radio, { target: { checked: true } })`. The
@@ -458,7 +468,9 @@ Read whole by a run that changes `frontend/`, after `every-run.md`.
   and a code the browser has no word for (`qq`) reads as itself.
   `languageCode(word, locale)` reads a word back: the first code of the
   module's private `CODES`, the 183 codes of ISO 639-1 written out in their
-  order, whose word equals it under `nameOrder(locale)`, `null` for none.
+  order, whose word equals it under `nameOrder(locale)`, `null` for none;
+  `refusalsOf` reads the form's *Langue* through it, `null` refused as
+  `unknownLanguage`.
   The list is never built from two-letter pairs: the browser has words for
   withdrawn codes (`iw`, `mo`, `in`). The catalogue holds no `language`
   block.

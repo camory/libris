@@ -1,7 +1,7 @@
 import { BookOpen } from "@lucide/vue";
 import { fireEvent, within } from "@testing-library/dom";
 import { mount } from "@vue/test-utils";
-import { describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 import type { Copy } from "../../domain/Copy";
 import type { CoverCandidate } from "../../domain/Cover";
 import type { SourceEdition } from "../../domain/SourceEdition";
@@ -36,6 +36,10 @@ const onLea: Copy = {
 };
 
 describe("EditionForm", () => {
+  afterEach(() => {
+    Reflect.deleteProperty(HTMLElement.prototype, "scrollIntoView");
+  });
+
   it("shows the ISBN under its label", () => {
     // When
     const text = show();
@@ -395,6 +399,144 @@ describe("EditionForm", () => {
     );
   });
 
+  it("sends nothing while the title is missing", async () => {
+    // Given
+    const wrapper = form(onePiece1);
+    const screen = within(wrapper.element as HTMLElement);
+    await typeIn(screen, "Titre", "");
+
+    // When
+    await tapAdd(screen);
+
+    // Then
+    expect(wrapper.emitted("add")).toBeUndefined();
+    expect(wrapper.text()).toContain("Titre manquant");
+    expect(isRefused(screen, "Titre")).toBe(true);
+  });
+
+  it("says Nombre invalide under the refused number", async () => {
+    // Given
+    const wrapper = form(onePiece1);
+    const screen = within(wrapper.element as HTMLElement);
+    await typeIn(screen, "Année", "deux mille");
+
+    // When
+    await tapAdd(screen);
+
+    // Then
+    expect(wrapper.text()).toMatch(/Année.*Nombre invalide.*Langue/s);
+    expect(isRefused(screen, "Année")).toBe(true);
+  });
+
+  it("says Langue inconnue under a word naming no language", async () => {
+    // Given
+    const wrapper = form(onePiece1);
+    const screen = within(wrapper.element as HTMLElement);
+    await typeIn(screen, "Langue", "elfique");
+
+    // When
+    await tapAdd(screen);
+
+    // Then
+    expect(wrapper.text()).toContain("Langue inconnue");
+    expect(isRefused(screen, "Langue")).toBe(true);
+  });
+
+  it("checks nothing before the tap", async () => {
+    // Given
+    const wrapper = form(onePiece1);
+    const screen = within(wrapper.element as HTMLElement);
+
+    // When
+    await typeIn(screen, "Titre", "");
+
+    // Then
+    expect(wrapper.text()).not.toContain("Titre manquant");
+    expect(
+      screen
+        .getAllByRole("textbox")
+        .filter((field) => field.getAttribute("aria-invalid") === "true"),
+    ).toEqual([]);
+  });
+
+  it("focuses the first refused field", async () => {
+    // Given
+    const wrapper = form(onePiece1, [], [], { attachTo: document.body });
+    const screen = within(wrapper.element as HTMLElement);
+    await typeIn(screen, "Titre", "");
+    await typeIn(screen, "Pages", "0");
+    const button = screen.getByRole("button", {
+      name: "Ajouter à ma bibliothèque",
+    });
+    button.focus();
+
+    // When
+    await fireEvent.click(button);
+
+    // Then
+    expect(document.activeElement).toBe(
+      screen.getByRole("textbox", { name: "Titre" }),
+    );
+    wrapper.unmount();
+  });
+
+  it("brings the first refused field into view", async () => {
+    // Given
+    const scrollIntoView = vi.fn();
+    Object.defineProperty(HTMLElement.prototype, "scrollIntoView", {
+      configurable: true,
+      value: scrollIntoView,
+    });
+    const wrapper = form(onePiece1);
+    const screen = within(wrapper.element as HTMLElement);
+    await typeIn(screen, "Titre", "");
+    await typeIn(screen, "Pages", "0");
+
+    // When
+    await tapAdd(screen);
+
+    // Then
+    expect(scrollIntoView).toHaveBeenCalledExactlyOnceWith({
+      block: "center",
+    });
+    expect(scrollIntoView.mock.contexts[0]).toBe(
+      screen.getByRole("textbox", { name: "Titre" }),
+    );
+  });
+
+  it("keeps a refusal until the next tap", async () => {
+    // Given
+    const wrapper = form(onePiece1);
+    const screen = within(wrapper.element as HTMLElement);
+    await typeIn(screen, "Titre", "");
+    await tapAdd(screen);
+
+    // When
+    await typeIn(screen, "Titre", "Romance Dawn");
+
+    // Then
+    expect(wrapper.text()).toContain("Titre manquant");
+    expect(isRefused(screen, "Titre")).toBe(true);
+  });
+
+  it("sends the form once the refused field is mended", async () => {
+    // Given
+    const wrapper = form(onePiece1);
+    const screen = within(wrapper.element as HTMLElement);
+    await typeIn(screen, "Titre", "");
+    await tapAdd(screen);
+    await typeIn(screen, "Titre", "Romance Dawn");
+
+    // When
+    await tapAdd(screen);
+
+    // Then
+    expect(wrapper.emitted("add")).toEqual([
+      [{ ...onePiece1, title: "Romance Dawn" }],
+    ]);
+    expect(wrapper.text()).not.toContain("Titre manquant");
+  });
+
   function disabledOf(fields: ReturnType<typeof screen>) {
     return [
       ...fields.getAllByRole<HTMLInputElement>("textbox"),
@@ -403,6 +545,30 @@ describe("EditionForm", () => {
         name: /^Couverture /,
       }),
     ].map((field) => field.disabled);
+  }
+
+  async function typeIn(
+    fields: ReturnType<typeof screen>,
+    label: string,
+    text: string,
+  ) {
+    await fireEvent.input(fields.getByRole("textbox", { name: label }), {
+      target: { value: text },
+    });
+  }
+
+  function isRefused(fields: ReturnType<typeof screen>, label: string) {
+    return (
+      fields
+        .getByRole("textbox", { name: label })
+        .getAttribute("aria-invalid") === "true"
+    );
+  }
+
+  async function tapAdd(fields: ReturnType<typeof screen>) {
+    await fireEvent.click(
+      fields.getByRole("button", { name: "Ajouter à ma bibliothèque" }),
+    );
   }
 
   function valuesOf(fields: ReturnType<typeof screen>) {
@@ -436,11 +602,13 @@ describe("EditionForm", () => {
       failed = false,
       corner,
       shownSource,
+      attachTo,
     }: {
       adding?: boolean;
       failed?: boolean;
       corner?: string;
       shownSource?: string;
+      attachTo?: HTMLElement;
     } = {},
   ) {
     return mount(EditionForm, {
@@ -455,6 +623,7 @@ describe("EditionForm", () => {
       },
       slots: corner === undefined ? {} : { corner },
       global: { plugins: [createLibrisI18n()] },
+      attachTo,
     });
   }
 });

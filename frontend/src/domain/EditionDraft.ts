@@ -42,6 +42,32 @@ export function editionOf(
   };
 }
 
+export type Refusal = "missing" | "invalidNumber" | "unknownLanguage";
+
+export type Refusals = Partial<
+  Record<Exclude<keyof EditionDraft, "kind" | "summary">, Refusal>
+>;
+
+export function refusalsOf(draft: EditionDraft, locale: string): Refusals {
+  const refusals: Refusals = {};
+  if (text(draft.title) === null) refusals.title = "missing";
+  for (const field of ["volume", "year", "pages"] as const) {
+    const digits = text(draft[field]);
+    if (digits !== null && !isWholeNumber(digits)) {
+      refusals[field] = "invalidNumber";
+    }
+  }
+  const language = text(draft.language);
+  if (language !== null && languageCode(language, locale) === null) {
+    refusals.language = "unknownLanguage";
+  }
+  return refusals;
+}
+
+function isWholeNumber(value: string) {
+  return /^\d+$/.test(value) && Number(value) >= 1;
+}
+
 function text(value: string) {
   const trimmed = value.trim();
   return trimmed === "" ? null : trimmed;

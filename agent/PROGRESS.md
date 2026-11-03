@@ -247,3 +247,23 @@ Format:
   card or a form as on arrival, nothing under it; the card or the form
   back in place on the cross, the dock under it); the message and the
   skeleton while the camera is open, in `agent/PROPOSED.md`.
+
+## 2026-11-03 — T124 A refused field — done
+- Did: `refusalsOf(draft, locale)` answers, field by field, why a draft
+  cannot be read; on the add's tap `EditionForm` sends nothing while it
+  answers a refusal, outlines and words each refused field, focuses and
+  centres the first; S10's six field-by-field cases run green.
+- Decided: `Refusals` is keyed by the draft's text fields (`kind` and
+  `summary` excluded), so T125 extends the same record; the form keeps
+  its boxes in a plain record filled by a function `:ref`, not a
+  template ref array, whose order Vue does not promise; the focus and the
+  scroll are called synchronously on the tap, the message's render
+  following; the message's markup stays drawn in place, as in the eleven
+  other places that draw it (a shared component proposed instead, since
+  seven of them are views outside the footprint).
+- Deviations from the brief: none.
+- Left over: the checks by hand on the Pixel (the outline and the message
+  against `7-refused.jpg`, its *Titre* half; the outline kept while
+  focused; the refused field scrolled to the middle, clear of the dock);
+  `aria-describedby` and a shared message component, in
+  `agent/PROPOSED.md`; S10's three other cases are T125's.

@@ -99,6 +99,11 @@ const fr = {
       language: "Langue",
       pages: "Pages",
       summary: "Résumé",
+      refusal: {
+        missing: "Titre manquant",
+        invalidNumber: "Nombre invalide",
+        unknownLanguage: "Langue inconnue",
+      },
     },
   },
   catalogue: {

@@ -1,9 +1,15 @@
 <script setup lang="ts">
+import { CircleAlert } from "@lucide/vue";
 import { reactive, ref, useId } from "vue";
 import { useI18n } from "vue-i18n";
 import type { Copy } from "../../domain/Copy";
 import type { CoverCandidate } from "../../domain/Cover";
-import { editionOf } from "../../domain/EditionDraft";
+import {
+  editionOf,
+  refusalsOf,
+  type EditionDraft,
+  type Refusals,
+} from "../../domain/EditionDraft";
 import { languageWord } from "../../domain/Language";
 import type { Kind, SourceEdition } from "../../domain/SourceEdition";
 import AuthorLines from "./AuthorLines.vue";
@@ -65,16 +71,25 @@ function text(value: string | number | null | undefined) {
 }
 
 const id = useId();
+const refusals = ref<Refusals>({});
+const boxes: Partial<Record<(typeof fields)[number], HTMLInputElement>> = {};
 
 function add() {
+  const draft: EditionDraft = {
+    kind: kind.value,
+    ...values,
+    summary: summary.value,
+  };
+  refusals.value = refusalsOf(draft, locale.value);
+  const first = fields.find((field) => refusals.value[field]);
+  if (first) {
+    boxes[first]?.focus();
+    boxes[first]?.scrollIntoView?.({ block: "center" });
+    return;
+  }
   emit(
     "add",
-    editionOf(
-      props.isbn13,
-      answered?.authors ?? [],
-      { kind: kind.value, ...values, summary: summary.value },
-      locale.value,
-    ),
+    editionOf(props.isbn13, answered?.authors ?? [], draft, locale.value),
   );
 }
 </script>
@@ -131,12 +146,21 @@ function add() {
           </label>
           <input
             :id="`${id}-${field}`"
+            :ref="(box) => (boxes[field] = box as HTMLInputElement)"
             v-model="values[field]"
             type="text"
             :disabled="adding"
             :inputmode="numeric.has(field) ? 'numeric' : undefined"
-            class="h-[50px] w-full rounded-xl border-[1.5px] border-border bg-surface px-3.5 text-field"
+            :aria-invalid="refusals[field] ? 'true' : undefined"
+            class="h-[50px] w-full rounded-xl border-[1.5px] border-border bg-surface px-3.5 text-field aria-invalid:border-danger"
           />
+          <p
+            v-if="refusals[field]"
+            class="flex items-start gap-2 text-body text-danger"
+          >
+            <CircleAlert :size="22" class="shrink-0" />
+            <span>{{ t(`isbn.form.refusal.${refusals[field]}`) }}</span>
+          </p>
         </div>
         <div
           v-if="field === 'volume' && edition?.authors.length"

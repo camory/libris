@@ -119,7 +119,7 @@ green already and guard every frontend task.
       The card's case proven by the lookup screen's component test.
       Realises S14; un-skips the frontend test of S14.
 
-- [ ] T124 Frontend: a refused field.
+- [x] T124 Frontend: a refused field.
       On the add's tap, and not before, each field the domain refuses takes
       the `danger` outline, kept while it has the focus, and its message
       under it; the first refused is focused and scrolled into view, the
