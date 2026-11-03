@@ -411,11 +411,7 @@ describe("EditionForm", () => {
     // Then
     expect(wrapper.emitted("add")).toBeUndefined();
     expect(wrapper.text()).toContain("Titre manquant");
-    expect(
-      screen
-        .getByRole("textbox", { name: "Titre" })
-        .getAttribute("aria-invalid"),
-    ).toBe("true");
+    expect(isRefused(screen, "Titre")).toBe(true);
   });
 
   it("says Nombre invalide under the refused number", async () => {
@@ -429,11 +425,7 @@ describe("EditionForm", () => {
 
     // Then
     expect(wrapper.text()).toMatch(/Année.*Nombre invalide.*Langue/s);
-    expect(
-      screen
-        .getByRole("textbox", { name: "Année" })
-        .getAttribute("aria-invalid"),
-    ).toBe("true");
+    expect(isRefused(screen, "Année")).toBe(true);
   });
 
   it("says Langue inconnue under a word naming no language", async () => {
@@ -447,11 +439,7 @@ describe("EditionForm", () => {
 
     // Then
     expect(wrapper.text()).toContain("Langue inconnue");
-    expect(
-      screen
-        .getByRole("textbox", { name: "Langue" })
-        .getAttribute("aria-invalid"),
-    ).toBe("true");
+    expect(isRefused(screen, "Langue")).toBe(true);
   });
 
   it("checks nothing before the tap", async () => {
@@ -528,11 +516,7 @@ describe("EditionForm", () => {
 
     // Then
     expect(wrapper.text()).toContain("Titre manquant");
-    expect(
-      screen
-        .getByRole("textbox", { name: "Titre" })
-        .getAttribute("aria-invalid"),
-    ).toBe("true");
+    expect(isRefused(screen, "Titre")).toBe(true);
   });
 
   it("sends the form once the refused field is mended", async () => {
@@ -571,6 +555,14 @@ describe("EditionForm", () => {
     await fireEvent.input(fields.getByRole("textbox", { name: label }), {
       target: { value: text },
     });
+  }
+
+  function isRefused(fields: ReturnType<typeof screen>, label: string) {
+    return (
+      fields
+        .getByRole("textbox", { name: label })
+        .getAttribute("aria-invalid") === "true"
+    );
   }
 
   async function tapAdd(fields: ReturnType<typeof screen>) {
