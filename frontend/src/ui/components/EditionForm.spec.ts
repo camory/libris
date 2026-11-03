@@ -663,6 +663,17 @@ describe("EditionForm", () => {
     ]);
   });
 
+  it("suggests nothing while Série has not the focus", async () => {
+    // Given
+    const fields = screen(onePiece1, [], [], { seriesNames: houseSeries });
+
+    // When
+    await typeIn(fields, "Série", "pie");
+
+    // Then
+    expect(suggestions(fields)).toEqual([]);
+  });
+
   function suggestions(fields: ReturnType<typeof screen>) {
     return fields
       .queryAllByRole("button")
