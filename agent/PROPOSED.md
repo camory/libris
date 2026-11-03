@@ -490,3 +490,9 @@
   whether "the spaces at its ends" of PRD §3 means every whitespace, and
   whether the backend then trims the name before it is stored, the index
   following (found by the reviewer on T120, Tophe 2026-11-01).
+- 2026-11-03 Frontend: the card of an ISBN the house lacks keeps its pencil
+  and its cover dots enabled while its add runs, the spec's *Adding*
+  saying only that the form accepts nothing; a dot tapped then changes the
+  cover the form opens on, not the one sent. Open before a task: whether
+  the pencil and the card's dots are part of what accepts nothing while
+  the add runs (T128's brief, Tophe).

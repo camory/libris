@@ -94,7 +94,8 @@ Read whole by a run that changes `frontend/`, after `every-run.md`.
   `EditionFormScenarios`' `open()` gives `world.names` as its `seriesApi`.
 - `EditionForm` takes `isbn13`, `edition` (a `SourceEdition`, absent for
   an unknown ISBN), `copies`, `covers`, `adding` and `failed`, required,
-  emits `coverSource` as the card does, and `add` with the edition its
+  `shownSource`, optional, as the card's, and the named slot `corner` as
+  the card's, emits `coverSource` as the card does, and `add` with the edition its
   fields read as, `editionOf(isbn13, authors, draft, locale)`
   (`src/domain/EditionDraft.ts`). Its root is a plain block holding the
   card-shaped `<form>` then `DockedAdd`. While `adding` its textboxes and
@@ -110,8 +111,9 @@ Read whole by a run that changes `frontend/`, after `every-run.md`.
   `field()` still finds the one `ISBN` textbox. A case that types in a
   field the mutation makes a `number` input finds it with
   `getByLabelText`: a role query reds on the `spinbutton` before the value
-  is read. Its spec's `form()` takes `{ adding, failed }` fourth, `false`
-  by default, and gives the edition's own `isbn13` when there is one.
+  is read. Its spec's `form()` takes `{ adding, failed, corner, shownSource }`
+  fourth, `false` and none by default, and gives the edition's own
+  `isbn13` when there is one.
 - On a detached tree a `fireEvent.click` on a radio checks nothing and fires
   no `change`, so `v-model` keeps the kind: a component spec chooses a kind
   with `fireEvent.change(radio, { target: { checked: true } })`. The
@@ -221,21 +223,29 @@ Read whole by a run that changes `frontend/`, after `every-run.md`.
 - `SourceEditionCard` and `EditionForm` draw three parts in common, each a
   component of `ui/components` with no spec of its own: `CoverChoice`
   (props `covers`, `title`, `held`, and `disabled`, optional, which
-  disables its dots; emitting `coverSource`) keeps one `img`
+  disables its dots, and `shownSource`, optional, the source of the
+  candidate it shows first, read once at setup; emitting `coverSource`) keeps one `img`
   per candidate of the lookup's `covers`, the shown one alone accessible,
   and the stand-in `BookOpen` when none is left, the dots' row and the
   source's name drawn only when `held` is false; `AuthorLines` (props
   `authors`, `kind`) and `BookshelvesHolding` (prop `copies`). The card's
   props are `edition` (a `SourceEdition` or a `Book`, whose `isbn13` may be
-  `null`), `copies`, `covers` and `held`, required, and `pageTitle`,
-  optional, which makes its heading the `h1` instead of the `h2`; the
-  heading is named after the title alone, the overline outside it. Its
-  callers are `IsbnView`, for an ISBN the house holds alone, and
+  `null`), `copies`, `covers` and `held`, required, `pageTitle`,
+  optional, which makes its heading the `h1` instead of the `h2`, and
+  `shownSource`, optional, passed to `CoverChoice`; the
+  heading is named after the title alone, the overline outside it. The
+  named slot `corner`, card and form alike, is drawn at the right of the
+  top part's text column, inside a `flex min-w-0 flex-1 gap-2` wrapper;
+  `IsbnView` fills it with the pencil *Modifier* on the card of an ISBN
+  the house lacks and the cross *Annuler les modifications* on the form
+  that pencil opens (`editing`). Its
+  callers are `IsbnView`, for every found answer, and
   `EditionPageView`, which passes the stored cover as the one candidate
   `{ source: "Libris", url }`, `held`, `page-title`. Its spec's `card()`,
   `show()` and `screen()` default to no candidate and `held` false, so a
   case counting the rows' `BookOpen`s passes a candidate, or the stand-in
-  adds one; `card()` and `screen()` take `pageTitle` fifth.
+  adds one; `card()` and `screen()` take `pageTitle` fifth and
+  `{ corner, shownSource }` sixth.
   `getAllByRole("img", { hidden: true })` reaches every candidate's image,
   in the answer's order.
 - jsdom clears its computed-style cache only when the tree is attached to
@@ -304,8 +314,11 @@ Read whole by a run that changes `frontend/`, after `every-run.md`.
   `AuthorLines`, `BookshelvesHolding`) is asserted in `EditionForm.spec.ts`
   too. Taking a word off the card reds them all; grep the word over `src/`
   before calling the change done. An ISBN the house lacks (`id: null`)
-  shows the form, whose fields hold their text as values: a `getByText`
-  over a found answer of `id: null` no longer finds the title.
+  shows the card first, its pencil *Modifier* opening the form, whose
+  fields hold their text as values: a `getByText` for the title finds it
+  on the card and no longer once the pencil is pressed. The form is
+  remounted on each pencil, and the view keeps `coverSource` across the
+  switch, handing it to each as `shownSource`; a lookup forgets both.
 - The backend denies every non-GET without `X-Requested-With`, and the
   contract does not state the header, so `contracteer mock` answers the same
   without it: a frontend client that sends a `POST`, `PUT` or `DELETE` sets
@@ -389,8 +402,9 @@ Read whole by a run that changes `frontend/`, after `every-run.md`.
   template as a ref still, and the view reads it through a `computed`
   (`addState`). Its function is called from the script through `.value`
   (`send`'s `addBookToBookshelf.value.add(edition, sentCoverSource.value)`),
-  the template's `@add="send(edition)"` narrowed by `vue-tsc` from the
-  `v-else-if="held && edition"` around the held card's dock.
+  the template's `@add="send(edition)"` narrowed by `vue-tsc` to a
+  defined `edition` in the `v-else` that follows the form's
+  `v-else-if="editing || !edition"`.
 - `@typescript-eslint/no-unused-vars` has no `argsIgnorePattern`: an
   `_`-prefixed parameter is still an error, so a cycle whose signature is
   fixed before its body uses the argument leaves `eslint .`, and the gate,
@@ -436,7 +450,7 @@ Read whole by a run that changes `frontend/`, after `every-run.md`.
   emitting `add`) draws the button, *Ajout en cours…* while `adding`, and
   the message under it when `failed`. It is drawn in two places: inside
   `EditionForm`'s root block, after the `<form>`, and in `IsbnView` after
-  the held card, the two sharing the view's `mt-5 flex flex-col` block, so
+  the card of every found answer, the two sharing the view's `mt-5 flex flex-col` block, so
   that each dock sticks over the block it closes. Its root is `sticky
   bottom-0 -mx-5` with `[container-type:scroll-state]`; its inner
   `div` draws the hairline under the arbitrary variant

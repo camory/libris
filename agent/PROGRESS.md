@@ -206,11 +206,23 @@ Format:
   `8-added.jpg` leaves them out.
 - Left over: the checks by hand of the first entry stay Tophe's.
 
-## 2026-11-03 — T128 The card first, its pencil opens the form — handoff
-- Done: the un-skip (S1, S5, S11 both cases, S12, S13; its red read, all six on the missing card or *Modifier*), then steps 1 to 5, one commit each. Start with step 6 (the cross).
-- Gate at handoff, red on cited scenarios not yet reached only: S12 (the form shows inventaire.io, not the cover tapped: steps 8, 9) and S13 (no *Annuler les modifications*: step 6); S1, S5 and S11 green. Not pushed, the gate being red.
-- Decided: the slot `corner` sits beside the text column in a `flex min-w-0 flex-1 gap-2` wrapper of the top part (card and form), the text column `flex-1`; `CoverChoice`'s `tapped` starts on `covers.findIndex` of `shownSource`, `null` when none matches; the spec helpers take `{ corner, shownSource }` last (`card()`, `screen()` sixth, `form()` in its options object).
-- View so far: `editing` ref; `EditionForm` on `v-else-if="editing || !edition"`, else the card and `DockedAdd`, the card given the pencil (`isbn.edit`, Lucide `Pencil`, 22) in `#corner` when `!held`; the lookup does not reset `editing` yet (step 10), no `isbn.cancelEdit` yet.
-- Step 5 also re-greened *shows the card of the edition it added in place of the form* (Modifier pressed in its Given) and renamed *adds the cover the card shows*, as the brief says.
-- No guard reached yet: steps 12 to 19's mutations are all still to run.
-- Deviations: none so far.
+## 2026-11-03 — T128 The card first, its pencil opens the form — done
+- Did: an ISBN the house lacks shows its card and its docked add first; the
+  pencil *Modifier* in the card's corner opens the form as answered, the
+  cross *Annuler les modifications* shows the card again; S1, S5, S11,
+  S12 and S13 run green.
+- Decided: the slot `corner` sits beside the text column of the top part in
+  a `flex min-w-0 flex-1 gap-2` wrapper, card and form alike;
+  `CoverChoice`'s `tapped` starts on the candidate whose source
+  `shownSource` names, none when no candidate matches; the view holds
+  `editing`, the cross drawn only when it is set, and a lookup clears
+  `editing` and `coverSource`; the view's spec shares one answer with two
+  covers (`covered`), its three local copies dropped in a refactor; the
+  run was split in two by a handoff after step 5.
+- Deviations from the brief: none.
+- Left over: the checks by hand on the Pixel (the card and its pencil
+  against `1-card.jpg`, the form and its cross against `2-filled.jpg`, the
+  8 between the text and the corner, the dock under the card); whether
+  the card's pencil and dots accept nothing while the add runs, in
+  `agent/PROPOSED.md`; the two `DESIGN` amendments proposed in the PR
+  body; S14 and the camera taking the answer's place are T129's.
