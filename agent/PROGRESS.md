@@ -318,3 +318,12 @@ Format:
 - Deviations from the brief: none.
 - Left over: the commit subjects of 73 characters stay, history is not
   rewritten; the checks by hand of the first run, unchanged.
+
+## 2026-11-03 — T127 Existante or Nouvelle, and the language suggested — handoff
+- Done: steps 0 to 20 of the test plan, each committed; S7's three cases and S8 green; then a refactor (`Field` alias in `EditionForm.vue`).
+- Start with: the self-review (`git diff main...HEAD`), the `agent/gotchas/frontend.md` items the brief names (series' names `null`; `EditionForm`'s word, *Langue*'s rows, `form()`'s `seriesNames` `null` by default; `languageWords`, *akan* once), tick T127, the diary entry, the gate, the PR.
+- Decided: the form keeps `suggesting` (the focused field among those `offered` holds, `series` and `language`) in place of `seriesFocused`, one block of rows for both; the word's colour and check come from a `statusLooks` record keyed by the status, the word from `isbn.form.seriesNameStatus.<status>`; *Série*'s box takes `pr-32` while it shows a word (hand check); step 9 also made the prop `string[] | null` and the suggestions read `?? []`, since `null` reached them at once.
+- Red first, no mutation needed: steps 3, 15, 16 (3 red because step 2 lower-cased).
+- Guards: 13, `seriesNames ?? []` handed to `seriesNameStatus` → `expected <span …(1)></span> to be null`; 17, the word drawn beside every offered field from its own text → *says no word in Langue* red (and `Found multiple elements with the text: Nouvelle`); 18, `boxes[field]?.scrollIntoView` for every field → `expected "vi.fn()" to not be called at all, but actually been called 1 times`; 19, the composable's `catch` setting `[]` → S8 `expected <span …(1)></span> to be null`. All reverted.
+- Deviation to declare: the subject of the step 2 commit runs to 74 characters, left since history is not rewritten.
+- Hand checks left for Tophe: the word against `2-filled.jpg` / `5-series-suggested.jpg` (the mockup draws *Existante* itself in `accent`, as built), `pr-32` keeping the text clear of it, *Langue*'s rows against `6-language-suggested.jpg` and above the Pixel's keyboard.
