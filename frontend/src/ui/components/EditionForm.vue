@@ -25,6 +25,8 @@ const emit = defineEmits<{
   add: [edition: SourceEdition];
 }>();
 
+defineSlots<{ corner?: () => unknown }>();
+
 const { t, locale } = useI18n();
 
 const kinds: Kind[] = ["BOOK", "BD", "MANGA"];
@@ -89,9 +91,12 @@ function add() {
           :disabled="adding"
           @cover-source="emit('coverSource', $event)"
         />
-        <div class="flex min-w-0 flex-col gap-1.5">
-          <p class="text-label text-muted">{{ t("isbn.card.isbn") }}</p>
-          <p class="text-body tabular-nums">{{ isbn13 }}</p>
+        <div class="flex min-w-0 flex-1 gap-2">
+          <div class="flex min-w-0 flex-1 flex-col gap-1.5">
+            <p class="text-label text-muted">{{ t("isbn.card.isbn") }}</p>
+            <p class="text-body tabular-nums">{{ isbn13 }}</p>
+          </div>
+          <slot name="corner" />
         </div>
       </div>
 

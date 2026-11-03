@@ -254,6 +254,20 @@ describe("EditionForm", () => {
     ]);
   });
 
+  it("draws the button the screen gives in its corner", () => {
+    // When
+    const wrapper = form(onePiece1, [], [], {
+      corner: '<button type="button">Agir</button>',
+    });
+
+    // Then
+    expect(
+      within(wrapper.element as HTMLElement).getByRole("button", {
+        name: "Agir",
+      }),
+    ).toBeDefined();
+  });
+
   it("says in which bookshelf the reader has a copy", () => {
     // When
     const text = show(onePiece1, [onLea]);
@@ -395,7 +409,11 @@ describe("EditionForm", () => {
     edition?: SourceEdition,
     copies: Copy[] = [],
     covers: CoverCandidate[] = [],
-    { adding = false, failed = false } = {},
+    {
+      adding = false,
+      failed = false,
+      corner,
+    }: { adding?: boolean; failed?: boolean; corner?: string } = {},
   ) {
     return mount(EditionForm, {
       props: {
@@ -406,6 +424,7 @@ describe("EditionForm", () => {
         adding,
         failed,
       },
+      slots: corner === undefined ? {} : { corner },
       global: { plugins: [createLibrisI18n()] },
     });
   }
