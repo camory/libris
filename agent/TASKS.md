@@ -155,7 +155,7 @@ green already and guard every frontend task.
       the suggestions, and of S8; S7's tap, which ends on *Existante*, is
       T127's.
 
-- [ ] T127 Frontend: Existante or Nouvelle, and the language suggested.
+- [x] T127 Frontend: Existante or Nouvelle, and the language suggested.
       Once the series' field holds text, its box says *Existante* after a
       check in `accent` when the text names a series of the house, ignoring
       case, accents and the spaces at its ends, else *Nouvelle* in `muted`,
