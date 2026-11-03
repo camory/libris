@@ -663,16 +663,6 @@ describe("IsbnView", () => {
 
   it("adds the cover the card shows", async () => {
     // Given
-    const covered: IsbnAnswer = {
-      ...found,
-      covers: [
-        { source: "inventaire.io", url: "https://inventaire.io/img/1" },
-        {
-          source: "Open Library",
-          url: "https://covers.openlibrary.org/b/id/1-L.jpg",
-        },
-      ],
-    };
     const bookshelfApi = new FakeBookshelfApi(added);
     const screen = open(new FakeIsbnApi(covered), undefined, bookshelfApi);
     await ask(screen, "9782723488525");
@@ -737,16 +727,6 @@ describe("IsbnView", () => {
 
   it("keeps on the card the cover it added", async () => {
     // Given
-    const covered: IsbnAnswer = {
-      ...found,
-      covers: [
-        { source: "inventaire.io", url: "https://inventaire.io/img/1" },
-        {
-          source: "Open Library",
-          url: "https://covers.openlibrary.org/b/id/1-L.jpg",
-        },
-      ],
-    };
     const screen = open(
       new FakeIsbnApi(covered),
       undefined,
@@ -772,16 +752,6 @@ describe("IsbnView", () => {
 
   it("keeps on the card the cover it sent, not one tapped while the add runs", async () => {
     // Given
-    const covered: IsbnAnswer = {
-      ...found,
-      covers: [
-        { source: "inventaire.io", url: "https://inventaire.io/img/1" },
-        {
-          source: "Open Library",
-          url: "https://covers.openlibrary.org/b/id/1-L.jpg",
-        },
-      ],
-    };
     let land: (answer: AddAnswer) => void = () => {};
     const screen = open(
       new FakeIsbnApi(covered),
