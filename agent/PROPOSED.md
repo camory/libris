@@ -497,5 +497,6 @@
   it, one refactor, their tests unchanged (found on T128's fix-ups, Tophe).
 - 2026-11-03 Frontend: while the camera is open, the message under the
   field (*ISBN invalide*, *Erreur lors de la recherche…*) still draws under
-  it; whether the camera takes its place too, as it does the card's and the
-  form's, is for Tophe and the spec (found on T129, out of its scope).
+  it, and so does the skeleton of a lookup typed meanwhile; whether the
+  camera takes their place too, as it does the card's and the form's, is
+  for Tophe and the spec (found on T129, out of its scope).
