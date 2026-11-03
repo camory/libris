@@ -58,7 +58,7 @@ const fields = [
 type Field = (typeof fields)[number];
 const numeric = new Set<string>(["volume", "year", "pages"]);
 const language = answered?.language ?? null;
-const values = reactive<Record<(typeof fields)[number], string>>({
+const values = reactive<Record<Field, string>>({
   title: text(answered?.title),
   subtitle: text(answered?.subtitle),
   series: text(answered?.series?.name),
@@ -119,7 +119,7 @@ function choose(field: Field, name: string) {
   chosen.value = true;
 }
 
-function labelOf(field: (typeof fields)[number]) {
+function labelOf(field: Field) {
   return field === "volume"
     ? `isbn.form.volume.${kind.value}`
     : `isbn.form.${field}`;
@@ -133,7 +133,7 @@ function messageOf(refusal: Refusal) {
 
 const id = useId();
 const refusals = ref<Refusals>({});
-const boxes: Partial<Record<(typeof fields)[number], HTMLInputElement>> = {};
+const boxes: Partial<Record<Field, HTMLInputElement>> = {};
 
 function add() {
   const draft: EditionDraft = {
