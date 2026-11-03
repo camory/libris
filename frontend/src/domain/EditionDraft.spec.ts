@@ -96,6 +96,14 @@ describe("refusalsOf", () => {
     expect(refusals).toEqual({ title: "missing" });
   });
 
+  it("refuses a volume number of 0", () => {
+    // When
+    const refusals = check({ ...filled, volume: "0" });
+
+    // Then
+    expect(refusals).toEqual({ volume: "invalidNumber" });
+  });
+
   function check(draft: EditionDraft) {
     return refusalsOf(draft, "fr");
   }

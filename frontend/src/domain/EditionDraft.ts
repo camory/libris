@@ -49,7 +49,14 @@ export type Refusals = Partial<
 >;
 
 export function refusalsOf(draft: EditionDraft, locale: string): Refusals {
-  return text(draft.title) === null ? { title: "missing" } : {};
+  const refusals: Refusals = {};
+  if (text(draft.title) === null) refusals.title = "missing";
+  if (!isWholeNumber(draft.volume)) refusals.volume = "invalidNumber";
+  return refusals;
+}
+
+function isWholeNumber(value: string) {
+  return /^\d+$/.test(value) && Number(value) >= 1;
 }
 
 function text(value: string) {
