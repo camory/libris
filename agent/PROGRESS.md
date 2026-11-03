@@ -260,7 +260,7 @@ Format:
   scroll are called synchronously on the tap, the message's render
   following; the message's markup stays drawn in place, as in the eleven
   other places that draw it (a shared component proposed instead, since
-  three of them are views outside the footprint).
+  seven of them are views outside the footprint).
 - Deviations from the brief: none.
 - Left over: the checks by hand on the Pixel (the outline and the message
   against `7-refused.jpg`, its *Titre* half; the outline kept while
