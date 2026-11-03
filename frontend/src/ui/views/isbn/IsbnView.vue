@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { CircleAlert, ScanBarcode, Search, X } from "@lucide/vue";
+import { CircleAlert, Pencil, ScanBarcode, Search, X } from "@lucide/vue";
 import {
   computed,
   inject,
@@ -38,6 +38,7 @@ const refused = computed(() => message.value === "isbn.invalid");
 const edition = ref<SourceEdition>();
 const unknownIsbn13 = ref<string>();
 const held = ref(false);
+const editing = ref(false);
 const copies = ref<Copy[]>([]);
 const covers = ref<CoverCandidate[]>([]);
 const coverSource = ref<string | null>(null);
@@ -211,22 +212,8 @@ async function send(edition: SourceEdition) {
         :copies="shownCopies"
         :covers="sentCovers"
       />
-      <template v-else-if="held && edition">
-        <SourceEditionCard
-          :edition="edition"
-          :held="held"
-          :copies="shownCopies"
-          :covers="covers"
-          @cover-source="coverSource = $event"
-        />
-        <DockedAdd
-          :adding="adding"
-          :failed="failed"
-          @add="send(edition)"
-        />
-      </template>
       <EditionForm
-        v-else
+        v-else-if="editing || !edition"
         :isbn13="shownIsbn13"
         :edition="edition"
         :copies="shownCopies"
@@ -236,6 +223,27 @@ async function send(edition: SourceEdition) {
         @cover-source="coverSource = $event"
         @add="send($event)"
       />
+      <template v-else>
+        <SourceEditionCard
+          :edition="edition"
+          :held="held"
+          :copies="shownCopies"
+          :covers="covers"
+          @cover-source="coverSource = $event"
+        >
+          <template v-if="!held" #corner>
+            <button
+              type="button"
+              :aria-label="t('isbn.edit')"
+              class="flex size-11 shrink-0 items-center justify-center rounded-[10px] text-accent"
+              @click="editing = true"
+            >
+              <Pencil :size="22" class="shrink-0" />
+            </button>
+          </template>
+        </SourceEditionCard>
+        <DockedAdd :adding="adding" :failed="failed" @add="send(edition)" />
+      </template>
     </div>
 
     <p v-if="message" class="mt-5 flex items-start gap-2 text-body text-danger">

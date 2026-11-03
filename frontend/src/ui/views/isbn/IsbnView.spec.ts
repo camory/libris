@@ -100,7 +100,7 @@ describe("IsbnView", () => {
     expect(api.asked).toEqual([]);
   });
 
-  it("opens the form of the answer for an ISBN the house lacks", async () => {
+  it("shows the card of an ISBN the house lacks, with its pencil", async () => {
     // Given
     const api = new FakeIsbnApi(found);
     const screen = open(api);
@@ -110,10 +110,9 @@ describe("IsbnView", () => {
 
     // Then
     expect(api.asked).toEqual(["9782723488525"]);
-    expect(
-      screen.getByRole<HTMLInputElement>("textbox", { name: "Titre" }).value,
-    ).toBe("Romance dawn");
-    expect(screen.queryByRole("heading", { name: "Romance dawn" })).toBeNull();
+    expect(screen.getByRole("heading", { name: "Romance dawn" })).toBeDefined();
+    expect(screen.queryByRole("textbox", { name: "Titre" })).toBeNull();
+    expect(screen.getByRole("button", { name: "Modifier" })).toBeDefined();
     expect(
       screen.getByRole("button", { name: "Ajouter à ma bibliothèque" }),
     ).toBeDefined();
@@ -579,7 +578,7 @@ describe("IsbnView", () => {
     ).toBeNull();
   });
 
-  it("adds the cover the form shows", async () => {
+  it("adds the cover the card shows", async () => {
     // Given
     const covered: IsbnAnswer = {
       ...found,
@@ -636,6 +635,7 @@ describe("IsbnView", () => {
       new FakeBookshelfApi(added),
     );
     await ask(screen, "9782723488525");
+    await press(screen, "Modifier");
     await fireEvent.input(screen.getByRole("textbox", { name: "Titre" }), {
       target: { value: "Romance Dawn" },
     });
