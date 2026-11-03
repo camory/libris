@@ -674,6 +674,30 @@ describe("EditionForm", () => {
     expect(suggestions(fields)).toEqual([]);
   });
 
+  it("fills Série with the tapped name and closes them", async () => {
+    // Given
+    const wrapper = form(onePiece1, [], [], {
+      seriesNames: houseSeries,
+      attachTo: document.body,
+    });
+    const fields = within(wrapper.element as HTMLElement);
+    const submitted = vi.fn((event: Event) => event.preventDefault());
+    wrapper.element.addEventListener("submit", submitted);
+    await fireEvent.focus(fields.getByRole("textbox", { name: "Série" }));
+    await typeIn(fields, "Série", "one pi");
+
+    // When
+    await fireEvent.click(fields.getByRole("button", { name: "One piece" }));
+
+    // Then
+    expect(
+      fields.getByRole<HTMLInputElement>("textbox", { name: "Série" }).value,
+    ).toBe("One piece");
+    expect(suggestions(fields)).toEqual([]);
+    expect(submitted).not.toHaveBeenCalled();
+    wrapper.unmount();
+  });
+
   function suggestions(fields: ReturnType<typeof screen>) {
     return fields
       .queryAllByRole("button")

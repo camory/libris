@@ -83,6 +83,11 @@ function focused(field: (typeof fields)[number]) {
   if (field === "series") suggesting.value = true;
 }
 
+function choose(name: string) {
+  values.series = name;
+  suggesting.value = false;
+}
+
 function labelOf(field: (typeof fields)[number]) {
   return field === "volume"
     ? `isbn.form.volume.${kind.value}`
@@ -188,6 +193,11 @@ function add() {
               v-for="suggestion in suggestions"
               :key="suggestion.before + suggestion.matched + suggestion.after"
               type="button"
+              @click="
+                choose(
+                  suggestion.before + suggestion.matched + suggestion.after,
+                )
+              "
               class="mx-3.5 h-11 text-left text-field"
             >
               <span>{{ suggestion.before }}</span>
