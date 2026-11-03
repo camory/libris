@@ -29,6 +29,31 @@ describe("suggestionsFor", () => {
       ).map(nameOf),
     ).toEqual(["Épiés", "One piece", "Pièces détachées"]);
   });
+
+  it("keeps the first five", () => {
+    expect(
+      suggestionsFor(
+        "pie",
+        [
+          "Pierrot",
+          "Spirou et Fantasio",
+          "Piège",
+          "One piece",
+          "Les Pieds Nickelés",
+          "Astérix",
+          "Épiés",
+          "Pièces détachées",
+        ],
+        "fr",
+      ).map(nameOf),
+    ).toEqual([
+      "Épiés",
+      "Les Pieds Nickelés",
+      "One piece",
+      "Pièces détachées",
+      "Piège",
+    ]);
+  });
 });
 
 function nameOf(suggestion: Suggestion) {
