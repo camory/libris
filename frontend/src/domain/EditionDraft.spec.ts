@@ -136,6 +136,14 @@ describe("refusalsOf", () => {
     expect(refusals).toEqual({ language: "unknownLanguage" });
   });
 
+  it("refuses a volume number with no series", () => {
+    // When
+    const refusals = check({ ...filled, series: "" });
+
+    // Then
+    expect(refusals).toEqual({ volume: "withoutSeries" });
+  });
+
   it("refuses no field left empty", () => {
     // Given
     const blank: EditionDraft = {

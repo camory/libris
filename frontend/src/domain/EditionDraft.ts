@@ -42,7 +42,8 @@ export function editionOf(
   };
 }
 
-export type Refusal = "missing" | "invalidNumber" | "unknownLanguage";
+export type Refusal =
+  "missing" | "invalidNumber" | "unknownLanguage" | "withoutSeries";
 
 export type Refusals = Partial<
   Record<Exclude<keyof EditionDraft, "kind" | "summary">, Refusal>
@@ -51,6 +52,9 @@ export type Refusals = Partial<
 export function refusalsOf(draft: EditionDraft, locale: string): Refusals {
   const refusals: Refusals = {};
   if (text(draft.title) === null) refusals.title = "missing";
+  if (text(draft.volume) !== null && text(draft.series) === null) {
+    refusals.volume = "withoutSeries";
+  }
   for (const field of ["volume", "year", "pages"] as const) {
     const digits = text(draft[field]);
     if (digits !== null && !isWholeNumber(digits)) {
