@@ -786,6 +786,20 @@ describe("EditionForm", () => {
     expect(fields.queryByText("Nouvelle")).toBeNull();
   });
 
+  it("says Nouvelle for a name the house does not hold", async () => {
+    // Given
+    const wrapper = form(onePiece1, [], [], { seriesNames: houseSeries });
+    const fields = within(wrapper.element as HTMLElement);
+
+    // When
+    await typeIn(fields, "Série", "One pie");
+
+    // Then
+    expect(fields.getByText("Nouvelle")).toBeTruthy();
+    expect(fields.queryByText("Existante")).toBeNull();
+    expect(wrapper.findAllComponents(Check)).toHaveLength(0);
+  });
+
   function suggestions(fields: ReturnType<typeof screen>) {
     return fields
       .queryAllByRole("button")

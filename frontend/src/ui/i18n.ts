@@ -93,6 +93,7 @@ const fr = {
       series: "Série",
       seriesNameStatus: {
         existing: "Existante",
+        new: "Nouvelle",
       },
       volume: {
         BOOK: "Tome",

@@ -12,7 +12,7 @@ import {
   type Refusals,
 } from "../../domain/EditionDraft";
 import { languageWord } from "../../domain/Language";
-import { seriesNameStatus } from "../../domain/Series";
+import { seriesNameStatus, type SeriesNameStatus } from "../../domain/Series";
 import type { Kind, SourceEdition } from "../../domain/SourceEdition";
 import { nameOf, suggestionsFor } from "../../domain/Suggestion";
 import AuthorLines from "./AuthorLines.vue";
@@ -80,6 +80,14 @@ const suggestions = computed(() =>
 const seriesStatus = computed(() =>
   seriesNameStatus(values.series, props.seriesNames, locale.value),
 );
+
+const statusLooks: Record<
+  SeriesNameStatus,
+  { colour: string; checked: boolean }
+> = {
+  existing: { colour: "text-accent", checked: true },
+  new: { colour: "text-muted", checked: false },
+};
 
 function text(value: string | number | null | undefined) {
   return value == null ? "" : String(value);
@@ -204,13 +212,21 @@ function add() {
               @blur="left(field)"
               @input="typed(field)"
               class="h-[50px] w-full rounded-xl border-[1.5px] border-border bg-surface px-3.5 text-field aria-invalid:border-danger"
-              :class="{ 'scroll-mt-28': field === 'series' }"
+              :class="{
+                'scroll-mt-28': field === 'series',
+                'pr-32': field === 'series' && seriesStatus,
+              }"
             />
             <span
               v-if="field === 'series' && seriesStatus"
-              class="pointer-events-none absolute inset-y-0 right-3.5 flex items-center gap-2 text-body font-semibold text-accent"
+              class="pointer-events-none absolute inset-y-0 right-3.5 flex items-center gap-2 text-body font-semibold"
+              :class="statusLooks[seriesStatus].colour"
             >
-              <Check :size="22" class="shrink-0" />
+              <Check
+                v-if="statusLooks[seriesStatus].checked"
+                :size="22"
+                class="shrink-0"
+              />
               {{ t(`isbn.form.seriesNameStatus.${seriesStatus}`) }}
             </span>
           </div>
