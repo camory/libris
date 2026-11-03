@@ -15,6 +15,10 @@ describe("seriesNameStatus", () => {
   it("says new for a name the house does not hold", () => {
     expect(seriesNameStatus("One pie", names, "fr")).toBe("new");
   });
+
+  it("says existing for a name of the house, ignoring case", () => {
+    expect(seriesNameStatus("ONE PIECE", names, "fr")).toBe("existing");
+  });
 });
 
 const onePiece: Series = {
