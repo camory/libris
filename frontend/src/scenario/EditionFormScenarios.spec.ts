@@ -341,7 +341,7 @@ describe("Edition form", () => {
     expect(screen.queryByText("Existante")).toBeNull();
   });
 
-  it.skip("S8 No suggestions when the names fail", async () => {
+  it("S8 No suggestions when the names fail", async () => {
     // Given
     const screen = await formOfOnePiece1({
       names: theSeriesNamesAreUnavailable(),
