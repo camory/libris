@@ -450,6 +450,23 @@ describe("EditionForm", () => {
     ).toBe("true");
   });
 
+  it("checks nothing before the tap", async () => {
+    // Given
+    const wrapper = form(onePiece1);
+    const screen = within(wrapper.element as HTMLElement);
+
+    // When
+    await typeIn(screen, "Titre", "");
+
+    // Then
+    expect(wrapper.text()).not.toContain("Titre manquant");
+    expect(
+      screen
+        .getAllByRole("textbox")
+        .filter((field) => field.getAttribute("aria-invalid") === "true"),
+    ).toEqual([]);
+  });
+
   function disabledOf(fields: ReturnType<typeof screen>) {
     return [
       ...fields.getAllByRole<HTMLInputElement>("textbox"),
