@@ -147,13 +147,12 @@ Read whole by a run that changes `frontend/`, after `every-run.md`.
   seriesNames, locale)` (`src/domain/Series.ts`, `null` for a blank text
   or unknown names) as `isbn.form.seriesNameStatus.<status>`, its colour
   and `Check` from the `statusLooks` record, and takes `pr-32` while it
-  does. Its spec's `form()` takes
-  `{ adding, failed, corner, shownSource, attachTo, seriesNames }` fourth,
-  `false` and none by default (`seriesNames` `null`, so no word), and
-  gives the edition's own
-  `isbn13` when there is one; the focus case passes `attachTo:
-  document.body` and unmounts at its end, and the file's `afterEach`
-  deletes a `scrollIntoView` a case defined.
+  does. Its spec's `form()` takes `{ adding, failed, corner, shownSource,
+  attachTo, seriesNames }` fourth, `false` and none by default
+  (`seriesNames` `null`, so no word), and gives the edition's own `isbn13`
+  when there is one; the focus case passes `attachTo: document.body` and
+  unmounts at its end, and the file's `afterEach` deletes a
+  `scrollIntoView` a case defined.
 - On a detached tree a `fireEvent.click` on a radio checks nothing and fires
   no `change`, so `v-model` keeps the kind: a component spec chooses a kind
   with `fireEvent.change(radio, { target: { checked: true } })`. The
