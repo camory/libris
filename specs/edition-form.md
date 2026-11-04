@@ -6,7 +6,7 @@ opens it as a form, corrects or completes it, a title the BnF spells
 oddly, a series it leaves out, a summary it lacks, and adds the ouvrage as
 they wrote it; an ISBN no source knows is no longer a dead end. Now, because the sources' answer is stored as it comes and nothing
 lets the family fix it before it lands on every copy's card.
-**Status:** draft
+**Status:** done 2026-11-04
 
 ## Scenarios
 
@@ -412,6 +412,7 @@ alone, read *Tome sans série*. Type *jap* in *Langue* and tap *japonais*.
 Type a summary of several lines and watch the field grow. Scroll the
 form: the button stays docked above the tab bar, and the keyboard covers
 it; tap *Série*: it comes to the top, its suggestions above the keyboard.
+Checked by Tophe on staging, recorded on 2026-11-04.
 
 ## Tasks
 
