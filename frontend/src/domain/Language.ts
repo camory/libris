@@ -11,6 +11,10 @@ export function languageCode(word: string, locale: string): string | null {
   );
 }
 
+export function languageWords(locale: string): string[] {
+  return [...new Set(CODES.map((code) => languageWord(code, locale)))];
+}
+
 const CODES = [
   "aa",
   "ab",

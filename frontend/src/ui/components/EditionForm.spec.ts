@@ -1,4 +1,4 @@
-import { BookOpen } from "@lucide/vue";
+import { BookOpen, Check } from "@lucide/vue";
 import { fireEvent, within } from "@testing-library/dom";
 import { mount } from "@vue/test-utils";
 import { afterEach, describe, expect, it, vi } from "vitest";
@@ -775,6 +775,117 @@ describe("EditionForm", () => {
     expect(scrollIntoView.mock.contexts[0]).toBe(series);
   });
 
+  it("says Existante in Série for a series of the house", () => {
+    // When
+    const wrapper = form(onePiece1, [], [], { seriesNames: houseSeries });
+
+    // Then
+    const fields = within(wrapper.element as HTMLElement);
+    expect(fields.getByText("Existante")).toBeTruthy();
+    expect(wrapper.findAllComponents(Check)).toHaveLength(1);
+    expect(fields.queryByText("Nouvelle")).toBeNull();
+  });
+
+  it("says Nouvelle for a name the house does not hold", async () => {
+    // Given
+    const wrapper = form(onePiece1, [], [], { seriesNames: houseSeries });
+    const fields = within(wrapper.element as HTMLElement);
+
+    // When
+    await typeIn(fields, "Série", "One pie");
+
+    // Then
+    expect(fields.getByText("Nouvelle")).toBeTruthy();
+    expect(fields.queryByText("Existante")).toBeNull();
+    expect(wrapper.findAllComponents(Check)).toHaveLength(0);
+  });
+
+  it("says no word while the names are unknown", () => {
+    // When
+    const fields = screen(onePiece1, [], [], { seriesNames: null });
+
+    // Then
+    expect(fields.queryByText("Existante")).toBeNull();
+    expect(fields.queryByText("Nouvelle")).toBeNull();
+  });
+
+  it("suggests under Langue the words that contain the text", async () => {
+    // Given
+    const fields = screen();
+    await fireEvent.focus(fields.getByRole("textbox", { name: "Langue" }));
+
+    // When
+    await typeIn(fields, "Langue", "AN");
+
+    // Then
+    expect(suggestions(fields)).toEqual([
+      "afrikaans",
+      "akan",
+      "albanais",
+      "allemand",
+      "anglais",
+    ]);
+  });
+
+  it("fills Langue with the tapped word and closes them", async () => {
+    // Given
+    const fields = screen();
+    await fireEvent.focus(fields.getByRole("textbox", { name: "Langue" }));
+    await typeIn(fields, "Langue", "jap");
+
+    // When
+    await fireEvent.click(fields.getByRole("button", { name: "japonais" }));
+
+    // Then
+    expect(
+      fields.getByRole<HTMLInputElement>("textbox", { name: "Langue" }).value,
+    ).toBe("japonais");
+    expect(suggestions(fields)).toEqual([]);
+  });
+
+  it("closes them when Langue is left", async () => {
+    // Given
+    const fields = screen();
+    const language = fields.getByRole("textbox", { name: "Langue" });
+    await fireEvent.focus(language);
+    await typeIn(fields, "Langue", "jap");
+
+    // When
+    await fireEvent.blur(language);
+
+    // Then
+    expect(suggestions(fields)).toEqual([]);
+  });
+
+  it("says no word in Langue", async () => {
+    // Given
+    const fields = screen(onePiece1, [], [], { seriesNames: houseSeries });
+    await typeIn(fields, "Série", "");
+
+    // When
+    await typeIn(fields, "Langue", "japonais");
+
+    // Then
+    expect(fields.queryByText("Existante")).toBeNull();
+    expect(fields.queryByText("Nouvelle")).toBeNull();
+  });
+
+  it("does not scroll Langue on focus", async () => {
+    // Given
+    const scrollIntoView = vi.fn();
+    Object.defineProperty(HTMLElement.prototype, "scrollIntoView", {
+      configurable: true,
+      value: scrollIntoView,
+    });
+    const fields = screen(onePiece1, [], [], { seriesNames: houseSeries });
+
+    // When
+    await fireEvent.focus(fields.getByRole("textbox", { name: "Langue" }));
+
+    // Then
+    expect(scrollIntoView).not.toHaveBeenCalled();
+  });
+
   function suggestions(fields: ReturnType<typeof screen>) {
     return fields
       .queryAllByRole("button")
@@ -851,14 +962,14 @@ describe("EditionForm", () => {
       corner,
       shownSource,
       attachTo,
-      seriesNames = [],
+      seriesNames = null,
     }: {
       adding?: boolean;
       failed?: boolean;
       corner?: string;
       shownSource?: string;
       attachTo?: HTMLElement;
-      seriesNames?: string[];
+      seriesNames?: string[] | null;
     } = {},
   ) {
     return mount(EditionForm, {

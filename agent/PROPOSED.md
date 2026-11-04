@@ -523,3 +523,9 @@
   *한* in semibold; worth a decision before T127 reuses the rule for the
   language: keep it (it helps while a Korean IME composes) or recompose
   what NFD split but the marks (found on T126's review).
+- 2026-11-04 Frontend: *Série*'s word compares through `nameOrder`, which
+  holds *œ* equal to *oe*, as the database's series names do, but
+  `suggestionsFor` folds one character at a time, so typing *Coeur* says
+  *Existante* for *Cœur* and no row offers it. Tophe wants the rows to
+  match *œ* and *oe* (and *æ* and *ae*) alike; the same holds for
+  *Langue*'s rows (found on T127's review, Tophe).

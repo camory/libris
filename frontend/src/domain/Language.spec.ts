@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { languageCode, languageWord } from "./Language";
+import { languageCode, languageWord, languageWords } from "./Language";
 
 describe("languageWord", () => {
   it("answers the French word of a language", () => {
@@ -22,5 +22,19 @@ describe("languageCode", () => {
 
   it("answers no code for a word naming no language", () => {
     expect(languageCode("klingon", "fr")).toBeNull();
+  });
+});
+
+describe("languageWords", () => {
+  it("answers the word of every language", () => {
+    expect(languageWords("fr")).toEqual(
+      expect.arrayContaining(["japonais", "anglais"]),
+    );
+  });
+
+  it("answers each word once", () => {
+    expect(languageWords("fr").filter((word) => word === "akan")).toEqual([
+      "akan",
+    ]);
   });
 });

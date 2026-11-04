@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { CircleAlert } from "@lucide/vue";
+import { Check, CircleAlert } from "@lucide/vue";
 import { computed, reactive, ref, useId } from "vue";
 import { useI18n } from "vue-i18n";
 import type { Copy } from "../../domain/Copy";
@@ -11,7 +11,8 @@ import {
   type Refusal,
   type Refusals,
 } from "../../domain/EditionDraft";
-import { languageWord } from "../../domain/Language";
+import { languageWord, languageWords } from "../../domain/Language";
+import { seriesNameStatus, type SeriesNameStatus } from "../../domain/Series";
 import type { Kind, SourceEdition } from "../../domain/SourceEdition";
 import { nameOf, suggestionsFor } from "../../domain/Suggestion";
 import AuthorLines from "./AuthorLines.vue";
@@ -27,7 +28,7 @@ const props = defineProps<{
   adding: boolean;
   failed: boolean;
   shownSource?: string | null;
-  seriesNames: string[];
+  seriesNames: string[] | null;
 }>();
 
 const emit = defineEmits<{
@@ -54,9 +55,10 @@ const fields = [
   "language",
   "pages",
 ] as const;
+type Field = (typeof fields)[number];
 const numeric = new Set<string>(["volume", "year", "pages"]);
 const language = answered?.language ?? null;
-const values = reactive<Record<(typeof fields)[number], string>>({
+const values = reactive<Record<Field, string>>({
   title: text(answered?.title),
   subtitle: text(answered?.subtitle),
   series: text(answered?.series?.name),
@@ -68,39 +70,56 @@ const values = reactive<Record<(typeof fields)[number], string>>({
   pages: text(answered?.pageCount),
 });
 const summary = ref(text(answered?.summary));
-const seriesFocused = ref(false);
+const offered = computed<Partial<Record<Field, string[]>>>(() => ({
+  series: props.seriesNames ?? [],
+  language: languageWords(locale.value),
+}));
+const suggesting = ref<Field | null>(null);
 const chosen = ref(false);
-const suggestions = computed(() =>
-  seriesFocused.value && !chosen.value
-    ? suggestionsFor(values.series, props.seriesNames, locale.value)
-    : [],
+const suggestions = computed(() => {
+  const field = suggesting.value;
+  return field && !chosen.value
+    ? suggestionsFor(values[field], offered.value[field] ?? [], locale.value)
+    : [];
+});
+
+const seriesStatus = computed(() =>
+  seriesNameStatus(values.series, props.seriesNames, locale.value),
 );
+
+const statusLooks: Record<
+  SeriesNameStatus,
+  { colour: string; checked: boolean }
+> = {
+  existing: { colour: "text-accent", checked: true },
+  new: { colour: "text-muted", checked: false },
+};
 
 function text(value: string | number | null | undefined) {
   return value == null ? "" : String(value);
 }
 
-function focused(field: (typeof fields)[number]) {
-  if (field !== "series") return;
-  seriesFocused.value = true;
+function focused(field: Field) {
+  if (!offered.value[field]) return;
+  suggesting.value = field;
   chosen.value = false;
-  boxes.series?.scrollIntoView?.({ block: "start" });
+  if (field === "series") boxes.series?.scrollIntoView?.({ block: "start" });
 }
 
-function left(field: (typeof fields)[number]) {
-  if (field === "series") seriesFocused.value = false;
+function left(field: Field) {
+  if (field === suggesting.value) suggesting.value = null;
 }
 
-function typed(field: (typeof fields)[number]) {
-  if (field === "series") chosen.value = false;
+function typed(field: Field) {
+  if (field === suggesting.value) chosen.value = false;
 }
 
-function choose(name: string) {
-  values.series = name;
+function choose(field: Field, name: string) {
+  values[field] = name;
   chosen.value = true;
 }
 
-function labelOf(field: (typeof fields)[number]) {
+function labelOf(field: Field) {
   return field === "volume"
     ? `isbn.form.volume.${kind.value}`
     : `isbn.form.${field}`;
@@ -114,7 +133,7 @@ function messageOf(refusal: Refusal) {
 
 const id = useId();
 const refusals = ref<Refusals>({});
-const boxes: Partial<Record<(typeof fields)[number], HTMLInputElement>> = {};
+const boxes: Partial<Record<Field, HTMLInputElement>> = {};
 
 function add() {
   const draft: EditionDraft = {
@@ -186,22 +205,39 @@ function add() {
           <label class="text-label text-muted" :for="`${id}-${field}`">
             {{ t(labelOf(field)) }}
           </label>
-          <input
-            :id="`${id}-${field}`"
-            :ref="(box) => (boxes[field] = box as HTMLInputElement)"
-            v-model="values[field]"
-            type="text"
-            :disabled="adding"
-            :inputmode="numeric.has(field) ? 'numeric' : undefined"
-            :aria-invalid="refusals[field] ? 'true' : undefined"
-            @focus="focused(field)"
-            @blur="left(field)"
-            @input="typed(field)"
-            class="h-[50px] w-full rounded-xl border-[1.5px] border-border bg-surface px-3.5 text-field aria-invalid:border-danger"
-            :class="{ 'scroll-mt-28': field === 'series' }"
-          />
+          <div class="relative">
+            <input
+              :id="`${id}-${field}`"
+              :ref="(box) => (boxes[field] = box as HTMLInputElement)"
+              v-model="values[field]"
+              type="text"
+              :disabled="adding"
+              :inputmode="numeric.has(field) ? 'numeric' : undefined"
+              :aria-invalid="refusals[field] ? 'true' : undefined"
+              @focus="focused(field)"
+              @blur="left(field)"
+              @input="typed(field)"
+              class="h-[50px] w-full rounded-xl border-[1.5px] border-border bg-surface px-3.5 text-field aria-invalid:border-danger"
+              :class="{
+                'scroll-mt-28': field === 'series',
+                'pr-32': field === 'series' && seriesStatus,
+              }"
+            />
+            <span
+              v-if="field === 'series' && seriesStatus"
+              class="pointer-events-none absolute inset-y-0 right-3.5 flex items-center gap-2 text-body font-semibold"
+              :class="statusLooks[seriesStatus].colour"
+            >
+              <Check
+                v-if="statusLooks[seriesStatus].checked"
+                :size="22"
+                class="shrink-0"
+              />
+              {{ t(`isbn.form.seriesNameStatus.${seriesStatus}`) }}
+            </span>
+          </div>
           <div
-            v-if="field === 'series' && suggestions.length"
+            v-if="field === suggesting && suggestions.length"
             class="-mt-1 flex flex-col divide-y divide-border rounded-xl border-[1.5px] border-border bg-surface"
           >
             <button
@@ -209,7 +245,7 @@ function add() {
               :key="nameOf(suggestion)"
               type="button"
               @mousedown.prevent
-              @click="choose(nameOf(suggestion))"
+              @click="choose(field, nameOf(suggestion))"
               class="mx-3.5 h-11 text-left text-field"
             >
               <span>{{ suggestion.before }}</span>

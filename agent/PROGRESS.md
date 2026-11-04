@@ -318,3 +318,27 @@ Format:
 - Deviations from the brief: none.
 - Left over: the commit subjects of 73 characters stay, history is not
   rewritten; the checks by hand of the first run, unchanged.
+
+## 2026-11-03 — T127 Existante or Nouvelle, and the language suggested — done
+- Did: `seriesNameStatus` and `languageWords` in `domain`; *Série*'s box says
+  *Existante* after a check or *Nouvelle*, nothing while the names are
+  unknown; *Langue* suggests the words of a language as *Série* the names.
+- Decided: `useListSeriesNames` holds `null` until Libris answers and when
+  it does not, as the brief chose; the form keeps `suggesting`, the focused
+  field among those `offered` (*Série*, *Langue*), in place of
+  `seriesFocused`, so one block of rows serves both (the brief's refactor,
+  the `v-for` way, no new component); the word's colour and check come
+  from a `statusLooks` record keyed by the status, its text from
+  `isbn.form.seriesNameStatus.<status>`; *Série*'s box takes `pr-32` while
+  it shows a word, so the text stops short of it (hand check); a `Field`
+  alias names the form's field type once.
+- Deviations from the brief: step 9 also made the prop `string[] | null`
+  and the suggestions read `seriesNames ?? []`, since `vue-tsc` and the
+  suggestions met `null` at once; the step 2 commit's subject runs to 74
+  characters, left since history is not rewritten. The run handed off
+  once after step 20; the second run did the self-review and the finish.
+- Left over: the checks by hand on the Pixel, for Tophe (the word and its
+  check against `2-filled.jpg` and `5-series-suggested.jpg`, the mockup
+  drawing the check smaller than 22; `pr-32` keeping the text clear of the
+  word; *Langue*'s rows against `6-language-suggested.jpg` and above the
+  keyboard, with no scroll on its focus).

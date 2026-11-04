@@ -93,8 +93,9 @@ Read whole by a run that changes `frontend/`, after `every-run.md`.
   passes `undefined` second to keep the find's default.
   `EditionFormScenarios`' `open()` gives `world.names` as its `seriesApi`.
   `FetchSeriesApi.names()` rejects any answer but `200`. `IsbnView` holds
-  them through `useListSeriesNames(seriesApi)` (`names`, `[]` until
-  answered and when Libris does not answer; `list()` never rejects), calls
+  them through `useListSeriesNames(seriesApi)` (`names`, `null` until
+  answered and when Libris does not answer, never `[]` then, so the form
+  tells "the house holds none" from "unknown"; `list()` never rejects), calls
   `list()` unawaited on each accepted lookup and passes `names` to the form
   as `seriesNames`. `IsbnView.spec.ts`' `mountView` and `open` take a
   `seriesApi` fourth, `new FakeSeriesApi([])` by default.
@@ -132,19 +133,26 @@ Read whole by a run that changes `frontend/`, after `every-run.md`.
   kind chosen now, not at the tap), and focuses then
   `scrollIntoView({ block: "center" })`s the first refused in its `fields`
   order, reaching the box through a function `:ref` into `boxes`. Under
-  *Série*, while it has the focus (`seriesFocused`, set on `focus` and
-  cleared on `blur`) and no row has been tapped since the last keystroke
-  or focus (`chosen`), it draws `suggestionsFor(values.series,
-  seriesNames, locale)` (`src/domain/Suggestion.ts`, with `nameOf`, the
-  three parts joined) as `type="button"` rows of three spans,
-  `before`, `matched` in `font-semibold`, `after`; a row's `mousedown` is
-  prevented so the box keeps the focus, and *Série*'s `focus` calls
-  `scrollIntoView({ block: "start" })` on it. Its spec's `form()` takes
-  `{ adding, failed, corner, shownSource, attachTo, seriesNames }` fourth,
-  `false` and none by default, and gives the edition's own
-  `isbn13` when there is one; the focus case passes `attachTo:
-  document.body` and unmounts at its end, and the file's `afterEach`
-  deletes a `scrollIntoView` a case defined.
+  the field of `offered` (*Série*, `seriesNames ?? []`, and *Langue*,
+  `languageWords(locale)`) that has the focus (`suggesting`, set on
+  `focus` and cleared on `blur`), while no row has been tapped since the
+  last keystroke or focus (`chosen`), one block draws
+  `suggestionsFor(values[field], offered[field], locale)`
+  (`src/domain/Suggestion.ts`, with `nameOf`, the three parts joined) as
+  `type="button"` rows of three spans, `before`, `matched` in
+  `font-semibold`, `after`; a row's `mousedown` is prevented so the box
+  keeps the focus, and *Série*'s `focus` alone calls
+  `scrollIntoView({ block: "start" })` on it. *Série*'s box, in a
+  `relative` wrapper, draws at its right `seriesNameStatus(values.series,
+  seriesNames, locale)` (`src/domain/Series.ts`, `null` for a blank text
+  or unknown names) as `isbn.form.seriesNameStatus.<status>`, its colour
+  and `Check` from the `statusLooks` record, and takes `pr-32` while it
+  does. Its spec's `form()` takes `{ adding, failed, corner, shownSource,
+  attachTo, seriesNames }` fourth, `false` and none by default
+  (`seriesNames` `null`, so no word), and gives the edition's own `isbn13`
+  when there is one; the focus case passes `attachTo: document.body` and
+  unmounts at its end, and the file's `afterEach` deletes a
+  `scrollIntoView` a case defined.
 - On a detached tree a `fireEvent.click` on a radio checks nothing and fires
   no `change`, so `v-model` keeps the kind: a component spec chooses a kind
   with `fireEvent.change(radio, { target: { checked: true } })`. The
@@ -504,7 +512,8 @@ Read whole by a run that changes `frontend/`, after `every-run.md`.
   module's private `CODES`, the 183 codes of ISO 639-1 written out in their
   order, whose word equals it under `nameOrder(locale)`, `null` for none;
   `refusalsOf` reads the form's *Langue* through it, `null` refused as
-  `unknownLanguage`.
+  `unknownLanguage`. `languageWords(locale)` answers the words of `CODES`,
+  each once: the browser names `ak` and `tw` both *akan*.
   The list is never built from two-letter pairs: the browser has words for
   withdrawn codes (`iw`, `mo`, `in`). The catalogue holds no `language`
   block.

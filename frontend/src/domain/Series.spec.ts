@@ -1,11 +1,39 @@
 import { describe, expect, it } from "vitest";
-import { seriesInOrder, type Series } from "./Series";
+import { seriesInOrder, seriesNameStatus, type Series } from "./Series";
 
 describe("seriesInOrder", () => {
   it("sorts the series by name, ignoring case and accents", () => {
     expect(
       seriesInOrder([onePiece, emileEtMargot, dragonQuest, asterix], "fr"),
     ).toEqual([asterix, dragonQuest, emileEtMargot, onePiece]);
+  });
+});
+
+describe("seriesNameStatus", () => {
+  const names = ["One piece", "Astérix"];
+
+  it("says new for a name the house does not hold", () => {
+    expect(seriesNameStatus("One pie", names, "fr")).toBe("new");
+  });
+
+  it("says existing for a name of the house, ignoring case", () => {
+    expect(seriesNameStatus("ONE PIECE", names, "fr")).toBe("existing");
+  });
+
+  it("ignores the accents", () => {
+    expect(seriesNameStatus("asterix", names, "fr")).toBe("existing");
+  });
+
+  it("ignores the spaces at the text's ends", () => {
+    expect(seriesNameStatus(" one piece ", names, "fr")).toBe("existing");
+  });
+
+  it("says nothing for a blank text", () => {
+    expect(seriesNameStatus("   ", names, "fr")).toBeNull();
+  });
+
+  it("says nothing while the names are unknown", () => {
+    expect(seriesNameStatus("One piece", null, "fr")).toBeNull();
   });
 });
 
