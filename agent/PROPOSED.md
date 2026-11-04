@@ -172,11 +172,6 @@
   ever and saying nothing, exactly as it leaves the button busy (the bullet
   above); the `finally` that frees the button frees the answer's place too
   (found on T018, 2026-09-14).
-- Frontend: the `language` section of the `fr` catalogue holds `fr` alone, so
-  a lookup answering any other code shows the code itself in the *Langue* row
-  (`en`). That is the decided fallback, not a bug, but the words are added one
-  at a time with a case each, and the codes that will arrive are the ones the
-  backend's map learns (found on T018, 2026-09-14).
 - Frontend: a reader who refuses the camera sees the camera block disappear
   and nothing else; the screen never says why, and the words for a refused
   camera are in no document. A sentence under the field, or a state of the
