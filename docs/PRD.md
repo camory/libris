@@ -153,9 +153,9 @@ notes),
 - Adding an ouvrage from a scan creates the edition when its ISBN is unknown,
   and a copy on the reader's default bookshelf, or on another bookshelf they
   own when they choose one.
-- Nobody deletes an edition. A member removes a copy from a bookshelf; when
-  the last copy goes, the edition goes with it. An edition exists only while a
-  copy or, later, a wish refers to it.
+- Nobody deletes an edition. An owner removes a copy from a bookshelf; when
+  the last copy goes, the edition stays the house's record, and a later scan
+  of its ISBN reaches it.
 
 ## 4. Functional requirements
 
@@ -170,8 +170,7 @@ Priorities: **P1** = needed before the family uses it, **P2** = soon after,
   role, publisher, collection, publication year, ISBN-13, language, page
   count, summary, cover URL and tags; the copy is created on the reader's
   default bookshelf, or on another bookshelf they own when they choose one.
-- View and edit an edition; remove a copy from a bookshelf, which deletes the
-  edition when it was the last copy.
+- View and edit an edition; remove a copy from a bookshelf.
 - List the catalogue with filters (kind, series, bookshelf, tag; reading
   state once it exists) and sort (title, series and volume, added date).
 - Edition page showing its copies with their bookshelves, and later the
@@ -203,8 +202,8 @@ Priorities: **P1** = needed before the family uses it, **P2** = soon after,
 - Optionally record the total number of published volumes to show completion.
 
 ### 4.6 Wishlist (P2)
-- A reader adds a wish for an edition they want. A wish keeps a copy-less
-  edition alive. Turning a wish into a copy on a bookshelf is one action.
+- A reader adds a wish for an edition they want. Turning a wish into a copy
+  on a bookshelf is one action.
 
 ### 4.7 Fast entry (P1, the first feature)
 - Scan the EAN-13 barcode with the phone camera, or type an ISBN, and prefill
