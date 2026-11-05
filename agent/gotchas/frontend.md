@@ -88,6 +88,16 @@ Read whole by a run that changes `frontend/`, after `every-run.md`.
 - A fixture may import `domain` and `application` only, so a shared
   app-over-fakes builder cannot live in `src/fixture`: each scenario file
   keeps its own `open()`, naming the ports its spec varies.
+- The removal of a copy is `CopiesApi.remove(copyId)` (`removed`, or a
+  problem), a port of its own with no client: `RemoveCopyScenarios`' `open()`
+  hands its fake over with `app.provide(copiesApiKey, …)` after
+  `createLibrisApp`, until a task adds the client and puts the port in
+  `LibrisPorts`, then moves that line into `open()`'s ports. Those
+  scenarios give each copy's bookshelf a `role` (`OWNER`, `VIEWER`) in
+  their data only: today's `Bookshelf` type has no `role`.
+  `FakeCatalogueApi`'s find takes a single answer, given at every find, or
+  a list answered in order, whose last answer then repeats: the page
+  before a removal, then after it.
 - The series' names are `SeriesApi.names()`, and `FakeSeriesApi` takes them
   third, `string[] | Error`, `[]` by default; a scenario that varies them
   passes `undefined` second to keep the find's default.
