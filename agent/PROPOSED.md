@@ -283,10 +283,6 @@
   names a `tag` table, but no lookup answers a tag and no scenario of this
   phase names one. The task that first shows or sets a tag writes the table,
   the column and the cases (found on T034, 2026-09-21).
-- Backend: nothing deletes an edition. PRD §3's "when the last copy goes, the
-  edition goes with it" needs the task that removes a copy to decide where the
-  rule lives — the use case or the schema — and what becomes of the `series`
-  and `author` rows no edition names any more (found on T034, 2026-09-21).
 - Backend: the editions `JdbcEditionRepositoryTest` builds come from a private
   helper of the class. The day a second class needs the same shapes — T035
   creating an edition the house lacks is the likely one — the helper moves to

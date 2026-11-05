@@ -12,14 +12,14 @@
 ### U01 — Palette: slate, one accent, one danger, dark follows the system
 Six colour roles, every one a Tailwind shade, one value per scheme:
 
-| Role      | Light                | Dark                 | Used for                              |
-|-----------|----------------------|----------------------|---------------------------------------|
-| `bg`      | slate-50 `#f8fafc`   | slate-900 `#0f172b`  | the page                              |
-| `surface` | white `#ffffff`      | slate-800 `#1d293d`  | cards, fields, the tab bar            |
-| `text`    | slate-900 `#0f172b`  | slate-100 `#f1f5f9`  | everything that is read               |
-| `muted`   | slate-500 `#62748e`  | slate-400 `#90a1b9`  | hints, labels, inactive tabs          |
-| `border`  | slate-200 `#e2e8f0`  | slate-700 `#314158`  | hairlines, field outlines, skeletons  |
-| `danger`  | red-700 `#b91c1c`    | red-400 `#f87171`    | error outlines and messages           |
+| Role      | Light                | Dark                 | Used for                                           |
+|-----------|----------------------|----------------------|----------------------------------------------------|
+| `bg`      | slate-50 `#f8fafc`   | slate-900 `#0f172b`  | the page                                           |
+| `surface` | white `#ffffff`      | slate-800 `#1d293d`  | cards, fields, the tab bar                         |
+| `text`    | slate-900 `#0f172b`  | slate-100 `#f1f5f9`  | everything that is read                            |
+| `muted`   | slate-500 `#62748e`  | slate-400 `#90a1b9`  | hints, labels, inactive tabs                       |
+| `border`  | slate-200 `#e2e8f0`  | slate-700 `#314158`  | hairlines, field outlines, skeletons               |
+| `danger`  | red-700 `#b91c1c`    | red-400 `#f87171`    | error outlines and messages, a check that destroys |
 
 One accent, `accent`, teal-700 `#0f766e` in both schemes, teal-800 `#115e59`
 when pressed: the primary button, the active tab, the scanner icon and
@@ -162,6 +162,18 @@ form, the option's name then its controls and the check; a tap on another
 option moves the form there. While the form is sent the block accepts
 nothing else, and on success it is gone.
 
+**Row action.** An action that destroys, on one row of a card, asks
+first, inside the row: an icon button at the row's right, the trash
+*Retirer un exemplaire* on a bookshelf row (U06). A tap turns the row into
+its question, in its place, on `bg`, radius 10, its text 8 from its edges:
+the sentence in `body` regular, then the cross *Annuler* in `muted`, then
+the check in `danger`, drawn at stroke 3, both centred on the sentence's
+first line. The cross puts the row back as it was; the check sends. While
+it is sent, a spinner takes the check's place and the row accepts nothing.
+A message goes under the question, inside the row (U05). One row of a card
+asks at a time: another row's action moves the question there. Nothing
+undoes it after the check; the row's new state is the success.
+
 **Segmented choice.** Two views of one screen, each at its own address: a
 block 44 tall, full width, on `surface`, a 1.5 `border` outline, radius 12,
 the first block of the content, with no label. Its halves are equal, each
@@ -257,12 +269,15 @@ Chatrian*), otherwise one line per author, the name in `text` and its roles
 after a middle dot in `muted` (*René Goscinny · scénario*, *Albert Uderzo ·
 dessin*); the card sorts the authors by their first role, scénario, dessin,
 couleurs, traduction, then by name, ignoring case and accents. Between the
-top part and the field rows, one row per bookshelf holding a copy, `body`
-semibold, `text`, the book icon at 22 before the words: *Dans* and the
-name, then the count after a middle dot when it holds more than one (*Dans
-Bibliothèque de Léa · 2 exemplaires*), by name, ignoring case and accents;
-when no bookshelf of the reader holds a copy, one row of the same shape,
-*Dans aucune de vos bibliothèques*.
+top part and the field rows, one row per bookshelf holding a copy, 44
+tall, its words 12 under its top, `body` semibold, `text`, the book icon at
+22 before them, centred on their first line: *Dans* and the name, then,
+when it holds more than one, the count on a second line in `body` regular,
+`muted` (*2 exemplaires*); by name, ignoring case and accents. The row of a
+bookshelf the reader owns carries at its right the trash, a row action
+(U04), centred on the first line too. When no bookshelf of the reader
+holds a copy, one row of the same shape, *Dans aucune de vos
+bibliothèques*.
 Middle part: one row per field, `body`, the label at the left in
 `muted` and the value at the right in `text`, right-aligned, 7 of vertical
 padding, a `border` hairline above each row: *Collection*, *Éditeur*,
@@ -310,14 +325,16 @@ and the pencil becomes the cross in the same corner.
 ### U07 — Icons: Lucide, inline
 An icon is a Lucide icon from `@lucide/vue`: an inline SVG on a 24 grid,
 round caps and joins, `currentColor`, stroke 1.8 set once for the whole
-app, and stroke 3 for the check of a form in a list (U04). It has no fill,
+app, and stroke 3 for the check of a form in a list and of a row's
+question (U04). It has no fill,
 except an icon's filled variant: the star and the crown, filled with
 `currentColor`. Sizes are 22 for the alert of a message, the bookshelf
 rows of a card (U06), the stand-in of a row's missing cover and the glyph
 of a button (U04), 32 on the tab bar, 48 for an empty state (U05). A component
 imports the icon it shows under its Lucide name: `House`, `ScanBarcode`,
 `Library`, `BookOpen`, `CircleAlert`, `Search`, `RefreshCw`, `CirclePlus`,
-`Check`, `Star`, `Crown`, `Pencil`, `X`. No hand-drawn icon, no icon font.
+`Check`, `Star`, `Crown`, `Pencil`, `X`, `Trash2`. No hand-drawn icon, no
+icon font.
 
 An icon next to a word is decoration: `aria-hidden`, the word carries the
 meaning. An icon alone is a button (U04) or a tab (U03) and carries its
