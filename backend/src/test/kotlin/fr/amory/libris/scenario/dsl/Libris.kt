@@ -48,6 +48,15 @@ class Libris(private val http: RestTestClient) {
       Picture::of,
     )
 
+  fun delete(reader: Reader, path: String): Answer<Unit> =
+    Answer(
+      http.delete()
+        .uri(path)
+        .headers { it.putAll(reader.headers) }
+        .accept(APPLICATION_JSON, APPLICATION_PROBLEM_JSON)
+        .exchange(),
+    ) {}
+
   fun put(reader: Reader, path: String, body: Any): Answer<Unit> =
     Answer(
       http.put()

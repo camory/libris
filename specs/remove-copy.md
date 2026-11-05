@@ -101,9 +101,10 @@ copy just added carries its trash with no other request. Proof: the role
 verified by Contracteer on its shape on both sides; contract example
 `404_NOT_MY_COPY` verified by Contracteer on both sides; backend scenario
 test over HTTP, three cases: a copy on a bookshelf the reader joins as a
-guest, one on a bookshelf they do not belong to, an id Libris does not
-know, each answered not found and the copy still there; frontend scenario
-test over the fakes.
+guest, the ouvrage first answered with each copy's role, `OWNER` on the
+reader's and `VIEWER` on the guest's; one on a bookshelf they do not
+belong to; an id Libris does not know; each answered not found and the
+copy still there; frontend scenario test over the fakes.
 
 **S4 Annuler puts the row back** · frontend
 
