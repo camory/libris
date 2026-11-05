@@ -8,13 +8,16 @@ const notFound = { outcome: "problem", type: "/problems/not-found" } as const;
 
 export class FakeCatalogueApi implements CatalogueApi {
   readonly asked: (string | null)[] = [];
+  private readonly finds: (FindBookAnswer | Error)[];
 
   constructor(
     private readonly pages: (BookPage | Error)[],
-    private readonly found: FindBookAnswer | Error = new Error(
+    found: FindBookAnswer | Error | (FindBookAnswer | Error)[] = new Error(
       "no find in this scenario",
     ),
-  ) {}
+  ) {
+    this.finds = Array.isArray(found) ? [...found] : [found];
+  }
 
   browse(after: string | null): Promise<BookPage> {
     this.asked.push(after);
@@ -24,12 +27,14 @@ export class FakeCatalogueApi implements CatalogueApi {
   }
 
   find(id: string): Promise<FindBookAnswer> {
-    if (this.found instanceof Error) return Promise.reject(this.found);
-    if (this.found.outcome === "problem") return Promise.resolve(this.found);
-    if (this.found.book.id !== id) return Promise.resolve(notFound);
+    const found = this.finds.length > 1 ? this.finds.shift() : this.finds.at(0);
+    if (found === undefined) return Promise.reject(Error("No find left"));
+    if (found instanceof Error) return Promise.reject(found);
+    if (found.outcome === "problem") return Promise.resolve(found);
+    if (found.book.id !== id) return Promise.resolve(notFound);
     return Promise.resolve({
       outcome: "found",
-      book: { ...this.found.book, copies: [...this.found.book.copies] },
+      book: { ...found.book, copies: [...found.book.copies] },
     });
   }
 }
