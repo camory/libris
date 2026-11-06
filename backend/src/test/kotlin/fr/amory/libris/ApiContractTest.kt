@@ -323,11 +323,6 @@ private val COPY_OF_ASTERIX_1 = CopyOnBookshelf(
   ReaderBookshelf(BookshelfId(UUID.randomUUID()), "Grenier", OWNER),
 )
 
-private val CONTRACTEER_COPY = CopyOnBookshelf(
-  CopyId.new(),
-  ReaderBookshelf(CONTRACTEER_BOOKSHELF.id, CONTRACTEER_BOOKSHELF.name.value, OWNER),
-)
-
 private val NEW_ONE_PIECE_1 = NewEdition(
   isbn = isbnOf("9782723488525"),
   kind = MANGA,
@@ -347,6 +342,11 @@ private val NEW_ONE_PIECE_1 = NewEdition(
   pageCount = 203,
   summary = null,
   coverSource = INVENTAIRE,
+)
+
+private val CONTRACTEER_COPY = CopyOnBookshelf(
+  CopyId.new(),
+  ReaderBookshelf(CONTRACTEER_BOOKSHELF.id, CONTRACTEER_BOOKSHELF.name.value, OWNER),
 )
 
 private val NOT_MINE = bookshelfId("9e8d7c6b-5a4f-4e3d-8c2b-1a0f9e8d7c6b")
