@@ -115,3 +115,16 @@ Format:
   un-skip), left as they are since history is not rewritten.
 - Left over: T131 removes the copy behind `RemoveCopy`, its result and
   `CopyController`; `S1` and both `S2` stay skipped until then.
+
+## 2026-11-06 — T130 The reader's role on every copy, on v0.16.0 — reworked
+- Did: `ApiContractTest`'s `CONTRACTEER_COPY` moved below
+  `COPY_OF_ASTERIX_1`, `MY_COPY` and `NOT_MY_COPY` below `TOPHE_AS_OWNER`,
+  where the helpers reach them; the review's two code-smell suggestions
+  are two lines of `agent/PROPOSED.md`.
+- Decided: the reviewer's verdict of 2026-11-06 settled that the stepdown
+  rule places a fixture, over the brief's "beside `NOT_MINE`"; its
+  Duplicated Code and Middle Man suggestions name a later task and a later
+  tidy, so they are proposed, not done; its commit-history remark stays as
+  it is, since pushed history is not rewritten.
+- Deviations from the brief: the fixtures' place, as the review asks.
+- Left over: the two lines of `agent/PROPOSED.md`; T131 as before.
