@@ -99,11 +99,19 @@ Format:
 - Left over: the backlog is empty; the next feature needs its spec,
   written with Tophe.
 
-## 2026-11-06 — T130 The reader's role on every copy, on v0.16.0 — handoff
-- Done: steps 1, 2 and step 3's red and green (`78eae03b`); `ApiContractTest` on `main` before step 1: `tests="42"`.
-- Start with: step 3's refactor (`ListReaderBookshelves` through `ReaderBookshelf.of`, its private helper gone), then step 3's three guards, then step 4.
-- Step 1's red was exactly the brief's: the three `DELETE /api/v1/copies/{id}` cases at `403`, and the five `Copy` cases on `bookshelf.role is required`; no other operation red.
-- Step 2's red: `ValueInstantiationException` on the DSL's `ReaderBookshelf`, `role` null, at `lea.rolesOn(book)`.
-- Decided: `COPY_OF_ASTERIX_1`'s *Grenier* takes `OWNER`; `LookupIsbnForReader` drops its `hasMember` filter, `ReaderBookshelf.of` answering null for a non-member.
-- Guards: none run yet.
-- Red at this handoff: the eight `ApiContractTest` cases of step 1 (turned green by steps 4 and 7) and *S3 … joins as a guest*, a cited scenario not yet reached.
+## 2026-11-06 — T130 The reader's role on every copy, on v0.16.0 — done
+- Did: the backend pins `v0.16.0`; every copy it answers names its bookshelf
+  with the reader's role, read through `ReaderBookshelf.of`; `DELETE
+  /api/v1/copies/{id}` answers through `RemoveCopy`, not found for now.
+- Decided: `COPY_OF_ASTERIX_1`'s *Grenier* takes `OWNER`; the add stub of
+  `ApiContractTest` answers a new top-level `CONTRACTEER_COPY`, since the
+  inline copy ran past detekt's line length; the removal's fixtures are
+  `MY_COPY` (the `any()` fallback, the `204`'s id) and `NOT_MY_COPY`.
+- Decided: `AddBookToBookshelf` reads its bookshelf's role through
+  `checkNotNull(ReaderBookshelf.of(…))`, the reader being an owner there.
+- Deviations from the brief: `LookupIsbnForReader` drops its `hasMember`
+  filter, `ReaderBookshelf.of` answering null for a non-member; two branch
+  commit subjects run past 72 characters (step 3's refactor, step 5's
+  un-skip), left as they are since history is not rewritten.
+- Left over: T131 removes the copy behind `RemoveCopy`, its result and
+  `CopyController`; `S1` and both `S2` stay skipped until then.
