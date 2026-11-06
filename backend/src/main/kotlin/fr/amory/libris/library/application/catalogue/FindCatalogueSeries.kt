@@ -41,7 +41,7 @@ class FindCatalogueSeries(
           edition.seriesVolume?.entryIn(series),
           copiesByEditionId
             .getValue(edition.id)
-            .map { CopyOnBookshelf.of(it, readersBookshelves.getValue(it.bookshelfId)) },
+            .map { CopyOnBookshelf(it.id, readersBookshelves.getValue(it.bookshelfId)) },
         )
       },
     )

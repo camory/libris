@@ -34,7 +34,7 @@ class LookupIsbnForReader(
       .flatMap { bookshelf ->
         copiesOfEdition
           .filter { it.bookshelfId == bookshelf.id }
-          .map { CopyOnBookshelf.of(it, bookshelf) }
+          .map { CopyOnBookshelf(it.id, bookshelf) }
       }
   }
 }

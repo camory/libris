@@ -526,6 +526,3 @@
   ReaderBookshelf.of(it, readerId) }.associateBy { it.id }`; one function
   answering the reader's bookshelves by id would hold it once (Duplicated
   Code, found on T130's review).
-- 2026-11-06 Backend: `CopyOnBookshelf.of(copy, bookshelf)` only forwards
-  `copy.id` to the constructor since T130; its callers could call the
-  constructor (Middle Man, found on T130's review).

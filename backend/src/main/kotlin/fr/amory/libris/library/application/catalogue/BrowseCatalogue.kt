@@ -42,7 +42,7 @@ class BrowseCatalogue(
           edition.seriesVolume?.let { volume -> seriesById[volume.seriesId]?.let(volume::entryIn) },
           copiesByEdition
             .getValue(editionId)
-            .map { CopyOnBookshelf.of(it, readersBookshelves.getValue(it.bookshelfId)) },
+            .map { CopyOnBookshelf(it.id, readersBookshelves.getValue(it.bookshelfId)) },
         )
       },
       page.next,
