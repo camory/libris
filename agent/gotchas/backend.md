@@ -95,7 +95,11 @@ Read whole by a run that changes `backend/`, after `every-run.md`.
   Older unmarked cases (`NewBookRequestTest`'s first five) are not a model.
 - A test file's top-level fixtures sit below its class and the class's
   helpers, in the order the class reaches them; the reviewer blocks one
-  above. A few older files put them above the class: they are not a model.
+  above. A fixture's place is the first helper that reaches it, and within
+  that helper the order in which its lines reach them, never beside a
+  fixture of its kind, even when a brief says so (T130's `MY_COPY` was
+  sent back for sitting beside `NOT_MINE`). A few older files put them
+  above the class: they are not a model.
   A fixture added to such a file moves all of them below the class (T110's
   `BrowseCatalogueTest` was sent back for it), in the order written, since
   top-level vals initialise in that order and a later one reads an earlier.
@@ -317,7 +321,10 @@ Read whole by a run that changes `backend/`, after `every-run.md`.
   reader headers and the security chain refuses it. A `403` there is a stub
   that answered `null` (an argument no stub names, a matcher that missed)
   or a framework failure no handler turned into a problem, or a path no
-  controller maps yet, its `auto:` cases included.
+  controller maps yet, its `auto:` cases included. A scenario sending to
+  a path no controller maps gets Boot's plain `404` JSON instead, which
+  the DSL's `refusal` throws on (`not a problem: 404 NOT_FOUND`): a `404`
+  there is not yet the `/problems/not-found` a case expects.
 - The JDK `HttpClient` writes header values as US-ASCII (`Léa` leaves as
   `L?a`) and Tomcat reads them as ISO-8859-1. The scenario client and the
   web slice's client are built on `SimpleClientHttpRequestFactory`, which

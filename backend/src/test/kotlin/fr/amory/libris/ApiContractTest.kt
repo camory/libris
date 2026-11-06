@@ -52,6 +52,9 @@ import fr.amory.libris.library.application.FindDefaultBookshelf
 import fr.amory.libris.library.application.ListReaderBookshelves
 import fr.amory.libris.library.application.ListReaders
 import fr.amory.libris.library.application.ReaderBookshelf
+import fr.amory.libris.library.application.RemoveCopy
+import fr.amory.libris.library.application.RemoveCopyResult.NoSuchCopy
+import fr.amory.libris.library.application.RemoveCopyResult.Removed
 import fr.amory.libris.library.application.WelcomeReader
 import fr.amory.libris.library.application.catalogue.BrowseCatalogue
 import fr.amory.libris.library.application.catalogue.CataloguePage
@@ -74,7 +77,6 @@ import fr.amory.libris.library.domain.copy.CopyId
 import fr.amory.libris.library.domain.reader.ReaderId
 import fr.amory.libris.library.fixture.bookshelfOf
 import fr.amory.libris.library.fixture.bookshelfOwnedBy
-import fr.amory.libris.library.fixture.copyOn
 import fr.amory.libris.library.fixture.readerNamed
 import jakarta.servlet.Filter
 import jakarta.servlet.http.HttpServletRequest
@@ -112,6 +114,7 @@ import java.util.UUID
     FindCatalogueSeries::class,
     FindCatalogueEdition::class,
     ListSeriesNames::class,
+    RemoveCopy::class,
   ],
 )
 @Suppress("LongParameterList")
@@ -132,8 +135,9 @@ class ApiContractTest @Autowired constructor(
   private val listCatalogueSeries: ListCatalogueSeries,
   private val findCatalogueSeries: FindCatalogueSeries,
   private val findCatalogueEdition: FindCatalogueEdition,
-  private val listSeriesNames: ListSeriesNames) {
-  @ContracteerTest(openApiDoc = "https://raw.githubusercontent.com/camory/libris-api/v0.15.0/openapi.yaml")
+  private val listSeriesNames: ListSeriesNames,
+  private val removeCopy: RemoveCopy) {
+  @ContracteerTest(openApiDoc = "https://raw.githubusercontent.com/camory/libris-api/v0.16.0/openapi.yaml")
   fun `the API matches the contract`() {
     contracteerIsWelcomed()
     isbnLookupsAnswer()
@@ -150,6 +154,7 @@ class ApiContractTest @Autowired constructor(
     findingASeriesAnswers()
     findingABookAnswers()
     seriesNamesAnswer()
+    removingACopyAnswers()
   }
 
   private fun contracteerIsWelcomed() {
@@ -168,7 +173,7 @@ class ApiContractTest @Autowired constructor(
 
   private fun addingABookAnswers() {
     given(addBookToBookshelf(CONTRACTEER.id, CONTRACTEER_BOOKSHELF.id, NEW_ONE_PIECE_1))
-      .willReturn(Added(copyOn(CONTRACTEER_BOOKSHELF, EditionId.new()), CONTRACTEER_BOOKSHELF))
+      .willReturn(Added(CONTRACTEER_COPY))
     given(addBookToBookshelf(CONTRACTEER.id, NOT_MINE, NEW_ONE_PIECE_1))
       .willReturn(NotAnOwner)
   }
@@ -245,6 +250,12 @@ class ApiContractTest @Autowired constructor(
     given(listSeriesNames()).willReturn(listOf("Astérix", "One piece"))
   }
 
+  private fun removingACopyAnswers() {
+    val contracteer = ReaderId(eq(CONTRACTEER.id.value) ?: CONTRACTEER.id.value)
+    given(removeCopy(contracteer, CopyId(any() ?: MY_COPY.value))).willReturn(Removed)
+    given(removeCopy(CONTRACTEER.id, NOT_MY_COPY)).willReturn(NoSuchCopy)
+  }
+
   private fun noCopy(answer: EditionLookupResult) =
     IsbnLookup(answer, emptyList())
 
@@ -309,8 +320,7 @@ private val ASTERIX_1_COVER = CoverName("9c56cc51b374c3ba189210d5b6d4bf57790d351
 
 private val COPY_OF_ASTERIX_1 = CopyOnBookshelf(
   CopyId.new(),
-  BookshelfId(UUID.randomUUID()),
-  "Grenier",
+  ReaderBookshelf(BookshelfId(UUID.randomUUID()), "Grenier", OWNER),
 )
 
 private val NEW_ONE_PIECE_1 = NewEdition(
@@ -332,6 +342,11 @@ private val NEW_ONE_PIECE_1 = NewEdition(
   pageCount = 203,
   summary = null,
   coverSource = INVENTAIRE,
+)
+
+private val CONTRACTEER_COPY = CopyOnBookshelf(
+  CopyId.new(),
+  ReaderBookshelf(CONTRACTEER_BOOKSHELF.id, CONTRACTEER_BOOKSHELF.name.value, OWNER),
 )
 
 private val NOT_MINE = bookshelfId("9e8d7c6b-5a4f-4e3d-8c2b-1a0f9e8d7c6b")
@@ -380,6 +395,10 @@ private val EVE_AS_VIEWER = Membership(readerId("7f8091a2-b3c4-4d5e-8f6a-7b8c9d0
 private val UNKNOWN_AS_VIEWER = Membership(readerId("00000000-0000-4000-8000-000000000000"), VIEWER)
 
 private val TOPHE_AS_OWNER = Membership(readerId("6e7f8091-a2b3-4c4d-9e5f-6a7b8c9d0e1f"), OWNER)
+
+private val MY_COPY = CopyId(UUID.fromString("4d5e6f70-8192-4a3b-9c4d-5e6f708192a3"))
+
+private val NOT_MY_COPY = CopyId(UUID.fromString("8b9c0d1e-2f3a-4b4c-9d5e-6f7a8b9c0d1e"))
 
 private fun bookshelfId(id: String) =
   BookshelfId(UUID.fromString(id))

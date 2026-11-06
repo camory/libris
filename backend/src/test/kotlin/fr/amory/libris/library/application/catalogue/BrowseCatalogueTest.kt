@@ -11,6 +11,7 @@ import fr.amory.libris.bibliography.domain.series.SeriesId
 import fr.amory.libris.bibliography.domain.series.SeriesVolume
 import fr.amory.libris.bibliography.fixture.EditionsInMemory
 import fr.amory.libris.bibliography.fixture.SeriesInMemory
+import fr.amory.libris.library.application.ReaderBookshelf
 import fr.amory.libris.library.application.lookup.CopyOnBookshelf
 import fr.amory.libris.library.domain.bookshelf.Bookshelf
 import fr.amory.libris.library.domain.bookshelf.BookshelfId
@@ -61,14 +62,16 @@ class BrowseCatalogueTest {
           CIGARES,
           SeriesEntry("Tintin", 1),
           listOf(
-            CopyOnBookshelf(cigaresOnLeasBookshelf.id, leasBookshelf.id, "Bibliothèque de Léa"),
-            CopyOnBookshelf(cigaresInTheSalon.id, salon.id, "Salon"),
+            CopyOnBookshelf(cigaresOnLeasBookshelf.id, ReaderBookshelf(leasBookshelf.id, "Bibliothèque de Léa", OWNER)),
+            CopyOnBookshelf(cigaresInTheSalon.id, ReaderBookshelf(salon.id, "Salon", VIEWER)),
           ),
         ),
         HeldEdition(
           PIERRE,
           null,
-          listOf(CopyOnBookshelf(pierreOnLeasBookshelf.id, leasBookshelf.id, "Bibliothèque de Léa")),
+          listOf(
+            CopyOnBookshelf(pierreOnLeasBookshelf.id, ReaderBookshelf(leasBookshelf.id, "Bibliothèque de Léa", OWNER)),
+          ),
         ),
       ),
       next,
@@ -93,7 +96,7 @@ class BrowseCatalogueTest {
         HeldEdition(
           CIGARES,
           SeriesEntry("Tintin", 1),
-          listOf(CopyOnBookshelf(leasCopy.id, leasBookshelf.id, "Bibliothèque de Léa")),
+          listOf(CopyOnBookshelf(leasCopy.id, ReaderBookshelf(leasBookshelf.id, "Bibliothèque de Léa", OWNER))),
         ),
       ),
       null,

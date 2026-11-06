@@ -98,3 +98,33 @@ Format:
   as the phases before it did.
 - Left over: the backlog is empty; the next feature needs its spec,
   written with Tophe.
+
+## 2026-11-06 — T130 The reader's role on every copy, on v0.16.0 — done
+- Did: the backend pins `v0.16.0`; every copy it answers names its bookshelf
+  with the reader's role, read through `ReaderBookshelf.of`; `DELETE
+  /api/v1/copies/{id}` answers through `RemoveCopy`, not found for now.
+- Decided: `COPY_OF_ASTERIX_1`'s *Grenier* takes `OWNER`; the add stub of
+  `ApiContractTest` answers a new top-level `CONTRACTEER_COPY`, since the
+  inline copy ran past detekt's line length; the removal's fixtures are
+  `MY_COPY` (the `any()` fallback, the `204`'s id) and `NOT_MY_COPY`.
+- Decided: `AddBookToBookshelf` reads its bookshelf's role through
+  `checkNotNull(ReaderBookshelf.of(…))`, the reader being an owner there.
+- Deviations from the brief: `LookupIsbnForReader` drops its `hasMember`
+  filter, `ReaderBookshelf.of` answering null for a non-member; two branch
+  commit subjects run past 72 characters (step 3's refactor, step 5's
+  un-skip), left as they are since history is not rewritten.
+- Left over: T131 removes the copy behind `RemoveCopy`, its result and
+  `CopyController`; `S1` and both `S2` stay skipped until then.
+
+## 2026-11-06 — T130 The reader's role on every copy, on v0.16.0 — reworked
+- Did: `ApiContractTest`'s `CONTRACTEER_COPY` moved below
+  `COPY_OF_ASTERIX_1`, `MY_COPY` and `NOT_MY_COPY` below `TOPHE_AS_OWNER`,
+  where the helpers reach them; the review's two code-smell suggestions
+  are two lines of `agent/PROPOSED.md`.
+- Decided: the reviewer's verdict of 2026-11-06 settled that the stepdown
+  rule places a fixture, over the brief's "beside `NOT_MINE`"; its
+  Duplicated Code and Middle Man suggestions name a later task and a later
+  tidy, so they are proposed, not done; its commit-history remark stays as
+  it is, since pushed history is not rewritten.
+- Deviations from the brief: the fixtures' place, as the review asks.
+- Left over: the two lines of `agent/PROPOSED.md`; T131 as before.

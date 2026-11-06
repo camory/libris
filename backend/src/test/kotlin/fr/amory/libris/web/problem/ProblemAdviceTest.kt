@@ -11,6 +11,7 @@ import fr.amory.libris.library.application.FindBookshelf
 import fr.amory.libris.library.application.FindDefaultBookshelf
 import fr.amory.libris.library.application.ListReaderBookshelves
 import fr.amory.libris.library.application.ListReaders
+import fr.amory.libris.library.application.RemoveCopy
 import fr.amory.libris.library.application.WelcomeReader
 import fr.amory.libris.library.application.catalogue.BrowseCatalogue
 import fr.amory.libris.library.application.catalogue.FindCatalogueEdition
@@ -58,6 +59,7 @@ private val TOPHE = readerNamed(
     FindCatalogueSeries::class,
     FindCatalogueEdition::class,
     ListSeriesNames::class,
+    RemoveCopy::class,
   ],
 )
 class ProblemAdviceTest @Autowired constructor(

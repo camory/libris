@@ -103,7 +103,7 @@ class BookshelfController(
 
   private fun responseOf(result: AddBookResult): ResponseEntity<Any> =
     when (result) {
-      is Added                    -> ResponseEntity.status(CREATED).body(CopyResponse.from(result))
+      is Added                    -> ResponseEntity.status(CREATED).body(CopyResponse.from(result.copy))
       NoSuchBookshelf, NotAnOwner -> notFound()
     }
 }
@@ -124,9 +124,6 @@ data class BookshelfResponse(
   companion object {
     fun from(bookshelf: Bookshelf): BookshelfResponse =
       BookshelfResponse(bookshelf.id.value.toString(), bookshelf.name.value)
-
-    fun from(copy: CopyOnBookshelf): BookshelfResponse =
-      BookshelfResponse(copy.bookshelfId.value.toString(), copy.bookshelfName)
   }
 }
 
@@ -156,12 +153,9 @@ data class MemberResponse(
 
 data class CopyResponse(
   val id: String,
-  val bookshelf: BookshelfResponse) {
+  val bookshelf: ReaderBookshelfResponse) {
   companion object {
     fun from(copy: CopyOnBookshelf): CopyResponse =
-      CopyResponse(copy.copyId.value.toString(), BookshelfResponse.from(copy))
-
-    fun from(added: Added): CopyResponse =
-      CopyResponse(added.copy.id.value.toString(), BookshelfResponse.from(added.bookshelf))
+      CopyResponse(copy.copyId.value.toString(), ReaderBookshelfResponse.from(copy.bookshelf))
   }
 }

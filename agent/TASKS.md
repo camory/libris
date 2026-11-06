@@ -31,7 +31,7 @@ one or two scenarios to the card's rows, the ouvrage's page before the
 lookup screen. No other task touches the contract (D04). The edition is
 never removed (PRD §3, D11).
 
-- [ ] T130 Backend: the reader's role on every copy, on `v0.16.0`.
+- [x] T130 Backend: the reader's role on every copy, on `v0.16.0`.
       `ApiContractTest` pins `v0.16.0`, the backend's one bump (D04). Every
       copy Libris answers (the ouvrage, the catalogue's page, a series'
       editions, the lookup, the add) names its bookshelf with the reader's

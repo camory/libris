@@ -11,6 +11,7 @@ import fr.amory.libris.bibliography.domain.series.SeriesId
 import fr.amory.libris.bibliography.domain.series.SeriesVolume
 import fr.amory.libris.bibliography.fixture.EditionsInMemory
 import fr.amory.libris.bibliography.fixture.SeriesInMemory
+import fr.amory.libris.library.application.ReaderBookshelf
 import fr.amory.libris.library.application.catalogue.FindCatalogueEditionResult.Found
 import fr.amory.libris.library.application.catalogue.FindCatalogueEditionResult.NoSuchEdition
 import fr.amory.libris.library.application.lookup.CopyOnBookshelf
@@ -59,7 +60,7 @@ class FindCatalogueEditionTest {
       HeldEdition(
         ASTERIX_LE_GAULOIS,
         SeriesEntry("Astérix", 1),
-        listOf(CopyOnBookshelf(copy.id, leasBookshelf.id, "Bibliothèque de Léa")),
+        listOf(CopyOnBookshelf(copy.id, ReaderBookshelf(leasBookshelf.id, "Bibliothèque de Léa", OWNER))),
       ),
     )
   }
@@ -77,7 +78,7 @@ class FindCatalogueEditionTest {
 
     // Then
     result.shouldBeInstanceOf<Found>().held.copies shouldBe listOf(
-      CopyOnBookshelf(leasCopy.id, leasBookshelf.id, "Bibliothèque de Léa"),
+      CopyOnBookshelf(leasCopy.id, ReaderBookshelf(leasBookshelf.id, "Bibliothèque de Léa", OWNER)),
     )
   }
 
@@ -94,8 +95,8 @@ class FindCatalogueEditionTest {
 
     // Then
     result.shouldBeInstanceOf<Found>().held.copies shouldContainExactlyInAnyOrder listOf(
-      CopyOnBookshelf(leasCopy.id, leasBookshelf.id, "Bibliothèque de Léa"),
-      CopyOnBookshelf(salonsCopy.id, salon.id, "Salon"),
+      CopyOnBookshelf(leasCopy.id, ReaderBookshelf(leasBookshelf.id, "Bibliothèque de Léa", OWNER)),
+      CopyOnBookshelf(salonsCopy.id, ReaderBookshelf(salon.id, "Salon", VIEWER)),
     )
   }
 

@@ -6,9 +6,11 @@ import fr.amory.libris.bibliography.application.edition.NewEdition
 import fr.amory.libris.library.application.AddBookResult.Added
 import fr.amory.libris.library.application.AddBookResult.NoSuchBookshelf
 import fr.amory.libris.library.application.AddBookResult.NotAnOwner
+import fr.amory.libris.library.application.lookup.CopyOnBookshelf
 import fr.amory.libris.library.domain.bookshelf.Bookshelf
 import fr.amory.libris.library.domain.bookshelf.BookshelfId
 import fr.amory.libris.library.domain.bookshelf.BookshelfRepository
+import fr.amory.libris.library.domain.bookshelf.MembershipRole.OWNER
 import fr.amory.libris.library.domain.copy.Copy
 import fr.amory.libris.library.domain.copy.CopyId
 import fr.amory.libris.library.domain.copy.CopyRepository
@@ -40,6 +42,6 @@ class AddBookToBookshelf(
       Copy(CopyId.new(), edition.id, bookshelf.id, readerId, clock.instant()).also { copies.insert(it) }
     }
     coverWorker.wake()
-    return Added(copy, bookshelf)
+    return Added(CopyOnBookshelf(copy.id, ReaderBookshelf(bookshelf.id, bookshelf.name.value, OWNER)))
   }
 }
