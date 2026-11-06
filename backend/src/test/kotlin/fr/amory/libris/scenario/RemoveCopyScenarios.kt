@@ -123,7 +123,6 @@ class RemoveCopyScenarios @Autowired constructor(private val libris: Libris, pri
   }
 
   @Test
-  @Disabled("remove a copy")
   fun `S3 A guest's row has no trash, a copy Libris does not know`() {
     // Given
     val lea = libris.reader("lea", "Léa")
