@@ -297,11 +297,6 @@ private val CONTRACTEER = readerNamed(
 
 private val CONTRACTEER_BOOKSHELF = bookshelfOwnedBy(CONTRACTEER)
 
-private val CONTRACTEER_COPY = CopyOnBookshelf(
-  CopyId.new(),
-  ReaderBookshelf(CONTRACTEER_BOOKSHELF.id, CONTRACTEER_BOOKSHELF.name.value, OWNER),
-)
-
 private val ASTERIX_1 = EditionPreview(
   isbn = isbnOf("9782012101333"),
   kind = BD,
@@ -328,6 +323,11 @@ private val COPY_OF_ASTERIX_1 = CopyOnBookshelf(
   ReaderBookshelf(BookshelfId(UUID.randomUUID()), "Grenier", OWNER),
 )
 
+private val CONTRACTEER_COPY = CopyOnBookshelf(
+  CopyId.new(),
+  ReaderBookshelf(CONTRACTEER_BOOKSHELF.id, CONTRACTEER_BOOKSHELF.name.value, OWNER),
+)
+
 private val NEW_ONE_PIECE_1 = NewEdition(
   isbn = isbnOf("9782723488525"),
   kind = MANGA,
@@ -350,10 +350,6 @@ private val NEW_ONE_PIECE_1 = NewEdition(
 )
 
 private val NOT_MINE = bookshelfId("9e8d7c6b-5a4f-4e3d-8c2b-1a0f9e8d7c6b")
-
-private val MY_COPY = CopyId(UUID.fromString("4d5e6f70-8192-4a3b-9c4d-5e6f708192a3"))
-
-private val NOT_MY_COPY = CopyId(UUID.fromString("8b9c0d1e-2f3a-4b4c-9d5e-6f7a8b9c0d1e"))
 
 private val NOT_IN_MY_CATALOGUE = SeriesId(UUID.fromString("5b6c7d8e-9f0a-4b1c-8d2e-3f4a5b6c7d8e"))
 
@@ -399,6 +395,10 @@ private val EVE_AS_VIEWER = Membership(readerId("7f8091a2-b3c4-4d5e-8f6a-7b8c9d0
 private val UNKNOWN_AS_VIEWER = Membership(readerId("00000000-0000-4000-8000-000000000000"), VIEWER)
 
 private val TOPHE_AS_OWNER = Membership(readerId("6e7f8091-a2b3-4c4d-9e5f-6a7b8c9d0e1f"), OWNER)
+
+private val MY_COPY = CopyId(UUID.fromString("4d5e6f70-8192-4a3b-9c4d-5e6f708192a3"))
+
+private val NOT_MY_COPY = CopyId(UUID.fromString("8b9c0d1e-2f3a-4b4c-9d5e-6f7a8b9c0d1e"))
 
 private fun bookshelfId(id: String) =
   BookshelfId(UUID.fromString(id))
