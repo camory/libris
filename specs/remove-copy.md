@@ -282,4 +282,11 @@ ouvrage on *Salon* and see no trash on its row.
 
 ## Tasks
 
-Filled by the planner.
+- T130 — S3, the backend on `v0.16.0` — backend
+- T131 — S1, S2 — backend
+- T132 — S3, the frontend on `v0.16.0` — frontend
+- T133 — S4, S5, the count on its own line — frontend
+- T134 — S1 — frontend
+- T135 — S6, S7 — frontend
+- T136 — S2 — frontend
+- T137 — S8 — frontend

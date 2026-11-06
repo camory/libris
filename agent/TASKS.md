@@ -16,6 +16,109 @@
 >
 > Follow-ups and ideas go to `agent/PROPOSED.md`, never here.
 
+## Remove a copy — specs/remove-copy.md
+
+Contract: release `v0.16.0` of `camory/libris-api`, after `v0.15.0`: every
+copy's bookshelf gains the reader's role on it, and the removal of a copy
+is added, answered `204` or the not-found problem. An addition, so the
+backend goes first: its pin moves in T130, which answers the role on every
+copy and serves the removal with the thinnest answer, not found whatever
+the copy, which is all S3's backend tests ask; T131 then removes a copy
+the reader owns, and S1 and S2 go green together, since the edition stays
+by itself once only the copy goes. The frontend pin moves in T132, once
+T131 is deployed: the trash and its question first, then each task adds
+one or two scenarios to the card's rows, the ouvrage's page before the
+lookup screen. No other task touches the contract (D04). The edition is
+never removed (PRD §3, D11).
+
+- [ ] T130 Backend: the reader's role on every copy, on `v0.16.0`.
+      `ApiContractTest` pins `v0.16.0`, the backend's one bump (D04). Every
+      copy Libris answers (the ouvrage, the catalogue's page, a series'
+      editions, the lookup, the add) names its bookshelf with the reader's
+      role on it, `OWNER` or `VIEWER`, read from its memberships (D12) and
+      unit tested where computed (D07). The removal is served by a use case
+      (D02) answering, for now, not found whatever the id; Contracteer
+      verifies both keys, the generated `400` and every copy's new schema.
+      Walking skeleton; realises S3; un-skips the backend tests of S3.
+
+- [ ] T131 Backend: an owner removes a copy.
+      The removal deletes the copy for good (D11) when its bookshelf is one
+      the reader owns, the bookshelf answering that (D12), else not found as
+      before. The edition stays with its fields (PRD §3): the lookup of its
+      ISBN answers it with no copy, the sources not asked. The catalogue's
+      page drops an edition whose copies of the reader's leave between its
+      two reads, rather than failing, proven by the use case's test (the
+      race the spec asks weighed). Realises
+      S1, S2; un-skips the backend tests of S1 and S2, both cases.
+
+- [ ] T132 Frontend: the trash on an owned row, on `v0.16.0`.
+      Precondition (human): T131 deployed (D04).
+      `vitest.global-setup.ts` pins `v0.16.0`, the frontend's one bump; the
+      lookup, add, ouvrage, catalogue and series clients read each copy's
+      role against `contracteer mock` (D07). On the card, an owned row
+      carries the trash, *Retirer un exemplaire*, `Trash2`, a guest's none;
+      a tap turns the row into its question, *Retirer un exemplaire de* the
+      bookshelf's name *?*, the cross *Annuler* and the check *Retirer*
+      (U01, U04, U06, U07), both inert until T133 and T134. Walking
+      skeleton; realises S3; un-skips its frontend test.
+
+- [ ] T133 Frontend: the count on its own line, Annuler, one question.
+      Every bookshelf row of the card is 44 tall; a bookshelf holding more
+      than one copy says *2 exemplaires* on a second line under its name,
+      with no middle dot, proven by the card's tests, the sizes by hand
+      (U06); the catalogue rows keep theirs. Edition-page S1's frontend
+      test moves with the row as the spec says, declared in the PR (D07).
+      *Annuler* shows the row again as it was and sends nothing; another
+      row's trash moves the question there (U04). Realises S4 and S5;
+      un-skips their frontend tests.
+
+- [ ] T134 Frontend: Retirer removes one copy, on the ouvrage's page.
+      The removal reaches Libris through a client of its own, tested
+      against `contracteer mock` on its `204`, `400` and `404`; its port
+      joins the application's ports, the scenario file handing its fake
+      through them, changing for that alone, as #340 records (D05, D07).
+      *Retirer* sends one of the row's copies, a spinner in the check's
+      place, the row accepting nothing (U04); removed, the page asks the
+      ouvrage anew and the row reads *Dans* and the bookshelf's name.
+      Realises S1; un-skips its frontend test.
+
+- [ ] T135 Frontend: Libris unavailable, or the copy already gone.
+      Libris not answering the removal, the row says *Erreur lors du
+      retrait, veuillez réessayer plus tard.* under its question, inside
+      it, ready for another try (U05); a `400` the screen never provokes
+      reads as no answer, as the bookshelves screens read theirs. Answered
+      not found, the copy is taken as removed, the ouvrage asked anew with
+      no message. Realises S6 and S7; un-skips their frontend tests.
+
+- [ ] T136 Frontend: the last copy removed, back where the page came from.
+      With none of the reader's copies of the ouvrage left, removed or
+      answered not found, the screen goes back to the one the page was
+      opened from, the page leaving the history so the phone's back button
+      does not return to it, checked by hand on the Pixel; opened from its
+      address alone, it goes to the catalogue. Realises S2; un-skips its
+      frontend tests, both cases.
+
+- [ ] T137 Frontend: removing from the lookup screen.
+      The lookup screen's card asks and answers as the ouvrage's page does,
+      S3 to S7 holding there, and nothing navigates: the card stays and its
+      row drops the copy; with none of the reader's copies left it reads
+      *Dans aucune de vos bibliothèques* and the button *Ajouter à ma
+      bibliothèque* shows again, after an add too, the added copy carrying
+      the role the add answered. Realises S8; un-skips its frontend tests,
+      both cases.
+
+*Done (Tophe, on the Pixel, from the installed app on staging): scan One
+Piece 1, held once on Bibliothèque de Christophe, add it again, read 2
+exemplaires under the bookshelf's name; tap the trash, read the question,
+tap Annuler, the row is back; tap the trash and Retirer, read Dans
+Bibliothèque de Christophe. In Catalogue, open an ouvrage on two of your
+bookshelves and remove one copy, the row updates. Remove your last copy of
+an ouvrage and land back on the catalogue, the ouvrage gone from it; the
+phone's back button does not return to its page. Scan that ISBN again and
+read Dans aucune de vos bibliothèques, its card as the house holds it. On
+the second account of the family, a guest of Salon, open an ouvrage on
+Salon and see no trash on its row.*
+
 ## Done
 
 - Phase 0 — Foundations, T001 to T012, done 2026-09-10 with `v0.1.3` on the
@@ -108,10 +211,10 @@
 ## Questions for the human
 
 - **No spec yet**, so nothing is planned for them: PRD §4.1 beyond the
-  add, its form, the listing and the edition page — editing an edition
-  the house holds, editing its authors, adding an ouvrage with no ISBN,
-  removing a copy, the filters and sorts of the list, and on the edition
-  page the link to its series and its tags — §4.2 search, §4.3 beyond
+  add, its form, the listing, the edition page and removing a copy —
+  editing an edition the house holds, editing its authors, adding an
+  ouvrage with no ISBN, the filters and sorts of the list, and on the
+  edition page the link to its series and its tags — §4.2 search, §4.3 beyond
   creating a bookshelf, adding a member and choosing the default —
   removing a member, changing a member's role, adding to a bookshelf other
   than the default, moving and lending a copy, its condition and
@@ -126,4 +229,5 @@
   screen never sends, an add of a member answered `400`, `404` or `409`, a
   default answered `400` or `404`, all reachable only by a race with
   another reader. T081, T088 and T084 read such a refusal as no answer and
-  show their S9 sentence; say if one should read otherwise.
+  show their S9 sentence; say if one should read otherwise. T135 reads
+  the removal's `400`, which the screen never provokes, the same way.
