@@ -12,6 +12,7 @@ import fr.amory.libris.bibliography.domain.series.SeriesId
 import fr.amory.libris.bibliography.domain.series.SeriesVolume
 import fr.amory.libris.bibliography.fixture.EditionsInMemory
 import fr.amory.libris.bibliography.fixture.SeriesInMemory
+import fr.amory.libris.library.application.ReaderBookshelf
 import fr.amory.libris.library.application.catalogue.FindCatalogueSeriesResult.Found
 import fr.amory.libris.library.application.catalogue.FindCatalogueSeriesResult.NoSuchSeries
 import fr.amory.libris.library.application.lookup.CopyOnBookshelf
@@ -80,7 +81,7 @@ class FindCatalogueSeriesTest {
       HeldEdition(
         ROMANCE_DAWN,
         SeriesEntry("One piece", 1),
-        listOf(CopyOnBookshelf(copy.id, leasBookshelf.id, "Bibliothèque de Léa")),
+        listOf(CopyOnBookshelf(copy.id, ReaderBookshelf(leasBookshelf.id, "Bibliothèque de Léa", OWNER))),
       ),
     )
   }
@@ -98,8 +99,8 @@ class FindCatalogueSeriesTest {
 
     // Then
     result.shouldBeInstanceOf<Found>().books.single().copies shouldContainExactlyInAnyOrder listOf(
-      CopyOnBookshelf(leasCopy.id, leasBookshelf.id, "Bibliothèque de Léa"),
-      CopyOnBookshelf(salonsCopy.id, salon.id, "Salon"),
+      CopyOnBookshelf(leasCopy.id, ReaderBookshelf(leasBookshelf.id, "Bibliothèque de Léa", OWNER)),
+      CopyOnBookshelf(salonsCopy.id, ReaderBookshelf(salon.id, "Salon", VIEWER)),
     )
   }
 
@@ -116,7 +117,7 @@ class FindCatalogueSeriesTest {
 
     // Then
     result.shouldBeInstanceOf<Found>().books.single().copies shouldBe listOf(
-      CopyOnBookshelf(leasCopy.id, leasBookshelf.id, "Bibliothèque de Léa"),
+      CopyOnBookshelf(leasCopy.id, ReaderBookshelf(leasBookshelf.id, "Bibliothèque de Léa", OWNER)),
     )
   }
 

@@ -309,8 +309,7 @@ private val ASTERIX_1_COVER = CoverName("9c56cc51b374c3ba189210d5b6d4bf57790d351
 
 private val COPY_OF_ASTERIX_1 = CopyOnBookshelf(
   CopyId.new(),
-  BookshelfId(UUID.randomUUID()),
-  "Grenier",
+  ReaderBookshelf(BookshelfId(UUID.randomUUID()), "Grenier", OWNER),
 )
 
 private val NEW_ONE_PIECE_1 = NewEdition(

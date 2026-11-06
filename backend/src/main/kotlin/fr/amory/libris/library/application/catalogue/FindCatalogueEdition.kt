@@ -5,6 +5,7 @@ import fr.amory.libris.bibliography.domain.edition.Edition
 import fr.amory.libris.bibliography.domain.edition.EditionId
 import fr.amory.libris.bibliography.domain.edition.EditionRepository
 import fr.amory.libris.bibliography.domain.series.SeriesRepository
+import fr.amory.libris.library.application.ReaderBookshelf
 import fr.amory.libris.library.application.catalogue.FindCatalogueEditionResult.Found
 import fr.amory.libris.library.application.catalogue.FindCatalogueEditionResult.NoSuchEdition
 import fr.amory.libris.library.application.lookup.CopyOnBookshelf
@@ -31,6 +32,7 @@ class FindCatalogueEdition(
   private fun readersCopiesOf(readerId: ReaderId, editionId: EditionId): List<CopyOnBookshelf> {
     val readersBookshelves = bookshelves
       .findByMember(readerId)
+      .mapNotNull { ReaderBookshelf.of(it, readerId) }
       .associateBy { it.id }
     return copies
       .findByEditionId(editionId)

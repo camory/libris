@@ -126,7 +126,7 @@ data class BookshelfResponse(
       BookshelfResponse(bookshelf.id.value.toString(), bookshelf.name.value)
 
     fun from(copy: CopyOnBookshelf): BookshelfResponse =
-      BookshelfResponse(copy.bookshelfId.value.toString(), copy.bookshelfName)
+      BookshelfResponse(copy.bookshelf.id.value.toString(), copy.bookshelf.name)
   }
 }
 

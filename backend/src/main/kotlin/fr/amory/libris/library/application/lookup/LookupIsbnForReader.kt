@@ -5,6 +5,7 @@ import fr.amory.libris.bibliography.application.lookup.EditionLookupResult.Held
 import fr.amory.libris.bibliography.application.lookup.LookupEditionByIsbn
 import fr.amory.libris.bibliography.domain.Isbn
 import fr.amory.libris.bibliography.domain.edition.EditionId
+import fr.amory.libris.library.application.ReaderBookshelf
 import fr.amory.libris.library.domain.bookshelf.BookshelfRepository
 import fr.amory.libris.library.domain.copy.CopyRepository
 import fr.amory.libris.library.domain.reader.ReaderId
@@ -29,7 +30,7 @@ class LookupIsbnForReader(
       .map { it.bookshelfId }
       .distinct()
       .mapNotNull { bookshelves.findById(it) }
-      .filter { it.hasMember(readerId) }
+      .mapNotNull { ReaderBookshelf.of(it, readerId) }
       .flatMap { bookshelf ->
         copiesOfEdition
           .filter { it.bookshelfId == bookshelf.id }

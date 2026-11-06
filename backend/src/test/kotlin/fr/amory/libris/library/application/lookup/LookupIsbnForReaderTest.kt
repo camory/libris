@@ -20,6 +20,7 @@ import fr.amory.libris.bibliography.fixture.EditionsInMemory
 import fr.amory.libris.bibliography.fixture.LookupAnswering
 import fr.amory.libris.bibliography.fixture.SeriesInMemory
 import fr.amory.libris.bibliography.fixture.isbnOf
+import fr.amory.libris.library.application.ReaderBookshelf
 import fr.amory.libris.library.domain.bookshelf.Bookshelf
 import fr.amory.libris.library.domain.bookshelf.BookshelfId
 import fr.amory.libris.library.domain.bookshelf.BookshelfName
@@ -114,8 +115,8 @@ class LookupIsbnForReaderTest {
 
     // Then
     result.copies shouldContainExactlyInAnyOrder listOf(
-      CopyOnBookshelf(onLeasBookshelf.id, leasBookshelf.id, "Bibliothèque de Léa"),
-      CopyOnBookshelf(inTheSalon.id, salon.id, "Salon"),
+      CopyOnBookshelf(onLeasBookshelf.id, ReaderBookshelf(leasBookshelf.id, "Bibliothèque de Léa", OWNER)),
+      CopyOnBookshelf(inTheSalon.id, ReaderBookshelf(salon.id, "Salon", VIEWER)),
     )
   }
 
