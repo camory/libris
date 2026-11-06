@@ -95,9 +95,10 @@ Read whole by a run that changes `backend/`, after `every-run.md`.
   Older unmarked cases (`NewBookRequestTest`'s first five) are not a model.
 - A test file's top-level fixtures sit below its class and the class's
   helpers, in the order the class reaches them; the reviewer blocks one
-  above. A fixture's place is the first helper that reaches it, never
-  beside a fixture of its kind, even when a brief says so (T130's `MY_COPY`
-  was sent back for sitting beside `NOT_MINE`). A few older files put them
+  above. A fixture's place is the first helper that reaches it, and within
+  that helper the order in which its lines reach them, never beside a
+  fixture of its kind, even when a brief says so (T130's `MY_COPY` was
+  sent back for sitting beside `NOT_MINE`). A few older files put them
   above the class: they are not a model.
   A fixture added to such a file moves all of them below the class (T110's
   `BrowseCatalogueTest` was sent back for it), in the order written, since
