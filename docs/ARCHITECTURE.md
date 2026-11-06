@@ -565,7 +565,7 @@ Schema
   `BD`), identical in Kotlin, SQL and JSON.
 - Foreign keys always declared. Deletes are hard; rows meaningless without
   their parent cascade (author and tag links, copies, reading states, loans).
-  Removing the last copy of an edition deletes the edition (PRD §3).
+  An edition is never deleted, not even with its last copy (PRD §3).
 - ISBN-13 / EAN stored normalised: thirteen digits, no separators, validated
   on input.
 - Flyway files `V001__short_description.sql`, three digits, never edited once

@@ -29,8 +29,7 @@ by itself once only the copy goes. The frontend pin moves in T132, once
 T131 is deployed: the trash and its question first, then each task adds
 one or two scenarios to the card's rows, the ouvrage's page before the
 lookup screen. No other task touches the contract (D04). The edition is
-never removed (PRD §3), against a sentence of D11 the questions below ask
-about.
+never removed (PRD §3, D11).
 
 - [ ] T130 Backend: the reader's role on every copy, on `v0.16.0`.
       `ApiContractTest` pins `v0.16.0`, the backend's one bump (D04). Every
@@ -49,7 +48,7 @@ about.
       ISBN answers it with no copy, the sources not asked. The catalogue's
       page drops an edition whose copies of the reader's leave between its
       two reads, rather than failing, proven by the use case's test (the
-      race the spec asks weighed); the PR proposes D11's change. Realises
+      race the spec asks weighed). Realises
       S1, S2; un-skips the backend tests of S1 and S2, both cases.
 
 - [ ] T132 Frontend: the trash on an owned row, on `v0.16.0`.
@@ -232,8 +231,3 @@ Salon and see no trash on its row.*
   another reader. T081, T088 and T084 read such a refusal as no answer and
   show their S9 sentence; say if one should read otherwise. T135 reads
   the removal's `400`, which the screen never provokes, the same way.
-- **D11 still deletes the edition with its last copy.** Its *Schema*
-  bullet says "Removing the last copy of an edition deletes the edition
-  (PRD §3)", while PRD §3 and `specs/remove-copy.md` now keep the edition.
-  T131 follows the spec and proposes the change in its pull request;
-  strike or reword the sentence, or say if the spec should yield.
