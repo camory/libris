@@ -6,6 +6,7 @@ import fr.amory.libris.bibliography.application.edition.NewEdition
 import fr.amory.libris.library.application.AddBookResult.Added
 import fr.amory.libris.library.application.AddBookResult.NoSuchBookshelf
 import fr.amory.libris.library.application.AddBookResult.NotAnOwner
+import fr.amory.libris.library.application.lookup.CopyOnBookshelf
 import fr.amory.libris.library.domain.bookshelf.Bookshelf
 import fr.amory.libris.library.domain.bookshelf.BookshelfId
 import fr.amory.libris.library.domain.bookshelf.BookshelfRepository
@@ -40,6 +41,6 @@ class AddBookToBookshelf(
       Copy(CopyId.new(), edition.id, bookshelf.id, readerId, clock.instant()).also { copies.insert(it) }
     }
     coverWorker.wake()
-    return Added(copy, bookshelf)
+    return Added(CopyOnBookshelf.of(copy, checkNotNull(ReaderBookshelf.of(bookshelf, readerId))))
   }
 }

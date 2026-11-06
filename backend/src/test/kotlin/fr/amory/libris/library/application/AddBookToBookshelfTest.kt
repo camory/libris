@@ -18,6 +18,7 @@ import fr.amory.libris.fixture.TransactionsObserving
 import fr.amory.libris.library.application.AddBookResult.Added
 import fr.amory.libris.library.application.AddBookResult.NoSuchBookshelf
 import fr.amory.libris.library.application.AddBookResult.NotAnOwner
+import fr.amory.libris.library.application.lookup.CopyOnBookshelf
 import fr.amory.libris.library.domain.bookshelf.Membership
 import fr.amory.libris.library.domain.bookshelf.MembershipRole.OWNER
 import fr.amory.libris.library.domain.bookshelf.MembershipRole.VIEWER
@@ -59,7 +60,7 @@ class AddBookToBookshelfTest {
     val edition = editions.stored.single()
     val copy = copies.stored.single()
     copy shouldBe Copy(copy.id, edition.id, bookshelf.id, lea.id, clock.instant())
-    result shouldBe Added(copy, bookshelf)
+    result shouldBe Added(CopyOnBookshelf(copy.id, ReaderBookshelf(bookshelf.id, "Bibliothèque de Léa", OWNER)))
   }
 
   @Test

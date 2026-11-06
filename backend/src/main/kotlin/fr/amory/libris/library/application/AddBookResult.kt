@@ -1,10 +1,9 @@
 package fr.amory.libris.library.application
 
-import fr.amory.libris.library.domain.bookshelf.Bookshelf
-import fr.amory.libris.library.domain.copy.Copy
+import fr.amory.libris.library.application.lookup.CopyOnBookshelf
 
 sealed class AddBookResult {
-  data class Added(val copy: Copy, val bookshelf: Bookshelf) : AddBookResult()
+  data class Added(val copy: CopyOnBookshelf) : AddBookResult()
 
   data object NoSuchBookshelf : AddBookResult()
 
