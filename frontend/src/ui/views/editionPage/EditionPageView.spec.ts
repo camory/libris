@@ -317,6 +317,31 @@ describe("EditionPageView", () => {
       screen.getByRole("button", { name: "Retrait en cours…" }),
     ).toBeTruthy();
   });
+
+  it("says the removal failed when Libris does not answer", async () => {
+    // Given
+    const wrapper = mountEditionPageView(
+      { outcome: "found", book: romanceDawnTwiceOnLea },
+      romanceDawn.id,
+      new FakeCopiesApi(new TypeError("Failed to fetch")),
+    );
+    await flushPromises();
+    const screen = within(wrapper.element as HTMLElement);
+    screen.getByRole("button", { name: "Retirer un exemplaire" }).click();
+    await flushPromises();
+
+    // When
+    screen.getByRole("button", { name: "Retirer" }).click();
+    await flushPromises();
+
+    // Then
+    expect(
+      screen.getByText("Erreur lors du retrait, veuillez réessayer plus tard."),
+    ).toBeTruthy();
+    expect(
+      screen.getByText("Retirer un exemplaire de Bibliothèque de Léa ?"),
+    ).toBeTruthy();
+  });
 });
 
 function seen(wrapper: ReturnType<typeof mountEditionPageView>) {
