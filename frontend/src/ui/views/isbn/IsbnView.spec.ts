@@ -1281,6 +1281,27 @@ describe("IsbnView", () => {
     ).toBeDefined();
   });
 
+  it("says the removal failed on the card it added", async () => {
+    // Given
+    const screen = open(
+      new FakeIsbnApi(found),
+      undefined,
+      new FakeBookshelfApi(added),
+      undefined,
+      new FakeCopiesApi(new TypeError("Failed to fetch")),
+    );
+    await ask(screen, "9782723488525");
+    await press(screen, "Ajouter à ma bibliothèque");
+
+    // When
+    await removeCopy(screen);
+
+    // Then
+    expect(
+      screen.getByText("Erreur lors du retrait, veuillez réessayer plus tard."),
+    ).toBeDefined();
+  });
+
   it("stops the camera when the screen goes away", async () => {
     // Given
     const scanner = new FakeBarcodeScanner(true, neverRead);
