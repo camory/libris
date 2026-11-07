@@ -94,10 +94,9 @@ Read whole by a run that changes `frontend/`, after `every-run.md`.
   `createLibrisApp`, until a task adds the client and puts the port in
   `LibrisPorts`, then moves that line into `open()`'s ports (still so
   after T132). `Copy.bookshelf` is a `ReaderBookshelf` (`src/domain/Copy.ts`),
-  a `Bookshelf` with an optional `role`, so the scenario files that build
-  copies from a plain `Bookshelf` compile as they are; the clients of
-  `infra/api` declare it required and map it, and a copy without a role
-  is drawn as a guest's, no trash.
+  a `Bookshelf` with a required `role`, as in the contract: a test builds
+  a copy's bookshelf by spreading a fixture with a role, `{ ...salon,
+  role: "OWNER" }`, and the card draws the trash on an `OWNER` row only.
   `FakeCatalogueApi`'s find takes a single answer, given at every find, or
   a list answered in order, whose last answer then repeats: the page
   before a removal, then after it.

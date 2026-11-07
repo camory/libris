@@ -8,7 +8,7 @@ export interface Copy {
 }
 
 export interface ReaderBookshelf extends Bookshelf {
-  role?: MembershipRole;
+  role: MembershipRole;
 }
 
 export interface Holding {

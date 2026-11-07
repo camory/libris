@@ -52,12 +52,8 @@ const onLea: Copy = {
   bookshelf: {
     id: "0b1e2d3c-4f5a-4b6c-8d7e-9f0a1b2c3d4e",
     name: "Bibliothèque de Léa",
+    role: "OWNER",
   },
-};
-
-const ownedOnLea: Copy = {
-  ...onLea,
-  bookshelf: { ...onLea.bookshelf, role: "OWNER" },
 };
 
 const joinedSalon: Copy = {
@@ -862,7 +858,7 @@ describe("SourceEditionCard", () => {
 
   it("carries the trash on the row of a bookshelf the reader owns", () => {
     // When
-    const wrapper = card(onePiece1, [ownedOnLea]);
+    const wrapper = card(onePiece1, [onLea]);
 
     // Then
     const trashes = within(wrapper.element as HTMLElement).queryAllByRole(
@@ -885,19 +881,9 @@ describe("SourceEditionCard", () => {
     ).toEqual([]);
   });
 
-  it("carries no trash on a row whose role it is not given", () => {
-    // When
-    const card = screen(onePiece1, [onLea]);
-
-    // Then
-    expect(
-      card.queryAllByRole("button", { name: "Retirer un exemplaire" }),
-    ).toEqual([]);
-  });
-
   it("turns the row into its question when its trash is tapped", async () => {
     // Given
-    const card = screen(onePiece1, [ownedOnLea]);
+    const card = screen(onePiece1, [onLea]);
 
     // When
     card.getByRole("button", { name: "Retirer un exemplaire" }).click();
@@ -917,7 +903,7 @@ describe("SourceEditionCard", () => {
 
   it("offers Annuler then Retirer in the question", async () => {
     // Given
-    const wrapper = card(onePiece1, [ownedOnLea]);
+    const wrapper = card(onePiece1, [onLea]);
     const shown = within(wrapper.element as HTMLElement);
 
     // When
@@ -936,7 +922,7 @@ describe("SourceEditionCard", () => {
 
   it("leaves a guest's row as it is while the owned row asks", async () => {
     // Given
-    const card = screen(onePiece1, [ownedOnLea, joinedSalon]);
+    const card = screen(onePiece1, [onLea, joinedSalon]);
 
     // When
     card.getByRole("button", { name: "Retirer un exemplaire" }).click();

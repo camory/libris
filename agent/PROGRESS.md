@@ -163,6 +163,9 @@ Format:
 - Decided: `joinedSalon` moved to the spec's top, beside `ownedOnLea`,
   once steps 6 and 10 both built it (a `refactor` commit).
 - Decided: the work ran over two runs, a handoff after step 7.
+- Fix-up (Tophe's call, after review): `role` is required, as the
+  contract has it; the scenario files, `fixture/Books.ts` and the specs
+  give each copy a role, and the role-not-given test is gone.
 - Deviations from the brief: none.
 - Left over: T133 makes *Annuler* act, moves the count and un-skips S5,
   which the question kept per bookshelf may already pass; the layout
