@@ -1349,6 +1349,28 @@ describe("IsbnView", () => {
     ).toBe(false);
   });
 
+  it("leaves the next card as it is when an earlier removal answers late", async () => {
+    // Given
+    const copiesApi = new LibrisRemovingOnDemand();
+    const screen = open(
+      new FakeIsbnApi(heldTwiceOnLeas),
+      undefined,
+      undefined,
+      undefined,
+      copiesApi,
+    );
+    await ask(screen, "9782723488525");
+    await removeCopy(screen);
+    await ask(screen, "9782723488525");
+
+    // When
+    copiesApi.answer({ outcome: "removed" });
+    await flushPromises();
+
+    // Then
+    expect(screen.getByText("2 exemplaires")).toBeDefined();
+  });
+
   it("stops the camera when the screen goes away", async () => {
     // Given
     const scanner = new FakeBarcodeScanner(true, neverRead);
@@ -1469,5 +1491,17 @@ class SeriesNamesInTurn extends FakeSeriesApi {
 class LibrisNotRemoving implements CopiesApi {
   remove(): Promise<RemoveAnswer> {
     return new Promise(() => {});
+  }
+}
+
+class LibrisRemovingOnDemand implements CopiesApi {
+  private settle: (answer: RemoveAnswer) => void = () => {};
+
+  remove(): Promise<RemoveAnswer> {
+    return new Promise((resolve) => (this.settle = resolve));
+  }
+
+  answer(answer: RemoveAnswer) {
+    this.settle(answer);
   }
 }

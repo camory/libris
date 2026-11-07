@@ -72,7 +72,7 @@ const shownCopies = computed(() =>
     : copies.value,
 );
 let removedId: string | null = null;
-const removeCopyFromCard = shallowRef(useRemoveCopy(copiesApi, afterRemoval));
+const removeCopyFromCard = shallowRef(copyRemoval());
 const removalState = computed(() => removeCopyFromCard.value.state.value);
 const removing = computed(() => removalState.value.status === "removing");
 const removalFailed = computed(
@@ -129,7 +129,7 @@ async function search() {
   covers.value = [];
   coverSource.value = null;
   addBookToBookshelf.value = useAddBookToBookshelf(meApi, bookshelfApi);
-  removeCopyFromCard.value = useRemoveCopy(copiesApi, afterRemoval);
+  removeCopyFromCard.value = copyRemoval();
   sent.value = undefined;
   editing.value = false;
   message.value = undefined;
@@ -154,7 +154,14 @@ async function search() {
   }
 }
 
-async function afterRemoval() {
+function copyRemoval() {
+  const removal = useRemoveCopy(copiesApi, async () => {
+    if (removeCopyFromCard.value === removal) afterRemoval();
+  });
+  return removal;
+}
+
+function afterRemoval() {
   copies.value = shownCopies.value.filter(({ id }) => id !== removedId);
   if (addState.value.status === "added" && sent.value) {
     edition.value = sent.value;
