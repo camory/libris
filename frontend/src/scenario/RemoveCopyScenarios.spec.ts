@@ -207,7 +207,7 @@ describe("Remove a copy", () => {
     expect(trashes(screen)).toHaveLength(1);
   });
 
-  it.skip("S6 Libris unavailable during the removal", async () => {
+  it("S6 Libris unavailable during the removal", async () => {
     // Given
     const screen = open(page, {
       catalogue: librisAnswers(found(heldTwice())),
@@ -228,7 +228,7 @@ describe("Remove a copy", () => {
     expect(screen.getByRole("button", { name: "Retirer" })).toBeDefined();
   });
 
-  it.skip("S7 A copy already gone", async () => {
+  it("S7 A copy already gone", async () => {
     // Given
     const left = on(owned, "1c2d3e4f-5a6b-4c7d-8e8f-9a0b1c2d3e4f");
     const gone = on(owned, "2d3e4f5a-6b7c-4d8e-9f9a-0b1c2d3e4f5a");

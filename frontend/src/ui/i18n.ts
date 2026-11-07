@@ -81,6 +81,7 @@ const fr = {
         cancel: "Annuler",
         confirm: "Retirer",
         removing: "Retrait en cours…",
+        failed: "Erreur lors du retrait, veuillez réessayer plus tard.",
       },
       collection: "Collection",
       publisher: "Éditeur",

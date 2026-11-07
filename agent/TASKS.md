@@ -82,7 +82,7 @@ never removed (PRD §3, D11).
       ouvrage anew and the row reads *Dans* and the bookshelf's name.
       Realises S1; un-skips its frontend test.
 
-- [ ] T135 Frontend: Libris unavailable, or the copy already gone.
+- [x] T135 Frontend: Libris unavailable, or the copy already gone.
       Libris not answering the removal, the row says *Erreur lors du
       retrait, veuillez réessayer plus tard.* under its question, inside
       it, ready for another try (U05); a `400` the screen never provokes

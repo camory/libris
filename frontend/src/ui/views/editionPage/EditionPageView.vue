@@ -49,6 +49,7 @@ const failure = computed(() =>
       held
       page-title
       :removing="removal.status === 'removing'"
+      :removal-failed="removal.status === 'unavailable'"
       @remove="remove"
     />
     <p v-else class="flex items-start gap-2 text-body text-danger">

@@ -1,4 +1,4 @@
-import { BookOpen, Check, Trash2, X } from "@lucide/vue";
+import { BookOpen, Check, CircleAlert, Trash2, X } from "@lucide/vue";
 import { within } from "@testing-library/dom";
 import { mount } from "@vue/test-utils";
 import { afterEach, describe, expect, it } from "vitest";
@@ -1075,6 +1075,95 @@ describe("SourceEditionCard", () => {
     // Then
     expect(shown.queryByText(/^Retirer un exemplaire de/)).toBeNull();
     expect(shown.getByText("Dans Bibliothèque de Léa")).toBeDefined();
+  });
+
+  it("says the removal failed under the question", async () => {
+    // Given
+    const wrapper = card(onePiece1, [ownedSalon, onLea]);
+    const shown = within(wrapper.element as HTMLElement);
+    shown.getAllByRole("button", { name: "Retirer un exemplaire" })[0].click();
+    await nextTick();
+
+    // When
+    await wrapper.setProps({ removalFailed: true });
+
+    // Then
+    expect(
+      shown.getByText("Erreur lors du retrait, veuillez réessayer plus tard."),
+    ).toBeDefined();
+    expect(wrapper.findComponent(CircleAlert).exists()).toBe(true);
+    expect(
+      shown.getByText("Retirer un exemplaire de Bibliothèque de Léa ?"),
+    ).toBeDefined();
+  });
+
+  it("keeps the question ready for another try", async () => {
+    // Given
+    const wrapper = card(onePiece1, [ownedSalon, onLea]);
+    const shown = within(wrapper.element as HTMLElement);
+    shown.getAllByRole("button", { name: "Retirer un exemplaire" })[0].click();
+    await nextTick();
+
+    // When
+    await wrapper.setProps({ removalFailed: true });
+
+    // Then
+    expect(
+      shown.getByRole<HTMLButtonElement>("button", { name: "Annuler" })
+        .disabled,
+    ).toBe(false);
+    const again = shown.getByRole<HTMLButtonElement>("button", {
+      name: "Retirer",
+    });
+    expect(again.disabled).toBe(false);
+    again.click();
+    expect(wrapper.emitted("remove")).toEqual([[onLea.id]]);
+  });
+
+  it("asks a new question without the earlier message", async () => {
+    // Given
+    const wrapper = card(onePiece1, [ownedSalon, onLea]);
+    const shown = within(wrapper.element as HTMLElement);
+    shown.getAllByRole("button", { name: "Retirer un exemplaire" })[0].click();
+    await nextTick();
+    await wrapper.setProps({ removalFailed: true });
+
+    // When
+    shown.getByRole("button", { name: "Annuler" }).click();
+    await nextTick();
+    shown.getAllByRole("button", { name: "Retirer un exemplaire" })[0].click();
+    await nextTick();
+
+    // Then
+    expect(
+      shown.getByText("Retirer un exemplaire de Bibliothèque de Léa ?"),
+    ).toBeDefined();
+    expect(
+      shown.queryByText(
+        "Erreur lors du retrait, veuillez réessayer plus tard.",
+      ),
+    ).toBeNull();
+  });
+
+  it("asks another row without the earlier message", async () => {
+    // Given
+    const wrapper = card(onePiece1, [ownedSalon, onLea]);
+    const shown = within(wrapper.element as HTMLElement);
+    shown.getAllByRole("button", { name: "Retirer un exemplaire" })[0].click();
+    await nextTick();
+    await wrapper.setProps({ removalFailed: true });
+
+    // When
+    shown.getByRole("button", { name: "Retirer un exemplaire" }).click();
+    await nextTick();
+
+    // Then
+    expect(shown.getByText("Retirer un exemplaire de Salon ?")).toBeDefined();
+    expect(
+      shown.queryByText(
+        "Erreur lors du retrait, veuillez réessayer plus tard.",
+      ),
+    ).toBeNull();
   });
 
   function summaryMeasures(measures: {

@@ -95,9 +95,14 @@ Read whole by a run that changes `frontend/`, after `every-run.md`.
   `copiesApiKey`; `FetchCopiesApi` sends the `DELETE`, the id unencoded, and
   hands any answer but `204` to `problemOf`.
   `useRemoveCopy(copiesApi, afterRemoval)` exposes `state` (`ready`,
-  `removing`, `removed`; no problem branch yet) and `remove(copyId)`, and
-  stays `removing` until `afterRemoval` is done. `EditionPageView` passes
-  `removing` to the card and hands `refresh` as `afterRemoval`:
+  `removing`, `removed`, `unavailable`) and `remove(copyId)`, which never
+  rejects as long as its `afterRemoval` does not, and stays `removing`
+  until `afterRemoval` is done. The
+  `/problems/not-found` answer is taken as `removed`, `afterRemoval` run;
+  a rejection, `/problems/validation` and any other type are
+  `unavailable`, `afterRemoval` not run. `EditionPageView` passes
+  `removing` and `removal-failed` (`unavailable`) to the card and hands
+  `refresh` as `afterRemoval`:
   `useFindCatalogueEdition`'s `refresh(id)` asks again with no `loading`
   step, the card staying mounted, while `find(id)` shows the skeleton
   first; its spec's `mountEditionPageView` takes the copies' port third, a
@@ -308,7 +313,12 @@ Read whole by a run that changes `frontend/`, after `every-run.md`.
   *Retirer*, which emits `remove` with one copy id of that row's
   bookshelf; with the optional prop `removing` the check becomes a
   disabled `BusySpinner` button *Retrait en cours…* and the cross and
-  every trash are disabled; new `copies` close the question. `SourceEditionCard` passes `removing` and `remove` through;
+  every trash are disabled; new `copies` close the question. With the
+  optional prop `removalFailed` the asking row draws `CircleAlert` and
+  `isbn.card.removal.failed` under its question, inside its `bg` block,
+  its buttons enabled; the row keeps its own `failed`, set from the
+  prop's changes and cleared by the cross and every trash, so a question
+  opened after a failure shows no message while the prop stays true. `SourceEditionCard` passes `removing`, `removalFailed` and `remove` through;
   `EditionForm` passes neither, and `IsbnView` listens to nothing yet; the
   form draws the same rows. A row's text
   reads its name and its count as two elements: `getByText("Dans

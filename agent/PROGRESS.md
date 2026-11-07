@@ -223,3 +223,26 @@ Format:
 - Left over: T135 (problems, S6, S7), T136 (the last copy, S2), T137 (the
   lookup card, S8); the spinner against `3-removing.jpg` and the page
   after the removal against `4-removed.jpg`, both schemes, Tophe's.
+
+## 2026-11-07 — T135 Libris unavailable, or the copy already gone — done
+- Did: `useRemoveCopy` answers `unavailable` to a rejection or a refusal
+  and takes the not-found answer as a removal; the asking row draws the
+  message under its question, ready for another try; S6 and S7 run.
+- Decided: S6 was un-skipped first, red on the sentence with the
+  *Unhandled Rejection* the brief measured, before any unit test.
+- Decided: `remove` reads the answer through a private `isGone`, `true`
+  for `removed` and `/problems/not-found`, `false` for any other problem
+  and for a rejection; `afterRemoval` runs only when it answers `true`.
+- Decided: how the card tells an answered question from a new one:
+  `BookshelvesHolding` keeps a `failed` ref, set from each change of the
+  `removalFailed` prop and cleared by the cross and every trash. A first
+  try, `failed` set only after a tap on *Retirer*, reddened step 7, whose
+  case sets the prop with no tap.
+- Decided: the asking row became a `bg` block holding the question's
+  flex row, then the message (`pt-2`, icon and sentence `gap-2`);
+  `font-normal` moved from the sentence to the block.
+- Deviations from the brief: S7's mutation (not-found read as
+  unavailable) reds on `findByText("Dans Bibliothèque de Léa")`, the
+  question still open, before the assertion on the sentence.
+- Left over: T136 (the last copy, S2), T137 (the lookup card, S8); the
+  message against `5-not-removed.jpg`, both schemes, Tophe's.

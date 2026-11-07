@@ -50,10 +50,92 @@ describe("useRemoveCopy", () => {
     // Then
     expect(state.value).toEqual({ status: "removing" });
   });
+
+  it("is unavailable when Libris does not answer", async () => {
+    // Given
+    const { state, remove } = useRemoveCopy(
+      new FakeCopiesApi(new TypeError("Failed to fetch")),
+      nothingAfter,
+    );
+
+    // When
+    await remove(copyId);
+
+    // Then
+    expect(state.value).toEqual({ status: "unavailable" });
+  });
+
+  it("is unavailable when Libris refuses the id", async () => {
+    // Given
+    const { state, remove } = useRemoveCopy(
+      new FakeCopiesApi({ outcome: "problem", type: "/problems/validation" }),
+      nothingAfter,
+    );
+
+    // When
+    await remove(copyId);
+
+    // Then
+    expect(state.value).toEqual({ status: "unavailable" });
+  });
+
+  it("takes a copy Libris finds no more as removed", async () => {
+    // Given
+    const after = new RecordingAfterRemoval();
+    const { state, remove } = useRemoveCopy(
+      new FakeCopiesApi({ outcome: "problem", type: "/problems/not-found" }),
+      after.run,
+    );
+
+    // When
+    await remove(copyId);
+
+    // Then
+    expect(state.value).toEqual({ status: "removed" });
+    expect(after.calls).toBe(1);
+  });
+
+  it("is unavailable when Libris answers a problem it does not name", async () => {
+    // Given
+    const { state, remove } = useRemoveCopy(
+      new FakeCopiesApi({ outcome: "problem", type: "/problems/unknown" }),
+      nothingAfter,
+    );
+
+    // When
+    await remove(copyId);
+
+    // Then
+    expect(state.value).toEqual({ status: "unavailable" });
+  });
+
+  it("does not ask again when the removal fails", async () => {
+    // Given
+    const after = new RecordingAfterRemoval();
+    const { remove } = useRemoveCopy(
+      new FakeCopiesApi({ outcome: "problem", type: "/problems/validation" }),
+      after.run,
+    );
+
+    // When
+    await remove(copyId);
+
+    // Then
+    expect(after.calls).toBe(0);
+  });
 });
 
 class LibrisNotAnswering implements CopiesApi {
   remove(): Promise<RemoveAnswer> {
     return new Promise(() => {});
   }
+}
+
+class RecordingAfterRemoval {
+  calls = 0;
+
+  readonly run = () => {
+    this.calls += 1;
+    return Promise.resolve();
+  };
 }
