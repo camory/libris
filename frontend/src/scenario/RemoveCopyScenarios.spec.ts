@@ -254,7 +254,7 @@ describe("Remove a copy", () => {
     ).toBeNull();
   });
 
-  it.skip("S8 Removing from the lookup screen, one copy of two", async () => {
+  it("S8 Removing from the lookup screen, one copy of two", async () => {
     // Given
     const first = on(owned, "3e4f5a6b-7c8d-4e9f-9a0b-1c2d3e4f5a6b");
     const second = on(owned, "4f5a6b7c-8d9e-4f0a-8b1c-2d3e4f5a6b7c");
