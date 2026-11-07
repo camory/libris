@@ -1189,6 +1189,30 @@ describe("IsbnView", () => {
     ).toBeNull();
   });
 
+  it("keeps the edition it added once that copy is removed", async () => {
+    // Given
+    const screen = open(
+      new FakeIsbnApi(found),
+      undefined,
+      new FakeBookshelfApi(added),
+      undefined,
+      new FakeCopiesApi({ outcome: "removed" }),
+    );
+    await ask(screen, "9782723488525");
+    await press(screen, "Modifier");
+    await fireEvent.input(screen.getByRole("textbox", { name: "Titre" }), {
+      target: { value: "Romance Dawn" },
+    });
+    await press(screen, "Ajouter à ma bibliothèque");
+
+    // When
+    await removeCopy(screen);
+
+    // Then
+    expect(screen.getByRole("heading", { name: "Romance Dawn" })).toBeDefined();
+    expect(screen.queryByRole("textbox", { name: "Titre" })).toBeNull();
+  });
+
   it("stops the camera when the screen goes away", async () => {
     // Given
     const scanner = new FakeBarcodeScanner(true, neverRead);

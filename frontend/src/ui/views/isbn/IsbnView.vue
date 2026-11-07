@@ -154,6 +154,7 @@ async function afterRemoval() {
     edition.value = sent.value;
     covers.value = sentCovers.value;
     held.value = true;
+    editing.value = false;
   }
   addBookToBookshelf.value = useAddBookToBookshelf(meApi, bookshelfApi);
 }
