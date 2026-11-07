@@ -469,15 +469,14 @@ describe("EditionPageView", () => {
 
     // When
     screen.getByRole("button", { name: "Retirer" }).click();
-    await waitFor(() =>
-      expect(screen.queryByText("Dans Bibliothèque de Léa")).toBeNull(),
-    );
+    await flushPromises();
 
     // Then
-    expect(screen.getByText("Dans Salon")).toBeTruthy();
     expect(window.location.pathname).toBe(
       `/catalogue/ouvrages/${romanceDawn.id}`,
     );
+    expect(screen.queryByText(/Bibliothèque de Léa/)).toBeNull();
+    expect(screen.getByText("Dans Salon")).toBeTruthy();
   });
 });
 
