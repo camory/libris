@@ -12,7 +12,11 @@ import {
   bookshelfApiKey,
   type AddAnswer,
 } from "../../../application/BookshelfApi";
-import { copiesApiKey, type CopiesApi } from "../../../application/CopiesApi";
+import {
+  copiesApiKey,
+  type CopiesApi,
+  type RemoveAnswer,
+} from "../../../application/CopiesApi";
 import {
   isbnApiKey,
   type IsbnAnswer,
@@ -1213,6 +1217,26 @@ describe("IsbnView", () => {
     expect(screen.queryByRole("textbox", { name: "Titre" })).toBeNull();
   });
 
+  it("keeps its spinner while the removal is sent", async () => {
+    // Given
+    const screen = open(
+      new FakeIsbnApi(heldTwiceOnLeas),
+      undefined,
+      undefined,
+      undefined,
+      new LibrisNotRemoving(),
+    );
+    await ask(screen, "9782723488525");
+
+    // When
+    await removeCopy(screen);
+
+    // Then
+    expect(
+      screen.getByRole("button", { name: "Retrait en cours…" }),
+    ).toBeDefined();
+  });
+
   it("stops the camera when the screen goes away", async () => {
     // Given
     const scanner = new FakeBarcodeScanner(true, neverRead);
@@ -1327,5 +1351,11 @@ class SeriesNamesInTurn extends FakeSeriesApi {
 
   override names(): Promise<string[]> {
     return Promise.resolve(this.turns.shift() ?? []);
+  }
+}
+
+class LibrisNotRemoving implements CopiesApi {
+  remove(): Promise<RemoveAnswer> {
+    return new Promise(() => {});
   }
 }

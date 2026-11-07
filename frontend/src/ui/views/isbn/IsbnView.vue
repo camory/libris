@@ -72,7 +72,8 @@ const shownCopies = computed(() =>
     : copies.value,
 );
 let removedId: string | null = null;
-const { remove } = useRemoveCopy(copiesApi, afterRemoval);
+const { state: removal, remove } = useRemoveCopy(copiesApi, afterRemoval);
+const removing = computed(() => removal.value.status === "removing");
 const scanning = ref(false);
 const answerShown = computed(() => {
   if (scanning.value) {
@@ -290,6 +291,7 @@ async function send(edition: SourceEdition) {
           :covers="covers"
           :shown-source="coverSource"
           :disabled="adding"
+          :removing="removing"
           @cover-source="coverSource = $event"
           @remove="removeCopy"
         >
