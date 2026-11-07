@@ -72,6 +72,7 @@ function remove(bookshelfId: string) {
         <IconButton
           v-if="bookshelf.role === 'OWNER'"
           :label="t('isbn.card.removal.trash')"
+          :disabled="removing"
           @click="asking = bookshelf.id"
         >
           <Trash2 :size="22" />

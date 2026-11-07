@@ -1044,6 +1044,24 @@ describe("SourceEditionCard", () => {
     ).toBe(true);
   });
 
+  it("accepts no other row's trash while removing", async () => {
+    // Given
+    const wrapper = card(onePiece1, [onLea, ownedSalon]);
+    const shown = within(wrapper.element as HTMLElement);
+    shown.getAllByRole("button", { name: "Retirer un exemplaire" })[0].click();
+    await nextTick();
+
+    // When
+    await wrapper.setProps({ removing: true });
+
+    // Then
+    expect(
+      shown.getByRole<HTMLButtonElement>("button", {
+        name: "Retirer un exemplaire",
+      }).disabled,
+    ).toBe(true);
+  });
+
   it("puts the row back once the card is given its new copies", async () => {
     // Given
     const wrapper = card(onePiece1, [onLea, secondOnLea]);
