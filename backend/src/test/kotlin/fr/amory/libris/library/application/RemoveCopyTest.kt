@@ -9,6 +9,7 @@ import fr.amory.libris.library.domain.bookshelf.BookshelfName
 import fr.amory.libris.library.domain.bookshelf.Membership
 import fr.amory.libris.library.domain.bookshelf.MembershipRole.OWNER
 import fr.amory.libris.library.domain.bookshelf.MembershipRole.VIEWER
+import fr.amory.libris.library.domain.copy.CopyId
 import fr.amory.libris.library.domain.reader.ReaderId
 import fr.amory.libris.library.fixture.BookshelvesInMemory
 import fr.amory.libris.library.fixture.CopiesInMemory
@@ -63,6 +64,21 @@ class RemoveCopyTest {
 
     // When
     val result = removeCopy(LEA, copy.id)
+
+    // Then
+    result shouldBe NoSuchCopy
+    copies.stored shouldBe listOf(copy)
+  }
+
+  @Test
+  fun `an id no copy carries answers no such copy`() {
+    // Given
+    val salon = salonOf(Membership(LEA, OWNER))
+    val copy = copyOn(salon, ASTERIX_LE_GAULOIS)
+    copies.insert(copy)
+
+    // When
+    val result = removeCopy(LEA, CopyId.new())
 
     // Then
     result shouldBe NoSuchCopy
