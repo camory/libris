@@ -78,10 +78,35 @@ describe("useRemoveCopy", () => {
     // Then
     expect(state.value).toEqual({ status: "unavailable" });
   });
+
+  it("takes a copy Libris finds no more as removed", async () => {
+    // Given
+    const after = new RecordingAfterRemoval();
+    const { state, remove } = useRemoveCopy(
+      new FakeCopiesApi({ outcome: "problem", type: "/problems/not-found" }),
+      after.run,
+    );
+
+    // When
+    await remove(copyId);
+
+    // Then
+    expect(state.value).toEqual({ status: "removed" });
+    expect(after.calls).toBe(1);
+  });
 });
 
 class LibrisNotAnswering implements CopiesApi {
   remove(): Promise<RemoveAnswer> {
     return new Promise(() => {});
   }
+}
+
+class RecordingAfterRemoval {
+  calls = 0;
+
+  readonly run = () => {
+    this.calls += 1;
+    return Promise.resolve();
+  };
 }
