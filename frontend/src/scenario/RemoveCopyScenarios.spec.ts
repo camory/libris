@@ -134,7 +134,7 @@ describe("Remove a copy", () => {
     await waitFor(() => expect(window.location.pathname).toBe("/catalogue"));
   });
 
-  it.skip("S3 A guest's row has no trash", async () => {
+  it("S3 A guest's row has no trash", async () => {
     // Given
     const catalogue = librisAnswers(
       found(
