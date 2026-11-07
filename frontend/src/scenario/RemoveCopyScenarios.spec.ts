@@ -280,7 +280,7 @@ describe("Remove a copy", () => {
     expect([first.id, second.id]).toContain(removal.asked[0]);
   });
 
-  it.skip("S8 Removing from the lookup screen, right after the add", async () => {
+  it("S8 Removing from the lookup screen, right after the add", async () => {
     // Given
     const added = on(owned, "5a6b7c8d-9e0f-4a1b-9c2d-3e4f5a6b7c8d");
     const removal = librisRemoves();
