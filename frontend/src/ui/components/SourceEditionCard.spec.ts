@@ -991,6 +991,20 @@ describe("SourceEditionCard", () => {
     expect(wrapper.emitted("remove")).toEqual([[onLea.id]]);
   });
 
+  it("hands nothing up when Annuler is tapped", async () => {
+    // Given
+    const wrapper = card(onePiece1, [ownedSalon, onLea]);
+    const shown = within(wrapper.element as HTMLElement);
+    shown.getAllByRole("button", { name: "Retirer un exemplaire" })[0].click();
+    await nextTick();
+
+    // When
+    shown.getByRole("button", { name: "Annuler" }).click();
+
+    // Then
+    expect(wrapper.emitted("remove")).toBeUndefined();
+  });
+
   function summaryMeasures(measures: {
     scrollHeight: number;
     clientHeight: number;
