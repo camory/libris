@@ -1326,6 +1326,29 @@ describe("IsbnView", () => {
     ).toBeNull();
   });
 
+  it("takes the trash on the next card while an earlier removal is still sent", async () => {
+    // Given
+    const screen = open(
+      new FakeIsbnApi(heldTwiceOnLeas),
+      undefined,
+      undefined,
+      undefined,
+      new LibrisNotRemoving(),
+    );
+    await ask(screen, "9782723488525");
+    await removeCopy(screen);
+
+    // When
+    await ask(screen, "9782723488525");
+
+    // Then
+    expect(
+      screen.getByRole<HTMLButtonElement>("button", {
+        name: "Retirer un exemplaire",
+      }).disabled,
+    ).toBe(false);
+  });
+
   it("stops the camera when the screen goes away", async () => {
     // Given
     const scanner = new FakeBarcodeScanner(true, neverRead);

@@ -72,9 +72,12 @@ const shownCopies = computed(() =>
     : copies.value,
 );
 let removedId: string | null = null;
-const { state: removal, remove } = useRemoveCopy(copiesApi, afterRemoval);
-const removing = computed(() => removal.value.status === "removing");
-const removalFailed = computed(() => removal.value.status === "unavailable");
+const removeCopyFromCard = shallowRef(useRemoveCopy(copiesApi, afterRemoval));
+const removalState = computed(() => removeCopyFromCard.value.state.value);
+const removing = computed(() => removalState.value.status === "removing");
+const removalFailed = computed(
+  () => removalState.value.status === "unavailable",
+);
 const scanning = ref(false);
 const answerShown = computed(() => {
   if (scanning.value) {
@@ -126,6 +129,7 @@ async function search() {
   covers.value = [];
   coverSource.value = null;
   addBookToBookshelf.value = useAddBookToBookshelf(meApi, bookshelfApi);
+  removeCopyFromCard.value = useRemoveCopy(copiesApi, afterRemoval);
   sent.value = undefined;
   editing.value = false;
   message.value = undefined;
@@ -163,7 +167,7 @@ async function afterRemoval() {
 
 async function removeCopy(copyId: string) {
   removedId = copyId;
-  await remove(copyId);
+  await removeCopyFromCard.value.remove(copyId);
 }
 
 async function send(edition: SourceEdition) {
