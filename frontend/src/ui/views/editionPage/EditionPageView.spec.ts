@@ -353,16 +353,7 @@ describe("EditionPageView", () => {
   it("goes to the catalogue once the last copy is removed, opened from its address", async () => {
     // Given
     const router = await routerOn(`/catalogue/ouvrages/${romanceDawn.id}`);
-    const wrapper = mountEditionPageView(
-      { outcome: "found", book: romanceDawnOnceOnLea },
-      romanceDawn.id,
-      new FakeCopiesApi({ outcome: "removed" }),
-      router,
-    );
-    await flushPromises();
-    const screen = within(wrapper.element as HTMLElement);
-    screen.getByRole("button", { name: "Retirer un exemplaire" }).click();
-    await flushPromises();
+    const screen = await askingOnTheLastCopy(router);
 
     // When
     screen.getByRole("button", { name: "Retirer" }).click();
@@ -377,16 +368,7 @@ describe("EditionPageView", () => {
       "/catalogue/series",
       `/catalogue/ouvrages/${romanceDawn.id}`,
     );
-    const wrapper = mountEditionPageView(
-      { outcome: "found", book: romanceDawnOnceOnLea },
-      romanceDawn.id,
-      new FakeCopiesApi({ outcome: "removed" }),
-      router,
-    );
-    await flushPromises();
-    const screen = within(wrapper.element as HTMLElement);
-    screen.getByRole("button", { name: "Retirer un exemplaire" }).click();
-    await flushPromises();
+    const screen = await askingOnTheLastCopy(router);
 
     // When
     screen.getByRole("button", { name: "Retirer" }).click();
@@ -397,6 +379,20 @@ describe("EditionPageView", () => {
     );
   });
 });
+
+async function askingOnTheLastCopy(router: Router) {
+  const wrapper = mountEditionPageView(
+    { outcome: "found", book: romanceDawnOnceOnLea },
+    romanceDawn.id,
+    new FakeCopiesApi({ outcome: "removed" }),
+    router,
+  );
+  await flushPromises();
+  const screen = within(wrapper.element as HTMLElement);
+  screen.getByRole("button", { name: "Retirer un exemplaire" }).click();
+  await flushPromises();
+  return screen;
+}
 
 async function routerOn(...paths: string[]) {
   const router = createLibrisRouter();
