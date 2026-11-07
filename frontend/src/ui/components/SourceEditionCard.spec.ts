@@ -1027,6 +1027,23 @@ describe("SourceEditionCard", () => {
     );
   });
 
+  it("accepts nothing on the asking row while removing", async () => {
+    // Given
+    const wrapper = card(onePiece1, [ownedSalon, onLea]);
+    const shown = within(wrapper.element as HTMLElement);
+    shown.getAllByRole("button", { name: "Retirer un exemplaire" })[0].click();
+    await nextTick();
+
+    // When
+    await wrapper.setProps({ removing: true });
+
+    // Then
+    expect(
+      shown.getByRole<HTMLButtonElement>("button", { name: "Annuler" })
+        .disabled,
+    ).toBe(true);
+  });
+
   function summaryMeasures(measures: {
     scrollHeight: number;
     clientHeight: number;

@@ -36,6 +36,7 @@ function remove(bookshelfId: string) {
         </p>
         <IconButton
           :label="t('isbn.card.removal.cancel')"
+          :disabled="removing"
           class="-my-3"
           @click="asking = null"
         >
