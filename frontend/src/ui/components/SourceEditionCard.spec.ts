@@ -56,6 +56,11 @@ const onLea: Copy = {
   },
 };
 
+const secondOnLea: Copy = {
+  ...onLea,
+  id: "7a2e3d4c-5b6a-4f70-9c81-2d3e4f5a6b72",
+};
+
 const joinedSalon: Copy = {
   id: "7a2e3d4c-5b6a-4f70-9c81-2d3e4f5a6b72",
   bookshelf: {
@@ -759,12 +764,6 @@ describe("SourceEditionCard", () => {
   });
 
   it("counts the copies of a bookshelf that holds more than one, on a second line under its name", () => {
-    // Given
-    const secondOnLea: Copy = {
-      ...onLea,
-      id: "7a2e3d4c-5b6a-4f70-9c81-2d3e4f5a6b72",
-    };
-
     // When
     const wrapper = card(onePiece1, [onLea, secondOnLea]);
 
@@ -925,10 +924,6 @@ describe("SourceEditionCard", () => {
 
   it("puts the row back as it was when Annuler is tapped", async () => {
     // Given
-    const secondOnLea: Copy = {
-      ...onLea,
-      id: "7a2e3d4c-5b6a-4f70-9c81-2d3e4f5a6b72",
-    };
     const card = screen(onePiece1, [onLea, secondOnLea]);
     card.getByRole("button", { name: "Retirer un exemplaire" }).click();
     await nextTick();
