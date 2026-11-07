@@ -6,7 +6,7 @@ given away, lost, or added twice by mistake; the edition stays the house's
 record, found again by a later scan of its ISBN. Now, because a copy added
 by mistake has no way out, and a scan of a book already on the shelf is
 one tap away from a second copy.
-**Status:** draft
+**Status:** done 2026-11-07
 
 ## Scenarios
 
@@ -279,6 +279,7 @@ it; the phone's back button does not return to its page. Scan that ISBN
 again and read *Dans aucune de vos bibliothèques*, its card as the house
 holds it. On the second account of the family, a guest of *Salon*, open an
 ouvrage on *Salon* and see no trash on its row.
+Checked by Tophe on staging, recorded on 2026-11-07.
 
 ## Tasks
 
