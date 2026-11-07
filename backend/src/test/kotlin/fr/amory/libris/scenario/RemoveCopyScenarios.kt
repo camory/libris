@@ -20,7 +20,6 @@ import io.kotest.matchers.collections.shouldBeEmpty
 import io.kotest.matchers.collections.shouldContainExactlyInAnyOrder
 import io.kotest.matchers.nulls.shouldBeNull
 import io.kotest.matchers.shouldBe
-import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 
@@ -64,7 +63,6 @@ class RemoveCopyScenarios @Autowired constructor(private val libris: Libris, pri
   }
 
   @Test
-  @Disabled("remove a copy")
   fun `S2 The reader removes their last copy, one left on another reader's bookshelf`() {
     // Given
     val lea = libris.reader("lea", "Léa")
