@@ -411,6 +411,27 @@ describe("EditionPageView", () => {
     // Then
     expect(window.history.length).toBe(entries);
   });
+
+  it("keeps its spinner while it goes back", async () => {
+    // Given
+    const router = await routerOn(
+      "/catalogue/series",
+      `/catalogue/ouvrages/${romanceDawn.id}`,
+    );
+    const screen = await askingOnTheLastCopy(router);
+
+    // When
+    screen.getByRole("button", { name: "Retirer" }).click();
+    await flushPromises();
+
+    // Then
+    expect(window.location.pathname).toBe(
+      `/catalogue/ouvrages/${romanceDawn.id}`,
+    );
+    expect(
+      screen.getByRole("button", { name: "Retrait en cours…" }),
+    ).toBeTruthy();
+  });
 });
 
 async function askingOnTheLastCopy(router: Router) {
