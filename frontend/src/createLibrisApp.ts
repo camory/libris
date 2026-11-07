@@ -13,6 +13,7 @@ import {
   type BookshelvesApi,
 } from "./application/BookshelvesApi";
 import { catalogueApiKey, type CatalogueApi } from "./application/CatalogueApi";
+import { copiesApiKey, type CopiesApi } from "./application/CopiesApi";
 import { isbnApiKey, type IsbnApi } from "./application/IsbnApi";
 import { meApiKey, type MeApi } from "./application/MeApi";
 import { readersApiKey, type ReadersApi } from "./application/ReadersApi";
@@ -32,6 +33,7 @@ export interface LibrisPorts {
   bookshelvesApi: BookshelvesApi;
   readersApi: ReadersApi;
   seriesApi: SeriesApi;
+  copiesApi: CopiesApi;
 }
 
 export function createLibrisApp(ports: LibrisPorts, revision: string): App {
@@ -50,6 +52,7 @@ export function createLibrisApp(ports: LibrisPorts, revision: string): App {
   app.provide(bookshelvesApiKey, ports.bookshelvesApi);
   app.provide(readersApiKey, ports.readersApi);
   app.provide(seriesApiKey, ports.seriesApi);
+  app.provide(copiesApiKey, ports.copiesApi);
   app.provide(revisionKey, revision);
   app.provide(LUCIDE_CONTEXT, { strokeWidth: 1.8 });
   return app;

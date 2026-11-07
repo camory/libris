@@ -9,7 +9,7 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 import type { App } from "vue";
 import type { BookshelfApi } from "../application/BookshelfApi";
 import type { CatalogueApi, FindBookAnswer } from "../application/CatalogueApi";
-import { copiesApiKey, type CopiesApi } from "../application/CopiesApi";
+import type { CopiesApi } from "../application/CopiesApi";
 import type { IsbnApi } from "../application/IsbnApi";
 import { createLibrisApp } from "../createLibrisApp";
 import type { Book } from "../domain/Book";
@@ -401,13 +401,11 @@ describe("Remove a copy", () => {
         bookshelvesApi: new FakeBookshelvesApi({ memberships: [] }),
         readersApi: new FakeReadersApi([]),
         seriesApi: new FakeSeriesApi([]),
+        copiesApi:
+          world.copies ??
+          new FakeCopiesApi(new Error("no removal in this scenario")),
       },
       "sha-abc1234",
-    );
-    app.provide(
-      copiesApiKey,
-      world.copies ??
-        new FakeCopiesApi(new Error("no removal in this scenario")),
     );
     app.mount(host);
     return within(host);
