@@ -538,6 +538,8 @@ const romanceDawnOnceOnLea: Book = {
   copies: romanceDawnTwiceOnLea.copies.slice(1),
 };
 
+const romanceDawnPage = `/catalogue/ouvrages/${romanceDawn.id}`;
+
 const romanceDawnViewedOnSalon: Book = {
   ...romanceDawn,
   copies: romanceDawn.copies
@@ -549,8 +551,6 @@ const romanceDawnOnLeaAndViewedOnSalon: Book = {
   ...romanceDawn,
   copies: [...romanceDawnOnceOnLea.copies, ...romanceDawnViewedOnSalon.copies],
 };
-
-const romanceDawnPage = `/catalogue/ouvrages/${romanceDawn.id}`;
 
 const noSuchOuvrage: FindBookAnswer = {
   outcome: "problem",
