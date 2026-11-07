@@ -76,6 +76,7 @@ const fr = {
       noCopy: "Dans aucune de vos bibliothèques",
       removal: {
         trash: "Retirer un exemplaire",
+        question: "Retirer un exemplaire de {bookshelf}\u00A0?",
       },
       collection: "Collection",
       publisher: "Éditeur",

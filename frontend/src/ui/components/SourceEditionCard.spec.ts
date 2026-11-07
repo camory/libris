@@ -888,6 +888,26 @@ describe("SourceEditionCard", () => {
     ).toEqual([]);
   });
 
+  it("turns the row into its question when its trash is tapped", async () => {
+    // Given
+    const card = screen(onePiece1, [ownedOnLea]);
+
+    // When
+    card.getByRole("button", { name: "Retirer un exemplaire" }).click();
+    await nextTick();
+
+    // Then
+    expect(
+      card.getByText("Retirer un exemplaire de Bibliothèque de Léa\u00A0?", {
+        normalizer: (text) => text,
+      }),
+    ).toBeDefined();
+    expect(card.queryByText("Dans Bibliothèque de Léa")).toBeNull();
+    expect(
+      card.queryAllByRole("button", { name: "Retirer un exemplaire" }),
+    ).toEqual([]);
+  });
+
   function summaryMeasures(measures: {
     scrollHeight: number;
     clientHeight: number;
