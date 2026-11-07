@@ -1260,6 +1260,27 @@ describe("IsbnView", () => {
     ).toBeDefined();
   });
 
+  it("keeps its spinner on the card it added", async () => {
+    // Given
+    const screen = open(
+      new FakeIsbnApi(found),
+      undefined,
+      new FakeBookshelfApi(added),
+      undefined,
+      new LibrisNotRemoving(),
+    );
+    await ask(screen, "9782723488525");
+    await press(screen, "Ajouter à ma bibliothèque");
+
+    // When
+    await removeCopy(screen);
+
+    // Then
+    expect(
+      screen.getByRole("button", { name: "Retrait en cours…" }),
+    ).toBeDefined();
+  });
+
   it("stops the camera when the screen goes away", async () => {
     // Given
     const scanner = new FakeBarcodeScanner(true, neverRead);

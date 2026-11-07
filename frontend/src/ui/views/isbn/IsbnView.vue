@@ -259,6 +259,7 @@ async function send(edition: SourceEdition) {
           :held="held"
           :copies="shownCopies"
           :covers="sentCovers"
+          :removing="removing"
           @remove="removeCopy"
         />
         <EditionForm
