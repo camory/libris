@@ -63,7 +63,10 @@ export const aBook = {
   pageCount: aNumberOrNull,
   summary: aStringOrNull,
   coverUrl: aStringOrNull,
-  copies: expect.toSatisfy(areCopies, "copies with an id and a bookshelf"),
+  copies: expect.toSatisfy(
+    areCopies,
+    "copies with an id and a bookshelf with the reader's role",
+  ),
 };
 
 function areCopies(value: unknown) {
@@ -73,9 +76,10 @@ function areCopies(value: unknown) {
       (copy) =>
         Object.keys(copy).sort().join() === "bookshelf,id" &&
         typeof copy.id === "string" &&
-        Object.keys(copy.bookshelf).sort().join() === "id,name" &&
+        Object.keys(copy.bookshelf).sort().join() === "id,name,role" &&
         typeof copy.bookshelf.id === "string" &&
-        typeof copy.bookshelf.name === "string",
+        typeof copy.bookshelf.name === "string" &&
+        ["OWNER", "VIEWER"].includes(copy.bookshelf.role),
     )
   );
 }

@@ -1,13 +1,18 @@
 import type { Bookshelf } from "./Bookshelf";
+import type { MembershipRole } from "./Membership";
 import { nameOrder } from "./nameOrder";
 
 export interface Copy {
   id: string;
-  bookshelf: Bookshelf;
+  bookshelf: ReaderBookshelf;
+}
+
+export interface ReaderBookshelf extends Bookshelf {
+  role?: MembershipRole;
 }
 
 export interface Holding {
-  bookshelf: Bookshelf;
+  bookshelf: ReaderBookshelf;
   count: number;
 }
 
