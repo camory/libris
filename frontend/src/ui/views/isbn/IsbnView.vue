@@ -74,6 +74,7 @@ const shownCopies = computed(() =>
 let removedId: string | null = null;
 const { state: removal, remove } = useRemoveCopy(copiesApi, afterRemoval);
 const removing = computed(() => removal.value.status === "removing");
+const removalFailed = computed(() => removal.value.status === "unavailable");
 const scanning = ref(false);
 const answerShown = computed(() => {
   if (scanning.value) {
@@ -292,6 +293,7 @@ async function send(edition: SourceEdition) {
           :shown-source="coverSource"
           :disabled="adding"
           :removing="removing"
+          :removal-failed="removalFailed"
           @cover-source="coverSource = $event"
           @remove="removeCopy"
         >

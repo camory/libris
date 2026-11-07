@@ -1237,6 +1237,29 @@ describe("IsbnView", () => {
     ).toBeDefined();
   });
 
+  it("says the removal failed when Libris does not answer", async () => {
+    // Given
+    const screen = open(
+      new FakeIsbnApi(heldTwiceOnLeas),
+      undefined,
+      undefined,
+      undefined,
+      new FakeCopiesApi(new TypeError("Failed to fetch")),
+    );
+    await ask(screen, "9782723488525");
+
+    // When
+    await removeCopy(screen);
+
+    // Then
+    expect(
+      screen.getByText("Erreur lors du retrait, veuillez réessayer plus tard."),
+    ).toBeDefined();
+    expect(
+      screen.getByText("Retirer un exemplaire de Bibliothèque de Léa ?"),
+    ).toBeDefined();
+  });
+
   it("stops the camera when the screen goes away", async () => {
     // Given
     const scanner = new FakeBarcodeScanner(true, neverRead);
