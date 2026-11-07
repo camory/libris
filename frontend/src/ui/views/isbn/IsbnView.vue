@@ -156,12 +156,12 @@ async function search() {
 
 function copyRemoval() {
   const removal = useRemoveCopy(copiesApi, async () => {
-    if (removeCopyFromCard.value === removal) afterRemoval();
+    if (removeCopyFromCard.value === removal) dropRemovedCopy();
   });
   return removal;
 }
 
-function afterRemoval() {
+function dropRemovedCopy() {
   copies.value = shownCopies.value.filter(({ id }) => id !== removedId);
   if (addState.value.status === "added" && sent.value) {
     edition.value = sent.value;
