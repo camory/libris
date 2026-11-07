@@ -172,3 +172,26 @@ Format:
 - Left over: T133 makes *Annuler* act, moves the count and un-skips S5,
   which the question kept per bookshelf may already pass; the layout
   and colours checked by hand on the phone, Tophe's.
+
+## 2026-11-07 — T133 The count on its own line, Annuler, one question — done
+- Did: the card's bookshelf row draws *Dans* and the name, then, past one
+  copy, *2 exemplaires* on a line of its own; every row is at least 44 tall,
+  its words 12 under its top; the cross *Annuler* puts the row back.
+- Decided: S4 and S5 were un-skipped as the first commit, their red read
+  before any unit test (S4 red on *Dans Bibliothèque de Léa* not found, S5
+  already green), as the implementer's rules order, the brief listing them
+  last as steps 5 and 6.
+- Decided: the row is `flex items-start`; the book icon takes `my-2.75`
+  (a 44 box, centred at 22) and the words column `py-3`, so the icon and
+  the trash, a 44 `IconButton` at the top, centre on the first line of
+  19.6; the absence row takes the same shape.
+- Decided: the counting case reads the card's text through `card()`'s
+  `wrapper.text()` beside `within(wrapper.element)`, since `screen()`
+  searches inside the `article` root and cannot read the card's whole text.
+- Decided: `secondOnLea` moved to the spec's top, beside `onLea`, once
+  steps 1 and 3 both built it (a `refactor` commit).
+- Decided: Prettier puts edition-page S1's two expected rows on one line,
+  still the first row's change alone.
+- Deviations from the brief: none.
+- Left over: T134 makes *Retirer* send; the 44, the 12 above the words and
+  the icons on the first line, in both schemes, checked by hand by Tophe.

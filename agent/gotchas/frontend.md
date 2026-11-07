@@ -93,7 +93,7 @@ Read whole by a run that changes `frontend/`, after `every-run.md`.
   hands its fake over with `app.provide(copiesApiKey, …)` after
   `createLibrisApp`, until a task adds the client and puts the port in
   `LibrisPorts`, then moves that line into `open()`'s ports (still so
-  after T132). `Copy.bookshelf` is a `ReaderBookshelf` (`src/domain/Copy.ts`),
+  after T133). `Copy.bookshelf` is a `ReaderBookshelf` (`src/domain/Copy.ts`),
   a `Bookshelf` with a required `role`, as in the contract: a test builds
   a copy's bookshelf by spreading a fixture with a role, `{ ...salon,
   role: "OWNER" }`, and the card draws the trash on an `OWNER` row only.
@@ -292,10 +292,15 @@ Read whole by a run that changes `frontend/`, after `every-run.md`.
   source's name drawn only when `held` is false; `AuthorLines` (props
   `authors`, `kind`) and `BookshelvesHolding` (prop `copies`), which draws
   one row per bookshelf, the trash *Retirer un exemplaire* on an `OWNER`'s
-  alone, and holds `asking`, the id of the bookshelf whose trash was
-  tapped, whose row it draws as the question (`isbn.card.removal`), the
-  cross *Annuler* and the check *Retirer*, inert so far; the form draws
-  the same rows. The card's
+  alone, *Dans* and the name (`isbn.card.bookshelf`) and, past one copy,
+  the count on a second line of its own (`isbn.card.count`, *2
+  exemplaires*), and holds `asking`, the id of the bookshelf whose trash
+  was tapped, whose row it draws as the question (`isbn.card.removal`),
+  the cross *Annuler*, which puts `asking` back to `null`, and the check
+  *Retirer*, inert so far; the form draws the same rows. A row's text
+  reads its name and its count as two elements: `getByText("Dans
+  Bibliothèque de Léa")` and `getByText("2 exemplaires")`, never one
+  sentence. The card's
   props are `edition` (a `SourceEdition` or a `Book`, whose `isbn13` may be
   `null`), `copies`, `covers` and `held`, required, `pageTitle`,
   optional, which makes its heading the `h1` instead of the `h2`, and
@@ -355,19 +360,20 @@ Read whole by a run that changes `frontend/`, after `every-run.md`.
   `null` in a template literal, so only a case asserting the word of the
   `null` entry proves it is there (`SeriesRow`'s *counts in tomes when the
   editions differ in kind*).
-- A catalogue entry of two forms, `"Dans {bookshelf} | Dans {bookshelf} ·
-  {count} exemplaires"`, is picked by `<i18n-t :plural="n">`: vue-i18n's
-  default rule answers the first form for 1 and the second for any other
-  count, 0 included. An entry of three forms, `"{first} | {first}, {last} |
+- A catalogue entry of two forms, `"{bookshelf} | {bookshelf} · {count}
+  exemplaires"` (`catalogue.copies`), is picked by `<i18n-t :plural="n">`
+  or `t(key, { … }, n)`: vue-i18n's default rule answers the first form for
+  1 and the second for any other count, 0 included. An entry of three forms, `"{first} | {first}, {last} |
   {first} à {last}"` (`seriesPage.run`), follows vue-i18n 11's other rule:
   the first form for 0, the second for 1, the third for any other count, so
   `t("seriesPage.run", { first, last }, last - first)` reads a run as one
-  tome, two or its ends. The placeholders are filled by the named slots
-  (`#bookshelf`, `#count`); a slot is the only part of the sentence a class
-  can style, so a class on the count would cover the number alone, not the
-  words around it. Where no part is styled, `t(key, { … }, count)`
-  picks the form as a plain string (`CatalogueRow`'s bookshelves), which
-  several can then join.
+  tome, two or its ends. In `<i18n-t>` the placeholders are filled by
+  named slots (`AuthorLines`, `MemberRow`); a slot is the only part of the
+  sentence a class can style, so a class on a number would cover the number
+  alone, not the words around it: words styled apart are entries of their
+  own (`isbn.card.bookshelf` and `isbn.card.count`). Where no part is
+  styled, `t(key, { … }, count)` picks the form as a plain string
+  (`CatalogueRow`'s bookshelves), which several can then join.
 - A type step worn at another weight is the step's class plus a weight
   class, `text-body font-semibold`: Tailwind 4 emits `.text-body` with
   `font-weight: var(--tw-font-weight, 400)` and `font-semibold` sets that

@@ -62,7 +62,7 @@ never removed (PRD §3, D11).
       (U01, U04, U06, U07), both inert until T133 and T134. Walking
       skeleton; realises S3; un-skips its frontend test.
 
-- [ ] T133 Frontend: the count on its own line, Annuler, one question.
+- [x] T133 Frontend: the count on its own line, Annuler, one question.
       Every bookshelf row of the card is 44 tall; a bookshelf holding more
       than one copy says *2 exemplaires* on a second line under its name,
       with no middle dot, proven by the card's tests, the sizes by hand
