@@ -1,7 +1,10 @@
 import type { CopiesApi, RemoveAnswer } from "../../application/CopiesApi";
 import { problemOf } from "./problemOf";
 
-const problems = new Map([[404, "/problems/not-found"]]);
+const problems = new Map([
+  [400, "/problems/validation"],
+  [404, "/problems/not-found"],
+]);
 
 export class FetchCopiesApi implements CopiesApi {
   constructor(private readonly baseUrl: string) {}
