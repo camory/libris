@@ -523,6 +523,7 @@
   Code, found on T130's review).
 - 2026-11-07 Frontend: `EditionPageView` keeps the removed copy's id in a
   mutable `let removedId`, set by its `removeCopy` wrapper before `remove`
-  and read by `copiesLeft` in `afterRemoval`; were `useRemoveCopy` to hand
-  the copy's id to `afterRemoval`, both the `let` and the wrapper would go
-  (Middle Man, temporal coupling, found on T136's review).
+  and read by `copiesLeft` in `afterRemoval`, and `IsbnView` does the same
+  for `dropRemovedCopy` (T137); were `useRemoveCopy` to hand the copy's id
+  to `afterRemoval`, both `let`s and both wrappers would go (Middle Man,
+  temporal coupling, found on T136's review).
