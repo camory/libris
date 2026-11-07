@@ -150,6 +150,11 @@ async function search() {
 
 async function afterRemoval() {
   copies.value = shownCopies.value.filter(({ id }) => id !== removedId);
+  if (addState.value.status === "added" && sent.value) {
+    edition.value = sent.value;
+    covers.value = sentCovers.value;
+    held.value = true;
+  }
   addBookToBookshelf.value = useAddBookToBookshelf(meApi, bookshelfApi);
 }
 

@@ -1166,6 +1166,29 @@ describe("IsbnView", () => {
     ).toBeDefined();
   });
 
+  it("shows the card as the house holds it once the copy it added is removed", async () => {
+    // Given
+    const screen = open(
+      new FakeIsbnApi(covered),
+      undefined,
+      new FakeBookshelfApi(added),
+      undefined,
+      new FakeCopiesApi({ outcome: "removed" }),
+    );
+    await ask(screen, "9782723488525");
+    await press(screen, "Ajouter à ma bibliothèque");
+
+    // When
+    await removeCopy(screen);
+
+    // Then
+    expect(screen.getByRole("heading", { name: "Romance dawn" })).toBeDefined();
+    expect(screen.queryByRole("button", { name: "Modifier" })).toBeNull();
+    expect(
+      screen.queryByRole("button", { name: "Couverture inventaire.io" }),
+    ).toBeNull();
+  });
+
   it("stops the camera when the screen goes away", async () => {
     // Given
     const scanner = new FakeBarcodeScanner(true, neverRead);
