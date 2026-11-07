@@ -946,6 +946,28 @@ describe("SourceEditionCard", () => {
     ).toHaveLength(1);
   });
 
+  it("moves the question to the row whose trash is tapped", async () => {
+    // Given
+    const ownedSalon: Copy = {
+      ...joinedSalon,
+      bookshelf: { ...joinedSalon.bookshelf, role: "OWNER" },
+    };
+    const card = screen(onePiece1, [onLea, ownedSalon]);
+    card.getAllByRole("button", { name: "Retirer un exemplaire" })[0].click();
+    await nextTick();
+
+    // When
+    card.getByRole("button", { name: "Retirer un exemplaire" }).click();
+    await nextTick();
+
+    // Then
+    expect(card.getByText(/^Retirer un exemplaire de Salon/)).toBeDefined();
+    expect(
+      card.queryByText(/^Retirer un exemplaire de Bibliothèque de Léa/),
+    ).toBeNull();
+    expect(card.getByText("Dans Bibliothèque de Léa")).toBeDefined();
+  });
+
   it("leaves a guest's row as it is while the owned row asks", async () => {
     // Given
     const card = screen(onePiece1, [onLea, joinedSalon]);
