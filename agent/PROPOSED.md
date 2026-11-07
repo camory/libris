@@ -521,3 +521,8 @@
   ReaderBookshelf.of(it, readerId) }.associateBy { it.id }`; one function
   answering the reader's bookshelves by id would hold it once (Duplicated
   Code, found on T130's review).
+- 2026-11-07 Frontend: `EditionPageView` keeps the removed copy's id in a
+  mutable `let removedId`, set by its `removeCopy` wrapper before `remove`
+  and read by `copiesLeft` in `afterRemoval`; were `useRemoveCopy` to hand
+  the copy's id to `afterRemoval`, both the `let` and the wrapper would go
+  (Middle Man, temporal coupling, found on T136's review).

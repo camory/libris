@@ -1,7 +1,8 @@
 import { BookOpen, CircleAlert } from "@lucide/vue";
-import { within } from "@testing-library/dom";
+import { waitFor, within } from "@testing-library/dom";
 import { flushPromises, mount } from "@vue/test-utils";
-import { describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it } from "vitest";
+import type { Router } from "vue-router";
 import {
   catalogueApiKey,
   type BookPage,
@@ -19,6 +20,7 @@ import {
   asterixLeGaulois,
   bibliothequeDeLea,
   romanceDawn,
+  salon,
 } from "../../../fixture/Books";
 import { FakeCatalogueApi } from "../../../fixture/FakeCatalogueApi";
 import { FakeCopiesApi } from "../../../fixture/FakeCopiesApi";
@@ -26,17 +28,19 @@ import { normalised } from "../../../fixture/normalised";
 import HeldEditionCardSkeleton from "../../components/HeldEditionCardSkeleton.vue";
 import PageTitleSkeleton from "../../components/PageTitleSkeleton.vue";
 import { createLibrisI18n } from "../../i18n";
+import { createLibrisRouter } from "../../router";
 import EditionPageView from "./EditionPageView.vue";
 
 const mountEditionPageView = (
   found: FindBookAnswer | CatalogueApi,
   id = asterixLeGaulois.id,
   copiesApi: CopiesApi = new FakeCopiesApi(new Error("no removal here")),
+  router: Router = createLibrisRouter(),
 ) =>
   mount(EditionPageView, {
     props: { id },
     global: {
-      plugins: [createLibrisI18n()],
+      plugins: [createLibrisI18n(), router],
       provide: {
         [catalogueApiKey]:
           "outcome" in found ? new FakeCatalogueApi([], found) : found,
@@ -70,17 +74,23 @@ class LibrisAnsweringOnce implements CatalogueApi {
 class LibrisRecordingAsks implements CatalogueApi {
   readonly asked: string[] = [];
 
+  constructor(private readonly found: FindBookAnswer = noSuchOuvrage) {}
+
   browse(): Promise<BookPage> {
     return Promise.resolve({ books: [], next: null });
   }
 
   find(id: string): Promise<FindBookAnswer> {
     this.asked.push(id);
-    return Promise.resolve(noSuchOuvrage);
+    return Promise.resolve(this.found);
   }
 }
 
 describe("EditionPageView", () => {
+  afterEach(() => {
+    window.history.replaceState(null, "", "/");
+  });
+
   it("shows the card's skeleton while the ouvrage comes, no title", async () => {
     // Given
     const wrapper = mountEditionPageView(noSuchOuvrage);
@@ -342,6 +352,135 @@ describe("EditionPageView", () => {
       screen.getByText("Retirer un exemplaire de Bibliothèque de Léa ?"),
     ).toBeTruthy();
   });
+
+  it("goes to the catalogue once the last copy is removed, opened from its address", async () => {
+    // Given
+    const router = await routerOn(romanceDawnPage);
+    const screen = await askingToRemove(router);
+
+    // When
+    screen.getByRole("button", { name: "Retirer" }).click();
+
+    // Then
+    await waitFor(() => expect(window.location.pathname).toBe("/catalogue"));
+  });
+
+  it("goes back to the screen it was opened from once the last copy is removed", async () => {
+    // Given
+    const router = await routerOn("/catalogue/series", romanceDawnPage);
+    const screen = await askingToRemove(router);
+
+    // When
+    screen.getByRole("button", { name: "Retirer" }).click();
+
+    // Then
+    await waitFor(() =>
+      expect(window.location.pathname).toBe("/catalogue/series"),
+    );
+  });
+
+  it("leaves the history when it goes to the catalogue", async () => {
+    // Given
+    const router = await routerOn(romanceDawnPage);
+    const screen = await askingToRemove(router);
+    const entries = window.history.length;
+
+    // When
+    screen.getByRole("button", { name: "Retirer" }).click();
+    await waitFor(() => expect(window.location.pathname).toBe("/catalogue"));
+
+    // Then
+    expect(window.history.length).toBe(entries);
+  });
+
+  it("leaves the history when it goes back", async () => {
+    // Given
+    const router = await routerOn("/catalogue/series", romanceDawnPage);
+    const screen = await askingToRemove(router);
+    const entries = window.history.length;
+
+    // When
+    screen.getByRole("button", { name: "Retirer" }).click();
+    await waitFor(() =>
+      expect(window.location.pathname).toBe("/catalogue/series"),
+    );
+
+    // Then
+    expect(window.history.length).toBe(entries);
+  });
+
+  it("keeps its spinner while it goes back", async () => {
+    // Given
+    const router = await routerOn("/catalogue/series", romanceDawnPage);
+    const screen = await askingToRemove(router);
+
+    // When
+    screen.getByRole("button", { name: "Retirer" }).click();
+    await flushPromises();
+
+    // Then
+    expect(window.location.pathname).toBe(romanceDawnPage);
+    expect(
+      screen.getByRole("button", { name: "Retrait en cours…" }),
+    ).toBeTruthy();
+  });
+
+  it("asks nothing more once the last copy is removed", async () => {
+    // Given
+    const libris = new LibrisRecordingAsks({
+      outcome: "found",
+      book: romanceDawnOnceOnLea,
+    });
+    const router = await routerOn(romanceDawnPage);
+    const screen = await askingToRemove(router, libris);
+
+    // When
+    screen.getByRole("button", { name: "Retirer" }).click();
+    await waitFor(() => expect(window.location.pathname).toBe("/catalogue"));
+
+    // Then
+    expect(libris.asked).toEqual([romanceDawn.id]);
+  });
+
+  it("stays on the page while a copy is left on a guest's bookshelf", async () => {
+    // Given
+    const router = await routerOn(romanceDawnPage);
+    const screen = await askingToRemove(
+      router,
+      new FakeCatalogueApi(
+        [],
+        [
+          { outcome: "found", book: romanceDawnOnLeaAndViewedOnSalon },
+          { outcome: "found", book: romanceDawnViewedOnSalon },
+        ],
+      ),
+    );
+
+    // When
+    screen.getByRole("button", { name: "Retirer" }).click();
+    await flushPromises();
+
+    // Then
+    expect(window.location.pathname).toBe(romanceDawnPage);
+    expect(screen.queryByText(/Bibliothèque de Léa/)).toBeNull();
+    expect(screen.getByText("Dans Salon")).toBeTruthy();
+  });
+
+  it("goes back too when the copy was already gone", async () => {
+    // Given
+    const router = await routerOn(romanceDawnPage);
+    const screen = await askingToRemove(
+      router,
+      { outcome: "found", book: romanceDawnOnceOnLea },
+      new FakeCopiesApi({ outcome: "problem", type: "/problems/not-found" }),
+    );
+
+    // When
+    screen.getByRole("button", { name: "Retirer" }).click();
+
+    // Then
+    await waitFor(() => expect(window.location.pathname).toBe("/catalogue"));
+  });
 });
 
 function seen(wrapper: ReturnType<typeof mountEditionPageView>) {
@@ -349,6 +488,34 @@ function seen(wrapper: ReturnType<typeof mountEditionPageView>) {
     card: wrapper.findAllComponents(HeldEditionCardSkeleton).length,
     title: wrapper.findAllComponents(PageTitleSkeleton).length,
   };
+}
+
+async function routerOn(...paths: string[]) {
+  const router = createLibrisRouter();
+  for (const path of paths) await router.push(path);
+  await router.isReady();
+  return router;
+}
+
+async function askingToRemove(
+  router: Router,
+  catalogue: FindBookAnswer | CatalogueApi = {
+    outcome: "found",
+    book: romanceDawnOnceOnLea,
+  },
+  copiesApi: CopiesApi = new FakeCopiesApi({ outcome: "removed" }),
+) {
+  const wrapper = mountEditionPageView(
+    catalogue,
+    romanceDawn.id,
+    copiesApi,
+    router,
+  );
+  await flushPromises();
+  const screen = within(wrapper.element as HTMLElement);
+  screen.getByRole("button", { name: "Retirer un exemplaire" }).click();
+  await flushPromises();
+  return screen;
 }
 
 const romanceDawnOnlyViewed: Book = {
@@ -369,6 +536,20 @@ const romanceDawnTwiceOnLea: Book = {
 const romanceDawnOnceOnLea: Book = {
   ...romanceDawn,
   copies: romanceDawnTwiceOnLea.copies.slice(1),
+};
+
+const romanceDawnPage = `/catalogue/ouvrages/${romanceDawn.id}`;
+
+const romanceDawnViewedOnSalon: Book = {
+  ...romanceDawn,
+  copies: romanceDawn.copies
+    .filter((copy) => copy.bookshelf.id === salon.id)
+    .map((copy) => ({ ...copy, bookshelf: { ...salon, role: "VIEWER" } })),
+};
+
+const romanceDawnOnLeaAndViewedOnSalon: Book = {
+  ...romanceDawn,
+  copies: [...romanceDawnOnceOnLea.copies, ...romanceDawnViewedOnSalon.copies],
 };
 
 const noSuchOuvrage: FindBookAnswer = {

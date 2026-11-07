@@ -2,6 +2,7 @@
 import { CircleAlert } from "@lucide/vue";
 import { computed, inject, watch } from "vue";
 import { useI18n } from "vue-i18n";
+import { useRouter } from "vue-router";
 import { catalogueApiKey } from "../../../application/CatalogueApi";
 import { copiesApiKey } from "../../../application/CopiesApi";
 import { useFindCatalogueEdition } from "../../../application/useFindCatalogueEdition";
@@ -13,12 +14,46 @@ import SourceEditionCard from "../../components/SourceEditionCard.vue";
 const props = defineProps<{ id: string }>();
 
 const { t } = useI18n();
+const router = useRouter();
 const { state, find, refresh } = useFindCatalogueEdition(
   inject(catalogueApiKey)!,
 );
-const { state: removal, remove } = useRemoveCopy(inject(copiesApiKey)!, () =>
-  refresh(props.id),
+let removedId: string | null = null;
+const { state: removal, remove } = useRemoveCopy(
+  inject(copiesApiKey)!,
+  afterRemoval,
 );
+
+async function afterRemoval() {
+  if (copiesLeft().length > 0) await refresh(props.id);
+  else if (openedFromAnotherScreen()) await back();
+  else await router.replace("/catalogue");
+}
+
+function copiesLeft() {
+  return state.value.status === "found"
+    ? state.value.book.copies.filter((copy) => copy.id !== removedId)
+    : [];
+}
+
+function openedFromAnotherScreen() {
+  return Boolean(router.options.history.state.back);
+}
+
+function back() {
+  return new Promise<void>((resolve) => {
+    const stop = router.afterEach(() => {
+      stop();
+      resolve();
+    });
+    router.back();
+  });
+}
+
+async function removeCopy(copyId: string) {
+  removedId = copyId;
+  await remove(copyId);
+}
 
 watch(
   () => props.id,
@@ -50,7 +85,7 @@ const failure = computed(() =>
       page-title
       :removing="removal.status === 'removing'"
       :removal-failed="removal.status === 'unavailable'"
-      @remove="remove"
+      @remove="removeCopy"
     />
     <p v-else class="flex items-start gap-2 text-body text-danger">
       <CircleAlert :size="22" class="shrink-0" />

@@ -101,8 +101,15 @@ Read whole by a run that changes `frontend/`, after `every-run.md`.
   `/problems/not-found` answer is taken as `removed`, `afterRemoval` run;
   a rejection, `/problems/validation` and any other type are
   `unavailable`, `afterRemoval` not run. `EditionPageView` passes
-  `removing` and `removal-failed` (`unavailable`) to the card and hands
-  `refresh` as `afterRemoval`:
+  `removing` and `removal-failed` (`unavailable`) to the card; its
+  `@remove` goes through `removeCopy`, which keeps the copy's id, and its
+  `afterRemoval` calls `refresh` while the ouvrage holds a copy other than
+  that one (on any bookshelf, whatever the role), and otherwise leaves
+  the page without asking: `router.back()` when
+  `openedFromAnotherScreen()` (`router.options.history.state.back` set)
+  answers true, awaited through a one-shot
+  `router.afterEach` so the spinner turns until the page is left, and
+  `router.replace("/catalogue")` when it is `null`.
   `useFindCatalogueEdition`'s `refresh(id)` asks again with no `loading`
   step, the card staying mounted, while `find(id)` shows the skeleton
   first; its spec's `mountEditionPageView` takes the copies' port third, a
@@ -489,6 +496,17 @@ Read whole by a run that changes `frontend/`, after `every-run.md`.
   `window.history.replaceState(null, "", "/")` in an `afterEach`, since
   `createWebHistory` writes to jsdom's real history and a leftover path makes a
   later spec mount the wrong screen.
+- A navigation in jsdom (T136): `router.back()` moves `window.location`
+  a task after the call, not by `flushPromises`, so a case waits with
+  `waitFor` from `@testing-library/dom`; `router.replace` and `push` move
+  it by their awaited promise. A fresh `createLibrisRouter()`'s first
+  `push` replaces its start entry (`state.back` `null`), so a case
+  "opened from another screen" pushes that screen, then the page.
+  `window.history.length` read before and after is the proof that no
+  entry was added (it grows by one on a `push`). `EditionPageView.spec.ts`'
+  `mountEditionPageView` takes the router fourth, `routerOn(...paths)`
+  builds one already there. Vitest hides the `console.log` of a passing
+  case: a `throw` shows a value while debugging.
 - With `vi.useFakeTimers()` on, a helper that waits on a real timer never
   resolves: the `settled()` of `ServiceWorkerAppUpdate.spec.ts` leaves the
   case to fail on Vitest's five-second timeout.

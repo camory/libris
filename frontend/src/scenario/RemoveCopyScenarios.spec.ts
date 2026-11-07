@@ -85,7 +85,7 @@ describe("Remove a copy", () => {
     expect([first.id, second.id]).toContain(removal.asked[0]);
   });
 
-  it.skip("S2 The reader removes their last copy, opened from the catalogue", async () => {
+  it("S2 The reader removes their last copy, opened from the catalogue", async () => {
     // Given
     const last = on(owned, "5c6d7e8f-9a0b-4c1d-8e2f-3a4b5c6d7e8f");
     const removal = librisRemoves();
@@ -112,7 +112,7 @@ describe("Remove a copy", () => {
     await waitFor(() => expect(window.location.pathname).toBe("/catalogue"));
   });
 
-  it.skip("S2 The reader removes their last copy, opened from its address alone", async () => {
+  it("S2 The reader removes their last copy, opened from its address alone", async () => {
     // Given
     const last = on(owned, "6d7e8f9a-0b1c-4d2e-9f3a-4b5c6d7e8f9a");
     const removal = librisRemoves();
