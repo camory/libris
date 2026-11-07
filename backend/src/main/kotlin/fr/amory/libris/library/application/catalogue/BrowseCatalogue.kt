@@ -35,16 +35,18 @@ class BrowseCatalogue(
       .filter { it.bookshelfId in readersBookshelves }
       .groupBy { it.editionId }
     return CataloguePage(
-      page.editionIds.map { editionId ->
-        val edition = editionsById.getValue(editionId)
-        HeldEdition(
-          edition,
-          edition.seriesVolume?.let { volume -> seriesById[volume.seriesId]?.let(volume::entryIn) },
-          copiesByEdition
-            .getValue(editionId)
-            .map { CopyOnBookshelf(it.id, readersBookshelves.getValue(it.bookshelfId)) },
-        )
-      },
+      page.editionIds
+        .filter { it in copiesByEdition }
+        .map { editionId ->
+          val edition = editionsById.getValue(editionId)
+          HeldEdition(
+            edition,
+            edition.seriesVolume?.let { volume -> seriesById[volume.seriesId]?.let(volume::entryIn) },
+            copiesByEdition
+              .getValue(editionId)
+              .map { CopyOnBookshelf(it.id, readersBookshelves.getValue(it.bookshelfId)) },
+          )
+        },
       page.next,
     )
   }
