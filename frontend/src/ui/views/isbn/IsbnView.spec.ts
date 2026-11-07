@@ -1302,6 +1302,30 @@ describe("IsbnView", () => {
     ).toBeDefined();
   });
 
+  it("takes a copy Libris finds no more as removed", async () => {
+    // Given
+    const screen = open(
+      new FakeIsbnApi(heldTwiceOnLeas),
+      undefined,
+      undefined,
+      undefined,
+      new FakeCopiesApi({ outcome: "problem", type: "/problems/not-found" }),
+    );
+    await ask(screen, "9782723488525");
+
+    // When
+    await removeCopy(screen);
+
+    // Then
+    expect(screen.getByText("Dans Bibliothèque de Léa")).toBeDefined();
+    expect(screen.queryByText("2 exemplaires")).toBeNull();
+    expect(
+      screen.queryByText(
+        "Erreur lors du retrait, veuillez réessayer plus tard.",
+      ),
+    ).toBeNull();
+  });
+
   it("stops the camera when the screen goes away", async () => {
     // Given
     const scanner = new FakeBarcodeScanner(true, neverRead);
