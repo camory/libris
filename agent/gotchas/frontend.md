@@ -116,8 +116,9 @@ Read whole by a run that changes `frontend/`, after `every-run.md`.
   lookup, whose `afterRemoval` acts only while that removal is still the
   current one, so a late answer leaves the next card alone. It never asks
   Libris again: `dropRemovedCopy` keeps the shown copies (the lookup's and
-  the added one) less the removed id and rebuilds `addBookToBookshelf`,
-  which ends the *Added* state and brings the dock back; after an add it
+  the added one) less the removed id and, unless an add is being sent,
+  rebuilds `addBookToBookshelf`, which ends the *Added* state and brings
+  the dock back; after an add it
   also makes `edition` the sent one, `covers` the sent candidate, `held`
   true and `editing` false, so the card is the house's: no pencil, no dots.
   `useFindCatalogueEdition`'s `refresh(id)` asks again with no `loading`

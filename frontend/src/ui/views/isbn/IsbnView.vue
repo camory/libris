@@ -169,7 +169,9 @@ function dropRemovedCopy() {
     held.value = true;
     editing.value = false;
   }
-  addBookToBookshelf.value = useAddBookToBookshelf(meApi, bookshelfApi);
+  if (!adding.value) {
+    addBookToBookshelf.value = useAddBookToBookshelf(meApi, bookshelfApi);
+  }
 }
 
 async function removeCopy(copyId: string) {

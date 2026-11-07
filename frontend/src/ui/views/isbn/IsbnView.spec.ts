@@ -1371,6 +1371,36 @@ describe("IsbnView", () => {
     expect(screen.getByText("2 exemplaires")).toBeDefined();
   });
 
+  it("keeps the add it sent when a removal answers while it runs", async () => {
+    // Given
+    let addAnswers: (answer: AddAnswer) => void = () => {};
+    const copiesApi = new LibrisRemovingOnDemand();
+    const screen = open(
+      new FakeIsbnApi(heldTwiceOnLeas),
+      undefined,
+      new FakeBookshelfApi(
+        new Promise<AddAnswer>((resolve) => (addAnswers = resolve)),
+      ),
+      undefined,
+      copiesApi,
+    );
+    await ask(screen, "9782723488525");
+    await removeCopy(screen);
+    await press(screen, "Ajouter à ma bibliothèque");
+    copiesApi.answer({ outcome: "removed" });
+    await flushPromises();
+
+    // When
+    addAnswers(added);
+    await flushPromises();
+
+    // Then
+    expect(screen.getByText("2 exemplaires")).toBeDefined();
+    expect(
+      screen.queryByRole("button", { name: "Ajouter à ma bibliothèque" }),
+    ).toBeNull();
+  });
+
   it("stops the camera when the screen goes away", async () => {
     // Given
     const scanner = new FakeBarcodeScanner(true, neverRead);
