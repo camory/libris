@@ -106,7 +106,8 @@ Read whole by a run that changes `frontend/`, after `every-run.md`.
   `afterRemoval` calls `refresh` while the ouvrage holds a copy other than
   that one (on any bookshelf, whatever the role), and otherwise leaves
   the page without asking: `router.back()` when
-  `router.options.history.state.back` is set, awaited through a one-shot
+  `openedFromAnotherScreen()` (`router.options.history.state.back` set)
+  answers true, awaited through a one-shot
   `router.afterEach` so the spinner turns until the page is left, and
   `router.replace("/catalogue")` when it is `null`.
   `useFindCatalogueEdition`'s `refresh(id)` asks again with no `loading`

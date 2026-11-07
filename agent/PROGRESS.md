@@ -264,8 +264,23 @@ Format:
   its mutation: the asking row reads the question, not *Dans Bibliothèque
   de Léa*, so the `waitFor` passed at once; reworded to `flushPromises`
   then the pathname, no text of Léa's, *Dans Salon*.
-- Deviations from the brief: one commit subject runs 76 characters; left,
+- Deviations from the brief: one commit subject runs 74 characters; left,
   history not rewritten, the PR title being the squash commit.
 - Left over: T137 (the lookup card, S8); on the Pixel, the last copy
   removed from an ouvrage opened from the catalogue and from a series'
   page, back on that screen, the back button not returning, Tophe's.
+
+## 2026-11-07 — T136 The last copy removed, back where the page came from — reworked
+- Did: `EditionPageView.vue` reads from the top down (`afterRemoval`, then
+  `copiesLeft`, `openedFromAnotherScreen`, `back`, then `removeCopy`), the
+  history's check named `openedFromAnotherScreen()`; the spec's helpers
+  come as reached, `seen`, `routerOn`, `askingToRemove`; PR retitled.
+- Decided: the reviewer's verdict of 2026-11-07 settled nothing new: its
+  three blocking findings were the brief's D10 rules unmet (the title's
+  72 characters, the stepdown order in the view and in its spec); its
+  suggestions applied: the check named, the 76 corrected to 74 here and in
+  the PR body, and the `let removedId` with its `removeCopy` wrapper
+  proposed for a later task in `agent/PROPOSED.md`.
+- Deviations from the brief: none.
+- Left over: as before, T137 (the lookup card, S8) and the check by hand
+  on the Pixel, Tophe's.
