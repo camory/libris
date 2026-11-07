@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+import type { CopiesApi, RemoveAnswer } from "./CopiesApi";
 import { FakeCopiesApi } from "../fixture/FakeCopiesApi";
 import { useRemoveCopy } from "./useRemoveCopy";
 
@@ -17,4 +18,21 @@ describe("useRemoveCopy", () => {
     expect(copiesApi.asked).toEqual([copyId]);
     expect(state.value).toEqual({ status: "removed" });
   });
+
+  it("is removing while Libris has not answered", () => {
+    // Given
+    const { state, remove } = useRemoveCopy(new LibrisNotAnswering());
+
+    // When
+    void remove(copyId);
+
+    // Then
+    expect(state.value).toEqual({ status: "removing" });
+  });
 });
+
+class LibrisNotAnswering implements CopiesApi {
+  remove(): Promise<RemoveAnswer> {
+    return new Promise(() => {});
+  }
+}

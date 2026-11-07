@@ -2,7 +2,7 @@ import { ref, type Ref } from "vue";
 import type { CopiesApi } from "./CopiesApi";
 
 export interface RemoveCopyState {
-  status: "ready" | "removed";
+  status: "ready" | "removing" | "removed";
 }
 
 export function useRemoveCopy(copiesApi: CopiesApi): {
@@ -12,6 +12,7 @@ export function useRemoveCopy(copiesApi: CopiesApi): {
   const state = ref<RemoveCopyState>({ status: "ready" });
 
   async function remove(copyId: string) {
+    state.value = { status: "removing" };
     await copiesApi.remove(copyId);
     state.value = { status: "removed" };
   }
