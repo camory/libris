@@ -248,6 +248,33 @@ describe("EditionPageView", () => {
       screen.getByRole("button", { name: "Retrait en cours…" }),
     ).toBeTruthy();
   });
+
+  it("asks the ouvrage again once the copy is removed", async () => {
+    // Given
+    const wrapper = mountEditionPageView(
+      new FakeCatalogueApi(
+        [],
+        [
+          { outcome: "found", book: romanceDawnTwiceOnLea },
+          { outcome: "found", book: romanceDawnOnceOnLea },
+        ],
+      ),
+      romanceDawn.id,
+      new FakeCopiesApi({ outcome: "removed" }),
+    );
+    await flushPromises();
+    const screen = within(wrapper.element as HTMLElement);
+    screen.getByRole("button", { name: "Retirer un exemplaire" }).click();
+    await flushPromises();
+
+    // When
+    screen.getByRole("button", { name: "Retirer" }).click();
+    await flushPromises();
+
+    // Then
+    expect(screen.queryByText("2 exemplaires")).toBeNull();
+    expect(screen.getByText("Dans Bibliothèque de Léa")).toBeTruthy();
+  });
 });
 
 function seen(wrapper: ReturnType<typeof mountEditionPageView>) {
@@ -270,6 +297,11 @@ const romanceDawnTwiceOnLea: Book = {
   copies: romanceDawn.copies.filter(
     (copy) => copy.bookshelf.id === bibliothequeDeLea.id,
   ),
+};
+
+const romanceDawnOnceOnLea: Book = {
+  ...romanceDawn,
+  copies: romanceDawnTwiceOnLea.copies.slice(1),
 };
 
 const noSuchOuvrage: FindBookAnswer = {

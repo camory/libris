@@ -22,6 +22,11 @@ watch(
   { immediate: true },
 );
 
+async function removeCopy(copyId: string) {
+  await remove(copyId);
+  await find(props.id);
+}
+
 const covers = computed<CoverCandidate[]>(() => {
   const coverUrl = state.value.status === "found" && state.value.book.coverUrl;
   return coverUrl ? [{ source: "Libris", url: coverUrl }] : [];
@@ -45,7 +50,7 @@ const failure = computed(() =>
       held
       page-title
       :removing="removal.status === 'removing'"
-      @remove="remove"
+      @remove="removeCopy"
     />
     <p v-else class="flex items-start gap-2 text-body text-danger">
       <CircleAlert :size="22" class="shrink-0" />
