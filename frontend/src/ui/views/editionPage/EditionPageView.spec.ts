@@ -355,7 +355,7 @@ describe("EditionPageView", () => {
 
   it("goes to the catalogue once the last copy is removed, opened from its address", async () => {
     // Given
-    const router = await routerOn(`/catalogue/ouvrages/${romanceDawn.id}`);
+    const router = await routerOn(romanceDawnPage);
     const screen = await askingToRemove(router);
 
     // When
@@ -367,10 +367,7 @@ describe("EditionPageView", () => {
 
   it("goes back to the screen it was opened from once the last copy is removed", async () => {
     // Given
-    const router = await routerOn(
-      "/catalogue/series",
-      `/catalogue/ouvrages/${romanceDawn.id}`,
-    );
+    const router = await routerOn("/catalogue/series", romanceDawnPage);
     const screen = await askingToRemove(router);
 
     // When
@@ -384,7 +381,7 @@ describe("EditionPageView", () => {
 
   it("leaves the history when it goes to the catalogue", async () => {
     // Given
-    const router = await routerOn(`/catalogue/ouvrages/${romanceDawn.id}`);
+    const router = await routerOn(romanceDawnPage);
     const screen = await askingToRemove(router);
     const entries = window.history.length;
 
@@ -398,10 +395,7 @@ describe("EditionPageView", () => {
 
   it("leaves the history when it goes back", async () => {
     // Given
-    const router = await routerOn(
-      "/catalogue/series",
-      `/catalogue/ouvrages/${romanceDawn.id}`,
-    );
+    const router = await routerOn("/catalogue/series", romanceDawnPage);
     const screen = await askingToRemove(router);
     const entries = window.history.length;
 
@@ -417,10 +411,7 @@ describe("EditionPageView", () => {
 
   it("keeps its spinner while it goes back", async () => {
     // Given
-    const router = await routerOn(
-      "/catalogue/series",
-      `/catalogue/ouvrages/${romanceDawn.id}`,
-    );
+    const router = await routerOn("/catalogue/series", romanceDawnPage);
     const screen = await askingToRemove(router);
 
     // When
@@ -428,9 +419,7 @@ describe("EditionPageView", () => {
     await flushPromises();
 
     // Then
-    expect(window.location.pathname).toBe(
-      `/catalogue/ouvrages/${romanceDawn.id}`,
-    );
+    expect(window.location.pathname).toBe(romanceDawnPage);
     expect(
       screen.getByRole("button", { name: "Retrait en cours…" }),
     ).toBeTruthy();
@@ -442,7 +431,7 @@ describe("EditionPageView", () => {
       outcome: "found",
       book: romanceDawnOnceOnLea,
     });
-    const router = await routerOn(`/catalogue/ouvrages/${romanceDawn.id}`);
+    const router = await routerOn(romanceDawnPage);
     const screen = await askingToRemove(router, libris);
 
     // When
@@ -455,7 +444,7 @@ describe("EditionPageView", () => {
 
   it("stays on the page while a copy is left on a guest's bookshelf", async () => {
     // Given
-    const router = await routerOn(`/catalogue/ouvrages/${romanceDawn.id}`);
+    const router = await routerOn(romanceDawnPage);
     const screen = await askingToRemove(
       router,
       new FakeCatalogueApi(
@@ -472,16 +461,14 @@ describe("EditionPageView", () => {
     await flushPromises();
 
     // Then
-    expect(window.location.pathname).toBe(
-      `/catalogue/ouvrages/${romanceDawn.id}`,
-    );
+    expect(window.location.pathname).toBe(romanceDawnPage);
     expect(screen.queryByText(/Bibliothèque de Léa/)).toBeNull();
     expect(screen.getByText("Dans Salon")).toBeTruthy();
   });
 
   it("goes back too when the copy was already gone", async () => {
     // Given
-    const router = await routerOn(`/catalogue/ouvrages/${romanceDawn.id}`);
+    const router = await routerOn(romanceDawnPage);
     const screen = await askingToRemove(
       router,
       { outcome: "found", book: romanceDawnOnceOnLea },
@@ -562,6 +549,8 @@ const romanceDawnOnLeaAndViewedOnSalon: Book = {
   ...romanceDawn,
   copies: [...romanceDawnOnceOnLea.copies, ...romanceDawnViewedOnSalon.copies],
 };
+
+const romanceDawnPage = `/catalogue/ouvrages/${romanceDawn.id}`;
 
 const noSuchOuvrage: FindBookAnswer = {
   outcome: "problem",
