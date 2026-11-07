@@ -18,6 +18,7 @@ const props = defineProps<{
   pageTitle?: boolean;
   shownSource?: string | null;
   disabled?: boolean;
+  removing?: boolean;
 }>();
 
 const emit = defineEmits<{
@@ -102,7 +103,11 @@ onMounted(() => {
       </div>
     </div>
 
-    <BookshelvesHolding :copies="copies" @remove="emit('remove', $event)" />
+    <BookshelvesHolding
+      :copies="copies"
+      :removing="removing"
+      @remove="emit('remove', $event)"
+    />
 
     <div>
       <div

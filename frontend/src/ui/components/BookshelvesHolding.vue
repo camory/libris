@@ -3,9 +3,10 @@ import { BookOpen, Check, Trash2, X } from "@lucide/vue";
 import { computed, ref } from "vue";
 import { useI18n } from "vue-i18n";
 import { bookshelvesHolding, type Copy } from "../../domain/Copy";
+import BusySpinner from "./BusySpinner.vue";
 import IconButton from "./IconButton.vue";
 
-const props = defineProps<{ copies: Copy[] }>();
+const props = defineProps<{ copies: Copy[]; removing?: boolean }>();
 
 const emit = defineEmits<{ remove: [copyId: string] }>();
 
@@ -41,11 +42,17 @@ function remove(bookshelfId: string) {
           <X :size="22" class="text-muted" />
         </IconButton>
         <IconButton
-          :label="t('isbn.card.removal.confirm')"
+          :label="
+            removing
+              ? t('isbn.card.removal.removing')
+              : t('isbn.card.removal.confirm')
+          "
+          :disabled="removing"
           class="-my-3"
           @click="remove(bookshelf.id)"
         >
-          <Check :size="22" :stroke-width="3" class="text-danger" />
+          <BusySpinner v-if="removing" class="size-5.5 text-danger" />
+          <Check v-else :size="22" :stroke-width="3" class="text-danger" />
         </IconButton>
       </div>
       <div v-else class="flex items-start gap-2">

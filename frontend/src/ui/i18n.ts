@@ -80,6 +80,7 @@ const fr = {
         question: "Retirer un exemplaire de {bookshelf}\u00A0?",
         cancel: "Annuler",
         confirm: "Retirer",
+        removing: "Retrait en cours…",
       },
       collection: "Collection",
       publisher: "Éditeur",

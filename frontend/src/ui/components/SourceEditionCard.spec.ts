@@ -8,6 +8,7 @@ import type { CoverCandidate } from "../../domain/Cover";
 import type { SourceAuthor, SourceEdition } from "../../domain/SourceEdition";
 import { onePiece1 } from "../../fixture/SourceEditions";
 import { createLibrisI18n } from "../i18n";
+import BusySpinner from "./BusySpinner.vue";
 import SourceEditionCard from "./SourceEditionCard.vue";
 
 const barelyKnown: SourceEdition = {
@@ -1003,6 +1004,27 @@ describe("SourceEditionCard", () => {
 
     // Then
     expect(wrapper.emitted("remove")).toBeUndefined();
+  });
+
+  it("shows a spinner in the check's place while removing", async () => {
+    // Given
+    const wrapper = card(onePiece1, [ownedSalon, onLea]);
+    const shown = within(wrapper.element as HTMLElement);
+    shown.getAllByRole("button", { name: "Retirer un exemplaire" })[0].click();
+    await nextTick();
+
+    // When
+    await wrapper.setProps({ removing: true });
+
+    // Then
+    expect(shown.queryByRole("button", { name: "Retirer" })).toBeNull();
+    const busy = shown.getByRole<HTMLButtonElement>("button", {
+      name: "Retrait en cours…",
+    });
+    expect(busy.disabled).toBe(true);
+    expect(busy.contains(wrapper.findComponent(BusySpinner).element)).toBe(
+      true,
+    );
   });
 
   function summaryMeasures(measures: {
