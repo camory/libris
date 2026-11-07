@@ -145,3 +145,10 @@ Format:
 - Deviations from the brief: none.
 - Left over: nothing; T132 brings the trash to the frontend once T131 is
   deployed.
+
+## 2026-11-07 — T132 The trash on an owned row, on v0.16.0 — handoff
+- Done: steps 1 to 7 of the brief's test plan, one commit each; S3's red read once (`expected [] to have a length of 1 but got +0`, no trash), its un-skip reverted until the last step. Start with step 8.
+- Decided: `ReaderBookshelf extends Bookshelf` with `role?: MembershipRole`, in `src/domain/Copy.ts`; the trash is an `IconButton` holding `Trash2` at 22, after the row's words, which take `min-w-0 flex-1`; `isbn.card.removal` holds `trash` alone so far, the other words come with their cycles.
+- Guard step 7: mutation `v-if="bookshelf.role !== 'VIEWER'"` in `BookshelvesHolding.vue`; red read: *carries no trash on a row whose role it is not given*, `AssertionError: expected [ …(1) ] to deeply equal []`; reverted.
+- Learned: `SourceEditionCard.spec.ts` holds three lines Prettier would rewrite on `main` already, as `Copy.ts` does; the new cases are formatted.
+- Deviations: none so far.
