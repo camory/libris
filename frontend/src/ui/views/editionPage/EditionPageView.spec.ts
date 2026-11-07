@@ -8,7 +8,11 @@ import {
   type CatalogueApi,
   type FindBookAnswer,
 } from "../../../application/CatalogueApi";
-import { copiesApiKey, type CopiesApi } from "../../../application/CopiesApi";
+import {
+  copiesApiKey,
+  type CopiesApi,
+  type RemoveAnswer,
+} from "../../../application/CopiesApi";
 import type { Book } from "../../../domain/Book";
 import {
   asterixEtSesAmis,
@@ -40,6 +44,12 @@ const mountEditionPageView = (
       },
     },
   });
+
+class LibrisNotRemoving implements CopiesApi {
+  remove(): Promise<RemoveAnswer> {
+    return new Promise(() => {});
+  }
+}
 
 class LibrisRecordingAsks implements CatalogueApi {
   readonly asked: string[] = [];
@@ -215,6 +225,28 @@ describe("EditionPageView", () => {
     expect(copiesApi.asked).toEqual([
       expect.toBeOneOf(romanceDawnTwiceOnLea.copies.map((copy) => copy.id)),
     ]);
+  });
+
+  it("shows the spinner while the removal is sent", async () => {
+    // Given
+    const wrapper = mountEditionPageView(
+      { outcome: "found", book: romanceDawnTwiceOnLea },
+      romanceDawn.id,
+      new LibrisNotRemoving(),
+    );
+    await flushPromises();
+    const screen = within(wrapper.element as HTMLElement);
+    screen.getByRole("button", { name: "Retirer un exemplaire" }).click();
+    await flushPromises();
+
+    // When
+    screen.getByRole("button", { name: "Retirer" }).click();
+    await flushPromises();
+
+    // Then
+    expect(
+      screen.getByRole("button", { name: "Retrait en cours…" }),
+    ).toBeTruthy();
   });
 });
 

@@ -14,7 +14,7 @@ const props = defineProps<{ id: string }>();
 
 const { t } = useI18n();
 const { state, find } = useFindCatalogueEdition(inject(catalogueApiKey)!);
-const { remove } = useRemoveCopy(inject(copiesApiKey)!);
+const { state: removal, remove } = useRemoveCopy(inject(copiesApiKey)!);
 
 watch(
   () => props.id,
@@ -44,6 +44,7 @@ const failure = computed(() =>
       :covers="covers"
       held
       page-title
+      :removing="removal.status === 'removing'"
       @remove="remove"
     />
     <p v-else class="flex items-start gap-2 text-body text-danger">
