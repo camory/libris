@@ -104,6 +104,32 @@ class BrowseCatalogueTest {
   }
 
   @Test
+  fun `an edition whose copies of the reader's left after the page was read is not on the page`() {
+    // Given
+    val leasBookshelf = bookshelfOf("Bibliothèque de Léa", Membership(lea, OWNER))
+    val pierreOnLeasBookshelf = copyOf(PIERRE, leasBookshelf)
+    val next = EditionId.new()
+    val browseCatalogue = browsing(EditionIdPage(listOf(CIGARES.id, PIERRE.id), next))
+
+    // When
+    val page = browseCatalogue(lea, null)
+
+    // Then
+    page shouldBe CataloguePage(
+      listOf(
+        HeldEdition(
+          PIERRE,
+          null,
+          listOf(
+            CopyOnBookshelf(pierreOnLeasBookshelf.id, ReaderBookshelf(leasBookshelf.id, "Bibliothèque de Léa", OWNER)),
+          ),
+        ),
+      ),
+      next,
+    )
+  }
+
+  @Test
   fun `the catalogue asks the port for fifty editions of the reader after the one given`() {
     // Given
     val after = EditionId.new()

@@ -3,6 +3,7 @@ package fr.amory.libris.library.fixture
 import fr.amory.libris.bibliography.domain.edition.EditionId
 import fr.amory.libris.library.domain.bookshelf.BookshelfId
 import fr.amory.libris.library.domain.copy.Copy
+import fr.amory.libris.library.domain.copy.CopyId
 import fr.amory.libris.library.domain.copy.CopyRepository
 
 class CopiesInMemory : CopyRepository {
@@ -14,6 +15,9 @@ class CopiesInMemory : CopyRepository {
     copies += copy
   }
 
+  override fun findById(id: CopyId): Copy? =
+    copies.find { it.id == id }
+
   override fun findByEditionId(editionId: EditionId): List<Copy> =
     copies.filter { it.editionId == editionId }
 
@@ -22,4 +26,8 @@ class CopiesInMemory : CopyRepository {
 
   override fun findByBookshelfIds(bookshelfIds: List<BookshelfId>): List<Copy> =
     copies.filter { it.bookshelfId in bookshelfIds }
+
+  override fun delete(id: CopyId) {
+    copies.removeIf { it.id == id }
+  }
 }

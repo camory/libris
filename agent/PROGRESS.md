@@ -128,3 +128,20 @@ Format:
   it is, since pushed history is not rewritten.
 - Deviations from the brief: the fixtures' place, as the review asks.
 - Left over: the two lines of `agent/PROPOSED.md`; T131 as before.
+
+## 2026-11-07 — T131 An owner removes a copy — done
+- Did: `CopyRepository` gains `findById` and `delete`, one statement each;
+  `RemoveCopy` deletes a copy whose bookshelf the reader owns and answers
+  `NoSuchCopy` otherwise; the catalogue's page drops an edition left with
+  no copy of the reader's between its two reads, keeping the port's `next`.
+- Decided: `RemoveCopy` asks the bookshelf inside one `takeIf` over the
+  copy found, a missing bookshelf read as not owned, so the rule stays one
+  expression and the two returns detekt allows; `RemoveCopyTest` builds its
+  bookshelves through a `salonOf(vararg memberships)` helper, since the
+  guest case's inline `bookshelfOf` ran past the line length.
+- Decided: `findById` and `delete` sit in the port and its adapters
+  beside the methods of their kind, `findById` after `insert`, `delete`
+  last, each statement a top-level constant in that order.
+- Deviations from the brief: none.
+- Left over: nothing; T132 brings the trash to the frontend once T131 is
+  deployed.

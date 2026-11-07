@@ -352,11 +352,6 @@
 - Frontend: `CatalogueRow` and `SourceEditionCard` each group the copies of
   an edition by bookshelf with the same loop; one function beside `Book` or
   `Copy` could serve both (found 2026-09-28 while implementing T047).
-- Backend: `BrowseCatalogue` reads the page's edition ids in one statement
-  and their copies in another; a copy removed between the two would leave
-  an edition of the page without copies and fail `getValue`. Nothing
-  removes copies yet; the task that does should let an edition of the page
-  come with no copy, or drop it (found 2026-09-29 while implementing T050).
 - Frontend: the lookup and add ports answer `{ outcome: "problem"; type }`,
   so the wire string `/problems/not-found` crosses into the application
   layer, `IsbnView` maps it to a message and every fake speaks it. The

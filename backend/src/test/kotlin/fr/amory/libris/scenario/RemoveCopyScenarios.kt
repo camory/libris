@@ -1,5 +1,7 @@
 package fr.amory.libris.scenario
 
+import fr.amory.libris.bibliography.fixture.OpenLibraryStubs
+import fr.amory.libris.bibliography.fixture.recordedBytes
 import fr.amory.libris.scenario.dsl.Author
 import fr.amory.libris.scenario.dsl.Libris
 import fr.amory.libris.scenario.dsl.NOT_FOUND
@@ -9,6 +11,7 @@ import fr.amory.libris.scenario.dsl.Role.VIEWER
 import fr.amory.libris.scenario.dsl.SeriesEntry
 import fr.amory.libris.scenario.dsl.Sources
 import fr.amory.libris.scenario.dsl.asks
+import fr.amory.libris.scenario.dsl.awaitsCoverOf
 import fr.amory.libris.scenario.dsl.catalogue
 import fr.amory.libris.scenario.dsl.hasAdded
 import fr.amory.libris.scenario.dsl.hasCreated
@@ -20,15 +23,16 @@ import io.kotest.matchers.collections.shouldBeEmpty
 import io.kotest.matchers.collections.shouldContainExactlyInAnyOrder
 import io.kotest.matchers.nulls.shouldBeNull
 import io.kotest.matchers.shouldBe
-import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 
 @ScenarioTest
-class RemoveCopyScenarios @Autowired constructor(private val libris: Libris, private val sources: Sources) {
+class RemoveCopyScenarios @Autowired constructor(
+  private val libris: Libris,
+  private val sources: Sources,
+  private val openLibrary: OpenLibraryStubs) {
 
   @Test
-  @Disabled("remove a copy")
   fun `S1 The owner removes one copy of two`() {
     // Given
     val lea = libris.reader("lea", "Léa")
@@ -44,11 +48,12 @@ class RemoveCopyScenarios @Autowired constructor(private val libris: Libris, pri
   }
 
   @Test
-  @Disabled("remove a copy")
   fun `S2 The reader removes their last copy, the house's last`() {
     // Given
     val lea = libris.reader("lea", "Léa")
+    openLibrary.hasCover(ASTERIX_LE_GAULOIS.isbn13, TALL_JPEG)
     val copy = lea.hasAdded(ASTERIX_LE_GAULOIS, to = lea.defaultBookshelf)
+    lea.awaitsCoverOf(ASTERIX_LE_GAULOIS.isbn13)
     val book = lea.catalogue().books.single()
     sources.forgetRequests()
 
@@ -66,7 +71,6 @@ class RemoveCopyScenarios @Autowired constructor(private val libris: Libris, pri
   }
 
   @Test
-  @Disabled("remove a copy")
   fun `S2 The reader removes their last copy, one left on another reader's bookshelf`() {
     // Given
     val lea = libris.reader("lea", "Léa")
@@ -144,6 +148,8 @@ class RemoveCopyScenarios @Autowired constructor(private val libris: Libris, pri
         authors = listOf(Author("René Goscinny", "WRITER"), Author("Albert Uderzo", "ARTIST")),
         series = SeriesEntry("Astérix", 1),
         language = "fr",
+        coverSource = "Open Library",
       )
+    val TALL_JPEG = recordedBytes("covers/tall.jpg")
   }
 }
