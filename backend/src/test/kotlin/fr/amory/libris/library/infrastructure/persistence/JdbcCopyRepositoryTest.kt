@@ -235,6 +235,11 @@ class JdbcCopyRepositoryTest @Autowired constructor(
     found shouldBe copy
   }
 
+  @Test
+  fun `an id no copy carries finds no copy`() {
+    copies.findById(CopyId.new()) shouldBe null
+  }
+
   private fun bookshelfOf(username: String, displayName: String): Bookshelf {
     val reader = readerNamed(username, displayName)
     readers.insert(reader)
