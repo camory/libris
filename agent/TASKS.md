@@ -98,7 +98,7 @@ never removed (PRD §3, D11).
       address alone, it goes to the catalogue. Realises S2; un-skips its
       frontend tests, both cases.
 
-- [ ] T137 Frontend: removing from the lookup screen.
+- [x] T137 Frontend: removing from the lookup screen.
       The lookup screen's card asks and answers as the ouvrage's page does,
       S3 to S7 holding there, and nothing navigates: the card stays and its
       row drops the copy; with none of the reader's copies left it reads

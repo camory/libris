@@ -285,15 +285,25 @@ Format:
 - Left over: as before, T137 (the lookup card, S8) and the check by hand
   on the Pixel, Tophe's.
 
-## 2026-11-07 — T137 Removing from the lookup screen — handoff
-- Done: steps 1 to 14, each its own commit, then a `refactor` naming
-  `dropRemovedCopy`; self-review of `git diff main...HEAD` read, nothing changed;
-  gotchas rewritten. Next: *Finish*: tick T137, rewrite this as the diary entry, PR.
-- Decided: `useRemoveCopy` in a `shallowRef` rebuilt by `copyRemoval()` on each
-  lookup, acting only while current; `dropRemovedCopy` keeps the shown copies less
-  the id, rebuilds `addBookToBookshelf`, after an add takes `sent`, `sentCovers`,
-  `held` true, `editing` false. S8's cases turned green at steps 3 and 4.
-- Deviation: step 4 also asserts one trash left; "no *Dans Chambre*" held while the row still asked.
-- Guards: step 5, added copy kept in `copies` while the lookup's dropped the id: red on
-  `getByText("Dans aucune de vos bibliothèques")`; step 12, `isGone` without the not-found
-  arm: red on `getByText("Dans Bibliothèque de Léa")` (question still open). Both reverted.
+## 2026-11-07 — T137 Removing from the lookup screen — done
+- Did: the lookup screen's trash removes one copy as the ouvrage's page does;
+  the card stays and drops the copy, the *Added* state ends and the button
+  *Ajouter à ma bibliothèque* comes back; S8's two cases run.
+- Decided: S8's two cases un-skipped first, each its own commit, red as the
+  brief measured; they turned green at steps 3 and 4.
+- Decided: `useRemoveCopy` held in a `shallowRef` rebuilt by `copyRemoval()`
+  on each lookup, its `afterRemoval` acting only while it is still the
+  current one, so a late answer leaves the next card alone.
+- Decided: `dropRemovedCopy` keeps the shown copies (the lookup's and the
+  added one) less the removed id and rebuilds `addBookToBookshelf`; after an
+  add it makes the card the house's: `edition` the sent one, `covers` the
+  sent candidate, `held` true, `editing` false.
+- Decided: the work ran over two runs, the first handing off after step 14
+  and its refactor; the second ran the gate, read the diff and finished.
+- Deviations from the brief: step 4 also counts one trash left, since "no
+  *Dans Chambre*" held while the row still asked.
+- Deviations from the brief: step 12's mutation reds on
+  `getByText("Dans Bibliothèque de Léa")`, the question still open, before
+  the assertion on the sentence.
+- Left over: the two lookup cards against `6-lookup-card.jpg` and
+  `7-lookup-card-emptied.jpg`, and the spec's *Done* on the Pixel, Tophe's.
