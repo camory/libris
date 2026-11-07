@@ -1,8 +1,9 @@
 <script setup lang="ts">
-import { BookOpen } from "@lucide/vue";
+import { BookOpen, Trash2 } from "@lucide/vue";
 import { computed } from "vue";
 import { useI18n } from "vue-i18n";
 import { bookshelvesHolding, type Copy } from "../../domain/Copy";
+import IconButton from "./IconButton.vue";
 
 const props = defineProps<{ copies: Copy[] }>();
 
@@ -21,10 +22,18 @@ const bookshelves = computed(() =>
       class="flex items-center gap-2"
     >
       <BookOpen :size="22" class="shrink-0" />
-      <i18n-t keypath="isbn.card.copies" :plural="count" tag="p">
+      <i18n-t
+        keypath="isbn.card.copies"
+        :plural="count"
+        tag="p"
+        class="min-w-0 flex-1"
+      >
         <template #bookshelf>{{ bookshelf.name }}</template>
         <template #count>{{ count }}</template>
       </i18n-t>
+      <IconButton :label="t('isbn.card.removal.trash')">
+        <Trash2 :size="22" />
+      </IconButton>
     </div>
     <div v-if="bookshelves.length === 0" class="flex items-center gap-2">
       <BookOpen :size="22" class="shrink-0" />

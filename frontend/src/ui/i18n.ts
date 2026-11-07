@@ -74,6 +74,9 @@ const fr = {
       coverSource: "Couverture {source}",
       copies: "Dans {bookshelf} | Dans {bookshelf} · {count} exemplaires",
       noCopy: "Dans aucune de vos bibliothèques",
+      removal: {
+        trash: "Retirer un exemplaire",
+      },
       collection: "Collection",
       publisher: "Éditeur",
       year: "Année",

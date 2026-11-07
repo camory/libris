@@ -1,4 +1,4 @@
-import { BookOpen } from "@lucide/vue";
+import { BookOpen, Trash2 } from "@lucide/vue";
 import { within } from "@testing-library/dom";
 import { mount } from "@vue/test-utils";
 import { afterEach, describe, expect, it } from "vitest";
@@ -53,6 +53,11 @@ const onLea: Copy = {
     id: "0b1e2d3c-4f5a-4b6c-8d7e-9f0a1b2c3d4e",
     name: "Bibliothèque de Léa",
   },
+};
+
+const ownedOnLea: Copy = {
+  ...onLea,
+  bookshelf: { ...onLea.bookshelf, role: "OWNER" },
 };
 
 const inventaire: CoverCandidate = {
@@ -836,6 +841,21 @@ describe("SourceEditionCard", () => {
     expect(positions).not.toContain(-1);
     expect(positions).toEqual([...positions].sort((a, b) => a - b));
     expect(card.match(/Dans/g)).toHaveLength(1);
+  });
+
+  it("carries the trash on the row of a bookshelf the reader owns", () => {
+    // When
+    const wrapper = card(onePiece1, [ownedOnLea]);
+
+    // Then
+    const trashes = within(wrapper.element as HTMLElement).queryAllByRole(
+      "button",
+      { name: "Retirer un exemplaire" },
+    );
+    expect(trashes).toHaveLength(1);
+    expect(trashes[0].contains(wrapper.findComponent(Trash2).element)).toBe(
+      true,
+    );
   });
 
   function summaryMeasures(measures: {
