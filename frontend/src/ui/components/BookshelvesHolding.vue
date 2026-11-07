@@ -7,6 +7,8 @@ import IconButton from "./IconButton.vue";
 
 const props = defineProps<{ copies: Copy[] }>();
 
+const emit = defineEmits<{ remove: [copyId: string] }>();
+
 const { t, locale } = useI18n();
 
 const bookshelves = computed(() =>
@@ -14,6 +16,11 @@ const bookshelves = computed(() =>
 );
 
 const asking = ref<string | null>(null);
+
+function remove(bookshelfId: string) {
+  const copy = props.copies.find((copy) => copy.bookshelf.id === bookshelfId);
+  if (copy) emit("remove", copy.id);
+}
 </script>
 
 <template>
@@ -33,7 +40,11 @@ const asking = ref<string | null>(null);
         >
           <X :size="22" class="text-muted" />
         </IconButton>
-        <IconButton :label="t('isbn.card.removal.confirm')" class="-my-3">
+        <IconButton
+          :label="t('isbn.card.removal.confirm')"
+          class="-my-3"
+          @click="remove(bookshelf.id)"
+        >
           <Check :size="22" :stroke-width="3" class="text-danger" />
         </IconButton>
       </div>

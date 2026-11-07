@@ -20,7 +20,10 @@ const props = defineProps<{
   disabled?: boolean;
 }>();
 
-const emit = defineEmits<{ coverSource: [source: string | null] }>();
+const emit = defineEmits<{
+  coverSource: [source: string | null];
+  remove: [copyId: string];
+}>();
 
 defineSlots<{ corner?: () => unknown }>();
 
@@ -99,7 +102,7 @@ onMounted(() => {
       </div>
     </div>
 
-    <BookshelvesHolding :copies="copies" />
+    <BookshelvesHolding :copies="copies" @remove="emit('remove', $event)" />
 
     <div>
       <div

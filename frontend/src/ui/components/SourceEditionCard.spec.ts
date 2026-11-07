@@ -70,6 +70,11 @@ const joinedSalon: Copy = {
   },
 };
 
+const ownedSalon: Copy = {
+  ...joinedSalon,
+  bookshelf: { ...joinedSalon.bookshelf, role: "OWNER" },
+};
+
 const inventaire: CoverCandidate = {
   source: "inventaire.io",
   url: "https://inventaire.io/img/entities/480x600/34d6e7d99cec5b0922b9eccfeb03748ab2b4db99",
@@ -943,10 +948,6 @@ describe("SourceEditionCard", () => {
 
   it("moves the question to the row whose trash is tapped", async () => {
     // Given
-    const ownedSalon: Copy = {
-      ...joinedSalon,
-      bookshelf: { ...joinedSalon.bookshelf, role: "OWNER" },
-    };
     const card = screen(onePiece1, [onLea, ownedSalon]);
     card.getAllByRole("button", { name: "Retirer un exemplaire" })[0].click();
     await nextTick();
@@ -974,6 +975,20 @@ describe("SourceEditionCard", () => {
     // Then
     expect(card.getByText("Dans Salon")).toBeDefined();
     expect(card.queryByText(/Retirer un exemplaire de Salon/)).toBeNull();
+  });
+
+  it("hands up one copy of the row whose Retirer is tapped", async () => {
+    // Given
+    const wrapper = card(onePiece1, [ownedSalon, onLea]);
+    const shown = within(wrapper.element as HTMLElement);
+    shown.getAllByRole("button", { name: "Retirer un exemplaire" })[0].click();
+    await nextTick();
+
+    // When
+    shown.getByRole("button", { name: "Retirer" }).click();
+
+    // Then
+    expect(wrapper.emitted("remove")).toEqual([[onLea.id]]);
   });
 
   function summaryMeasures(measures: {
