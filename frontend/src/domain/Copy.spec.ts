@@ -13,14 +13,22 @@ describe("bookshelvesHolding", () => {
     // When
     const bookshelves = bookshelvesHolding(
       [
-        { id: "1a2b3c4d-5e6f-4a7b-8c9d-0e1f2a3b4c5d", bookshelf: lea },
-        { id: "2b3c4d5e-6f7a-4b8c-9d0e-1f2a3b4c5d6e", bookshelf: lea },
+        {
+          id: "1a2b3c4d-5e6f-4a7b-8c9d-0e1f2a3b4c5d",
+          bookshelf: { ...lea, role: "OWNER" },
+        },
+        {
+          id: "2b3c4d5e-6f7a-4b8c-9d0e-1f2a3b4c5d6e",
+          bookshelf: { ...lea, role: "OWNER" },
+        },
       ],
       "fr",
     );
 
     // Then
-    expect(bookshelves).toEqual([{ bookshelf: lea, count: 2 }]);
+    expect(bookshelves).toEqual([
+      { bookshelf: { ...lea, role: "OWNER" }, count: 2 },
+    ]);
   });
 
   it("sorts the bookshelves by name, ignoring case and accents", () => {
@@ -41,18 +49,27 @@ describe("bookshelvesHolding", () => {
     // When
     const bookshelves = bookshelvesHolding(
       [
-        { id: "6f7a8b9c-0d1e-4f2a-9b3c-4d5e6f7a8b9c", bookshelf: salon },
-        { id: "7a8b9c0d-1e2f-4a3b-8c4d-5e6f7a8b9c0d", bookshelf: chambre },
-        { id: "8b9c0d1e-2f3a-4b4c-9d5e-6f7a8b9c0d1e", bookshelf: etagere },
+        {
+          id: "6f7a8b9c-0d1e-4f2a-9b3c-4d5e6f7a8b9c",
+          bookshelf: { ...salon, role: "OWNER" },
+        },
+        {
+          id: "7a8b9c0d-1e2f-4a3b-8c4d-5e6f7a8b9c0d",
+          bookshelf: { ...chambre, role: "OWNER" },
+        },
+        {
+          id: "8b9c0d1e-2f3a-4b4c-9d5e-6f7a8b9c0d1e",
+          bookshelf: { ...etagere, role: "OWNER" },
+        },
       ],
       "fr",
     );
 
     // Then
     expect(bookshelves).toEqual([
-      { bookshelf: chambre, count: 1 },
-      { bookshelf: etagere, count: 1 },
-      { bookshelf: salon, count: 1 },
+      { bookshelf: { ...chambre, role: "OWNER" }, count: 1 },
+      { bookshelf: { ...etagere, role: "OWNER" }, count: 1 },
+      { bookshelf: { ...salon, role: "OWNER" }, count: 1 },
     ]);
   });
 });
