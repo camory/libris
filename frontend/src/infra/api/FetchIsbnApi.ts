@@ -1,6 +1,6 @@
 import type { IsbnApi, IsbnAnswer } from "../../application/IsbnApi";
-import type { MembershipRole } from "../../domain/Membership";
 import type { AuthorRole, Kind } from "../../domain/SourceEdition";
+import { copyOf, type CopyResponse } from "./copyOf";
 import { problemOf } from "./problemOf";
 
 interface IsbnResponse {
@@ -17,10 +17,7 @@ interface IsbnResponse {
   language: string | null;
   pageCount: number | null;
   summary: string | null;
-  copies: {
-    id: string;
-    bookshelf: { id: string; name: string; role: MembershipRole };
-  }[];
+  copies: CopyResponse[];
   covers: { source: string; url: string }[];
 }
 
@@ -56,14 +53,7 @@ export class FetchIsbnApi implements IsbnApi {
           pageCount: body.pageCount,
           summary: body.summary,
         },
-        copies: body.copies.map((copy) => ({
-          id: copy.id,
-          bookshelf: {
-            id: copy.bookshelf.id,
-            name: copy.bookshelf.name,
-            role: copy.bookshelf.role,
-          },
-        })),
+        copies: body.copies.map(copyOf),
         covers: body.covers.map((cover) => ({
           source: cover.source,
           url: cover.url,

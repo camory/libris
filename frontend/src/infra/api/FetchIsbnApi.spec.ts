@@ -6,6 +6,7 @@ import {
   aStringOrNull,
   authorsWithNameAndRole,
   candidatesWithSourceAndUrl,
+  copiesWithIdAndReaderBookshelf,
 } from "../../fixture/EditionShapes";
 import { FetchIsbnApi } from "./FetchIsbnApi";
 
@@ -50,10 +51,8 @@ describe("FetchIsbnApi", () => {
 
     // Then
     assert(answer.outcome === "found", `the answer is a ${answer.outcome}`);
-    expect(answer.copies).toSatisfy(
-      areCopies,
-      "copies with an id and a bookshelf with the reader's role",
-    );
+    expect(answer.copies).not.toEqual([]);
+    expect(answer.copies).toEqual(copiesWithIdAndReaderBookshelf);
   });
 
   it("answers a problem when no source knows the ISBN", async () => {
@@ -158,19 +157,3 @@ describe("FetchIsbnApi", () => {
     });
   });
 });
-
-function areCopies(value: unknown) {
-  return (
-    Array.isArray(value) &&
-    value.length > 0 &&
-    value.every(
-      (copy) =>
-        Object.keys(copy).sort().join() === "bookshelf,id" &&
-        typeof copy.id === "string" &&
-        Object.keys(copy.bookshelf).sort().join() === "id,name,role" &&
-        typeof copy.bookshelf.id === "string" &&
-        typeof copy.bookshelf.name === "string" &&
-        ["OWNER", "VIEWER"].includes(copy.bookshelf.role),
-    )
-  );
-}

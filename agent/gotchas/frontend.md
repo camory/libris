@@ -97,6 +97,9 @@ Read whole by a run that changes `frontend/`, after `every-run.md`.
   a `Bookshelf` with a required `role`, as in the contract: a test builds
   a copy's bookshelf by spreading a fixture with a role, `{ ...salon,
   role: "OWNER" }`, and the card draws the trash on an `OWNER` row only.
+  Every client maps a copy with `copyOf` (`infra/api/copyOf.ts`, beside
+  its `CopyResponse`), and its spec checks one with
+  `copiesWithIdAndReaderBookshelf` from `fixture/EditionShapes.ts`.
   `FakeCatalogueApi`'s find takes a single answer, given at every find, or
   a list answered in order, whose last answer then repeats: the page
   before a removal, then after it.

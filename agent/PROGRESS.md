@@ -165,7 +165,9 @@ Format:
 - Decided: the work ran over two runs, a handoff after step 7.
 - Fix-up (Tophe's call, after review): `role` is required, as the
   contract has it; the scenario files, `fixture/Books.ts` and the specs
-  give each copy a role, and the role-not-given test is gone.
+  give each copy a role, and the role-not-given test is gone; the
+  reviewer's suggestion applied: one `CopyResponse` and `copyOf` in
+  `infra/api`, one `copiesWithIdAndReaderBookshelf` in `EditionShapes`.
 - Deviations from the brief: none.
 - Left over: T133 makes *Annuler* act, moves the count and un-skips S5,
   which the question kept per bookshelf may already pass; the layout
