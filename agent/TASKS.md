@@ -41,7 +41,7 @@ never removed (PRD §3, D11).
       verifies both keys, the generated `400` and every copy's new schema.
       Walking skeleton; realises S3; un-skips the backend tests of S3.
 
-- [ ] T131 Backend: an owner removes a copy.
+- [x] T131 Backend: an owner removes a copy.
       The removal deletes the copy for good (D11) when its bookshelf is one
       the reader owns, the bookshelf answering that (D12), else not found as
       before. The edition stays with its fields (PRD §3): the lookup of its
