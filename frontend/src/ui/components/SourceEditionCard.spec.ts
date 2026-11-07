@@ -1,4 +1,4 @@
-import { BookOpen } from "@lucide/vue";
+import { BookOpen, Check, Trash2, X } from "@lucide/vue";
 import { within } from "@testing-library/dom";
 import { mount } from "@vue/test-utils";
 import { afterEach, describe, expect, it } from "vitest";
@@ -52,6 +52,16 @@ const onLea: Copy = {
   bookshelf: {
     id: "0b1e2d3c-4f5a-4b6c-8d7e-9f0a1b2c3d4e",
     name: "Bibliothèque de Léa",
+    role: "OWNER",
+  },
+};
+
+const joinedSalon: Copy = {
+  id: "7a2e3d4c-5b6a-4f70-9c81-2d3e4f5a6b72",
+  bookshelf: {
+    id: "1c2f3e4d-5a6b-4c7d-9e8f-0a1b2c3d4e5f",
+    name: "Salon",
+    role: "VIEWER",
   },
 };
 
@@ -769,7 +779,11 @@ describe("SourceEditionCard", () => {
     // Given
     const onSalon: Copy = {
       id: "7a2e3d4c-5b6a-4f70-9c81-2d3e4f5a6b72",
-      bookshelf: { id: "1c2f3e4d-5a6b-4c7d-9e8f-0a1b2c3d4e5f", name: "Salon" },
+      bookshelf: {
+        id: "1c2f3e4d-5a6b-4c7d-9e8f-0a1b2c3d4e5f",
+        name: "Salon",
+        role: "OWNER",
+      },
     };
 
     // When
@@ -813,7 +827,11 @@ describe("SourceEditionCard", () => {
     // Given
     const onSalon: Copy = {
       id: "7a2e3d4c-5b6a-4f70-9c81-2d3e4f5a6b72",
-      bookshelf: { id: "1c2f3e4d-5a6b-4c7d-9e8f-0a1b2c3d4e5f", name: "Salon" },
+      bookshelf: {
+        id: "1c2f3e4d-5a6b-4c7d-9e8f-0a1b2c3d4e5f",
+        name: "Salon",
+        role: "OWNER",
+      },
     };
 
     // When
@@ -836,6 +854,83 @@ describe("SourceEditionCard", () => {
     expect(positions).not.toContain(-1);
     expect(positions).toEqual([...positions].sort((a, b) => a - b));
     expect(card.match(/Dans/g)).toHaveLength(1);
+  });
+
+  it("carries the trash on the row of a bookshelf the reader owns", () => {
+    // When
+    const wrapper = card(onePiece1, [onLea]);
+
+    // Then
+    const trashes = within(wrapper.element as HTMLElement).queryAllByRole(
+      "button",
+      { name: "Retirer un exemplaire" },
+    );
+    expect(trashes).toHaveLength(1);
+    expect(trashes[0].contains(wrapper.findComponent(Trash2).element)).toBe(
+      true,
+    );
+  });
+
+  it("carries no trash on a guest's row", () => {
+    // When
+    const card = screen(onePiece1, [joinedSalon]);
+
+    // Then
+    expect(
+      card.queryAllByRole("button", { name: "Retirer un exemplaire" }),
+    ).toEqual([]);
+  });
+
+  it("turns the row into its question when its trash is tapped", async () => {
+    // Given
+    const card = screen(onePiece1, [onLea]);
+
+    // When
+    card.getByRole("button", { name: "Retirer un exemplaire" }).click();
+    await nextTick();
+
+    // Then
+    expect(
+      card.getByText("Retirer un exemplaire de Bibliothèque de Léa\u00A0?", {
+        normalizer: (text) => text,
+      }),
+    ).toBeDefined();
+    expect(card.queryByText("Dans Bibliothèque de Léa")).toBeNull();
+    expect(
+      card.queryAllByRole("button", { name: "Retirer un exemplaire" }),
+    ).toEqual([]);
+  });
+
+  it("offers Annuler then Retirer in the question", async () => {
+    // Given
+    const wrapper = card(onePiece1, [onLea]);
+    const shown = within(wrapper.element as HTMLElement);
+
+    // When
+    shown.getByRole("button", { name: "Retirer un exemplaire" }).click();
+    await nextTick();
+
+    // Then
+    const question = shown.getByText(/^Retirer un exemplaire de/);
+    const cancel = shown.getByRole("button", { name: "Annuler" });
+    const confirm = shown.getByRole("button", { name: "Retirer" });
+    expect(precedes(question, cancel)).toBe(true);
+    expect(precedes(cancel, confirm)).toBe(true);
+    expect(cancel.contains(wrapper.findComponent(X).element)).toBe(true);
+    expect(confirm.contains(wrapper.findComponent(Check).element)).toBe(true);
+  });
+
+  it("leaves a guest's row as it is while the owned row asks", async () => {
+    // Given
+    const card = screen(onePiece1, [onLea, joinedSalon]);
+
+    // When
+    card.getByRole("button", { name: "Retirer un exemplaire" }).click();
+    await nextTick();
+
+    // Then
+    expect(card.getByText("Dans Salon")).toBeDefined();
+    expect(card.queryByText(/Retirer un exemplaire de Salon/)).toBeNull();
   });
 
   function summaryMeasures(measures: {

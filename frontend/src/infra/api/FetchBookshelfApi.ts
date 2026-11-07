@@ -1,11 +1,7 @@
 import type { AddAnswer, BookshelfApi } from "../../application/BookshelfApi";
 import type { SourceEdition } from "../../domain/SourceEdition";
+import { copyOf, type CopyResponse } from "./copyOf";
 import { problemOf } from "./problemOf";
-
-interface CopyResponse {
-  id: string;
-  bookshelf: { id: string; name: string };
-}
 
 const problems = new Map([
   [400, "/problems/validation"],
@@ -50,10 +46,7 @@ export class FetchBookshelfApi implements BookshelfApi {
       const body = (await response.json()) as CopyResponse;
       return {
         outcome: "added",
-        copy: {
-          id: body.id,
-          bookshelf: { id: body.bookshelf.id, name: body.bookshelf.name },
-        },
+        copy: copyOf(body),
       };
     }
     return problemOf(response, problems);

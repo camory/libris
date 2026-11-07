@@ -22,7 +22,7 @@ Read whole by a run that changes `frontend/`, after `every-run.md`.
   an `afterEach`, or the contract case passes only by running first.
 - `vitest.global-setup.ts` starts `contracteer mock` on port 9099 over the
   contract the frontend pins, a `raw.githubusercontent.com` URL of
-  `camory/libris-api` (`v0.15.0` since T121); it starts in about four seconds
+  `camory/libris-api` (`v0.16.0` since T132); it starts in about four seconds
   and logs `Contracteer mock server started on port 9099` last, and the
   setup resolves on that line and kills the process in its teardown. The
   mock generates values, so an `infra/api` spec asserts shape and types,
@@ -92,9 +92,14 @@ Read whole by a run that changes `frontend/`, after `every-run.md`.
   problem), a port of its own with no client: `RemoveCopyScenarios`' `open()`
   hands its fake over with `app.provide(copiesApiKey, …)` after
   `createLibrisApp`, until a task adds the client and puts the port in
-  `LibrisPorts`, then moves that line into `open()`'s ports. Those
-  scenarios give each copy's bookshelf a `role` (`OWNER`, `VIEWER`) in
-  their data only: today's `Bookshelf` type has no `role`.
+  `LibrisPorts`, then moves that line into `open()`'s ports (still so
+  after T132). `Copy.bookshelf` is a `ReaderBookshelf` (`src/domain/Copy.ts`),
+  a `Bookshelf` with a required `role`, as in the contract: a test builds
+  a copy's bookshelf by spreading a fixture with a role, `{ ...salon,
+  role: "OWNER" }`, and the card draws the trash on an `OWNER` row only.
+  Every client maps a copy with `copyOf` (`infra/api/copyOf.ts`, beside
+  its `CopyResponse`), and its spec checks one with
+  `copiesWithIdAndReaderBookshelf` from `fixture/EditionShapes.ts`.
   `FakeCatalogueApi`'s find takes a single answer, given at every find, or
   a list answered in order, whose last answer then repeats: the page
   before a removal, then after it.
@@ -190,9 +195,11 @@ Read whole by a run that changes `frontend/`, after `every-run.md`.
   the mock generates.
 - `npm run format` passes `--ignore-path ../.gitignore`, or Prettier
   rewrites `dist/` and `coverage/`; `prettier --check` cannot parse
-  `nginx.conf`. `npx prettier --write src` also rewrites `src/domain/Copy.ts`
-  and `src/scenario/CoversScenarios.spec.ts`, which `main` holds unformatted:
-  format the files the task touches, by name.
+  `nginx.conf`. `npx prettier --write src` also rewrites `src/domain/Copy.ts`,
+  `src/scenario/CoversScenarios.spec.ts` and three calls of
+  `src/ui/components/SourceEditionCard.spec.ts`, which `main` holds
+  unformatted: format the files the task touches by name, and in that spec
+  compare `npx prettier <file> | diff <file> -` instead of writing it.
 - `registerType: "prompt"` and `injectRegister: false` on the PWA plugin: no
   `registerSW.js` is emitted, the app registers `/sw.js` itself through
   `ServiceWorkerAppUpdate`, and Workbox writes the `SKIP_WAITING` message
@@ -243,6 +250,12 @@ Read whole by a run that changes `frontend/`, after `every-run.md`.
   reads *tome 1Romance* otherwise. A literal space between two `<span>`s
   does not last: Prettier moves each span to its own line and Vue then
   drops the space.
+- Testing Library's default normaliser trims and collapses `\s+`, the
+  non-breaking space included, so a query typed with a plain space (the
+  scenarios' *…de Bibliothèque de Léa ?*) finds a text holding U+00A0 and
+  proves nothing about it: a case asserting the non-breaking space passes
+  `{ normalizer: (text) => text }` (`SourceEditionCard.spec.ts`, the
+  question).
 - The colour roles and the type steps of `docs/DESIGN.md` are Tailwind theme
   tokens in `src/ui/style.css`: custom properties on `:root`, overridden in a
   `prefers-color-scheme: dark` block, exposed through `@theme inline` as
@@ -277,7 +290,12 @@ Read whole by a run that changes `frontend/`, after `every-run.md`.
   per candidate of the lookup's `covers`, the shown one alone accessible,
   and the stand-in `BookOpen` when none is left, the dots' row and the
   source's name drawn only when `held` is false; `AuthorLines` (props
-  `authors`, `kind`) and `BookshelvesHolding` (prop `copies`). The card's
+  `authors`, `kind`) and `BookshelvesHolding` (prop `copies`), which draws
+  one row per bookshelf, the trash *Retirer un exemplaire* on an `OWNER`'s
+  alone, and holds `asking`, the id of the bookshelf whose trash was
+  tapped, whose row it draws as the question (`isbn.card.removal`), the
+  cross *Annuler* and the check *Retirer*, inert so far; the form draws
+  the same rows. The card's
   props are `edition` (a `SourceEdition` or a `Book`, whose `isbn13` may be
   `null`), `copies`, `covers` and `held`, required, `pageTitle`,
   optional, which makes its heading the `h1` instead of the `h2`, and

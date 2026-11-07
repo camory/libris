@@ -145,3 +145,30 @@ Format:
 - Deviations from the brief: none.
 - Left over: nothing; T132 brings the trash to the frontend once T131 is
   deployed.
+
+## 2026-11-07 — T132 The trash on an owned row, on v0.16.0 — done
+- Did: the frontend pins `v0.16.0`; every client maps each copy's role
+  into `Copy.bookshelf`, a `ReaderBookshelf`; the card draws the trash on
+  an owned row, which turns into its question, *Annuler* then *Retirer*.
+- Decided: `ReaderBookshelf extends Bookshelf` with `role?:
+  MembershipRole` in `src/domain/Copy.ts`, as the brief chose; the trash,
+  the cross and the check are `IconButton`s, the cross's `muted` and the
+  check's `danger` on the icon, the check at stroke 3.
+- Decided: `BookshelvesHolding` holds `asking`, the id of the bookshelf
+  whose trash was tapped, `null` until then; the question is a `flex
+  items-start` block on `bg`, `p-2`, radius 10, its buttons pulled up by
+  `-my-3` so their 44 centre on the sentence's first line of 19.6.
+- Decided: step 8's green was a card-wide flag, so step 10 was a red
+  case, not a guard; its green keys the question by bookshelf id.
+- Decided: `joinedSalon` moved to the spec's top, beside `ownedOnLea`,
+  once steps 6 and 10 both built it (a `refactor` commit).
+- Decided: the work ran over two runs, a handoff after step 7.
+- Fix-up (Tophe's call, after review): `role` is required, as the
+  contract has it; the scenario files, `fixture/Books.ts` and the specs
+  give each copy a role, and the role-not-given test is gone; the
+  reviewer's suggestion applied: one `CopyResponse` and `copyOf` in
+  `infra/api`, one `copiesWithIdAndReaderBookshelf` in `EditionShapes`.
+- Deviations from the brief: none.
+- Left over: T133 makes *Annuler* act, moves the count and un-skips S5,
+  which the question kept per bookshelf may already pass; the layout
+  and colours checked by hand on the phone, Tophe's.

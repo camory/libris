@@ -297,7 +297,10 @@ describe("Covers", () => {
   }
 
   function on(bookshelf: typeof bibliothequeDeLea): Copy {
-    return { id: crypto.randomUUID(), bookshelf };
+    return {
+      id: crypto.randomUUID(),
+      bookshelf: { ...bookshelf, role: "OWNER" },
+    };
   }
 
   function open(

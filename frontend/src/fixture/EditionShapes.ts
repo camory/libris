@@ -48,6 +48,21 @@ export const aSeriesOrNull = expect.toSatisfy((value: unknown) => {
   );
 }, "a series or null");
 
+export const copiesWithIdAndReaderBookshelf = expect.toSatisfy(
+  (value: unknown) =>
+    Array.isArray(value) &&
+    value.every(
+      (copy) =>
+        Object.keys(copy).sort().join() === "bookshelf,id" &&
+        typeof copy.id === "string" &&
+        Object.keys(copy.bookshelf).sort().join() === "id,name,role" &&
+        typeof copy.bookshelf.id === "string" &&
+        typeof copy.bookshelf.name === "string" &&
+        ["OWNER", "VIEWER"].includes(copy.bookshelf.role),
+    ),
+  "copies with an id and a bookshelf with the reader's role",
+);
+
 export const aBook = {
   id: expect.any(String),
   isbn13: aStringOrNull,
@@ -63,19 +78,5 @@ export const aBook = {
   pageCount: aNumberOrNull,
   summary: aStringOrNull,
   coverUrl: aStringOrNull,
-  copies: expect.toSatisfy(areCopies, "copies with an id and a bookshelf"),
+  copies: copiesWithIdAndReaderBookshelf,
 };
-
-function areCopies(value: unknown) {
-  return (
-    Array.isArray(value) &&
-    value.every(
-      (copy) =>
-        Object.keys(copy).sort().join() === "bookshelf,id" &&
-        typeof copy.id === "string" &&
-        Object.keys(copy.bookshelf).sort().join() === "id,name" &&
-        typeof copy.bookshelf.id === "string" &&
-        typeof copy.bookshelf.name === "string",
-    )
-  );
-}

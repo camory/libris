@@ -128,7 +128,10 @@ describe("CatalogueRow", () => {
       ...asterixLeGaulois,
       copies: [
         ...asterixLeGaulois.copies,
-        { id: "f2a0bf1e-d34c-4bf8-94a9-afb0c1d2e3fa", bookshelf: salon },
+        {
+          id: "f2a0bf1e-d34c-4bf8-94a9-afb0c1d2e3fa",
+          bookshelf: { ...salon, role: "OWNER" },
+        },
       ],
     };
 
@@ -144,7 +147,10 @@ describe("CatalogueRow", () => {
     const onSalonFirst: Book = {
       ...asterixLeGaulois,
       copies: [
-        { id: "f2a0bf1e-d34c-4bf8-94a9-afb0c1d2e3fa", bookshelf: salon },
+        {
+          id: "f2a0bf1e-d34c-4bf8-94a9-afb0c1d2e3fa",
+          bookshelf: { ...salon, role: "OWNER" },
+        },
         ...asterixLeGaulois.copies,
       ],
     };

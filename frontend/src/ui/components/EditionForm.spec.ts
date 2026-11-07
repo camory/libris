@@ -43,7 +43,7 @@ const houseSeries = [
 
 const onLea: Copy = {
   id: "6f1d2c3b-4a59-4e6f-8b70-1c2d3e4f5a61",
-  bookshelf: bibliothequeDeLea,
+  bookshelf: { ...bibliothequeDeLea, role: "OWNER" },
 };
 
 describe("EditionForm", () => {

@@ -48,7 +48,12 @@ const laSerpeDOr: Book = {
   pageCount: null,
   summary: null,
   coverUrl: null,
-  copies: [{ id: "3e5f7091-a2b3-4c4d-9e5f-60718293a4b5", bookshelf: salon }],
+  copies: [
+    {
+      id: "3e5f7091-a2b3-4c4d-9e5f-60718293a4b5",
+      bookshelf: { ...salon, role: "OWNER" },
+    },
+  ],
 };
 
 const asterix: SeriesWithBooks = {
@@ -303,7 +308,7 @@ describe("Series page", () => {
       copies: [
         {
           id: crypto.randomUUID(),
-          bookshelf: bibliothequeDeLea,
+          bookshelf: { ...bibliothequeDeLea, role: "OWNER" },
         },
       ],
     };
@@ -334,7 +339,7 @@ describe("Series page", () => {
         copies: [
           {
             id: crypto.randomUUID(),
-            bookshelf: bibliothequeDeLea,
+            bookshelf: { ...bibliothequeDeLea, role: "OWNER" },
           },
         ],
       })),

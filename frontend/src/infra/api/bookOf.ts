@@ -1,5 +1,6 @@
 import type { Book } from "../../domain/Book";
 import type { AuthorRole, Kind } from "../../domain/SourceEdition";
+import { copyOf, type CopyResponse } from "./copyOf";
 
 export interface BookResponse {
   id: string;
@@ -16,7 +17,7 @@ export interface BookResponse {
   pageCount: number | null;
   summary: string | null;
   coverUrl: string | null;
-  copies: { id: string; bookshelf: { id: string; name: string } }[];
+  copies: CopyResponse[];
 }
 
 export function bookOf(book: BookResponse): Book {
@@ -38,9 +39,6 @@ export function bookOf(book: BookResponse): Book {
     pageCount: book.pageCount,
     summary: book.summary,
     coverUrl: book.coverUrl,
-    copies: book.copies.map((copy) => ({
-      id: copy.id,
-      bookshelf: { id: copy.bookshelf.id, name: copy.bookshelf.name },
-    })),
+    copies: book.copies.map(copyOf),
   };
 }

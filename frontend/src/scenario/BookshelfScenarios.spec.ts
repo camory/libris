@@ -134,7 +134,7 @@ describe("Bookshelf", () => {
   }
 
   function on(bookshelf: Bookshelf, copyId: string): Copy {
-    return { id: copyId, bookshelf };
+    return { id: copyId, bookshelf: { ...bookshelf, role: "OWNER" } };
   }
 
   function librisAdds(copy: Copy): BookshelfApi {

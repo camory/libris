@@ -32,7 +32,7 @@ export const asterixLeGaulois: Book = {
   copies: [
     {
       id: "8b3f4e5d-6c7b-4a81-8d92-3e4f5a6b7c83",
-      bookshelf: bibliothequeDeLea,
+      bookshelf: { ...bibliothequeDeLea, role: "OWNER" },
     },
   ],
 };
@@ -55,7 +55,12 @@ export const asterixEtSesAmis: Book = {
   pageCount: null,
   summary: null,
   coverUrl: null,
-  copies: [{ id: "cf7d8c9b-a01f-4ec5-a1d6-7c8d9eafb0c7", bookshelf: salon }],
+  copies: [
+    {
+      id: "cf7d8c9b-a01f-4ec5-a1d6-7c8d9eafb0c7",
+      bookshelf: { ...salon, role: "OWNER" },
+    },
+  ],
 };
 
 export const lePetitPrince: Book = {
@@ -76,7 +81,7 @@ export const lePetitPrince: Book = {
   copies: [
     {
       id: "e19fae0d-c23b-4ae7-83f8-9eafb0c1d2e9",
-      bookshelf: bibliothequeDeLea,
+      bookshelf: { ...bibliothequeDeLea, role: "OWNER" },
     },
   ],
 };
@@ -102,12 +107,15 @@ export const romanceDawn: Book = {
   copies: [
     {
       id: "9c4a5f6e-7d8c-4b92-9ea3-4f5a6b7c8d94",
-      bookshelf: bibliothequeDeLea,
+      bookshelf: { ...bibliothequeDeLea, role: "OWNER" },
     },
     {
       id: "ad5b6a7f-8e9d-4ca3-8fb4-5a6b7c8d9ea5",
-      bookshelf: bibliothequeDeLea,
+      bookshelf: { ...bibliothequeDeLea, role: "OWNER" },
     },
-    { id: "be6c7b8a-9f0e-4db4-90c5-6b7c8d9eafb6", bookshelf: salon },
+    {
+      id: "be6c7b8a-9f0e-4db4-90c5-6b7c8d9eafb6",
+      bookshelf: { ...salon, role: "OWNER" },
+    },
   ],
 };

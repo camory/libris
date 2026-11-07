@@ -71,7 +71,7 @@ const onLeasBookshelf: IsbnAnswer = {
   copies: [
     {
       id: "6f1d2c3b-4a59-4e6f-8b70-1c2d3e4f5a61",
-      bookshelf: lea.defaultBookshelf,
+      bookshelf: { ...lea.defaultBookshelf, role: "OWNER" },
     },
   ],
   covers: [],
@@ -91,7 +91,7 @@ const added: AddAnswer = {
   outcome: "added",
   copy: {
     id: "5e0c1b2a-3948-4d5e-8a6f-0b1c2d3e4f50",
-    bookshelf: lea.defaultBookshelf,
+    bookshelf: { ...lea.defaultBookshelf, role: "OWNER" },
   },
 };
 
@@ -309,6 +309,7 @@ describe("IsbnView", () => {
           bookshelf: {
             id: "0b1e2d3c-4f5a-4b6c-8d7e-9f0a1b2c3d4e",
             name: "Bibliothèque de Léa",
+            role: "OWNER",
           },
         },
       ],
