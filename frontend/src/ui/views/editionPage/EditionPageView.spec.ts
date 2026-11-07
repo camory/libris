@@ -1,7 +1,8 @@
 import { BookOpen, CircleAlert } from "@lucide/vue";
-import { within } from "@testing-library/dom";
+import { waitFor, within } from "@testing-library/dom";
 import { flushPromises, mount } from "@vue/test-utils";
-import { describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it } from "vitest";
+import type { Router } from "vue-router";
 import {
   catalogueApiKey,
   type BookPage,
@@ -26,17 +27,19 @@ import { normalised } from "../../../fixture/normalised";
 import HeldEditionCardSkeleton from "../../components/HeldEditionCardSkeleton.vue";
 import PageTitleSkeleton from "../../components/PageTitleSkeleton.vue";
 import { createLibrisI18n } from "../../i18n";
+import { createLibrisRouter } from "../../router";
 import EditionPageView from "./EditionPageView.vue";
 
 const mountEditionPageView = (
   found: FindBookAnswer | CatalogueApi,
   id = asterixLeGaulois.id,
   copiesApi: CopiesApi = new FakeCopiesApi(new Error("no removal here")),
+  router: Router = createLibrisRouter(),
 ) =>
   mount(EditionPageView, {
     props: { id },
     global: {
-      plugins: [createLibrisI18n()],
+      plugins: [createLibrisI18n(), router],
       provide: {
         [catalogueApiKey]:
           "outcome" in found ? new FakeCatalogueApi([], found) : found,
@@ -81,6 +84,10 @@ class LibrisRecordingAsks implements CatalogueApi {
 }
 
 describe("EditionPageView", () => {
+  afterEach(() => {
+    window.history.replaceState(null, "", "/");
+  });
+
   it("shows the card's skeleton while the ouvrage comes, no title", async () => {
     // Given
     const wrapper = mountEditionPageView(noSuchOuvrage);
@@ -342,7 +349,35 @@ describe("EditionPageView", () => {
       screen.getByText("Retirer un exemplaire de Bibliothèque de Léa ?"),
     ).toBeTruthy();
   });
+
+  it("goes to the catalogue once the last copy is removed, opened from its address", async () => {
+    // Given
+    const router = await routerOn(`/catalogue/ouvrages/${romanceDawn.id}`);
+    const wrapper = mountEditionPageView(
+      { outcome: "found", book: romanceDawnOnceOnLea },
+      romanceDawn.id,
+      new FakeCopiesApi({ outcome: "removed" }),
+      router,
+    );
+    await flushPromises();
+    const screen = within(wrapper.element as HTMLElement);
+    screen.getByRole("button", { name: "Retirer un exemplaire" }).click();
+    await flushPromises();
+
+    // When
+    screen.getByRole("button", { name: "Retirer" }).click();
+
+    // Then
+    await waitFor(() => expect(window.location.pathname).toBe("/catalogue"));
+  });
 });
+
+async function routerOn(...paths: string[]) {
+  const router = createLibrisRouter();
+  for (const path of paths) await router.push(path);
+  await router.isReady();
+  return router;
+}
 
 function seen(wrapper: ReturnType<typeof mountEditionPageView>) {
   return {
