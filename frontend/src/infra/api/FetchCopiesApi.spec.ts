@@ -1,7 +1,11 @@
-import { describe, expect, inject, it } from "vitest";
+import { afterEach, describe, expect, inject, it, vi } from "vitest";
 import { FetchCopiesApi } from "./FetchCopiesApi";
 
 describe("FetchCopiesApi", () => {
+  afterEach(() => {
+    vi.unstubAllGlobals();
+  });
+
   it("removes the copy", async () => {
     // Given
     const api = new FetchCopiesApi(inject("mockBaseUrl"));
@@ -35,6 +39,25 @@ describe("FetchCopiesApi", () => {
     expect(answer).toEqual({
       outcome: "problem",
       type: "/problems/validation",
+    });
+  });
+
+  it("says the removal comes from the application", async () => {
+    // Given
+    const api = new FetchCopiesApi("http://libris.invalid");
+    const sent: RequestInit[] = [];
+    vi.stubGlobal("fetch", (_url: string, init: RequestInit) => {
+      sent.push(init);
+      return Promise.resolve(new Response(null, { status: 204 }));
+    });
+
+    // When
+    await api.remove("4d5e6f70-8192-4a3b-9c4d-5e6f708192a3");
+
+    // Then
+    expect(sent[0]).toMatchObject({
+      method: "DELETE",
+      headers: { "X-Requested-With": "XMLHttpRequest" },
     });
   });
 });
