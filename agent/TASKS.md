@@ -90,7 +90,7 @@ never removed (PRD §3, D11).
       not found, the copy is taken as removed, the ouvrage asked anew with
       no message. Realises S6 and S7; un-skips their frontend tests.
 
-- [ ] T136 Frontend: the last copy removed, back where the page came from.
+- [x] T136 Frontend: the last copy removed, back where the page came from.
       With none of the reader's copies of the ouvrage left, removed or
       answered not found, the screen goes back to the one the page was
       opened from, the page leaving the history so the phone's back button

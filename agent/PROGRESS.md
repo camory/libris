@@ -246,3 +246,26 @@ Format:
   question still open, before the assertion on the sentence.
 - Left over: T136 (the last copy, S2), T137 (the lookup card, S8); the
   message against `5-not-removed.jpg`, both schemes, Tophe's.
+
+## 2026-11-07 — T136 The last copy removed, back where the page came from — done
+- Did: the ouvrage's page, its last copy removed or answered not found,
+  goes back through the history when it was opened from another screen and
+  replaces its entry with `/catalogue` when opened from its address; S2 runs.
+- Decided: S2's two cases were un-skipped first, each its own commit, both
+  red on the pathname before any unit test; step 3's green turned them both.
+- Decided: the view keeps the id `remove` was handed (`removeCopy`) and
+  counts the ouvrage's other copies, every bookshelf and role, in its
+  `afterRemoval`; `useRemoveCopy` and `useFindCatalogueEdition` unchanged.
+- Decided: the back is awaited through a one-shot `router.afterEach`, so
+  `afterRemoval` ends, and the spinner stops, once the page is left.
+- Decided: the spec gained `askingToRemove(router, catalogue, copiesApi)`
+  and `routerOn(...paths)`; `LibrisRecordingAsks` takes its answer.
+- Deviations from the brief: step 9 as first written stayed green under
+  its mutation: the asking row reads the question, not *Dans Bibliothèque
+  de Léa*, so the `waitFor` passed at once; reworded to `flushPromises`
+  then the pathname, no text of Léa's, *Dans Salon*.
+- Deviations from the brief: one commit subject runs 76 characters; left,
+  history not rewritten, the PR title being the squash commit.
+- Left over: T137 (the lookup card, S8); on the Pixel, the last copy
+  removed from an ouvrage opened from the catalogue and from a series'
+  page, back on that screen, the back button not returning, Tophe's.
