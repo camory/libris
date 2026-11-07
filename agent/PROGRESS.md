@@ -195,3 +195,15 @@ Format:
 - Deviations from the brief: none.
 - Left over: T134 makes *Retirer* send; the 44, the 12 above the words and
   the icons on the first line, in both schemes, checked by hand by Tophe.
+
+## 2026-11-07 — T134 Retirer removes one copy, on the ouvrage's page — handoff
+- Done: steps 1 to 9, one commit each. Start with step 10 (*Annuler*
+  disabled while `removing`), then 11 to 16.
+- Step 1's red lands on `findByText("Dans Bibliothèque de Léa")`, not on the
+  `waitFor` of *2 exemplaires*: the asking row draws no count. Deviation, for the PR.
+- Step 7 moved `ownedSalon` to a file constant of `SourceEditionCard.spec.ts`;
+  `BookshelvesHolding` finds a copy of the row's bookshelf in `copies` (domain untouched).
+- Guard step 8: mutation, the cross's click also calls `remove(bookshelf.id)`;
+  red `expected [ Array(1) ] to be undefined`; reverted.
+- `CoversScenarios.spec.ts` got its line by script, not Prettier (gotcha).
+- Gotchas not yet rewritten: the removal, mock and shared-parts items of `frontend.md`.
