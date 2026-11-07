@@ -8,13 +8,16 @@ import {
   type CatalogueApi,
   type FindBookAnswer,
 } from "../../../application/CatalogueApi";
+import { copiesApiKey, type CopiesApi } from "../../../application/CopiesApi";
 import type { Book } from "../../../domain/Book";
 import {
   asterixEtSesAmis,
   asterixLeGaulois,
+  bibliothequeDeLea,
   romanceDawn,
 } from "../../../fixture/Books";
 import { FakeCatalogueApi } from "../../../fixture/FakeCatalogueApi";
+import { FakeCopiesApi } from "../../../fixture/FakeCopiesApi";
 import { normalised } from "../../../fixture/normalised";
 import HeldEditionCardSkeleton from "../../components/HeldEditionCardSkeleton.vue";
 import PageTitleSkeleton from "../../components/PageTitleSkeleton.vue";
@@ -24,6 +27,7 @@ import EditionPageView from "./EditionPageView.vue";
 const mountEditionPageView = (
   found: FindBookAnswer | CatalogueApi,
   id = asterixLeGaulois.id,
+  copiesApi: CopiesApi = new FakeCopiesApi(new Error("no removal here")),
 ) =>
   mount(EditionPageView, {
     props: { id },
@@ -32,6 +36,7 @@ const mountEditionPageView = (
       provide: {
         [catalogueApiKey]:
           "outcome" in found ? new FakeCatalogueApi([], found) : found,
+        [copiesApiKey]: copiesApi,
       },
     },
   });
@@ -188,6 +193,29 @@ describe("EditionPageView", () => {
     // Then
     expect(libris.asked).toEqual([asterixLeGaulois.id, asterixLeGaulois.id]);
   });
+
+  it("removes one copy of the row whose Retirer is tapped", async () => {
+    // Given
+    const copiesApi = new FakeCopiesApi({ outcome: "removed" });
+    const wrapper = mountEditionPageView(
+      { outcome: "found", book: romanceDawnTwiceOnLea },
+      romanceDawn.id,
+      copiesApi,
+    );
+    await flushPromises();
+    const screen = within(wrapper.element as HTMLElement);
+    screen.getByRole("button", { name: "Retirer un exemplaire" }).click();
+    await flushPromises();
+
+    // When
+    screen.getByRole("button", { name: "Retirer" }).click();
+    await flushPromises();
+
+    // Then
+    expect(copiesApi.asked).toEqual([
+      expect.toBeOneOf(romanceDawnTwiceOnLea.copies.map((copy) => copy.id)),
+    ]);
+  });
 });
 
 function seen(wrapper: ReturnType<typeof mountEditionPageView>) {
@@ -203,6 +231,13 @@ const romanceDawnOnlyViewed: Book = {
     ...copy,
     bookshelf: { ...copy.bookshelf, role: "VIEWER" },
   })),
+};
+
+const romanceDawnTwiceOnLea: Book = {
+  ...romanceDawn,
+  copies: romanceDawn.copies.filter(
+    (copy) => copy.bookshelf.id === bibliothequeDeLea.id,
+  ),
 };
 
 const noSuchOuvrage: FindBookAnswer = {

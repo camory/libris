@@ -3,7 +3,9 @@ import { CircleAlert } from "@lucide/vue";
 import { computed, inject, watch } from "vue";
 import { useI18n } from "vue-i18n";
 import { catalogueApiKey } from "../../../application/CatalogueApi";
+import { copiesApiKey } from "../../../application/CopiesApi";
 import { useFindCatalogueEdition } from "../../../application/useFindCatalogueEdition";
+import { useRemoveCopy } from "../../../application/useRemoveCopy";
 import type { CoverCandidate } from "../../../domain/Cover";
 import HeldEditionCardSkeleton from "../../components/HeldEditionCardSkeleton.vue";
 import SourceEditionCard from "../../components/SourceEditionCard.vue";
@@ -12,6 +14,7 @@ const props = defineProps<{ id: string }>();
 
 const { t } = useI18n();
 const { state, find } = useFindCatalogueEdition(inject(catalogueApiKey)!);
+const { remove } = useRemoveCopy(inject(copiesApiKey)!);
 
 watch(
   () => props.id,
@@ -41,6 +44,7 @@ const failure = computed(() =>
       :covers="covers"
       held
       page-title
+      @remove="remove"
     />
     <p v-else class="flex items-start gap-2 text-body text-danger">
       <CircleAlert :size="22" class="shrink-0" />
