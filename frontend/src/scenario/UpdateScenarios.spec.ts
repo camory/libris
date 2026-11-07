@@ -6,6 +6,7 @@ import { FakeBarcodeScanner } from "../fixture/FakeBarcodeScanner";
 import { FakeBookshelfApi } from "../fixture/FakeBookshelfApi";
 import { FakeBookshelvesApi } from "../fixture/FakeBookshelvesApi";
 import { FakeCatalogueApi } from "../fixture/FakeCatalogueApi";
+import { FakeCopiesApi } from "../fixture/FakeCopiesApi";
 import { FakeIsbnApi } from "../fixture/FakeIsbnApi";
 import { FakeMeApi } from "../fixture/FakeMeApi";
 import { FakeReadersApi } from "../fixture/FakeReadersApi";
@@ -147,6 +148,7 @@ describe("Update", () => {
         bookshelvesApi: new FakeBookshelvesApi({ memberships: [] }),
         readersApi: new FakeReadersApi([]),
         seriesApi: new FakeSeriesApi([]),
+        copiesApi: new FakeCopiesApi(new Error("no removal in this scenario")),
       },
       "sha-abc1234",
     );

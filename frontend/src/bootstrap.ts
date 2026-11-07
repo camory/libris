@@ -3,6 +3,7 @@ import { createLibrisApp } from "./createLibrisApp";
 import { FetchBookshelfApi } from "./infra/api/FetchBookshelfApi";
 import { FetchBookshelvesApi } from "./infra/api/FetchBookshelvesApi";
 import { FetchCatalogueApi } from "./infra/api/FetchCatalogueApi";
+import { FetchCopiesApi } from "./infra/api/FetchCopiesApi";
 import { FetchIsbnApi } from "./infra/api/FetchIsbnApi";
 import { FetchMeApi } from "./infra/api/FetchMeApi";
 import { FetchReadersApi } from "./infra/api/FetchReadersApi";
@@ -22,6 +23,7 @@ export function bootstrap(origin: string, revision: string): App {
       bookshelvesApi: new FetchBookshelvesApi(origin),
       readersApi: new FetchReadersApi(origin),
       seriesApi: new FetchSeriesApi(origin),
+      copiesApi: new FetchCopiesApi(origin),
     },
     revision,
   );

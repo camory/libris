@@ -72,7 +72,7 @@ never removed (PRD §3, D11).
       row's trash moves the question there (U04). Realises S4 and S5;
       un-skips their frontend tests.
 
-- [ ] T134 Frontend: Retirer removes one copy, on the ouvrage's page.
+- [x] T134 Frontend: Retirer removes one copy, on the ouvrage's page.
       The removal reaches Libris through a client of its own, tested
       against `contracteer mock` on its `204`, `400` and `404`; its port
       joins the application's ports, the scenario file handing its fake

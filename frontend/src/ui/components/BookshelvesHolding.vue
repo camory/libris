@@ -1,11 +1,14 @@
 <script setup lang="ts">
 import { BookOpen, Check, Trash2, X } from "@lucide/vue";
-import { computed, ref } from "vue";
+import { computed, ref, watch } from "vue";
 import { useI18n } from "vue-i18n";
 import { bookshelvesHolding, type Copy } from "../../domain/Copy";
+import BusySpinner from "./BusySpinner.vue";
 import IconButton from "./IconButton.vue";
 
-const props = defineProps<{ copies: Copy[] }>();
+const props = defineProps<{ copies: Copy[]; removing?: boolean }>();
+
+const emit = defineEmits<{ remove: [copyId: string] }>();
 
 const { t, locale } = useI18n();
 
@@ -14,6 +17,16 @@ const bookshelves = computed(() =>
 );
 
 const asking = ref<string | null>(null);
+
+watch(
+  () => props.copies,
+  () => (asking.value = null),
+);
+
+function remove(bookshelfId: string) {
+  const copy = props.copies.find((copy) => copy.bookshelf.id === bookshelfId);
+  if (copy) emit("remove", copy.id);
+}
 </script>
 
 <template>
@@ -28,13 +41,24 @@ const asking = ref<string | null>(null);
         </p>
         <IconButton
           :label="t('isbn.card.removal.cancel')"
+          :disabled="removing"
           class="-my-3"
           @click="asking = null"
         >
           <X :size="22" class="text-muted" />
         </IconButton>
-        <IconButton :label="t('isbn.card.removal.confirm')" class="-my-3">
-          <Check :size="22" :stroke-width="3" class="text-danger" />
+        <IconButton
+          :label="
+            removing
+              ? t('isbn.card.removal.removing')
+              : t('isbn.card.removal.confirm')
+          "
+          :disabled="removing"
+          class="-my-3"
+          @click="remove(bookshelf.id)"
+        >
+          <BusySpinner v-if="removing" class="size-5.5 text-danger" />
+          <Check v-else :size="22" :stroke-width="3" class="text-danger" />
         </IconButton>
       </div>
       <div v-else class="flex items-start gap-2">
@@ -48,6 +72,7 @@ const asking = ref<string | null>(null);
         <IconButton
           v-if="bookshelf.role === 'OWNER'"
           :label="t('isbn.card.removal.trash')"
+          :disabled="removing"
           @click="asking = bookshelf.id"
         >
           <Trash2 :size="22" />

@@ -8,13 +8,20 @@ import {
   type CatalogueApi,
   type FindBookAnswer,
 } from "../../../application/CatalogueApi";
+import {
+  copiesApiKey,
+  type CopiesApi,
+  type RemoveAnswer,
+} from "../../../application/CopiesApi";
 import type { Book } from "../../../domain/Book";
 import {
   asterixEtSesAmis,
   asterixLeGaulois,
+  bibliothequeDeLea,
   romanceDawn,
 } from "../../../fixture/Books";
 import { FakeCatalogueApi } from "../../../fixture/FakeCatalogueApi";
+import { FakeCopiesApi } from "../../../fixture/FakeCopiesApi";
 import { normalised } from "../../../fixture/normalised";
 import HeldEditionCardSkeleton from "../../components/HeldEditionCardSkeleton.vue";
 import PageTitleSkeleton from "../../components/PageTitleSkeleton.vue";
@@ -24,6 +31,7 @@ import EditionPageView from "./EditionPageView.vue";
 const mountEditionPageView = (
   found: FindBookAnswer | CatalogueApi,
   id = asterixLeGaulois.id,
+  copiesApi: CopiesApi = new FakeCopiesApi(new Error("no removal here")),
 ) =>
   mount(EditionPageView, {
     props: { id },
@@ -32,9 +40,32 @@ const mountEditionPageView = (
       provide: {
         [catalogueApiKey]:
           "outcome" in found ? new FakeCatalogueApi([], found) : found,
+        [copiesApiKey]: copiesApi,
       },
     },
   });
+
+class LibrisNotRemoving implements CopiesApi {
+  remove(): Promise<RemoveAnswer> {
+    return new Promise(() => {});
+  }
+}
+
+class LibrisAnsweringOnce implements CatalogueApi {
+  private answered = false;
+
+  constructor(private readonly found: FindBookAnswer) {}
+
+  browse(): Promise<BookPage> {
+    return Promise.resolve({ books: [], next: null });
+  }
+
+  find(): Promise<FindBookAnswer> {
+    if (this.answered) return new Promise(() => {});
+    this.answered = true;
+    return Promise.resolve(this.found);
+  }
+}
 
 class LibrisRecordingAsks implements CatalogueApi {
   readonly asked: string[] = [];
@@ -188,6 +219,104 @@ describe("EditionPageView", () => {
     // Then
     expect(libris.asked).toEqual([asterixLeGaulois.id, asterixLeGaulois.id]);
   });
+
+  it("removes one copy of the row whose Retirer is tapped", async () => {
+    // Given
+    const copiesApi = new FakeCopiesApi({ outcome: "removed" });
+    const wrapper = mountEditionPageView(
+      { outcome: "found", book: romanceDawnTwiceOnLea },
+      romanceDawn.id,
+      copiesApi,
+    );
+    await flushPromises();
+    const screen = within(wrapper.element as HTMLElement);
+    screen.getByRole("button", { name: "Retirer un exemplaire" }).click();
+    await flushPromises();
+
+    // When
+    screen.getByRole("button", { name: "Retirer" }).click();
+    await flushPromises();
+
+    // Then
+    expect(copiesApi.asked).toEqual([
+      expect.toBeOneOf(romanceDawnTwiceOnLea.copies.map((copy) => copy.id)),
+    ]);
+  });
+
+  it("shows the spinner while the removal is sent", async () => {
+    // Given
+    const wrapper = mountEditionPageView(
+      { outcome: "found", book: romanceDawnTwiceOnLea },
+      romanceDawn.id,
+      new LibrisNotRemoving(),
+    );
+    await flushPromises();
+    const screen = within(wrapper.element as HTMLElement);
+    screen.getByRole("button", { name: "Retirer un exemplaire" }).click();
+    await flushPromises();
+
+    // When
+    screen.getByRole("button", { name: "Retirer" }).click();
+    await flushPromises();
+
+    // Then
+    expect(
+      screen.getByRole("button", { name: "Retrait en cours…" }),
+    ).toBeTruthy();
+  });
+
+  it("asks the ouvrage again once the copy is removed", async () => {
+    // Given
+    const wrapper = mountEditionPageView(
+      new FakeCatalogueApi(
+        [],
+        [
+          { outcome: "found", book: romanceDawnTwiceOnLea },
+          { outcome: "found", book: romanceDawnOnceOnLea },
+        ],
+      ),
+      romanceDawn.id,
+      new FakeCopiesApi({ outcome: "removed" }),
+    );
+    await flushPromises();
+    const screen = within(wrapper.element as HTMLElement);
+    screen.getByRole("button", { name: "Retirer un exemplaire" }).click();
+    await flushPromises();
+
+    // When
+    screen.getByRole("button", { name: "Retirer" }).click();
+    await flushPromises();
+
+    // Then
+    expect(screen.queryByText("2 exemplaires")).toBeNull();
+    expect(screen.getByText("Dans Bibliothèque de Léa")).toBeTruthy();
+  });
+
+  it("keeps the card, its spinner turning, while the ouvrage is asked again", async () => {
+    // Given
+    const wrapper = mountEditionPageView(
+      new LibrisAnsweringOnce({
+        outcome: "found",
+        book: romanceDawnTwiceOnLea,
+      }),
+      romanceDawn.id,
+      new FakeCopiesApi({ outcome: "removed" }),
+    );
+    await flushPromises();
+    const screen = within(wrapper.element as HTMLElement);
+    screen.getByRole("button", { name: "Retirer un exemplaire" }).click();
+    await flushPromises();
+
+    // When
+    screen.getByRole("button", { name: "Retirer" }).click();
+    await flushPromises();
+
+    // Then
+    expect(seen(wrapper)).toEqual({ card: 0, title: 0 });
+    expect(
+      screen.getByRole("button", { name: "Retrait en cours…" }),
+    ).toBeTruthy();
+  });
 });
 
 function seen(wrapper: ReturnType<typeof mountEditionPageView>) {
@@ -203,6 +332,18 @@ const romanceDawnOnlyViewed: Book = {
     ...copy,
     bookshelf: { ...copy.bookshelf, role: "VIEWER" },
   })),
+};
+
+const romanceDawnTwiceOnLea: Book = {
+  ...romanceDawn,
+  copies: romanceDawn.copies.filter(
+    (copy) => copy.bookshelf.id === bibliothequeDeLea.id,
+  ),
+};
+
+const romanceDawnOnceOnLea: Book = {
+  ...romanceDawn,
+  copies: romanceDawnTwiceOnLea.copies.slice(1),
 };
 
 const noSuchOuvrage: FindBookAnswer = {

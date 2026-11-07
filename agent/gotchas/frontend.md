@@ -59,8 +59,10 @@ Read whole by a run that changes `frontend/`, after `every-run.md`.
   `0b1e2d3c-…`, reader `6e7f8091-a2b3-4c4d-9e5f-6a7b8c9d0e1f`, `OWNER`
   (`v0.11.0`). The choice of the default, `PUT /me/default-bookshelf`,
   answers `404` for the body `{ id: "9e8d7c6b-5a4f-4e3d-8c2b-1a0f9e8d7c6b" }`,
-  `400` for `{ id: "not-a-uuid" }` and a `204` for any other uuid. The
-  generated `200` of `GET /series` held one or two series in 30 tries,
+  `400` for `{ id: "not-a-uuid" }` and a `204` for any other uuid.
+  `DELETE /copies/{id}` answers `404` for
+  `8b9c0d1e-2f3a-4b4c-9d5e-6f7a8b9c0d1e`, `400` for `not-a-uuid` and a
+  `204` for any other uuid (T134). The generated `200` of `GET /series` held one or two series in 30 tries,
   never none (T096). `GET /series/{id}` answers `404` for
   `5b6c7d8e-9f0a-4b1c-8d2e-3f4a5b6c7d8e`, `400` for `not-a-uuid` and
   `a%2Fb`, and a generated `200` of one or two books in 30 tries, never none
@@ -69,11 +71,11 @@ Read whole by a run that changes `frontend/`, after `every-run.md`.
   `a%2Fb`, and a generated `200` of one or two copies in 30 tries, never
   none (T113). `GET /series-names` answers a generated `200` of one or two
   names of one character in 30 tries, never none (T121). `FetchIsbnApi`, `FetchBookshelfApi`, `FetchBookshelvesApi`,
-  `FetchSeriesApi`'s find and `FetchCatalogueApi`'s find hand a non-2xx
+  `FetchSeriesApi`'s find, `FetchCatalogueApi`'s find and `FetchCopiesApi` hand a non-2xx
   answer to `infra/api/problemOf`, which maps the statuses the
   contract names (400, 404, 409 for the creation and the add of a member, 400 and
-  404 for the choice of the default and the finds of a series and of an
-  ouvrage, and 503 for the lookup)
+  404 for the choice of the default, the finds of a series and of an
+  ouvrage and the removal of a copy, and 503 for the lookup)
   to the `/problems/…`
   slugs only when the `Content-Type` is `application/problem+json`, and
   reads the body's `type` otherwise: a proxy's `text/plain` 404 or 503 then
@@ -89,11 +91,17 @@ Read whole by a run that changes `frontend/`, after `every-run.md`.
   app-over-fakes builder cannot live in `src/fixture`: each scenario file
   keeps its own `open()`, naming the ports its spec varies.
 - The removal of a copy is `CopiesApi.remove(copyId)` (`removed`, or a
-  problem), a port of its own with no client: `RemoveCopyScenarios`' `open()`
-  hands its fake over with `app.provide(copiesApiKey, …)` after
-  `createLibrisApp`, until a task adds the client and puts the port in
-  `LibrisPorts`, then moves that line into `open()`'s ports (still so
-  after T133). `Copy.bookshelf` is a `ReaderBookshelf` (`src/domain/Copy.ts`),
+  problem), `copiesApi` of `LibrisPorts` since T134, provided under
+  `copiesApiKey`; `FetchCopiesApi` sends the `DELETE`, the id unencoded, and
+  hands any answer but `204` to `problemOf`.
+  `useRemoveCopy(copiesApi, afterRemoval)` exposes `state` (`ready`,
+  `removing`, `removed`; no problem branch yet) and `remove(copyId)`, and
+  stays `removing` until `afterRemoval` is done. `EditionPageView` passes
+  `removing` to the card and hands `refresh` as `afterRemoval`:
+  `useFindCatalogueEdition`'s `refresh(id)` asks again with no `loading`
+  step, the card staying mounted, while `find(id)` shows the skeleton
+  first; its spec's `mountEditionPageView` takes the copies' port third, a
+  `FakeCopiesApi` rejecting by default. `Copy.bookshelf` is a `ReaderBookshelf` (`src/domain/Copy.ts`),
   a `Bookshelf` with a required `role`, as in the contract: a test builds
   a copy's bookshelf by spreading a fixture with a role, `{ ...salon,
   role: "OWNER" }`, and the card draws the trash on an `OWNER` row only.
@@ -297,7 +305,12 @@ Read whole by a run that changes `frontend/`, after `every-run.md`.
   exemplaires*), and holds `asking`, the id of the bookshelf whose trash
   was tapped, whose row it draws as the question (`isbn.card.removal`),
   the cross *Annuler*, which puts `asking` back to `null`, and the check
-  *Retirer*, inert so far; the form draws the same rows. A row's text
+  *Retirer*, which emits `remove` with one copy id of that row's
+  bookshelf; with the optional prop `removing` the check becomes a
+  disabled `BusySpinner` button *Retrait en cours…* and the cross and
+  every trash are disabled; new `copies` close the question. `SourceEditionCard` passes `removing` and `remove` through;
+  `EditionForm` passes neither, and `IsbnView` listens to nothing yet; the
+  form draws the same rows. A row's text
   reads its name and its count as two elements: `getByText("Dans
   Bibliothèque de Léa")` and `getByText("2 exemplaires")`, never one
   sentence. The card's

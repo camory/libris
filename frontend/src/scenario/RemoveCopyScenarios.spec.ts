@@ -9,7 +9,7 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 import type { App } from "vue";
 import type { BookshelfApi } from "../application/BookshelfApi";
 import type { CatalogueApi, FindBookAnswer } from "../application/CatalogueApi";
-import { copiesApiKey, type CopiesApi } from "../application/CopiesApi";
+import type { CopiesApi } from "../application/CopiesApi";
 import type { IsbnApi } from "../application/IsbnApi";
 import { createLibrisApp } from "../createLibrisApp";
 import type { Book } from "../domain/Book";
@@ -55,7 +55,7 @@ describe("Remove a copy", () => {
     vi.unstubAllGlobals();
   });
 
-  it.skip("S1 The owner removes one copy of two", async () => {
+  it("S1 The owner removes one copy of two", async () => {
     // Given
     const first = on(owned, "3a4b5c6d-7e8f-4a9b-8c0d-1e2f3a4b5c6d");
     const second = on(owned, "4b5c6d7e-8f9a-4b0c-9d1e-2f3a4b5c6d7e");
@@ -401,13 +401,11 @@ describe("Remove a copy", () => {
         bookshelvesApi: new FakeBookshelvesApi({ memberships: [] }),
         readersApi: new FakeReadersApi([]),
         seriesApi: new FakeSeriesApi([]),
+        copiesApi:
+          world.copies ??
+          new FakeCopiesApi(new Error("no removal in this scenario")),
       },
       "sha-abc1234",
-    );
-    app.provide(
-      copiesApiKey,
-      world.copies ??
-        new FakeCopiesApi(new Error("no removal in this scenario")),
     );
     app.mount(host);
     return within(host);

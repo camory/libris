@@ -8,6 +8,7 @@ import type { CoverCandidate } from "../../domain/Cover";
 import type { SourceAuthor, SourceEdition } from "../../domain/SourceEdition";
 import { onePiece1 } from "../../fixture/SourceEditions";
 import { createLibrisI18n } from "../i18n";
+import BusySpinner from "./BusySpinner.vue";
 import SourceEditionCard from "./SourceEditionCard.vue";
 
 const barelyKnown: SourceEdition = {
@@ -68,6 +69,11 @@ const joinedSalon: Copy = {
     name: "Salon",
     role: "VIEWER",
   },
+};
+
+const ownedSalon: Copy = {
+  ...joinedSalon,
+  bookshelf: { ...joinedSalon.bookshelf, role: "OWNER" },
 };
 
 const inventaire: CoverCandidate = {
@@ -943,10 +949,6 @@ describe("SourceEditionCard", () => {
 
   it("moves the question to the row whose trash is tapped", async () => {
     // Given
-    const ownedSalon: Copy = {
-      ...joinedSalon,
-      bookshelf: { ...joinedSalon.bookshelf, role: "OWNER" },
-    };
     const card = screen(onePiece1, [onLea, ownedSalon]);
     card.getAllByRole("button", { name: "Retirer un exemplaire" })[0].click();
     await nextTick();
@@ -974,6 +976,105 @@ describe("SourceEditionCard", () => {
     // Then
     expect(card.getByText("Dans Salon")).toBeDefined();
     expect(card.queryByText(/Retirer un exemplaire de Salon/)).toBeNull();
+  });
+
+  it("hands up one copy of the row whose Retirer is tapped", async () => {
+    // Given
+    const wrapper = card(onePiece1, [ownedSalon, onLea]);
+    const shown = within(wrapper.element as HTMLElement);
+    shown.getAllByRole("button", { name: "Retirer un exemplaire" })[0].click();
+    await nextTick();
+
+    // When
+    shown.getByRole("button", { name: "Retirer" }).click();
+
+    // Then
+    expect(wrapper.emitted("remove")).toEqual([[onLea.id]]);
+  });
+
+  it("hands nothing up when Annuler is tapped", async () => {
+    // Given
+    const wrapper = card(onePiece1, [ownedSalon, onLea]);
+    const shown = within(wrapper.element as HTMLElement);
+    shown.getAllByRole("button", { name: "Retirer un exemplaire" })[0].click();
+    await nextTick();
+
+    // When
+    shown.getByRole("button", { name: "Annuler" }).click();
+
+    // Then
+    expect(wrapper.emitted("remove")).toBeUndefined();
+  });
+
+  it("shows a spinner in the check's place while removing", async () => {
+    // Given
+    const wrapper = card(onePiece1, [ownedSalon, onLea]);
+    const shown = within(wrapper.element as HTMLElement);
+    shown.getAllByRole("button", { name: "Retirer un exemplaire" })[0].click();
+    await nextTick();
+
+    // When
+    await wrapper.setProps({ removing: true });
+
+    // Then
+    expect(shown.queryByRole("button", { name: "Retirer" })).toBeNull();
+    const busy = shown.getByRole<HTMLButtonElement>("button", {
+      name: "Retrait en cours…",
+    });
+    expect(busy.disabled).toBe(true);
+    expect(busy.contains(wrapper.findComponent(BusySpinner).element)).toBe(
+      true,
+    );
+  });
+
+  it("accepts nothing on the asking row while removing", async () => {
+    // Given
+    const wrapper = card(onePiece1, [ownedSalon, onLea]);
+    const shown = within(wrapper.element as HTMLElement);
+    shown.getAllByRole("button", { name: "Retirer un exemplaire" })[0].click();
+    await nextTick();
+
+    // When
+    await wrapper.setProps({ removing: true });
+
+    // Then
+    expect(
+      shown.getByRole<HTMLButtonElement>("button", { name: "Annuler" })
+        .disabled,
+    ).toBe(true);
+  });
+
+  it("accepts no other row's trash while removing", async () => {
+    // Given
+    const wrapper = card(onePiece1, [onLea, ownedSalon]);
+    const shown = within(wrapper.element as HTMLElement);
+    shown.getAllByRole("button", { name: "Retirer un exemplaire" })[0].click();
+    await nextTick();
+
+    // When
+    await wrapper.setProps({ removing: true });
+
+    // Then
+    expect(
+      shown.getByRole<HTMLButtonElement>("button", {
+        name: "Retirer un exemplaire",
+      }).disabled,
+    ).toBe(true);
+  });
+
+  it("puts the row back once the card is given its new copies", async () => {
+    // Given
+    const wrapper = card(onePiece1, [onLea, secondOnLea]);
+    const shown = within(wrapper.element as HTMLElement);
+    shown.getByRole("button", { name: "Retirer un exemplaire" }).click();
+    await nextTick();
+
+    // When
+    await wrapper.setProps({ copies: [onLea] });
+
+    // Then
+    expect(shown.queryByText(/^Retirer un exemplaire de/)).toBeNull();
+    expect(shown.getByText("Dans Bibliothèque de Léa")).toBeDefined();
   });
 
   function summaryMeasures(measures: {

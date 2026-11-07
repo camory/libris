@@ -195,3 +195,31 @@ Format:
 - Deviations from the brief: none.
 - Left over: T134 makes *Retirer* send; the 44, the 12 above the words and
   the icons on the first line, in both schemes, checked by hand by Tophe.
+
+## 2026-11-07 — T134 Retirer removes one copy, on the ouvrage's page — done
+- Did: `FetchCopiesApi` sends the removal, its port in `LibrisPorts`; the
+  card's *Retirer* hands up one copy of the row, a spinner in its place
+  meanwhile; the ouvrage's page removes it and asks the ouvrage again.
+- Decided: S1 was un-skipped first and read red before any unit test; it
+  reds on `findByText("Dans Bibliothèque de Léa")`, the asking row
+  drawing no *2 exemplaires* for the brief's `waitFor` to wait on.
+- Decided: `BookshelvesHolding` picks the first copy of the asking row's
+  bookshelf from `copies`; `ownedSalon` became a file constant of
+  `SourceEditionCard.spec.ts` once steps 7 to 10 all built it.
+- Decided: `useRemoveCopy` answers `removed` whatever the port answers and
+  the page asks again unconditionally: the problem and the rejection are
+  T135's, no branch without its test.
+- Decided: `EditionPageView.spec.ts`' mount helper takes the copies' port
+  third, rejecting by default; step 13 reads the asked id with
+  `expect.toBeOneOf` over the row's two copies.
+- Decided: the work ran over two runs, a handoff after step 9.
+- Deviations from the brief: step 1's red is on the name's row, not on
+  the `waitFor` of *2 exemplaires* (above).
+- Fix-ups by the interactive assistant, on Tophe's call after his Pixel
+  try: the page blinked, `find` dropping the card for the skeleton; the
+  page now asks again through `refresh`, no `loading` step, the spinner
+  turning until the answer comes, and new copies close the question; the
+  reviewer's suggestion taken, every trash disabled while removing.
+- Left over: T135 (problems, S6, S7), T136 (the last copy, S2), T137 (the
+  lookup card, S8); the spinner against `3-removing.jpg` and the page
+  after the removal against `4-removed.jpg`, both schemes, Tophe's.
