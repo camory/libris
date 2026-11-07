@@ -54,6 +54,21 @@ class RemoveCopyTest {
     copies.stored shouldBe listOf(copy)
   }
 
+  @Test
+  fun `a copy on a bookshelf the reader does not belong to stays`() {
+    // Given
+    val salon = salonOf(Membership(SAM, OWNER))
+    val copy = copyOn(salon, ASTERIX_LE_GAULOIS)
+    copies.insert(copy)
+
+    // When
+    val result = removeCopy(LEA, copy.id)
+
+    // Then
+    result shouldBe NoSuchCopy
+    copies.stored shouldBe listOf(copy)
+  }
+
   private fun salonOf(vararg memberships: Membership): Bookshelf =
     bookshelfOf(BookshelfId.new(), BookshelfName("Salon"), memberships.toList()).also { bookshelves.insert(it) }
 }
