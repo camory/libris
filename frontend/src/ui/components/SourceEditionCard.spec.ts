@@ -927,6 +927,27 @@ describe("SourceEditionCard", () => {
     expect(confirm.contains(wrapper.findComponent(Check).element)).toBe(true);
   });
 
+  it("leaves a guest's row as it is while the owned row asks", async () => {
+    // Given
+    const joinedSalon: Copy = {
+      id: "7a2e3d4c-5b6a-4f70-9c81-2d3e4f5a6b72",
+      bookshelf: {
+        id: "1c2f3e4d-5a6b-4c7d-9e8f-0a1b2c3d4e5f",
+        name: "Salon",
+        role: "VIEWER",
+      },
+    };
+    const card = screen(onePiece1, [ownedOnLea, joinedSalon]);
+
+    // When
+    card.getByRole("button", { name: "Retirer un exemplaire" }).click();
+    await nextTick();
+
+    // Then
+    expect(card.getByText("Dans Salon")).toBeDefined();
+    expect(card.queryByText(/Retirer un exemplaire de Salon/)).toBeNull();
+  });
+
   function summaryMeasures(measures: {
     scrollHeight: number;
     clientHeight: number;

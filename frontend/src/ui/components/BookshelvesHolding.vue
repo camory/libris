@@ -13,14 +13,14 @@ const bookshelves = computed(() =>
   bookshelvesHolding(props.copies, locale.value),
 );
 
-const asking = ref(false);
+const asking = ref<string | null>(null);
 </script>
 
 <template>
   <div class="text-body font-semibold">
     <template v-for="{ bookshelf, count } in bookshelves" :key="bookshelf.id">
       <div
-        v-if="asking"
+        v-if="asking === bookshelf.id"
         class="flex items-start gap-2 rounded-[10px] bg-bg p-2"
       >
         <p class="min-w-0 flex-1 text-body font-normal">
@@ -47,7 +47,7 @@ const asking = ref(false);
         <IconButton
           v-if="bookshelf.role === 'OWNER'"
           :label="t('isbn.card.removal.trash')"
-          @click="asking = true"
+          @click="asking = bookshelf.id"
         >
           <Trash2 :size="22" />
         </IconButton>
