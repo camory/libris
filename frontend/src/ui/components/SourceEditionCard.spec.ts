@@ -1145,6 +1145,27 @@ describe("SourceEditionCard", () => {
     ).toBeNull();
   });
 
+  it("asks another row without the earlier message", async () => {
+    // Given
+    const wrapper = card(onePiece1, [ownedSalon, onLea]);
+    const shown = within(wrapper.element as HTMLElement);
+    shown.getAllByRole("button", { name: "Retirer un exemplaire" })[0].click();
+    await nextTick();
+    await wrapper.setProps({ removalFailed: true });
+
+    // When
+    shown.getByRole("button", { name: "Retirer un exemplaire" }).click();
+    await nextTick();
+
+    // Then
+    expect(shown.getByText("Retirer un exemplaire de Salon ?")).toBeDefined();
+    expect(
+      shown.queryByText(
+        "Erreur lors du retrait, veuillez réessayer plus tard.",
+      ),
+    ).toBeNull();
+  });
+
   function summaryMeasures(measures: {
     scrollHeight: number;
     clientHeight: number;
