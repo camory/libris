@@ -19,6 +19,13 @@ private const val INSERT_COPY =
     VALUES (:id, :editionId, :bookshelfId, :addedBy, :addedAt)
     """
 
+private const val FIND_COPY =
+  """
+    SELECT copy.id, copy.edition_id, copy.bookshelf_id, copy.added_by, copy.added_at
+    FROM copy
+    WHERE copy.id = :id
+    """
+
 private const val FIND_COPIES_BY_EDITION =
   """
     SELECT copy.id, copy.edition_id, copy.bookshelf_id, copy.added_by, copy.added_at
@@ -52,6 +59,14 @@ class JdbcCopyRepository(private val jdbcClient: JdbcClient) : CopyRepository {
       .param("addedAt", copy.addedAt.atOffset(UTC))
       .update()
   }
+
+  override fun findById(id: CopyId): Copy? =
+    jdbcClient
+      .sql(FIND_COPY)
+      .param("id", id.value)
+      .query { rs, _ -> copyOf(rs) }
+      .optional()
+      .orElse(null)
 
   override fun findByEditionId(editionId: EditionId): List<Copy> =
     jdbcClient

@@ -218,6 +218,23 @@ class JdbcCopyRepositoryTest @Autowired constructor(
     copies.findByBookshelfIds(emptyList()) shouldBe emptyList()
   }
 
+  @Test
+  fun `a copy is found by its id`() {
+    // Given
+    val bookshelf = bookshelfOf("lea", "Léa")
+    val edition = onePieceTomeOne()
+    editions.insert(edition)
+    val copy = copyOn(bookshelf, edition.id)
+    copies.insert(copy)
+    copies.insert(copyOn(bookshelf, edition.id))
+
+    // When
+    val found = copies.findById(copy.id)
+
+    // Then
+    found shouldBe copy
+  }
+
   private fun bookshelfOf(username: String, displayName: String): Bookshelf {
     val reader = readerNamed(username, displayName)
     readers.insert(reader)
