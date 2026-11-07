@@ -1144,6 +1144,28 @@ describe("IsbnView", () => {
     ).toBeDefined();
   });
 
+  it("says no bookshelf holds a copy once the copy it added is removed", async () => {
+    // Given
+    const screen = open(
+      new FakeIsbnApi(found),
+      undefined,
+      new FakeBookshelfApi(added),
+      undefined,
+      new FakeCopiesApi({ outcome: "removed" }),
+    );
+    await ask(screen, "9782723488525");
+    await press(screen, "Ajouter à ma bibliothèque");
+
+    // When
+    await removeCopy(screen);
+
+    // Then
+    expect(screen.getByText("Dans aucune de vos bibliothèques")).toBeDefined();
+    expect(
+      screen.getByRole("button", { name: "Ajouter à ma bibliothèque" }),
+    ).toBeDefined();
+  });
+
   it("stops the camera when the screen goes away", async () => {
     // Given
     const scanner = new FakeBarcodeScanner(true, neverRead);
