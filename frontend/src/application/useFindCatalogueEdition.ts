@@ -11,11 +11,16 @@ export type FoundEditionState =
 export function useFindCatalogueEdition(catalogueApi: CatalogueApi): {
   state: Ref<FoundEditionState>;
   find: (id: string) => Promise<void>;
+  refresh: (id: string) => Promise<void>;
 } {
   const state = ref<FoundEditionState>({ status: "loading" });
 
   async function find(id: string) {
     state.value = { status: "loading" };
+    await refresh(id);
+  }
+
+  async function refresh(id: string) {
     try {
       state.value = stateOf(await catalogueApi.find(id));
     } catch {
@@ -23,7 +28,7 @@ export function useFindCatalogueEdition(catalogueApi: CatalogueApi): {
     }
   }
 
-  return { state, find };
+  return { state, find, refresh };
 }
 
 function stateOf(answer: FindBookAnswer): FoundEditionState {

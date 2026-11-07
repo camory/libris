@@ -66,6 +66,35 @@ describe("useFindCatalogueEdition", () => {
     expect(state.value).toEqual({ status: "unavailable" });
   });
 
+  it("keeps the ouvrage found on screen while it is asked again", async () => {
+    // Given
+    const fewerCopies = {
+      ...asterixLeGaulois,
+      copies: asterixLeGaulois.copies.slice(1),
+    };
+    const { state, find, refresh } = useFindCatalogueEdition(
+      new FakeCatalogueApi(
+        [],
+        [
+          { outcome: "found", book: asterixLeGaulois },
+          { outcome: "found", book: fewerCopies },
+        ],
+      ),
+    );
+    await find(asterixLeGaulois.id);
+
+    // When
+    const asking = refresh(asterixLeGaulois.id);
+    const during = state.value;
+    await asking;
+
+    // Then
+    expect([during, state.value]).toEqual([
+      { status: "found", book: asterixLeGaulois },
+      { status: "found", book: fewerCopies },
+    ]);
+  });
+
   it("reads another problem as no answer", async () => {
     // Given
     const { state, find } = useFindCatalogueEdition(
