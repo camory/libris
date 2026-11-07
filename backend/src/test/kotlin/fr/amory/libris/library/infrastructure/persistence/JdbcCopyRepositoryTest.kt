@@ -240,6 +240,24 @@ class JdbcCopyRepositoryTest @Autowired constructor(
     copies.findById(CopyId.new()) shouldBe null
   }
 
+  @Test
+  fun `a copy deleted is gone, the other copy of its edition stays`() {
+    // Given
+    val bookshelf = bookshelfOf("lea", "Léa")
+    val edition = onePieceTomeOne()
+    editions.insert(edition)
+    val first = copyOn(bookshelf, edition.id)
+    val second = copyOn(bookshelf, edition.id)
+    copies.insert(first)
+    copies.insert(second)
+
+    // When
+    copies.delete(first.id)
+
+    // Then
+    copies.findByEditionId(edition.id) shouldBe listOf(second)
+  }
+
   private fun bookshelfOf(username: String, displayName: String): Bookshelf {
     val reader = readerNamed(username, displayName)
     readers.insert(reader)

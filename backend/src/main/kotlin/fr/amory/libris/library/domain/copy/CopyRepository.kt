@@ -13,4 +13,6 @@ interface CopyRepository {
   fun findByEditionIds(editionIds: List<EditionId>): List<Copy>
 
   fun findByBookshelfIds(bookshelfIds: List<BookshelfId>): List<Copy>
+
+  fun delete(id: CopyId)
 }

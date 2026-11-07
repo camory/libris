@@ -47,6 +47,12 @@ private const val FIND_COPIES_BY_BOOKSHELVES =
     WHERE copy.bookshelf_id IN (:bookshelfIds)
     """
 
+private const val DELETE_COPY =
+  """
+    DELETE FROM copy
+    WHERE copy.id = :id
+    """
+
 @Repository
 class JdbcCopyRepository(private val jdbcClient: JdbcClient) : CopyRepository {
   override fun insert(copy: Copy) {
@@ -96,6 +102,13 @@ class JdbcCopyRepository(private val jdbcClient: JdbcClient) : CopyRepository {
         .query { rs, _ -> copyOf(rs) }
         .list()
     }
+
+  override fun delete(id: CopyId) {
+    jdbcClient
+      .sql(DELETE_COPY)
+      .param("id", id.value)
+      .update()
+  }
 
   private fun copyOf(rs: ResultSet): Copy =
     Copy(

@@ -26,4 +26,8 @@ class CopiesInMemory : CopyRepository {
 
   override fun findByBookshelfIds(bookshelfIds: List<BookshelfId>): List<Copy> =
     copies.filter { it.bookshelfId in bookshelfIds }
+
+  override fun delete(id: CopyId) {
+    copies.removeIf { it.id == id }
+  }
 }
