@@ -31,7 +31,10 @@ const bookshelves = computed(() =>
         <template #bookshelf>{{ bookshelf.name }}</template>
         <template #count>{{ count }}</template>
       </i18n-t>
-      <IconButton :label="t('isbn.card.removal.trash')">
+      <IconButton
+        v-if="bookshelf.role === 'OWNER'"
+        :label="t('isbn.card.removal.trash')"
+      >
         <Trash2 :size="22" />
       </IconButton>
     </div>

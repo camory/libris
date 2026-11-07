@@ -858,6 +858,26 @@ describe("SourceEditionCard", () => {
     );
   });
 
+  it("carries no trash on a guest's row", () => {
+    // Given
+    const joinedSalon: Copy = {
+      id: "7a2e3d4c-5b6a-4f70-9c81-2d3e4f5a6b72",
+      bookshelf: {
+        id: "1c2f3e4d-5a6b-4c7d-9e8f-0a1b2c3d4e5f",
+        name: "Salon",
+        role: "VIEWER",
+      },
+    };
+
+    // When
+    const card = screen(onePiece1, [joinedSalon]);
+
+    // Then
+    expect(
+      card.queryAllByRole("button", { name: "Retirer un exemplaire" }),
+    ).toEqual([]);
+  });
+
   function summaryMeasures(measures: {
     scrollHeight: number;
     clientHeight: number;
