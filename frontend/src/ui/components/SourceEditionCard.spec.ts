@@ -758,7 +758,7 @@ describe("SourceEditionCard", () => {
     expect(positions).toEqual([...positions].sort((a, b) => a - b));
   });
 
-  it("counts the copies of a bookshelf that holds more than one, on its row", () => {
+  it("counts the copies of a bookshelf that holds more than one, on a second line under its name", () => {
     // Given
     const secondOnLea: Copy = {
       ...onLea,
@@ -766,13 +766,16 @@ describe("SourceEditionCard", () => {
     };
 
     // When
-    const card = show(onePiece1, [onLea, secondOnLea]);
+    const wrapper = card(onePiece1, [onLea, secondOnLea]);
 
     // Then
-    expect(
-      card.match(/Dans Bibliothèque de Léa · 2 exemplaires/g),
-    ).toHaveLength(1);
-    expect(card.match(/Dans/g)).toHaveLength(1);
+    const shown = within(wrapper.element as HTMLElement);
+    const name = shown.getByText("Dans Bibliothèque de Léa");
+    const count = shown.getByText("2 exemplaires");
+    expect(precedes(name, count)).toBe(true);
+    const text = wrapper.text();
+    expect(text).not.toContain("Léa ·");
+    expect(text.match(/Dans/g)).toHaveLength(1);
   });
 
   it("gives each bookshelf its row, by name, with no count", () => {
