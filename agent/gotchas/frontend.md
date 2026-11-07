@@ -96,7 +96,8 @@ Read whole by a run that changes `frontend/`, after `every-run.md`.
   hands any answer but `204` to `problemOf`.
   `useRemoveCopy(copiesApi, afterRemoval)` exposes `state` (`ready`,
   `removing`, `removed`, `unavailable`) and `remove(copyId)`, which never
-  rejects, and stays `removing` until `afterRemoval` is done. The
+  rejects as long as its `afterRemoval` does not, and stays `removing`
+  until `afterRemoval` is done. The
   `/problems/not-found` answer is taken as `removed`, `afterRemoval` run;
   a rejection, `/problems/validation` and any other type are
   `unavailable`, `afterRemoval` not run. `EditionPageView` passes
