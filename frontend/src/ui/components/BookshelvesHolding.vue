@@ -26,7 +26,11 @@ const asking = ref<string | null>(null);
         <p class="min-w-0 flex-1 text-body font-normal">
           {{ t("isbn.card.removal.question", { bookshelf: bookshelf.name }) }}
         </p>
-        <IconButton :label="t('isbn.card.removal.cancel')" class="-my-3">
+        <IconButton
+          :label="t('isbn.card.removal.cancel')"
+          class="-my-3"
+          @click="asking = null"
+        >
           <X :size="22" class="text-muted" />
         </IconButton>
         <IconButton :label="t('isbn.card.removal.confirm')" class="-my-3">

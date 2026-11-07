@@ -923,6 +923,29 @@ describe("SourceEditionCard", () => {
     expect(confirm.contains(wrapper.findComponent(Check).element)).toBe(true);
   });
 
+  it("puts the row back as it was when Annuler is tapped", async () => {
+    // Given
+    const secondOnLea: Copy = {
+      ...onLea,
+      id: "7a2e3d4c-5b6a-4f70-9c81-2d3e4f5a6b72",
+    };
+    const card = screen(onePiece1, [onLea, secondOnLea]);
+    card.getByRole("button", { name: "Retirer un exemplaire" }).click();
+    await nextTick();
+
+    // When
+    card.getByRole("button", { name: "Annuler" }).click();
+    await nextTick();
+
+    // Then
+    expect(card.queryByText(/^Retirer un exemplaire de/)).toBeNull();
+    expect(card.getByText("Dans Bibliothèque de Léa")).toBeDefined();
+    expect(card.getByText("2 exemplaires")).toBeDefined();
+    expect(
+      card.getAllByRole("button", { name: "Retirer un exemplaire" }),
+    ).toHaveLength(1);
+  });
+
   it("leaves a guest's row as it is while the owned row asks", async () => {
     // Given
     const card = screen(onePiece1, [onLea, joinedSalon]);
