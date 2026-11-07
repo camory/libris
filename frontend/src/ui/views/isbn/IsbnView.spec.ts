@@ -13,6 +13,11 @@ import {
   type AddAnswer,
 } from "../../../application/BookshelfApi";
 import {
+  copiesApiKey,
+  type CopiesApi,
+  type RemoveAnswer,
+} from "../../../application/CopiesApi";
+import {
   isbnApiKey,
   type IsbnAnswer,
   type IsbnApi,
@@ -21,6 +26,7 @@ import { meApiKey } from "../../../application/MeApi";
 import { seriesApiKey, type SeriesApi } from "../../../application/SeriesApi";
 import { FakeBarcodeScanner } from "../../../fixture/FakeBarcodeScanner";
 import { FakeBookshelfApi } from "../../../fixture/FakeBookshelfApi";
+import { FakeCopiesApi } from "../../../fixture/FakeCopiesApi";
 import { FakeIsbnApi } from "../../../fixture/FakeIsbnApi";
 import { FakeMeApi } from "../../../fixture/FakeMeApi";
 import { FakeSeriesApi } from "../../../fixture/FakeSeriesApi";
@@ -93,6 +99,30 @@ const added: AddAnswer = {
     id: "5e0c1b2a-3948-4d5e-8a6f-0b1c2d3e4f50",
     bookshelf: { ...lea.defaultBookshelf, role: "OWNER" },
   },
+};
+
+const leasBookshelf = { ...lea.defaultBookshelf, role: "OWNER" as const };
+
+const heldTwiceOnLeas: IsbnAnswer = {
+  ...held,
+  copies: [
+    { id: "2a3b4c5d-6e7f-4a8b-9c0d-1e2f3a4b5c6d", bookshelf: leasBookshelf },
+    { id: "3b4c5d6e-7f8a-4b9c-8d1e-2f3a4b5c6d7e", bookshelf: leasBookshelf },
+  ],
+};
+
+const heldOnChambre: IsbnAnswer = {
+  ...held,
+  copies: [
+    {
+      id: "4c5d6e7f-8a9b-4c0d-9e2f-3a4b5c6d7e8f",
+      bookshelf: {
+        id: "1c2d3e4f-5a6b-4c7d-8e9f-0a1b2c3d4e5f",
+        name: "Chambre",
+        role: "OWNER",
+      },
+    },
+  ],
 };
 
 const neverRead = new Promise<string | null>(() => {});
@@ -1074,6 +1104,303 @@ describe("IsbnView", () => {
     ).toBe(false);
   });
 
+  it("removes a copy from the card of an ISBN the house holds", async () => {
+    // Given
+    const isbnApi = new FakeIsbnApi(heldTwiceOnLeas);
+    const copiesApi = new FakeCopiesApi({ outcome: "removed" });
+    const screen = open(isbnApi, undefined, undefined, undefined, copiesApi);
+    await ask(screen, "9782723488525");
+
+    // When
+    await removeCopy(screen);
+
+    // Then
+    expect(screen.getByText("Dans Bibliothèque de Léa")).toBeDefined();
+    expect(screen.queryByText("2 exemplaires")).toBeNull();
+    expect(copiesApi.asked).toHaveLength(1);
+    expect(idsOf(heldTwiceOnLeas)).toContain(copiesApi.asked[0]);
+    expect(isbnApi.asked).toHaveLength(1);
+  });
+
+  it("offers the add again once a copy is removed from the card it added", async () => {
+    // Given
+    const screen = open(
+      new FakeIsbnApi(heldOnChambre),
+      undefined,
+      new FakeBookshelfApi(added),
+      undefined,
+      new FakeCopiesApi({ outcome: "removed" }),
+    );
+    await ask(screen, "9782723488525");
+    await press(screen, "Ajouter à ma bibliothèque");
+
+    // When
+    await removeCopy(screen, "Dans Chambre");
+
+    // Then
+    expect(screen.getByText("Dans Bibliothèque de Léa")).toBeDefined();
+    expect(screen.queryByText("Dans Chambre")).toBeNull();
+    expect(
+      screen.getAllByRole("button", { name: "Retirer un exemplaire" }),
+    ).toHaveLength(1);
+    expect(
+      screen.getByRole("button", { name: "Ajouter à ma bibliothèque" }),
+    ).toBeDefined();
+  });
+
+  it("says no bookshelf holds a copy once the copy it added is removed", async () => {
+    // Given
+    const screen = open(
+      new FakeIsbnApi(found),
+      undefined,
+      new FakeBookshelfApi(added),
+      undefined,
+      new FakeCopiesApi({ outcome: "removed" }),
+    );
+    await ask(screen, "9782723488525");
+    await press(screen, "Ajouter à ma bibliothèque");
+
+    // When
+    await removeCopy(screen);
+
+    // Then
+    expect(screen.getByText("Dans aucune de vos bibliothèques")).toBeDefined();
+    expect(
+      screen.getByRole("button", { name: "Ajouter à ma bibliothèque" }),
+    ).toBeDefined();
+  });
+
+  it("shows the card as the house holds it once the copy it added is removed", async () => {
+    // Given
+    const screen = open(
+      new FakeIsbnApi(covered),
+      undefined,
+      new FakeBookshelfApi(added),
+      undefined,
+      new FakeCopiesApi({ outcome: "removed" }),
+    );
+    await ask(screen, "9782723488525");
+    await press(screen, "Ajouter à ma bibliothèque");
+
+    // When
+    await removeCopy(screen);
+
+    // Then
+    expect(screen.getByRole("heading", { name: "Romance dawn" })).toBeDefined();
+    expect(screen.queryByRole("button", { name: "Modifier" })).toBeNull();
+    expect(
+      screen.queryByRole("button", { name: "Couverture inventaire.io" }),
+    ).toBeNull();
+  });
+
+  it("keeps the edition it added once that copy is removed", async () => {
+    // Given
+    const screen = open(
+      new FakeIsbnApi(found),
+      undefined,
+      new FakeBookshelfApi(added),
+      undefined,
+      new FakeCopiesApi({ outcome: "removed" }),
+    );
+    await ask(screen, "9782723488525");
+    await press(screen, "Modifier");
+    await fireEvent.input(screen.getByRole("textbox", { name: "Titre" }), {
+      target: { value: "Romance Dawn" },
+    });
+    await press(screen, "Ajouter à ma bibliothèque");
+
+    // When
+    await removeCopy(screen);
+
+    // Then
+    expect(screen.getByRole("heading", { name: "Romance Dawn" })).toBeDefined();
+    expect(screen.queryByRole("textbox", { name: "Titre" })).toBeNull();
+  });
+
+  it("keeps its spinner while the removal is sent", async () => {
+    // Given
+    const screen = open(
+      new FakeIsbnApi(heldTwiceOnLeas),
+      undefined,
+      undefined,
+      undefined,
+      new LibrisNotRemoving(),
+    );
+    await ask(screen, "9782723488525");
+
+    // When
+    await removeCopy(screen);
+
+    // Then
+    expect(
+      screen.getByRole("button", { name: "Retrait en cours…" }),
+    ).toBeDefined();
+  });
+
+  it("says the removal failed when Libris does not answer", async () => {
+    // Given
+    const screen = open(
+      new FakeIsbnApi(heldTwiceOnLeas),
+      undefined,
+      undefined,
+      undefined,
+      new FakeCopiesApi(new TypeError("Failed to fetch")),
+    );
+    await ask(screen, "9782723488525");
+
+    // When
+    await removeCopy(screen);
+
+    // Then
+    expect(
+      screen.getByText("Erreur lors du retrait, veuillez réessayer plus tard."),
+    ).toBeDefined();
+    expect(
+      screen.getByText("Retirer un exemplaire de Bibliothèque de Léa ?"),
+    ).toBeDefined();
+  });
+
+  it("keeps its spinner on the card it added", async () => {
+    // Given
+    const screen = open(
+      new FakeIsbnApi(found),
+      undefined,
+      new FakeBookshelfApi(added),
+      undefined,
+      new LibrisNotRemoving(),
+    );
+    await ask(screen, "9782723488525");
+    await press(screen, "Ajouter à ma bibliothèque");
+
+    // When
+    await removeCopy(screen);
+
+    // Then
+    expect(
+      screen.getByRole("button", { name: "Retrait en cours…" }),
+    ).toBeDefined();
+  });
+
+  it("says the removal failed on the card it added", async () => {
+    // Given
+    const screen = open(
+      new FakeIsbnApi(found),
+      undefined,
+      new FakeBookshelfApi(added),
+      undefined,
+      new FakeCopiesApi(new TypeError("Failed to fetch")),
+    );
+    await ask(screen, "9782723488525");
+    await press(screen, "Ajouter à ma bibliothèque");
+
+    // When
+    await removeCopy(screen);
+
+    // Then
+    expect(
+      screen.getByText("Erreur lors du retrait, veuillez réessayer plus tard."),
+    ).toBeDefined();
+  });
+
+  it("takes a copy Libris finds no more as removed", async () => {
+    // Given
+    const screen = open(
+      new FakeIsbnApi(heldTwiceOnLeas),
+      undefined,
+      undefined,
+      undefined,
+      new FakeCopiesApi({ outcome: "problem", type: "/problems/not-found" }),
+    );
+    await ask(screen, "9782723488525");
+
+    // When
+    await removeCopy(screen);
+
+    // Then
+    expect(screen.getByText("Dans Bibliothèque de Léa")).toBeDefined();
+    expect(screen.queryByText("2 exemplaires")).toBeNull();
+    expect(
+      screen.queryByText(
+        "Erreur lors du retrait, veuillez réessayer plus tard.",
+      ),
+    ).toBeNull();
+  });
+
+  it("takes the trash on the next card while an earlier removal is still sent", async () => {
+    // Given
+    const screen = open(
+      new FakeIsbnApi(heldTwiceOnLeas),
+      undefined,
+      undefined,
+      undefined,
+      new LibrisNotRemoving(),
+    );
+    await ask(screen, "9782723488525");
+    await removeCopy(screen);
+
+    // When
+    await ask(screen, "9782723488525");
+
+    // Then
+    expect(
+      screen.getByRole<HTMLButtonElement>("button", {
+        name: "Retirer un exemplaire",
+      }).disabled,
+    ).toBe(false);
+  });
+
+  it("leaves the next card as it is when an earlier removal answers late", async () => {
+    // Given
+    const copiesApi = new LibrisRemovingOnDemand();
+    const screen = open(
+      new FakeIsbnApi(heldTwiceOnLeas),
+      undefined,
+      undefined,
+      undefined,
+      copiesApi,
+    );
+    await ask(screen, "9782723488525");
+    await removeCopy(screen);
+    await ask(screen, "9782723488525");
+
+    // When
+    copiesApi.answer({ outcome: "removed" });
+    await flushPromises();
+
+    // Then
+    expect(screen.getByText("2 exemplaires")).toBeDefined();
+  });
+
+  it("keeps the add it sent when a removal answers while it runs", async () => {
+    // Given
+    let addAnswers: (answer: AddAnswer) => void = () => {};
+    const copiesApi = new LibrisRemovingOnDemand();
+    const screen = open(
+      new FakeIsbnApi(heldTwiceOnLeas),
+      undefined,
+      new FakeBookshelfApi(
+        new Promise<AddAnswer>((resolve) => (addAnswers = resolve)),
+      ),
+      undefined,
+      copiesApi,
+    );
+    await ask(screen, "9782723488525");
+    await removeCopy(screen);
+    await press(screen, "Ajouter à ma bibliothèque");
+    copiesApi.answer({ outcome: "removed" });
+    await flushPromises();
+
+    // When
+    addAnswers(added);
+    await flushPromises();
+
+    // Then
+    expect(screen.getByText("2 exemplaires")).toBeDefined();
+    expect(
+      screen.queryByRole("button", { name: "Ajouter à ma bibliothèque" }),
+    ).toBeNull();
+  });
+
   it("stops the camera when the screen goes away", async () => {
     // Given
     const scanner = new FakeBarcodeScanner(true, neverRead);
@@ -1092,9 +1419,11 @@ describe("IsbnView", () => {
     scanner?: FakeBarcodeScanner,
     bookshelfApi?: FakeBookshelfApi,
     seriesApi?: SeriesApi,
+    copiesApi?: CopiesApi,
   ) {
     return within(
-      mountView(api, scanner, bookshelfApi, seriesApi).element as HTMLElement,
+      mountView(api, scanner, bookshelfApi, seriesApi, copiesApi)
+        .element as HTMLElement,
     );
   }
 
@@ -1111,6 +1440,9 @@ describe("IsbnView", () => {
     scanner: FakeBarcodeScanner = new FakeBarcodeScanner(false),
     bookshelfApi = new FakeBookshelfApi(new Error("no add in this case")),
     seriesApi: SeriesApi = new FakeSeriesApi([]),
+    copiesApi: CopiesApi = new FakeCopiesApi(
+      new Error("no removal in this case"),
+    ),
   ) {
     return mount(IsbnView, {
       global: {
@@ -1121,6 +1453,7 @@ describe("IsbnView", () => {
           [meApiKey]: new FakeMeApi(lea),
           [bookshelfApiKey]: bookshelfApi,
           [seriesApiKey]: seriesApi,
+          [copiesApiKey]: copiesApi,
         },
       },
     });
@@ -1155,6 +1488,21 @@ describe("IsbnView", () => {
     await flushPromises();
   }
 
+  async function removeCopy(screen: Screen, row?: string) {
+    const trashes = screen.getAllByRole("button", {
+      name: "Retirer un exemplaire",
+    });
+    const trash = row
+      ? trashes.find((button) => button.parentElement?.textContent === row)
+      : trashes[0];
+    await fireEvent.click(trash!);
+    await press(screen, "Retirer");
+  }
+
+  function idsOf(answer: IsbnAnswer) {
+    return answer.outcome === "found" ? answer.copies.map(({ id }) => id) : [];
+  }
+
   function field(screen: Screen) {
     return screen.getByRole<HTMLInputElement>("textbox", { name: "ISBN" });
   }
@@ -1167,5 +1515,23 @@ class SeriesNamesInTurn extends FakeSeriesApi {
 
   override names(): Promise<string[]> {
     return Promise.resolve(this.turns.shift() ?? []);
+  }
+}
+
+class LibrisNotRemoving implements CopiesApi {
+  remove(): Promise<RemoveAnswer> {
+    return new Promise(() => {});
+  }
+}
+
+class LibrisRemovingOnDemand implements CopiesApi {
+  private settle: (answer: RemoveAnswer) => void = () => {};
+
+  remove(): Promise<RemoveAnswer> {
+    return new Promise((resolve) => (this.settle = resolve));
+  }
+
+  answer(answer: RemoveAnswer) {
+    this.settle(answer);
   }
 }

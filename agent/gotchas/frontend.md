@@ -110,6 +110,17 @@ Read whole by a run that changes `frontend/`, after `every-run.md`.
   answers true, awaited through a one-shot
   `router.afterEach` so the spinner turns until the page is left, and
   `router.replace("/catalogue")` when it is `null`.
+  `IsbnView` (T137) passes `removing` and `removal-failed` to both its
+  `SourceEditionCard`s, the lookup's and the added one, and holds its
+  `useRemoveCopy` in a `shallowRef` rebuilt by `copyRemoval()` on each
+  lookup, whose `afterRemoval` acts only while that removal is still the
+  current one, so a late answer leaves the next card alone. It never asks
+  Libris again: `dropRemovedCopy` keeps the shown copies (the lookup's and
+  the added one) less the removed id and, unless an add is being sent,
+  rebuilds `addBookToBookshelf`, which ends the *Added* state and brings
+  the dock back; after an add it
+  also makes `edition` the sent one, `covers` the sent candidate, `held`
+  true and `editing` false, so the card is the house's: no pencil, no dots.
   `useFindCatalogueEdition`'s `refresh(id)` asks again with no `loading`
   step, the card staying mounted, while `find(id)` shows the skeleton
   first; its spec's `mountEditionPageView` takes the copies' port third, a
@@ -133,7 +144,12 @@ Read whole by a run that changes `frontend/`, after `every-run.md`.
   tells "the house holds none" from "unknown"; `list()` never rejects), calls
   `list()` unawaited on each accepted lookup and passes `names` to the form
   as `seriesNames`. `IsbnView.spec.ts`' `mountView` and `open` take a
-  `seriesApi` fourth, `new FakeSeriesApi([])` by default.
+  `seriesApi` fourth, `new FakeSeriesApi([])` by default, and a
+  `copiesApi` fifth, a `FakeCopiesApi` rejecting by default; its
+  `removeCopy(screen, row?)` taps the trash of the row whose text is `row`
+  (the first by default), then *Retirer*. While a row asks, its *Dans …*
+  text is gone, so "no *Dans Chambre*" holds before the removal answers:
+  count the trashes too.
 - `EditionForm` takes `isbn13`, `edition` (a `SourceEdition`, absent for
   an unknown ISBN), `copies`, `covers`, `adding`, `failed` and
   `seriesNames`, required,
@@ -326,8 +342,8 @@ Read whole by a run that changes `frontend/`, after `every-run.md`.
   its buttons enabled; the row keeps its own `failed`, set from the
   prop's changes and cleared by the cross and every trash, so a question
   opened after a failure shows no message while the prop stays true. `SourceEditionCard` passes `removing`, `removalFailed` and `remove` through;
-  `EditionForm` passes neither, and `IsbnView` listens to nothing yet; the
-  form draws the same rows. A row's text
+  `EditionForm` passes neither, and `IsbnView` listens on both its cards;
+  the form draws the same rows. A row's text
   reads its name and its count as two elements: `getByText("Dans
   Bibliothèque de Léa")` and `getByText("2 exemplaires")`, never one
   sentence. The card's

@@ -13,11 +13,13 @@ import {
 import { useI18n } from "vue-i18n";
 import { barcodeScannerKey } from "../../../application/BarcodeScanner";
 import { bookshelfApiKey } from "../../../application/BookshelfApi";
+import { copiesApiKey } from "../../../application/CopiesApi";
 import { isbnApiKey } from "../../../application/IsbnApi";
 import { meApiKey } from "../../../application/MeApi";
 import { seriesApiKey } from "../../../application/SeriesApi";
 import { useAddBookToBookshelf } from "../../../application/useAddBookToBookshelf";
 import { useListSeriesNames } from "../../../application/useListSeriesNames";
+import { useRemoveCopy } from "../../../application/useRemoveCopy";
 import type { Copy } from "../../../domain/Copy";
 import type { CoverCandidate } from "../../../domain/Cover";
 import { Isbn } from "../../../domain/Isbn";
@@ -34,6 +36,7 @@ const isbnApi = inject(isbnApiKey)!;
 const barcodeScanner = inject(barcodeScannerKey)!;
 const meApi = inject(meApiKey)!;
 const bookshelfApi = inject(bookshelfApiKey)!;
+const copiesApi = inject(copiesApiKey)!;
 const { names: seriesNames, list: listSeriesNames } = useListSeriesNames(
   inject(seriesApiKey)!,
 );
@@ -67,6 +70,13 @@ const shownCopies = computed(() =>
   addState.value.status === "added"
     ? [...copies.value, addState.value.copy]
     : copies.value,
+);
+let removedId: string | null = null;
+const removeCopyFromCard = shallowRef(copyRemoval());
+const removalState = computed(() => removeCopyFromCard.value.state.value);
+const removing = computed(() => removalState.value.status === "removing");
+const removalFailed = computed(
+  () => removalState.value.status === "unavailable",
 );
 const scanning = ref(false);
 const answerShown = computed(() => {
@@ -119,6 +129,7 @@ async function search() {
   covers.value = [];
   coverSource.value = null;
   addBookToBookshelf.value = useAddBookToBookshelf(meApi, bookshelfApi);
+  removeCopyFromCard.value = copyRemoval();
   sent.value = undefined;
   editing.value = false;
   message.value = undefined;
@@ -141,6 +152,31 @@ async function search() {
   } else {
     message.value = "isbn.error";
   }
+}
+
+function copyRemoval() {
+  const removal = useRemoveCopy(copiesApi, async () => {
+    if (removeCopyFromCard.value === removal) dropRemovedCopy();
+  });
+  return removal;
+}
+
+function dropRemovedCopy() {
+  copies.value = shownCopies.value.filter(({ id }) => id !== removedId);
+  if (addState.value.status === "added" && sent.value) {
+    edition.value = sent.value;
+    covers.value = sentCovers.value;
+    held.value = true;
+    editing.value = false;
+  }
+  if (!adding.value) {
+    addBookToBookshelf.value = useAddBookToBookshelf(meApi, bookshelfApi);
+  }
+}
+
+async function removeCopy(copyId: string) {
+  removedId = copyId;
+  await removeCopyFromCard.value.remove(copyId);
 }
 
 async function send(edition: SourceEdition) {
@@ -236,6 +272,9 @@ async function send(edition: SourceEdition) {
           :held="held"
           :copies="shownCopies"
           :covers="sentCovers"
+          :removing="removing"
+          :removal-failed="removalFailed"
+          @remove="removeCopy"
         />
         <EditionForm
           v-else-if="answerShown === 'form'"
@@ -268,7 +307,10 @@ async function send(edition: SourceEdition) {
           :covers="covers"
           :shown-source="coverSource"
           :disabled="adding"
+          :removing="removing"
+          :removal-failed="removalFailed"
           @cover-source="coverSource = $event"
+          @remove="removeCopy"
         >
           <template v-if="!held" #corner>
             <IconButton
