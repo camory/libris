@@ -197,13 +197,13 @@ Format:
   the icons on the first line, in both schemes, checked by hand by Tophe.
 
 ## 2026-11-07 — T134 Retirer removes one copy, on the ouvrage's page — handoff
-- Done: steps 1 to 9, one commit each. Start with step 10 (*Annuler*
-  disabled while `removing`), then 11 to 16.
-- Step 1's red lands on `findByText("Dans Bibliothèque de Léa")`, not on the
-  `waitFor` of *2 exemplaires*: the asking row draws no count. Deviation, for the PR.
-- Step 7 moved `ownedSalon` to a file constant of `SourceEditionCard.spec.ts`;
-  `BookshelvesHolding` finds a copy of the row's bookshelf in `copies` (domain untouched).
-- Guard step 8: mutation, the cross's click also calls `remove(bookshelf.id)`;
-  red `expected [ Array(1) ] to be undefined`; reverted.
+- Done: steps 1 to 9, one commit each; start with step 10, then 11 to 16.
+- Gate on the last commit: red on S1 alone (cited, not yet reached); vue-tsc,
+  ESLint and the 695 other tests green. Branch not pushed.
+- Deviation: step 1 reds on `findByText("Dans Bibliothèque de Léa")`, not the
+  `waitFor` of *2 exemplaires*, which the asking row never draws.
+- `ownedSalon` is now a file constant of `SourceEditionCard.spec.ts`;
+  `BookshelvesHolding` picks a copy of the row's bookshelf from `copies`.
+- Guard 8: the cross also calling `remove(bookshelf.id)` reds `expected [ Array(1) ] to be undefined`; reverted.
 - `CoversScenarios.spec.ts` got its line by script, not Prettier (gotcha).
-- Gotchas not yet rewritten: the removal, mock and shared-parts items of `frontend.md`.
+- Gotchas still to rewrite: removal, mock and shared-parts items of `frontend.md`.
