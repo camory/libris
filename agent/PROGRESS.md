@@ -284,3 +284,16 @@ Format:
 - Deviations from the brief: none.
 - Left over: as before, T137 (the lookup card, S8) and the check by hand
   on the Pixel, Tophe's.
+
+## 2026-11-07 — T137 Removing from the lookup screen — handoff
+- Done: steps 1 to 14, each its own commit, then a `refactor` naming
+  `dropRemovedCopy`; self-review of `git diff main...HEAD` read, nothing changed;
+  gotchas rewritten. Next: *Finish*: tick T137, rewrite this as the diary entry, PR.
+- Decided: `useRemoveCopy` in a `shallowRef` rebuilt by `copyRemoval()` on each
+  lookup, acting only while current; `dropRemovedCopy` keeps the shown copies less
+  the id, rebuilds `addBookToBookshelf`, after an add takes `sent`, `sentCovers`,
+  `held` true, `editing` false. S8's cases turned green at steps 3 and 4.
+- Deviation: step 4 also asserts one trash left; "no *Dans Chambre*" held while the row still asked.
+- Guards: step 5, added copy kept in `copies` while the lookup's dropped the id: red on
+  `getByText("Dans aucune de vos bibliothèques")`; step 12, `isGone` without the not-found
+  arm: red on `getByText("Dans Bibliothèque de Léa")` (question still open). Both reverted.
