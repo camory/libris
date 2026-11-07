@@ -1,10 +1,11 @@
 import type { AddAnswer, BookshelfApi } from "../../application/BookshelfApi";
+import type { MembershipRole } from "../../domain/Membership";
 import type { SourceEdition } from "../../domain/SourceEdition";
 import { problemOf } from "./problemOf";
 
 interface CopyResponse {
   id: string;
-  bookshelf: { id: string; name: string };
+  bookshelf: { id: string; name: string; role: MembershipRole };
 }
 
 const problems = new Map([
@@ -52,7 +53,11 @@ export class FetchBookshelfApi implements BookshelfApi {
         outcome: "added",
         copy: {
           id: body.id,
-          bookshelf: { id: body.bookshelf.id, name: body.bookshelf.name },
+          bookshelf: {
+            id: body.bookshelf.id,
+            name: body.bookshelf.name,
+            role: body.bookshelf.role,
+          },
         },
       };
     }

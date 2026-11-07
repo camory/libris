@@ -23,7 +23,11 @@ describe("FetchBookshelfApi", () => {
     assert(answer.outcome === "added", `the answer is a ${answer.outcome}`);
     expect(answer.copy).toEqual({
       id: expect.any(String),
-      bookshelf: { id: expect.any(String), name: expect.any(String) },
+      bookshelf: {
+        id: expect.any(String),
+        name: expect.any(String),
+        role: expect.stringMatching(/^(OWNER|VIEWER)$/),
+      },
     });
   });
 
