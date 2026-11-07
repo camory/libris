@@ -12,6 +12,7 @@ import {
   bookshelfApiKey,
   type AddAnswer,
 } from "../../../application/BookshelfApi";
+import { copiesApiKey, type CopiesApi } from "../../../application/CopiesApi";
 import {
   isbnApiKey,
   type IsbnAnswer,
@@ -21,6 +22,7 @@ import { meApiKey } from "../../../application/MeApi";
 import { seriesApiKey, type SeriesApi } from "../../../application/SeriesApi";
 import { FakeBarcodeScanner } from "../../../fixture/FakeBarcodeScanner";
 import { FakeBookshelfApi } from "../../../fixture/FakeBookshelfApi";
+import { FakeCopiesApi } from "../../../fixture/FakeCopiesApi";
 import { FakeIsbnApi } from "../../../fixture/FakeIsbnApi";
 import { FakeMeApi } from "../../../fixture/FakeMeApi";
 import { FakeSeriesApi } from "../../../fixture/FakeSeriesApi";
@@ -93,6 +95,16 @@ const added: AddAnswer = {
     id: "5e0c1b2a-3948-4d5e-8a6f-0b1c2d3e4f50",
     bookshelf: { ...lea.defaultBookshelf, role: "OWNER" },
   },
+};
+
+const leasBookshelf = { ...lea.defaultBookshelf, role: "OWNER" as const };
+
+const heldTwiceOnLeas: IsbnAnswer = {
+  ...held,
+  copies: [
+    { id: "2a3b4c5d-6e7f-4a8b-9c0d-1e2f3a4b5c6d", bookshelf: leasBookshelf },
+    { id: "3b4c5d6e-7f8a-4b9c-8d1e-2f3a4b5c6d7e", bookshelf: leasBookshelf },
+  ],
 };
 
 const neverRead = new Promise<string | null>(() => {});
@@ -1074,6 +1086,24 @@ describe("IsbnView", () => {
     ).toBe(false);
   });
 
+  it("removes a copy from the card of an ISBN the house holds", async () => {
+    // Given
+    const isbnApi = new FakeIsbnApi(heldTwiceOnLeas);
+    const copiesApi = new FakeCopiesApi({ outcome: "removed" });
+    const screen = open(isbnApi, undefined, undefined, undefined, copiesApi);
+    await ask(screen, "9782723488525");
+
+    // When
+    await removeCopy(screen);
+
+    // Then
+    expect(screen.getByText("Dans Bibliothèque de Léa")).toBeDefined();
+    expect(screen.queryByText("2 exemplaires")).toBeNull();
+    expect(copiesApi.asked).toHaveLength(1);
+    expect(idsOf(heldTwiceOnLeas)).toContain(copiesApi.asked[0]);
+    expect(isbnApi.asked).toHaveLength(1);
+  });
+
   it("stops the camera when the screen goes away", async () => {
     // Given
     const scanner = new FakeBarcodeScanner(true, neverRead);
@@ -1092,9 +1122,11 @@ describe("IsbnView", () => {
     scanner?: FakeBarcodeScanner,
     bookshelfApi?: FakeBookshelfApi,
     seriesApi?: SeriesApi,
+    copiesApi?: CopiesApi,
   ) {
     return within(
-      mountView(api, scanner, bookshelfApi, seriesApi).element as HTMLElement,
+      mountView(api, scanner, bookshelfApi, seriesApi, copiesApi)
+        .element as HTMLElement,
     );
   }
 
@@ -1111,6 +1143,9 @@ describe("IsbnView", () => {
     scanner: FakeBarcodeScanner = new FakeBarcodeScanner(false),
     bookshelfApi = new FakeBookshelfApi(new Error("no add in this case")),
     seriesApi: SeriesApi = new FakeSeriesApi([]),
+    copiesApi: CopiesApi = new FakeCopiesApi(
+      new Error("no removal in this case"),
+    ),
   ) {
     return mount(IsbnView, {
       global: {
@@ -1121,6 +1156,7 @@ describe("IsbnView", () => {
           [meApiKey]: new FakeMeApi(lea),
           [bookshelfApiKey]: bookshelfApi,
           [seriesApiKey]: seriesApi,
+          [copiesApiKey]: copiesApi,
         },
       },
     });
@@ -1153,6 +1189,15 @@ describe("IsbnView", () => {
     await fireEvent.focus(series);
     await fireEvent.input(series, { target: { value: text } });
     await flushPromises();
+  }
+
+  async function removeCopy(screen: Screen) {
+    await press(screen, "Retirer un exemplaire");
+    await press(screen, "Retirer");
+  }
+
+  function idsOf(answer: IsbnAnswer) {
+    return answer.outcome === "found" ? answer.copies.map(({ id }) => id) : [];
   }
 
   function field(screen: Screen) {
