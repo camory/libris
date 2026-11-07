@@ -1,12 +1,16 @@
 <script setup lang="ts">
-import { BookOpen, Check, Trash2, X } from "@lucide/vue";
+import { BookOpen, Check, CircleAlert, Trash2, X } from "@lucide/vue";
 import { computed, ref, watch } from "vue";
 import { useI18n } from "vue-i18n";
 import { bookshelvesHolding, type Copy } from "../../domain/Copy";
 import BusySpinner from "./BusySpinner.vue";
 import IconButton from "./IconButton.vue";
 
-const props = defineProps<{ copies: Copy[]; removing?: boolean }>();
+const props = defineProps<{
+  copies: Copy[];
+  removing?: boolean;
+  removalFailed?: boolean;
+}>();
 
 const emit = defineEmits<{ remove: [copyId: string] }>();
 
@@ -34,32 +38,41 @@ function remove(bookshelfId: string) {
     <template v-for="{ bookshelf, count } in bookshelves" :key="bookshelf.id">
       <div
         v-if="asking === bookshelf.id"
-        class="flex items-start gap-2 rounded-[10px] bg-bg p-2"
+        class="rounded-[10px] bg-bg p-2 font-normal"
       >
-        <p class="min-w-0 flex-1 text-body font-normal">
-          {{ t("isbn.card.removal.question", { bookshelf: bookshelf.name }) }}
+        <div class="flex items-start gap-2">
+          <p class="min-w-0 flex-1 text-body">
+            {{ t("isbn.card.removal.question", { bookshelf: bookshelf.name }) }}
+          </p>
+          <IconButton
+            :label="t('isbn.card.removal.cancel')"
+            :disabled="removing"
+            class="-my-3"
+            @click="asking = null"
+          >
+            <X :size="22" class="text-muted" />
+          </IconButton>
+          <IconButton
+            :label="
+              removing
+                ? t('isbn.card.removal.removing')
+                : t('isbn.card.removal.confirm')
+            "
+            :disabled="removing"
+            class="-my-3"
+            @click="remove(bookshelf.id)"
+          >
+            <BusySpinner v-if="removing" class="size-5.5 text-danger" />
+            <Check v-else :size="22" :stroke-width="3" class="text-danger" />
+          </IconButton>
+        </div>
+        <p
+          v-if="removalFailed"
+          class="flex items-start gap-2 pt-2 text-body text-danger"
+        >
+          <CircleAlert :size="22" class="shrink-0" />
+          <span>{{ t("isbn.card.removal.failed") }}</span>
         </p>
-        <IconButton
-          :label="t('isbn.card.removal.cancel')"
-          :disabled="removing"
-          class="-my-3"
-          @click="asking = null"
-        >
-          <X :size="22" class="text-muted" />
-        </IconButton>
-        <IconButton
-          :label="
-            removing
-              ? t('isbn.card.removal.removing')
-              : t('isbn.card.removal.confirm')
-          "
-          :disabled="removing"
-          class="-my-3"
-          @click="remove(bookshelf.id)"
-        >
-          <BusySpinner v-if="removing" class="size-5.5 text-danger" />
-          <Check v-else :size="22" :stroke-width="3" class="text-danger" />
-        </IconButton>
       </div>
       <div v-else class="flex items-start gap-2">
         <BookOpen :size="22" class="my-2.75 shrink-0" />
