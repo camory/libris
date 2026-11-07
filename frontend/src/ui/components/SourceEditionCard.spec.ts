@@ -1097,6 +1097,29 @@ describe("SourceEditionCard", () => {
     ).toBeDefined();
   });
 
+  it("keeps the question ready for another try", async () => {
+    // Given
+    const wrapper = card(onePiece1, [ownedSalon, onLea]);
+    const shown = within(wrapper.element as HTMLElement);
+    shown.getAllByRole("button", { name: "Retirer un exemplaire" })[0].click();
+    await nextTick();
+
+    // When
+    await wrapper.setProps({ removalFailed: true });
+
+    // Then
+    expect(
+      shown.getByRole<HTMLButtonElement>("button", { name: "Annuler" })
+        .disabled,
+    ).toBe(false);
+    const again = shown.getByRole<HTMLButtonElement>("button", {
+      name: "Retirer",
+    });
+    expect(again.disabled).toBe(false);
+    again.click();
+    expect(wrapper.emitted("remove")).toEqual([[onLea.id]]);
+  });
+
   function summaryMeasures(measures: {
     scrollHeight: number;
     clientHeight: number;
