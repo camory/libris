@@ -89,10 +89,7 @@ describe("Edition page", () => {
       name: "Astérix le Gaulois",
     });
     expect(window.location.pathname).toBe(`/catalogue/ouvrages/${held.id}`);
-    expect(rows(screen)).toEqual([
-      "Dans Bibliothèque de Léa · 2 exemplaires",
-      "Dans Salon",
-    ]);
+    expect(rows(screen)).toEqual(["Dans Bibliothèque de Léa", "Dans Salon"]);
   });
 
   it.each([

@@ -997,9 +997,8 @@ describe("IsbnView", () => {
     await press(screen, "Ajouter à ma bibliothèque");
 
     // Then
-    expect(
-      screen.getByText("Dans Bibliothèque de Léa · 2 exemplaires"),
-    ).toBeDefined();
+    expect(screen.getByText("Dans Bibliothèque de Léa")).toBeDefined();
+    expect(screen.getByText("2 exemplaires")).toBeDefined();
   });
 
   it("offers the add again on the next card", async () => {

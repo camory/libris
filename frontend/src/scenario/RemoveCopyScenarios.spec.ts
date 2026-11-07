@@ -159,7 +159,7 @@ describe("Remove a copy", () => {
     expect(screen.getByText("Dans Salon")).toBeDefined();
   });
 
-  it.skip("S4 Annuler puts the row back", async () => {
+  it("S4 Annuler puts the row back", async () => {
     // Given
     const removal = librisRemoves();
     const screen = open(page, {
@@ -181,7 +181,7 @@ describe("Remove a copy", () => {
     expect(removal.asked).toEqual([]);
   });
 
-  it.skip("S5 One question at a time", async () => {
+  it("S5 One question at a time", async () => {
     // Given
     const screen = open(page, {
       catalogue: librisAnswers(

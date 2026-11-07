@@ -56,6 +56,11 @@ const onLea: Copy = {
   },
 };
 
+const secondOnLea: Copy = {
+  ...onLea,
+  id: "7a2e3d4c-5b6a-4f70-9c81-2d3e4f5a6b72",
+};
+
 const joinedSalon: Copy = {
   id: "7a2e3d4c-5b6a-4f70-9c81-2d3e4f5a6b72",
   bookshelf: {
@@ -758,21 +763,18 @@ describe("SourceEditionCard", () => {
     expect(positions).toEqual([...positions].sort((a, b) => a - b));
   });
 
-  it("counts the copies of a bookshelf that holds more than one, on its row", () => {
-    // Given
-    const secondOnLea: Copy = {
-      ...onLea,
-      id: "7a2e3d4c-5b6a-4f70-9c81-2d3e4f5a6b72",
-    };
-
+  it("counts the copies of a bookshelf that holds more than one, on a second line under its name", () => {
     // When
-    const card = show(onePiece1, [onLea, secondOnLea]);
+    const wrapper = card(onePiece1, [onLea, secondOnLea]);
 
     // Then
-    expect(
-      card.match(/Dans Bibliothèque de Léa · 2 exemplaires/g),
-    ).toHaveLength(1);
-    expect(card.match(/Dans/g)).toHaveLength(1);
+    const shown = within(wrapper.element as HTMLElement);
+    const name = shown.getByText("Dans Bibliothèque de Léa");
+    const count = shown.getByText("2 exemplaires");
+    expect(precedes(name, count)).toBe(true);
+    const text = wrapper.text();
+    expect(text).not.toContain("Léa ·");
+    expect(text.match(/Dans/g)).toHaveLength(1);
   });
 
   it("gives each bookshelf its row, by name, with no count", () => {
@@ -918,6 +920,47 @@ describe("SourceEditionCard", () => {
     expect(precedes(cancel, confirm)).toBe(true);
     expect(cancel.contains(wrapper.findComponent(X).element)).toBe(true);
     expect(confirm.contains(wrapper.findComponent(Check).element)).toBe(true);
+  });
+
+  it("puts the row back as it was when Annuler is tapped", async () => {
+    // Given
+    const card = screen(onePiece1, [onLea, secondOnLea]);
+    card.getByRole("button", { name: "Retirer un exemplaire" }).click();
+    await nextTick();
+
+    // When
+    card.getByRole("button", { name: "Annuler" }).click();
+    await nextTick();
+
+    // Then
+    expect(card.queryByText(/^Retirer un exemplaire de/)).toBeNull();
+    expect(card.getByText("Dans Bibliothèque de Léa")).toBeDefined();
+    expect(card.getByText("2 exemplaires")).toBeDefined();
+    expect(
+      card.getAllByRole("button", { name: "Retirer un exemplaire" }),
+    ).toHaveLength(1);
+  });
+
+  it("moves the question to the row whose trash is tapped", async () => {
+    // Given
+    const ownedSalon: Copy = {
+      ...joinedSalon,
+      bookshelf: { ...joinedSalon.bookshelf, role: "OWNER" },
+    };
+    const card = screen(onePiece1, [onLea, ownedSalon]);
+    card.getAllByRole("button", { name: "Retirer un exemplaire" })[0].click();
+    await nextTick();
+
+    // When
+    card.getByRole("button", { name: "Retirer un exemplaire" }).click();
+    await nextTick();
+
+    // Then
+    expect(card.getByText(/^Retirer un exemplaire de Salon/)).toBeDefined();
+    expect(
+      card.queryByText(/^Retirer un exemplaire de Bibliothèque de Léa/),
+    ).toBeNull();
+    expect(card.getByText("Dans Bibliothèque de Léa")).toBeDefined();
   });
 
   it("leaves a guest's row as it is while the owned row asks", async () => {

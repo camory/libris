@@ -72,7 +72,8 @@ const fr = {
       author: "{name} · {roles}",
       cover: "Couverture de {title}",
       coverSource: "Couverture {source}",
-      copies: "Dans {bookshelf} | Dans {bookshelf} · {count} exemplaires",
+      bookshelf: "Dans {bookshelf}",
+      count: "{count} exemplaires",
       noCopy: "Dans aucune de vos bibliothèques",
       removal: {
         trash: "Retirer un exemplaire",
