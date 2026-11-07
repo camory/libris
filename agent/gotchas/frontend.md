@@ -93,12 +93,14 @@ Read whole by a run that changes `frontend/`, after `every-run.md`.
 - The removal of a copy is `CopiesApi.remove(copyId)` (`removed`, or a
   problem), `copiesApi` of `LibrisPorts` since T134, provided under
   `copiesApiKey`; `FetchCopiesApi` sends the `DELETE`, the id unencoded, and
-  hands any answer but `204` to `problemOf`. `useRemoveCopy(copiesApi)`
-  exposes `state` (`ready`, `removing`, `removed`; no problem branch yet)
-  and `remove(copyId)`. `EditionPageView` passes `removing` to the card and,
-  on its `remove`, awaits the removal then `find`s the ouvrage again, the
-  skeleton included, so the card is mounted afresh with no question open;
-  its spec's `mountEditionPageView` takes the copies' port third, a
+  hands any answer but `204` to `problemOf`.
+  `useRemoveCopy(copiesApi, afterRemoval)` exposes `state` (`ready`,
+  `removing`, `removed`; no problem branch yet) and `remove(copyId)`, and
+  stays `removing` until `afterRemoval` is done. `EditionPageView` passes
+  `removing` to the card and hands `refresh` as `afterRemoval`:
+  `useFindCatalogueEdition`'s `refresh(id)` asks again with no `loading`
+  step, the card staying mounted, while `find(id)` shows the skeleton
+  first; its spec's `mountEditionPageView` takes the copies' port third, a
   `FakeCopiesApi` rejecting by default. `Copy.bookshelf` is a `ReaderBookshelf` (`src/domain/Copy.ts`),
   a `Bookshelf` with a required `role`, as in the contract: a test builds
   a copy's bookshelf by spreading a fixture with a role, `{ ...salon,
@@ -305,8 +307,8 @@ Read whole by a run that changes `frontend/`, after `every-run.md`.
   the cross *Annuler*, which puts `asking` back to `null`, and the check
   *Retirer*, which emits `remove` with one copy id of that row's
   bookshelf; with the optional prop `removing` the check becomes a
-  disabled `BusySpinner` button *Retrait en cours…* and the cross is
-  disabled. `SourceEditionCard` passes `removing` and `remove` through;
+  disabled `BusySpinner` button *Retrait en cours…* and the cross and
+  every trash are disabled; new `copies` close the question. `SourceEditionCard` passes `removing` and `remove` through;
   `EditionForm` passes neither, and `IsbnView` listens to nothing yet; the
   form draws the same rows. A row's text
   reads its name and its count as two elements: `getByText("Dans

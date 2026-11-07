@@ -215,6 +215,11 @@ Format:
 - Decided: the work ran over two runs, a handoff after step 9.
 - Deviations from the brief: step 1's red is on the name's row, not on
   the `waitFor` of *2 exemplaires* (above).
+- Fix-ups by the interactive assistant, on Tophe's call after his Pixel
+  try: the page blinked, `find` dropping the card for the skeleton; the
+  page now asks again through `refresh`, no `loading` step, the spinner
+  turning until the answer comes, and new copies close the question; the
+  reviewer's suggestion taken, every trash disabled while removing.
 - Left over: T135 (problems, S6, S7), T136 (the last copy, S2), T137 (the
   lookup card, S8); the spinner against `3-removing.jpg` and the page
   after the removal against `4-removed.jpg`, both schemes, Tophe's.
