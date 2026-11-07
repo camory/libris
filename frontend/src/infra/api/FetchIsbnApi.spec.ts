@@ -52,7 +52,7 @@ describe("FetchIsbnApi", () => {
     assert(answer.outcome === "found", `the answer is a ${answer.outcome}`);
     expect(answer.copies).toSatisfy(
       areCopies,
-      "copies with an id and a bookshelf",
+      "copies with an id and a bookshelf with the reader's role",
     );
   });
 
@@ -167,9 +167,10 @@ function areCopies(value: unknown) {
       (copy) =>
         Object.keys(copy).sort().join() === "bookshelf,id" &&
         typeof copy.id === "string" &&
-        Object.keys(copy.bookshelf).sort().join() === "id,name" &&
+        Object.keys(copy.bookshelf).sort().join() === "id,name,role" &&
         typeof copy.bookshelf.id === "string" &&
-        typeof copy.bookshelf.name === "string",
+        typeof copy.bookshelf.name === "string" &&
+        ["OWNER", "VIEWER"].includes(copy.bookshelf.role),
     )
   );
 }
