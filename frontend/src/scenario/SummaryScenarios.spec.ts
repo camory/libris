@@ -56,7 +56,7 @@ const montTombeHeld: Book = {
   copies: [
     {
       id: "8c9d0e1f-2a3b-4c4d-9e5f-6a7b8c9d0e1f",
-      bookshelf: bibliothequeDeLea,
+      bookshelf: { ...bibliothequeDeLea, role: "OWNER" },
     },
   ],
 };

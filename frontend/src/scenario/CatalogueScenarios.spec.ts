@@ -186,7 +186,10 @@ describe("Catalogue", () => {
   }
 
   function on(bookshelf: Bookshelf): Copy {
-    return { id: crypto.randomUUID(), bookshelf };
+    return {
+      id: crypto.randomUUID(),
+      bookshelf: { ...bookshelf, role: "OWNER" },
+    };
   }
 
   function librisAnswers(...pages: (BookPage | Error)[]): CatalogueApi {

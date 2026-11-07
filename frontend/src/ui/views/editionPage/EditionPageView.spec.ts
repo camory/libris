@@ -8,6 +8,7 @@ import {
   type CatalogueApi,
   type FindBookAnswer,
 } from "../../../application/CatalogueApi";
+import type { Book } from "../../../domain/Book";
 import {
   asterixEtSesAmis,
   asterixLeGaulois,
@@ -112,7 +113,7 @@ describe("EditionPageView", () => {
   it("shows the stored cover as the house's, with no button", async () => {
     // Given
     const wrapper = mountEditionPageView(
-      { outcome: "found", book: romanceDawn },
+      { outcome: "found", book: romanceDawnOnlyViewed },
       romanceDawn.id,
     );
 
@@ -195,6 +196,14 @@ function seen(wrapper: ReturnType<typeof mountEditionPageView>) {
     title: wrapper.findAllComponents(PageTitleSkeleton).length,
   };
 }
+
+const romanceDawnOnlyViewed: Book = {
+  ...romanceDawn,
+  copies: romanceDawn.copies.map((copy) => ({
+    ...copy,
+    bookshelf: { ...copy.bookshelf, role: "VIEWER" },
+  })),
+};
 
 const noSuchOuvrage: FindBookAnswer = {
   outcome: "problem",

@@ -13,8 +13,7 @@ import { copiesApiKey, type CopiesApi } from "../application/CopiesApi";
 import type { IsbnApi } from "../application/IsbnApi";
 import { createLibrisApp } from "../createLibrisApp";
 import type { Book } from "../domain/Book";
-import type { Bookshelf } from "../domain/Bookshelf";
-import type { Copy } from "../domain/Copy";
+import type { Copy, ReaderBookshelf } from "../domain/Copy";
 import type { SourceEdition } from "../domain/SourceEdition";
 import { FakeAppUpdate } from "../fixture/FakeAppUpdate";
 import { asterixLeGaulois, bibliothequeDeLea, salon } from "../fixture/Books";
@@ -307,7 +306,7 @@ describe("Remove a copy", () => {
     expect(removal.asked).toEqual([added.id]);
   });
 
-  function on(bookshelf: Bookshelf, copyId: string): Copy {
+  function on(bookshelf: ReaderBookshelf, copyId: string): Copy {
     return { id: copyId, bookshelf };
   }
 
