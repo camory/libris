@@ -24,15 +24,20 @@ const { state: removal, remove } = useRemoveCopy(
   afterRemoval,
 );
 
-async function removeCopy(copyId: string) {
-  removedId = copyId;
-  await remove(copyId);
-}
-
 async function afterRemoval() {
   if (copiesLeft().length > 0) await refresh(props.id);
-  else if (router.options.history.state.back) await back();
+  else if (openedFromAnotherScreen()) await back();
   else await router.replace("/catalogue");
+}
+
+function copiesLeft() {
+  return state.value.status === "found"
+    ? state.value.book.copies.filter((copy) => copy.id !== removedId)
+    : [];
+}
+
+function openedFromAnotherScreen() {
+  return Boolean(router.options.history.state.back);
 }
 
 function back() {
@@ -45,10 +50,9 @@ function back() {
   });
 }
 
-function copiesLeft() {
-  return state.value.status === "found"
-    ? state.value.book.copies.filter((copy) => copy.id !== removedId)
-    : [];
+async function removeCopy(copyId: string) {
+  removedId = copyId;
+  await remove(copyId);
 }
 
 watch(
