@@ -28,7 +28,6 @@ import org.springframework.beans.factory.annotation.Autowired
 class RemoveCopyScenarios @Autowired constructor(private val libris: Libris, private val sources: Sources) {
 
   @Test
-  @Disabled("remove a copy")
   fun `S1 The owner removes one copy of two`() {
     // Given
     val lea = libris.reader("lea", "Léa")
