@@ -207,7 +207,7 @@ describe("Remove a copy", () => {
     expect(trashes(screen)).toHaveLength(1);
   });
 
-  it.skip("S6 Libris unavailable during the removal", async () => {
+  it("S6 Libris unavailable during the removal", async () => {
     // Given
     const screen = open(page, {
       catalogue: librisAnswers(found(heldTwice())),
