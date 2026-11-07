@@ -14,18 +14,15 @@ const props = defineProps<{ id: string }>();
 
 const { t } = useI18n();
 const { state, find } = useFindCatalogueEdition(inject(catalogueApiKey)!);
-const { state: removal, remove } = useRemoveCopy(inject(copiesApiKey)!);
+const { state: removal, remove } = useRemoveCopy(inject(copiesApiKey)!, () =>
+  find(props.id),
+);
 
 watch(
   () => props.id,
   (id) => void find(id),
   { immediate: true },
 );
-
-async function removeCopy(copyId: string) {
-  await remove(copyId);
-  await find(props.id);
-}
 
 const covers = computed<CoverCandidate[]>(() => {
   const coverUrl = state.value.status === "found" && state.value.book.coverUrl;
@@ -50,7 +47,7 @@ const failure = computed(() =>
       held
       page-title
       :removing="removal.status === 'removing'"
-      @remove="removeCopy"
+      @remove="remove"
     />
     <p v-else class="flex items-start gap-2 text-body text-danger">
       <CircleAlert :size="22" class="shrink-0" />

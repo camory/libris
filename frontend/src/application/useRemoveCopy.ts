@@ -5,7 +5,10 @@ export interface RemoveCopyState {
   status: "ready" | "removing" | "removed";
 }
 
-export function useRemoveCopy(copiesApi: CopiesApi): {
+export function useRemoveCopy(
+  copiesApi: CopiesApi,
+  afterRemoval: () => Promise<void>,
+): {
   state: Ref<RemoveCopyState>;
   remove: (copyId: string) => Promise<void>;
 } {
@@ -14,6 +17,7 @@ export function useRemoveCopy(copiesApi: CopiesApi): {
   async function remove(copyId: string) {
     state.value = { status: "removing" };
     await copiesApi.remove(copyId);
+    await afterRemoval();
     state.value = { status: "removed" };
   }
 
