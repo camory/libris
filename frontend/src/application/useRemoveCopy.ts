@@ -17,7 +17,11 @@ export function useRemoveCopy(
   async function remove(copyId: string) {
     state.value = { status: "removing" };
     try {
-      await copiesApi.remove(copyId);
+      const answer = await copiesApi.remove(copyId);
+      if (answer.outcome === "problem") {
+        state.value = { status: "unavailable" };
+        return;
+      }
     } catch {
       state.value = { status: "unavailable" };
       return;

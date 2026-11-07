@@ -64,6 +64,20 @@ describe("useRemoveCopy", () => {
     // Then
     expect(state.value).toEqual({ status: "unavailable" });
   });
+
+  it("is unavailable when Libris refuses the id", async () => {
+    // Given
+    const { state, remove } = useRemoveCopy(
+      new FakeCopiesApi({ outcome: "problem", type: "/problems/validation" }),
+      nothingAfter,
+    );
+
+    // When
+    await remove(copyId);
+
+    // Then
+    expect(state.value).toEqual({ status: "unavailable" });
+  });
 });
 
 class LibrisNotAnswering implements CopiesApi {
