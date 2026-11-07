@@ -370,6 +370,32 @@ describe("EditionPageView", () => {
     // Then
     await waitFor(() => expect(window.location.pathname).toBe("/catalogue"));
   });
+
+  it("goes back to the screen it was opened from once the last copy is removed", async () => {
+    // Given
+    const router = await routerOn(
+      "/catalogue/series",
+      `/catalogue/ouvrages/${romanceDawn.id}`,
+    );
+    const wrapper = mountEditionPageView(
+      { outcome: "found", book: romanceDawnOnceOnLea },
+      romanceDawn.id,
+      new FakeCopiesApi({ outcome: "removed" }),
+      router,
+    );
+    await flushPromises();
+    const screen = within(wrapper.element as HTMLElement);
+    screen.getByRole("button", { name: "Retirer un exemplaire" }).click();
+    await flushPromises();
+
+    // When
+    screen.getByRole("button", { name: "Retirer" }).click();
+
+    // Then
+    await waitFor(() =>
+      expect(window.location.pathname).toBe("/catalogue/series"),
+    );
+  });
 });
 
 async function routerOn(...paths: string[]) {

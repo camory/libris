@@ -30,8 +30,9 @@ async function removeCopy(copyId: string) {
 }
 
 async function afterRemoval() {
-  if (copiesLeft().length === 0) await router.replace("/catalogue");
-  else await refresh(props.id);
+  if (copiesLeft().length > 0) await refresh(props.id);
+  else if (router.options.history.state.back) router.back();
+  else await router.replace("/catalogue");
 }
 
 function copiesLeft() {
