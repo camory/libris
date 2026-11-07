@@ -1,4 +1,4 @@
-import { BookOpen, Trash2 } from "@lucide/vue";
+import { BookOpen, Check, Trash2, X } from "@lucide/vue";
 import { within } from "@testing-library/dom";
 import { mount } from "@vue/test-utils";
 import { afterEach, describe, expect, it } from "vitest";
@@ -906,6 +906,25 @@ describe("SourceEditionCard", () => {
     expect(
       card.queryAllByRole("button", { name: "Retirer un exemplaire" }),
     ).toEqual([]);
+  });
+
+  it("offers Annuler then Retirer in the question", async () => {
+    // Given
+    const wrapper = card(onePiece1, [ownedOnLea]);
+    const shown = within(wrapper.element as HTMLElement);
+
+    // When
+    shown.getByRole("button", { name: "Retirer un exemplaire" }).click();
+    await nextTick();
+
+    // Then
+    const question = shown.getByText(/^Retirer un exemplaire de/);
+    const cancel = shown.getByRole("button", { name: "Annuler" });
+    const confirm = shown.getByRole("button", { name: "Retirer" });
+    expect(precedes(question, cancel)).toBe(true);
+    expect(precedes(cancel, confirm)).toBe(true);
+    expect(cancel.contains(wrapper.findComponent(X).element)).toBe(true);
+    expect(confirm.contains(wrapper.findComponent(Check).element)).toBe(true);
   });
 
   function summaryMeasures(measures: {

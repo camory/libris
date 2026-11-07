@@ -77,6 +77,8 @@ const fr = {
       removal: {
         trash: "Retirer un exemplaire",
         question: "Retirer un exemplaire de {bookshelf}\u00A0?",
+        cancel: "Annuler",
+        confirm: "Retirer",
       },
       collection: "Collection",
       publisher: "Éditeur",

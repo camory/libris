@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { BookOpen, Trash2 } from "@lucide/vue";
+import { BookOpen, Check, Trash2, X } from "@lucide/vue";
 import { computed, ref } from "vue";
 import { useI18n } from "vue-i18n";
 import { bookshelvesHolding, type Copy } from "../../domain/Copy";
@@ -19,10 +19,19 @@ const asking = ref(false);
 <template>
   <div class="text-body font-semibold">
     <template v-for="{ bookshelf, count } in bookshelves" :key="bookshelf.id">
-      <div v-if="asking" class="rounded-[10px] bg-bg p-2">
-        <p class="text-body font-normal">
+      <div
+        v-if="asking"
+        class="flex items-start gap-2 rounded-[10px] bg-bg p-2"
+      >
+        <p class="min-w-0 flex-1 text-body font-normal">
           {{ t("isbn.card.removal.question", { bookshelf: bookshelf.name }) }}
         </p>
+        <IconButton :label="t('isbn.card.removal.cancel')" class="-my-3">
+          <X :size="22" class="text-muted" />
+        </IconButton>
+        <IconButton :label="t('isbn.card.removal.confirm')" class="-my-3">
+          <Check :size="22" :stroke-width="3" class="text-danger" />
+        </IconButton>
       </div>
       <div v-else class="flex items-center gap-2">
         <BookOpen :size="22" class="shrink-0" />
