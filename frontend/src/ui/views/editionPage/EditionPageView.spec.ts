@@ -478,6 +478,22 @@ describe("EditionPageView", () => {
     expect(screen.queryByText(/Bibliothèque de Léa/)).toBeNull();
     expect(screen.getByText("Dans Salon")).toBeTruthy();
   });
+
+  it("goes back too when the copy was already gone", async () => {
+    // Given
+    const router = await routerOn(`/catalogue/ouvrages/${romanceDawn.id}`);
+    const screen = await askingToRemove(
+      router,
+      { outcome: "found", book: romanceDawnOnceOnLea },
+      new FakeCopiesApi({ outcome: "problem", type: "/problems/not-found" }),
+    );
+
+    // When
+    screen.getByRole("button", { name: "Retirer" }).click();
+
+    // Then
+    await waitFor(() => expect(window.location.pathname).toBe("/catalogue"));
+  });
 });
 
 async function askingToRemove(
@@ -486,11 +502,12 @@ async function askingToRemove(
     outcome: "found",
     book: romanceDawnOnceOnLea,
   },
+  copiesApi: CopiesApi = new FakeCopiesApi({ outcome: "removed" }),
 ) {
   const wrapper = mountEditionPageView(
     catalogue,
     romanceDawn.id,
-    new FakeCopiesApi({ outcome: "removed" }),
+    copiesApi,
     router,
   );
   await flushPromises();
