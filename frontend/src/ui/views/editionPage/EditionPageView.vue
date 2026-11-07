@@ -13,9 +13,11 @@ import SourceEditionCard from "../../components/SourceEditionCard.vue";
 const props = defineProps<{ id: string }>();
 
 const { t } = useI18n();
-const { state, find } = useFindCatalogueEdition(inject(catalogueApiKey)!);
+const { state, find, refresh } = useFindCatalogueEdition(
+  inject(catalogueApiKey)!,
+);
 const { state: removal, remove } = useRemoveCopy(inject(copiesApiKey)!, () =>
-  find(props.id),
+  refresh(props.id),
 );
 
 watch(

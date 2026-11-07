@@ -51,6 +51,22 @@ class LibrisNotRemoving implements CopiesApi {
   }
 }
 
+class LibrisAnsweringOnce implements CatalogueApi {
+  private answered = false;
+
+  constructor(private readonly found: FindBookAnswer) {}
+
+  browse(): Promise<BookPage> {
+    return Promise.resolve({ books: [], next: null });
+  }
+
+  find(): Promise<FindBookAnswer> {
+    if (this.answered) return new Promise(() => {});
+    this.answered = true;
+    return Promise.resolve(this.found);
+  }
+}
+
 class LibrisRecordingAsks implements CatalogueApi {
   readonly asked: string[] = [];
 
@@ -274,6 +290,32 @@ describe("EditionPageView", () => {
     // Then
     expect(screen.queryByText("2 exemplaires")).toBeNull();
     expect(screen.getByText("Dans Bibliothèque de Léa")).toBeTruthy();
+  });
+
+  it("keeps the card, its spinner turning, while the ouvrage is asked again", async () => {
+    // Given
+    const wrapper = mountEditionPageView(
+      new LibrisAnsweringOnce({
+        outcome: "found",
+        book: romanceDawnTwiceOnLea,
+      }),
+      romanceDawn.id,
+      new FakeCopiesApi({ outcome: "removed" }),
+    );
+    await flushPromises();
+    const screen = within(wrapper.element as HTMLElement);
+    screen.getByRole("button", { name: "Retirer un exemplaire" }).click();
+    await flushPromises();
+
+    // When
+    screen.getByRole("button", { name: "Retirer" }).click();
+    await flushPromises();
+
+    // Then
+    expect(seen(wrapper)).toEqual({ card: 0, title: 0 });
+    expect(
+      screen.getByRole("button", { name: "Retrait en cours…" }),
+    ).toBeTruthy();
   });
 });
 
