@@ -483,6 +483,20 @@ describe("EditionPageView", () => {
   });
 });
 
+function seen(wrapper: ReturnType<typeof mountEditionPageView>) {
+  return {
+    card: wrapper.findAllComponents(HeldEditionCardSkeleton).length,
+    title: wrapper.findAllComponents(PageTitleSkeleton).length,
+  };
+}
+
+async function routerOn(...paths: string[]) {
+  const router = createLibrisRouter();
+  for (const path of paths) await router.push(path);
+  await router.isReady();
+  return router;
+}
+
 async function askingToRemove(
   router: Router,
   catalogue: FindBookAnswer | CatalogueApi = {
@@ -502,20 +516,6 @@ async function askingToRemove(
   screen.getByRole("button", { name: "Retirer un exemplaire" }).click();
   await flushPromises();
   return screen;
-}
-
-async function routerOn(...paths: string[]) {
-  const router = createLibrisRouter();
-  for (const path of paths) await router.push(path);
-  await router.isReady();
-  return router;
-}
-
-function seen(wrapper: ReturnType<typeof mountEditionPageView>) {
-  return {
-    card: wrapper.findAllComponents(HeldEditionCardSkeleton).length,
-    title: wrapper.findAllComponents(PageTitleSkeleton).length,
-  };
 }
 
 const romanceDawnOnlyViewed: Book = {
