@@ -73,13 +73,15 @@ class LibrisAnsweringOnce implements CatalogueApi {
 class LibrisRecordingAsks implements CatalogueApi {
   readonly asked: string[] = [];
 
+  constructor(private readonly found: FindBookAnswer = noSuchOuvrage) {}
+
   browse(): Promise<BookPage> {
     return Promise.resolve({ books: [], next: null });
   }
 
   find(id: string): Promise<FindBookAnswer> {
     this.asked.push(id);
-    return Promise.resolve(noSuchOuvrage);
+    return Promise.resolve(this.found);
   }
 }
 
@@ -432,11 +434,34 @@ describe("EditionPageView", () => {
       screen.getByRole("button", { name: "Retrait en cours…" }),
     ).toBeTruthy();
   });
+
+  it("asks nothing more once the last copy is removed", async () => {
+    // Given
+    const libris = new LibrisRecordingAsks({
+      outcome: "found",
+      book: romanceDawnOnceOnLea,
+    });
+    const router = await routerOn(`/catalogue/ouvrages/${romanceDawn.id}`);
+    const screen = await askingOnTheLastCopy(router, libris);
+
+    // When
+    screen.getByRole("button", { name: "Retirer" }).click();
+    await waitFor(() => expect(window.location.pathname).toBe("/catalogue"));
+
+    // Then
+    expect(libris.asked).toEqual([romanceDawn.id]);
+  });
 });
 
-async function askingOnTheLastCopy(router: Router) {
+async function askingOnTheLastCopy(
+  router: Router,
+  catalogue: FindBookAnswer | CatalogueApi = {
+    outcome: "found",
+    book: romanceDawnOnceOnLea,
+  },
+) {
   const wrapper = mountEditionPageView(
-    { outcome: "found", book: romanceDawnOnceOnLea },
+    catalogue,
     romanceDawn.id,
     new FakeCopiesApi({ outcome: "removed" }),
     router,
