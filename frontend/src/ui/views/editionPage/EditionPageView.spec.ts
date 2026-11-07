@@ -392,6 +392,25 @@ describe("EditionPageView", () => {
     // Then
     expect(window.history.length).toBe(entries);
   });
+
+  it("leaves the history when it goes back", async () => {
+    // Given
+    const router = await routerOn(
+      "/catalogue/series",
+      `/catalogue/ouvrages/${romanceDawn.id}`,
+    );
+    const screen = await askingOnTheLastCopy(router);
+    const entries = window.history.length;
+
+    // When
+    screen.getByRole("button", { name: "Retirer" }).click();
+    await waitFor(() =>
+      expect(window.location.pathname).toBe("/catalogue/series"),
+    );
+
+    // Then
+    expect(window.history.length).toBe(entries);
+  });
 });
 
 async function askingOnTheLastCopy(router: Router) {
