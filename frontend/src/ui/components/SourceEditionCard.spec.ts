@@ -60,6 +60,15 @@ const ownedOnLea: Copy = {
   bookshelf: { ...onLea.bookshelf, role: "OWNER" },
 };
 
+const joinedSalon: Copy = {
+  id: "7a2e3d4c-5b6a-4f70-9c81-2d3e4f5a6b72",
+  bookshelf: {
+    id: "1c2f3e4d-5a6b-4c7d-9e8f-0a1b2c3d4e5f",
+    name: "Salon",
+    role: "VIEWER",
+  },
+};
+
 const inventaire: CoverCandidate = {
   source: "inventaire.io",
   url: "https://inventaire.io/img/entities/480x600/34d6e7d99cec5b0922b9eccfeb03748ab2b4db99",
@@ -859,16 +868,6 @@ describe("SourceEditionCard", () => {
   });
 
   it("carries no trash on a guest's row", () => {
-    // Given
-    const joinedSalon: Copy = {
-      id: "7a2e3d4c-5b6a-4f70-9c81-2d3e4f5a6b72",
-      bookshelf: {
-        id: "1c2f3e4d-5a6b-4c7d-9e8f-0a1b2c3d4e5f",
-        name: "Salon",
-        role: "VIEWER",
-      },
-    };
-
     // When
     const card = screen(onePiece1, [joinedSalon]);
 
@@ -929,14 +928,6 @@ describe("SourceEditionCard", () => {
 
   it("leaves a guest's row as it is while the owned row asks", async () => {
     // Given
-    const joinedSalon: Copy = {
-      id: "7a2e3d4c-5b6a-4f70-9c81-2d3e4f5a6b72",
-      bookshelf: {
-        id: "1c2f3e4d-5a6b-4c7d-9e8f-0a1b2c3d4e5f",
-        name: "Salon",
-        role: "VIEWER",
-      },
-    };
     const card = screen(onePiece1, [ownedOnLea, joinedSalon]);
 
     // When
