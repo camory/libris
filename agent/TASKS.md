@@ -51,7 +51,7 @@ never removed (PRD §3, D11).
       race the spec asks weighed). Realises
       S1, S2; un-skips the backend tests of S1 and S2, both cases.
 
-- [ ] T132 Frontend: the trash on an owned row, on `v0.16.0`.
+- [x] T132 Frontend: the trash on an owned row, on `v0.16.0`.
       Precondition (human): T131 deployed (D04).
       `vitest.global-setup.ts` pins `v0.16.0`, the frontend's one bump; the
       lookup, add, ouvrage, catalogue and series clients read each copy's
