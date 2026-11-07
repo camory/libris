@@ -43,7 +43,6 @@ class RemoveCopyScenarios @Autowired constructor(private val libris: Libris, pri
   }
 
   @Test
-  @Disabled("remove a copy")
   fun `S2 The reader removes their last copy, the house's last`() {
     // Given
     val lea = libris.reader("lea", "Léa")
