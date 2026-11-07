@@ -149,7 +149,8 @@ async function search() {
 }
 
 async function afterRemoval() {
-  copies.value = copies.value.filter(({ id }) => id !== removedId);
+  copies.value = shownCopies.value.filter(({ id }) => id !== removedId);
+  addBookToBookshelf.value = useAddBookToBookshelf(meApi, bookshelfApi);
 }
 
 async function removeCopy(copyId: string) {
@@ -250,6 +251,7 @@ async function send(edition: SourceEdition) {
           :held="held"
           :copies="shownCopies"
           :covers="sentCovers"
+          @remove="removeCopy"
         />
         <EditionForm
           v-else-if="answerShown === 'form'"

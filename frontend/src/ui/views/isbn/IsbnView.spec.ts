@@ -107,6 +107,20 @@ const heldTwiceOnLeas: IsbnAnswer = {
   ],
 };
 
+const heldOnChambre: IsbnAnswer = {
+  ...held,
+  copies: [
+    {
+      id: "4c5d6e7f-8a9b-4c0d-9e2f-3a4b5c6d7e8f",
+      bookshelf: {
+        id: "1c2d3e4f-5a6b-4c7d-8e9f-0a1b2c3d4e5f",
+        name: "Chambre",
+        role: "OWNER",
+      },
+    },
+  ],
+};
+
 const neverRead = new Promise<string | null>(() => {});
 
 describe("IsbnView", () => {
@@ -1104,6 +1118,32 @@ describe("IsbnView", () => {
     expect(isbnApi.asked).toHaveLength(1);
   });
 
+  it("offers the add again once a copy is removed from the card it added", async () => {
+    // Given
+    const screen = open(
+      new FakeIsbnApi(heldOnChambre),
+      undefined,
+      new FakeBookshelfApi(added),
+      undefined,
+      new FakeCopiesApi({ outcome: "removed" }),
+    );
+    await ask(screen, "9782723488525");
+    await press(screen, "Ajouter à ma bibliothèque");
+
+    // When
+    await removeCopy(screen, "Dans Chambre");
+
+    // Then
+    expect(screen.getByText("Dans Bibliothèque de Léa")).toBeDefined();
+    expect(screen.queryByText("Dans Chambre")).toBeNull();
+    expect(
+      screen.getAllByRole("button", { name: "Retirer un exemplaire" }),
+    ).toHaveLength(1);
+    expect(
+      screen.getByRole("button", { name: "Ajouter à ma bibliothèque" }),
+    ).toBeDefined();
+  });
+
   it("stops the camera when the screen goes away", async () => {
     // Given
     const scanner = new FakeBarcodeScanner(true, neverRead);
@@ -1191,8 +1231,14 @@ describe("IsbnView", () => {
     await flushPromises();
   }
 
-  async function removeCopy(screen: Screen) {
-    await press(screen, "Retirer un exemplaire");
+  async function removeCopy(screen: Screen, row?: string) {
+    const trashes = screen.getAllByRole("button", {
+      name: "Retirer un exemplaire",
+    });
+    const trash = row
+      ? trashes.find((button) => button.parentElement?.textContent === row)
+      : trashes[0];
+    await fireEvent.click(trash!);
     await press(screen, "Retirer");
   }
 
