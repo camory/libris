@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { BookOpen, Check, Trash2, X } from "@lucide/vue";
-import { computed, ref } from "vue";
+import { computed, ref, watch } from "vue";
 import { useI18n } from "vue-i18n";
 import { bookshelvesHolding, type Copy } from "../../domain/Copy";
 import BusySpinner from "./BusySpinner.vue";
@@ -17,6 +17,11 @@ const bookshelves = computed(() =>
 );
 
 const asking = ref<string | null>(null);
+
+watch(
+  () => props.copies,
+  () => (asking.value = null),
+);
 
 function remove(bookshelfId: string) {
   const copy = props.copies.find((copy) => copy.bookshelf.id === bookshelfId);

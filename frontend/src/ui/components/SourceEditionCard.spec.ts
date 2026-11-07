@@ -1044,6 +1044,21 @@ describe("SourceEditionCard", () => {
     ).toBe(true);
   });
 
+  it("puts the row back once the card is given its new copies", async () => {
+    // Given
+    const wrapper = card(onePiece1, [onLea, secondOnLea]);
+    const shown = within(wrapper.element as HTMLElement);
+    shown.getByRole("button", { name: "Retirer un exemplaire" }).click();
+    await nextTick();
+
+    // When
+    await wrapper.setProps({ copies: [onLea] });
+
+    // Then
+    expect(shown.queryByText(/^Retirer un exemplaire de/)).toBeNull();
+    expect(shown.getByText("Dans Bibliothèque de Léa")).toBeDefined();
+  });
+
   function summaryMeasures(measures: {
     scrollHeight: number;
     clientHeight: number;
