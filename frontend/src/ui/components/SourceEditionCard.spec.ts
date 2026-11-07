@@ -1120,6 +1120,31 @@ describe("SourceEditionCard", () => {
     expect(wrapper.emitted("remove")).toEqual([[onLea.id]]);
   });
 
+  it("asks a new question without the earlier message", async () => {
+    // Given
+    const wrapper = card(onePiece1, [ownedSalon, onLea]);
+    const shown = within(wrapper.element as HTMLElement);
+    shown.getAllByRole("button", { name: "Retirer un exemplaire" })[0].click();
+    await nextTick();
+    await wrapper.setProps({ removalFailed: true });
+
+    // When
+    shown.getByRole("button", { name: "Annuler" }).click();
+    await nextTick();
+    shown.getAllByRole("button", { name: "Retirer un exemplaire" })[0].click();
+    await nextTick();
+
+    // Then
+    expect(
+      shown.getByText("Retirer un exemplaire de Bibliothèque de Léa ?"),
+    ).toBeDefined();
+    expect(
+      shown.queryByText(
+        "Erreur lors du retrait, veuillez réessayer plus tard.",
+      ),
+    ).toBeNull();
+  });
+
   function summaryMeasures(measures: {
     scrollHeight: number;
     clientHeight: number;

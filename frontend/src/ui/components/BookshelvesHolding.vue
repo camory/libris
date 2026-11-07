@@ -21,11 +21,22 @@ const bookshelves = computed(() =>
 );
 
 const asking = ref<string | null>(null);
+const failed = ref(false);
 
 watch(
   () => props.copies,
   () => (asking.value = null),
 );
+
+watch(
+  () => props.removalFailed,
+  (removalFailed) => (failed.value = removalFailed),
+);
+
+function ask(bookshelfId: string | null) {
+  asking.value = bookshelfId;
+  failed.value = false;
+}
 
 function remove(bookshelfId: string) {
   const copy = props.copies.find((copy) => copy.bookshelf.id === bookshelfId);
@@ -48,7 +59,7 @@ function remove(bookshelfId: string) {
             :label="t('isbn.card.removal.cancel')"
             :disabled="removing"
             class="-my-3"
-            @click="asking = null"
+            @click="ask(null)"
           >
             <X :size="22" class="text-muted" />
           </IconButton>
@@ -67,7 +78,7 @@ function remove(bookshelfId: string) {
           </IconButton>
         </div>
         <p
-          v-if="removalFailed"
+          v-if="failed"
           class="flex items-start gap-2 pt-2 text-body text-danger"
         >
           <CircleAlert :size="22" class="shrink-0" />
@@ -86,7 +97,7 @@ function remove(bookshelfId: string) {
           v-if="bookshelf.role === 'OWNER'"
           :label="t('isbn.card.removal.trash')"
           :disabled="removing"
-          @click="asking = bookshelf.id"
+          @click="ask(bookshelf.id)"
         >
           <Trash2 :size="22" />
         </IconButton>
