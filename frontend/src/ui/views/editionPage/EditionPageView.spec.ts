@@ -20,6 +20,7 @@ import {
   asterixLeGaulois,
   bibliothequeDeLea,
   romanceDawn,
+  salon,
 } from "../../../fixture/Books";
 import { FakeCatalogueApi } from "../../../fixture/FakeCatalogueApi";
 import { FakeCopiesApi } from "../../../fixture/FakeCopiesApi";
@@ -355,7 +356,7 @@ describe("EditionPageView", () => {
   it("goes to the catalogue once the last copy is removed, opened from its address", async () => {
     // Given
     const router = await routerOn(`/catalogue/ouvrages/${romanceDawn.id}`);
-    const screen = await askingOnTheLastCopy(router);
+    const screen = await askingToRemove(router);
 
     // When
     screen.getByRole("button", { name: "Retirer" }).click();
@@ -370,7 +371,7 @@ describe("EditionPageView", () => {
       "/catalogue/series",
       `/catalogue/ouvrages/${romanceDawn.id}`,
     );
-    const screen = await askingOnTheLastCopy(router);
+    const screen = await askingToRemove(router);
 
     // When
     screen.getByRole("button", { name: "Retirer" }).click();
@@ -384,7 +385,7 @@ describe("EditionPageView", () => {
   it("leaves the history when it goes to the catalogue", async () => {
     // Given
     const router = await routerOn(`/catalogue/ouvrages/${romanceDawn.id}`);
-    const screen = await askingOnTheLastCopy(router);
+    const screen = await askingToRemove(router);
     const entries = window.history.length;
 
     // When
@@ -401,7 +402,7 @@ describe("EditionPageView", () => {
       "/catalogue/series",
       `/catalogue/ouvrages/${romanceDawn.id}`,
     );
-    const screen = await askingOnTheLastCopy(router);
+    const screen = await askingToRemove(router);
     const entries = window.history.length;
 
     // When
@@ -420,7 +421,7 @@ describe("EditionPageView", () => {
       "/catalogue/series",
       `/catalogue/ouvrages/${romanceDawn.id}`,
     );
-    const screen = await askingOnTheLastCopy(router);
+    const screen = await askingToRemove(router);
 
     // When
     screen.getByRole("button", { name: "Retirer" }).click();
@@ -442,7 +443,7 @@ describe("EditionPageView", () => {
       book: romanceDawnOnceOnLea,
     });
     const router = await routerOn(`/catalogue/ouvrages/${romanceDawn.id}`);
-    const screen = await askingOnTheLastCopy(router, libris);
+    const screen = await askingToRemove(router, libris);
 
     // When
     screen.getByRole("button", { name: "Retirer" }).click();
@@ -451,9 +452,36 @@ describe("EditionPageView", () => {
     // Then
     expect(libris.asked).toEqual([romanceDawn.id]);
   });
+
+  it("stays on the page while a copy is left on a guest's bookshelf", async () => {
+    // Given
+    const router = await routerOn(`/catalogue/ouvrages/${romanceDawn.id}`);
+    const screen = await askingToRemove(
+      router,
+      new FakeCatalogueApi(
+        [],
+        [
+          { outcome: "found", book: romanceDawnOnLeaAndViewedOnSalon },
+          { outcome: "found", book: romanceDawnViewedOnSalon },
+        ],
+      ),
+    );
+
+    // When
+    screen.getByRole("button", { name: "Retirer" }).click();
+    await waitFor(() =>
+      expect(screen.queryByText("Dans Bibliothèque de Léa")).toBeNull(),
+    );
+
+    // Then
+    expect(screen.getByText("Dans Salon")).toBeTruthy();
+    expect(window.location.pathname).toBe(
+      `/catalogue/ouvrages/${romanceDawn.id}`,
+    );
+  });
 });
 
-async function askingOnTheLastCopy(
+async function askingToRemove(
   router: Router,
   catalogue: FindBookAnswer | CatalogueApi = {
     outcome: "found",
@@ -505,6 +533,18 @@ const romanceDawnTwiceOnLea: Book = {
 const romanceDawnOnceOnLea: Book = {
   ...romanceDawn,
   copies: romanceDawnTwiceOnLea.copies.slice(1),
+};
+
+const romanceDawnViewedOnSalon: Book = {
+  ...romanceDawn,
+  copies: romanceDawn.copies
+    .filter((copy) => copy.bookshelf.id === salon.id)
+    .map((copy) => ({ ...copy, bookshelf: { ...salon, role: "VIEWER" } })),
+};
+
+const romanceDawnOnLeaAndViewedOnSalon: Book = {
+  ...romanceDawn,
+  copies: [...romanceDawnOnceOnLea.copies, ...romanceDawnViewedOnSalon.copies],
 };
 
 const noSuchOuvrage: FindBookAnswer = {
