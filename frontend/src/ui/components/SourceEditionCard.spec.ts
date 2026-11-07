@@ -878,6 +878,16 @@ describe("SourceEditionCard", () => {
     ).toEqual([]);
   });
 
+  it("carries no trash on a row whose role it is not given", () => {
+    // When
+    const card = screen(onePiece1, [onLea]);
+
+    // Then
+    expect(
+      card.queryAllByRole("button", { name: "Retirer un exemplaire" }),
+    ).toEqual([]);
+  });
+
   function summaryMeasures(measures: {
     scrollHeight: number;
     clientHeight: number;
