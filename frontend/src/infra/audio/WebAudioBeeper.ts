@@ -7,6 +7,7 @@ export class WebAudioBeeper implements Beeper {
 
   beep(): void {
     const context = this.context();
+    void context.resume();
     const oscillator = context.createOscillator();
     oscillator.frequency.value = frequency;
     oscillator.setPeriodicWave(toneOf(context));

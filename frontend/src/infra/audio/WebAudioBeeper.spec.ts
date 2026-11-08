@@ -54,6 +54,20 @@ describe("WebAudioBeeper", () => {
     expect(browser.oscillators).toEqual([]);
   });
 
+  it("resumes a suspended context before it sounds", () => {
+    // Given
+    const browser = browserAudio();
+    browser.state = "suspended";
+    const beeper = new WebAudioBeeper(browser.newContext);
+
+    // When
+    beeper.beep();
+
+    // Then
+    expect(browser.resumes).toBe(1);
+    expect(browser.oscillators).toHaveLength(1);
+  });
+
   it("builds no context until it is asked to sound", () => {
     // Given
     const browser = browserAudio();
