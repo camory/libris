@@ -265,7 +265,9 @@ function add() {
           v-if="field === 'volume' && edition?.authors.length"
           class="flex flex-col gap-2"
         >
-          <p class="text-label text-muted">{{ t("isbn.form.authors") }}</p>
+          <p class="text-label text-muted">
+            {{ t("isbn.form.authors.label") }}
+          </p>
           <AuthorLines :authors="edition.authors" :kind="kind" />
         </div>
       </template>

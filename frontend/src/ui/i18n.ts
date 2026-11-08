@@ -109,7 +109,10 @@ const fr = {
         BD: "Album",
         MANGA: "Tome",
       },
-      authors: "Auteurs",
+      authors: {
+        label: "Auteurs",
+        name: "Nom de l'auteur",
+      },
       collection: "Collection",
       publisher: "Éditeur",
       year: "Année",
