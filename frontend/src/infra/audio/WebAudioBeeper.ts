@@ -9,16 +9,23 @@ const partials = [
 ];
 
 export class WebAudioBeeper implements Beeper {
+  private built: AudioContext | null = null;
+
   constructor(private readonly newContext: () => AudioContext) {}
 
   beep(): void {
-    const context = this.newContext();
+    const context = this.context();
     const oscillator = context.createOscillator();
     oscillator.frequency.value = frequency;
     oscillator.setPeriodicWave(toneOf(context));
     oscillator.connect(context.destination);
     oscillator.start(context.currentTime);
     oscillator.stop(context.currentTime + duration);
+  }
+
+  private context(): AudioContext {
+    this.built ??= this.newContext();
+    return this.built;
   }
 }
 

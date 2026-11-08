@@ -25,6 +25,19 @@ describe("WebAudioBeeper", () => {
     expect(oscillator!.startedAt).toBe(2);
     expect(oscillator!.stoppedAt).toBeCloseTo(2.099);
   });
+
+  it("builds one context for every beep", () => {
+    // Given
+    const browser = browserAudio();
+    const beeper = new WebAudioBeeper(browser.newContext);
+
+    // When
+    beeper.beep();
+    beeper.beep();
+
+    // Then
+    expect(browser.contexts).toBe(1);
+  });
 });
 
 interface StandInWave {
