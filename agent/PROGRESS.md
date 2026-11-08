@@ -173,13 +173,22 @@ Format:
   `Contributions.kt`) in `agent/PROPOSED.md`; T144 moves the frontend
   onto `v0.17.0`.
 
-## 2026-11-08 — T144 The authors on v0.17.0, open as rows — handoff
-- Done: test plan steps 1 (pin, `npx vitest run src/infra` 94 green), 2
-  (`FetchAuthorsApi.names()`, red `expected 0 to be greater than 0` read) and
-  3 (`authorsApi` in `LibrisPorts`, `vue-tsc` red on 17 files read, then
-  green); S1 un-skipped first, its red read: `expected [] to deeply equal`.
-- Start with: step 4, `AuthorBox.spec.ts` (the component written first,
-  drawing nothing). No guard reached yet, so no mutation run.
-- Decided: nothing beyond the brief. `CoversScenarios.spec.ts` stays
-  unformatted as on `main`; only its two port lines were added.
-- Red at handoff: the two S1 cases alone, the cited scenario not yet reached.
+## 2026-11-08 — T144 The authors on v0.17.0, open as rows — done
+- Did: the frontend pins `v0.17.0`; `FetchAuthorsApi` reads the authors'
+  names and `authorsApi` joins `LibrisPorts`; the edition form opens each
+  author as an `AuthorBox`, its name then its roles line. S1 un-skipped.
+- Decided: `isbn.form.authors` became a block (`label`, `name`, `roles`),
+  the shape later words join. The roles line's chevron sits in a 44 square
+  at the line's right, so it falls under the trash T146 adds.
+- Deviations from the brief: steps 10, 13 and 15 were green on their first
+  run and are kept as guards, their mutations run (PR body). Step 4's
+  green bound the name with `defineModel`, the brief's shape, which already
+  hands on what is typed (step 10); step 12's green groups through
+  `authorsInOrder` (step 13); and a `defineModel` the form binds one way
+  keeps the typed text across a kind change (step 15), so the form holds
+  its authors as a list built once and binds `:name`, not `v-model:name`:
+  no case shows the form's own copy before T145 sends the boxes. Step 14's
+  rewrite went into step 12's commit, since step 12's green reds the old
+  case. The run was continued from a handoff after step 3.
+- Left over: the add still sends the answer's authors (T145); boxes inert
+  while adding (T146, T147).

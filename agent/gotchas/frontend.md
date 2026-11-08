@@ -22,7 +22,7 @@ Read whole by a run that changes `frontend/`, after `every-run.md`.
   an `afterEach`, or the contract case passes only by running first.
 - `vitest.global-setup.ts` starts `contracteer mock` on port 9099 over the
   contract the frontend pins, a `raw.githubusercontent.com` URL of
-  `camory/libris-api` (`v0.16.0` since T132); it starts in about four seconds
+  `camory/libris-api` (`v0.17.0` since T144); it starts in about four seconds
   and logs `Contracteer mock server started on port 9099` last, and the
   setup resolves on that line and kills the process in its teardown. The
   mock generates values, so an `infra/api` spec asserts shape and types,
@@ -70,7 +70,8 @@ Read whole by a run that changes `frontend/`, after `every-run.md`.
   `3e4f5a6b-7c8d-4e9f-a0b1-c2d3e4f5a6b7`, `400` for `not-a-uuid` and
   `a%2Fb`, and a generated `200` of one or two copies in 30 tries, never
   none (T113). `GET /series-names` answers a generated `200` of one or two
-  names of one character in 30 tries, never none (T121). `FetchIsbnApi`, `FetchBookshelfApi`, `FetchBookshelvesApi`,
+  names of one character in 30 tries, never none (T121); `GET
+  /author-names` the same in 30 tries (T144). `FetchIsbnApi`, `FetchBookshelfApi`, `FetchBookshelvesApi`,
   `FetchSeriesApi`'s find, `FetchCatalogueApi`'s find and `FetchCopiesApi` hand a non-2xx
   answer to `infra/api/problemOf`, which maps the statuses the
   contract names (400, 404, 409 for the creation and the add of a member, 400 and
@@ -187,11 +188,11 @@ Read whole by a run that changes `frontend/`, after `every-run.md`.
   count the trashes too.
 - The authors' names are `AuthorsApi.names()` (`application/AuthorsApi.ts`,
   `authorsApiKey`), and `FakeAuthorsApi` takes them, `string[] | Error`.
-  The port has no client and no place in `LibrisPorts` yet:
-  `AuthorsEditScenarios`' `open()` provides it through `app.provide`, a
-  `FakeAuthorsApi([])` by default. The task that pins `v0.17.0` writes its
-  client over `GET /author-names`, adds `authorsApi` to `LibrisPorts`, and
-  moves that `open()`'s `app.provide` into its ports.
+  `FetchAuthorsApi` reads `GET /author-names` with no status check yet;
+  `authorsApi` is a port of `LibrisPorts` since T144, provided by
+  `createLibrisApp`. `AuthorsEditScenarios`' `open()` gives `world.authors`,
+  the other scenario files a `FakeAuthorsApi([])`. No component reads the
+  port yet.
 - `EditionForm` takes `isbn13`, `edition` (a `SourceEdition`, absent for
   an unknown ISBN), `copies`, `covers`, `adding`, `failed` and
   `seriesNames`, required,
@@ -206,8 +207,16 @@ Read whole by a run that changes `frontend/`, after `every-run.md`.
   `null` as `""`, the language through `languageWord`, and `summary`, a
   `textarea` of its own after them; the camera keeps it, edits included,
   and a new lookup remounts it through the skeleton. *Auteurs* is drawn
-  after *Tome* inside that `v-for`, only when the answer has authors,
-  `AuthorLines` given the chosen `kind`, not the answer's. The volume's
+  after *Tome* inside that `v-for`, also with no author, then one
+  `AuthorBox` per author of `authorsInOrder(answer's authors, locale)`,
+  a list built once at setup, each box given the chosen `kind`, not the
+  answer's. `AuthorBox` (props `roles`, `kind`, model `name`) draws the
+  name textbox *Nom de l'auteur*, a hairline, and the roles line, a button
+  with `aria-expanded="false"`, `aria-label` *Rôles* then its words, and
+  `ChevronDown`; the words are `isbn.form.authors.{label,name,roles}`. The
+  add still sends the answer's authors. Its spec's `valuesOf`,
+  `disabledOf` and `suggestions` leave out the name boxes and the roles
+  lines (`aria-expanded`). The volume's
   label is `isbn.form.volume.<kind>` (*Album* for a BD), built with the
   chosen kind, as `withoutSeries`' words are. Each label points at its
   box through `for` and an id built on `useId()`; the kinds are three
@@ -360,8 +369,10 @@ Read whole by a run that changes `frontend/`, after `every-run.md`.
   `srcObject` is implemented nowhere in jsdom, so assigning a plain object
   with `getTracks()` to it is an ordinary property assignment: no IDL
   conversion, no throw.
-- `SourceEditionCard` and `EditionForm` draw three parts in common, each a
-  component of `ui/components` with no spec of its own: `CoverChoice`
+- `SourceEditionCard` and `EditionForm` draw two parts in common, each a
+  component of `ui/components` with no spec of its own, and the card a
+  third, `AuthorLines`, the form's authors being `AuthorBox`es since T144:
+  `CoverChoice`
   (props `covers`, `title`, `held`, and `disabled`, optional, which
   disables its dots, and `shownSource`, optional, the source of the
   candidate it shows first, read once at setup; emitting `coverSource`) keeps one `img`
@@ -474,9 +485,8 @@ Read whole by a run that changes `frontend/`, after `every-run.md`.
 - A word `SourceEditionCard` displays is asserted in several files, not
   one: the card's own spec, `IsbnView.spec.ts` (*shows the card of an ISBN
   the house holds*, over the `held` answer) and `FastEntryScenarios.spec.ts`
-  (`showsTheOnePieceCard`); a word of its three parts (`CoverChoice`,
-  `AuthorLines`, `BookshelvesHolding`) is asserted in `EditionForm.spec.ts`
-  too. Taking a word off the card reds them all; grep the word over `src/`
+  (`showsTheOnePieceCard`); a word of `CoverChoice` or
+  `BookshelvesHolding` is asserted in `EditionForm.spec.ts` too. Taking a word off the card reds them all; grep the word over `src/`
   before calling the change done. An ISBN the house lacks (`id: null`)
   shows the card first, its pencil *Modifier* opening the form, whose
   fields hold their text as values: a `getByText` for the title finds it
@@ -700,6 +710,17 @@ Read whole by a run that changes `frontend/`, after `every-run.md`.
   `SeriesPageView`, `SeriesView`), mounts a router; `within(wrapper.element)` then misses
   the link, since it searches descendants only, and their specs query from
   the root's parent.
+- A `defineModel` prop the parent binds one way (`:name`, no
+  `@update:name`) keeps a local copy: the child's input keeps the typed
+  text when the parent redraws, a kind change in `EditionForm` included,
+  while an input bound `:value` alone is reset to the prop on that redraw.
+  A case "the typed text survives a redraw" is green on the child's
+  `v-model` alone; the parent holding the value shows only through what it
+  emits.
+- An `aria-label` of `"Rôles "`, trailing space, is named *Rôles* by
+  Testing Library, which trims the name, even with a function matcher
+  (`name: (name) => name === "Rôles"`): a case about the exact label reads
+  `getAttribute("aria-label")`.
 - A spec's subclass of a fixture fake (`LibrisNotAnswering`,
   `LibrisAnsweringInTurn`) cannot declare a private member of the same name
   as one of the base's: `FakeBookshelvesApi` holds a private `answers`, and
