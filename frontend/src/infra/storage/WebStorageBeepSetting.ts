@@ -7,7 +7,11 @@ export class WebStorageBeepSetting implements BeepSetting {
     return this.storage.getItem("beep") === "on";
   }
 
-  keep(): void {
-    this.storage.setItem("beep", "on");
+  keep(on: boolean): void {
+    if (on) {
+      this.storage.setItem("beep", "on");
+    } else {
+      this.storage.removeItem("beep");
+    }
   }
 }

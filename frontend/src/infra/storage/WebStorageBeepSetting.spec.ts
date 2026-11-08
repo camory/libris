@@ -39,4 +39,16 @@ describe("WebStorageBeepSetting", () => {
     // Then
     expect(on).toBe(true);
   });
+
+  it("forgets the beep turned off", () => {
+    // Given
+    localStorage.setItem("beep", "on");
+    const beepSetting = new WebStorageBeepSetting(localStorage);
+
+    // When
+    beepSetting.keep(false);
+
+    // Then
+    expect(localStorage.getItem("beep")).toBeNull();
+  });
 });
