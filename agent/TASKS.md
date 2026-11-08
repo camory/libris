@@ -47,15 +47,22 @@ Nothing on screen changes: the title looks and reads as before.
 - [ ] T140 Frontend: the trick again turns the beep off, in silence.
       With the beep on, the same three taps turn it off: no beep sounds,
       and the camera's next read is silent, Libris looking the ISBN up as
-      before. Realises S5; un-skips its frontend test.
+      before. A row starts anew once it has worked the trick, so six quick
+      taps turn the beep on, then off. Realises S5; un-skips its frontend
+      test.
 
 - [ ] T141 Frontend: the beep stays as the trick left it on that phone.
       The beep's state is kept in the phone's storage, across closing and
       reopening Libris: on where the trick turned it on, off where it was
       never done or the app's data was cleared. Nothing is sent to Libris,
       and it is no store of the application's (D05: Pinia holds the
-      session and the offline catalogue alone). Realises S6; un-skips its
-      frontend test.
+      session and the offline catalogue alone). The state goes through a
+      port of its own, its adapter in `infra/storage` over the browser's
+      `Storage` given to its constructor, `bootstrap` passing
+      `localStorage`, proven by its own spec; no view or composable reads
+      `localStorage` (D05). The scenario file's `open()` hands that adapter
+      over the real `localStorage` through the ports, so S6 spans its two
+      openings. Realises S6; un-skips its frontend test.
 
 *Done (Tophe, on the Pixel, from the installed app on staging, media
 volume up): scan One Piece 1, no beep. Tap the title Ajouter un ouvrage
@@ -183,8 +190,3 @@ no beep.*
   another reader. T081, T088 and T084 read such a refusal as no answer and
   show their S9 sentence; say if one should read otherwise. T135 reads
   the removal's `400`, which the screen never provokes, the same way.
-- **More than three quick taps on the title.** The scan beep's spec says
-  what three taps in a row do, not what a fourth or a sixth quick tap
-  does. T138 to T140 read a row as starting anew once it has worked the
-  trick, so six quick taps turn the beep on and then off; say if a row
-  should read otherwise.
