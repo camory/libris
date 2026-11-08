@@ -172,3 +172,14 @@ Format:
 - Left over: the two private foldings (`BookshelfName.kt`,
   `Contributions.kt`) in `agent/PROPOSED.md`; T144 moves the frontend
   onto `v0.17.0`.
+
+## 2026-11-08 — T144 The authors on v0.17.0, open as rows — handoff
+- Done: test plan steps 1 (pin, `npx vitest run src/infra` 94 green), 2
+  (`FetchAuthorsApi.names()`, red `expected 0 to be greater than 0` read) and
+  3 (`authorsApi` in `LibrisPorts`, `vue-tsc` red on 17 files read, then
+  green); S1 un-skipped first, its red read: `expected [] to deeply equal`.
+- Start with: step 4, `AuthorBox.spec.ts` (the component written first,
+  drawing nothing). No guard reached yet, so no mutation run.
+- Decided: nothing beyond the brief. `CoversScenarios.spec.ts` stays
+  unformatted as on `main`; only its two port lines were added.
+- Red at handoff: the two S1 cases alone, the cited scenario not yet reached.
