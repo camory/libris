@@ -330,4 +330,14 @@ spelling.
 
 ## Tasks
 
-Left for the planner.
+- T142 — S6, the backend on `v0.17.0` — backend
+- T143 — S5 — backend
+- T144 — S1, the frontend on `v0.17.0` — frontend
+- T145 — S2 — frontend
+- T146 — S3 — frontend
+- T147 — S4 — frontend
+- T148 — S5, S9 — frontend
+- T149 — S6 the suggestions, S7 — frontend
+- T150 — S6 the word — frontend
+- T151 — S8 Rôle manquant — frontend
+- T152 — S8 Auteur en double — frontend
