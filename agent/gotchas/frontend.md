@@ -90,6 +90,13 @@ Read whole by a run that changes `frontend/`, after `every-run.md`.
 - A fixture may import `domain` and `application` only, so a shared
   app-over-fakes builder cannot live in `src/fixture`: each scenario file
   keeps its own `open()`, naming the ports its spec varies.
+- The scan beep's port is `Beeper.beep()` under `beeperKey`
+  (`application/Beeper.ts`), with `FakeBeeper` counting `beeps`; it is not
+  in `LibrisPorts` and has no adapter yet. `ScanBeepScenarios` provides
+  the fake with `app.provide(beeperKey, …)` after `createLibrisApp`, does
+  the trick through three clicks on the `h1`, and mounts S6's second app
+  over the same `localStorage`, which it clears after each test; S2 fakes `Date`, `performance`, `setTimeout` and `clearTimeout`
+  for its taps only, and jsdom stamps `event.timeStamp` with `Date.now()`.
 - The removal of a copy is `CopiesApi.remove(copyId)` (`removed`, or a
   problem), `copiesApi` of `LibrisPorts` since T134, provided under
   `copiesApiKey`; `FetchCopiesApi` sends the `DELETE`, the id unencoded, and
