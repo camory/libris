@@ -192,3 +192,11 @@ Format:
   case. The run was continued from a handoff after step 3.
 - Left over: the add still sends the answer's authors (T145); boxes inert
   while adding (T146, T147).
+
+## 2026-11-08 — T145 An author is added — handoff
+- Done: the un-skip of S2 (red on the missing *Ajouter un auteur*), then test-plan steps 1 to 9, one commit each; S2's two cases green; the gate green on `35d26f9c`.
+- Start with: self-review of `git diff main...HEAD`, the gotchas the brief names (the `EditionForm` item, Tailwind's `aria-*` after `focus`), the tick, the diary entry, the PR.
+- Deviations: step 4's case awaits `flushPromises()` after the tap, since the form focuses after `nextTick` and `await fireEvent.click` does not wait for it; its red was rerun without the `focusName()` call (red: activeElement is the body). The boxes are `{ key, name, roles }`, keyed by a counter (`keyed`), and the draft gets them as plain `{ name, roles }`.
+- Guards: step 7, the new box on `ARTIST`: `expected [ { name: '', roles: 'illustration' } ] to deeply equal [ { name: '', roles: 'texte' } ]`. Step 8, the draft given `authorsInOrder(answer's authors)`: `expected [ [ {…}, {…} ] ] to deeply equal [ [ {…}, {…}, {…} ] ]`. Both reverted.
+- Step 6 was red (focus lost on the remount keyed by name), so it is not a guard.
+- Learned: a focus case that fails before its `unmount()` leaves its tree attached and reds two later focus cases of `EditionForm.spec.ts` (*focuses the first refused field*, *fills Série…*); they pass alone. `npm run build` shows `.focus-within\:border-accent`, then `.focus\:border-accent`, then `.aria-invalid\:border-danger`.
