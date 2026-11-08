@@ -10,7 +10,7 @@ const name = defineModel<string>("name", { required: true });
 const { t } = useI18n();
 
 const words = computed(() =>
-  props.roles.map((role) => t(`role.BD.${role}`)).join(", "),
+  props.roles.map((role) => t(`role.${props.kind}.${role}`)).join(", "),
 );
 </script>
 

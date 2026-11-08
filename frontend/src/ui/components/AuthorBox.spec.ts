@@ -25,6 +25,14 @@ describe("AuthorBox", () => {
     expect(rolesLine(box)?.textContent?.trim()).toBe("scénario, dessin");
   });
 
+  it("words the roles of a book as a book's", () => {
+    // When
+    const box = screen("Victor Hugo", ["WRITER"], "BOOK");
+
+    // Then
+    expect(rolesLine(box)?.textContent?.trim()).toBe("texte");
+  });
+
   function rolesLine(box: ReturnType<typeof screen>) {
     return box
       .queryAllByRole("button")
