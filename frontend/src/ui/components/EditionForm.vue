@@ -286,7 +286,7 @@ function add() {
                 (box) =>
                   (authorBoxes[index] = box as InstanceType<typeof AuthorBox>)
               "
-              :name="author.name"
+              v-model:name="author.name"
               :roles="author.roles"
               :kind="kind"
             />

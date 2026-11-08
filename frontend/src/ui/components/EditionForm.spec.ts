@@ -373,6 +373,26 @@ describe("EditionForm", () => {
     wrapper.unmount();
   });
 
+  it("sends a name typed in its box", async () => {
+    // Given
+    const wrapper = form(onePiece1);
+    const fields = within(wrapper.element as HTMLElement);
+    await fireEvent.input(names(fields)[0], {
+      target: { value: "Eiichiro Oda" },
+    });
+
+    // When
+    await tapAdd(fields);
+
+    // Then
+    expect(wrapper.emitted("add")?.[0]?.[0]).toMatchObject({
+      authors: [
+        { name: "Eiichiro Oda", role: "WRITER" },
+        { name: "Eiichiro Oda", role: "ARTIST" },
+      ],
+    });
+  });
+
   it("shows the covers on offer as the card does", () => {
     // When
     const covers = screen(onePiece1, [], [inventaire, openLibrary]);
