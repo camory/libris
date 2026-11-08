@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { ChevronDown } from "@lucide/vue";
 import { computed } from "vue";
 import { useI18n } from "vue-i18n";
 import type { AuthorRole, Kind } from "../../domain/SourceEdition";
@@ -30,9 +31,12 @@ const label = computed(() =>
       type="button"
       aria-expanded="false"
       :aria-label="label"
-      class="flex min-h-11 w-full items-center pr-0.75 pl-3.5 text-left text-body"
+      class="flex min-h-11 w-full items-center gap-2 pr-0.75 pl-3.5 text-left text-body"
     >
-      {{ words }}
+      <span class="flex-1">{{ words }}</span>
+      <span class="flex size-11 shrink-0 items-center justify-center">
+        <ChevronDown :size="22" class="text-muted" />
+      </span>
     </button>
   </div>
 </template>

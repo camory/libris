@@ -1,3 +1,4 @@
+import { ChevronDown } from "@lucide/vue";
 import { within } from "@testing-library/dom";
 import { mount } from "@vue/test-utils";
 import { describe, expect, it } from "vitest";
@@ -53,6 +54,18 @@ describe("AuthorBox", () => {
     });
     expect(line.getAttribute("aria-label")).toBe("Rôles");
     expect(line.textContent?.trim()).toBe("");
+  });
+
+  it("keeps the roles' list closed", () => {
+    // When
+    const wrapper = box("René Goscinny", ["WRITER"], "BD");
+
+    // Then
+    const line = rolesLine(within(wrapper.element as HTMLElement));
+    expect(line?.getAttribute("aria-expanded")).toBe("false");
+    expect(line?.contains(wrapper.findComponent(ChevronDown).element)).toBe(
+      true,
+    );
   });
 
   function rolesLine(box: ReturnType<typeof screen>) {
