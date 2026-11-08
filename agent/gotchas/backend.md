@@ -405,7 +405,8 @@ Read whole by a run that changes `backend/`, after `every-run.md`.
   ON CONFLICT specification`); the collation goes after the expression.
   Two names of one edition and role that the index matches but
   `Contributions.of` does not (`Jo Nesbø`, `Jo Nesbo`) meet one author id:
-  the contribution insert's `ON CONFLICT DO NOTHING` keeps the first link.
+  the contribution insert's `ON CONFLICT (edition_id, author_id, role) DO
+  NOTHING` keeps the first link.
 - An edition writes only its `series_id`, which references `series`: a slice
   case inserting an edition with a `seriesVolume` stores its series first,
   hence `JdbcSeriesRepository` in the constructor of
