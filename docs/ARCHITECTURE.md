@@ -349,7 +349,10 @@ session, no BCrypt.
   the frontend creates it through `createLibrisApp` over the fakes of its
   ports, its Given naming the reader, what each port answers and what it
   fails on, in the words of the spec. A fake answers what it was built with,
-  and a scenario asserts what the reader sees, never what a fake recorded.
+  and a scenario asserts what the reader sees. It reads what a fake recorded
+  only for an effect the screen cannot show (what Libris was asked to
+  change, a sound the phone makes), never to prove again what the screen
+  already shows.
   The mock proves the communication with the API in `infra/api` and in one
   smoke case of the fast-entry scenarios, which boots through `bootstrap`. A
   scenario asserts the exact values its spec names: with the domain and
