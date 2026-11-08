@@ -66,23 +66,6 @@ describe("WebAudioBeeper", () => {
   });
 });
 
-interface StandInWave {
-  real: number[];
-  imag: number[];
-}
-
-interface StandInOscillator {
-  frequency: { value: number };
-  wave: StandInWave | null;
-  connectedTo: unknown[];
-  startedAt: number | null;
-  stoppedAt: number | null;
-  setPeriodicWave(wave: StandInWave): void;
-  connect(node: unknown): void;
-  start(when: number): void;
-  stop(when: number): void;
-}
-
 function browserAudio() {
   const browser = {
     contexts: 0,
@@ -144,4 +127,21 @@ function newOscillator(): StandInOscillator {
       this.stoppedAt = when;
     },
   };
+}
+
+interface StandInOscillator {
+  frequency: { value: number };
+  wave: StandInWave | null;
+  connectedTo: unknown[];
+  startedAt: number | null;
+  stoppedAt: number | null;
+  setPeriodicWave(wave: StandInWave): void;
+  connect(node: unknown): void;
+  start(when: number): void;
+  stop(when: number): void;
+}
+
+interface StandInWave {
+  real: number[];
+  imag: number[];
 }
