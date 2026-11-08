@@ -268,7 +268,7 @@ function add() {
           <p class="text-label text-muted">
             {{ t("isbn.form.authors.label") }}
           </p>
-          <div class="flex flex-col gap-3.5">
+          <div v-if="authors.length" class="flex flex-col gap-3.5">
             <AuthorBox
               v-for="author in authors"
               :key="author.name"
@@ -277,6 +277,12 @@ function add() {
               :kind="kind"
             />
           </div>
+          <button
+            type="button"
+            class="-ml-3 h-11 self-start px-3 text-button text-accent"
+          >
+            {{ t("isbn.form.authors.add") }}
+          </button>
         </div>
       </template>
 

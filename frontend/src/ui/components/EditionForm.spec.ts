@@ -322,6 +322,24 @@ describe("EditionForm", () => {
     ).toEqual([]);
   });
 
+  it("offers Ajouter un auteur with no author", () => {
+    // When
+    const wrapper = form();
+
+    // Then
+    expect(
+      within(wrapper.element as HTMLElement).getAllByRole("button", {
+        name: "Ajouter un auteur",
+      }),
+    ).toHaveLength(1);
+    const text = wrapper.text().replace(/\s+/g, " ");
+    const positions = ["Auteurs", "Ajouter un auteur", "Collection"].map(
+      (part) => text.indexOf(part),
+    );
+    expect(positions).not.toContain(-1);
+    expect(positions).toEqual([...positions].sort((a, b) => a - b));
+  });
+
   it("shows the covers on offer as the card does", () => {
     // When
     const covers = screen(onePiece1, [], [inventaire, openLibrary]);
@@ -953,7 +971,10 @@ describe("EditionForm", () => {
       .queryAllByRole("button")
       .filter((button) => !button.hasAttribute("aria-expanded"))
       .map((button) => button.textContent?.trim() ?? "")
-      .filter((name) => name !== "Ajouter à ma bibliothèque");
+      .filter(
+        (name) =>
+          name !== "Ajouter à ma bibliothèque" && name !== "Ajouter un auteur",
+      );
   }
 
   function disabledOf(fields: ReturnType<typeof screen>) {
