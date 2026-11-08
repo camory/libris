@@ -16,6 +16,63 @@
 >
 > Follow-ups and ideas go to `agent/PROPOSED.md`, never here.
 
+## Scan beep — specs/scan-beep.md
+
+Contract: none, the beep is the frontend's alone, so no pin moves and the
+backend has no task (D04). The scenario tests run over the beep's fake;
+the sound the phone makes is the browser adapter's, which arrives with the
+walking skeleton, since the application builds every port it takes (D05).
+T138 turns the beep on and sounds it at the camera's read, which S3, S4
+and S7 hold from then on; each task after it adds one scenario to the
+trick: the half second, the trick undone, the beep kept on the phone.
+Nothing on screen changes: the title looks and reads as before.
+
+- [ ] T138 Frontend: the trick turns the beep on, heard at the camera's read.
+      Three taps on the lookup screen's title turn the beep on, sounding it
+      once; while on, the camera's read beeps before Libris answers, a typed
+      ISBN or the camera closed never. The pace, the trick undone and the
+      beep kept wait for T139 to T141. The port joins the application's
+      ports, its fake handed through them as #340 records; its browser
+      adapter plays the spec's tone, readied by the tap that opens the
+      camera, proven by its own spec (D05, D07). Walking skeleton; realises
+      S1, S3, S4 and S7; un-skips their frontend tests, both of S7's cases.
+
+- [ ] T139 Frontend: three slow taps change nothing.
+      The trick counts only taps in a row, each less than half a second
+      after the one before; a slower tap starts a new row, so three taps
+      with a longer wait between two turn nothing on and sound nothing,
+      proven where the gaps are measured with the clock under the test's
+      control (D07). Realises S2; un-skips its frontend test.
+
+- [ ] T140 Frontend: the trick again turns the beep off, in silence.
+      With the beep on, the same three taps turn it off: no beep sounds,
+      and the camera's next read is silent, Libris looking the ISBN up as
+      before. A row starts anew once it has worked the trick, so six quick
+      taps turn the beep on, then off. Realises S5; un-skips its frontend
+      test.
+
+- [ ] T141 Frontend: the beep stays as the trick left it on that phone.
+      The beep's state is kept in the phone's storage, across closing and
+      reopening Libris: on where the trick turned it on, off where it was
+      never done or the app's data was cleared. Nothing is sent to Libris,
+      and it is no store of the application's (D05: Pinia holds the
+      session and the offline catalogue alone). The state goes through a
+      port of its own, its adapter in `infra/storage` over the browser's
+      `Storage` given to its constructor, `bootstrap` passing
+      `localStorage`, proven by its own spec; no view or composable reads
+      `localStorage` (D05). The scenario file's `open()` hands that adapter
+      over the real `localStorage` through the ports, so S6 spans its two
+      openings. Realises S6; un-skips its frontend test.
+
+*Done (Tophe, on the Pixel, from the installed app on staging, media
+volume up): scan One Piece 1, no beep. Tap the title Ajouter un ouvrage
+three times quickly and hear the beep. Scan One Piece 1 and hear the beep
+as the camera closes, before the card shows; scan an ISBN no source knows
+and hear it too. Open the camera and close it with the cross: no beep.
+Type 9782723488525 and tap Chercher: no beep. Close Libris, reopen it,
+scan again: the beep. Tap the title three times quickly: no sound; scan:
+no beep.*
+
 ## Done
 
 - Phase 0 — Foundations, T001 to T012, done 2026-09-10 with `v0.1.3` on the
