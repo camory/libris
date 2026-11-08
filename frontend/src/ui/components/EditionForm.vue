@@ -145,6 +145,7 @@ function add() {
     kind: kind.value,
     ...values,
     summary: summary.value,
+    authors,
   };
   refusals.value = refusalsOf(draft, locale.value);
   const first = fields.find((field) => refusals.value[field]);
@@ -153,10 +154,7 @@ function add() {
     boxes[first]?.scrollIntoView?.({ block: "center" });
     return;
   }
-  emit(
-    "add",
-    editionOf(props.isbn13, answered?.authors ?? [], draft, locale.value),
-  );
+  emit("add", editionOf(props.isbn13, draft, locale.value));
 }
 </script>
 

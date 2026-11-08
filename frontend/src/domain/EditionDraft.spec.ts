@@ -14,6 +14,7 @@ const filled: EditionDraft = {
   language: "français",
   pages: "203",
   summary: "",
+  authors: [{ name: "Eiichirō Oda", roles: ["WRITER", "ARTIST"] }],
 };
 
 describe("editionOf", () => {
@@ -30,7 +31,7 @@ describe("editionOf", () => {
     const spaced = Object.fromEntries(
       Object.entries(filled).map(([field, value]) => [
         field,
-        field === "kind" ? value : `  ${value} `,
+        field === "kind" || field === "authors" ? value : `  ${value} `,
       ]),
     ) as unknown as EditionDraft;
 
@@ -55,6 +56,7 @@ describe("editionOf", () => {
       language: " ",
       pages: "   ",
       summary: " \n ",
+      authors: [{ name: "Eiichirō Oda", roles: ["WRITER", "ARTIST"] }],
     };
 
     // When
@@ -74,8 +76,29 @@ describe("editionOf", () => {
     });
   });
 
+  it("sends each box's name once per role chosen, in the order of the boxes", () => {
+    // Given
+    const draft: EditionDraft = {
+      ...filled,
+      authors: [
+        { name: "Albert Uderzo", roles: ["ARTIST", "COLOURIST"] },
+        { name: "René Goscinny", roles: ["WRITER"] },
+      ],
+    };
+
+    // When
+    const edition = read(draft);
+
+    // Then
+    expect(edition.authors).toEqual([
+      { name: "Albert Uderzo", role: "ARTIST" },
+      { name: "Albert Uderzo", role: "COLOURIST" },
+      { name: "René Goscinny", role: "WRITER" },
+    ]);
+  });
+
   function read(draft: EditionDraft) {
-    return editionOf(onePiece1.isbn13, onePiece1.authors, draft, "fr");
+    return editionOf(onePiece1.isbn13, draft, "fr");
   }
 });
 
@@ -174,6 +197,7 @@ describe("refusalsOf", () => {
       language: "",
       pages: " ",
       summary: "",
+      authors: [],
     };
 
     // When
