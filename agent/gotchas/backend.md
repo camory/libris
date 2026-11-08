@@ -387,21 +387,25 @@ Read whole by a run that changes `backend/`, after `every-run.md`.
   source fails the whole lookup, the other sources' answers included, and
   a migration reading through the same mapping would refuse the start.
 - A name row shared by many parents is inserted or matched in one statement:
-  `insert into author (id, name) values (:id, :name) on conflict (lower(name))
-  do update set name = author.name returning id`. The conflict target is the
-  expression the unique index carries, `lower(name)`, not the column; and
-  `do update` is what makes `returning` answer the row that already exists,
-  where `do nothing` answers no row at all and costs a second statement. The
-  row keeps the spelling that created it, so an edition naming it otherwise
-  reads back with that first spelling. Authors are still unique on
-  `lower(name)`; series since `V014` on `((BTRIM(name)) COLLATE
-  ignoring_case_and_accents)`, so case, accents and the spaces at the ends
-  do not count. `JdbcSeriesRepository.findOrInsert` is that statement with
-  `RETURNING id, name`, answering the stored series whole, its conflict
-  target written as the index's, `((BTRIM(name)) COLLATE
-  ignoring_case_and_accents)`; with the collation inside the inner
-  parentheses it infers no index (`there is no unique or exclusion
-  constraint matching the ON CONFLICT specification`).
+  `INSERT INTO author (id, name) VALUES (:id, :name) ON CONFLICT
+  ((BTRIM(name)) COLLATE ignoring_case_and_accents) DO UPDATE SET name =
+  author.name RETURNING id`. The conflict target is the expression the
+  unique index carries, not the column; and `DO UPDATE` is what makes
+  `RETURNING` answer the row that already exists, where `DO NOTHING`
+  answers no row at all and costs a second statement. The row keeps the
+  spelling that created it, so an edition naming it otherwise reads back
+  with that first spelling. Authors (since `V015`) and series (since
+  `V014`) are unique on `((BTRIM(name)) COLLATE ignoring_case_and_accents)`,
+  so case, accents and the spaces at the ends do not count.
+  `JdbcSeriesRepository.findOrInsert` is that statement with `RETURNING id,
+  name`, answering the stored series whole. With the collation inside the
+  inner parentheses, `ON CONFLICT (((BTRIM(name)) COLLATE …))` or, for an
+  index on the bare column, `ON CONFLICT ((name COLLATE …))`, PostgreSQL
+  infers no index (`there is no unique or exclusion constraint matching the
+  ON CONFLICT specification`); the collation goes after the expression.
+  Two names of one edition and role that the index matches but
+  `Contributions.of` does not (`Jo Nesbø`, `Jo Nesbo`) meet one author id:
+  the contribution insert's `ON CONFLICT DO NOTHING` keeps the first link.
 - An edition writes only its `series_id`, which references `series`: a slice
   case inserting an edition with a `seriesVolume` stores its series first,
   hence `JdbcSeriesRepository` in the constructor of
@@ -548,8 +552,12 @@ Read whole by a run that changes `backend/`, after `every-run.md`.
   appear in select list`), collation or not; a semi-join (`EXISTS`) keeps
   an edition once without widening the answer.
 - In Kotlin, a bookshelf name's sameness ignoring case and accents is
-  `BookshelfName.isSameAs`, over a private `folded` in `BookshelfName.kt`,
-  the only folding of the backend's Kotlin; `BookshelfName` is not
+  `BookshelfName.isSameAs`, over a private `folded` in `BookshelfName.kt`;
+  `Contributions.kt` holds a second private folding of its own for the
+  authors' names, the same without `œ`/`æ` and with the spaces at the ends
+  dropped (`trim(' ')`, as `BTRIM` drops the space and leaves a tab).
+  Both leave `Ø` whole where the index matches it (see the name-row item).
+  `BookshelfName` is not
   `Comparable` and its `equals` stays exact. No Kotlin code sorts a list
   the screen shows. The folding: `Normalizer` NFD, the `\p{Mn}`
   marks dropped, `lowercase()`, then `œ` and `æ` spelt `oe` and `ae`,

@@ -157,3 +157,18 @@ Format:
 - Verified: `./gradlew check` on the host, 512 tests, 0 failures, 1 skipped
   (S5).
 - Left over: nothing.
+
+## 2026-11-08 — T143 An author's name matched as PRD §3 says — done
+- Did: `V015` makes `author_name_unique` ignore case, accents and the
+  spaces at a name's ends, as series are; `INSERT_AUTHOR` names it as its
+  conflict target and `Contributions.of` folds names the same way; S5 of
+  the authors edit un-skipped and green.
+- Decided: the folding trims the space character alone (`trim(' ')`),
+  since `BTRIM` leaves a tab.
+- Deviations from the brief: none. Step 2's first green tried the bare
+  column target `((name COLLATE …))`, which infers no index; the target
+  takes the collation after the expression, as step 3's final form does
+  anyway.
+- Left over: the two private foldings (`BookshelfName.kt`,
+  `Contributions.kt`) in `agent/PROPOSED.md`; T144 moves the frontend
+  onto `v0.17.0`.

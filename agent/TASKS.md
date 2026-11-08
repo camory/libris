@@ -39,7 +39,7 @@ frontend task.
       generated case, every other answer unchanged (D07). The backend's
       walking skeleton; realises S6 on the backend; un-skips its test.
 
-- [ ] T143 Backend: an author's name matched as PRD §3 says.
+- [x] T143 Backend: an author's name matched as PRD §3 says.
       An ouvrage added under an author's name is linked to the author the
       house holds under it whatever its capitals, accents and end spaces,
       the stored spelling kept; any other name creates an author. Kept
