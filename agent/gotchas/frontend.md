@@ -185,6 +185,13 @@ Read whole by a run that changes `frontend/`, after `every-run.md`.
   (the first by default), then *Retirer*. While a row asks, its *Dans …*
   text is gone, so "no *Dans Chambre*" holds before the removal answers:
   count the trashes too.
+- The authors' names are `AuthorsApi.names()` (`application/AuthorsApi.ts`,
+  `authorsApiKey`), and `FakeAuthorsApi` takes them, `string[] | Error`.
+  The port has no client and no place in `LibrisPorts` yet:
+  `AuthorsEditScenarios`' `open()` provides it through `app.provide`, a
+  `FakeAuthorsApi([])` by default. The task that pins `v0.17.0` writes its
+  client over `GET /author-names`, adds `authorsApi` to `LibrisPorts`, and
+  moves that `open()`'s `app.provide` into its ports.
 - `EditionForm` takes `isbn13`, `edition` (a `SourceEdition`, absent for
   an unknown ISBN), `copies`, `covers`, `adding`, `failed` and
   `seriesNames`, required,
