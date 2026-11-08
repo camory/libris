@@ -264,6 +264,16 @@ describe("EditionForm", () => {
     ).toEqual([3, 4, 5, 6]);
   });
 
+  it("keeps an author of several roles in one box", () => {
+    // When
+    const fields = screen(onePiece1);
+
+    // Then
+    expect(authorsOf(fields)).toEqual([
+      { name: "Eiichirō Oda", roles: "scénario, dessin" },
+    ]);
+  });
+
   it("words the authors' roles in the chosen kind", async () => {
     // Given
     const fields = screen(asterix1);
