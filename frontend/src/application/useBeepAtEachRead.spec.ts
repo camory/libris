@@ -111,4 +111,22 @@ describe("useBeepAtEachRead", () => {
     expect(afterTheTrick).toBe(1);
     expect(beeper.beeps).toBe(1);
   });
+
+  it("starts a new row once the trick has worked", () => {
+    // Given
+    const beeper = new FakeBeeper();
+    const { beep, tap } = useBeepAtEachRead(beeper);
+
+    // When
+    tap(0);
+    tap(100);
+    tap(200);
+    tap(300);
+    tap(400);
+    tap(500);
+    beep();
+
+    // Then
+    expect(beeper.beeps).toBe(1);
+  });
 });

@@ -20,6 +20,7 @@ export function useBeepAtEachRead(beeper: Beeper): {
     taps = at - lastTap < halfASecond ? taps + 1 : 1;
     lastTap = at;
     if (taps === 3) {
+      taps = 0;
       on = !on;
       beep();
     }
