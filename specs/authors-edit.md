@@ -246,9 +246,10 @@ absent when there is none. Top to bottom:
   - Under a `border` hairline inset 14, its second line, the roles, a
     button at least 44 tall, `aria-expanded`: the roles chosen in body, in
     the words and the order of the card, *scénario, dessin*, empty when
-    none is chosen; at its right the chevron in `muted`, under the trash,
-    turned up while the list is open. Four roles take a second line, the
-    box growing with it.
+    none is chosen, its `aria-label` *Rôles* followed by them, *Rôles
+    scénario, dessin*, *Rôles* alone when none is chosen; at its right the
+    chevron in `muted`, under the trash, turned up while the list is open.
+    Four roles take a second line, the box growing with it.
   - While the name has the focus and holds text, its suggestions 4 under
     the box, as *Série*'s.
   - A tap on the roles line opens their list 4 under the box, a list of
@@ -330,4 +331,14 @@ spelling.
 
 ## Tasks
 
-Left for the planner.
+- T142 — S6, the backend on `v0.17.0` — backend
+- T143 — S5 — backend
+- T144 — S1, the frontend on `v0.17.0` — frontend
+- T145 — S2 — frontend
+- T146 — S3 — frontend
+- T147 — S4 — frontend
+- T148 — S5, S9 — frontend
+- T149 — S6 the suggestions, S7 — frontend
+- T150 — S6 the word — frontend
+- T151 — S8 Rôle manquant — frontend
+- T152 — S8 Auteur en double — frontend
