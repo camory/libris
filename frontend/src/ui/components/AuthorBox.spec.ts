@@ -17,6 +17,20 @@ describe("AuthorBox", () => {
     ).toBe("René Goscinny");
   });
 
+  it("reads the roles in the words of the kind", () => {
+    // When
+    const box = screen("René Goscinny", ["WRITER", "ARTIST"], "BD");
+
+    // Then
+    expect(rolesLine(box)?.textContent?.trim()).toBe("scénario, dessin");
+  });
+
+  function rolesLine(box: ReturnType<typeof screen>) {
+    return box
+      .queryAllByRole("button")
+      .find((button) => button.hasAttribute("aria-expanded"));
+  }
+
   function screen(name: string, roles: AuthorRole[], kind: Kind) {
     return within(box(name, roles, kind).element as HTMLElement);
   }

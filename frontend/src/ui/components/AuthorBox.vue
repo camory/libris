@@ -1,12 +1,17 @@
 <script setup lang="ts">
+import { computed } from "vue";
 import { useI18n } from "vue-i18n";
 import type { AuthorRole, Kind } from "../../domain/SourceEdition";
 
-defineProps<{ roles: AuthorRole[]; kind: Kind }>();
+const props = defineProps<{ roles: AuthorRole[]; kind: Kind }>();
 
 const name = defineModel<string>("name", { required: true });
 
 const { t } = useI18n();
+
+const words = computed(() =>
+  props.roles.map((role) => t(`role.BD.${role}`)).join(", "),
+);
 </script>
 
 <template>
@@ -17,5 +22,13 @@ const { t } = useI18n();
       :aria-label="t('isbn.form.authors.name')"
       class="h-12 w-full bg-transparent pr-0.75 pl-3.5 text-field"
     />
+    <div class="mx-3.5 border-t border-border"></div>
+    <button
+      type="button"
+      aria-expanded="false"
+      class="flex min-h-11 w-full items-center pr-0.75 pl-3.5 text-left text-body"
+    >
+      {{ words }}
+    </button>
   </div>
 </template>
