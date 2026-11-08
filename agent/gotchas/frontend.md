@@ -102,7 +102,7 @@ Read whole by a run that changes `frontend/`, after `every-run.md`.
   rework); its spec runs over a stand-in context written in it
   (`browserAudio()`), which records the oscillators and counts `resumes`.
   `IsbnView` calls `ready()` first in `openCamera`, holds
-  `useBeepAtEachRead(beeper)`, which exposes `beep()`, its verb, and
+  `useBeepAtEachRead(beeper, beepSetting)`, which exposes `beep()`, its verb, and
   `tap(at)` (`tap($event.timeStamp)` on the `h1`'s click, the instant in
   milliseconds, a tap 500 ms or more after the one before starting a new
   row of which it is the first, the third of a row turning the beep on,
@@ -110,11 +110,19 @@ Read whole by a run that changes `frontend/`, after `every-run.md`.
   row however soon it comes, so six quick taps turn it on, then off;
   `beep()` on a non-`null` camera read before `search`, sounding only
   while the trick left it on), so the composable reads no clock, its
-  spec writes each tap's instant, and the state lives with the view's
-  mount and leaving the screen forgets it until T141; `IsbnView.spec.ts`' `mountView` takes the
-  beeper sixth. `ScanBeepScenarios` gives the fake through the ports, does
-  the trick through three clicks on the `h1`, and mounts S6's second app
-  over the same `localStorage`, which it clears after each test; S2 fakes
+  spec writes each tap's instant. The state is the port `BeepSetting`
+  (`application/BeepSetting.ts`), `beepSetting` of `LibrisPorts` since
+  T141, provided under `beepSettingKey`: `isOn()` read once at the
+  composable's setup, `keep(on)` at each trick. `WebStorageBeepSetting`
+  (`infra/storage`) takes a `Storage`, `localStorage` from `bootstrap`,
+  and keeps the one entry `beep` set to `on`, off being no entry;
+  `FakeBeepSetting(on = false)` exposes `on`. `IsbnView.spec.ts`'
+  `mountView` takes the beeper sixth and provides a `FakeBeepSetting`
+  itself. `ScanBeepScenarios` gives the fake beeper and the real
+  `WebStorageBeepSetting(localStorage)` through the ports, the other
+  scenario files a `FakeBeepSetting`, does the trick through three clicks
+  on the `h1`, and mounts S6's second app over the same `localStorage`,
+  which it clears after each test; S2 fakes
   `Date`, `performance`, `setTimeout` and `clearTimeout` for its taps only,
   and jsdom stamps `event.timeStamp` with `Date.now()`.
 - The removal of a copy is `CopiesApi.remove(copyId)` (`removed`, or a
