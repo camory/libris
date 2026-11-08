@@ -7,10 +7,8 @@ import io.kotest.matchers.collections.shouldContainExactlyInAnyOrder
 import io.kotest.matchers.shouldBe
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.context.annotation.Import
 
 @JdbcSliceTest
-@Import(JdbcSeriesRepository::class)
 class JdbcSeriesRepositoryTest @Autowired constructor(private val seriesRepository: JdbcSeriesRepository) {
   @Test
   fun `a series new to the house is stored under its name`() {

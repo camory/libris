@@ -142,3 +142,18 @@ Format:
 - Deviations from the brief: none beyond the first run's.
 - Left over: nothing new; the note on the brief's model is the reviewer's,
   for the planner.
+
+## 2026-11-08 — T142 The authors' names on v0.17.0 — fix-up
+- Did (Tophe's call, after review): every JDBC slice test shares one
+  Spring context. `@JdbcSliceTest` imports the eight `Jdbc…` adapters, the
+  slice tests carry no `@Import` of their own, and the pool cap of three is
+  gone. The two items of `agent/gotchas/backend.md` on contexts and on
+  `@JdbcSliceTest` say so, and three items naming a test's `@Import` now
+  name its constructor.
+- Decided: the cap treated the symptom. Each distinct `@Import` set was a
+  context of its own, cached until the JVM ends, each holding a pool of ten
+  connections. The suite now starts six contexts, four of them with a pool,
+  40 connections at peak, measured on `pg_stat_activity`.
+- Verified: `./gradlew check` on the host, 512 tests, 0 failures, 1 skipped
+  (S5).
+- Left over: nothing.

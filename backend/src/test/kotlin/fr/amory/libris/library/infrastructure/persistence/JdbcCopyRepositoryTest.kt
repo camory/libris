@@ -19,7 +19,6 @@ import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.matchers.shouldBe
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.context.annotation.Import
 import org.springframework.dao.DataIntegrityViolationException
 import org.springframework.jdbc.core.simple.JdbcClient
 import java.time.Instant
@@ -28,12 +27,6 @@ import java.util.UUID
 private const val ONE_PIECE = "9782723488525"
 
 @JdbcSliceTest
-@Import(
-  JdbcCopyRepository::class,
-  JdbcEditionRepository::class,
-  JdbcBookshelfRepository::class,
-  JdbcReaderRepository::class,
-)
 class JdbcCopyRepositoryTest @Autowired constructor(
   private val copies: JdbcCopyRepository,
   private val editions: JdbcEditionRepository,

@@ -11,10 +11,8 @@ import fr.amory.libris.fixture.JdbcSliceTest
 import io.kotest.matchers.collections.shouldContainExactlyInAnyOrder
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.context.annotation.Import
 
 @JdbcSliceTest
-@Import(JdbcAuthorNames::class, JdbcEditionRepository::class)
 class JdbcAuthorNamesTest @Autowired constructor(
   private val authorNames: JdbcAuthorNames,
   private val editions: JdbcEditionRepository) {

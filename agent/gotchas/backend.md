@@ -221,7 +221,7 @@ Read whole by a run that changes `backend/`, after `every-run.md`.
   and `copy.bookshelf_id`: a slice case proves them with
   `shouldThrow<DataIntegrityViolationException>`, and inserting a copy needs
   the reader, the bookshelf and the edition rows first, hence four
-  repositories in the `@Import`.
+  repositories in its constructor.
 - `ArchitectureTest`'s application rule lists what `application` may see of
   Spring: `org.springframework.stereotype..`,
   `org.springframework.transaction.support..` and the one type
@@ -404,8 +404,8 @@ Read whole by a run that changes `backend/`, after `every-run.md`.
   constraint matching the ON CONFLICT specification`).
 - An edition writes only its `series_id`, which references `series`: a slice
   case inserting an edition with a `seriesVolume` stores its series first,
-  hence `JdbcSeriesRepository` in the `@Import` of `JdbcEditionRepositoryTest`
-  and `JdbcCatalogueEditionsTest`. A use case reading an edition's series
+  hence `JdbcSeriesRepository` in the constructor of
+  `JdbcEditionRepositoryTest` and `JdbcCatalogueEditionsTest`. A use case reading an edition's series
   name takes `SeriesRepository` (`SeriesInMemory` in `bibliography.fixture`,
   names matched with `lowercase()` alone, unlike the index: no accents, no
   trimming).
@@ -423,25 +423,31 @@ Read whole by a run that changes `backend/`, after `every-run.md`.
 - A unique column that is nullable counts no null in PostgreSQL, so any number
   of editions without an `isbn13` sit side by side while two editions cannot
   share one.
-- The test JVM keeps every Spring context it built, each with its own
-  Hikari pool, and the sandbox PostgreSQL takes 100 connections: an eleventh
-  context of the default ten connections fails whole with `FATAL: sorry, too
-  many clients already` (T142's new slice test, 2026-11-08), on whichever
-  class starts last. A JDBC slice test whose `@Import` set differs from every
-  other's is a context of its own; `@JdbcSliceTest` caps its pool at three.
+- The test JVM caches every Spring context it builds until it ends, one per
+  distinct configuration, and each context with a datasource holds a Hikari
+  pool of ten connections; the sandbox PostgreSQL takes 100. With one
+  context per JDBC slice class, each with its own `@Import`, T142's ninth
+  slice failed the gate with `FATAL: sorry, too many clients already`
+  (2026-11-08). Every JDBC slice test now shares one context: the suite
+  starts six, four with a pool (the JDBC slices, `ScenarioTest`,
+  `StoredSummaryScenarios`, `LibrisApplicationTest`), 40 connections at
+  peak. An annotation or a property added to one slice class alone makes a
+  context of its own, with ten more connections.
 - `@JdbcSliceTest` lives in `fr.amory.libris.fixture` beside `FreshSchema` and
-  `WebSliceTest`, and serves both contexts. A slice test
-  imports the repository it proves with `@Import(Jdbc…Repository::class)` and
-  takes it through an `@Autowired` constructor, with `JdbcClient` beside it
-  only when a case queries through it: detekt's `UnusedPrivateProperty` fails
-  a constructor argument no case reads.
+  `WebSliceTest`, and serves both contexts. It imports every `Jdbc…` adapter
+  of `infrastructure.persistence`, so a new adapter joins its `@Import` and a
+  slice test carries no `@Import` of its own. A slice test takes the
+  adapters it uses through an `@Autowired` constructor, with `JdbcClient`
+  beside them only when a case queries through it: detekt's
+  `UnusedPrivateProperty` fails a constructor argument no case reads.
 - `JdbcClient` expands an empty collection parameter to `IN ()`, which
   PostgreSQL refuses (`BadSqlGrammarException`): a finder over a list of ids
   answers `emptyList()` without a statement when given none, and a slice case
   (`no edition finds no copy`, `no id finds no edition`) proves it.
 - `awaited_cover` is keyed by `edition.isbn13` and references it: a slice
   case inserts the edition before its awaited cover, hence
-  `JdbcEditionRepository` in the `@Import` of `JdbcAwaitedCoverRepositoryTest`.
+  `JdbcEditionRepository` in the constructor of
+  `JdbcAwaitedCoverRepositoryTest`.
   The port reads with `findAll`, the chosen source back through
   `CoverSource.of`; that class still queries `JdbcClient` for the label stored.
 - An `UPDATE` moves a row to the end of a PostgreSQL scan, so a finder

@@ -14,7 +14,6 @@ import io.kotest.matchers.collections.shouldContainExactlyInAnyOrder
 import io.kotest.matchers.shouldBe
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.context.annotation.Import
 import org.springframework.dao.DataIntegrityViolationException
 import org.springframework.jdbc.core.simple.JdbcClient
 import java.time.Instant
@@ -23,7 +22,6 @@ private const val ONE_PIECE = "9782723488525"
 private const val ONE_PIECE_TOME_TWO = "9782723489898"
 
 @JdbcSliceTest
-@Import(JdbcAwaitedCoverRepository::class, JdbcEditionRepository::class)
 class JdbcAwaitedCoverRepositoryTest @Autowired constructor(
   private val awaitedCovers: JdbcAwaitedCoverRepository,
   private val editions: JdbcEditionRepository,

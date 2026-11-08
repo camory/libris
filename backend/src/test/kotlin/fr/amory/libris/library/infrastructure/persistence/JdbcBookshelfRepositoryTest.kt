@@ -15,12 +15,10 @@ import io.kotest.matchers.collections.shouldContainExactlyInAnyOrder
 import io.kotest.matchers.shouldBe
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.context.annotation.Import
 import org.springframework.dao.DataIntegrityViolationException
 import java.time.Instant
 
 @JdbcSliceTest
-@Import(JdbcBookshelfRepository::class, JdbcReaderRepository::class)
 class JdbcBookshelfRepositoryTest @Autowired constructor(
   private val bookshelves: JdbcBookshelfRepository,
   private val readers: JdbcReaderRepository) {

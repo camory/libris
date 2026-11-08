@@ -11,10 +11,8 @@ import io.kotest.matchers.collections.shouldContainExactlyInAnyOrder
 import io.kotest.matchers.shouldBe
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.context.annotation.Import
 
 @JdbcSliceTest
-@Import(JdbcReaderRepository::class, JdbcBookshelfRepository::class)
 class JdbcReaderRepositoryTest @Autowired constructor(
   private val readers: JdbcReaderRepository,
   private val bookshelves: JdbcBookshelfRepository) {
