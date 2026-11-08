@@ -5,16 +5,20 @@ export function useBeepAtEachRead(beeper: Beeper): {
   read: () => void;
 } {
   let taps = 0;
+  let on = false;
 
   function tap() {
     taps += 1;
     if (taps === 3) {
+      on = true;
       beeper.beep();
     }
   }
 
   function read() {
-    beeper.beep();
+    if (on) {
+      beeper.beep();
+    }
   }
 
   return { tap, read };
