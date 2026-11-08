@@ -38,7 +38,7 @@ private const val UPDATE_EDITION =
 private const val INSERT_AUTHOR =
   """
     INSERT INTO author (id, name) VALUES (:id, :name)
-    ON CONFLICT (LOWER(name)) DO UPDATE SET name = author.name
+    ON CONFLICT (name COLLATE ignoring_case_and_accents) DO UPDATE SET name = author.name
     RETURNING id
     """
 
