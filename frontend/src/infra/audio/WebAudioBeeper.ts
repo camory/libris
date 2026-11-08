@@ -23,6 +23,10 @@ export class WebAudioBeeper implements Beeper {
     oscillator.stop(context.currentTime + duration);
   }
 
+  ready(): void {
+    void this.context().resume();
+  }
+
   private context(): AudioContext {
     this.built ??= this.newContext();
     return this.built;

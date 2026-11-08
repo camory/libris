@@ -38,6 +38,21 @@ describe("WebAudioBeeper", () => {
     // Then
     expect(browser.contexts).toBe(1);
   });
+
+  it("resumes a suspended context when readied", () => {
+    // Given
+    const browser = browserAudio();
+    browser.state = "suspended";
+    const beeper = new WebAudioBeeper(browser.newContext);
+
+    // When
+    beeper.ready();
+
+    // Then
+    expect(browser.contexts).toBe(1);
+    expect(browser.resumes).toBe(1);
+    expect(browser.oscillators).toEqual([]);
+  });
 });
 
 interface StandInWave {

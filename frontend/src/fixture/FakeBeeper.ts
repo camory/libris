@@ -6,4 +6,6 @@ export class FakeBeeper implements Beeper {
   beep(): void {
     this.beeps += 1;
   }
+
+  ready(): void {}
 }
