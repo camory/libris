@@ -266,7 +266,11 @@ each a message (U05), the box keeping the `danger` outline even with the
 focus. While the add runs, the names, the roles, the trashes and *Ajouter
 un auteur* accept nothing, as the fields do.
 
-`docs/DESIGN.md` changes with this spec, in U04: a field of a form may go
+`docs/DESIGN.md` changes with this spec. In U01 and U04: a field takes the
+`accent` outline while it has the focus, every field of the app, the
+form's other fields too. In U06: the fields of a form card come each with
+its label or under one that names several. In U07: `ChevronDown`, at 22,
+as the check of a list of several choices. In U04 too: a field of a form may go
 without a label of its own when one label names several of them, its
 `aria-label` naming it; the word in the box is *Existant* or *Nouveau* for
 an author; one box may hold the lines of one thing, an author's name and

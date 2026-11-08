@@ -23,8 +23,9 @@ Six colour roles, every one a Tailwind shade, one value per scheme:
 
 One accent, `accent`, teal-700 `#0f766e` in both schemes, teal-800 `#115e59`
 when pressed: the primary button, the active tab, the scanner icon and
-brackets, the series line of a card. White text sits on it. No other hue
-appears; a second accent is a decision to make here first.
+brackets, the series line of a card, the outline of a field that has the
+focus. White text sits on it. No other hue appears; a second accent is a
+decision to make here first.
 
 The scheme follows the system (`prefers-color-scheme`); the app offers no
 toggle and stores no preference. Both schemes are the same layout with the
@@ -119,7 +120,10 @@ not a second layout.
 ### U04 — Controls: field, primary button, icon button
 **Field.** Its label above it, `label` step, `muted`; then the box, 50 tall,
 full width, `surface`, a 1.5 px `border` outline, radius 12, 14 of side
-padding, the text in the `field` step. The placeholder is an example of a
+padding, the text in the `field` step; it takes the `accent` outline while
+it has the focus. One label may name several fields of one kind, *Auteurs*
+over the authors of a form: each then has no label of its own, its
+`aria-label` naming it, *Nom de l'auteur*. The placeholder is an example of a
 valid value in `muted`, never an instruction; the fields of a form shaped
 like a card (U06) have none, so that an empty field reads as empty. The
 keyboard matches the value: numeric for an ISBN. What the reader types stays as typed; the rule that
@@ -129,7 +133,8 @@ has the focus; the message goes under it (U05).
 An icon that acts on the field, the scanner, sits inside the box at the
 right, as an icon button. A word that says what the text is sits there
 too, in `body` semibold, once the box holds text: *Existante* after a
-check in `accent`, or *Nouvelle* in `muted`, for a series.
+check in `accent`, or *Nouvelle* in `muted`, for a series; *Existant* or
+*Nouveau* for an author.
 A field of several lines, a summary, is three lines tall when empty and
 grows with its text; it keeps the line breaks typed.
 
@@ -140,6 +145,14 @@ in the `field` step, the whole row a button, a `border` hairline between
 two rows, inset 14 each side; the part of the value that matches the text
 in semibold, the rest regular. A tap on one fills the field; the tap, or
 leaving the field, closes them.
+
+**Box of lines.** One box may hold the lines of one thing, an author's name
+and roles: the box of a field, growing with its lines, a `border` hairline
+between two lines, inset 14; a line is a field without a box of its own, or
+the line of a list of several choices. The box takes the `accent` outline
+while one of its lines has the focus or its list is open. A refused one
+takes the `danger` outline whole, kept with the focus, and its message goes
+under the box (U05).
 
 **Form in a list.** A block's form is the last row of its list (U03), and
 it has no primary button. Its fields have no label: a placeholder in
@@ -162,6 +175,17 @@ form, the option's name then its controls and the check; a tap on another
 option moves the form there. While the form is sent the block accepts
 nothing else, and on success it is gone.
 
+**List of several choices.** Values of which the reader chooses several,
+the roles of an author: a line of a box of lines, a button at least 44
+tall, `aria-expanded`, that reads the values chosen in `body`, empty when
+none is, the chevron in `muted` at its right, turned up while the list is
+open. A tap opens the list 4 under the box, shaped as the suggestions: one
+row per value, its word in the `field` step, each row a toggle,
+`aria-pressed`, the check in `accent` at its right when chosen; the rows a
+group named after what they choose, *Rôles*. A tap on a row chooses or
+releases its value and the list stays open; a tap on its line, or anywhere
+else, closes it.
+
 **Row action.** An action that destroys, on one row of a card, asks
 first, inside the row: an icon button at the row's right, the trash
 *Retirer un exemplaire* on a bookshelf row (U06). A tap turns the row into
@@ -173,6 +197,9 @@ it is sent, a spinner takes the check's place and the row accepts nothing.
 A message goes under the question, inside the row (U05). One row of a card
 asks at a time: another row's action moves the question there. Nothing
 undoes it after the check; the row's new state is the success.
+The trash removes a row from where it is, and asks first only when what it
+removes is stored: a row of a form not yet sent, an author, goes at once,
+and the focus goes to the text button that adds a row.
 
 **Segmented choice.** Two views of one screen, each at its own address: a
 block 44 tall, full width, on `surface`, a 1.5 `border` outline, radius 12,
@@ -208,7 +235,8 @@ toggles a state changes its icon, the barcode becomes a cross, the pencil
 
 **Text button.** A verb in the infinitive, `button` step, `accent`, no
 border, no background, 44 tall, 12 of side padding. It lives in a banner
-(U09) and under a card's folded summary (U06), nowhere else: on a screen
+(U09), under a card's folded summary (U06) and under the rows of a form,
+its word on their left edge, *Ajouter un auteur*, nowhere else: on a screen
 the action is the primary button.
 
 **Dot.** A choice among a few pictures, under the picture (U06): a button 44
@@ -318,9 +346,9 @@ picks an entry and never branches.
 
 **Form card.** A form that edits an ouvrage is shaped like a card: the
 card's block, its top part and its bookshelf row, then the fields (U04),
-14 apart, each with its label; its primary button under it as under the
-card (U03). A form opened from a card's pencil takes the card's place,
-and the pencil becomes the cross in the same corner.
+14 apart, each with its label or under one that names several; its primary
+button under it as under the card (U03). A form opened from a card's pencil
+takes the card's place, and the pencil becomes the cross in the same corner.
 
 ### U07 — Icons: Lucide, inline
 An icon is a Lucide icon from `@lucide/vue`: an inline SVG on a 24 grid,
@@ -329,12 +357,13 @@ app, and stroke 3 for the check of a form in a list and of a row's
 question (U04). It has no fill,
 except an icon's filled variant: the star and the crown, filled with
 `currentColor`. Sizes are 22 for the alert of a message, the bookshelf
-rows of a card (U06), the stand-in of a row's missing cover and the glyph
-of a button (U04), 32 on the tab bar, 48 for an empty state (U05). A component
+rows of a card (U06), the stand-in of a row's missing cover, the glyph
+of a button, and the chevron and the check of a list of several choices
+(U04), 32 on the tab bar, 48 for an empty state (U05). A component
 imports the icon it shows under its Lucide name: `House`, `ScanBarcode`,
 `Library`, `BookOpen`, `CircleAlert`, `Search`, `RefreshCw`, `CirclePlus`,
-`Check`, `Star`, `Crown`, `Pencil`, `X`, `Trash2`. No hand-drawn icon, no
-icon font.
+`Check`, `Star`, `Crown`, `Pencil`, `X`, `Trash2`, `ChevronDown`. No
+hand-drawn icon, no icon font.
 
 An icon next to a word is decoration: `aria-hidden`, the word carries the
 meaning. An icon alone is a button (U04) or a tab (U03) and carries its
