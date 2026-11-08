@@ -132,6 +132,21 @@ class JdbcEditionRepositoryTest @Autowired constructor(
   }
 
   @Test
+  fun `two names of one role the index matches are linked once`() {
+    // Given
+    val edition = onePieceTomeOne().copy(
+      contributions = Contributions.of(listOf(Contribution("Jo Nesbø", WRITER), Contribution("Jo Nesbo", WRITER))),
+    )
+
+    // When
+    editions.insert(edition)
+
+    // Then
+    editions.findByIsbn(isbnOf(ONE_PIECE)) shouldBe
+      edition.copy(contributions = Contributions.of(listOf(Contribution("Jo Nesbø", WRITER))))
+  }
+
+  @Test
   fun `two editions without an ISBN stand beside each other`() {
     // Given
     val first = onePieceTomeOne().copy(isbn = null)

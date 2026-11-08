@@ -43,7 +43,7 @@ private const val INSERT_AUTHOR =
     """
 
 private const val INSERT_CONTRIBUTION =
-  "INSERT INTO contribution (edition_id, author_id, role) VALUES (:editionId, :authorId, :role)"
+  "INSERT INTO contribution (edition_id, author_id, role) VALUES (:editionId, :authorId, :role) ON CONFLICT DO NOTHING"
 
 private const val DELETE_CONTRIBUTIONS =
   "DELETE FROM contribution WHERE contribution.edition_id = :editionId"
