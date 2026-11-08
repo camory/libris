@@ -13,7 +13,9 @@ export function useBeepAtEachRead(beeper: Beeper): {
     }
   }
 
-  function read() {}
+  function read() {
+    beeper.beep();
+  }
 
   return { tap, read };
 }

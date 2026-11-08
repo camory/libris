@@ -18,4 +18,19 @@ describe("useBeepAtEachRead", () => {
     expect(afterTwo).toBe(0);
     expect(beeper.beeps).toBe(1);
   });
+
+  it("sounds the beep at a read once it is on", () => {
+    // Given
+    const beeper = new FakeBeeper();
+    const { tap, read } = useBeepAtEachRead(beeper);
+    tap();
+    tap();
+    tap();
+
+    // When
+    read();
+
+    // Then
+    expect(beeper.beeps).toBe(2);
+  });
 });
