@@ -4,7 +4,7 @@
 supermarket checkout's beep, and from then on their phone beeps each time
 the camera reads an ISBN. Now, for the fun of it, for one reader of the
 family, with no name in the code.
-**Status:** draft
+**Status:** done 2026-11-08
 
 ## Scenarios
 
@@ -143,6 +143,7 @@ hear it too. Open the camera and close it with the cross: no beep. Type
 9782723488525 and tap *Chercher*: no beep. Close Libris, reopen it, scan
 again: the beep. Tap the title three times quickly: no sound; scan: no
 beep.
+Checked by Tophe on staging, recorded on 2026-11-08.
 
 ## Tasks
 
