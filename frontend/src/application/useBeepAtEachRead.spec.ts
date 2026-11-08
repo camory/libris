@@ -176,4 +176,20 @@ describe("useBeepAtEachRead", () => {
     // Then
     expect(beepSetting.on).toBe(true);
   });
+
+  it("keeps the beep off, turned off by the trick, in silence", () => {
+    // Given
+    const beeper = new FakeBeeper();
+    const beepSetting = new FakeBeepSetting(true);
+    const { tap } = useBeepAtEachRead(beeper, beepSetting);
+
+    // When
+    tap(0);
+    tap(100);
+    tap(200);
+
+    // Then
+    expect(beepSetting.on).toBe(false);
+    expect(beeper.beeps).toBe(0);
+  });
 });
