@@ -8,7 +8,7 @@ import {
 import { flushPromises } from "@vue/test-utils";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import type { App } from "vue";
-import { authorsApiKey, type AuthorsApi } from "../application/AuthorsApi";
+import type { AuthorsApi } from "../application/AuthorsApi";
 import type { BookshelfApi } from "../application/BookshelfApi";
 import type { IsbnApi } from "../application/IsbnApi";
 import { createLibrisApp } from "../createLibrisApp";
@@ -465,10 +465,10 @@ describe("Authors edit", () => {
         copiesApi: new FakeCopiesApi(new Error("no removal in this scenario")),
         beeper: new FakeBeeper(),
         beepSetting: new FakeBeepSetting(),
+        authorsApi: world.authors ?? new FakeAuthorsApi([]),
       },
       "sha-abc1234",
     );
-    app.provide(authorsApiKey, world.authors ?? new FakeAuthorsApi([]));
     app.mount(host);
     return within(host);
   }

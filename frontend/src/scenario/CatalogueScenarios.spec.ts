@@ -7,6 +7,7 @@ import type { Book } from "../domain/Book";
 import type { Bookshelf } from "../domain/Bookshelf";
 import type { Copy } from "../domain/Copy";
 import { FakeAppUpdate } from "../fixture/FakeAppUpdate";
+import { FakeAuthorsApi } from "../fixture/FakeAuthorsApi";
 import { FakeBarcodeScanner } from "../fixture/FakeBarcodeScanner";
 import { FakeBeepSetting } from "../fixture/FakeBeepSetting";
 import { FakeBeeper } from "../fixture/FakeBeeper";
@@ -255,6 +256,7 @@ describe("Catalogue", () => {
         copiesApi: new FakeCopiesApi(new Error("no removal in this scenario")),
         beeper: new FakeBeeper(),
         beepSetting: new FakeBeepSetting(),
+        authorsApi: new FakeAuthorsApi([]),
       },
       "sha-abc1234",
     );

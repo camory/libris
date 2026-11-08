@@ -10,6 +10,7 @@ import type { IsbnApi } from "../application/IsbnApi";
 import { createLibrisApp } from "../createLibrisApp";
 import type { SourceEdition } from "../domain/SourceEdition";
 import { FakeAppUpdate } from "../fixture/FakeAppUpdate";
+import { FakeAuthorsApi } from "../fixture/FakeAuthorsApi";
 import { FakeBarcodeScanner } from "../fixture/FakeBarcodeScanner";
 import { FakeBeepSetting } from "../fixture/FakeBeepSetting";
 import { FakeBeeper } from "../fixture/FakeBeeper";
@@ -79,6 +80,7 @@ describe("Kind", () => {
         copiesApi: new FakeCopiesApi(new Error("no removal in this scenario")),
         beeper: new FakeBeeper(),
         beepSetting: new FakeBeepSetting(),
+        authorsApi: new FakeAuthorsApi([]),
       },
       "sha-abc1234",
     );

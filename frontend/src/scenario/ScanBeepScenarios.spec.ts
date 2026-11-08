@@ -10,6 +10,7 @@ import type { BarcodeScanner } from "../application/BarcodeScanner";
 import type { IsbnAnswer, IsbnApi } from "../application/IsbnApi";
 import { createLibrisApp } from "../createLibrisApp";
 import { FakeAppUpdate } from "../fixture/FakeAppUpdate";
+import { FakeAuthorsApi } from "../fixture/FakeAuthorsApi";
 import { FakeBarcodeScanner } from "../fixture/FakeBarcodeScanner";
 import { FakeBeeper } from "../fixture/FakeBeeper";
 import { FakeBookshelfApi } from "../fixture/FakeBookshelfApi";
@@ -260,6 +261,7 @@ describe("Scan beep", () => {
         copiesApi: new FakeCopiesApi(new Error("no removal in this scenario")),
         beeper: world.beeper,
         beepSetting: new WebStorageBeepSetting(localStorage),
+        authorsApi: new FakeAuthorsApi([]),
       },
       "sha-abc1234",
     );
