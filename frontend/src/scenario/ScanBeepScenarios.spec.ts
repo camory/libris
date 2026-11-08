@@ -184,7 +184,7 @@ describe("Scan beep", () => {
     expect(beeper.beeps).toBe(1);
   });
 
-  it.skip("S7 Only the camera's read beeps, the camera closed", async () => {
+  it("S7 Only the camera's read beeps, the camera closed", async () => {
     // Given
     const beeper = new FakeBeeper();
     const screen = await open({ beeper, camera: theCameraOpen() });
