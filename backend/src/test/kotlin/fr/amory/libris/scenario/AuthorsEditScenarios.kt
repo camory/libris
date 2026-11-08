@@ -32,7 +32,6 @@ class AuthorsEditScenarios @Autowired constructor(private val libris: Libris) {
   }
 
   @Test
-  @Disabled("authors edit")
   fun `S6 The authors of the house are suggested`() {
     // Given
     val sam = libris.reader("sam", "Sam")
