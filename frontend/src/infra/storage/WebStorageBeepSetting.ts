@@ -4,7 +4,7 @@ export class WebStorageBeepSetting implements BeepSetting {
   constructor(private readonly storage: Storage) {}
 
   isOn(): boolean {
-    return false;
+    return this.storage.getItem("beep") === "on";
   }
 
   keep(): void {

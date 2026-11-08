@@ -27,4 +27,16 @@ describe("WebStorageBeepSetting", () => {
     // Then
     expect(on).toBe(false);
   });
+
+  it("reads the beep on from the phone's storage", () => {
+    // Given
+    localStorage.setItem("beep", "on");
+    const beepSetting = new WebStorageBeepSetting(localStorage);
+
+    // When
+    const on = beepSetting.isOn();
+
+    // Then
+    expect(on).toBe(true);
+  });
 });
