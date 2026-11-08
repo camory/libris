@@ -246,9 +246,10 @@ absent when there is none. Top to bottom:
   - Under a `border` hairline inset 14, its second line, the roles, a
     button at least 44 tall, `aria-expanded`: the roles chosen in body, in
     the words and the order of the card, *scénario, dessin*, empty when
-    none is chosen; at its right the chevron in `muted`, under the trash,
-    turned up while the list is open. Four roles take a second line, the
-    box growing with it.
+    none is chosen, its `aria-label` *Rôles* followed by them, *Rôles
+    scénario, dessin*, *Rôles* alone when none is chosen; at its right the
+    chevron in `muted`, under the trash, turned up while the list is open.
+    Four roles take a second line, the box growing with it.
   - While the name has the focus and holds text, its suggestions 4 under
     the box, as *Série*'s.
   - A tap on the roles line opens their list 4 under the box, a list of

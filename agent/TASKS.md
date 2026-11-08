@@ -46,7 +46,9 @@ frontend task.
       atomically where the name is found or inserted, as the series' name
       is (D12); no author stored on 2026-11-08 folds onto another. The
       contributions keep one per author and role, two names matching so
-      kept once, unit tested (D12). Realises S5; un-skips its backend test.
+      kept once, unit tested (D12). The item of `agent/PROPOSED.md` on
+      authors unique on `LOWER(name)` goes, answered. Realises S5; un-skips
+      its backend test.
 
 - [ ] T144 Frontend: the authors on `v0.17.0`, open as rows.
       Precondition (human): T143 deployed (D04). `vitest.global-setup.ts`
@@ -56,7 +58,9 @@ frontend task.
       D05, D07). Under *Auteurs*, shown with no author too, one box per
       author in the card's order: its name, named *Nom de l'auteur*, its
       roles' line, `aria-expanded`, in the kind's words, a chevron (U04,
-      U06, U07). Walking skeleton; realises S1; un-skips its two cases.
+      U06, U07), named *Rôles* followed by the roles it reads, *Rôles*
+      alone when it reads none. Walking skeleton; realises S1; un-skips
+      its two cases.
 
 - [ ] T145 Frontend: an author is added.
       *Ajouter un auteur*, under the last box or the label, adds a box
@@ -266,9 +270,3 @@ says René Goscinny, the house's spelling.*
   another reader. T081, T088 and T084 read such a refusal as no answer and
   show their S9 sentence; say if one should read otherwise. T135 reads
   the removal's `400`, which the screen never provokes, the same way.
-- **The name of an empty roles' line.** An author's roles' line reads the
-  roles chosen and is empty when none is (`specs/authors-edit.md`,
-  *Screen*), so with no role chosen the button has no accessible name, as
-  #363 notes. The scenario tests do not depend on it, and T147 and T151
-  build the line as the spec draws it; say if it should carry an
-  `aria-label` of its own, *Rôles de* followed by the name for instance.
