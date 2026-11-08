@@ -130,3 +130,15 @@ Format:
   (`too many clients already`, 74 cases).
 - Left over: T143 (an author's name matched as PRD §3 says) and T144 (the
   frontend onto `v0.17.0`), both in the backlog.
+
+## 2026-11-08 — T142 The authors' names on v0.17.0 — reworked
+- Did: `AuthorNamesAnswering.findAll`'s `=` body starts on the next line;
+  the `JdbcClient` `query(…)` item of `agent/gotchas/backend.md` records
+  that `query(String::class.java).list()` answers a `List<String?>`.
+- Decided: the reviewer's verdict of 2026-11-08 amended nothing; its
+  blocking finding was D10's layout, which the brief's model fake
+  (`CatalogueEditionsAnswering`, line 20, outside this diff) breaks too and
+  stays as it is.
+- Deviations from the brief: none beyond the first run's.
+- Left over: nothing new; the note on the brief's model is the reviewer's,
+  for the planner.

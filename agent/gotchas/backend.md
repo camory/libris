@@ -413,6 +413,9 @@ Read whole by a run that changes `backend/`, after `every-run.md`.
   `singleOrNull()`: a finder of one row that may be missing answers
   `.optional().orElse(null)`; `single()` throws
   `EmptyResultDataAccessException` on no row.
+  `query(String::class.java).list()` answers a `List<String?>`, which a
+  port's `List<String>` refuses: a column read alone maps itself,
+  `query { rs, _ -> rs.getString("name") }` (`JdbcAuthorNames`).
 - `ResultSet.getInt` and `getLong` read a null column as `0`. A nullable
   integer is read with `rs.getObject("page_count", Int::class.javaObjectType)`,
   which answers `null`; the mutation to `getInt` reds a case asserting an
