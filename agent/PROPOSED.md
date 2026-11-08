@@ -527,3 +527,13 @@
   for `dropRemovedCopy` (T137); were `useRemoveCopy` to hand the copy's id
   to `afterRemoval`, both `let`s and both wrappers would go (Middle Man,
   temporal coupling, found on T136's review).
+- 2026-11-08 CI: the backend image's build stage downloads the Gradle
+  distribution and every dependency on each CI run, since its
+  `--mount=type=cache,target=/root/.gradle` does not outlive the runner.
+  Carrying that cache into Docker (buildkit-cache-dance with
+  `actions/cache`), or building the jar in the `backend` job and copying it
+  into the image (which amends the multi-stage Dockerfile of the
+  architecture and the local image builds), would make the `images` job
+  faster and less exposed to download outages (found when a GitHub release
+  outage failed #356's `images` job; the wrapper's retries were kept
+  instead).
