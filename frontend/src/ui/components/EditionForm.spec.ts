@@ -1,6 +1,6 @@
 import { BookOpen, Check } from "@lucide/vue";
 import { fireEvent, within } from "@testing-library/dom";
-import { mount } from "@vue/test-utils";
+import { flushPromises, mount } from "@vue/test-utils";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import type { Copy } from "../../domain/Copy";
 import type { CoverCandidate } from "../../domain/Cover";
@@ -355,6 +355,22 @@ describe("EditionForm", () => {
       { name: "Albert Uderzo", roles: "dessin" },
       { name: "", roles: "scénario" },
     ]);
+  });
+
+  it("focuses the new box's name", async () => {
+    // Given
+    const wrapper = form(asterix1, [], [], { attachTo: document.body });
+    const fields = within(wrapper.element as HTMLElement);
+
+    // When
+    await fireEvent.click(
+      fields.getByRole("button", { name: "Ajouter un auteur" }),
+    );
+    await flushPromises();
+
+    // Then
+    expect(document.activeElement).toBe(names(fields)[2]);
+    wrapper.unmount();
   });
 
   it("shows the covers on offer as the card does", () => {

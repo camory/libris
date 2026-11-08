@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { Check, CircleAlert } from "@lucide/vue";
-import { computed, reactive, ref, useId } from "vue";
+import { computed, nextTick, reactive, ref, useId } from "vue";
 import { useI18n } from "vue-i18n";
 import type { Copy } from "../../domain/Copy";
 import type { CoverCandidate } from "../../domain/Cover";
@@ -127,8 +127,10 @@ function choose(field: Field, name: string) {
   chosen.value = true;
 }
 
-function addAuthor() {
+async function addAuthor() {
   authors.value.push({ name: "", roles: ["WRITER"] });
+  await nextTick();
+  authorBoxes[authors.value.length - 1]?.focusName();
 }
 
 function labelOf(field: Field) {
@@ -146,6 +148,7 @@ function messageOf(refusal: Refusal) {
 const id = useId();
 const refusals = ref<Refusals>({});
 const boxes: Partial<Record<Field, HTMLInputElement>> = {};
+const authorBoxes: (InstanceType<typeof AuthorBox> | null)[] = [];
 
 function add() {
   const draft: EditionDraft = {
@@ -277,8 +280,12 @@ function add() {
           </p>
           <div v-if="authors.length" class="flex flex-col gap-3.5">
             <AuthorBox
-              v-for="author in authors"
+              v-for="(author, index) in authors"
               :key="author.name"
+              :ref="
+                (box) =>
+                  (authorBoxes[index] = box as InstanceType<typeof AuthorBox>)
+              "
               :name="author.name"
               :roles="author.roles"
               :kind="kind"
