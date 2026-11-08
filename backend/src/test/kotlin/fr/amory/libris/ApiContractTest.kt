@@ -138,6 +138,7 @@ class ApiContractTest @Autowired constructor(
   private val findCatalogueSeries: FindCatalogueSeries,
   private val findCatalogueEdition: FindCatalogueEdition,
   private val listSeriesNames: ListSeriesNames,
+  private val listAuthorNames: ListAuthorNames,
   private val removeCopy: RemoveCopy) {
   @ContracteerTest(openApiDoc = "https://raw.githubusercontent.com/camory/libris-api/v0.17.0/openapi.yaml")
   fun `the API matches the contract`() {
@@ -156,6 +157,7 @@ class ApiContractTest @Autowired constructor(
     findingASeriesAnswers()
     findingABookAnswers()
     seriesNamesAnswer()
+    authorNamesAnswer()
     removingACopyAnswers()
   }
 
@@ -250,6 +252,10 @@ class ApiContractTest @Autowired constructor(
 
   private fun seriesNamesAnswer() {
     given(listSeriesNames()).willReturn(listOf("Astérix", "One piece"))
+  }
+
+  private fun authorNamesAnswer() {
+    given(listAuthorNames()).willReturn(listOf("Albert Uderzo", "René Goscinny"))
   }
 
   private fun removingACopyAnswers() {
