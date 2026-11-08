@@ -145,3 +145,8 @@ again: the beep. Tap the title three times quickly: no sound; scan: no
 beep.
 
 ## Tasks
+
+- T138 — S1, S3, S4, S7, the beep's browser adapter — frontend
+- T139 — S2 — frontend
+- T140 — S5 — frontend
+- T141 — S6 — frontend
