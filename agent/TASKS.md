@@ -44,7 +44,7 @@ Nothing on screen changes: the title looks and reads as before.
       proven where the gaps are measured with the clock under the test's
       control (D07). Realises S2; un-skips its frontend test.
 
-- [ ] T140 Frontend: the trick again turns the beep off, in silence.
+- [x] T140 Frontend: the trick again turns the beep off, in silence.
       With the beep on, the same three taps turn it off: no beep sounds,
       and the camera's next read is silent, Libris looking the ISBN up as
       before. A row starts anew once it has worked the trick, so six quick
