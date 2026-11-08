@@ -82,7 +82,7 @@ describe("Authors edit", () => {
     window.history.replaceState(null, "", "/");
   });
 
-  it.skip.each([
+  it.each([
     {
       case: "one author with two roles",
       edition: onePiece1,
