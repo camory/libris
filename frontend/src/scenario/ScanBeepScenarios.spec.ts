@@ -37,7 +37,7 @@ describe("Scan beep", () => {
     localStorage.clear();
   });
 
-  it.skip("S1 The trick turns the beep on", async () => {
+  it("S1 The trick turns the beep on", async () => {
     // Given
     const beeper = new FakeBeeper();
     const camera = theCameraOpen();
