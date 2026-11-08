@@ -9,23 +9,69 @@ describe("useBeepAtEachRead", () => {
     const { tap } = useBeepAtEachRead(beeper);
 
     // When
-    tap();
-    tap();
+    tap(0);
+    tap(100);
     const afterTwo = beeper.beeps;
-    tap();
+    tap(200);
 
     // Then
     expect(afterTwo).toBe(0);
     expect(beeper.beeps).toBe(1);
   });
 
+  it("starts a new row at a slow tap, counting it as the first", () => {
+    // Given
+    const beeper = new FakeBeeper();
+    const { tap } = useBeepAtEachRead(beeper);
+
+    // When
+    tap(0);
+    tap(100);
+    tap(700);
+    tap(800);
+    const afterFour = beeper.beeps;
+    tap(900);
+
+    // Then
+    expect(afterFour).toBe(0);
+    expect(beeper.beeps).toBe(1);
+  });
+
+  it("counts a tap less than half a second after the one before", () => {
+    // Given
+    const beeper = new FakeBeeper();
+    const { tap } = useBeepAtEachRead(beeper);
+
+    // When
+    tap(0);
+    tap(499);
+    tap(998);
+
+    // Then
+    expect(beeper.beeps).toBe(1);
+  });
+
+  it("changes nothing with three taps half a second apart", () => {
+    // Given
+    const beeper = new FakeBeeper();
+    const { tap } = useBeepAtEachRead(beeper);
+
+    // When
+    tap(0);
+    tap(500);
+    tap(1000);
+
+    // Then
+    expect(beeper.beeps).toBe(0);
+  });
+
   it("sounds the beep at a read once it is on", () => {
     // Given
     const beeper = new FakeBeeper();
     const { beep, tap } = useBeepAtEachRead(beeper);
-    tap();
-    tap();
-    tap();
+    tap(0);
+    tap(100);
+    tap(200);
 
     // When
     beep();

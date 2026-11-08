@@ -1,10 +1,13 @@
 import type { Beeper } from "./Beeper";
 
+const halfASecond = 500;
+
 export function useBeepAtEachRead(beeper: Beeper): {
   beep: () => void;
-  tap: () => void;
+  tap: (at: number) => void;
 } {
   let taps = 0;
+  let lastTap = -Infinity;
   let on = false;
 
   function beep() {
@@ -13,8 +16,9 @@ export function useBeepAtEachRead(beeper: Beeper): {
     }
   }
 
-  function tap() {
-    taps += 1;
+  function tap(at: number) {
+    taps = at - lastTap < halfASecond ? taps + 1 : 1;
+    lastTap = at;
     if (taps === 3) {
       on = true;
       beeper.beep();

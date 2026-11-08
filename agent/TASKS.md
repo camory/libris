@@ -37,7 +37,7 @@ Nothing on screen changes: the title looks and reads as before.
       camera, proven by its own spec (D05, D07). Walking skeleton; realises
       S1, S3, S4 and S7; un-skips their frontend tests, both of S7's cases.
 
-- [ ] T139 Frontend: three slow taps change nothing.
+- [x] T139 Frontend: three slow taps change nothing.
       The trick counts only taps in a row, each less than half a second
       after the one before; a slower tap starts a new row, so three taps
       with a longer wait between two turn nothing on and sound nothing,
