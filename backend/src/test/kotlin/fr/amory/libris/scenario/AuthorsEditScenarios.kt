@@ -9,7 +9,6 @@ import fr.amory.libris.scenario.dsl.authorNames
 import fr.amory.libris.scenario.dsl.hasAdded
 import io.kotest.matchers.collections.shouldContainExactlyInAnyOrder
 import io.kotest.matchers.shouldBe
-import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 
@@ -18,7 +17,6 @@ class AuthorsEditScenarios @Autowired constructor(private val libris: Libris) {
   private val lea = libris.reader("lea", "Léa")
 
   @Test
-  @Disabled("authors edit")
   fun `S5 An author of the house is matched by name`() {
     // Given
     lea.hasAdded(LE_LOTUS_BLEU, to = lea.defaultBookshelf)
