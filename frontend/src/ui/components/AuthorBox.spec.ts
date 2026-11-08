@@ -33,6 +33,16 @@ describe("AuthorBox", () => {
     expect(rolesLine(box)?.textContent?.trim()).toBe("texte");
   });
 
+  it("names the roles line after the roles it reads", () => {
+    // When
+    const box = screen("René Goscinny", ["WRITER", "ARTIST"], "BD");
+
+    // Then
+    expect(
+      box.getAllByRole("button", { name: "Rôles scénario, dessin" }),
+    ).toHaveLength(1);
+  });
+
   function rolesLine(box: ReturnType<typeof screen>) {
     return box
       .queryAllByRole("button")

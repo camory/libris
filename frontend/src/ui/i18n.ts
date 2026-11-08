@@ -112,6 +112,7 @@ const fr = {
       authors: {
         label: "Auteurs",
         name: "Nom de l'auteur",
+        roles: "Rôles",
       },
       collection: "Collection",
       publisher: "Éditeur",

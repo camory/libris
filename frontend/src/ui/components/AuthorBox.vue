@@ -26,6 +26,7 @@ const words = computed(() =>
     <button
       type="button"
       aria-expanded="false"
+      :aria-label="`${t('isbn.form.authors.roles')} ${words}`"
       class="flex min-h-11 w-full items-center pr-0.75 pl-3.5 text-left text-body"
     >
       {{ words }}
