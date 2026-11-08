@@ -290,6 +290,20 @@ describe("EditionForm", () => {
     ]);
   });
 
+  it("keeps a typed name when the kind changes", async () => {
+    // Given
+    const fields = screen(asterix1);
+    await fireEvent.input(names(fields)[0], { target: { value: "René" } });
+
+    // When
+    await fireEvent.change(fields.getByRole("radio", { name: "Livre" }), {
+      target: { checked: true },
+    });
+
+    // Then
+    expect(names(fields)[0].value).toBe("René");
+  });
+
   it("shows Auteurs with no author", () => {
     // When
     const wrapper = form();
