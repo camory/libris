@@ -3,6 +3,7 @@ import { createPinia } from "pinia";
 import { createApp, type App } from "vue";
 import type { RouteLocationNormalizedLoaded } from "vue-router";
 import { appUpdateKey, type AppUpdate } from "./application/AppUpdate";
+import { authorsApiKey, type AuthorsApi } from "./application/AuthorsApi";
 import { bookshelfApiKey, type BookshelfApi } from "./application/BookshelfApi";
 import {
   barcodeScannerKey,
@@ -38,6 +39,7 @@ export interface LibrisPorts {
   copiesApi: CopiesApi;
   beeper: Beeper;
   beepSetting: BeepSetting;
+  authorsApi: AuthorsApi;
 }
 
 export function createLibrisApp(ports: LibrisPorts, revision: string): App {
@@ -59,6 +61,7 @@ export function createLibrisApp(ports: LibrisPorts, revision: string): App {
   app.provide(copiesApiKey, ports.copiesApi);
   app.provide(beeperKey, ports.beeper);
   app.provide(beepSettingKey, ports.beepSetting);
+  app.provide(authorsApiKey, ports.authorsApi);
   app.provide(revisionKey, revision);
   app.provide(LUCIDE_CONTEXT, { strokeWidth: 1.8 });
   return app;

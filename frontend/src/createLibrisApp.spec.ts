@@ -3,6 +3,7 @@ import { flushPromises } from "@vue/test-utils";
 import { describe, expect, it } from "vitest";
 import { createLibrisApp } from "./createLibrisApp";
 import { FakeAppUpdate } from "./fixture/FakeAppUpdate";
+import { FakeAuthorsApi } from "./fixture/FakeAuthorsApi";
 import { FakeBookshelfApi } from "./fixture/FakeBookshelfApi";
 import { FakeBarcodeScanner } from "./fixture/FakeBarcodeScanner";
 import { FakeBeepSetting } from "./fixture/FakeBeepSetting";
@@ -37,6 +38,7 @@ const librisApp = () =>
       copiesApi: new FakeCopiesApi(new Error("no removal in this scenario")),
       beeper: new FakeBeeper(),
       beepSetting: new FakeBeepSetting(),
+      authorsApi: new FakeAuthorsApi([]),
     },
     "sha-abc1234",
   );

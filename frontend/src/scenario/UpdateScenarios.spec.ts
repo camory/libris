@@ -2,6 +2,7 @@ import { fireEvent, within } from "@testing-library/dom";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import type { App } from "vue";
 import { createLibrisApp } from "../createLibrisApp";
+import { FakeAuthorsApi } from "../fixture/FakeAuthorsApi";
 import { FakeBarcodeScanner } from "../fixture/FakeBarcodeScanner";
 import { FakeBeepSetting } from "../fixture/FakeBeepSetting";
 import { FakeBeeper } from "../fixture/FakeBeeper";
@@ -153,6 +154,7 @@ describe("Update", () => {
         copiesApi: new FakeCopiesApi(new Error("no removal in this scenario")),
         beeper: new FakeBeeper(),
         beepSetting: new FakeBeepSetting(),
+        authorsApi: new FakeAuthorsApi([]),
       },
       "sha-abc1234",
     );

@@ -13,9 +13,13 @@ import {
 } from "../../domain/EditionDraft";
 import { languageWord, languageWords } from "../../domain/Language";
 import { seriesNameStatus, type SeriesNameStatus } from "../../domain/Series";
-import type { Kind, SourceEdition } from "../../domain/SourceEdition";
+import {
+  authorsInOrder,
+  type Kind,
+  type SourceEdition,
+} from "../../domain/SourceEdition";
 import { nameOf, suggestionsFor } from "../../domain/Suggestion";
-import AuthorLines from "./AuthorLines.vue";
+import AuthorBox from "./AuthorBox.vue";
 import BookshelvesHolding from "./BookshelvesHolding.vue";
 import CoverChoice from "./CoverChoice.vue";
 import DockedAdd from "./DockedAdd.vue";
@@ -70,6 +74,7 @@ const values = reactive<Record<Field, string>>({
   pages: text(answered?.pageCount),
 });
 const summary = ref(text(answered?.summary));
+const authors = authorsInOrder(answered?.authors ?? [], locale.value);
 const offered = computed<Partial<Record<Field, string[]>>>(() => ({
   series: props.seriesNames ?? [],
   language: languageWords(locale.value),
@@ -261,12 +266,19 @@ function add() {
             <span>{{ t(messageOf(refusals[field])) }}</span>
           </p>
         </div>
-        <div
-          v-if="field === 'volume' && edition?.authors.length"
-          class="flex flex-col gap-2"
-        >
-          <p class="text-label text-muted">{{ t("isbn.form.authors") }}</p>
-          <AuthorLines :authors="edition.authors" :kind="kind" />
+        <div v-if="field === 'volume'" class="flex flex-col gap-2">
+          <p class="text-label text-muted">
+            {{ t("isbn.form.authors.label") }}
+          </p>
+          <div class="flex flex-col gap-3.5">
+            <AuthorBox
+              v-for="author in authors"
+              :key="author.name"
+              :name="author.name"
+              :roles="author.roles"
+              :kind="kind"
+            />
+          </div>
         </div>
       </template>
 

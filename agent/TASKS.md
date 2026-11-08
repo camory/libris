@@ -50,7 +50,7 @@ frontend task.
       authors unique on `LOWER(name)` goes, answered. Realises S5; un-skips
       its backend test.
 
-- [ ] T144 Frontend: the authors on `v0.17.0`, open as rows.
+- [x] T144 Frontend: the authors on `v0.17.0`, open as rows.
       Precondition (human): T143 deployed (D04). `vitest.global-setup.ts`
       pins `v0.17.0`, the frontend's one bump; the authors' port gets its
       client, tested on the mock's `200`, and joins the application's

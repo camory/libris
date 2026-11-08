@@ -13,6 +13,7 @@ import type { Book } from "../domain/Book";
 import type { SeriesWithBooks } from "../domain/Series";
 import { FakeAppUpdate } from "../fixture/FakeAppUpdate";
 import { asterixLeGaulois, bibliothequeDeLea, salon } from "../fixture/Books";
+import { FakeAuthorsApi } from "../fixture/FakeAuthorsApi";
 import { FakeBarcodeScanner } from "../fixture/FakeBarcodeScanner";
 import { FakeBeepSetting } from "../fixture/FakeBeepSetting";
 import { FakeBeeper } from "../fixture/FakeBeeper";
@@ -181,6 +182,7 @@ describe("Edition page", () => {
         copiesApi: new FakeCopiesApi(new Error("no removal in this scenario")),
         beeper: new FakeBeeper(),
         beepSetting: new FakeBeepSetting(),
+        authorsApi: new FakeAuthorsApi([]),
       },
       "sha-abc1234",
     );

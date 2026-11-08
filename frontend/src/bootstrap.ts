@@ -1,5 +1,6 @@
 import type { App } from "vue";
 import { createLibrisApp } from "./createLibrisApp";
+import { FetchAuthorsApi } from "./infra/api/FetchAuthorsApi";
 import { FetchBookshelfApi } from "./infra/api/FetchBookshelfApi";
 import { FetchBookshelvesApi } from "./infra/api/FetchBookshelvesApi";
 import { FetchCatalogueApi } from "./infra/api/FetchCatalogueApi";
@@ -28,6 +29,7 @@ export function bootstrap(origin: string, revision: string): App {
       copiesApi: new FetchCopiesApi(origin),
       beeper: new WebAudioBeeper(() => new AudioContext()),
       beepSetting: new WebStorageBeepSetting(localStorage),
+      authorsApi: new FetchAuthorsApi(origin),
     },
     revision,
   );

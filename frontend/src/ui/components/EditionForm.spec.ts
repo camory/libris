@@ -239,45 +239,87 @@ describe("EditionForm", () => {
     expect(fields.getByRole("textbox", { name: "Tome" })).toBeDefined();
   });
 
-  it("shows the authors as the card words them", () => {
+  it("opens one box per author in the card's order", () => {
     // When
-    const text = show(asterix1);
+    const fields = screen({
+      ...asterix1,
+      authors: [
+        { name: "Albert Uderzo", role: "ARTIST" },
+        { name: "René Goscinny", role: "WRITER" },
+      ],
+    });
 
     // Then
-    const positions = [
-      "Album",
-      "Auteurs",
-      "René Goscinny · scénario",
-      "Albert Uderzo · dessin",
-      "Collection",
-    ].map((part) => text.indexOf(part));
-    expect(positions).not.toContain(-1);
-    expect(positions).toEqual([...positions].sort((a, b) => a - b));
+    expect(authorsOf(fields)).toEqual([
+      { name: "René Goscinny", roles: "scénario" },
+      { name: "Albert Uderzo", roles: "dessin" },
+    ]);
+    const textboxes = fields.getAllByRole("textbox");
+    expect(
+      [
+        fields.getByRole("textbox", { name: "Album" }),
+        ...names(fields),
+        fields.getByRole("textbox", { name: "Collection" }),
+      ].map((box) => textboxes.indexOf(box)),
+    ).toEqual([3, 4, 5, 6]);
+  });
+
+  it("keeps an author of several roles in one box", () => {
+    // When
+    const fields = screen(onePiece1);
+
+    // Then
+    expect(authorsOf(fields)).toEqual([
+      { name: "Eiichirō Oda", roles: "scénario, dessin" },
+    ]);
   });
 
   it("words the authors' roles in the chosen kind", async () => {
     // Given
-    const wrapper = form({ ...asterix1, kind: "BOOK" });
-    const fields = within(wrapper.element as HTMLElement);
+    const fields = screen(asterix1);
 
     // When
-    await fireEvent.change(fields.getByRole("radio", { name: "BD" }), {
+    await fireEvent.change(fields.getByRole("radio", { name: "Livre" }), {
       target: { checked: true },
     });
 
     // Then
-    const text = wrapper.text().replace(/\s+/g, " ");
-    expect(text).toContain("René Goscinny · scénario");
-    expect(text).toContain("Albert Uderzo · dessin");
-    expect(text).not.toContain("texte");
+    expect(rolesLines(fields).map((line) => line.textContent?.trim())).toEqual([
+      "texte",
+      "illustration",
+    ]);
   });
 
-  it("shows no Auteurs when Libris answered none", () => {
+  it("keeps a typed name when the kind changes", async () => {
+    // Given
+    const fields = screen(asterix1);
+    await fireEvent.input(names(fields)[0], { target: { value: "René" } });
+
     // When
-    const text = show({ ...onePiece1, authors: [] });
+    await fireEvent.change(fields.getByRole("radio", { name: "Livre" }), {
+      target: { checked: true },
+    });
 
     // Then
-    expect(text).not.toContain("Auteurs");
+    expect(names(fields)[0].value).toBe("René");
+  });
+
+  it("shows Auteurs with no author", () => {
+    // When
+    const wrapper = form();
+
+    // Then
+    const text = wrapper.text().replace(/\s+/g, " ");
+    const positions = ["Tome", "Auteurs", "Collection"].map((part) =>
+      text.indexOf(part),
+    );
+    expect(positions).not.toContain(-1);
+    expect(positions).toEqual([...positions].sort((a, b) => a - b));
+    expect(
+      within(wrapper.element as HTMLElement).queryAllByRole("textbox", {
+        name: "Nom de l'auteur",
+      }),
+    ).toEqual([]);
   });
 
   it("shows the covers on offer as the card does", () => {
@@ -886,16 +928,37 @@ describe("EditionForm", () => {
     expect(scrollIntoView).not.toHaveBeenCalled();
   });
 
+  function names(fields: ReturnType<typeof screen>) {
+    return fields.queryAllByRole<HTMLInputElement>("textbox", {
+      name: "Nom de l'auteur",
+    });
+  }
+
+  function rolesLines(fields: ReturnType<typeof screen>) {
+    return fields
+      .queryAllByRole("button")
+      .filter((button) => button.hasAttribute("aria-expanded"));
+  }
+
+  function authorsOf(fields: ReturnType<typeof screen>) {
+    const lines = rolesLines(fields);
+    return names(fields).map((box, index) => ({
+      name: box.value,
+      roles: lines[index]?.textContent?.trim(),
+    }));
+  }
+
   function suggestions(fields: ReturnType<typeof screen>) {
     return fields
       .queryAllByRole("button")
+      .filter((button) => !button.hasAttribute("aria-expanded"))
       .map((button) => button.textContent?.trim() ?? "")
       .filter((name) => name !== "Ajouter à ma bibliothèque");
   }
 
   function disabledOf(fields: ReturnType<typeof screen>) {
     return [
-      ...fields.getAllByRole<HTMLInputElement>("textbox"),
+      ...fieldBoxes(fields),
       ...fields.getAllByRole<HTMLInputElement>("radio"),
       ...fields.getAllByRole<HTMLButtonElement>("button", {
         name: /^Couverture /,
@@ -928,9 +991,14 @@ describe("EditionForm", () => {
   }
 
   function valuesOf(fields: ReturnType<typeof screen>) {
+    return fieldBoxes(fields).map((field) => field.value);
+  }
+
+  function fieldBoxes(fields: ReturnType<typeof screen>) {
+    const authors = names(fields);
     return fields
       .getAllByRole<HTMLInputElement>("textbox")
-      .map((field) => field.value);
+      .filter((box) => !authors.includes(box));
   }
 
   function show(
