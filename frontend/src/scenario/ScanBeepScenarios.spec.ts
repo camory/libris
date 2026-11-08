@@ -84,7 +84,7 @@ describe("Scan beep", () => {
     expect(beeper.beeps).toBe(0);
   });
 
-  it.skip("S3 The beep off, the camera stays silent", async () => {
+  it("S3 The beep off, the camera stays silent", async () => {
     // Given
     const beeper = new FakeBeeper();
     const camera = theCameraOpen();
