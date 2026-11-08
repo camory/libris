@@ -8,6 +8,7 @@ import { Search, X } from "@lucide/vue";
 import { flushPromises, mount } from "@vue/test-utils";
 import { afterEach, describe, expect, it } from "vitest";
 import { barcodeScannerKey } from "../../../application/BarcodeScanner";
+import { beeperKey } from "../../../application/Beeper";
 import {
   bookshelfApiKey,
   type AddAnswer,
@@ -25,6 +26,7 @@ import {
 import { meApiKey } from "../../../application/MeApi";
 import { seriesApiKey, type SeriesApi } from "../../../application/SeriesApi";
 import { FakeBarcodeScanner } from "../../../fixture/FakeBarcodeScanner";
+import { FakeBeeper } from "../../../fixture/FakeBeeper";
 import { FakeBookshelfApi } from "../../../fixture/FakeBookshelfApi";
 import { FakeCopiesApi } from "../../../fixture/FakeCopiesApi";
 import { FakeIsbnApi } from "../../../fixture/FakeIsbnApi";
@@ -609,6 +611,25 @@ describe("IsbnView", () => {
       name: "Fermer la caméra",
     });
     expect(button.contains(view.findComponent(X).element)).toBe(true);
+  });
+
+  it("readies the beep when the camera opens", async () => {
+    // Given
+    const beeper = new FakeBeeper();
+
+    // When
+    mountView(
+      new FakeIsbnApi(unknownIsbn),
+      new FakeBarcodeScanner(true, neverRead),
+      undefined,
+      undefined,
+      undefined,
+      beeper,
+    );
+    await flushPromises();
+
+    // Then
+    expect(beeper.readies).toBe(1);
   });
 
   it("runs the lookup with the first code the camera reads", async () => {
@@ -1443,6 +1464,7 @@ describe("IsbnView", () => {
     copiesApi: CopiesApi = new FakeCopiesApi(
       new Error("no removal in this case"),
     ),
+    beeper = new FakeBeeper(),
   ) {
     return mount(IsbnView, {
       global: {
@@ -1454,6 +1476,7 @@ describe("IsbnView", () => {
           [bookshelfApiKey]: bookshelfApi,
           [seriesApiKey]: seriesApi,
           [copiesApiKey]: copiesApi,
+          [beeperKey]: beeper,
         },
       },
     });

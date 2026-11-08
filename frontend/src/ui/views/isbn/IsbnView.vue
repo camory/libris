@@ -12,6 +12,7 @@ import {
 } from "vue";
 import { useI18n } from "vue-i18n";
 import { barcodeScannerKey } from "../../../application/BarcodeScanner";
+import { beeperKey } from "../../../application/Beeper";
 import { bookshelfApiKey } from "../../../application/BookshelfApi";
 import { copiesApiKey } from "../../../application/CopiesApi";
 import { isbnApiKey } from "../../../application/IsbnApi";
@@ -34,6 +35,7 @@ import SourceEditionCardSkeleton from "../../components/SourceEditionCardSkeleto
 const { t } = useI18n();
 const isbnApi = inject(isbnApiKey)!;
 const barcodeScanner = inject(barcodeScannerKey)!;
+const beeper = inject(beeperKey)!;
 const meApi = inject(meApiKey)!;
 const bookshelfApi = inject(bookshelfApiKey)!;
 const copiesApi = inject(copiesApiKey)!;
@@ -101,6 +103,7 @@ onMounted(async () => {
 onBeforeUnmount(() => barcodeScanner.stop());
 
 async function openCamera() {
+  beeper.ready();
   scanning.value = true;
   await nextTick();
   const scanned = await barcodeScanner.read(camera.value!);
