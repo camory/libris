@@ -85,6 +85,10 @@ Read whole by a run that changes `backend/`, after `every-run.md`.
 - A named volume mounted where the image has no directory is root-owned, so
   the non-root backend cannot write it until the image creates that
   directory for its user.
+- `gradle/wrapper/gradle-wrapper.properties` carries `networkTimeout=30000`,
+  `retries=3` and `retryBackOffMs=2000`; `./gradlew wrapper` rewrites the
+  file with Gradle's defaults, so an upgrade of the wrapper keeps those
+  three lines.
 
 ## Backend tests
 - The reviewer counts statements, not phases: a case of two or more
