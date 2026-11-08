@@ -15,6 +15,7 @@ import { languageWord, languageWords } from "../../domain/Language";
 import { seriesNameStatus, type SeriesNameStatus } from "../../domain/Series";
 import {
   authorsInOrder,
+  type Author,
   type Kind,
   type SourceEdition,
 } from "../../domain/SourceEdition";
@@ -74,7 +75,9 @@ const values = reactive<Record<Field, string>>({
   pages: text(answered?.pageCount),
 });
 const summary = ref(text(answered?.summary));
-const authors = authorsInOrder(answered?.authors ?? [], locale.value);
+const authors = ref<Author[]>(
+  authorsInOrder(answered?.authors ?? [], locale.value),
+);
 const offered = computed<Partial<Record<Field, string[]>>>(() => ({
   series: props.seriesNames ?? [],
   language: languageWords(locale.value),
@@ -124,6 +127,10 @@ function choose(field: Field, name: string) {
   chosen.value = true;
 }
 
+function addAuthor() {
+  authors.value.push({ name: "", roles: ["WRITER"] });
+}
+
 function labelOf(field: Field) {
   return field === "volume"
     ? `isbn.form.volume.${kind.value}`
@@ -145,7 +152,7 @@ function add() {
     kind: kind.value,
     ...values,
     summary: summary.value,
-    authors,
+    authors: authors.value,
   };
   refusals.value = refusalsOf(draft, locale.value);
   const first = fields.find((field) => refusals.value[field]);
@@ -280,6 +287,7 @@ function add() {
           <button
             type="button"
             class="-ml-3 h-11 self-start px-3 text-button text-accent"
+            @click="addAuthor"
           >
             {{ t("isbn.form.authors.add") }}
           </button>

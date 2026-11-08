@@ -340,6 +340,23 @@ describe("EditionForm", () => {
     expect(positions).toEqual([...positions].sort((a, b) => a - b));
   });
 
+  it("adds an empty box after the last, on the kind's first role", async () => {
+    // Given
+    const fields = screen(asterix1);
+
+    // When
+    await fireEvent.click(
+      fields.getByRole("button", { name: "Ajouter un auteur" }),
+    );
+
+    // Then
+    expect(authorsOf(fields)).toEqual([
+      { name: "René Goscinny", roles: "scénario" },
+      { name: "Albert Uderzo", roles: "dessin" },
+      { name: "", roles: "scénario" },
+    ]);
+  });
+
   it("shows the covers on offer as the card does", () => {
     // When
     const covers = screen(onePiece1, [], [inventaire, openLibrary]);
