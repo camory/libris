@@ -116,3 +116,44 @@ Format:
   as the phases before it did.
 - Left over: the backlog is empty; the next feature needs its spec,
   written with Tophe.
+
+## 2026-11-08 — T142 The authors' names on v0.17.0 — done
+- Did: the backend pins `v0.17.0` and serves `GET /api/v1/author-names`
+  through `ListAuthorNames` over the new query port `AuthorNames`, read by
+  `JdbcAuthorNames` from `author` alone; S6 of the authors edit un-skipped.
+- Decided: `JdbcAuthorNames` maps its one column with
+  `query { rs, _ -> rs.getString("name") }`, since `query(String::class.java)`
+  answers a `List<String?>` the port's `List<String>` refuses.
+- Deviations from the brief: `@JdbcSliceTest` caps its Hikari pool at three
+  connections; `JdbcAuthorNamesTest`'s context, the suite's eleventh with a
+  pool of ten, ran PostgreSQL out of its 100 connections and failed the gate
+  (`too many clients already`, 74 cases).
+- Left over: T143 (an author's name matched as PRD §3 says) and T144 (the
+  frontend onto `v0.17.0`), both in the backlog.
+
+## 2026-11-08 — T142 The authors' names on v0.17.0 — reworked
+- Did: `AuthorNamesAnswering.findAll`'s `=` body starts on the next line;
+  the `JdbcClient` `query(…)` item of `agent/gotchas/backend.md` records
+  that `query(String::class.java).list()` answers a `List<String?>`.
+- Decided: the reviewer's verdict of 2026-11-08 amended nothing; its
+  blocking finding was D10's layout, which the brief's model fake
+  (`CatalogueEditionsAnswering`, line 20, outside this diff) breaks too and
+  stays as it is.
+- Deviations from the brief: none beyond the first run's.
+- Left over: nothing new; the note on the brief's model is the reviewer's,
+  for the planner.
+
+## 2026-11-08 — T142 The authors' names on v0.17.0 — fix-up
+- Did (Tophe's call, after review): every JDBC slice test shares one
+  Spring context. `@JdbcSliceTest` imports the eight `Jdbc…` adapters, the
+  slice tests carry no `@Import` of their own, and the pool cap of three is
+  gone. The two items of `agent/gotchas/backend.md` on contexts and on
+  `@JdbcSliceTest` say so, and three items naming a test's `@Import` now
+  name its constructor.
+- Decided: the cap treated the symptom. Each distinct `@Import` set was a
+  context of its own, cached until the JVM ends, each holding a pool of ten
+  connections. The suite now starts six contexts, four of them with a pool,
+  40 connections at peak, measured on `pg_stat_activity`.
+- Verified: `./gradlew check` on the host, 512 tests, 0 failures, 1 skipped
+  (S5).
+- Left over: nothing.

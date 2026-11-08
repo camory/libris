@@ -3,6 +3,7 @@ package fr.amory.libris
 import dev.contracteer.verifier.junit.ContracteerServerPort
 import dev.contracteer.verifier.junit.ContracteerTest
 import fr.amory.libris.bibliography.application.cover.FindCover
+import fr.amory.libris.bibliography.application.edition.ListAuthorNames
 import fr.amory.libris.bibliography.application.edition.NewEdition
 import fr.amory.libris.bibliography.application.lookup.EditionLookupResult
 import fr.amory.libris.bibliography.application.lookup.EditionLookupResult.Found
@@ -114,6 +115,7 @@ import java.util.UUID
     FindCatalogueSeries::class,
     FindCatalogueEdition::class,
     ListSeriesNames::class,
+    ListAuthorNames::class,
     RemoveCopy::class,
   ],
 )
@@ -136,8 +138,9 @@ class ApiContractTest @Autowired constructor(
   private val findCatalogueSeries: FindCatalogueSeries,
   private val findCatalogueEdition: FindCatalogueEdition,
   private val listSeriesNames: ListSeriesNames,
+  private val listAuthorNames: ListAuthorNames,
   private val removeCopy: RemoveCopy) {
-  @ContracteerTest(openApiDoc = "https://raw.githubusercontent.com/camory/libris-api/v0.16.0/openapi.yaml")
+  @ContracteerTest(openApiDoc = "https://raw.githubusercontent.com/camory/libris-api/v0.17.0/openapi.yaml")
   fun `the API matches the contract`() {
     contracteerIsWelcomed()
     isbnLookupsAnswer()
@@ -154,6 +157,7 @@ class ApiContractTest @Autowired constructor(
     findingASeriesAnswers()
     findingABookAnswers()
     seriesNamesAnswer()
+    authorNamesAnswer()
     removingACopyAnswers()
   }
 
@@ -248,6 +252,10 @@ class ApiContractTest @Autowired constructor(
 
   private fun seriesNamesAnswer() {
     given(listSeriesNames()).willReturn(listOf("Astérix", "One piece"))
+  }
+
+  private fun authorNamesAnswer() {
+    given(listAuthorNames()).willReturn(listOf("Albert Uderzo", "René Goscinny"))
   }
 
   private fun removingACopyAnswers() {

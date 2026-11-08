@@ -21,7 +21,6 @@ import io.kotest.matchers.shouldBe
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.context.annotation.Import
 import org.springframework.dao.DataIntegrityViolationException
 import org.springframework.jdbc.core.simple.JdbcClient
 
@@ -29,7 +28,6 @@ private const val ONE_PIECE = "9782723488525"
 private const val ONE_PIECE_TOME_TWO = "9782723489898"
 
 @JdbcSliceTest
-@Import(JdbcEditionRepository::class, JdbcSeriesRepository::class)
 class JdbcEditionRepositoryTest @Autowired constructor(
   private val editions: JdbcEditionRepository,
   private val seriesRepository: JdbcSeriesRepository,

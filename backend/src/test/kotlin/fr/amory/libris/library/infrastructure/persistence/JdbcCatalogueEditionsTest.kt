@@ -24,7 +24,6 @@ import io.kotest.matchers.shouldBe
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.context.annotation.Import
 import java.util.UUID
 
 private const val PAGE_SIZE = 50
@@ -32,14 +31,6 @@ private const val LESSER_TWIN = "00000000-0000-7000-8000-000000000001"
 private const val GREATER_TWIN = "00000000-0000-7000-8000-000000000002"
 
 @JdbcSliceTest
-@Import(
-  JdbcCatalogueEditions::class,
-  JdbcCopyRepository::class,
-  JdbcEditionRepository::class,
-  JdbcSeriesRepository::class,
-  JdbcBookshelfRepository::class,
-  JdbcReaderRepository::class,
-)
 class JdbcCatalogueEditionsTest @Autowired constructor(
   private val catalogueEditions: JdbcCatalogueEditions,
   private val copies: JdbcCopyRepository,
