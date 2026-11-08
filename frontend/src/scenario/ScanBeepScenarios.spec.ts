@@ -125,7 +125,7 @@ describe("Scan beep", () => {
     expect(beeper.beeps).toBe(2);
   });
 
-  it.skip("S5 The trick again turns the beep off", async () => {
+  it("S5 The trick again turns the beep off", async () => {
     // Given
     const beeper = new FakeBeeper();
     const camera = theCameraOpen();
