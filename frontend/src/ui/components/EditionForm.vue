@@ -75,8 +75,9 @@ const values = reactive<Record<Field, string>>({
   pages: text(answered?.pageCount),
 });
 const summary = ref(text(answered?.summary));
-const authors = ref<Author[]>(
-  authorsInOrder(answered?.authors ?? [], locale.value),
+let lastKey = 0;
+const authors = ref(
+  authorsInOrder(answered?.authors ?? [], locale.value).map(keyed),
 );
 const offered = computed<Partial<Record<Field, string[]>>>(() => ({
   series: props.seriesNames ?? [],
@@ -103,6 +104,11 @@ const statusLooks: Record<
   new: { colour: "text-muted", checked: false },
 };
 
+function keyed(author: Author) {
+  lastKey += 1;
+  return { key: lastKey, ...author };
+}
+
 function text(value: string | number | null | undefined) {
   return value == null ? "" : String(value);
 }
@@ -128,7 +134,7 @@ function choose(field: Field, name: string) {
 }
 
 async function addAuthor() {
-  authors.value.push({ name: "", roles: ["WRITER"] });
+  authors.value.push(keyed({ name: "", roles: ["WRITER"] }));
   await nextTick();
   authorBoxes[authors.value.length - 1]?.focusName();
 }
@@ -155,7 +161,7 @@ function add() {
     kind: kind.value,
     ...values,
     summary: summary.value,
-    authors: authors.value,
+    authors: authors.value.map(({ name, roles }) => ({ name, roles })),
   };
   refusals.value = refusalsOf(draft, locale.value);
   const first = fields.find((field) => refusals.value[field]);
@@ -281,7 +287,7 @@ function add() {
           <div v-if="authors.length" class="flex flex-col gap-3.5">
             <AuthorBox
               v-for="(author, index) in authors"
-              :key="author.name"
+              :key="author.key"
               :ref="
                 (box) =>
                   (authorBoxes[index] = box as InstanceType<typeof AuthorBox>)

@@ -393,6 +393,20 @@ describe("EditionForm", () => {
     });
   });
 
+  it("keeps the focus in a name being typed", async () => {
+    // Given
+    const wrapper = form(asterix1, [], [], { attachTo: document.body });
+    const fields = within(wrapper.element as HTMLElement);
+    names(fields)[0].focus();
+
+    // When
+    await fireEvent.input(names(fields)[0], { target: { value: "René Gosc" } });
+
+    // Then
+    expect(document.activeElement).toBe(names(fields)[0]);
+    wrapper.unmount();
+  });
+
   it("shows the covers on offer as the card does", () => {
     // When
     const covers = screen(onePiece1, [], [inventaire, openLibrary]);
