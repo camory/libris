@@ -43,6 +43,18 @@ describe("AuthorBox", () => {
     ).toHaveLength(1);
   });
 
+  it("names the roles line Rôles alone when it reads none", () => {
+    // When
+    const box = screen("René Goscinny", [], "BD");
+
+    // Then
+    const line = box.getByRole("button", {
+      name: (name) => name === "Rôles",
+    });
+    expect(line.getAttribute("aria-label")).toBe("Rôles");
+    expect(line.textContent?.trim()).toBe("");
+  });
+
   function rolesLine(box: ReturnType<typeof screen>) {
     return box
       .queryAllByRole("button")

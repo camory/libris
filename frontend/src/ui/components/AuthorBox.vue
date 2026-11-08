@@ -12,6 +12,9 @@ const { t } = useI18n();
 const words = computed(() =>
   props.roles.map((role) => t(`role.${props.kind}.${role}`)).join(", "),
 );
+const label = computed(() =>
+  [t("isbn.form.authors.roles"), words.value].filter(Boolean).join(" "),
+);
 </script>
 
 <template>
@@ -26,7 +29,7 @@ const words = computed(() =>
     <button
       type="button"
       aria-expanded="false"
-      :aria-label="`${t('isbn.form.authors.roles')} ${words}`"
+      :aria-label="label"
       class="flex min-h-11 w-full items-center pr-0.75 pl-3.5 text-left text-body"
     >
       {{ words }}
