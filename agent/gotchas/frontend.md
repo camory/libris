@@ -198,8 +198,9 @@ Read whole by a run that changes `frontend/`, after `every-run.md`.
   `seriesNames`, required,
   `shownSource`, optional, as the card's, and the named slot `corner` as
   the card's, emits `coverSource` as the card does, and `add` with the edition its
-  fields read as, `editionOf(isbn13, authors, draft, locale)`
-  (`src/domain/EditionDraft.ts`). Its root is a plain block holding the
+  fields read as, `editionOf(isbn13, draft, locale)`
+  (`src/domain/EditionDraft.ts`), whose `draft.authors` are the boxes
+  (`Author[]`), sent as one `SourceAuthor` per name and role, in order. Its root is a plain block holding the
   card-shaped `<form>` then `DockedAdd`. While `adding` its textboxes and
   radios are `disabled`. It fills its text once, at setup: `kind`
   from `edition.kind`, a `values` record for the nine `input`s drawn by one
@@ -208,15 +209,21 @@ Read whole by a run that changes `frontend/`, after `every-run.md`.
   `textarea` of its own after them; the camera keeps it, edits included,
   and a new lookup remounts it through the skeleton. *Auteurs* is drawn
   after *Tome* inside that `v-for`, also with no author, then one
-  `AuthorBox` per author of `authorsInOrder(answer's authors, locale)`,
-  a list built once at setup, each box given the chosen `kind`, not the
-  answer's. `AuthorBox` (props `roles`, `kind`, model `name`) draws the
+  `AuthorBox` per box of `authors`, a `ref` list built once at setup from
+  `authorsInOrder(answer's authors, locale)`, each `{ key, name, roles }`
+  keyed by a counter (`keyed`), never by its name, bound `v-model:name`,
+  given the chosen `kind`, not the answer's; then the text button
+  *Ajouter un auteur*, which pushes `{ name: "", roles: ["WRITER"] }` and,
+  after `nextTick`, calls `focusName()` on it, reached through a function
+  `:ref` into `authorBoxes` (a focus case awaits `flushPromises()` after
+  the tap). `AuthorBox` (props `roles`, `kind`, model `name`, exposing
+  `focusName()` through `defineExpose`) draws the
   name textbox *Nom de l'auteur*, a hairline, and the roles line, a button
   with `aria-expanded="false"`, `aria-label` *Rôles* then its words, and
-  `ChevronDown`; the words are `isbn.form.authors.{label,name,roles}`. The
-  add still sends the answer's authors. Its spec's `valuesOf`,
+  `ChevronDown`; the words are `isbn.form.authors.{label,name,roles,add}`.
+  Its spec's `valuesOf`,
   `disabledOf` and `suggestions` leave out the name boxes and the roles
-  lines (`aria-expanded`). The volume's
+  lines (`aria-expanded`), and `suggestions` *Ajouter un auteur* too. The volume's
   label is `isbn.form.volume.<kind>` (*Album* for a BD), built with the
   chosen kind, as `withoutSeries`' words are. Each label points at its
   box through `for` and an id built on `useId()`; the kinds are three
@@ -735,7 +742,16 @@ Read whole by a run that changes `frontend/`, after `every-run.md`.
   tree every spec mounts, `focus()` leaves `document.activeElement` on the
   body. A case about the focus mounts with `attachTo: document.body` and
   calls `wrapper.unmount()` at its end (`NewBookshelfRow`'s *takes the focus
-  when it opens*).
+  when it opens*). A focus case that fails before its `unmount()` leaves
+  its tree attached, and later focus cases of the file red on it while
+  they pass alone: read the first red of the file.
+- Tailwind 4 emits the `aria-*` variants after `focus` and
+  `focus-within` (read in `dist/assets` after `npm run build`), so
+  `aria-invalid:border-danger` beats `focus:border-accent` on a refused
+  field, while a plain colour class (`border-danger`) loses to `focus:`:
+  `IsbnView`'s ISBN field adds `focus:border-accent` only while not
+  refused. Every field takes `outline-none` and `focus:border-accent`, an
+  `AuthorBox` `focus-within:border-accent`.
 - A block that may draw nothing sits with the block after it in a
   `flex flex-col gap-5` parent (`SeriesPageView`'s card and list): a
   component whose root is `v-if`'d away renders a comment, which takes no

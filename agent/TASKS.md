@@ -62,7 +62,7 @@ frontend task.
       alone when it reads none. Walking skeleton; realises S1; un-skips
       its two cases.
 
-- [ ] T145 Frontend: an author is added.
+- [x] T145 Frontend: an author is added.
       *Ajouter un auteur*, under the last box or the label, adds a box
       after the last, its name empty and focused, the kind's first role
       chosen, texte for a Livre, scénario for a BD or a Manga; no box ever
