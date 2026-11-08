@@ -147,7 +147,7 @@ describe("Scan beep", () => {
     expect(beeper.beeps).toBe(1);
   });
 
-  it.skip("S6 The beep stays on when Libris is opened again", async () => {
+  it("S6 The beep stays on when Libris is opened again", async () => {
     // Given
     const firstBeeper = new FakeBeeper();
     const first = await open({ beeper: firstBeeper, camera: theCameraOpen() });
