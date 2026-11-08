@@ -27,20 +27,22 @@ const label = computed(() =>
 </script>
 
 <template>
-  <div class="rounded-xl border-[1.5px] border-border bg-surface">
+  <div
+    class="rounded-xl border-[1.5px] border-border bg-surface focus-within:border-accent"
+  >
     <input
       ref="nameBox"
       v-model="name"
       type="text"
       :aria-label="t('isbn.form.authors.name')"
-      class="h-12 w-full bg-transparent pr-0.75 pl-3.5 text-field"
+      class="h-12 w-full bg-transparent pr-0.75 pl-3.5 text-field outline-none"
     />
     <div class="mx-3.5 border-t border-border"></div>
     <button
       type="button"
       aria-expanded="false"
       :aria-label="label"
-      class="flex min-h-11 w-full items-center gap-2 pr-0.75 pl-3.5 text-left text-body"
+      class="flex min-h-11 w-full items-center gap-2 pr-0.75 pl-3.5 text-left text-body outline-none"
     >
       <span class="flex-1">{{ words }}</span>
       <span class="flex size-11 shrink-0 items-center justify-center">

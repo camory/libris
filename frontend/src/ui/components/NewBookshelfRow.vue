@@ -28,7 +28,7 @@ onMounted(() => field.value?.focus());
         type="text"
         :placeholder="t('home.bookshelves.name')"
         :aria-label="t('home.bookshelves.name')"
-        class="h-11 min-w-0 flex-1 rounded-xl border-[1.5px] border-border bg-surface px-3 text-field outline-none placeholder:text-muted"
+        class="h-11 min-w-0 flex-1 rounded-xl border-[1.5px] border-border bg-surface px-3 text-field outline-none placeholder:text-muted focus:border-accent"
       />
       <div class="size-11 shrink-0">
         <button

@@ -236,7 +236,7 @@ function add() {
               @focus="focused(field)"
               @blur="left(field)"
               @input="typed(field)"
-              class="h-[50px] w-full rounded-xl border-[1.5px] border-border bg-surface px-3.5 text-field aria-invalid:border-danger"
+              class="h-[50px] w-full rounded-xl border-[1.5px] border-border bg-surface px-3.5 text-field outline-none focus:border-accent aria-invalid:border-danger"
               :class="{
                 'scroll-mt-28': field === 'series',
                 'pr-32': field === 'series' && seriesStatus,
@@ -316,7 +316,7 @@ function add() {
           v-model="summary"
           rows="3"
           :disabled="adding"
-          class="field-sizing-content min-h-[calc(3lh+27px)] w-full resize-none rounded-xl border-[1.5px] border-border bg-surface px-3.5 py-3 text-field"
+          class="field-sizing-content min-h-[calc(3lh+27px)] w-full resize-none rounded-xl border-[1.5px] border-border bg-surface px-3.5 py-3 text-field outline-none focus:border-accent"
         ></textarea>
       </div>
     </form>
