@@ -29,12 +29,6 @@ export class WebAudioBeeper implements Beeper {
 }
 
 const frequency = 1000;
-const duration = 0.099;
-const partials = [
-  { harmonic: 1, decibels: 0 },
-  { harmonic: 3, decibels: -19 },
-  { harmonic: 5, decibels: -28 },
-];
 
 function toneOf(context: AudioContext): PeriodicWave {
   const size = Math.max(...partials.map(({ harmonic }) => harmonic)) + 1;
@@ -45,3 +39,11 @@ function toneOf(context: AudioContext): PeriodicWave {
   }
   return context.createPeriodicWave(real, imag);
 }
+
+const partials = [
+  { harmonic: 1, decibels: 0 },
+  { harmonic: 3, decibels: -19 },
+  { harmonic: 5, decibels: -28 },
+];
+
+const duration = 0.099;
