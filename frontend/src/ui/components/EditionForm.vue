@@ -261,14 +261,11 @@ function add() {
             <span>{{ t(messageOf(refusals[field])) }}</span>
           </p>
         </div>
-        <div
-          v-if="field === 'volume' && edition?.authors.length"
-          class="flex flex-col gap-2"
-        >
+        <div v-if="field === 'volume'" class="flex flex-col gap-2">
           <p class="text-label text-muted">
             {{ t("isbn.form.authors.label") }}
           </p>
-          <AuthorLines :authors="edition.authors" :kind="kind" />
+          <AuthorLines :authors="edition?.authors ?? []" :kind="kind" />
         </div>
       </template>
 

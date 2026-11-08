@@ -272,12 +272,22 @@ describe("EditionForm", () => {
     expect(text).not.toContain("texte");
   });
 
-  it("shows no Auteurs when Libris answered none", () => {
+  it("shows Auteurs with no author", () => {
     // When
-    const text = show({ ...onePiece1, authors: [] });
+    const wrapper = form();
 
     // Then
-    expect(text).not.toContain("Auteurs");
+    const text = wrapper.text().replace(/\s+/g, " ");
+    const positions = ["Tome", "Auteurs", "Collection"].map((part) =>
+      text.indexOf(part),
+    );
+    expect(positions).not.toContain(-1);
+    expect(positions).toEqual([...positions].sort((a, b) => a - b));
+    expect(
+      within(wrapper.element as HTMLElement).queryAllByRole("textbox", {
+        name: "Nom de l'auteur",
+      }),
+    ).toEqual([]);
   });
 
   it("shows the covers on offer as the card does", () => {
