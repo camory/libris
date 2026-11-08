@@ -149,3 +149,16 @@ Format:
   keeping it across openings (T141); for Tophe on the Pixel, three quick
   taps at a natural pace still turn the beep on, three taps a second
   apart sound nothing.
+
+## 2026-11-08 — T140 the trick again turns the beep off, in silence — done
+- Did: the third tap of a row turns the beep on and sounds it when it is
+  off, and turns it off in silence when it is on; the tap after the trick
+  starts a new row however soon it comes. S5 runs un-skipped.
+- Decided: the trick toggles `on` and calls the composable's own `beep()`,
+  so the sound follows the state it just took; the row restarts by setting
+  the count back to 0, the pace rule then counting the next tap as the
+  first.
+- Deviations from the brief: none.
+- Left over: keeping the state across openings (T141); for Tophe on the
+  Pixel, three quick taps with the beep on make no sound and the next scan
+  is silent, six quick taps sound one beep and leave the scan silent.

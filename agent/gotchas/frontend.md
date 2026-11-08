@@ -105,9 +105,11 @@ Read whole by a run that changes `frontend/`, after `every-run.md`.
   `useBeepAtEachRead(beeper)`, which exposes `beep()`, its verb, and
   `tap(at)` (`tap($event.timeStamp)` on the `h1`'s click, the instant in
   milliseconds, a tap 500 ms or more after the one before starting a new
-  row of which it is the first, the third of a row turning the beep on;
+  row of which it is the first, the third of a row turning the beep on,
+  sounding it, or off, in silence, and the tap after it starting a new
+  row however soon it comes, so six quick taps turn it on, then off;
   `beep()` on a non-`null` camera read before `search`, sounding only
-  once the trick turned it on), so the composable reads no clock, its
+  while the trick left it on), so the composable reads no clock, its
   spec writes each tap's instant, and the state lives with the view's
   mount and leaving the screen forgets it until T141; `IsbnView.spec.ts`' `mountView` takes the
   beeper sixth. `ScanBeepScenarios` gives the fake through the ports, does
