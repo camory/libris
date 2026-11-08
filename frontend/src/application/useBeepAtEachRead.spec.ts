@@ -22,13 +22,13 @@ describe("useBeepAtEachRead", () => {
   it("sounds the beep at a read once it is on", () => {
     // Given
     const beeper = new FakeBeeper();
-    const { tap, read } = useBeepAtEachRead(beeper);
+    const { beep, tap } = useBeepAtEachRead(beeper);
     tap();
     tap();
     tap();
 
     // When
-    read();
+    beep();
 
     // Then
     expect(beeper.beeps).toBe(2);
@@ -37,10 +37,10 @@ describe("useBeepAtEachRead", () => {
   it("keeps a read silent while the beep is off", () => {
     // Given
     const beeper = new FakeBeeper();
-    const { read } = useBeepAtEachRead(beeper);
+    const { beep } = useBeepAtEachRead(beeper);
 
     // When
-    read();
+    beep();
 
     // Then
     expect(beeper.beeps).toBe(0);

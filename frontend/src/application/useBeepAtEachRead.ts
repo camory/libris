@@ -1,11 +1,17 @@
 import type { Beeper } from "./Beeper";
 
 export function useBeepAtEachRead(beeper: Beeper): {
+  beep: () => void;
   tap: () => void;
-  read: () => void;
 } {
   let taps = 0;
   let on = false;
+
+  function beep() {
+    if (on) {
+      beeper.beep();
+    }
+  }
 
   function tap() {
     taps += 1;
@@ -15,11 +21,5 @@ export function useBeepAtEachRead(beeper: Beeper): {
     }
   }
 
-  function read() {
-    if (on) {
-      beeper.beep();
-    }
-  }
-
-  return { tap, read };
+  return { beep, tap };
 }

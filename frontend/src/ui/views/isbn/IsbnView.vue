@@ -37,7 +37,7 @@ const { t } = useI18n();
 const isbnApi = inject(isbnApiKey)!;
 const barcodeScanner = inject(barcodeScannerKey)!;
 const beeper = inject(beeperKey)!;
-const { tap, read } = useBeepAtEachRead(beeper);
+const { beep, tap } = useBeepAtEachRead(beeper);
 const meApi = inject(meApiKey)!;
 const bookshelfApi = inject(bookshelfApiKey)!;
 const copiesApi = inject(copiesApiKey)!;
@@ -111,7 +111,7 @@ async function openCamera() {
   const scanned = await barcodeScanner.read(camera.value!);
   scanning.value = false;
   if (scanned !== null) {
-    read();
+    beep();
     typed.value = scanned;
     await search();
   }
