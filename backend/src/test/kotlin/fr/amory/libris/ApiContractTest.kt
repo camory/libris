@@ -3,6 +3,7 @@ package fr.amory.libris
 import dev.contracteer.verifier.junit.ContracteerServerPort
 import dev.contracteer.verifier.junit.ContracteerTest
 import fr.amory.libris.bibliography.application.cover.FindCover
+import fr.amory.libris.bibliography.application.edition.ListAuthorNames
 import fr.amory.libris.bibliography.application.edition.NewEdition
 import fr.amory.libris.bibliography.application.lookup.EditionLookupResult
 import fr.amory.libris.bibliography.application.lookup.EditionLookupResult.Found
@@ -114,6 +115,7 @@ import java.util.UUID
     FindCatalogueSeries::class,
     FindCatalogueEdition::class,
     ListSeriesNames::class,
+    ListAuthorNames::class,
     RemoveCopy::class,
   ],
 )
