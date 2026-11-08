@@ -37,6 +37,20 @@ describe("useBeepAtEachRead", () => {
     expect(beeper.beeps).toBe(1);
   });
 
+  it("counts a tap less than half a second after the one before", () => {
+    // Given
+    const beeper = new FakeBeeper();
+    const { tap } = useBeepAtEachRead(beeper);
+
+    // When
+    tap(0);
+    tap(499);
+    tap(998);
+
+    // Then
+    expect(beeper.beeps).toBe(1);
+  });
+
   it("sounds the beep at a read once it is on", () => {
     // Given
     const beeper = new FakeBeeper();
