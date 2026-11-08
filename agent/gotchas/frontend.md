@@ -96,12 +96,16 @@ Read whole by a run that changes `frontend/`, after `every-run.md`.
   `beeps` and `readies`. `WebAudioBeeper` (`infra/audio`) takes a
   `() => AudioContext` from `bootstrap`, builds the context on its first
   `ready()` or `beep()` (jsdom has no `AudioContext`: one built earlier
-  reds the smoke case on `ReferenceError`), and `ready()` calls `resume()`
-  whatever the state; its spec runs over a stand-in context written in it
-  (`browserAudio()`), which records the oscillators. `IsbnView` calls
-  `ready()` first in `openCamera`, holds `useBeepAtEachRead(beeper)`
-  (`tap()` on the `h1`'s click, `read()` on a non-`null` camera read before
-  `search`), so the state lives with the view's mount and leaving the
+  reds the smoke case on `ReferenceError`); `ready()` calls `resume()`
+  whatever the state, and `beep()` calls it first only on a `suspended`
+  context, the one a cold load on `/isbn` builds before any tap (T138's
+  rework); its spec runs over a stand-in context written in it
+  (`browserAudio()`), which records the oscillators and counts `resumes`.
+  `IsbnView` calls `ready()` first in `openCamera`, holds
+  `useBeepAtEachRead(beeper)`, which exposes `beep()`, its verb, and
+  `tap()` (`tap()` on the `h1`'s click, `beep()` on a non-`null` camera
+  read before `search`, sounding only once the trick turned it on), so
+  the state lives with the view's mount and leaving the
   screen forgets it until T141; `IsbnView.spec.ts`' `mountView` takes the
   beeper sixth. `ScanBeepScenarios` gives the fake through the ports, does
   the trick through three clicks on the `h1`, and mounts S6's second app

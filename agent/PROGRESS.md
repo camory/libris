@@ -122,3 +122,17 @@ Format:
   keeping it across openings (T141); for Tophe on the Pixel, the tone
   against the spec's test page, the beep after reopening the screen from
   the tab, and the title's look under three quick taps.
+
+## 2026-11-08 — T138 the trick turns the beep on at the camera's read — reworked
+- Did: `useBeepAtEachRead` exposes `beep()`, its verb, and `tap()`, the
+  view calling `beep()` at the camera's read; `WebAudioBeeper.beep()`
+  resumes a suspended context before it sounds; its module reads top down.
+- Decided: Tophe's answer of 2026-11-08 on #355 amended the brief: the
+  composable's shape is `beep()` plus `tap()`, as `find` plus `refresh`,
+  D10 unchanged; the cold load on `/isbn` is met by `beep()` resuming a
+  suspended context, `tap()` never calling `ready()`. `beep()` reads the
+  state before resuming, as his answer words it, proven by a second case
+  over a running context; `ready()` still resumes whatever the state.
+- Deviations from the brief: none beyond the amended shape.
+- Left over: for Tophe on the Pixel, besides the first run's three checks,
+  the trick's beep after a reload on the lookup screen.
