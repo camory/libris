@@ -103,10 +103,13 @@ Read whole by a run that changes `frontend/`, after `every-run.md`.
   (`browserAudio()`), which records the oscillators and counts `resumes`.
   `IsbnView` calls `ready()` first in `openCamera`, holds
   `useBeepAtEachRead(beeper)`, which exposes `beep()`, its verb, and
-  `tap()` (`tap()` on the `h1`'s click, `beep()` on a non-`null` camera
-  read before `search`, sounding only once the trick turned it on), so
-  the state lives with the view's mount and leaving the
-  screen forgets it until T141; `IsbnView.spec.ts`' `mountView` takes the
+  `tap(at)` (`tap($event.timeStamp)` on the `h1`'s click, the instant in
+  milliseconds, a tap 500 ms or more after the one before starting a new
+  row of which it is the first, the third of a row turning the beep on;
+  `beep()` on a non-`null` camera read before `search`, sounding only
+  once the trick turned it on), so the composable reads no clock, its
+  spec writes each tap's instant, and the state lives with the view's
+  mount and leaving the screen forgets it until T141; `IsbnView.spec.ts`' `mountView` takes the
   beeper sixth. `ScanBeepScenarios` gives the fake through the ports, does
   the trick through three clicks on the `h1`, and mounts S6's second app
   over the same `localStorage`, which it clears after each test; S2 fakes

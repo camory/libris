@@ -136,3 +136,16 @@ Format:
 - Deviations from the brief: none beyond the amended shape.
 - Left over: for Tophe on the Pixel, besides the first run's three checks,
   the trick's beep after a reload on the lookup screen.
+
+## 2026-11-08 — T139 three slow taps change nothing — done
+- Did: the trick counts only taps in a row, each less than half a second
+  after the one before; a slower tap starts a new row of which it is the
+  first. `tap(at)` takes the click's `timeStamp`; S2 runs un-skipped.
+- Decided: the composable keeps the last tap's instant, starting at
+  `-Infinity`, so the first tap of all starts a row with no special case;
+  the bound is a module constant, `halfASecond`, compared strictly.
+- Deviations from the brief: none.
+- Left over: the fourth quick tap and turning the beep off (T140),
+  keeping it across openings (T141); for Tophe on the Pixel, three quick
+  taps at a natural pace still turn the beep on, three taps a second
+  apart sound nothing.
