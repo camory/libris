@@ -22,6 +22,7 @@ import { FakeReadersApi } from "../fixture/FakeReadersApi";
 import { FakeSeriesApi } from "../fixture/FakeSeriesApi";
 import { lea } from "../fixture/Readers";
 import { onePiece1 } from "../fixture/SourceEditions";
+import { WebStorageBeepSetting } from "../infra/storage/WebStorageBeepSetting";
 
 type Screen = BoundFunctions<typeof queries>;
 
@@ -258,6 +259,7 @@ describe("Scan beep", () => {
         seriesApi: new FakeSeriesApi([]),
         copiesApi: new FakeCopiesApi(new Error("no removal in this scenario")),
         beeper: world.beeper,
+        beepSetting: new WebStorageBeepSetting(localStorage),
       },
       "sha-abc1234",
     );

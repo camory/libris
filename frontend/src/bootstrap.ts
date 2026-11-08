@@ -11,6 +11,7 @@ import { FetchSeriesApi } from "./infra/api/FetchSeriesApi";
 import { WebAudioBeeper } from "./infra/audio/WebAudioBeeper";
 import { CameraBarcodeScanner } from "./infra/camera/CameraBarcodeScanner";
 import { ServiceWorkerAppUpdate } from "./infra/pwa/ServiceWorkerAppUpdate";
+import { WebStorageBeepSetting } from "./infra/storage/WebStorageBeepSetting";
 
 export function bootstrap(origin: string, revision: string): App {
   return createLibrisApp(
@@ -26,6 +27,7 @@ export function bootstrap(origin: string, revision: string): App {
       seriesApi: new FetchSeriesApi(origin),
       copiesApi: new FetchCopiesApi(origin),
       beeper: new WebAudioBeeper(() => new AudioContext()),
+      beepSetting: new WebStorageBeepSetting(localStorage),
     },
     revision,
   );

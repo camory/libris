@@ -9,6 +9,7 @@ import {
   type BarcodeScanner,
 } from "./application/BarcodeScanner";
 import { beeperKey, type Beeper } from "./application/Beeper";
+import { beepSettingKey, type BeepSetting } from "./application/BeepSetting";
 import {
   bookshelvesApiKey,
   type BookshelvesApi,
@@ -36,6 +37,7 @@ export interface LibrisPorts {
   seriesApi: SeriesApi;
   copiesApi: CopiesApi;
   beeper: Beeper;
+  beepSetting: BeepSetting;
 }
 
 export function createLibrisApp(ports: LibrisPorts, revision: string): App {
@@ -56,6 +58,7 @@ export function createLibrisApp(ports: LibrisPorts, revision: string): App {
   app.provide(seriesApiKey, ports.seriesApi);
   app.provide(copiesApiKey, ports.copiesApi);
   app.provide(beeperKey, ports.beeper);
+  app.provide(beepSettingKey, ports.beepSetting);
   app.provide(revisionKey, revision);
   app.provide(LUCIDE_CONTEXT, { strokeWidth: 1.8 });
   return app;

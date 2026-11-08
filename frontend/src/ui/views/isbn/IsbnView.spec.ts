@@ -9,6 +9,7 @@ import { flushPromises, mount } from "@vue/test-utils";
 import { afterEach, describe, expect, it } from "vitest";
 import { barcodeScannerKey } from "../../../application/BarcodeScanner";
 import { beeperKey } from "../../../application/Beeper";
+import { beepSettingKey } from "../../../application/BeepSetting";
 import {
   bookshelfApiKey,
   type AddAnswer,
@@ -26,6 +27,7 @@ import {
 import { meApiKey } from "../../../application/MeApi";
 import { seriesApiKey, type SeriesApi } from "../../../application/SeriesApi";
 import { FakeBarcodeScanner } from "../../../fixture/FakeBarcodeScanner";
+import { FakeBeepSetting } from "../../../fixture/FakeBeepSetting";
 import { FakeBeeper } from "../../../fixture/FakeBeeper";
 import { FakeBookshelfApi } from "../../../fixture/FakeBookshelfApi";
 import { FakeCopiesApi } from "../../../fixture/FakeCopiesApi";
@@ -1477,6 +1479,7 @@ describe("IsbnView", () => {
           [seriesApiKey]: seriesApi,
           [copiesApiKey]: copiesApi,
           [beeperKey]: beeper,
+          [beepSettingKey]: new FakeBeepSetting(),
         },
       },
     });

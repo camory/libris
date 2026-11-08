@@ -17,6 +17,7 @@ import type { SourceEdition } from "../domain/SourceEdition";
 import { asterixLeGaulois, bibliothequeDeLea } from "../fixture/Books";
 import { FakeAppUpdate } from "../fixture/FakeAppUpdate";
 import { FakeBarcodeScanner } from "../fixture/FakeBarcodeScanner";
+import { FakeBeepSetting } from "../fixture/FakeBeepSetting";
 import { FakeBeeper } from "../fixture/FakeBeeper";
 import { FakeBookshelfApi } from "../fixture/FakeBookshelfApi";
 import { FakeBookshelvesApi } from "../fixture/FakeBookshelvesApi";
@@ -333,6 +334,7 @@ describe("Covers", () => {
         seriesApi: new FakeSeriesApi([]),
         copiesApi: new FakeCopiesApi(new Error("no removal in this scenario")),
         beeper: new FakeBeeper(),
+        beepSetting: new FakeBeepSetting(),
       },
       "sha-abc1234",
     );
