@@ -87,11 +87,16 @@
   the edition endpoint, the recorded answers and the scenario stubs follow
   it. To weigh with Tophe when T014 is planned (found reviewing T013).
 - Backend: the web slice grows a mock per controller. Every `@WebSliceTest`
-  class must name every use case of `infra.web` in its `@MockitoBean`, because
+  class must name every use case of `web` in its `@MockitoBean`, because
   `WebSliceConfiguration` scans the whole package; the list will be copied into
   each new test class as controllers arrive. Declaring the mocks on the
   `@WebSliceTest` annotation itself would keep one list (found on T020,
-  2026-09-12).
+  2026-09-12). The identical lists are also what lets `ProblemAdviceTest`
+  and `SecurityConfigTest` share one Spring context (`ApiContractTest` has
+  its own for `FixedReaderHeaders`): a list that drifts makes a context of
+  its own without a word, and T142 added `ListAuthorNames` to all three.
+  Whether `@MockitoBean` is honoured on a meta-annotation is to check first
+  (2026-11-08, on T142's review).
 - Backend: the source timeout is per HTTP request, not per lookup. The Open
   Library client bounds each of its requests (the edition, then one per
   author), so a source slow on every request may take several timeouts and
@@ -537,3 +542,12 @@
   faster and less exposed to download outages (found when a GitHub release
   outage failed #356's `images` job; the wrapper's retries were kept
   instead).
+- Backend: `StoredSummaryScenarios` is the only scenario class off the
+  shared `@ScenarioTest` context: its `@TestPropertySource`
+  `spring.flyway.target=12` makes a full boot of its own (1.4 s on the
+  host) and a Hikari pool of ten connections more. It already migrates to
+  the latest version through a `Flyway` built from the context's
+  configuration; its first half done the same way (clean, migrate to 12,
+  insert, then migrate to the latest) would let it share the scenario
+  context. A scenario test is Tophe's, so the change is his (found on
+  T142's review, 2026-11-08).
