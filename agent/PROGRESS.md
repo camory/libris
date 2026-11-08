@@ -116,3 +116,17 @@ Format:
   as the phases before it did.
 - Left over: the backlog is empty; the next feature needs its spec,
   written with Tophe.
+
+## 2026-11-08 — T142 The authors' names on v0.17.0 — done
+- Did: the backend pins `v0.17.0` and serves `GET /api/v1/author-names`
+  through `ListAuthorNames` over the new query port `AuthorNames`, read by
+  `JdbcAuthorNames` from `author` alone; S6 of the authors edit un-skipped.
+- Decided: `JdbcAuthorNames` maps its one column with
+  `query { rs, _ -> rs.getString("name") }`, since `query(String::class.java)`
+  answers a `List<String?>` the port's `List<String>` refuses.
+- Deviations from the brief: `@JdbcSliceTest` caps its Hikari pool at three
+  connections; `JdbcAuthorNamesTest`'s context, the suite's eleventh with a
+  pool of ten, ran PostgreSQL out of its 100 connections and failed the gate
+  (`too many clients already`, 74 cases).
+- Left over: T143 (an author's name matched as PRD §3 says) and T144 (the
+  frontend onto `v0.17.0`), both in the backlog.

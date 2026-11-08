@@ -30,7 +30,7 @@ task touches the contract (D04). The frontend tests of edition-form, S12
 without its line on *Eiichirō Oda* (#363), stay green and guard every
 frontend task.
 
-- [ ] T142 Backend: the authors' names on `v0.17.0`.
+- [x] T142 Backend: the authors' names on `v0.17.0`.
       `ApiContractTest` pins `v0.17.0`, the backend's one bump (D04).
       Libris answers the names of every author the house holds, on a
       bookshelf of the reader's or not, each once and none blank, in no

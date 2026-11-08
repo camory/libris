@@ -318,7 +318,7 @@ Read whole by a run that changes `backend/`, after `every-run.md`.
   `[]` and checks no item. Stubbed with items, the verifier checks each
   item's `minLength` and `pattern` and the array's `uniqueItems` (a name
   answered twice: `Array contains duplicate items but uniqueItems is true`,
-  Contracteer on `v0.15.0`, 2026-11-01).
+  Contracteer on `v0.15.0`, 2026-11-01, and on `v0.17.0`, 2026-11-08).
 - In `ApiContractTest` an exception nothing answers shows as `403`, not
   `500`: `FixedReaderHeaders` is a filter registered for the `REQUEST`
   dispatch only, so the error dispatch to `/error` arrives without the
@@ -420,6 +420,12 @@ Read whole by a run that changes `backend/`, after `every-run.md`.
 - A unique column that is nullable counts no null in PostgreSQL, so any number
   of editions without an `isbn13` sit side by side while two editions cannot
   share one.
+- The test JVM keeps every Spring context it built, each with its own
+  Hikari pool, and the sandbox PostgreSQL takes 100 connections: an eleventh
+  context of the default ten connections fails whole with `FATAL: sorry, too
+  many clients already` (T142's new slice test, 2026-11-08), on whichever
+  class starts last. A JDBC slice test whose `@Import` set differs from every
+  other's is a context of its own; `@JdbcSliceTest` caps its pool at three.
 - `@JdbcSliceTest` lives in `fr.amory.libris.fixture` beside `FreshSchema` and
   `WebSliceTest`, and serves both contexts. A slice test
   imports the repository it proves with `@Import(Jdbc…Repository::class)` and
