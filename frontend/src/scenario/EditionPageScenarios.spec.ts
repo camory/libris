@@ -14,6 +14,7 @@ import type { SeriesWithBooks } from "../domain/Series";
 import { FakeAppUpdate } from "../fixture/FakeAppUpdate";
 import { asterixLeGaulois, bibliothequeDeLea, salon } from "../fixture/Books";
 import { FakeBarcodeScanner } from "../fixture/FakeBarcodeScanner";
+import { FakeBeeper } from "../fixture/FakeBeeper";
 import { FakeBookshelfApi } from "../fixture/FakeBookshelfApi";
 import { FakeBookshelvesApi } from "../fixture/FakeBookshelvesApi";
 import { FakeCatalogueApi } from "../fixture/FakeCatalogueApi";
@@ -177,6 +178,7 @@ describe("Edition page", () => {
         readersApi: new FakeReadersApi([]),
         seriesApi: world.series ?? new FakeSeriesApi([]),
         copiesApi: new FakeCopiesApi(new Error("no removal in this scenario")),
+        beeper: new FakeBeeper(),
       },
       "sha-abc1234",
     );

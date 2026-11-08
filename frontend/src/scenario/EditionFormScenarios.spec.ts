@@ -19,6 +19,7 @@ import type { CoverCandidate } from "../domain/Cover";
 import type { SourceEdition } from "../domain/SourceEdition";
 import { FakeAppUpdate } from "../fixture/FakeAppUpdate";
 import { FakeBarcodeScanner } from "../fixture/FakeBarcodeScanner";
+import { FakeBeeper } from "../fixture/FakeBeeper";
 import { FakeBookshelfApi } from "../fixture/FakeBookshelfApi";
 import { FakeBookshelvesApi } from "../fixture/FakeBookshelvesApi";
 import { FakeCatalogueApi } from "../fixture/FakeCatalogueApi";
@@ -587,6 +588,7 @@ describe("Edition form", () => {
         readersApi: new FakeReadersApi([]),
         seriesApi: world.names ?? new FakeSeriesApi([]),
         copiesApi: new FakeCopiesApi(new Error("no removal in this scenario")),
+        beeper: new FakeBeeper(),
       },
       "sha-abc1234",
     );

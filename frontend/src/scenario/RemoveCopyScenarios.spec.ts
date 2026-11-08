@@ -18,6 +18,7 @@ import type { SourceEdition } from "../domain/SourceEdition";
 import { FakeAppUpdate } from "../fixture/FakeAppUpdate";
 import { asterixLeGaulois, bibliothequeDeLea, salon } from "../fixture/Books";
 import { FakeBarcodeScanner } from "../fixture/FakeBarcodeScanner";
+import { FakeBeeper } from "../fixture/FakeBeeper";
 import { FakeBookshelfApi } from "../fixture/FakeBookshelfApi";
 import { FakeBookshelvesApi } from "../fixture/FakeBookshelvesApi";
 import { FakeCatalogueApi } from "../fixture/FakeCatalogueApi";
@@ -404,6 +405,7 @@ describe("Remove a copy", () => {
         copiesApi:
           world.copies ??
           new FakeCopiesApi(new Error("no removal in this scenario")),
+        beeper: new FakeBeeper(),
       },
       "sha-abc1234",
     );

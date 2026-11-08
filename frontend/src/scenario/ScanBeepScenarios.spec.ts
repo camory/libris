@@ -6,7 +6,6 @@ import {
 } from "@testing-library/dom";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import type { App } from "vue";
-import { beeperKey } from "../application/Beeper";
 import type { BarcodeScanner } from "../application/BarcodeScanner";
 import type { IsbnAnswer, IsbnApi } from "../application/IsbnApi";
 import { createLibrisApp } from "../createLibrisApp";
@@ -258,10 +257,10 @@ describe("Scan beep", () => {
         readersApi: new FakeReadersApi([]),
         seriesApi: new FakeSeriesApi([]),
         copiesApi: new FakeCopiesApi(new Error("no removal in this scenario")),
+        beeper: world.beeper,
       },
       "sha-abc1234",
     );
-    app.provide(beeperKey, world.beeper);
     app.mount(host);
     const screen = within(host);
     await screen.findByRole("button", { name: "Fermer la caméra" });
