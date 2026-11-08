@@ -107,3 +107,11 @@ Format:
   as the phases before it did.
 - Left over: the backlog is empty; the next feature needs its spec,
   written with Tophe.
+
+## 2026-11-08 — T138 the trick turns the beep on at the camera's read — handoff
+- Done: test plan steps 1 to 15, each its own commit, plus a refactor (adapter and spec read top down). S1, S3, S4, both S7 un-skipped and green.
+- Start with: *Finish* — rewrite the scan beep item of `agent/gotchas/frontend.md`, tick T138, the diary entry, the gate, the PR (title as the brief gives it).
+- Decided: `ready()` calls `resume()` whatever the state (no test motivates reading `state`; a resume of a running context does nothing); `ready()` lives on the port from step 7, `FakeBeeper.ready()` counting `readies` from step 10.
+- Deviations: none.
+- Guards, run and reverted: step 8, context built in the constructor: `expected 1 to be +0`, and the smoke case *the application runs over the mock* red on `ReferenceError: AudioContext is not defined`; S3, `beeper.beep()` at the read: `expected 1 to be +0`; S4, `read()` after `await search()`: `expected 1 to be 2`; S7 typed, `read()` first in `search`: `expected 2 to be 1`; S7 closed, `read()` before the `null` check: `expected 2 to be 1`.
+- Criteria checked: the backend/docs/specs/domain/i18n/components diff empty, the `localStorage|Date.now|timeStamp` grep empty outside specs, the scenario diff as the brief says (13 files plus `createLibrisApp.spec.ts` gain one `beeper` line and its import).
