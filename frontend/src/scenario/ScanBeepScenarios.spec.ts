@@ -100,7 +100,7 @@ describe("Scan beep", () => {
     expect(isbn.asked).toEqual([onePiece1.isbn13]);
   });
 
-  it.skip("S4 The beep on, the camera beeps", async () => {
+  it("S4 The beep on, the camera beeps", async () => {
     // Given
     const beeper = new FakeBeeper();
     const camera = theCameraOpen();
