@@ -56,7 +56,7 @@ describe("Scan beep", () => {
     expect(beeper.beeps).toBe(2);
   });
 
-  it.skip("S2 Three slow taps change nothing", async () => {
+  it("S2 Three slow taps change nothing", async () => {
     // Given
     const beeper = new FakeBeeper();
     const camera = theCameraOpen();
