@@ -9,7 +9,7 @@ import org.springframework.context.annotation.Import
 
 @Target(AnnotationTarget.CLASS)
 @Retention(AnnotationRetention.RUNTIME)
-@JdbcTest(properties = ["spring.flyway.clean-disabled=false"])
+@JdbcTest(properties = ["spring.flyway.clean-disabled=false", "spring.datasource.hikari.maximum-pool-size=3"])
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 @ImportAutoConfiguration(FlywayAutoConfiguration::class)
 @Import(CleanSchema::class)
