@@ -38,12 +38,15 @@ private const val UPDATE_EDITION =
 private const val INSERT_AUTHOR =
   """
     INSERT INTO author (id, name) VALUES (:id, :name)
-    ON CONFLICT (LOWER(name)) DO UPDATE SET name = author.name
+    ON CONFLICT ((BTRIM(name)) COLLATE ignoring_case_and_accents) DO UPDATE SET name = author.name
     RETURNING id
     """
 
 private const val INSERT_CONTRIBUTION =
-  "INSERT INTO contribution (edition_id, author_id, role) VALUES (:editionId, :authorId, :role)"
+  """
+    INSERT INTO contribution (edition_id, author_id, role) VALUES (:editionId, :authorId, :role)
+    ON CONFLICT (edition_id, author_id, role) DO NOTHING
+    """
 
 private const val DELETE_CONTRIBUTIONS =
   "DELETE FROM contribution WHERE contribution.edition_id = :editionId"

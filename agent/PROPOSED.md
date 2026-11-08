@@ -450,13 +450,6 @@
   true when a cover arrives late through the awaited covers, when an
   edition is corrected or moves to another series, and when the lowest
   tome has no cover or the series only untomed editions.
-- Backend: authors are unique on `LOWER(name)` (`V003`), so *Hergé* and
-  *Herge* are two rows, where PRD §3 matches a name whatever its
-  capitalisation and its accents, as series are since T120's `V014`
-  (Tophe, 2026-10-19, on T106). Open before a task: the folded unique
-  index and the migration that brings it, which spelling stays when rows
-  already stored fold to one, and what the editions pointing at the
-  others then point at.
 - Frontend: `SourceEditionCard` takes a cover as candidates plus `held`, so
   `EditionPageView` passes the stored cover as the one candidate
   `{ source: "Libris", url }`, a name it writes itself and nothing reads,
@@ -551,3 +544,8 @@
   insert, then migrate to the latest) would let it share the scenario
   context. A scenario test is Tophe's, so the change is his (found on
   T142's review, 2026-11-08).
+- Backend: two private foldings of a name, `BookshelfName.kt` and
+  `Contributions.kt`, alike but for the trim of the end spaces the second
+  adds (Duplicated Code), one per context since `bibliography` never
+  depends on `library`. Open: whether a shared kernel of the domain should
+  hold one (found on T143, 2026-11-08).

@@ -86,6 +86,67 @@ class JdbcEditionRepositoryTest @Autowired constructor(
   }
 
   @Test
+  fun `an author named again in other accents is not doubled`() {
+    // Given
+    val first = onePieceTomeOne()
+    val second = first.copy(
+      id = EditionId.new(),
+      isbn = isbnOf(ONE_PIECE_TOME_TWO),
+      title = "Aux prises avec Baggy et ses hommes",
+      contributions = Contributions.of(
+        listOf(Contribution("Eiichirō Oda", WRITER), Contribution("Akiko Indei", TRANSLATOR)),
+      ),
+      seriesVolume = SeriesVolume(ONE_PIECE_SERIES.id, 2),
+    )
+    editions.insert(first)
+
+    // When
+    editions.insert(second)
+
+    // Then
+    rowsOf("author") shouldBe 2
+    editions.findByIsbn(isbnOf(ONE_PIECE_TOME_TWO)) shouldBe second.copy(contributions = first.contributions)
+  }
+
+  @Test
+  fun `an author named again with spaces at its ends is not doubled`() {
+    // Given
+    val first = onePieceTomeOne()
+    val second = first.copy(
+      id = EditionId.new(),
+      isbn = isbnOf(ONE_PIECE_TOME_TWO),
+      title = "Aux prises avec Baggy et ses hommes",
+      contributions = Contributions.of(
+        listOf(Contribution(" Eiichiro Oda ", WRITER), Contribution("Akiko Indei", TRANSLATOR)),
+      ),
+      seriesVolume = SeriesVolume(ONE_PIECE_SERIES.id, 2),
+    )
+    editions.insert(first)
+
+    // When
+    editions.insert(second)
+
+    // Then
+    rowsOf("author") shouldBe 2
+    editions.findByIsbn(isbnOf(ONE_PIECE_TOME_TWO)) shouldBe second.copy(contributions = first.contributions)
+  }
+
+  @Test
+  fun `two names of one role the index matches are linked once`() {
+    // Given
+    val edition = onePieceTomeOne().copy(
+      contributions = Contributions.of(listOf(Contribution("Jo Nesbø", WRITER), Contribution("Jo Nesbo", WRITER))),
+    )
+
+    // When
+    editions.insert(edition)
+
+    // Then
+    editions.findByIsbn(isbnOf(ONE_PIECE)) shouldBe
+      edition.copy(contributions = Contributions.of(listOf(Contribution("Jo Nesbø", WRITER))))
+  }
+
+  @Test
   fun `two editions without an ISBN stand beside each other`() {
     // Given
     val first = onePieceTomeOne().copy(isbn = null)

@@ -37,6 +37,30 @@ class ContributionsTest {
   }
 
   @Test
+  fun `an author named twice in one role, in other accents, is kept once, under the first spelling`() {
+    // Given
+    val given = listOf(Contribution("Eiichirō Oda", WRITER), Contribution("eiichiro oda", WRITER))
+
+    // When
+    val contributions = Contributions.of(given)
+
+    // Then
+    contributions.toList() shouldBe listOf(Contribution("Eiichirō Oda", WRITER))
+  }
+
+  @Test
+  fun `an author named twice in one role, with spaces at its ends, is kept once, under the first spelling`() {
+    // Given
+    val given = listOf(Contribution("Eiichirō Oda", WRITER), Contribution(" Eiichirō Oda ", WRITER))
+
+    // When
+    val contributions = Contributions.of(given)
+
+    // Then
+    contributions.toList() shouldBe listOf(Contribution("Eiichirō Oda", WRITER))
+  }
+
+  @Test
   fun `an author holds several roles`() {
     // Given
     val given = listOf(Contribution("Eiichirō Oda", ARTIST), Contribution("Eiichirō Oda", WRITER))
