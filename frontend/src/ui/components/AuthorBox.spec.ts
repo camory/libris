@@ -1,5 +1,5 @@
 import { ChevronDown } from "@lucide/vue";
-import { within } from "@testing-library/dom";
+import { fireEvent, within } from "@testing-library/dom";
 import { mount } from "@vue/test-utils";
 import { describe, expect, it } from "vitest";
 import type { AuthorRole, Kind } from "../../domain/SourceEdition";
@@ -66,6 +66,22 @@ describe("AuthorBox", () => {
     expect(line?.contains(wrapper.findComponent(ChevronDown).element)).toBe(
       true,
     );
+  });
+
+  it("hands on the name typed", async () => {
+    // Given
+    const wrapper = box("", [], "BOOK");
+
+    // When
+    await fireEvent.input(
+      within(wrapper.element as HTMLElement).getByRole("textbox", {
+        name: "Nom de l'auteur",
+      }),
+      { target: { value: "René" } },
+    );
+
+    // Then
+    expect(wrapper.emitted("update:name")).toEqual([["René"]]);
   });
 
   function rolesLine(box: ReturnType<typeof screen>) {
