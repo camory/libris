@@ -27,7 +27,7 @@ and S7 hold from then on; each task after it adds one scenario to the
 trick: the half second, the trick undone, the beep kept on the phone.
 Nothing on screen changes: the title looks and reads as before.
 
-- [ ] T138 Frontend: the trick turns the beep on, heard at the camera's read.
+- [x] T138 Frontend: the trick turns the beep on, heard at the camera's read.
       Three taps on the lookup screen's title turn the beep on, sounding it
       once; while on, the camera's read beeps before Libris answers, a typed
       ISBN or the camera closed never. The pace, the trick undone and the
