@@ -129,4 +129,24 @@ describe("useBeepAtEachRead", () => {
     // Then
     expect(beeper.beeps).toBe(1);
   });
+
+  it("turns the beep on again at a third row, sounding it", () => {
+    // Given
+    const beeper = new FakeBeeper();
+    const { tap } = useBeepAtEachRead(beeper);
+
+    // When
+    tap(0);
+    tap(100);
+    tap(200);
+    tap(300);
+    tap(400);
+    tap(500);
+    tap(600);
+    tap(700);
+    tap(800);
+
+    // Then
+    expect(beeper.beeps).toBe(2);
+  });
 });
