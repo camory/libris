@@ -53,6 +53,17 @@ describe("WebAudioBeeper", () => {
     expect(browser.resumes).toBe(1);
     expect(browser.oscillators).toEqual([]);
   });
+
+  it("builds no context until it is asked to sound", () => {
+    // Given
+    const browser = browserAudio();
+
+    // When
+    new WebAudioBeeper(browser.newContext);
+
+    // Then
+    expect(browser.contexts).toBe(0);
+  });
 });
 
 interface StandInWave {
