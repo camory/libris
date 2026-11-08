@@ -26,6 +26,7 @@ export function useBeepAtEachRead(
     if (taps === 3) {
       taps = 0;
       on = !on;
+      beepSetting.keep(on);
       beep();
     }
   }
