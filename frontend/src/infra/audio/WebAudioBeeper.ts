@@ -1,0 +1,49 @@
+import type { Beeper } from "../../application/Beeper";
+
+export class WebAudioBeeper implements Beeper {
+  private built: AudioContext | null = null;
+
+  constructor(private readonly newContext: () => AudioContext) {}
+
+  beep(): void {
+    const context = this.context();
+    if (context.state === "suspended") {
+      void context.resume();
+    }
+    const oscillator = context.createOscillator();
+    oscillator.frequency.value = frequency;
+    oscillator.setPeriodicWave(toneOf(context));
+    oscillator.connect(context.destination);
+    oscillator.start(context.currentTime);
+    oscillator.stop(context.currentTime + duration);
+  }
+
+  ready(): void {
+    void this.context().resume();
+  }
+
+  private context(): AudioContext {
+    this.built ??= this.newContext();
+    return this.built;
+  }
+}
+
+const frequency = 1000;
+
+function toneOf(context: AudioContext): PeriodicWave {
+  const size = Math.max(...partials.map(({ harmonic }) => harmonic)) + 1;
+  const real = new Float32Array(size);
+  const imag = new Float32Array(size);
+  for (const { harmonic, decibels } of partials) {
+    imag[harmonic] = 10 ** (decibels / 20);
+  }
+  return context.createPeriodicWave(real, imag);
+}
+
+const partials = [
+  { harmonic: 1, decibels: 0 },
+  { harmonic: 3, decibels: -19 },
+  { harmonic: 5, decibels: -28 },
+];
+
+const duration = 0.099;

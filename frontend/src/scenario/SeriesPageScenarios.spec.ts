@@ -19,6 +19,7 @@ import {
   salon,
 } from "../fixture/Books";
 import { FakeBarcodeScanner } from "../fixture/FakeBarcodeScanner";
+import { FakeBeeper } from "../fixture/FakeBeeper";
 import { FakeBookshelfApi } from "../fixture/FakeBookshelfApi";
 import { FakeBookshelvesApi } from "../fixture/FakeBookshelvesApi";
 import { FakeCatalogueApi } from "../fixture/FakeCatalogueApi";
@@ -390,6 +391,7 @@ describe("Series page", () => {
         readersApi: new FakeReadersApi([]),
         seriesApi: series,
         copiesApi: new FakeCopiesApi(new Error("no removal in this scenario")),
+        beeper: new FakeBeeper(),
       },
       "sha-abc1234",
     );

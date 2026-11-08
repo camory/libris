@@ -6,7 +6,6 @@ import {
 } from "@testing-library/dom";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import type { App } from "vue";
-import { beeperKey } from "../application/Beeper";
 import type { BarcodeScanner } from "../application/BarcodeScanner";
 import type { IsbnAnswer, IsbnApi } from "../application/IsbnApi";
 import { createLibrisApp } from "../createLibrisApp";
@@ -37,7 +36,7 @@ describe("Scan beep", () => {
     localStorage.clear();
   });
 
-  it.skip("S1 The trick turns the beep on", async () => {
+  it("S1 The trick turns the beep on", async () => {
     // Given
     const beeper = new FakeBeeper();
     const camera = theCameraOpen();
@@ -85,7 +84,7 @@ describe("Scan beep", () => {
     expect(beeper.beeps).toBe(0);
   });
 
-  it.skip("S3 The beep off, the camera stays silent", async () => {
+  it("S3 The beep off, the camera stays silent", async () => {
     // Given
     const beeper = new FakeBeeper();
     const camera = theCameraOpen();
@@ -101,7 +100,7 @@ describe("Scan beep", () => {
     expect(isbn.asked).toEqual([onePiece1.isbn13]);
   });
 
-  it.skip("S4 The beep on, the camera beeps", async () => {
+  it("S4 The beep on, the camera beeps", async () => {
     // Given
     const beeper = new FakeBeeper();
     const camera = theCameraOpen();
@@ -167,7 +166,7 @@ describe("Scan beep", () => {
     expect(beeper.beeps).toBe(1);
   });
 
-  it.skip("S7 Only the camera's read beeps, an ISBN typed", async () => {
+  it("S7 Only the camera's read beeps, an ISBN typed", async () => {
     // Given
     const beeper = new FakeBeeper();
     const screen = await open({ beeper, camera: theCameraOpen() });
@@ -185,7 +184,7 @@ describe("Scan beep", () => {
     expect(beeper.beeps).toBe(1);
   });
 
-  it.skip("S7 Only the camera's read beeps, the camera closed", async () => {
+  it("S7 Only the camera's read beeps, the camera closed", async () => {
     // Given
     const beeper = new FakeBeeper();
     const screen = await open({ beeper, camera: theCameraOpen() });
@@ -258,10 +257,10 @@ describe("Scan beep", () => {
         readersApi: new FakeReadersApi([]),
         seriesApi: new FakeSeriesApi([]),
         copiesApi: new FakeCopiesApi(new Error("no removal in this scenario")),
+        beeper: world.beeper,
       },
       "sha-abc1234",
     );
-    app.provide(beeperKey, world.beeper);
     app.mount(host);
     const screen = within(host);
     await screen.findByRole("button", { name: "Fermer la caméra" });

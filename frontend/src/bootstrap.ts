@@ -8,6 +8,7 @@ import { FetchIsbnApi } from "./infra/api/FetchIsbnApi";
 import { FetchMeApi } from "./infra/api/FetchMeApi";
 import { FetchReadersApi } from "./infra/api/FetchReadersApi";
 import { FetchSeriesApi } from "./infra/api/FetchSeriesApi";
+import { WebAudioBeeper } from "./infra/audio/WebAudioBeeper";
 import { CameraBarcodeScanner } from "./infra/camera/CameraBarcodeScanner";
 import { ServiceWorkerAppUpdate } from "./infra/pwa/ServiceWorkerAppUpdate";
 
@@ -24,6 +25,7 @@ export function bootstrap(origin: string, revision: string): App {
       readersApi: new FetchReadersApi(origin),
       seriesApi: new FetchSeriesApi(origin),
       copiesApi: new FetchCopiesApi(origin),
+      beeper: new WebAudioBeeper(() => new AudioContext()),
     },
     revision,
   );

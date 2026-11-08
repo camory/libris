@@ -90,13 +90,28 @@ Read whole by a run that changes `frontend/`, after `every-run.md`.
 - A fixture may import `domain` and `application` only, so a shared
   app-over-fakes builder cannot live in `src/fixture`: each scenario file
   keeps its own `open()`, naming the ports its spec varies.
-- The scan beep's port is `Beeper.beep()` under `beeperKey`
-  (`application/Beeper.ts`), with `FakeBeeper` counting `beeps`; it is not
-  in `LibrisPorts` and has no adapter yet. `ScanBeepScenarios` provides
-  the fake with `app.provide(beeperKey, …)` after `createLibrisApp`, does
+- The scan beep's port is `Beeper` (`application/Beeper.ts`), `beeper` of
+  `LibrisPorts` since T138, provided under `beeperKey`: `beep()` sounds,
+  `ready()` readies the browser's audio on a tap; `FakeBeeper` counts
+  `beeps` and `readies`. `WebAudioBeeper` (`infra/audio`) takes a
+  `() => AudioContext` from `bootstrap`, builds the context on its first
+  `ready()` or `beep()` (jsdom has no `AudioContext`: one built earlier
+  reds the smoke case on `ReferenceError`); `ready()` calls `resume()`
+  whatever the state, and `beep()` calls it first only on a `suspended`
+  context, the one a cold load on `/isbn` builds before any tap (T138's
+  rework); its spec runs over a stand-in context written in it
+  (`browserAudio()`), which records the oscillators and counts `resumes`.
+  `IsbnView` calls `ready()` first in `openCamera`, holds
+  `useBeepAtEachRead(beeper)`, which exposes `beep()`, its verb, and
+  `tap()` (`tap()` on the `h1`'s click, `beep()` on a non-`null` camera
+  read before `search`, sounding only once the trick turned it on), so
+  the state lives with the view's mount and leaving the
+  screen forgets it until T141; `IsbnView.spec.ts`' `mountView` takes the
+  beeper sixth. `ScanBeepScenarios` gives the fake through the ports, does
   the trick through three clicks on the `h1`, and mounts S6's second app
-  over the same `localStorage`, which it clears after each test; S2 fakes `Date`, `performance`, `setTimeout` and `clearTimeout`
-  for its taps only, and jsdom stamps `event.timeStamp` with `Date.now()`.
+  over the same `localStorage`, which it clears after each test; S2 fakes
+  `Date`, `performance`, `setTimeout` and `clearTimeout` for its taps only,
+  and jsdom stamps `event.timeStamp` with `Date.now()`.
 - The removal of a copy is `CopiesApi.remove(copyId)` (`removed`, or a
   problem), `copiesApi` of `LibrisPorts` since T134, provided under
   `copiesApiKey`; `FetchCopiesApi` sends the `DELETE`, the id unencoded, and
