@@ -51,7 +51,7 @@ Nothing on screen changes: the title looks and reads as before.
       taps turn the beep on, then off. Realises S5; un-skips its frontend
       test.
 
-- [ ] T141 Frontend: the beep stays as the trick left it on that phone.
+- [x] T141 Frontend: the beep stays as the trick left it on that phone.
       The beep's state is kept in the phone's storage, across closing and
       reopening Libris: on where the trick turned it on, off where it was
       never done or the app's data was cleared. Nothing is sent to Libris,

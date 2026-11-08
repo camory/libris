@@ -5,6 +5,7 @@ import { createLibrisApp } from "./createLibrisApp";
 import { FakeAppUpdate } from "./fixture/FakeAppUpdate";
 import { FakeBookshelfApi } from "./fixture/FakeBookshelfApi";
 import { FakeBarcodeScanner } from "./fixture/FakeBarcodeScanner";
+import { FakeBeepSetting } from "./fixture/FakeBeepSetting";
 import { FakeBeeper } from "./fixture/FakeBeeper";
 import { FakeBookshelvesApi } from "./fixture/FakeBookshelvesApi";
 import { FakeCatalogueApi } from "./fixture/FakeCatalogueApi";
@@ -35,6 +36,7 @@ const librisApp = () =>
       seriesApi: new FakeSeriesApi([]),
       copiesApi: new FakeCopiesApi(new Error("no removal in this scenario")),
       beeper: new FakeBeeper(),
+      beepSetting: new FakeBeepSetting(),
     },
     "sha-abc1234",
   );

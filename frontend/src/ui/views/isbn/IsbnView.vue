@@ -13,6 +13,7 @@ import {
 import { useI18n } from "vue-i18n";
 import { barcodeScannerKey } from "../../../application/BarcodeScanner";
 import { beeperKey } from "../../../application/Beeper";
+import { beepSettingKey } from "../../../application/BeepSetting";
 import { bookshelfApiKey } from "../../../application/BookshelfApi";
 import { copiesApiKey } from "../../../application/CopiesApi";
 import { isbnApiKey } from "../../../application/IsbnApi";
@@ -37,7 +38,8 @@ const { t } = useI18n();
 const isbnApi = inject(isbnApiKey)!;
 const barcodeScanner = inject(barcodeScannerKey)!;
 const beeper = inject(beeperKey)!;
-const { beep, tap } = useBeepAtEachRead(beeper);
+const beepSetting = inject(beepSettingKey)!;
+const { beep, tap } = useBeepAtEachRead(beeper, beepSetting);
 const meApi = inject(meApiKey)!;
 const bookshelfApi = inject(bookshelfApiKey)!;
 const copiesApi = inject(copiesApiKey)!;

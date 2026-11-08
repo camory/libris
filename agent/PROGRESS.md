@@ -162,3 +162,15 @@ Format:
 - Left over: keeping the state across openings (T141); for Tophe on the
   Pixel, three quick taps with the beep on make no sound and the next scan
   is silent, six quick taps sound one beep and leave the scan silent.
+
+## 2026-11-08 — T141 the beep stays as the trick left it on that phone — done
+- Did: the beep's state goes through the port `BeepSetting`, kept by
+  `WebStorageBeepSetting` as the entry `beep` of the `Storage` it is given;
+  `useBeepAtEachRead` starts from it and the trick keeps what it leaves.
+  S6 runs un-skipped, over the real `localStorage`, across two openings.
+- Decided: nothing the brief left open; `keep` is called at every trick,
+  on or off, right after the toggle, before the sound.
+- Deviations from the brief: none.
+- Left over: the spec's *Done* to Tophe on the Pixel: close Libris,
+  reopen it, scan: the beep; the trick again, close, reopen, scan: no
+  beep.
