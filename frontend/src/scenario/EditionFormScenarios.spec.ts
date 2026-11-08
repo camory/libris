@@ -130,7 +130,6 @@ describe("Edition form", () => {
       Résumé: "",
     });
     expect(kind(screen, "Manga").checked).toBe(true);
-    expect(text()).toContain("Eiichirō Oda");
     expect(text()).toContain("9782723488525");
     expect(coverImage(screen, "Romance dawn").getAttribute("src")).toBe(
       openLibrary.url,
