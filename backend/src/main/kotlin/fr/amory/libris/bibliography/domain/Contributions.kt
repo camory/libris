@@ -26,5 +26,6 @@ private fun folded(name: String): String =
     .normalize(name, NFD)
     .replace(COMBINING_MARKS, "")
     .lowercase()
+    .trim(' ')
 
 private val COMBINING_MARKS = Regex("\\p{Mn}")
