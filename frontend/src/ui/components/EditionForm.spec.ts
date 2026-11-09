@@ -858,6 +858,25 @@ describe("EditionForm", () => {
     expect(wrapper.text()).toMatch(/Auteurs.*Rôle manquant.*dessin/s);
   });
 
+  it("focuses the roles' line of the first author refused", async () => {
+    // Given
+    const wrapper = form(asterix1, [], [], { attachTo: document.body });
+    const screen = within(wrapper.element as HTMLElement);
+    await release(screen, 0, "scénario");
+    await release(screen, 1, "dessin");
+    const button = screen.getByRole("button", {
+      name: "Ajouter à ma bibliothèque",
+    });
+    button.focus();
+
+    // When
+    await fireEvent.click(button);
+
+    // Then
+    expect(document.activeElement).toBe(rolesLines(screen)[0]);
+    wrapper.unmount();
+  });
+
   it("suggests under Série the names that contain the text", async () => {
     // Given
     const fields = screen(onePiece1, [], [], { seriesNames: houseSeries });

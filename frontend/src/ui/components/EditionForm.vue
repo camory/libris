@@ -184,7 +184,11 @@ function add() {
     boxes[first]?.scrollIntoView?.({ block: "center" });
     return;
   }
-  if (refused.some(Boolean)) return;
+  const firstAuthor = authors.value.find((_, index) => refused[index]);
+  if (firstAuthor) {
+    authorBoxes.get(firstAuthor.key)?.focusRoles();
+    return;
+  }
   emit("add", editionOf(props.isbn13, draft, locale.value));
 }
 </script>
