@@ -471,6 +471,15 @@ describe("AuthorBox", () => {
     expect(wrapper.findAllComponents(Check)).toHaveLength(0);
   });
 
+  it("says no word while the house's names are unknown", () => {
+    // When
+    const view = screen("René Goscinny", ["WRITER"], "BD", null);
+
+    // Then
+    expect(view.queryByText("Existant")).toBeNull();
+    expect(view.queryByText("Nouveau")).toBeNull();
+  });
+
   function rolesLine(box: ReturnType<typeof screen>) {
     return box
       .queryAllByRole("button")
