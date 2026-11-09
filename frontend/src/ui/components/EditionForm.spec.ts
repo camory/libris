@@ -393,6 +393,27 @@ describe("EditionForm", () => {
     });
   });
 
+  it("sends the roles chosen in a box", async () => {
+    // Given
+    const wrapper = form(onePiece1);
+    const fields = within(wrapper.element as HTMLElement);
+    await fireEvent.click(rolesLines(fields)[0]!);
+    await fireEvent.click(role(fields, "dessin"));
+    await fireEvent.click(role(fields, "traduction"));
+
+    // When
+    await tapAdd(fields);
+
+    // Then
+    const name = onePiece1.authors[0]?.name;
+    expect(wrapper.emitted("add")?.[0]?.[0]).toMatchObject({
+      authors: [
+        { name, role: "WRITER" },
+        { name, role: "TRANSLATOR" },
+      ],
+    });
+  });
+
   it("keeps the focus in a name being typed", async () => {
     // Given
     const wrapper = form(asterix1, [], [], { attachTo: document.body });
@@ -1056,6 +1077,13 @@ describe("EditionForm", () => {
     return fields
       .queryAllByRole("button")
       .filter((button) => button.hasAttribute("aria-expanded"));
+  }
+
+  function role(fields: ReturnType<typeof screen>, word: string) {
+    return within(fields.getByRole("group", { name: "Rôles" })).getByRole(
+      "button",
+      { name: word },
+    );
   }
 
   function trashes(fields: ReturnType<typeof screen>) {

@@ -302,7 +302,7 @@ function add() {
               :key="author.key"
               :ref="(box) => keepBox(author.key, box)"
               v-model:name="author.name"
-              :roles="author.roles"
+              v-model:roles="author.roles"
               :kind="kind"
               :disabled="adding"
               @remove="removeAuthor(author.key)"
