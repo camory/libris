@@ -7,6 +7,10 @@ import {
 import { Search, X } from "@lucide/vue";
 import { flushPromises, mount } from "@vue/test-utils";
 import { afterEach, describe, expect, it } from "vitest";
+import {
+  authorsApiKey,
+  type AuthorsApi,
+} from "../../../application/AuthorsApi";
 import { barcodeScannerKey } from "../../../application/BarcodeScanner";
 import { beeperKey } from "../../../application/Beeper";
 import { beepSettingKey } from "../../../application/BeepSetting";
@@ -26,6 +30,7 @@ import {
 } from "../../../application/IsbnApi";
 import { meApiKey } from "../../../application/MeApi";
 import { seriesApiKey, type SeriesApi } from "../../../application/SeriesApi";
+import { FakeAuthorsApi } from "../../../fixture/FakeAuthorsApi";
 import { FakeBarcodeScanner } from "../../../fixture/FakeBarcodeScanner";
 import { FakeBeepSetting } from "../../../fixture/FakeBeepSetting";
 import { FakeBeeper } from "../../../fixture/FakeBeeper";
@@ -233,6 +238,26 @@ describe("IsbnView", () => {
 
     // Then
     expect(screen.getByRole("button", { name: "Pierrot" })).toBeDefined();
+  });
+
+  it("suggests in the form the authors Libris answers", async () => {
+    // Given
+    const screen = open(
+      new FakeIsbnApi(found),
+      undefined,
+      undefined,
+      undefined,
+      undefined,
+      new FakeAuthorsApi(["René Goscinny"]),
+    );
+    await ask(screen, "9782723488525");
+    await press(screen, "Modifier");
+
+    // When
+    await typeInFirstName(screen, "rené gos");
+
+    // Then
+    expect(screen.getByRole("button", { name: "René Goscinny" })).toBeDefined();
   });
 
   it("shows the card as answered again from the cross", async () => {
@@ -1463,10 +1488,18 @@ describe("IsbnView", () => {
     bookshelfApi?: FakeBookshelfApi,
     seriesApi?: SeriesApi,
     copiesApi?: CopiesApi,
+    authorsApi?: AuthorsApi,
   ) {
     return within(
-      mountView(api, scanner, bookshelfApi, seriesApi, copiesApi)
-        .element as HTMLElement,
+      mountView(
+        api,
+        scanner,
+        bookshelfApi,
+        seriesApi,
+        copiesApi,
+        undefined,
+        authorsApi,
+      ).element as HTMLElement,
     );
   }
 
@@ -1487,6 +1520,7 @@ describe("IsbnView", () => {
       new Error("no removal in this case"),
     ),
     beeper = new FakeBeeper(),
+    authorsApi: AuthorsApi = new FakeAuthorsApi([]),
   ) {
     return mount(IsbnView, {
       global: {
@@ -1500,6 +1534,7 @@ describe("IsbnView", () => {
           [copiesApiKey]: copiesApi,
           [beeperKey]: beeper,
           [beepSettingKey]: new FakeBeepSetting(),
+          [authorsApiKey]: authorsApi,
         },
       },
     });
@@ -1531,6 +1566,13 @@ describe("IsbnView", () => {
     const series = screen.getByRole("textbox", { name: "Série" });
     await fireEvent.focus(series);
     await fireEvent.input(series, { target: { value: text } });
+    await flushPromises();
+  }
+
+  async function typeInFirstName(screen: Screen, text: string) {
+    const [name] = screen.getAllByRole("textbox", { name: "Nom de l'auteur" });
+    await fireEvent.focus(name!);
+    await fireEvent.input(name!, { target: { value: text } });
     await flushPromises();
   }
 

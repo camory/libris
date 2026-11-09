@@ -12,6 +12,7 @@ import {
 } from "vue";
 import { useI18n } from "vue-i18n";
 import { barcodeScannerKey } from "../../../application/BarcodeScanner";
+import { authorsApiKey } from "../../../application/AuthorsApi";
 import { beeperKey } from "../../../application/Beeper";
 import { beepSettingKey } from "../../../application/BeepSetting";
 import { bookshelfApiKey } from "../../../application/BookshelfApi";
@@ -21,6 +22,7 @@ import { meApiKey } from "../../../application/MeApi";
 import { seriesApiKey } from "../../../application/SeriesApi";
 import { useAddBookToBookshelf } from "../../../application/useAddBookToBookshelf";
 import { useBeepAtEachRead } from "../../../application/useBeepAtEachRead";
+import { useListAuthorNames } from "../../../application/useListAuthorNames";
 import { useListSeriesNames } from "../../../application/useListSeriesNames";
 import { useRemoveCopy } from "../../../application/useRemoveCopy";
 import type { Copy } from "../../../domain/Copy";
@@ -45,6 +47,9 @@ const bookshelfApi = inject(bookshelfApiKey)!;
 const copiesApi = inject(copiesApiKey)!;
 const { names: seriesNames, list: listSeriesNames } = useListSeriesNames(
   inject(seriesApiKey)!,
+);
+const { names: authorNames, list: listAuthorNames } = useListAuthorNames(
+  inject(authorsApiKey)!,
 );
 
 const typed = ref("");
@@ -147,6 +152,7 @@ async function search() {
     return;
   }
   void listSeriesNames();
+  void listAuthorNames();
   searching.value = true;
   const answer = await isbnApi.lookUp(isbn13);
   searching.value = false;
@@ -298,6 +304,7 @@ async function send(edition: SourceEdition) {
           :adding="adding"
           :failed="failed"
           :series-names="seriesNames"
+          :author-names="authorNames"
           @cover-source="coverSource = $event"
           @add="send($event)"
         >
