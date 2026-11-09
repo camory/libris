@@ -304,6 +304,23 @@ describe("AuthorBox", () => {
     wrapper.unmount();
   });
 
+  it("suggests under its box the house's names that contain the name typed", async () => {
+    // Given
+    const view = screen("", [], "BOOK", [
+      "René Goscinny",
+      "Albert Uderzo",
+      "Hergé",
+    ]);
+    const name = view.getByRole("textbox", { name: "Nom de l'auteur" });
+    await fireEvent.focus(name);
+
+    // When
+    await fireEvent.input(name, { target: { value: "er" } });
+
+    // Then
+    expect(suggestions(view)).toEqual(["Albert Uderzo", "Hergé"]);
+  });
+
   function rolesLine(box: ReturnType<typeof screen>) {
     return box
       .queryAllByRole("button")
@@ -334,8 +351,26 @@ describe("AuthorBox", () => {
     });
   }
 
-  function screen(name: string, roles: AuthorRole[], kind: Kind) {
-    return within(box(name, roles, kind).element as HTMLElement);
+  function suggestions(box: ReturnType<typeof screen>) {
+    return box
+      .queryAllByRole("button")
+      .filter(
+        (button) =>
+          !button.hasAttribute("aria-label") &&
+          !button.hasAttribute("aria-pressed"),
+      )
+      .map((button) => button.textContent?.trim());
+  }
+
+  function screen(
+    name: string,
+    roles: AuthorRole[],
+    kind: Kind,
+    authorNames: string[] | null = null,
+  ) {
+    return within(
+      box(name, roles, kind, undefined, authorNames).element as HTMLElement,
+    );
   }
 
   function box(
@@ -343,9 +378,10 @@ describe("AuthorBox", () => {
     roles: AuthorRole[],
     kind: Kind,
     attachTo?: HTMLElement,
+    authorNames: string[] | null = null,
   ) {
     return mount(AuthorBox, {
-      props: { name, roles, kind },
+      props: { name, roles, kind, authorNames },
       global: { plugins: [createLibrisI18n()] },
       attachTo,
     });

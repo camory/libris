@@ -8,11 +8,13 @@ import {
   type AuthorRole,
   type Kind,
 } from "../../domain/SourceEdition";
+import { nameOf, suggestionsFor } from "../../domain/Suggestion";
 import IconButton from "./IconButton.vue";
 
 const props = defineProps<{
   kind: Kind;
   disabled?: boolean;
+  authorNames: string[] | null;
 }>();
 
 const name = defineModel<string>("name", { required: true });
@@ -20,7 +22,7 @@ const roles = defineModel<AuthorRole[]>("roles", { required: true });
 
 const emit = defineEmits<{ remove: [] }>();
 
-const { t } = useI18n();
+const { t, locale } = useI18n();
 
 const nameBox = useTemplateRef("nameBox");
 const open = ref(false);
@@ -45,6 +47,10 @@ function closeOutside(event: MouseEvent) {
   }
   open.value = false;
 }
+
+const suggestions = computed(() =>
+  suggestionsFor(name.value, props.authorNames ?? [], locale.value),
+);
 
 const trash = computed(() =>
   name.value === ""
@@ -96,6 +102,22 @@ const label = computed(() =>
             :class="{ 'rotate-180': open }"
           />
         </span>
+      </button>
+    </div>
+    <div
+      v-if="suggestions.length"
+      class="flex flex-col divide-y divide-border rounded-xl border-[1.5px] border-border bg-surface"
+    >
+      <button
+        v-for="suggestion in suggestions"
+        :key="nameOf(suggestion)"
+        type="button"
+        @mousedown.prevent
+        class="mx-3.5 h-11 text-left text-field"
+      >
+        <span>{{ suggestion.before }}</span>
+        <span class="font-semibold">{{ suggestion.matched }}</span>
+        <span>{{ suggestion.after }}</span>
       </button>
     </div>
     <div
