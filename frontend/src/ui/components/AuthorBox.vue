@@ -11,6 +11,7 @@ import {
 import { nameStatus } from "../../domain/NameStatus";
 import { suggestionsFor } from "../../domain/Suggestion";
 import IconButton from "./IconButton.vue";
+import NameStatusWord from "./NameStatusWord.vue";
 import SuggestionList from "./SuggestionList.vue";
 
 const props = defineProps<{
@@ -105,14 +106,12 @@ const label = computed(() =>
           @input="chosen = false"
           class="h-12 min-w-0 flex-1 bg-transparent pl-3.5 text-field outline-none"
         />
-        <span
+        <NameStatusWord
           v-if="status"
-          class="mr-2 flex shrink-0 items-center gap-2 text-body font-semibold"
-          :class="status === 'existing' ? 'text-accent' : 'text-muted'"
-        >
-          <Check v-if="status === 'existing'" :size="22" class="shrink-0" />
-          {{ t(`isbn.form.authors.nameStatus.${status}`) }}
-        </span>
+          :status="status"
+          :word="t(`isbn.form.authors.nameStatus.${status}`)"
+          class="mr-2 shrink-0"
+        />
         <IconButton :label="trash" :disabled="disabled" @click="emit('remove')">
           <Trash2 :size="22" />
         </IconButton>
