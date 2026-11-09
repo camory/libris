@@ -97,6 +97,22 @@ describe("editionOf", () => {
     ]);
   });
 
+  it("sends each name without the spaces at its ends", () => {
+    // Given
+    const draft: EditionDraft = {
+      ...filled,
+      authors: [{ name: "  Albert Uderzo ", roles: ["ARTIST"] }],
+    };
+
+    // When
+    const edition = read(draft);
+
+    // Then
+    expect(edition.authors).toEqual([
+      { name: "Albert Uderzo", role: "ARTIST" },
+    ]);
+  });
+
   function read(draft: EditionDraft) {
     return editionOf(onePiece1.isbn13, draft, "fr");
   }

@@ -49,7 +49,7 @@ export function editionOf(
 
 function sourceAuthorsOf(authors: Author[]): SourceAuthor[] {
   return authors.flatMap(({ name, roles }) =>
-    roles.map((role) => ({ name, role })),
+    roles.map((role) => ({ name: name.trim(), role })),
   );
 }
 
