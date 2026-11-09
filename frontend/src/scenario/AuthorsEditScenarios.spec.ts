@@ -244,7 +244,7 @@ describe("Authors edit", () => {
     ]);
   });
 
-  it.skip("S6 The authors of the house are suggested, the suggestions", async () => {
+  it("S6 The authors of the house are suggested, the suggestions", async () => {
     // Given
     const screen = await formOf(onePiece1, {
       authors: theHouseHoldsTheAuthors(...houseAuthors),
@@ -314,7 +314,7 @@ describe("Authors edit", () => {
     expect(screen.queryByText("Existant")).toBeNull();
   });
 
-  it.skip("S7 No suggestions when the names fail", async () => {
+  it("S7 No suggestions when the names fail", async () => {
     // Given
     const screen = await formOf(onePiece1, {
       authors: theAuthorNamesAreUnavailable(),
