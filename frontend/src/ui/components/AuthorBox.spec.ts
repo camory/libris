@@ -443,6 +443,20 @@ describe("AuthorBox", () => {
     expect(scrolled.contains(rolesLine(view) ?? null)).toBe(true);
   });
 
+  it("says Existant after a check for a name of the house", () => {
+    // When
+    const wrapper = box("René Goscinny", ["WRITER"], "BD", undefined, [
+      "René Goscinny",
+      "Hergé",
+    ]);
+
+    // Then
+    const view = within(wrapper.element as HTMLElement);
+    expect(view.getAllByText("Existant")).toHaveLength(1);
+    expect(wrapper.findAllComponents(Check)).toHaveLength(1);
+    expect(view.queryByText("Nouveau")).toBeNull();
+  });
+
   function rolesLine(box: ReturnType<typeof screen>) {
     return box
       .queryAllByRole("button")

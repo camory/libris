@@ -8,6 +8,7 @@ import {
   type AuthorRole,
   type Kind,
 } from "../../domain/SourceEdition";
+import { nameStatus } from "../../domain/NameStatus";
 import { suggestionsFor } from "../../domain/Suggestion";
 import IconButton from "./IconButton.vue";
 import SuggestionList from "./SuggestionList.vue";
@@ -69,6 +70,9 @@ function closeOutside(event: MouseEvent) {
   open.value = false;
 }
 
+const status = computed(() =>
+  nameStatus(name.value, props.authorNames, locale.value),
+);
 const trash = computed(() =>
   name.value === ""
     ? t("isbn.form.authors.removeUnnamed")
@@ -101,6 +105,13 @@ const label = computed(() =>
           @input="chosen = false"
           class="h-12 min-w-0 flex-1 bg-transparent pl-3.5 text-field outline-none"
         />
+        <span
+          v-if="status"
+          class="mr-2 flex shrink-0 items-center gap-2 text-body font-semibold text-accent"
+        >
+          <Check :size="22" class="shrink-0" />
+          {{ t(`isbn.form.authors.nameStatus.${status}`) }}
+        </span>
         <IconButton :label="trash" :disabled="disabled" @click="emit('remove')">
           <Trash2 :size="22" />
         </IconButton>

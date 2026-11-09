@@ -112,6 +112,10 @@ const fr = {
       authors: {
         label: "Auteurs",
         name: "Nom de l'auteur",
+        nameStatus: {
+          existing: "Existant",
+          new: "Nouveau",
+        },
         roles: "Rôles",
         add: "Ajouter un auteur",
         remove: "Retirer {name}",
