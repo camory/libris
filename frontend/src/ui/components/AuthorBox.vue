@@ -8,11 +8,14 @@ import {
   type AuthorRole,
   type Kind,
 } from "../../domain/SourceEdition";
+import { suggestionsFor } from "../../domain/Suggestion";
 import IconButton from "./IconButton.vue";
+import SuggestionList from "./SuggestionList.vue";
 
 const props = defineProps<{
   kind: Kind;
   disabled?: boolean;
+  authorNames: string[] | null;
 }>();
 
 const name = defineModel<string>("name", { required: true });
@@ -20,12 +23,21 @@ const roles = defineModel<AuthorRole[]>("roles", { required: true });
 
 const emit = defineEmits<{ remove: [] }>();
 
-const { t } = useI18n();
+const { t, locale } = useI18n();
 
+const box = useTemplateRef("box");
 const nameBox = useTemplateRef("nameBox");
 const open = ref(false);
 const rolesLine = useTemplateRef("rolesLine");
 const rolesList = useTemplateRef("rolesList");
+
+const focused = ref(false);
+const chosen = ref(false);
+const suggestions = computed(() =>
+  focused.value && !chosen.value
+    ? suggestionsFor(name.value, props.authorNames ?? [], locale.value)
+    : [],
+);
 
 onMounted(() => document.addEventListener("click", closeOutside));
 onUnmounted(() => document.removeEventListener("click", closeOutside));
@@ -34,6 +46,17 @@ defineExpose({ focusName });
 
 function focusName() {
   nameBox.value?.focus();
+}
+
+function nameFocused() {
+  focused.value = true;
+  chosen.value = false;
+  box.value?.scrollIntoView?.({ block: "start" });
+}
+
+function choose(tapped: string) {
+  name.value = tapped;
+  chosen.value = true;
 }
 
 function closeOutside(event: MouseEvent) {
@@ -62,7 +85,8 @@ const label = computed(() =>
 <template>
   <div class="flex flex-col gap-1">
     <div
-      class="rounded-xl border-[1.5px] bg-surface focus-within:border-accent"
+      ref="box"
+      class="scroll-mt-28 rounded-xl border-[1.5px] bg-surface focus-within:border-accent"
       :class="open ? 'border-accent' : 'border-border'"
     >
       <div class="flex items-center pr-0.75">
@@ -72,6 +96,9 @@ const label = computed(() =>
           type="text"
           :disabled="disabled"
           :aria-label="t('isbn.form.authors.name')"
+          @focus="nameFocused"
+          @blur="focused = false"
+          @input="chosen = false"
           class="h-12 min-w-0 flex-1 bg-transparent pl-3.5 text-field outline-none"
         />
         <IconButton :label="trash" :disabled="disabled" @click="emit('remove')">
@@ -98,6 +125,11 @@ const label = computed(() =>
         </span>
       </button>
     </div>
+    <SuggestionList
+      v-if="suggestions.length"
+      :suggestions="suggestions"
+      @choose="choose"
+    />
     <div
       v-if="open"
       ref="rolesList"

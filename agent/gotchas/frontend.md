@@ -188,14 +188,19 @@ Read whole by a run that changes `frontend/`, after `every-run.md`.
   count the trashes too.
 - The authors' names are `AuthorsApi.names()` (`application/AuthorsApi.ts`,
   `authorsApiKey`), and `FakeAuthorsApi` takes them, `string[] | Error`.
-  `FetchAuthorsApi` reads `GET /author-names` with no status check yet;
+  `FetchAuthorsApi.names()` rejects any answer but `200`;
   `authorsApi` is a port of `LibrisPorts` since T144, provided by
   `createLibrisApp`. `AuthorsEditScenarios`' `open()` gives `world.authors`,
-  the other scenario files a `FakeAuthorsApi([])`. No component reads the
-  port yet.
+  the other scenario files a `FakeAuthorsApi([])`. `IsbnView` holds them
+  through `useListAuthorNames(authorsApi)` (`names`, `null` until answered
+  and when Libris does not answer; `list()` never rejects), calls `list()`
+  unawaited on each accepted lookup beside the series' names and passes
+  `names` to the form as `authorNames`. `IsbnView.spec.ts`' `mountView`
+  takes an `authorsApi` seventh, `new FakeAuthorsApi([])` by default, and
+  `open` sixth.
 - `EditionForm` takes `isbn13`, `edition` (a `SourceEdition`, absent for
   an unknown ISBN), `copies`, `covers`, `adding`, `failed` and
-  `seriesNames`, required,
+  `seriesNames` and `authorNames`, required,
   `shownSource`, optional, as the card's, and the named slot `corner` as
   the card's, emits `coverSource` as the card does, and `add` with the edition its
   fields read as, `editionOf(isbn13, draft, locale)`
@@ -223,8 +228,9 @@ Read whole by a run that changes `frontend/`, after `every-run.md`.
   awaits `flushPromises()` after the tap). On a box's `remove` the form
   filters that key out of `authors` and focuses *Ajouter un auteur*,
   reached through a function `:ref` into `addAuthorButton`.
-  `AuthorBox` (props `kind` and `disabled`, optional, on the name, the
-  trash and the roles' line, models `name` and `roles`, emitting `remove` with no payload, exposing
+  `AuthorBox` (props `kind`, `authorNames`, required, and `disabled`,
+  optional, on the name, the trash and the roles' line, models `name` and
+  `roles`, emitting `remove` with no payload, exposing
   `focusName()` through `defineExpose`) draws the name's line, the
   textbox *Nom de l'auteur* then the trash, an `IconButton` drawing
   `Trash2` at 22, named `isbn.form.authors.remove` (*Retirer {name}*) or
@@ -237,7 +243,15 @@ Read whole by a run that changes `frontend/`, after `every-run.md`.
   `roleChoicesOf(roles)` (`SourceEdition.ts`, the card's order), a row's
   tap writing `rolesToggled(roles, role)` to the model; a `click` on
   `document` whose `composedPath()` holds neither its line nor its list
-  closes it, the listener added on mount and removed on unmount.
+  closes it, the listener added on mount and removed on unmount. Under
+  the box, 4 under it (the root's `gap-1`), before the roles' group,
+  `SuggestionList` draws `suggestionsFor(name, authorNames ?? [], locale)`
+  while the name has the focus and no row was tapped since the last
+  keystroke or focus; a tap writes the name to the model. The name's
+  `focus` calls `scrollIntoView({ block: "start" })` on the bordered box
+  (name and roles' line, `scroll-mt-28`). Its spec's `box()` and
+  `screen()` take `authorNames` fifth and fourth, `null` by default, and
+  the file's `afterEach` deletes a `scrollIntoView` a case defined.
   Its spec's `valuesOf` leaves out the name boxes, `suggestions` the roles
   lines (`aria-expanded`), the trashes (`trashes()`, buttons named from
   *Retirer*) and *Ajouter un auteur*; `disabledOf` reads the fields, the
@@ -264,7 +278,9 @@ Read whole by a run that changes `frontend/`, after `every-run.md`.
   the field of `offered` (*Série*, `seriesNames ?? []`, and *Langue*,
   `languageWords(locale)`) that has the focus (`suggesting`, set on
   `focus` and cleared on `blur`), while no row has been tapped since the
-  last keystroke or focus (`chosen`), one block draws
+  last keystroke or focus (`chosen`), `SuggestionList` (prop
+  `suggestions`, emitting `choose` with the name, no spec of its own,
+  `AuthorBox` its other caller, given `class="-mt-1"` here) draws
   `suggestionsFor(values[field], offered[field], locale)`
   (`src/domain/Suggestion.ts`, with `nameOf`, the three parts joined) as
   `type="button"` rows of three spans, `before`, `matched` in
@@ -276,8 +292,8 @@ Read whole by a run that changes `frontend/`, after `every-run.md`.
   or unknown names) as `isbn.form.seriesNameStatus.<status>`, its colour
   and `Check` from the `statusLooks` record, and takes `pr-32` while it
   does. Its spec's `form()` takes `{ adding, failed, corner, shownSource,
-  attachTo, seriesNames }` fourth, `false` and none by default
-  (`seriesNames` `null`, so no word), and gives the edition's own `isbn13`
+  attachTo, seriesNames, authorNames }` fourth, `false` and none by
+  default (`seriesNames` and `authorNames` `null`, so no word), and gives the edition's own `isbn13`
   when there is one; the focus case passes `attachTo: document.body` and
   unmounts at its end, and the file's `afterEach` deletes a
   `scrollIntoView` a case defined.

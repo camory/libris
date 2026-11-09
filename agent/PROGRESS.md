@@ -275,3 +275,18 @@ Format:
   made once the scenarios were green.
 - Left over: the refusals of a box with no role or a name twice (T151,
   T152), suggestions (T149, T150).
+
+## 2026-11-09 — T149 The authors of the house suggested — done
+- Did: an author's box suggests, while its name has the focus, the house's
+  author names `IsbnView` asks for on each lookup; a tap fills the name;
+  the name's focus brings the box to the top. S6 *the suggestions* and S7
+  un-skipped and green.
+- Decided: `SuggestionList` takes `class="-mt-1"` from `EditionForm`,
+  `AuthorBox`'s root `gap-1` giving its 4; the scroll goes to the bordered
+  box (name and roles' line), `scroll-mt-28`, as the brief's margin.
+- Deviations from the brief: none. Steps 13 and 14 were guards, their
+  mutations run and reverted (PR body). The run was continued from a
+  handoff after steps 0 to 15. One commit subject runs to 73 characters,
+  left as is since history is not rewritten.
+- Left over: the checks by hand of the rows and the scroll, for Tophe (PR
+  body); *Existant* / *Nouveau* and S6 *a tap* (T150); S8 (T151, T152).

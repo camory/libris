@@ -98,7 +98,7 @@ frontend task.
       frontend tests of S5 and of S9, both cases; S9's spaces alone with no
       role starts green and guards T151's refusal.
 
-- [ ] T149 Frontend: the authors of the house suggested.
+- [x] T149 Frontend: the authors of the house suggested.
       While a name has the focus and holds text, up to five of the house's
       author names containing it, ignoring case, accents and end spaces,
       sorted in the reader's language (D11), show under its box as the

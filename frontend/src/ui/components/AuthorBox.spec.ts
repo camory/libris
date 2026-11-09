@@ -1,12 +1,16 @@
 import { Check, ChevronDown, Trash2 } from "@lucide/vue";
 import { fireEvent, within } from "@testing-library/dom";
 import { mount } from "@vue/test-utils";
-import { describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 import type { AuthorRole, Kind } from "../../domain/SourceEdition";
 import { createLibrisI18n } from "../i18n";
 import AuthorBox from "./AuthorBox.vue";
 
 describe("AuthorBox", () => {
+  afterEach(() => {
+    Reflect.deleteProperty(HTMLElement.prototype, "scrollIntoView");
+  });
+
   it("holds the author's name", () => {
     // When
     const box = screen("René Goscinny", [], "BD");
@@ -304,6 +308,141 @@ describe("AuthorBox", () => {
     wrapper.unmount();
   });
 
+  it("suggests under its box the house's names that contain the name typed", async () => {
+    // Given
+    const view = screen("", [], "BOOK", [
+      "René Goscinny",
+      "Albert Uderzo",
+      "Hergé",
+    ]);
+    const name = view.getByRole("textbox", { name: "Nom de l'auteur" });
+    await fireEvent.focus(name);
+
+    // When
+    await fireEvent.input(name, { target: { value: "er" } });
+
+    // Then
+    expect(suggestions(view)).toEqual(["Albert Uderzo", "Hergé"]);
+  });
+
+  it("suggests nothing while the name has not the focus", async () => {
+    // Given
+    const view = screen("", [], "BOOK", [
+      "René Goscinny",
+      "Albert Uderzo",
+      "Hergé",
+    ]);
+
+    // When
+    await fireEvent.input(
+      view.getByRole("textbox", { name: "Nom de l'auteur" }),
+      { target: { value: "er" } },
+    );
+
+    // Then
+    expect(suggestions(view)).toEqual([]);
+  });
+
+  it("puts the tapped name in place of the text and closes them", async () => {
+    // Given
+    const wrapper = box("", [], "BOOK", undefined, [
+      "René Goscinny",
+      "Albert Uderzo",
+      "Hergé",
+    ]);
+    const view = within(wrapper.element as HTMLElement);
+    const name = view.getByRole<HTMLInputElement>("textbox", {
+      name: "Nom de l'auteur",
+    });
+    await fireEvent.focus(name);
+    await fireEvent.input(name, { target: { value: "rené gos" } });
+
+    // When
+    await fireEvent.click(view.getByRole("button", { name: "René Goscinny" }));
+
+    // Then
+    expect(name.value).toBe("René Goscinny");
+    expect(suggestions(view)).toEqual([]);
+    expect(wrapper.emitted("update:name")?.at(-1)).toEqual(["René Goscinny"]);
+  });
+
+  it("offers them again on the next keystroke", async () => {
+    // Given
+    const view = screen("", [], "BOOK", [
+      "René Goscinny",
+      "Albert Uderzo",
+      "Hergé",
+    ]);
+    const name = view.getByRole("textbox", { name: "Nom de l'auteur" });
+    await fireEvent.focus(name);
+    await fireEvent.input(name, { target: { value: "rené gos" } });
+    await fireEvent.click(view.getByRole("button", { name: "René Goscinny" }));
+
+    // When
+    await fireEvent.input(name, { target: { value: "er" } });
+
+    // Then
+    expect(suggestions(view)).toHaveLength(2);
+  });
+
+  it("closes them when the name is left", async () => {
+    // Given
+    const view = screen("", [], "BOOK", [
+      "René Goscinny",
+      "Albert Uderzo",
+      "Hergé",
+    ]);
+    const name = view.getByRole("textbox", { name: "Nom de l'auteur" });
+    await fireEvent.focus(name);
+    await fireEvent.input(name, { target: { value: "er" } });
+
+    // When
+    await fireEvent.blur(name);
+
+    // Then
+    expect(suggestions(view)).toEqual([]);
+  });
+
+  it("offers them again when the name takes the focus anew", async () => {
+    // Given
+    const view = screen("", [], "BOOK", [
+      "René Goscinny",
+      "Albert Uderzo",
+      "Hergé",
+    ]);
+    const name = view.getByRole("textbox", { name: "Nom de l'auteur" });
+    await fireEvent.focus(name);
+    await fireEvent.input(name, { target: { value: "rené gos" } });
+    await fireEvent.click(view.getByRole("button", { name: "René Goscinny" }));
+    await fireEvent.blur(name);
+
+    // When
+    await fireEvent.focus(name);
+
+    // Then
+    expect(suggestions(view)).toEqual(["René Goscinny"]);
+  });
+
+  it("brings its box to the top when its name takes the focus", async () => {
+    // Given
+    const scrollIntoView = vi.fn();
+    Object.defineProperty(HTMLElement.prototype, "scrollIntoView", {
+      configurable: true,
+      value: scrollIntoView,
+    });
+    const view = screen("", [], "BOOK");
+    const name = view.getByRole("textbox", { name: "Nom de l'auteur" });
+
+    // When
+    await fireEvent.focus(name);
+
+    // Then
+    expect(scrollIntoView).toHaveBeenCalledExactlyOnceWith({ block: "start" });
+    const scrolled = scrollIntoView.mock.contexts[0] as HTMLElement;
+    expect(scrolled.contains(name)).toBe(true);
+    expect(scrolled.contains(rolesLine(view) ?? null)).toBe(true);
+  });
+
   function rolesLine(box: ReturnType<typeof screen>) {
     return box
       .queryAllByRole("button")
@@ -334,8 +473,26 @@ describe("AuthorBox", () => {
     });
   }
 
-  function screen(name: string, roles: AuthorRole[], kind: Kind) {
-    return within(box(name, roles, kind).element as HTMLElement);
+  function suggestions(box: ReturnType<typeof screen>) {
+    return box
+      .queryAllByRole("button")
+      .filter(
+        (button) =>
+          !button.hasAttribute("aria-label") &&
+          !button.hasAttribute("aria-pressed"),
+      )
+      .map((button) => button.textContent?.trim());
+  }
+
+  function screen(
+    name: string,
+    roles: AuthorRole[],
+    kind: Kind,
+    authorNames: string[] | null = null,
+  ) {
+    return within(
+      box(name, roles, kind, undefined, authorNames).element as HTMLElement,
+    );
   }
 
   function box(
@@ -343,9 +500,10 @@ describe("AuthorBox", () => {
     roles: AuthorRole[],
     kind: Kind,
     attachTo?: HTMLElement,
+    authorNames: string[] | null = null,
   ) {
     return mount(AuthorBox, {
-      props: { name, roles, kind },
+      props: { name, roles, kind, authorNames },
       global: { plugins: [createLibrisI18n()] },
       attachTo,
     });
