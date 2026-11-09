@@ -8,7 +8,11 @@ export function useListAuthorNames(authorsApi: AuthorsApi): {
   const names = ref<string[] | null>(null);
 
   async function list() {
-    names.value = await authorsApi.names();
+    try {
+      names.value = await authorsApi.names();
+    } catch {
+      names.value = null;
+    }
   }
 
   return { names, list };

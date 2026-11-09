@@ -17,4 +17,18 @@ describe("useListAuthorNames", () => {
     expect(before).toBeNull();
     expect(names.value).toEqual(["René Goscinny", "Hergé"]);
   });
+
+  it("holds no names when Libris does not answer", async () => {
+    // Given
+    const { names, list } = useListAuthorNames(
+      new FakeAuthorsApi(new TypeError("Failed to fetch")),
+    );
+
+    // When
+    const listed = list();
+
+    // Then
+    await expect(listed).resolves.toBeUndefined();
+    expect(names.value).toBeNull();
+  });
 });
