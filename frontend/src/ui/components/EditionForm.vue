@@ -140,6 +140,10 @@ async function addAuthor() {
   authorBoxes.get(author.key)?.focusName();
 }
 
+function removeAuthor(key: number) {
+  authors.value = authors.value.filter((author) => author.key !== key);
+}
+
 function keepBox(key: number, box: unknown) {
   if (box) authorBoxes.set(key, box as InstanceType<typeof AuthorBox>);
   else authorBoxes.delete(key);
@@ -298,6 +302,7 @@ function add() {
               v-model:name="author.name"
               :roles="author.roles"
               :kind="kind"
+              @remove="removeAuthor(author.key)"
             />
           </div>
           <button

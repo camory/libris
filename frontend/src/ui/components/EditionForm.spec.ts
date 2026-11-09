@@ -407,6 +407,21 @@ describe("EditionForm", () => {
     wrapper.unmount();
   });
 
+  it("removes the box of the trash tapped", async () => {
+    // Given
+    const fields = screen(asterix1);
+
+    // When
+    await fireEvent.click(
+      fields.getByRole("button", { name: "Retirer René Goscinny" }),
+    );
+
+    // Then
+    expect(authorsOf(fields)).toEqual([
+      { name: "Albert Uderzo", roles: "dessin" },
+    ]);
+  });
+
   it("shows the covers on offer as the card does", () => {
     // When
     const covers = screen(onePiece1, [], [inventaire, openLibrary]);
