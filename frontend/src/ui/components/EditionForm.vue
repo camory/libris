@@ -12,7 +12,7 @@ import {
   type Refusals,
 } from "../../domain/EditionDraft";
 import { languageWord, languageWords } from "../../domain/Language";
-import { seriesNameStatus, type SeriesNameStatus } from "../../domain/Series";
+import { nameStatus, type NameStatus } from "../../domain/NameStatus";
 import {
   authorsInOrder,
   type Author,
@@ -95,13 +95,10 @@ const suggestions = computed(() => {
 });
 
 const seriesStatus = computed(() =>
-  seriesNameStatus(values.series, props.seriesNames, locale.value),
+  nameStatus(values.series, props.seriesNames, locale.value),
 );
 
-const statusLooks: Record<
-  SeriesNameStatus,
-  { colour: string; checked: boolean }
-> = {
+const statusLooks: Record<NameStatus, { colour: string; checked: boolean }> = {
   existing: { colour: "text-accent", checked: true },
   new: { colour: "text-muted", checked: false },
 };
