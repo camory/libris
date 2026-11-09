@@ -513,6 +513,23 @@ describe("AuthorBox", () => {
     expect(wrapper.findAllComponents(CircleAlert)).toHaveLength(1);
   });
 
+  it("says Auteur en double under its box when refused as doubled", () => {
+    // When
+    const wrapper = box(
+      "René Goscinny",
+      ["WRITER"],
+      "BD",
+      undefined,
+      null,
+      "twice",
+    );
+
+    // Then
+    const view = within(wrapper.element as HTMLElement);
+    expect(view.getAllByText("Auteur en double")).toHaveLength(1);
+    expect(wrapper.findAllComponents(CircleAlert)).toHaveLength(1);
+  });
+
   it("focuses its roles' line on focusRoles", () => {
     // Given
     const wrapper = box("Albert Uderzo", [], "BD", document.body);
