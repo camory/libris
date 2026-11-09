@@ -304,6 +304,24 @@ describe("EditionForm", () => {
     expect(names(fields)[0].value).toBe("René");
   });
 
+  it("keeps the roles chosen when the kind changes", async () => {
+    // Given
+    const fields = screen(asterix1);
+    await fireEvent.click(rolesLines(fields)[1]!);
+    await fireEvent.click(role(fields, "couleurs"));
+
+    // When
+    await fireEvent.change(fields.getByRole("radio", { name: "Livre" }), {
+      target: { checked: true },
+    });
+
+    // Then
+    expect(authorsOf(fields)[1]).toEqual({
+      name: "Albert Uderzo",
+      roles: "illustration, couleurs",
+    });
+  });
+
   it("shows Auteurs with no author", () => {
     // When
     const wrapper = form();
