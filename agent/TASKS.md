@@ -80,7 +80,7 @@ frontend task.
       trashes and *Ajouter un auteur* accept nothing, as the fields do.
       Realises S3; un-skips the frontend test of S3.
 
-- [x] T147 Frontend: an author's roles chosen.
+- [ ] T147 Frontend: an author's roles chosen.
       A tap on a roles' line opens under its box the list *Rôles*: the four
       roles in the kind's words and the card's order, each a toggle,
       `aria-pressed`, checked in `accent` when chosen, open while the reader
