@@ -2,13 +2,13 @@
 import { Check, ChevronDown, Trash2 } from "@lucide/vue";
 import { computed, onMounted, onUnmounted, ref, useTemplateRef } from "vue";
 import { useI18n } from "vue-i18n";
+import { nameStatus } from "../../domain/NameStatus";
 import {
   roleChoicesOf,
   rolesToggled,
   type AuthorRole,
   type Kind,
 } from "../../domain/SourceEdition";
-import { nameStatus } from "../../domain/NameStatus";
 import { suggestionsFor } from "../../domain/Suggestion";
 import IconButton from "./IconButton.vue";
 import NameStatusWord from "./NameStatusWord.vue";
