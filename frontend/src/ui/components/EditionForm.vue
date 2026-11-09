@@ -166,7 +166,7 @@ const id = useId();
 const refusals = ref<Refusals>({});
 const boxes: Partial<Record<Field, HTMLInputElement>> = {};
 const authorBoxes = new Map<number, InstanceType<typeof AuthorBox>>();
-let addAuthorButton: HTMLButtonElement | null = null;
+let addAuthorButton = null as HTMLButtonElement | null;
 
 function add() {
   const draft: EditionDraft = {

@@ -1074,7 +1074,7 @@ describe("EditionForm", () => {
 
   function suggestions(fields: ReturnType<typeof screen>) {
     return fields
-      .queryAllByRole("button")
+      .queryAllByRole<HTMLButtonElement>("button")
       .filter((button) => !button.hasAttribute("aria-expanded"))
       .filter((button) => !trashes(fields).includes(button))
       .map((button) => button.textContent?.trim() ?? "")
