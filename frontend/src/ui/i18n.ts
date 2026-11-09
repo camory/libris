@@ -114,6 +114,8 @@ const fr = {
         name: "Nom de l'auteur",
         roles: "Rôles",
         add: "Ajouter un auteur",
+        remove: "Retirer {name}",
+        removeUnnamed: "Retirer l'auteur",
       },
       collection: "Collection",
       publisher: "Éditeur",

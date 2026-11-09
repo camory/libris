@@ -253,6 +253,26 @@ describe("IsbnView", () => {
     expect(screen.getByRole("button", { name: "Modifier" })).toBeDefined();
   });
 
+  it("brings back on the cross the authors removed in the form", async () => {
+    // Given
+    const author = onePiece1.authors[0].name;
+    const screen = open(new FakeIsbnApi(found));
+    await ask(screen, "9782723488525");
+    await press(screen, "Modifier");
+    await press(screen, `Retirer ${author}`);
+    await press(screen, "Annuler les modifications");
+
+    // When
+    await press(screen, "Modifier");
+
+    // Then
+    expect(
+      screen
+        .getAllByRole<HTMLInputElement>("textbox", { name: "Nom de l'auteur" })
+        .map((box) => box.value),
+    ).toEqual([author]);
+  });
+
   it("keeps in the form the cover shown on the card", async () => {
     // Given
     const screen = open(new FakeIsbnApi(covered));

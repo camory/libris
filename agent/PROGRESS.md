@@ -208,3 +208,20 @@ Format:
   run was continued from a handoff after step 9.
 - Left over: the trash and the button inert while adding (T146), the
   roles' list (T147), trimming and empty boxes dropped (T148).
+
+## 2026-11-09 — T146 An author is removed — done
+- Did: each `AuthorBox` draws its trash at the right of the name's line,
+  *Retirer* and the name, or *Retirer l'auteur*, and emits `remove`; the
+  form drops that box, focuses *Ajouter un auteur*, and disables the names,
+  the trashes and that button while `adding`. S3 un-skipped and green.
+- Decided: the form reaches *Ajouter un auteur* through a function `:ref`,
+  not a template ref: the button sits inside the fields' `v-for`, where a
+  string ref collects an array (gotcha added). The spec's `trashes()`
+  helper, shared by `suggestions` and `disabledOf`, finds the buttons named
+  from *Retirer*.
+- Deviations from the brief: none. Steps 3, 8 and 9 were guards, their
+  mutations run and reverted (PR body). A `fix(frontend)` commit types the
+  add's button ref and the spec's trashes after `vue-tsc` refused them.
+- Left over: the roles' line enabled while the add runs (T147); the trash
+  at the line's right over the chevron, in both schemes, checked by hand by
+  Tophe.

@@ -201,8 +201,9 @@ Read whole by a run that changes `frontend/`, after `every-run.md`.
   fields read as, `editionOf(isbn13, draft, locale)`
   (`src/domain/EditionDraft.ts`), whose `draft.authors` are the boxes
   (`Author[]`), sent as one `SourceAuthor` per name and role, in order. Its root is a plain block holding the
-  card-shaped `<form>` then `DockedAdd`. While `adding` its textboxes and
-  radios are `disabled`. It fills its text once, at setup: `kind`
+  card-shaped `<form>` then `DockedAdd`. While `adding` its textboxes,
+  radios, author names and trashes and *Ajouter un auteur* are `disabled`
+  (the roles lines not yet). It fills its text once, at setup: `kind`
   from `edition.kind`, a `values` record for the nine `input`s drawn by one
   `v-for` over `fields` (`isbn.form.<field>`), numbers as their digits,
   `null` as `""`, the language through `languageWord`, and `summary`, a
@@ -217,14 +218,23 @@ Read whole by a run that changes `frontend/`, after `every-run.md`.
   after `nextTick`, calls `focusName()` on it, reached through a function
   `:ref` into `authorBoxes`, a `Map` by the box's `key`, never by its
   position, which a box removed from the middle shifts (a focus case
-  awaits `flushPromises()` after the tap). `AuthorBox` (props `roles`, `kind`, model `name`, exposing
-  `focusName()` through `defineExpose`) draws the
-  name textbox *Nom de l'auteur*, a hairline, and the roles line, a button
+  awaits `flushPromises()` after the tap). On a box's `remove` the form
+  filters that key out of `authors` and focuses *Ajouter un auteur*,
+  reached through a function `:ref` into `addAuthorButton`.
+  `AuthorBox` (props `roles`, `kind`, `disabled`, optional, on the name and
+  the trash, model `name`, emitting `remove` with no payload, exposing
+  `focusName()` through `defineExpose`) draws the name's line, the
+  textbox *Nom de l'auteur* then the trash, an `IconButton` drawing
+  `Trash2` at 22, named `isbn.form.authors.remove` (*Retirer {name}*) or
+  `removeUnnamed` (*Retirer l'auteur*) while the name is `""`; then a
+  hairline, and the roles line, a button
   with `aria-expanded="false"`, `aria-label` *Rôles* then its words, and
   `ChevronDown`; the words are `isbn.form.authors.{label,name,roles,add}`.
-  Its spec's `valuesOf`,
-  `disabledOf` and `suggestions` leave out the name boxes and the roles
-  lines (`aria-expanded`), and `suggestions` *Ajouter un auteur* too. The volume's
+  Its spec's `valuesOf` leaves out the name boxes, `suggestions` the roles
+  lines (`aria-expanded`), the trashes (`trashes()`, buttons named from
+  *Retirer*) and *Ajouter un auteur*; `disabledOf` reads the fields, the
+  kinds, the dots, the names, the trashes and *Ajouter un auteur*, 18 over
+  `onePiece1`. The volume's
   label is `isbn.form.volume.<kind>` (*Album* for a BD), built with the
   chosen kind, as `withoutSeries`' words are. Each label points at its
   box through `for` and an id built on `useId()`; the kinds are three
@@ -729,6 +739,14 @@ Read whole by a run that changes `frontend/`, after `every-run.md`.
   Testing Library, which trims the name, even with a function matcher
   (`name: (name) => name === "Rôles"`): a case about the exact label reads
   `getAttribute("aria-label")`.
+- A string `ref` (or `useTemplateRef`) on an element inside a `v-for`
+  collects an array, even when a `v-if` draws the element once: the
+  `EditionForm`'s fields loop holds *Auteurs*, so `focus()` on such a ref
+  throws `is not a function` inside the event handler, which Vue logs as
+  *Unhandled error during execution of component event handler*. Reach the
+  element through a function `:ref` instead. A plain `let` it writes to is
+  declared `let x = null as T | null`: written `let x: T | null = null`,
+  `vue-tsc` narrows it to `null` in the template and refuses the write.
 - A spec's subclass of a fixture fake (`LibrisNotAnswering`,
   `LibrisAnsweringInTurn`) cannot declare a private member of the same name
   as one of the base's: `FakeBookshelvesApi` holds a private `answers`, and

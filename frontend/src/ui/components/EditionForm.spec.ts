@@ -407,6 +407,39 @@ describe("EditionForm", () => {
     wrapper.unmount();
   });
 
+  it("removes the box of the trash tapped", async () => {
+    // Given
+    const fields = screen(asterix1);
+
+    // When
+    await fireEvent.click(
+      fields.getByRole("button", { name: "Retirer René Goscinny" }),
+    );
+
+    // Then
+    expect(authorsOf(fields)).toEqual([
+      { name: "Albert Uderzo", roles: "dessin" },
+    ]);
+  });
+
+  it("focuses Ajouter un auteur once a box is removed", async () => {
+    // Given
+    const wrapper = form(asterix1, [], [], { attachTo: document.body });
+    const fields = within(wrapper.element as HTMLElement);
+
+    // When
+    await fireEvent.click(
+      fields.getByRole("button", { name: "Retirer Albert Uderzo" }),
+    );
+    await flushPromises();
+
+    // Then
+    expect(document.activeElement).toBe(
+      fields.getByRole("button", { name: "Ajouter un auteur" }),
+    );
+    wrapper.unmount();
+  });
+
   it("shows the covers on offer as the card does", () => {
     // When
     const covers = screen(onePiece1, [], [inventaire, openLibrary]);
@@ -566,7 +599,7 @@ describe("EditionForm", () => {
     );
 
     // Then
-    expect(disabledOf(fields)).toEqual(Array(15).fill(true));
+    expect(disabledOf(fields)).toEqual(Array(18).fill(true));
   });
 
   it("takes edits again once the add failed", () => {
@@ -580,7 +613,7 @@ describe("EditionForm", () => {
       "Erreur lors de l'ajout, veuillez réessayer plus tard.",
     );
     expect(disabledOf(within(wrapper.element as HTMLElement))).toEqual(
-      Array(15).fill(false),
+      Array(18).fill(false),
     );
   });
 
@@ -1025,6 +1058,12 @@ describe("EditionForm", () => {
       .filter((button) => button.hasAttribute("aria-expanded"));
   }
 
+  function trashes(fields: ReturnType<typeof screen>) {
+    return fields.queryAllByRole<HTMLButtonElement>("button", {
+      name: /^Retirer\b/,
+    });
+  }
+
   function authorsOf(fields: ReturnType<typeof screen>) {
     const lines = rolesLines(fields);
     return names(fields).map((box, index) => ({
@@ -1035,8 +1074,9 @@ describe("EditionForm", () => {
 
   function suggestions(fields: ReturnType<typeof screen>) {
     return fields
-      .queryAllByRole("button")
+      .queryAllByRole<HTMLButtonElement>("button")
       .filter((button) => !button.hasAttribute("aria-expanded"))
+      .filter((button) => !trashes(fields).includes(button))
       .map((button) => button.textContent?.trim() ?? "")
       .filter(
         (name) =>
@@ -1050,6 +1090,11 @@ describe("EditionForm", () => {
       ...fields.getAllByRole<HTMLInputElement>("radio"),
       ...fields.getAllByRole<HTMLButtonElement>("button", {
         name: /^Couverture /,
+      }),
+      ...names(fields),
+      ...trashes(fields),
+      fields.getByRole<HTMLButtonElement>("button", {
+        name: "Ajouter un auteur",
       }),
     ].map((field) => field.disabled);
   }
