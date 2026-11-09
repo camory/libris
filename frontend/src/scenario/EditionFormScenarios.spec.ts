@@ -31,7 +31,7 @@ import { FakeMeApi } from "../fixture/FakeMeApi";
 import { FakeReadersApi } from "../fixture/FakeReadersApi";
 import { FakeSeriesApi } from "../fixture/FakeSeriesApi";
 import { lea } from "../fixture/Readers";
-import { onePiece1, onePiece2 } from "../fixture/SourceEditions";
+import { onePiece1 } from "../fixture/SourceEditions";
 
 type Screen = BoundFunctions<typeof queries>;
 type Field = HTMLInputElement | HTMLTextAreaElement;
@@ -222,24 +222,6 @@ describe("Edition form", () => {
       "Erreur lors de la recherche, veuillez réessayer plus tard.",
     );
     expect(screen.queryByLabelText("Titre")).toBeNull();
-  });
-
-  it("S4 A held ISBN shows its card", async () => {
-    // Given
-    const screen = open({
-      isbn: theHouseHolds(onePiece2, [on(lea.defaultBookshelf)]),
-    });
-
-    // When
-    await ask(screen, "9782723489898");
-
-    // Then
-    await screen.findByRole("heading", {
-      name: "Aux prises avec Baggy et ses hommes",
-    });
-    expect(rows(screen)).toEqual(["Dans Bibliothèque de Léa"]);
-    expect(screen.queryByLabelText("Titre")).toBeNull();
-    expect(screen.queryByRole("button", { name: "Modifier" })).toBeNull();
   });
 
   it("S5 The ouvrage is added as edited", async () => {
@@ -506,16 +488,6 @@ describe("Edition form", () => {
       edition,
       copies: [],
       covers,
-    });
-  }
-
-  function theHouseHolds(edition: SourceEdition, copies: Copy[]): IsbnApi {
-    return new FakeIsbnApi({
-      outcome: "found",
-      id: "8b3f4e5d-6c7a-4b8c-9d0e-1f2a3b4c5d6e",
-      edition,
-      copies,
-      covers: [],
     });
   }
 

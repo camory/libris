@@ -200,6 +200,15 @@ Read whole by a run that changes `frontend/`, after `every-run.md`.
   `names` to the form as `authorNames`. `IsbnView.spec.ts`' `mountView`
   takes an `authorsApi` seventh, `new FakeAuthorsApi([])` by default, and
   `open` sixth.
+- The save of a held edition is `EditionsApi.save(id, edition)`
+  (`application/EditionsApi.ts`, `editionsApiKey`), `edition` an
+  `EditionDetails` (a `SourceEdition` without `isbn13`), answering `saved`
+  with the `Book` or a problem; `FakeEditionsApi` takes its answer,
+  `SaveAnswer | Error`, and records `asked`. It is no port of `LibrisPorts`
+  yet and has no client: `HeldEditionEditScenarios`' `open()` provides it
+  with `app.provide(editionsApiKey, …)` after `createLibrisApp`. `v0.18.0`
+  is released, so the task writes the client over `PUT /books/{id}` and
+  moves the port into `LibrisPorts`.
 - `EditionForm` takes `isbn13`, `edition` (a `SourceEdition`, absent for
   an unknown ISBN), `copies`, `covers`, `adding`, `failed` and
   `seriesNames` and `authorNames`, required,
