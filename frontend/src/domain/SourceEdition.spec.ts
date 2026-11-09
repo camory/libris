@@ -85,4 +85,12 @@ describe("rolesToggled", () => {
     // Then
     expect(roles).toEqual(["WRITER"]);
   });
+
+  it("chooses a role in the card's order", () => {
+    // When
+    const roles = rolesToggled(["TRANSLATOR"], "WRITER");
+
+    // Then
+    expect(roles).toEqual(["WRITER", "TRANSLATOR"]);
+  });
 });

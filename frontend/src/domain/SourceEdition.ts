@@ -62,7 +62,9 @@ export function rolesToggled(
   roles: AuthorRole[],
   role: AuthorRole,
 ): AuthorRole[] {
-  return roles.filter((each) => each !== role);
+  return roles.includes(role)
+    ? roles.filter((each) => each !== role)
+    : [...roles, role].sort(byRole);
 }
 
 function byRole(a: AuthorRole, b: AuthorRole) {
