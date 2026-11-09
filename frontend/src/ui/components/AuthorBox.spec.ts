@@ -158,6 +158,22 @@ describe("AuthorBox", () => {
     ]);
   });
 
+  it("words a book's roles as a book's in the list", async () => {
+    // Given
+    const box = screen("Victor Hugo", ["WRITER"], "BOOK");
+
+    // When
+    await fireEvent.click(rolesLine(box)!);
+
+    // Then
+    expect(rowsOf(box).map((row) => row.textContent?.trim())).toEqual([
+      "texte",
+      "illustration",
+      "couleurs",
+      "traduction",
+    ]);
+  });
+
   function rolesLine(box: ReturnType<typeof screen>) {
     return box
       .queryAllByRole("button")
