@@ -179,18 +179,21 @@ function add() {
   authorRefusals.value = new Map(
     authors.value.map(({ key }, index) => [key, refused[index] ?? null]),
   );
-  const first = fields.find((field) => refusals.value[field]);
-  const firstAuthor = authors.value.find((_, index) => refused[index]);
-  if (first && (!firstAuthor || fields.indexOf(first) <= volumeAt)) {
-    boxes[first]?.focus();
-    boxes[first]?.scrollIntoView?.({ block: "center" });
-    return;
-  }
-  if (firstAuthor) {
-    authorBoxes.get(firstAuthor.key)?.focusRoles();
-    return;
-  }
+  if (focusFirstRefused(refused)) return;
   emit("add", editionOf(props.isbn13, draft, locale.value));
+}
+
+function focusFirstRefused(refused: (AuthorRefusal | null)[]) {
+  const field = fields.find((each) => refusals.value[each]);
+  const author = authors.value.find((_, index) => refused[index]);
+  if (field && (!author || fields.indexOf(field) <= volumeAt)) {
+    boxes[field]?.focus();
+    boxes[field]?.scrollIntoView?.({ block: "center" });
+    return true;
+  }
+  if (!author) return false;
+  authorBoxes.get(author.key)?.focusRoles();
+  return true;
 }
 </script>
 
