@@ -212,6 +212,21 @@ describe("AuthorBox", () => {
     expect(wrapper.emitted("update:roles")).toEqual([[["WRITER"]]]);
   });
 
+  it("hands on a role chosen in the card's order", async () => {
+    // Given
+    const wrapper = box("René Goscinny", ["TRANSLATOR"], "BD");
+    const roles = within(wrapper.element as HTMLElement);
+    await fireEvent.click(rolesLine(roles)!);
+
+    // When
+    await fireEvent.click(role(roles, "scénario"));
+
+    // Then
+    expect(wrapper.emitted("update:roles")).toEqual([
+      [["WRITER", "TRANSLATOR"]],
+    ]);
+  });
+
   function rolesLine(box: ReturnType<typeof screen>) {
     return box
       .queryAllByRole("button")
