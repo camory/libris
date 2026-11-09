@@ -310,3 +310,20 @@ Format:
 - Left over: the checks by hand of the word against `1-filled.jpg` and
   `4-author-suggested.jpg`, and *Série*'s unmoved, for Tophe (PR body);
   S8 (T151, T152).
+
+## 2026-11-09 — T151 An author without a role refused — handoff
+- Done: steps 0 to 13, each committed; S8 *Rôle manquant* un-skipped (its
+  red *Unable to find an element with the text: Rôle manquant* read first),
+  S9 green; gate green, 860 passed, 1 skipped. Start with *Finish*: the
+  gotchas (`frontend.md`, the `AuthorBox` and `EditionForm` items), self-review
+  of `git diff main...HEAD`, tick, diary entry, PR.
+- Decided: `focusFirstRefused(refused)` in `EditionForm` (a refactor commit);
+  `authorRefusals` a `Map` by the box's `key`; the message a `mt-1` line
+  right under the bordered box. Deviations: none.
+- Guards: 3, the empty test on the untrimmed name, red `expected
+  [ 'missingRole' ] to deeply equal [ null ]`; 10, `if (field && !author)`,
+  red on the roles' line focused instead of *Album*; 11, `:refusal` also
+  asking `authorRefusalsOf([author])[0]` now, red `expected '…' to contain
+  'Rôle manquant'`; 12, the map and the prop by index, red `expected '…' not
+  to contain 'Rôle manquant'`. All reverted.
+- Learned: `npm test` runs past Bash's 120 s default timeout; give it 600 s.
