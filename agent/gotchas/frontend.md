@@ -284,7 +284,8 @@ Read whole by a run that changes `frontend/`, after `every-run.md`.
   box, in order, a box whose trimmed name is empty never refused) and
   emits `add` only when both answer none; otherwise it keeps those
   answers until the next tap, the authors' in `authorRefusals`, a `Map` by
-  the box's `key` given to each box as `refusal`, marks each refused box `aria-invalid="true"`
+  the box's `key` given to each box as `refusal` (an author box takes no
+  `aria-invalid`), marks each refused field's box `aria-invalid="true"`
   (outlined through `aria-invalid:border-danger`), draws
   `isbn.form.refusal.<code>` under it (`withoutSeries.<kind>`, in the
   kind chosen now, not at the tap), and `focusFirstRefused` focuses then
