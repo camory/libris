@@ -282,6 +282,28 @@ describe("AuthorBox", () => {
     wrapper.unmount();
   });
 
+  it("keeps its list open on a tap on a chosen role's check", async () => {
+    // Given
+    const wrapper = box(
+      "René Goscinny",
+      ["WRITER", "ARTIST"],
+      "BD",
+      document.body,
+    );
+    const view = within(wrapper.element as HTMLElement);
+    await fireEvent.click(rolesLine(view)!);
+    rendersBeforeDocumentHears(wrapper);
+
+    // When
+    await fireEvent.click(wrapper.findAllComponents(Check)[0]!.element);
+
+    // Then
+    expect(wrapper.emitted("update:roles")).toEqual([[["ARTIST"]]]);
+    expect(rolesLine(view)?.getAttribute("aria-expanded")).toBe("true");
+    expect(view.getAllByRole("group", { name: "Rôles" })).toHaveLength(1);
+    wrapper.unmount();
+  });
+
   function rolesLine(box: ReturnType<typeof screen>) {
     return box
       .queryAllByRole("button")
@@ -304,6 +326,12 @@ describe("AuthorBox", () => {
       "button",
       { name: word },
     );
+  }
+
+  function rendersBeforeDocumentHears(wrapper: ReturnType<typeof box>) {
+    document.body.addEventListener("click", () => wrapper.vm.$.update(), {
+      once: true,
+    });
   }
 
   function screen(name: string, roles: AuthorRole[], kind: Kind) {

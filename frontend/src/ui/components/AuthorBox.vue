@@ -37,8 +37,10 @@ function focusName() {
 }
 
 function closeOutside(event: MouseEvent) {
-  const target = event.target as Node;
-  if (rolesLine.value?.contains(target) || rolesList.value?.contains(target)) {
+  const path = event.composedPath();
+  if (
+    path.some((node) => node === rolesLine.value || node === rolesList.value)
+  ) {
     return;
   }
   open.value = false;
