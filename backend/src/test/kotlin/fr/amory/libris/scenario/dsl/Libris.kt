@@ -57,7 +57,7 @@ class Libris(private val http: RestTestClient) {
         .exchange(),
     ) {}
 
-  fun put(reader: Reader, path: String, body: Any): Answer<Unit> =
+  fun <T> put(reader: Reader, path: String, body: Any, read: (String) -> T): Answer<T> =
     Answer(
       http.put()
         .uri(path)
@@ -66,7 +66,7 @@ class Libris(private val http: RestTestClient) {
         .accept(APPLICATION_JSON, APPLICATION_PROBLEM_JSON)
         .body(JSON.writeValueAsString(body))
         .exchange(),
-    ) {}
+    ) { read(textOf(it)) }
 }
 
 class Reader(val libris: Libris, username: String, val displayName: String, private val unknownId: String? = null) {
