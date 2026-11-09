@@ -260,6 +260,28 @@ describe("IsbnView", () => {
     expect(screen.getByRole("button", { name: "René Goscinny" })).toBeDefined();
   });
 
+  it("asks the authors' names again for the next lookup's form", async () => {
+    // Given
+    const screen = open(
+      new FakeIsbnApi(found),
+      undefined,
+      undefined,
+      undefined,
+      undefined,
+      new AuthorNamesInTurn([["René Goscinny"], ["René Goscinny", "Hergé"]]),
+    );
+    await ask(screen, "9782723488525");
+    await press(screen, "Modifier");
+
+    // When
+    await ask(screen, "9782723488525");
+    await press(screen, "Modifier");
+    await typeInFirstName(screen, "her");
+
+    // Then
+    expect(screen.getByRole("button", { name: "Hergé" })).toBeDefined();
+  });
+
   it("shows the card as answered again from the cross", async () => {
     // Given
     const screen = open(new FakeIsbnApi(found));
@@ -1597,6 +1619,16 @@ describe("IsbnView", () => {
 });
 
 class SeriesNamesInTurn extends FakeSeriesApi {
+  constructor(private readonly turns: string[][]) {
+    super([]);
+  }
+
+  override names(): Promise<string[]> {
+    return Promise.resolve(this.turns.shift() ?? []);
+  }
+}
+
+class AuthorNamesInTurn extends FakeAuthorsApi {
   constructor(private readonly turns: string[][]) {
     super([]);
   }
