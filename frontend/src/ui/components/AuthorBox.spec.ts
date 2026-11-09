@@ -60,6 +60,21 @@ describe("AuthorBox", () => {
     ).toHaveLength(1);
   });
 
+  it("asks to be removed on the trash's tap", async () => {
+    // Given
+    const wrapper = box("René Goscinny", ["WRITER"], "BD");
+
+    // When
+    await fireEvent.click(
+      within(wrapper.element as HTMLElement).getByRole("button", {
+        name: "Retirer René Goscinny",
+      }),
+    );
+
+    // Then
+    expect(wrapper.emitted("remove")).toEqual([[]]);
+  });
+
   it("reads the roles in the words of the kind", () => {
     // When
     const box = screen("René Goscinny", ["WRITER", "ARTIST"], "BD");

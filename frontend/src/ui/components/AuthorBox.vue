@@ -9,6 +9,8 @@ const props = defineProps<{ roles: AuthorRole[]; kind: Kind }>();
 
 const name = defineModel<string>("name", { required: true });
 
+const emit = defineEmits<{ remove: [] }>();
+
 const { t } = useI18n();
 
 const nameBox = useTemplateRef("nameBox");
@@ -44,7 +46,7 @@ const label = computed(() =>
         :aria-label="t('isbn.form.authors.name')"
         class="h-12 min-w-0 flex-1 bg-transparent pl-3.5 text-field outline-none"
       />
-      <IconButton :label="trash">
+      <IconButton :label="trash" @click="emit('remove')">
         <Trash2 :size="22" />
       </IconButton>
     </div>
