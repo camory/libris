@@ -25,6 +25,7 @@ const emit = defineEmits<{ remove: [] }>();
 
 const { t, locale } = useI18n();
 
+const box = useTemplateRef("box");
 const nameBox = useTemplateRef("nameBox");
 const open = ref(false);
 const rolesLine = useTemplateRef("rolesLine");
@@ -42,6 +43,7 @@ function focusName() {
 function nameFocused() {
   focused.value = true;
   chosen.value = false;
+  box.value?.scrollIntoView?.({ block: "start" });
 }
 
 function choose(tapped: string) {
@@ -83,7 +85,8 @@ const label = computed(() =>
 <template>
   <div class="flex flex-col gap-1">
     <div
-      class="rounded-xl border-[1.5px] bg-surface focus-within:border-accent"
+      ref="box"
+      class="scroll-mt-28 rounded-xl border-[1.5px] bg-surface focus-within:border-accent"
       :class="open ? 'border-accent' : 'border-border'"
     >
       <div class="flex items-center pr-0.75">

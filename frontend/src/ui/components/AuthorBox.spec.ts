@@ -1,12 +1,16 @@
 import { Check, ChevronDown, Trash2 } from "@lucide/vue";
 import { fireEvent, within } from "@testing-library/dom";
 import { mount } from "@vue/test-utils";
-import { describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 import type { AuthorRole, Kind } from "../../domain/SourceEdition";
 import { createLibrisI18n } from "../i18n";
 import AuthorBox from "./AuthorBox.vue";
 
 describe("AuthorBox", () => {
+  afterEach(() => {
+    Reflect.deleteProperty(HTMLElement.prototype, "scrollIntoView");
+  });
+
   it("holds the author's name", () => {
     // When
     const box = screen("René Goscinny", [], "BD");
@@ -417,6 +421,26 @@ describe("AuthorBox", () => {
 
     // Then
     expect(suggestions(view)).toEqual(["René Goscinny"]);
+  });
+
+  it("brings its box to the top when its name takes the focus", async () => {
+    // Given
+    const scrollIntoView = vi.fn();
+    Object.defineProperty(HTMLElement.prototype, "scrollIntoView", {
+      configurable: true,
+      value: scrollIntoView,
+    });
+    const view = screen("", [], "BOOK");
+    const name = view.getByRole("textbox", { name: "Nom de l'auteur" });
+
+    // When
+    await fireEvent.focus(name);
+
+    // Then
+    expect(scrollIntoView).toHaveBeenCalledExactlyOnceWith({ block: "start" });
+    const scrolled = scrollIntoView.mock.contexts[0] as HTMLElement;
+    expect(scrolled.contains(name)).toBe(true);
+    expect(scrolled.contains(rolesLine(view) ?? null)).toBe(true);
   });
 
   function rolesLine(box: ReturnType<typeof screen>) {
