@@ -85,8 +85,8 @@ export function refusalsOf(draft: EditionDraft, locale: string): Refusals {
 export type AuthorRefusal = "missingRole";
 
 export function authorRefusalsOf(authors: Author[]): (AuthorRefusal | null)[] {
-  return authors.map(({ roles }) =>
-    roles.length === 0 ? "missingRole" : null,
+  return authors.map(({ name, roles }) =>
+    text(name) !== null && roles.length === 0 ? "missingRole" : null,
   );
 }
 

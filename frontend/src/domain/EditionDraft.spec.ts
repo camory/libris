@@ -313,4 +313,12 @@ describe("authorRefusalsOf", () => {
     // Then
     expect(refusals).toEqual([null, "missingRole"]);
   });
+
+  it("refuses no box whose name is empty", () => {
+    // When
+    const refusals = authorRefusalsOf([{ name: "", roles: [] }]);
+
+    // Then
+    expect(refusals).toEqual([null]);
+  });
 });
