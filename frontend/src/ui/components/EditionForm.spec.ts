@@ -1025,6 +1025,12 @@ describe("EditionForm", () => {
       .filter((button) => button.hasAttribute("aria-expanded"));
   }
 
+  function trashes(fields: ReturnType<typeof screen>) {
+    return fields.queryAllByRole<HTMLButtonElement>("button", {
+      name: /^Retirer\b/,
+    });
+  }
+
   function authorsOf(fields: ReturnType<typeof screen>) {
     const lines = rolesLines(fields);
     return names(fields).map((box, index) => ({
@@ -1037,6 +1043,7 @@ describe("EditionForm", () => {
     return fields
       .queryAllByRole("button")
       .filter((button) => !button.hasAttribute("aria-expanded"))
+      .filter((button) => !trashes(fields).includes(button))
       .map((button) => button.textContent?.trim() ?? "")
       .filter(
         (name) =>

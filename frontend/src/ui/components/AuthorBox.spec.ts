@@ -1,4 +1,4 @@
-import { ChevronDown } from "@lucide/vue";
+import { ChevronDown, Trash2 } from "@lucide/vue";
 import { fireEvent, within } from "@testing-library/dom";
 import { mount } from "@vue/test-utils";
 import { describe, expect, it } from "vitest";
@@ -16,6 +16,21 @@ describe("AuthorBox", () => {
       box.getByRole<HTMLInputElement>("textbox", { name: "Nom de l'auteur" })
         .value,
     ).toBe("René Goscinny");
+  });
+
+  it("offers the trash, named Retirer and the name", () => {
+    // When
+    const wrapper = box("René Goscinny", [], "BD");
+
+    // Then
+    const trashes = within(wrapper.element as HTMLElement).getAllByRole(
+      "button",
+      { name: "Retirer René Goscinny" },
+    );
+    expect(trashes).toHaveLength(1);
+    expect(trashes[0]?.contains(wrapper.findComponent(Trash2).element)).toBe(
+      true,
+    );
   });
 
   it("reads the roles in the words of the kind", () => {
