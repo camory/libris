@@ -275,3 +275,17 @@ Format:
   made once the scenarios were green.
 - Left over: the refusals of a box with no role or a name twice (T151,
   T152), suggestions (T149, T150).
+
+## 2026-11-09 — T149 The authors of the house suggested — handoff
+- Done: test plan steps 0 to 15, each its own commit; self-review read
+  the components' diff and moved `AuthorBox`'s suggestions state up.
+- Start with: the rest of the self-review (`git diff main...HEAD`), then
+  *Finish*: gotchas (`frontend.md`: authors' names item, `EditionForm`/
+  `AuthorBox` item with `authorNames`, `SuggestionList`, rows and scroll;
+  `mountView`'s `authorsApi` seventh, `open`'s sixth), tick, diary, PR.
+- Decided: `SuggestionList` takes `class="-mt-1"` from `EditionForm`;
+  `AuthorBox`'s root `gap-1` gives its 4. The scroll goes to the bordered
+  box (name and roles' line), `scroll-mt-28`. Deviations: none.
+- Guards: 13, `list()` moved to the view's setup: red, no button *Hergé*
+  (step 12 stayed green). 14, `useListAuthorNames`' `catch` taken off:
+  *Unhandled Rejection TypeError: Failed to fetch*, 1 error. Reverted.
