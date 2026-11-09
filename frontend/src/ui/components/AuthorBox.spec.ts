@@ -177,13 +177,13 @@ describe("AuthorBox", () => {
   it("presses the roles chosen", async () => {
     // Given
     const wrapper = box("René Goscinny", ["WRITER", "ARTIST"], "BD");
-    const roles = within(wrapper.element as HTMLElement);
+    const view = within(wrapper.element as HTMLElement);
 
     // When
-    await fireEvent.click(rolesLine(roles)!);
+    await fireEvent.click(rolesLine(view)!);
 
     // Then
-    const rows = rowsOf(roles);
+    const rows = rowsOf(view);
     expect(rows.map((row) => row.getAttribute("aria-pressed"))).toEqual([
       "true",
       "true",
@@ -202,11 +202,11 @@ describe("AuthorBox", () => {
   it("hands on the roles with a role released", async () => {
     // Given
     const wrapper = box("René Goscinny", ["WRITER", "ARTIST"], "BD");
-    const roles = within(wrapper.element as HTMLElement);
-    await fireEvent.click(rolesLine(roles)!);
+    const view = within(wrapper.element as HTMLElement);
+    await fireEvent.click(rolesLine(view)!);
 
     // When
-    await fireEvent.click(role(roles, "dessin"));
+    await fireEvent.click(role(view, "dessin"));
 
     // Then
     expect(wrapper.emitted("update:roles")).toEqual([[["WRITER"]]]);
@@ -215,11 +215,11 @@ describe("AuthorBox", () => {
   it("hands on a role chosen in the card's order", async () => {
     // Given
     const wrapper = box("René Goscinny", ["TRANSLATOR"], "BD");
-    const roles = within(wrapper.element as HTMLElement);
-    await fireEvent.click(rolesLine(roles)!);
+    const view = within(wrapper.element as HTMLElement);
+    await fireEvent.click(rolesLine(view)!);
 
     // When
-    await fireEvent.click(role(roles, "scénario"));
+    await fireEvent.click(role(view, "scénario"));
 
     // Then
     expect(wrapper.emitted("update:roles")).toEqual([
@@ -242,16 +242,16 @@ describe("AuthorBox", () => {
   it("closes its list on a tap on its name", async () => {
     // Given
     const wrapper = box("René Goscinny", ["WRITER"], "BD", document.body);
-    const roles = within(wrapper.element as HTMLElement);
-    await fireEvent.click(rolesLine(roles)!);
+    const view = within(wrapper.element as HTMLElement);
+    await fireEvent.click(rolesLine(view)!);
 
     // When
     await fireEvent.click(
-      roles.getByRole("textbox", { name: "Nom de l'auteur" }),
+      view.getByRole("textbox", { name: "Nom de l'auteur" }),
     );
 
     // Then
-    expectClosed(roles);
+    expectClosed(view);
     wrapper.unmount();
   });
 
@@ -270,15 +270,15 @@ describe("AuthorBox", () => {
   it("keeps its list open on a role's tap", async () => {
     // Given
     const wrapper = box("René Goscinny", ["WRITER"], "BD", document.body);
-    const roles = within(wrapper.element as HTMLElement);
-    await fireEvent.click(rolesLine(roles)!);
+    const view = within(wrapper.element as HTMLElement);
+    await fireEvent.click(rolesLine(view)!);
 
     // When
-    await fireEvent.click(role(roles, "couleurs"));
+    await fireEvent.click(role(view, "couleurs"));
 
     // Then
-    expect(rolesLine(roles)?.getAttribute("aria-expanded")).toBe("true");
-    expect(roles.getAllByRole("group", { name: "Rôles" })).toHaveLength(1);
+    expect(rolesLine(view)?.getAttribute("aria-expanded")).toBe("true");
+    expect(view.getAllByRole("group", { name: "Rôles" })).toHaveLength(1);
     wrapper.unmount();
   });
 
