@@ -527,6 +527,28 @@ describe("AuthorBox", () => {
     wrapper.unmount();
   });
 
+  it("brings its box into view on focusRoles", () => {
+    // Given
+    const scrollIntoView = vi.fn();
+    Object.defineProperty(HTMLElement.prototype, "scrollIntoView", {
+      configurable: true,
+      value: scrollIntoView,
+    });
+    const wrapper = box("Albert Uderzo", [], "BD");
+
+    // When
+    wrapper.vm.focusRoles();
+
+    // Then
+    expect(scrollIntoView).toHaveBeenCalledExactlyOnceWith({ block: "center" });
+    const scrolled = scrollIntoView.mock.contexts[0] as HTMLElement;
+    const view = within(wrapper.element as HTMLElement);
+    expect(
+      scrolled.contains(view.getByRole("textbox", { name: "Nom de l'auteur" })),
+    ).toBe(true);
+    expect(scrolled.contains(rolesLine(view) ?? null)).toBe(true);
+  });
+
   function rolesLine(box: ReturnType<typeof screen>) {
     return box
       .queryAllByRole("button")

@@ -54,6 +54,7 @@ function focusName() {
 
 function focusRoles() {
   rolesLine.value?.focus();
+  box.value?.scrollIntoView?.({ block: "center" });
 }
 
 function nameFocused() {
