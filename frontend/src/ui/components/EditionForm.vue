@@ -142,6 +142,7 @@ async function addAuthor() {
 
 function removeAuthor(key: number) {
   authors.value = authors.value.filter((author) => author.key !== key);
+  addAuthorButton?.focus();
 }
 
 function keepBox(key: number, box: unknown) {
@@ -165,6 +166,7 @@ const id = useId();
 const refusals = ref<Refusals>({});
 const boxes: Partial<Record<Field, HTMLInputElement>> = {};
 const authorBoxes = new Map<number, InstanceType<typeof AuthorBox>>();
+let addAuthorButton: HTMLButtonElement | null = null;
 
 function add() {
   const draft: EditionDraft = {
@@ -306,6 +308,7 @@ function add() {
             />
           </div>
           <button
+            :ref="(button) => (addAuthorButton = button as HTMLButtonElement)"
             type="button"
             class="-ml-3 h-11 self-start px-3 text-button text-accent"
             @click="addAuthor"

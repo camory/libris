@@ -422,6 +422,24 @@ describe("EditionForm", () => {
     ]);
   });
 
+  it("focuses Ajouter un auteur once a box is removed", async () => {
+    // Given
+    const wrapper = form(asterix1, [], [], { attachTo: document.body });
+    const fields = within(wrapper.element as HTMLElement);
+
+    // When
+    await fireEvent.click(
+      fields.getByRole("button", { name: "Retirer Albert Uderzo" }),
+    );
+    await flushPromises();
+
+    // Then
+    expect(document.activeElement).toBe(
+      fields.getByRole("button", { name: "Ajouter un auteur" }),
+    );
+    wrapper.unmount();
+  });
+
   it("shows the covers on offer as the card does", () => {
     // When
     const covers = screen(onePiece1, [], [inventaire, openLibrary]);
