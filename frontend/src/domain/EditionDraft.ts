@@ -91,14 +91,13 @@ export function authorRefusalsOf(
 ): (AuthorRefusal | null)[] {
   const byName = nameOrder(locale);
   return authors.map(({ name, roles }, index) => {
-    if (
-      authors
-        .slice(0, index)
-        .some((before) => byName(before.name.trim(), name.trim()) === 0)
-    ) {
+    const typed = text(name);
+    if (typed === null) return null;
+    const before = authors.slice(0, index);
+    if (before.some((each) => byName(each.name.trim(), typed) === 0)) {
       return "twice";
     }
-    return text(name) !== null && roles.length === 0 ? "missingRole" : null;
+    return roles.length === 0 ? "missingRole" : null;
   });
 }
 

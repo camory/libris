@@ -375,4 +375,18 @@ describe("authorRefusalsOf", () => {
     // Then
     expect(refusals).toEqual([null, "twice"]);
   });
+
+  it("refuses no second empty name", () => {
+    // When
+    const refusals = authorRefusalsOf(
+      [
+        { name: "", roles: ["WRITER"] },
+        { name: "", roles: ["WRITER"] },
+      ],
+      "fr",
+    );
+
+    // Then
+    expect(refusals).toEqual([null, null]);
+  });
 });
