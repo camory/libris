@@ -252,8 +252,9 @@ answering the not-found problem, the save failing; and the title emptied:
 
 ## Screen
 
-Mockups: to draw with Tophe, one artboard per state below, exported as
-`specs/held-edition-edit/<n>-<state>.jpg` in the same order. No route of
+Mockups: <https://claude.ai/artifact/9RMhN9rnNpAUkvZv6eJmgc>, one artboard
+per state below, exported as `specs/held-edition-edit/<n>-<state>.jpg` in
+the same order. No route of
 its own: the ouvrage's page of `specs/edition-page.md`, route
 `/catalogue/ouvrages/{id}`, and the lookup screen of
 `specs/edition-form.md`, route `/isbn`.
@@ -286,29 +287,36 @@ lacks does; its form is the lookup's form, with the house's cover as on
 the card, the row *Dans aucune de vos bibliothèques* and the button
 *Ajouter à ma bibliothèque*.
 
-Open: what is the screen's `h1` while the form shows on the ouvrage's
-page, the card's title being gone with the card.
+While the form shows on the ouvrage's page, the screen's `h1` stays the
+ouvrage's title as Libris answered it, visually hidden: nothing moves when
+the form opens, and the screen's name follows no keystroke. The document
+title is unchanged.
 
-`docs/DESIGN.md` changes with this spec: in U04, the primary button
-*Enregistrer* for the form of an ouvrage the house holds, opened from its
-page, present while the form is, *Enregistrement en cours…* while it runs;
-in U06, the bookshelf rows of a form card carry no trash.
+`docs/DESIGN.md` changes with this spec: in U02, while a form shows in
+place of an ouvrage's card, the screen's `h1` is the ouvrage's title as
+answered, visually hidden; in U04, the primary button *Enregistrer* for
+the form of an ouvrage the house holds, opened from its page, present
+while the form is, *Enregistrement en cours…* while it runs; in U06, the
+bookshelf rows of a form card carry no trash.
 
 States:
 
-- **Lookup card** (S1): an edition the house holds with none of the
-  reader's copies, *Dans aucune de vos bibliothèques*, the pencil, the
-  button *Ajouter à ma bibliothèque*.
+- **Lookup card** (S1): *Le Lotus bleu*, an edition the house holds with
+  none of the reader's copies, its stored cover without dots, *Dans
+  aucune de vos bibliothèques*, the pencil, the button *Ajouter à ma
+  bibliothèque*.
 - **Lookup form** (S2): the same edition's form, the house's cover, the
   cross, the button *Ajouter à ma bibliothèque*.
-- **Page card** (S3): an Astérix album on its page, the card with its
-  pencil.
-- **Page form** (S3): its form, its bookshelf row without trash, its two
+- **Page card** (S3): *Astérix le Gaulois* on its page, stored with no
+  series, the card with its pencil, the reader's bookshelf row with its
+  trash, a guest's without.
+- **Page form** (S3): its form, its bookshelf rows without trash, its two
   authors' rows, the cross, *Enregistrer* docked above the tab bar.
-- **Saving** (S4): *Enregistrement en cours…* with its spinner, the form
-  accepting nothing.
+- **Saving** (S4): *asterix* typed in *Série*, *1* in *Album*;
+  *Enregistrement en cours…* with its spinner, the form accepting nothing.
 - **Saved** (S4, S5): the card as Libris answered it, the series typed
-  *tintin* reading *Tintin*, the pencil back, no button.
+  *asterix* reading *Astérix*, the house's spelling, the pencil back, no
+  button.
 - **Not saved** (S9): *Erreur lors de l'enregistrement, veuillez
   réessayer plus tard.* under the button, the form as left.
 
