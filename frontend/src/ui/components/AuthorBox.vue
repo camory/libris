@@ -89,6 +89,7 @@ const label = computed(() =>
           :disabled="disabled"
           :aria-label="t('isbn.form.authors.name')"
           @focus="focused = true"
+          @blur="focused = false"
           @input="chosen = false"
           class="h-12 min-w-0 flex-1 bg-transparent pl-3.5 text-field outline-none"
         />

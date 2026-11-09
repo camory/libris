@@ -381,6 +381,24 @@ describe("AuthorBox", () => {
     expect(suggestions(view)).toHaveLength(2);
   });
 
+  it("closes them when the name is left", async () => {
+    // Given
+    const view = screen("", [], "BOOK", [
+      "René Goscinny",
+      "Albert Uderzo",
+      "Hergé",
+    ]);
+    const name = view.getByRole("textbox", { name: "Nom de l'auteur" });
+    await fireEvent.focus(name);
+    await fireEvent.input(name, { target: { value: "er" } });
+
+    // When
+    await fireEvent.blur(name);
+
+    // Then
+    expect(suggestions(view)).toEqual([]);
+  });
+
   function rolesLine(box: ReturnType<typeof screen>) {
     return box
       .queryAllByRole("button")
