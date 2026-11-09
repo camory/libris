@@ -7,7 +7,7 @@ each author the roles they had, and the authors the house already holds
 are suggested and matched, whatever their capitals and accents. Now,
 because the edition form shows the authors without editing them, and a
 wrong author lands on the card of every copy.
-**Status:** draft
+**Status:** done 2026-11-09
 
 ## Scenarios
 
@@ -328,6 +328,9 @@ leave the other empty. Add: the card shows *rene goscinny*, your
 colourist, *Albert Uderzo* and *Dans Bibliothèque de Christophe*, and no
 empty author. Scan it again: the card says *René Goscinny*, the house's
 spelling.
+Checked by Tophe on staging, recorded on 2026-11-09, on *Astérix chez les
+Helvètes*, whose BnF record gives Albert Uderzo the function code of an
+author: the form opened him on scénario.
 
 ## Tasks
 
