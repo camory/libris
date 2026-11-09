@@ -113,6 +113,25 @@ describe("editionOf", () => {
     ]);
   });
 
+  it("sends no author for a box whose name is empty", () => {
+    // Given
+    const draft: EditionDraft = {
+      ...filled,
+      authors: [
+        { name: "René Goscinny", roles: ["WRITER"] },
+        { name: "", roles: ["WRITER", "ARTIST"] },
+      ],
+    };
+
+    // When
+    const edition = read(draft);
+
+    // Then
+    expect(edition.authors).toEqual([
+      { name: "René Goscinny", role: "WRITER" },
+    ]);
+  });
+
   function read(draft: EditionDraft) {
     return editionOf(onePiece1.isbn13, draft, "fr");
   }
