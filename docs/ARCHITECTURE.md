@@ -713,13 +713,19 @@ Contract
   the edition. A series holds no list of its editions. A read that answers
   a series' name reads it through `SeriesRepository`. There is no
   renaming: a name is corrected edition by edition, which moves the
-  edition to the series of the corrected name.
+  edition to the series of the corrected name. The one exception is a
+  respelling: an edition written with a name that matches its own series
+  respells that series, for every edition of it; since no two series
+  match so, a respelling never merges two.
 - An author and a tag are values of the edition, not aggregates:
   `Contribution(name, role)` on the `Edition`, matched by name as PRD §3
   says. Each name has a row of its own in persistence, with a uuid key and
   never doubled, and the edition's child tables reference it: that row is
   what a filter or a sort by the name reads. There is no renaming: a name
-  is corrected edition by edition. Such a value becomes an aggregate the
+  is corrected edition by edition, but for the respelling a series has:
+  an edition written with a name that matches one of its own authors,
+  whatever roles it then has, respells that author for every edition.
+  Such a value becomes an aggregate the
   day it gains a fact of its own, or the day something outside the edition
   addresses it, as the series did when the API gave it an id.
 
