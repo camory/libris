@@ -90,7 +90,7 @@ frontend task.
       chosen; the lines accept nothing while it runs. Realises S4; un-skips
       the frontend test of S4.
 
-- [ ] T148 Frontend: each name sent trimmed, an empty row dropped.
+- [x] T148 Frontend: each name sent trimmed, an empty row dropped.
       The add sends each author's name without the spaces at its ends, and
       no author for a box whose name is empty or holds spaces alone,
       whatever its roles, with no message; the rule unit tested in the

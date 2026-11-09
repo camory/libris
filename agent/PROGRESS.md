@@ -262,3 +262,16 @@ Format:
 - Deviations from the brief: none. The helpers' parameter `box` stays.
 - Left over: the checks by hand for Tophe (PR body), now with a tap on a
   chosen row's check.
+
+## 2026-11-09 — T148 Each name sent trimmed, an empty row dropped — done
+- Did: `editionOf` sends each author's name trimmed and nothing for a box
+  whose trimmed name is empty, whatever its roles, the boxes after it kept
+  in order. S5 and S9's two cases un-skipped and green.
+- Decided: `sourceAuthorsOf` reads each name through the module's `text`,
+  the door every other text of the draft goes through, so one `null`
+  answers both the trim and the drop.
+- Deviations from the brief: none. Steps 3 to 6 were guards, their
+  mutations run and reverted (PR body); the un-skip is its own commit,
+  made once the scenarios were green.
+- Left over: the refusals of a box with no role or a name twice (T151,
+  T152), suggestions (T149, T150).

@@ -200,7 +200,9 @@ Read whole by a run that changes `frontend/`, after `every-run.md`.
   the card's, emits `coverSource` as the card does, and `add` with the edition its
   fields read as, `editionOf(isbn13, draft, locale)`
   (`src/domain/EditionDraft.ts`), whose `draft.authors` are the boxes
-  (`Author[]`), sent as one `SourceAuthor` per name and role, in order. Its root is a plain block holding the
+  (`Author[]`), sent as one `SourceAuthor` per name and role, in order,
+  each name trimmed, a box whose trimmed name is empty sending nothing
+  whatever its roles. Its root is a plain block holding the
   card-shaped `<form>` then `DockedAdd`. While `adding` its textboxes,
   radios, author names, trashes and roles' lines and *Ajouter un auteur*
   are `disabled`. It fills its text once, at setup: `kind`
