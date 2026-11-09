@@ -234,8 +234,8 @@ Read whole by a run that changes `frontend/`, after `every-run.md`.
   open, the group *Rôles* (`aria-label`) of four `aria-pressed` rows from
   `roleChoicesOf(roles)` (`SourceEdition.ts`, the card's order), a row's
   tap writing `rolesToggled(roles, role)` to the model; a `click` on
-  `document` outside its line and its list closes it, the listener added
-  on mount and removed on unmount.
+  `document` whose `composedPath()` holds neither its line nor its list
+  closes it, the listener added on mount and removed on unmount.
   Its spec's `valuesOf` leaves out the name boxes, `suggestions` the roles
   lines (`aria-expanded`), the trashes (`trashes()`, buttons named from
   *Retirer*) and *Ajouter un auteur*; `disabledOf` reads the fields, the
@@ -345,6 +345,18 @@ Read whole by a run that changes `frontend/`, after `every-run.md`.
   mounts with `attachTo: document.body` and unmounts at its end
   (`AuthorBox`'s *closes its list on a tap on its name*, *keeps its list
   open on a role's tap*).
+- A browser runs a microtask checkpoint after each listener of a click the
+  reader makes, so Vue re-renders between a row's `@click` and a listener
+  higher up: an element the render drops (a `v-if` icon, the `svg` that
+  was `event.target`) is detached when `document` hears the click, and
+  `contains(event.target)` answers false. `fireEvent` dispatches
+  synchronously, with no render in between, and hides it. A `document`
+  listener reads `event.composedPath()`, fixed at dispatch; a case
+  re-renders mid-dispatch from a `document.body` listener calling
+  `wrapper.vm.$.update()` (`AuthorBox`'s *keeps its list open on a tap on
+  a chosen role's check*, T147's rework). After the dispatch,
+  `composedPath()` answers `[]`, so deferring the listener does not model
+  the browser.
 - `aria-labelledby` does not resolve on a detached tree: a `getByRole(…, {
   name })` over it throws `root.getElementById is not a function`, and every
   component spec and scenario mounts detached. A list is named with

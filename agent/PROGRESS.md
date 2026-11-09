@@ -246,3 +246,19 @@ Format:
 - Left over: the checks by hand of the list, the outline and the chevron,
   in both schemes, for Tophe (PR body); names trimmed and empty boxes
   dropped (T148).
+
+## 2026-11-09 — T147 An author's roles chosen — reworked
+- Did: `AuthorBox`'s `document` listener decides from the click's
+  `composedPath()`, so a tap on a chosen row's check, dropped by the
+  render before `document` hears the click, keeps the list open; a case
+  re-renders the box mid-dispatch to prove it. The spec's query over the
+  box is named `view`, not `roles`.
+- Decided: the reviewer's verdict of 2026-11-09 left two ways open;
+  `composedPath()` was taken, since keeping the check mounted would change
+  step 6, which counts two `Check`s for two roles chosen. The case renders
+  through `wrapper.vm.$.update()` from a `document.body` listener: a
+  listener deferred past the dispatch, the reviewer's probe, reads an
+  empty `composedPath()` (gotcha added).
+- Deviations from the brief: none. The helpers' parameter `box` stays.
+- Left over: the checks by hand for Tophe (PR body), now with a tap on a
+  chosen row's check.
