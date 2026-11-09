@@ -39,7 +39,7 @@ fun Reader.hasAdded(reader: Reader, role: Role, to: Bookshelf): Member =
   adds(reader, role, to).value
 
 fun Reader.makesDefault(bookshelf: Bookshelf): Answer<Unit> =
-  libris.put(this, "/api/v1/me/default-bookshelf", mapOf("id" to bookshelf.id))
+  libris.put(this, "/api/v1/me/default-bookshelf", mapOf("id" to bookshelf.id)) {}
 
 fun Reader.member(role: Role) =
   Member(id, displayName, role)
