@@ -52,6 +52,12 @@ export function authorsInOrder(
     .sort((a, b) => byRole(a.roles[0], b.roles[0]) || byName(a.name, b.name));
 }
 
+export function roleChoicesOf(
+  roles: AuthorRole[],
+): { role: AuthorRole; chosen: boolean }[] {
+  return ROLES.map((role) => ({ role, chosen: roles.includes(role) }));
+}
+
 function byRole(a: AuthorRole, b: AuthorRole) {
   return ROLES.indexOf(a) - ROLES.indexOf(b);
 }
