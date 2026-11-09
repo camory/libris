@@ -5,8 +5,10 @@ import { useI18n } from "vue-i18n";
 import type { Copy } from "../../domain/Copy";
 import type { CoverCandidate } from "../../domain/Cover";
 import {
+  authorRefusalsOf,
   editionOf,
   refusalsOf,
+  type AuthorRefusal,
   type EditionDraft,
   type Refusal,
   type Refusals,
@@ -159,6 +161,7 @@ function messageOf(refusal: Refusal) {
 
 const id = useId();
 const refusals = ref<Refusals>({});
+const authorRefusals = ref(new Map<number, AuthorRefusal | null>());
 const boxes: Partial<Record<Field, HTMLInputElement>> = {};
 const authorBoxes = new Map<number, InstanceType<typeof AuthorBox>>();
 let addAuthorButton = null as HTMLButtonElement | null;
@@ -171,12 +174,17 @@ function add() {
     authors: authors.value.map(({ name, roles }) => ({ name, roles })),
   };
   refusals.value = refusalsOf(draft, locale.value);
+  const refused = authorRefusalsOf(draft.authors);
+  authorRefusals.value = new Map(
+    authors.value.map(({ key }, index) => [key, refused[index] ?? null]),
+  );
   const first = fields.find((field) => refusals.value[field]);
   if (first) {
     boxes[first]?.focus();
     boxes[first]?.scrollIntoView?.({ block: "center" });
     return;
   }
+  if (refused.some(Boolean)) return;
   emit("add", editionOf(props.isbn13, draft, locale.value));
 }
 </script>
@@ -284,6 +292,7 @@ function add() {
               :kind="kind"
               :disabled="adding"
               :author-names="authorNames"
+              :refusal="authorRefusals.get(author.key)"
               @remove="removeAuthor(author.key)"
             />
           </div>

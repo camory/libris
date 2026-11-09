@@ -844,6 +844,20 @@ describe("EditionForm", () => {
     expect(wrapper.text()).not.toContain("Titre manquant");
   });
 
+  it("sends nothing while an author has no role", async () => {
+    // Given
+    const wrapper = form(asterix1);
+    const screen = within(wrapper.element as HTMLElement);
+    await release(screen, 0, "scénario");
+
+    // When
+    await tapAdd(screen);
+
+    // Then
+    expect(wrapper.emitted("add")).toBeUndefined();
+    expect(wrapper.text()).toMatch(/Auteurs.*Rôle manquant.*dessin/s);
+  });
+
   it("suggests under Série the names that contain the text", async () => {
     // Given
     const fields = screen(onePiece1, [], [], { seriesNames: houseSeries });
@@ -1117,6 +1131,16 @@ describe("EditionForm", () => {
       "button",
       { name: word },
     );
+  }
+
+  async function release(
+    fields: ReturnType<typeof screen>,
+    box: number,
+    word: string,
+  ) {
+    await fireEvent.click(rolesLines(fields)[box]!);
+    await fireEvent.click(role(fields, word));
+    await fireEvent.click(rolesLines(fields)[box]!);
   }
 
   function trashes(fields: ReturnType<typeof screen>) {
