@@ -113,6 +113,7 @@ const fr = {
         label: "Auteurs",
         name: "Nom de l'auteur",
         roles: "Rôles",
+        add: "Ajouter un auteur",
       },
       collection: "Collection",
       publisher: "Éditeur",

@@ -111,7 +111,7 @@ describe("Authors edit", () => {
     expect(authors(screen)).toEqual(rows);
   });
 
-  it.skip("S2 An author is added", async () => {
+  it("S2 An author is added", async () => {
     // Given
     const add = librisAdds(on(lea.defaultBookshelf));
     const screen = open({ isbn: noSourceKnows(), add });
@@ -143,7 +143,7 @@ describe("Authors edit", () => {
     ]);
   });
 
-  it.skip("S2 An author is added, after the others", async () => {
+  it("S2 An author is added, after the others", async () => {
     // Given
     const add = librisAdds(on(lea.defaultBookshelf));
     const screen = await formOf(asterix1, { add });

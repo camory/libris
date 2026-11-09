@@ -215,8 +215,10 @@ async function send(edition: SourceEdition) {
             type="text"
             inputmode="numeric"
             :placeholder="t('isbn.placeholder')"
-            class="h-[50px] w-full rounded-xl border-[1.5px] bg-surface pr-13 pl-3.5 text-field tabular-nums placeholder:text-muted"
-            :class="refused ? 'border-danger' : 'border-border'"
+            class="h-[50px] w-full rounded-xl border-[1.5px] bg-surface pr-13 pl-3.5 text-field tabular-nums outline-none placeholder:text-muted"
+            :class="
+              refused ? 'border-danger' : 'border-border focus:border-accent'
+            "
           />
           <IconButton
             v-if="canScan"

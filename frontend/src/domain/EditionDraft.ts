@@ -1,5 +1,10 @@
 import { languageCode } from "./Language";
-import type { Kind, SourceAuthor, SourceEdition } from "./SourceEdition";
+import type {
+  Author,
+  Kind,
+  SourceAuthor,
+  SourceEdition,
+} from "./SourceEdition";
 
 export interface EditionDraft {
   kind: Kind;
@@ -13,11 +18,11 @@ export interface EditionDraft {
   language: string;
   pages: string;
   summary: string;
+  authors: Author[];
 }
 
 export function editionOf(
   isbn13: string,
-  authors: SourceAuthor[],
   draft: EditionDraft,
   locale: string,
 ): SourceEdition {
@@ -28,7 +33,7 @@ export function editionOf(
     kind: draft.kind,
     title: draft.title.trim(),
     subtitle: text(draft.subtitle),
-    authors,
+    authors: sourceAuthorsOf(draft.authors),
     series:
       series === null
         ? null
@@ -42,11 +47,17 @@ export function editionOf(
   };
 }
 
+function sourceAuthorsOf(authors: Author[]): SourceAuthor[] {
+  return authors.flatMap(({ name, roles }) =>
+    roles.map((role) => ({ name, role })),
+  );
+}
+
 export type Refusal =
   "missing" | "invalidNumber" | "unknownLanguage" | "withoutSeries";
 
 export type Refusals = Partial<
-  Record<Exclude<keyof EditionDraft, "kind" | "summary">, Refusal>
+  Record<Exclude<keyof EditionDraft, "kind" | "summary" | "authors">, Refusal>
 >;
 
 export function refusalsOf(draft: EditionDraft, locale: string): Refusals {

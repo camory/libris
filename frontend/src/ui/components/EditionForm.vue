@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { Check, CircleAlert } from "@lucide/vue";
-import { computed, reactive, ref, useId } from "vue";
+import { computed, nextTick, reactive, ref, useId } from "vue";
 import { useI18n } from "vue-i18n";
 import type { Copy } from "../../domain/Copy";
 import type { CoverCandidate } from "../../domain/Cover";
@@ -15,6 +15,7 @@ import { languageWord, languageWords } from "../../domain/Language";
 import { seriesNameStatus, type SeriesNameStatus } from "../../domain/Series";
 import {
   authorsInOrder,
+  type Author,
   type Kind,
   type SourceEdition,
 } from "../../domain/SourceEdition";
@@ -74,7 +75,10 @@ const values = reactive<Record<Field, string>>({
   pages: text(answered?.pageCount),
 });
 const summary = ref(text(answered?.summary));
-const authors = authorsInOrder(answered?.authors ?? [], locale.value);
+let lastKey = 0;
+const authors = ref(
+  authorsInOrder(answered?.authors ?? [], locale.value).map(keyed),
+);
 const offered = computed<Partial<Record<Field, string[]>>>(() => ({
   series: props.seriesNames ?? [],
   language: languageWords(locale.value),
@@ -100,6 +104,11 @@ const statusLooks: Record<
   new: { colour: "text-muted", checked: false },
 };
 
+function keyed(author: Author) {
+  lastKey += 1;
+  return { key: lastKey, ...author };
+}
+
 function text(value: string | number | null | undefined) {
   return value == null ? "" : String(value);
 }
@@ -124,6 +133,18 @@ function choose(field: Field, name: string) {
   chosen.value = true;
 }
 
+async function addAuthor() {
+  const author = keyed({ name: "", roles: ["WRITER"] });
+  authors.value.push(author);
+  await nextTick();
+  authorBoxes.get(author.key)?.focusName();
+}
+
+function keepBox(key: number, box: unknown) {
+  if (box) authorBoxes.set(key, box as InstanceType<typeof AuthorBox>);
+  else authorBoxes.delete(key);
+}
+
 function labelOf(field: Field) {
   return field === "volume"
     ? `isbn.form.volume.${kind.value}`
@@ -139,12 +160,14 @@ function messageOf(refusal: Refusal) {
 const id = useId();
 const refusals = ref<Refusals>({});
 const boxes: Partial<Record<Field, HTMLInputElement>> = {};
+const authorBoxes = new Map<number, InstanceType<typeof AuthorBox>>();
 
 function add() {
   const draft: EditionDraft = {
     kind: kind.value,
     ...values,
     summary: summary.value,
+    authors: authors.value.map(({ name, roles }) => ({ name, roles })),
   };
   refusals.value = refusalsOf(draft, locale.value);
   const first = fields.find((field) => refusals.value[field]);
@@ -153,10 +176,7 @@ function add() {
     boxes[first]?.scrollIntoView?.({ block: "center" });
     return;
   }
-  emit(
-    "add",
-    editionOf(props.isbn13, answered?.authors ?? [], draft, locale.value),
-  );
+  emit("add", editionOf(props.isbn13, draft, locale.value));
 }
 </script>
 
@@ -222,7 +242,7 @@ function add() {
               @focus="focused(field)"
               @blur="left(field)"
               @input="typed(field)"
-              class="h-[50px] w-full rounded-xl border-[1.5px] border-border bg-surface px-3.5 text-field aria-invalid:border-danger"
+              class="h-[50px] w-full rounded-xl border-[1.5px] border-border bg-surface px-3.5 text-field outline-none focus:border-accent aria-invalid:border-danger"
               :class="{
                 'scroll-mt-28': field === 'series',
                 'pr-32': field === 'series' && seriesStatus,
@@ -270,15 +290,23 @@ function add() {
           <p class="text-label text-muted">
             {{ t("isbn.form.authors.label") }}
           </p>
-          <div class="flex flex-col gap-3.5">
+          <div v-if="authors.length" class="flex flex-col gap-3.5">
             <AuthorBox
               v-for="author in authors"
-              :key="author.name"
-              :name="author.name"
+              :key="author.key"
+              :ref="(box) => keepBox(author.key, box)"
+              v-model:name="author.name"
               :roles="author.roles"
               :kind="kind"
             />
           </div>
+          <button
+            type="button"
+            class="-ml-3 h-11 self-start px-3 text-button text-accent"
+            @click="addAuthor"
+          >
+            {{ t("isbn.form.authors.add") }}
+          </button>
         </div>
       </template>
 
@@ -291,7 +319,7 @@ function add() {
           v-model="summary"
           rows="3"
           :disabled="adding"
-          class="field-sizing-content min-h-[calc(3lh+27px)] w-full resize-none rounded-xl border-[1.5px] border-border bg-surface px-3.5 py-3 text-field"
+          class="field-sizing-content min-h-[calc(3lh+27px)] w-full resize-none rounded-xl border-[1.5px] border-border bg-surface px-3.5 py-3 text-field outline-none focus:border-accent"
         ></textarea>
       </div>
     </form>

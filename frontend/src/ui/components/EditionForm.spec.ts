@@ -1,6 +1,6 @@
 import { BookOpen, Check } from "@lucide/vue";
 import { fireEvent, within } from "@testing-library/dom";
-import { mount } from "@vue/test-utils";
+import { flushPromises, mount } from "@vue/test-utils";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import type { Copy } from "../../domain/Copy";
 import type { CoverCandidate } from "../../domain/Cover";
@@ -320,6 +320,91 @@ describe("EditionForm", () => {
         name: "Nom de l'auteur",
       }),
     ).toEqual([]);
+  });
+
+  it("offers Ajouter un auteur with no author", () => {
+    // When
+    const wrapper = form();
+
+    // Then
+    expect(
+      within(wrapper.element as HTMLElement).getAllByRole("button", {
+        name: "Ajouter un auteur",
+      }),
+    ).toHaveLength(1);
+    const text = wrapper.text().replace(/\s+/g, " ");
+    const positions = ["Auteurs", "Ajouter un auteur", "Collection"].map(
+      (part) => text.indexOf(part),
+    );
+    expect(positions).not.toContain(-1);
+    expect(positions).toEqual([...positions].sort((a, b) => a - b));
+  });
+
+  it("adds an empty box after the last, on the kind's first role", async () => {
+    // Given
+    const fields = screen(asterix1);
+
+    // When
+    await fireEvent.click(
+      fields.getByRole("button", { name: "Ajouter un auteur" }),
+    );
+
+    // Then
+    expect(authorsOf(fields)).toEqual([
+      { name: "René Goscinny", roles: "scénario" },
+      { name: "Albert Uderzo", roles: "dessin" },
+      { name: "", roles: "scénario" },
+    ]);
+  });
+
+  it("focuses the new box's name", async () => {
+    // Given
+    const wrapper = form(asterix1, [], [], { attachTo: document.body });
+    const fields = within(wrapper.element as HTMLElement);
+
+    // When
+    await fireEvent.click(
+      fields.getByRole("button", { name: "Ajouter un auteur" }),
+    );
+    await flushPromises();
+
+    // Then
+    expect(document.activeElement).toBe(names(fields)[2]);
+    wrapper.unmount();
+  });
+
+  it("sends a name typed in its box", async () => {
+    // Given
+    const wrapper = form(onePiece1);
+    const fields = within(wrapper.element as HTMLElement);
+    await fireEvent.input(names(fields)[0], {
+      target: { value: "Eiichiro Oda" },
+    });
+
+    // When
+    await tapAdd(fields);
+
+    // Then
+    expect(wrapper.emitted("add")?.[0]?.[0]).toMatchObject({
+      authors: [
+        { name: "Eiichiro Oda", role: "WRITER" },
+        { name: "Eiichiro Oda", role: "ARTIST" },
+      ],
+    });
+  });
+
+  it("keeps the focus in a name being typed", async () => {
+    // Given
+    const wrapper = form(asterix1, [], [], { attachTo: document.body });
+    const fields = within(wrapper.element as HTMLElement);
+    names(fields)[0].focus();
+
+    // When
+    await fireEvent.input(names(fields)[0], { target: { value: "René Gosc" } });
+
+    // Then
+    expect(document.activeElement).toBe(names(fields)[0]);
+    wrapper.unmount();
   });
 
   it("shows the covers on offer as the card does", () => {
@@ -953,7 +1038,10 @@ describe("EditionForm", () => {
       .queryAllByRole("button")
       .filter((button) => !button.hasAttribute("aria-expanded"))
       .map((button) => button.textContent?.trim() ?? "")
-      .filter((name) => name !== "Ajouter à ma bibliothèque");
+      .filter(
+        (name) =>
+          name !== "Ajouter à ma bibliothèque" && name !== "Ajouter un auteur",
+      );
   }
 
   function disabledOf(fields: ReturnType<typeof screen>) {
