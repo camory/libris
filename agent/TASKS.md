@@ -116,7 +116,7 @@ frontend task.
       word; un-skips the frontend tests of S6, Existant, Nouveau and a
       tap, which ends on *Existant*; S7 stays green.
 
-- [ ] T151 Frontend: an author without a role refused.
+- [x] T151 Frontend: an author without a role refused.
       On the add's tap, with the fields of edition-form S10, a box with a
       name and no role takes the `danger` outline whole, kept with the
       focus, *Rôle manquant* 8 under it; the first refused in the form's

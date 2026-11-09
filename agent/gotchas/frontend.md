@@ -3,6 +3,8 @@
 Read whole by a run that changes `frontend/`, after `every-run.md`.
 
 ## Frontend build and tests
+- `npm test` runs past the Bash tool's 120 s default timeout: give the
+  call a 600 s timeout.
 - Two TypeScript programs: `tsconfig.app.json` (`src/`, `vite/client` types)
   and `tsconfig.node.json` (`vite.config.ts`, `vitest.global-setup.ts`,
   `eslint.config.ts`, `node` types), checked by `vue-tsc --build`. A `node`
@@ -231,7 +233,12 @@ Read whole by a run that changes `frontend/`, after `every-run.md`.
   `AuthorBox` (props `kind`, `authorNames`, required, and `disabled`,
   optional, on the name, the trash and the roles' line, models `name` and
   `roles`, emitting `remove` with no payload, exposing
-  `focusName()` through `defineExpose`) draws the name's line, the
+  `focusName()` and `focusRoles()`, which focuses the roles' line and
+  `scrollIntoView({ block: "center" })`s the bordered box, through
+  `defineExpose`; prop `refusal`, optional, an `AuthorRefusal`: while set
+  the box takes `border-danger` and neither `accent` class, and a line
+  under the box, 4 under it plus the root's `gap-1`, draws `CircleAlert`
+  and `isbn.form.authors.refusal.<code>` (*Rôle manquant*)) draws the name's line, the
   textbox *Nom de l'auteur* then the trash, an `IconButton` drawing
   `Trash2` at 22, named `isbn.form.authors.remove` (*Retirer {name}*) or
   `removeUnnamed` (*Retirer l'auteur*) while the name is `""`; then a
@@ -254,7 +261,8 @@ Read whole by a run that changes `frontend/`, after `every-run.md`.
   while `authorNames` is `null`. The name's
   `focus` calls `scrollIntoView({ block: "start" })` on the bordered box
   (name and roles' line, `scroll-mt-28`). Its spec's `box()` and
-  `screen()` take `authorNames` fifth and fourth, `null` by default, and
+  `screen()` take `authorNames` fifth and fourth, `null` by default, then
+  `refusal`, optional, and
   the file's `afterEach` deletes a `scrollIntoView` a case defined.
   Its spec's `valuesOf` leaves out the name boxes, `suggestions` the roles
   lines (`aria-expanded`), the trashes (`trashes()`, buttons named from
@@ -272,13 +280,18 @@ Read whole by a run that changes `frontend/`, after `every-run.md`.
   (beside `editionOf`, a `Refusals` record from a text field to
   `missing`, `invalidNumber`, `unknownLanguage` or `withoutSeries`, a
   volume number with a blank series, `invalidNumber` winning over it)
-  and emits `add` only when it answers none; otherwise it keeps that
-  answer until the next tap, marks each refused box `aria-invalid="true"`
+  and `authorRefusalsOf(draft.authors)` (one `"missingRole"` or `null` per
+  box, in order, a box whose trimmed name is empty never refused) and
+  emits `add` only when both answer none; otherwise it keeps those
+  answers until the next tap, the authors' in `authorRefusals`, a `Map` by
+  the box's `key` given to each box as `refusal`, marks each refused box `aria-invalid="true"`
   (outlined through `aria-invalid:border-danger`), draws
   `isbn.form.refusal.<code>` under it (`withoutSeries.<kind>`, in the
-  kind chosen now, not at the tap), and focuses then
-  `scrollIntoView({ block: "center" })`s the first refused in its `fields`
-  order, reaching the box through a function `:ref` into `boxes`. Under
+  kind chosen now, not at the tap), and `focusFirstRefused` focuses then
+  `scrollIntoView({ block: "center" })`s the first refused in the form's
+  order (title … volume, the authors, collection … pages), reaching a
+  field through a function `:ref` into `boxes`, an author through its
+  box's `focusRoles()`. Under
   the field of `offered` (*Série*, `seriesNames ?? []`, and *Langue*,
   `languageWords(locale)`) that has the focus (`suggesting`, set on
   `focus` and cleared on `blur`), while no row has been tapped since the
@@ -820,7 +833,7 @@ Read whole by a run that changes `frontend/`, after `every-run.md`.
   field, while a plain colour class (`border-danger`) loses to `focus:`:
   `IsbnView`'s ISBN field adds `focus:border-accent` only while not
   refused. Every field takes `outline-none` and `focus:border-accent`, an
-  `AuthorBox` `focus-within:border-accent`.
+  `AuthorBox` `focus-within:border-accent` while not refused.
 - A block that may draw nothing sits with the block after it in a
   `flex flex-col gap-5` parent (`SeriesPageView`'s card and list): a
   component whose root is `v-if`'d away renders a comment, which takes no

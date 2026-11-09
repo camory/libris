@@ -311,19 +311,17 @@ Format:
   `4-author-suggested.jpg`, and *Série*'s unmoved, for Tophe (PR body);
   S8 (T151, T152).
 
-## 2026-11-09 — T151 An author without a role refused — handoff
-- Done: steps 0 to 13, each committed; S8 *Rôle manquant* un-skipped (its
-  red *Unable to find an element with the text: Rôle manquant* read first),
-  S9 green; gate green, 860 passed, 1 skipped. Start with *Finish*: the
-  gotchas (`frontend.md`, the `AuthorBox` and `EditionForm` items), self-review
-  of `git diff main...HEAD`, tick, diary entry, PR.
-- Decided: `focusFirstRefused(refused)` in `EditionForm` (a refactor commit);
-  `authorRefusals` a `Map` by the box's `key`; the message a `mt-1` line
-  right under the bordered box. Deviations: none.
-- Guards: 3, the empty test on the untrimmed name, red `expected
-  [ 'missingRole' ] to deeply equal [ null ]`; 10, `if (field && !author)`,
-  red on the roles' line focused instead of *Album*; 11, `:refusal` also
-  asking `authorRefusalsOf([author])[0]` now, red `expected '…' to contain
-  'Rôle manquant'`; 12, the map and the prop by index, red `expected '…' not
-  to contain 'Rôle manquant'`. All reverted.
-- Learned: `npm test` runs past Bash's 120 s default timeout; give it 600 s.
+## 2026-11-09 — T151 An author without a role refused — done
+- Did: on the add's tap, an author's box with a name and no role is
+  refused, outlined in `danger`, *Rôle manquant* under it, nothing sent,
+  the first refused focused in the form's order. S8 *Rôle manquant* green.
+- Decided: `focusFirstRefused(refused)` in `EditionForm`, a refactor
+  commit of its own; the authors' refusals kept in a `Map` by the box's
+  `key`, so a box removed takes its message away; the message a `mt-1`
+  line right under the bordered box, the root's `gap-1` making the 8.
+- Deviations from the brief: none. Steps 3 and 10 to 12 were guards,
+  their mutations run and reverted (PR body). The run was continued from
+  a handoff after steps 0 to 13.
+- Left over: the checks by hand of the `danger` outline, the message's
+  place and the scroll against `5-refused.jpg`, for Tophe (PR body);
+  *Auteur en double* (T152).
