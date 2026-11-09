@@ -1,4 +1,5 @@
 import { languageCode } from "./Language";
+import { nameOrder } from "./nameOrder";
 import type {
   Author,
   Kind,
@@ -88,11 +89,12 @@ export function authorRefusalsOf(
   authors: Author[],
   locale: string,
 ): (AuthorRefusal | null)[] {
+  const byName = nameOrder(locale);
   return authors.map(({ name, roles }, index) => {
     if (
       authors
         .slice(0, index)
-        .some((before) => before.name.trim() === name.trim())
+        .some((before) => byName(before.name.trim(), name.trim()) === 0)
     ) {
       return "twice";
     }

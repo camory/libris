@@ -361,4 +361,18 @@ describe("authorRefusalsOf", () => {
     // Then
     expect(refusals).toEqual([null, "twice"]);
   });
+
+  it("matches names ignoring case and accents", () => {
+    // When
+    const refusals = authorRefusalsOf(
+      [
+        { name: "René Goscinny", roles: ["WRITER"] },
+        { name: "rene GOSCINNY", roles: ["WRITER"] },
+      ],
+      "fr",
+    );
+
+    // Then
+    expect(refusals).toEqual([null, "twice"]);
+  });
 });
