@@ -19,6 +19,11 @@ function focusName() {
   nameBox.value?.focus();
 }
 
+const trash = computed(() =>
+  name.value === ""
+    ? t("isbn.form.authors.removeUnnamed")
+    : t("isbn.form.authors.remove", { name: name.value }),
+);
 const words = computed(() =>
   props.roles.map((role) => t(`role.${props.kind}.${role}`)).join(", "),
 );
@@ -39,7 +44,7 @@ const label = computed(() =>
         :aria-label="t('isbn.form.authors.name')"
         class="h-12 min-w-0 flex-1 bg-transparent pl-3.5 text-field outline-none"
       />
-      <IconButton :label="t('isbn.form.authors.remove', { name })">
+      <IconButton :label="trash">
         <Trash2 :size="22" />
       </IconButton>
     </div>

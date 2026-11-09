@@ -33,6 +33,15 @@ describe("AuthorBox", () => {
     );
   });
 
+  it("names the trash Retirer l'auteur while the name is empty", () => {
+    // When
+    const box = screen("", [], "BD");
+
+    // Then
+    const trash = box.getByRole("button", { name: /^Retirer/ });
+    expect(trash.getAttribute("aria-label")).toBe("Retirer l'auteur");
+  });
+
   it("reads the roles in the words of the kind", () => {
     // When
     const box = screen("René Goscinny", ["WRITER", "ARTIST"], "BD");
