@@ -308,7 +308,7 @@ describe("authorRefusalsOf", () => {
     const refusals = authorRefusalsOf([
       { name: "René Goscinny", roles: ["WRITER"] },
       { name: "Albert Uderzo", roles: [] },
-    ]);
+    ], "fr");
 
     // Then
     expect(refusals).toEqual([null, "missingRole"]);
@@ -316,7 +316,7 @@ describe("authorRefusalsOf", () => {
 
   it("refuses no box whose name is empty", () => {
     // When
-    const refusals = authorRefusalsOf([{ name: "", roles: [] }]);
+    const refusals = authorRefusalsOf([{ name: "", roles: [] }], "fr");
 
     // Then
     expect(refusals).toEqual([null]);
@@ -324,9 +324,24 @@ describe("authorRefusalsOf", () => {
 
   it("refuses no box whose name holds spaces alone", () => {
     // When
-    const refusals = authorRefusalsOf([{ name: "   ", roles: [] }]);
+    const refusals = authorRefusalsOf([{ name: "   ", roles: [] }], "fr");
 
     // Then
     expect(refusals).toEqual([null]);
+  });
+
+  it("refuses the second of two boxes of one name", () => {
+    // When
+    const refusals = authorRefusalsOf(
+      [
+        { name: "René Goscinny", roles: ["WRITER"] },
+        { name: "Albert Uderzo", roles: ["ARTIST"] },
+        { name: "René Goscinny", roles: ["ARTIST"] },
+      ],
+      "fr",
+    );
+
+    // Then
+    expect(refusals).toEqual([null, null, "twice"]);
   });
 });

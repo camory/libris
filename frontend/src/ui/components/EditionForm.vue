@@ -175,7 +175,7 @@ function add() {
     authors: authors.value.map(({ name, roles }) => ({ name, roles })),
   };
   refusals.value = refusalsOf(draft, locale.value);
-  const refused = authorRefusalsOf(draft.authors);
+  const refused = authorRefusalsOf(draft.authors, locale.value);
   authorRefusals.value = new Map(
     authors.value.map(({ key }, index) => [key, refused[index] ?? null]),
   );
