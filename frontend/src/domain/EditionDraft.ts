@@ -89,7 +89,11 @@ export function authorRefusalsOf(
   locale: string,
 ): (AuthorRefusal | null)[] {
   return authors.map(({ name, roles }, index) => {
-    if (authors.slice(0, index).some((before) => before.name === name)) {
+    if (
+      authors
+        .slice(0, index)
+        .some((before) => before.name.trim() === name.trim())
+    ) {
       return "twice";
     }
     return text(name) !== null && roles.length === 0 ? "missingRole" : null;
