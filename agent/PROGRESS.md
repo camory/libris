@@ -226,12 +226,23 @@ Format:
   at the line's right over the chevron, in both schemes, checked by hand by
   Tophe.
 
-## 2026-11-09 — T147 An author's roles chosen — handoff
-- Done: steps 1 to 16 and the self-review, gate green; start with *Finish*: tick, diary entry, PR.
-- Deviations: steps 10 and 12 mount attached (`box()` gains an optional `attachTo`), a click on a detached tree never reaching `document` (gotcha added); step 9 green on its first run (step 4 already toggled), kept as a guard.
-- Self-review: the open box's colour is `open ? 'border-accent' : 'border-border'`, not two colour classes side by side.
-- Mutations, each read red and reverted: 5 rows on `role.BD.*` (`scénario…` for `texte…`); 8 `[...roles, role]` (`TRANSLATOR, WRITER`, step 7 red too);
-  9 `open = true` (`'true'` for `'false'`); 11 listener on the root (`'true'` for `'false'`); 12 no list check in the listener (`'false'` for `'true'`);
-  14 a `watch` on the kind setting `["WRITER"]` (`texte, texte`; the case reds); 16 `:roles` one way (S4's sent authors differ).
-- Step 10's red, attached, with no `document` listener: `'true'` for `'false'`.
-- Checks by hand left to Tophe, both schemes: list 4 under the box, rows and hairlines, the check at a row's right, the accent outline and turned chevron while open, closing on a tap on the page.
+## 2026-11-09 — T147 An author's roles chosen — done
+- Did: `roleChoicesOf` and `rolesToggled` in `SourceEdition.ts`; each
+  `AuthorBox` opens on its roles' line the group *Rôles* of four toggles,
+  writes its model `roles`, closes on its line or a `click` on `document`
+  outside it; the form binds `v-model:roles`, the lines `disabled` while
+  `adding`. S4 un-skipped and green.
+- Decided: the open box's outline is `open ? 'border-accent' :
+  'border-border'`, not a second colour class beside `border-border`,
+  which Tailwind's emission order would settle (found in self-review).
+- Deviations from the brief: steps 10 and 12 mount attached to
+  `document.body` (`box()` gains an optional `attachTo`): a click on a
+  detached tree never reaches `document`, so step 10 stayed red with the
+  listener and step 12's mutation could not red (gotcha added). Step 9
+  was green on its first run, step 4's green already toggling the list;
+  kept as a guard, its mutation run (PR body). Steps 5, 8, 11, 12, 14 and
+  16 were guards, their mutations run and reverted (PR body). The run was
+  continued from a handoff after the self-review.
+- Left over: the checks by hand of the list, the outline and the chevron,
+  in both schemes, for Tophe (PR body); names trimmed and empty boxes
+  dropped (T148).
