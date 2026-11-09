@@ -339,6 +339,29 @@ describe("AuthorBox", () => {
     expect(suggestions(view)).toEqual([]);
   });
 
+  it("puts the tapped name in place of the text and closes them", async () => {
+    // Given
+    const wrapper = box("", [], "BOOK", undefined, [
+      "René Goscinny",
+      "Albert Uderzo",
+      "Hergé",
+    ]);
+    const view = within(wrapper.element as HTMLElement);
+    const name = view.getByRole<HTMLInputElement>("textbox", {
+      name: "Nom de l'auteur",
+    });
+    await fireEvent.focus(name);
+    await fireEvent.input(name, { target: { value: "rené gos" } });
+
+    // When
+    await fireEvent.click(view.getByRole("button", { name: "René Goscinny" }));
+
+    // Then
+    expect(name.value).toBe("René Goscinny");
+    expect(suggestions(view)).toEqual([]);
+    expect(wrapper.emitted("update:name")?.at(-1)).toEqual(["René Goscinny"]);
+  });
+
   function rolesLine(box: ReturnType<typeof screen>) {
     return box
       .queryAllByRole("button")

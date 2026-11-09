@@ -39,6 +39,11 @@ function focusName() {
   nameBox.value?.focus();
 }
 
+function choose(chosen: string) {
+  name.value = chosen;
+  suggesting.value = false;
+}
+
 function closeOutside(event: MouseEvent) {
   const path = event.composedPath();
   if (
@@ -109,7 +114,11 @@ const label = computed(() =>
         </span>
       </button>
     </div>
-    <SuggestionList v-if="suggestions.length" :suggestions="suggestions" />
+    <SuggestionList
+      v-if="suggestions.length"
+      :suggestions="suggestions"
+      @choose="choose"
+    />
     <div
       v-if="open"
       ref="rolesList"
