@@ -909,6 +909,27 @@ describe("EditionForm", () => {
     wrapper.unmount();
   });
 
+  it("focuses the name of the first author doubled", async () => {
+    // Given
+    const wrapper = form(asterix1, [], [], { attachTo: document.body });
+    const screen = within(wrapper.element as HTMLElement);
+    await fireEvent.click(
+      screen.getByRole("button", { name: "Ajouter un auteur" }),
+    );
+    await flushPromises();
+    await fireEvent.input(names(screen)[2]!, {
+      target: { value: "rené goscinny" },
+    });
+
+    // When
+    await tapAdd(screen);
+
+    // Then
+    expect(document.activeElement).toBe(names(screen)[2]);
+    expect(wrapper.emitted("add")).toBeUndefined();
+    wrapper.unmount();
+  });
+
   it("keeps an author's refusal until the next tap", async () => {
     // Given
     const wrapper = form(asterix1);
