@@ -304,12 +304,14 @@ function add() {
               v-model:name="author.name"
               :roles="author.roles"
               :kind="kind"
+              :disabled="adding"
               @remove="removeAuthor(author.key)"
             />
           </div>
           <button
             :ref="(button) => (addAuthorButton = button as HTMLButtonElement)"
             type="button"
+            :disabled="adding"
             class="-ml-3 h-11 self-start px-3 text-button text-accent"
             @click="addAuthor"
           >

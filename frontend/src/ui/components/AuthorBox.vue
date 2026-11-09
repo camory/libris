@@ -5,7 +5,11 @@ import { useI18n } from "vue-i18n";
 import type { AuthorRole, Kind } from "../../domain/SourceEdition";
 import IconButton from "./IconButton.vue";
 
-const props = defineProps<{ roles: AuthorRole[]; kind: Kind }>();
+const props = defineProps<{
+  roles: AuthorRole[];
+  kind: Kind;
+  disabled?: boolean;
+}>();
 
 const name = defineModel<string>("name", { required: true });
 
@@ -43,10 +47,11 @@ const label = computed(() =>
         ref="nameBox"
         v-model="name"
         type="text"
+        :disabled="disabled"
         :aria-label="t('isbn.form.authors.name')"
         class="h-12 min-w-0 flex-1 bg-transparent pl-3.5 text-field outline-none"
       />
-      <IconButton :label="trash" @click="emit('remove')">
+      <IconButton :label="trash" :disabled="disabled" @click="emit('remove')">
         <Trash2 :size="22" />
       </IconButton>
     </div>
