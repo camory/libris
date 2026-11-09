@@ -1,4 +1,4 @@
-import { ChevronDown, Trash2 } from "@lucide/vue";
+import { Check, ChevronDown, Trash2 } from "@lucide/vue";
 import { fireEvent, within } from "@testing-library/dom";
 import { mount } from "@vue/test-utils";
 import { describe, expect, it } from "vitest";
@@ -172,6 +172,31 @@ describe("AuthorBox", () => {
       "couleurs",
       "traduction",
     ]);
+  });
+
+  it("presses the roles chosen", async () => {
+    // Given
+    const wrapper = box("René Goscinny", ["WRITER", "ARTIST"], "BD");
+    const roles = within(wrapper.element as HTMLElement);
+
+    // When
+    await fireEvent.click(rolesLine(roles)!);
+
+    // Then
+    const rows = rowsOf(roles);
+    expect(rows.map((row) => row.getAttribute("aria-pressed"))).toEqual([
+      "true",
+      "true",
+      "false",
+      "false",
+    ]);
+    const checks = wrapper.findAllComponents(Check);
+    expect(checks).toHaveLength(2);
+    expect(
+      checks.map((check) =>
+        rows.findIndex((row) => row.contains(check.element)),
+      ),
+    ).toEqual([0, 1]);
   });
 
   function rolesLine(box: ReturnType<typeof screen>) {

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ChevronDown, Trash2 } from "@lucide/vue";
+import { Check, ChevronDown, Trash2 } from "@lucide/vue";
 import { computed, ref, useTemplateRef } from "vue";
 import { useI18n } from "vue-i18n";
 import {
@@ -90,9 +90,11 @@ const label = computed(() =>
         v-for="choice in roleChoicesOf(roles)"
         :key="choice.role"
         type="button"
-        class="mx-3.5 flex h-11 items-center text-left text-field"
+        :aria-pressed="choice.chosen"
+        class="mx-3.5 flex h-11 items-center gap-2 text-left text-field"
       >
-        {{ t(`role.${kind}.${choice.role}`) }}
+        <span class="flex-1">{{ t(`role.${kind}.${choice.role}`) }}</span>
+        <Check v-if="choice.chosen" :size="22" class="shrink-0 text-accent" />
       </button>
     </div>
   </div>
