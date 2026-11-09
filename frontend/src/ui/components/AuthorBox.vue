@@ -107,9 +107,10 @@ const label = computed(() =>
         />
         <span
           v-if="status"
-          class="mr-2 flex shrink-0 items-center gap-2 text-body font-semibold text-accent"
+          class="mr-2 flex shrink-0 items-center gap-2 text-body font-semibold"
+          :class="status === 'existing' ? 'text-accent' : 'text-muted'"
         >
-          <Check :size="22" class="shrink-0" />
+          <Check v-if="status === 'existing'" :size="22" class="shrink-0" />
           {{ t(`isbn.form.authors.nameStatus.${status}`) }}
         </span>
         <IconButton :label="trash" :disabled="disabled" @click="emit('remove')">

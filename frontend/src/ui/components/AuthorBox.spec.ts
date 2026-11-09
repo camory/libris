@@ -457,6 +457,20 @@ describe("AuthorBox", () => {
     expect(view.queryByText("Nouveau")).toBeNull();
   });
 
+  it("says Nouveau for a name the house does not hold", () => {
+    // When
+    const wrapper = box("René Gosc", ["WRITER"], "BD", undefined, [
+      "René Goscinny",
+      "Hergé",
+    ]);
+
+    // Then
+    const view = within(wrapper.element as HTMLElement);
+    expect(view.getAllByText("Nouveau")).toHaveLength(1);
+    expect(view.queryByText("Existant")).toBeNull();
+    expect(wrapper.findAllComponents(Check)).toHaveLength(0);
+  });
+
   function rolesLine(box: ReturnType<typeof screen>) {
     return box
       .queryAllByRole("button")
