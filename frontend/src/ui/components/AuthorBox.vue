@@ -8,8 +8,9 @@ import {
   type AuthorRole,
   type Kind,
 } from "../../domain/SourceEdition";
-import { nameOf, suggestionsFor } from "../../domain/Suggestion";
+import { suggestionsFor } from "../../domain/Suggestion";
 import IconButton from "./IconButton.vue";
+import SuggestionList from "./SuggestionList.vue";
 
 const props = defineProps<{
   kind: Kind;
@@ -104,22 +105,7 @@ const label = computed(() =>
         </span>
       </button>
     </div>
-    <div
-      v-if="suggestions.length"
-      class="flex flex-col divide-y divide-border rounded-xl border-[1.5px] border-border bg-surface"
-    >
-      <button
-        v-for="suggestion in suggestions"
-        :key="nameOf(suggestion)"
-        type="button"
-        @mousedown.prevent
-        class="mx-3.5 h-11 text-left text-field"
-      >
-        <span>{{ suggestion.before }}</span>
-        <span class="font-semibold">{{ suggestion.matched }}</span>
-        <span>{{ suggestion.after }}</span>
-      </button>
-    </div>
+    <SuggestionList v-if="suggestions.length" :suggestions="suggestions" />
     <div
       v-if="open"
       ref="rolesList"

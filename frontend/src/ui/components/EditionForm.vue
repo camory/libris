@@ -19,11 +19,12 @@ import {
   type Kind,
   type SourceEdition,
 } from "../../domain/SourceEdition";
-import { nameOf, suggestionsFor } from "../../domain/Suggestion";
+import { suggestionsFor } from "../../domain/Suggestion";
 import AuthorBox from "./AuthorBox.vue";
 import BookshelvesHolding from "./BookshelvesHolding.vue";
 import CoverChoice from "./CoverChoice.vue";
 import DockedAdd from "./DockedAdd.vue";
+import SuggestionList from "./SuggestionList.vue";
 
 const props = defineProps<{
   isbn13: string;
@@ -267,23 +268,12 @@ function add() {
               {{ t(`isbn.form.seriesNameStatus.${seriesStatus}`) }}
             </span>
           </div>
-          <div
+          <SuggestionList
             v-if="field === suggesting && suggestions.length"
-            class="-mt-1 flex flex-col divide-y divide-border rounded-xl border-[1.5px] border-border bg-surface"
-          >
-            <button
-              v-for="suggestion in suggestions"
-              :key="nameOf(suggestion)"
-              type="button"
-              @mousedown.prevent
-              @click="choose(field, nameOf(suggestion))"
-              class="mx-3.5 h-11 text-left text-field"
-            >
-              <span>{{ suggestion.before }}</span>
-              <span class="font-semibold">{{ suggestion.matched }}</span>
-              <span>{{ suggestion.after }}</span>
-            </button>
-          </div>
+            :suggestions="suggestions"
+            class="-mt-1"
+            @choose="choose(field, $event)"
+          />
           <p
             v-if="refusals[field]"
             class="flex items-start gap-2 text-body text-danger"
