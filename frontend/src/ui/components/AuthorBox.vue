@@ -39,6 +39,11 @@ function focusName() {
   nameBox.value?.focus();
 }
 
+function nameFocused() {
+  focused.value = true;
+  chosen.value = false;
+}
+
 function choose(tapped: string) {
   name.value = tapped;
   chosen.value = true;
@@ -88,7 +93,7 @@ const label = computed(() =>
           type="text"
           :disabled="disabled"
           :aria-label="t('isbn.form.authors.name')"
-          @focus="focused = true"
+          @focus="nameFocused"
           @blur="focused = false"
           @input="chosen = false"
           class="h-12 min-w-0 flex-1 bg-transparent pl-3.5 text-field outline-none"

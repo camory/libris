@@ -399,6 +399,26 @@ describe("AuthorBox", () => {
     expect(suggestions(view)).toEqual([]);
   });
 
+  it("offers them again when the name takes the focus anew", async () => {
+    // Given
+    const view = screen("", [], "BOOK", [
+      "René Goscinny",
+      "Albert Uderzo",
+      "Hergé",
+    ]);
+    const name = view.getByRole("textbox", { name: "Nom de l'auteur" });
+    await fireEvent.focus(name);
+    await fireEvent.input(name, { target: { value: "rené gos" } });
+    await fireEvent.click(view.getByRole("button", { name: "René Goscinny" }));
+    await fireEvent.blur(name);
+
+    // When
+    await fireEvent.focus(name);
+
+    // Then
+    expect(suggestions(view)).toEqual(["René Goscinny"]);
+  });
+
   function rolesLine(box: ReturnType<typeof screen>) {
     return box
       .queryAllByRole("button")
