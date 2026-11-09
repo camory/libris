@@ -66,6 +66,7 @@ const fields = [
   "pages",
 ] as const;
 type Field = (typeof fields)[number];
+const volumeAt = fields.indexOf("volume");
 const numeric = new Set<string>(["volume", "year", "pages"]);
 const language = answered?.language ?? null;
 const values = reactive<Record<Field, string>>({
@@ -179,12 +180,12 @@ function add() {
     authors.value.map(({ key }, index) => [key, refused[index] ?? null]),
   );
   const first = fields.find((field) => refusals.value[field]);
-  if (first) {
+  const firstAuthor = authors.value.find((_, index) => refused[index]);
+  if (first && (!firstAuthor || fields.indexOf(first) <= volumeAt)) {
     boxes[first]?.focus();
     boxes[first]?.scrollIntoView?.({ block: "center" });
     return;
   }
-  const firstAuthor = authors.value.find((_, index) => refused[index]);
   if (firstAuthor) {
     authorBoxes.get(firstAuthor.key)?.focusRoles();
     return;

@@ -877,6 +877,21 @@ describe("EditionForm", () => {
     wrapper.unmount();
   });
 
+  it("focuses a refused author before a refused page count", async () => {
+    // Given
+    const wrapper = form(asterix1, [], [], { attachTo: document.body });
+    const screen = within(wrapper.element as HTMLElement);
+    await typeIn(screen, "Pages", "0");
+    await release(screen, 0, "scénario");
+
+    // When
+    await tapAdd(screen);
+
+    // Then
+    expect(document.activeElement).toBe(rolesLines(screen)[0]);
+    wrapper.unmount();
+  });
+
   it("suggests under Série the names that contain the text", async () => {
     // Given
     const fields = screen(onePiece1, [], [], { seriesNames: houseSeries });
