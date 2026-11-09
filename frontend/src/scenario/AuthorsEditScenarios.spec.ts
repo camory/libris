@@ -174,7 +174,7 @@ describe("Authors edit", () => {
     ]);
   });
 
-  it.skip("S3 An author is removed", async () => {
+  it("S3 An author is removed", async () => {
     // Given
     const add = librisAdds(on(lea.defaultBookshelf));
     const screen = await formOf(asterix1, { add });
