@@ -71,7 +71,7 @@ frontend task.
       while it has the focus, checked by hand (U01, U04). Realises S2;
       un-skips the frontend tests of S2, an unknown ISBN and after the others.
 
-- [ ] T146 Frontend: an author is removed.
+- [x] T146 Frontend: an author is removed.
       The trash at the right of a name, Lucide `Trash2`, *Retirer* followed
       by the name, *Retirer l'auteur* while it is empty, removes its box at
       once with no question, the focus going to *Ajouter un auteur*; the
