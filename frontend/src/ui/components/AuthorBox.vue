@@ -49,8 +49,11 @@ function closeOutside(event: MouseEvent) {
   open.value = false;
 }
 
+const suggesting = ref(false);
 const suggestions = computed(() =>
-  suggestionsFor(name.value, props.authorNames ?? [], locale.value),
+  suggesting.value
+    ? suggestionsFor(name.value, props.authorNames ?? [], locale.value)
+    : [],
 );
 
 const trash = computed(() =>
@@ -79,6 +82,7 @@ const label = computed(() =>
           type="text"
           :disabled="disabled"
           :aria-label="t('isbn.form.authors.name')"
+          @focus="suggesting = true"
           class="h-12 min-w-0 flex-1 bg-transparent pl-3.5 text-field outline-none"
         />
         <IconButton :label="trash" :disabled="disabled" @click="emit('remove')">

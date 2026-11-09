@@ -321,6 +321,24 @@ describe("AuthorBox", () => {
     expect(suggestions(view)).toEqual(["Albert Uderzo", "Hergé"]);
   });
 
+  it("suggests nothing while the name has not the focus", async () => {
+    // Given
+    const view = screen("", [], "BOOK", [
+      "René Goscinny",
+      "Albert Uderzo",
+      "Hergé",
+    ]);
+
+    // When
+    await fireEvent.input(
+      view.getByRole("textbox", { name: "Nom de l'auteur" }),
+      { target: { value: "er" } },
+    );
+
+    // Then
+    expect(suggestions(view)).toEqual([]);
+  });
+
   function rolesLine(box: ReturnType<typeof screen>) {
     return box
       .queryAllByRole("button")
