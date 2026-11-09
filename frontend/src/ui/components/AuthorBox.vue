@@ -39,9 +39,9 @@ function focusName() {
   nameBox.value?.focus();
 }
 
-function choose(chosen: string) {
-  name.value = chosen;
-  suggesting.value = false;
+function choose(tapped: string) {
+  name.value = tapped;
+  chosen.value = true;
 }
 
 function closeOutside(event: MouseEvent) {
@@ -54,9 +54,10 @@ function closeOutside(event: MouseEvent) {
   open.value = false;
 }
 
-const suggesting = ref(false);
+const focused = ref(false);
+const chosen = ref(false);
 const suggestions = computed(() =>
-  suggesting.value
+  focused.value && !chosen.value
     ? suggestionsFor(name.value, props.authorNames ?? [], locale.value)
     : [],
 );
@@ -87,7 +88,8 @@ const label = computed(() =>
           type="text"
           :disabled="disabled"
           :aria-label="t('isbn.form.authors.name')"
-          @focus="suggesting = true"
+          @focus="focused = true"
+          @input="chosen = false"
           class="h-12 min-w-0 flex-1 bg-transparent pl-3.5 text-field outline-none"
         />
         <IconButton :label="trash" :disabled="disabled" @click="emit('remove')">

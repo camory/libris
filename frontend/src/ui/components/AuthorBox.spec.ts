@@ -362,6 +362,25 @@ describe("AuthorBox", () => {
     expect(wrapper.emitted("update:name")?.at(-1)).toEqual(["René Goscinny"]);
   });
 
+  it("offers them again on the next keystroke", async () => {
+    // Given
+    const view = screen("", [], "BOOK", [
+      "René Goscinny",
+      "Albert Uderzo",
+      "Hergé",
+    ]);
+    const name = view.getByRole("textbox", { name: "Nom de l'auteur" });
+    await fireEvent.focus(name);
+    await fireEvent.input(name, { target: { value: "rené gos" } });
+    await fireEvent.click(view.getByRole("button", { name: "René Goscinny" }));
+
+    // When
+    await fireEvent.input(name, { target: { value: "er" } });
+
+    // Then
+    expect(suggestions(view)).toHaveLength(2);
+  });
+
   function rolesLine(box: ReturnType<typeof screen>) {
     return box
       .queryAllByRole("button")
