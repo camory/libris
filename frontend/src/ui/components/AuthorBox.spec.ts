@@ -227,10 +227,27 @@ describe("AuthorBox", () => {
     ]);
   });
 
+  it("closes its list on its line's second tap", async () => {
+    // Given
+    const box = screen("René Goscinny", ["WRITER"], "BD");
+    await fireEvent.click(rolesLine(box)!);
+
+    // When
+    await fireEvent.click(rolesLine(box)!);
+
+    // Then
+    expectClosed(box);
+  });
+
   function rolesLine(box: ReturnType<typeof screen>) {
     return box
       .queryAllByRole("button")
       .find((button) => button.hasAttribute("aria-expanded"));
+  }
+
+  function expectClosed(box: ReturnType<typeof screen>) {
+    expect(rolesLine(box)?.getAttribute("aria-expanded")).toBe("false");
+    expect(box.queryByRole("group", { name: "Rôles" })).toBeNull();
   }
 
   function rowsOf(box: ReturnType<typeof screen>) {
