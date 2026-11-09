@@ -42,6 +42,24 @@ describe("AuthorBox", () => {
     expect(trash.getAttribute("aria-label")).toBe("Retirer l'auteur");
   });
 
+  it("names the trash after the name typed", async () => {
+    // Given
+    const box = screen("René", [], "BD");
+
+    // When
+    await fireEvent.input(
+      box.getByRole("textbox", { name: "Nom de l'auteur" }),
+      {
+        target: { value: "René Goscinny" },
+      },
+    );
+
+    // Then
+    expect(
+      box.getAllByRole("button", { name: "Retirer René Goscinny" }),
+    ).toHaveLength(1);
+  });
+
   it("reads the roles in the words of the kind", () => {
     // When
     const box = screen("René Goscinny", ["WRITER", "ARTIST"], "BD");
