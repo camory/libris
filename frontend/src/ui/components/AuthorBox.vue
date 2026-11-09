@@ -80,6 +80,7 @@ const label = computed(() =>
       <button
         ref="rolesLine"
         type="button"
+        :disabled="disabled"
         :aria-expanded="open"
         :aria-label="label"
         class="flex min-h-11 w-full items-center gap-2 pr-0.75 pl-3.5 text-left text-body outline-none"

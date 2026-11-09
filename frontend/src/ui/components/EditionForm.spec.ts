@@ -638,7 +638,7 @@ describe("EditionForm", () => {
     );
 
     // Then
-    expect(disabledOf(fields)).toEqual(Array(18).fill(true));
+    expect(disabledOf(fields)).toEqual(Array(19).fill(true));
   });
 
   it("takes edits again once the add failed", () => {
@@ -652,7 +652,7 @@ describe("EditionForm", () => {
       "Erreur lors de l'ajout, veuillez réessayer plus tard.",
     );
     expect(disabledOf(within(wrapper.element as HTMLElement))).toEqual(
-      Array(18).fill(false),
+      Array(19).fill(false),
     );
   });
 
@@ -1139,6 +1139,7 @@ describe("EditionForm", () => {
       }),
       ...names(fields),
       ...trashes(fields),
+      ...(rolesLines(fields) as HTMLButtonElement[]),
       fields.getByRole<HTMLButtonElement>("button", {
         name: "Ajouter un auteur",
       }),
