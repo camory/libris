@@ -347,7 +347,7 @@ describe("Authors edit", () => {
     expect(add.asked).toEqual([]);
   });
 
-  it.skip("S8 A refused author, Auteur en double", async () => {
+  it("S8 A refused author, Auteur en double", async () => {
     // Given
     const add = librisAdds(on(lea.defaultBookshelf));
     const screen = await formOf(asterix1, { add });

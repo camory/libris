@@ -125,7 +125,7 @@ frontend task.
       (U04, U05, U08). The rule unit tested. Realises S8, a missing role;
       un-skips the frontend test of S8, Rôle manquant; S9 stays green.
 
-- [ ] T152 Frontend: an author named twice refused.
+- [x] T152 Frontend: an author named twice refused.
       Of two boxes whose names match, ignoring case, accents and end
       spaces, whatever their roles, the second is refused, *Auteur en
       double* 8 under it, its name focused, shown and ordered as T151's

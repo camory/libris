@@ -1,4 +1,5 @@
 import { languageCode } from "./Language";
+import { nameOrder } from "./nameOrder";
 import type {
   Author,
   Kind,
@@ -82,12 +83,22 @@ export function refusalsOf(draft: EditionDraft, locale: string): Refusals {
   return refusals;
 }
 
-export type AuthorRefusal = "missingRole";
+export type AuthorRefusal = "twice" | "missingRole";
 
-export function authorRefusalsOf(authors: Author[]): (AuthorRefusal | null)[] {
-  return authors.map(({ name, roles }) =>
-    text(name) !== null && roles.length === 0 ? "missingRole" : null,
-  );
+export function authorRefusalsOf(
+  authors: Author[],
+  locale: string,
+): (AuthorRefusal | null)[] {
+  const byName = nameOrder(locale);
+  return authors.map(({ name, roles }, index) => {
+    const trimmed = text(name);
+    if (trimmed === null) return null;
+    const before = authors.slice(0, index);
+    if (before.some((each) => byName(each.name.trim(), trimmed) === 0)) {
+      return "twice";
+    }
+    return roles.length === 0 ? "missingRole" : null;
+  });
 }
 
 function isWholeNumber(value: string) {

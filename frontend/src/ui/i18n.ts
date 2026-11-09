@@ -122,6 +122,7 @@ const fr = {
         removeUnnamed: "Retirer l'auteur",
         refusal: {
           missingRole: "Rôle manquant",
+          twice: "Auteur en double",
         },
       },
       collection: "Collection",

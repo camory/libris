@@ -175,7 +175,7 @@ function add() {
     authors: authors.value.map(({ name, roles }) => ({ name, roles })),
   };
   refusals.value = refusalsOf(draft, locale.value);
-  const refused = authorRefusalsOf(draft.authors);
+  const refused = authorRefusalsOf(draft.authors, locale.value);
   authorRefusals.value = new Map(
     authors.value.map(({ key }, index) => [key, refused[index] ?? null]),
   );
@@ -185,14 +185,17 @@ function add() {
 
 function focusFirstRefused(refused: (AuthorRefusal | null)[]) {
   const field = fields.find((each) => refusals.value[each]);
-  const author = authors.value.find((_, index) => refused[index]);
+  const at = refused.findIndex((refusal) => refusal);
+  const author = authors.value[at];
   if (field && (!author || fields.indexOf(field) <= volumeAt)) {
     boxes[field]?.focus();
     boxes[field]?.scrollIntoView?.({ block: "center" });
     return true;
   }
   if (!author) return false;
-  authorBoxes.get(author.key)?.focusRoles();
+  const box = authorBoxes.get(author.key);
+  if (refused[at] === "twice") box?.focusName();
+  else box?.focusRoles();
   return true;
 }
 </script>
