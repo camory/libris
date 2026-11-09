@@ -60,8 +60,8 @@ const label = computed(() =>
 <template>
   <div class="flex flex-col gap-1">
     <div
-      class="rounded-xl border-[1.5px] border-border bg-surface focus-within:border-accent"
-      :class="{ 'border-accent': open }"
+      class="rounded-xl border-[1.5px] bg-surface focus-within:border-accent"
+      :class="open ? 'border-accent' : 'border-border'"
     >
       <div class="flex items-center pr-0.75">
         <input
