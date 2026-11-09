@@ -134,9 +134,15 @@ function choose(field: Field, name: string) {
 }
 
 async function addAuthor() {
-  authors.value.push(keyed({ name: "", roles: ["WRITER"] }));
+  const author = keyed({ name: "", roles: ["WRITER"] });
+  authors.value.push(author);
   await nextTick();
-  authorBoxes[authors.value.length - 1]?.focusName();
+  authorBoxes.get(author.key)?.focusName();
+}
+
+function keepBox(key: number, box: unknown) {
+  if (box) authorBoxes.set(key, box as InstanceType<typeof AuthorBox>);
+  else authorBoxes.delete(key);
 }
 
 function labelOf(field: Field) {
@@ -154,7 +160,7 @@ function messageOf(refusal: Refusal) {
 const id = useId();
 const refusals = ref<Refusals>({});
 const boxes: Partial<Record<Field, HTMLInputElement>> = {};
-const authorBoxes: (InstanceType<typeof AuthorBox> | null)[] = [];
+const authorBoxes = new Map<number, InstanceType<typeof AuthorBox>>();
 
 function add() {
   const draft: EditionDraft = {
@@ -286,12 +292,9 @@ function add() {
           </p>
           <div v-if="authors.length" class="flex flex-col gap-3.5">
             <AuthorBox
-              v-for="(author, index) in authors"
+              v-for="author in authors"
               :key="author.key"
-              :ref="
-                (box) =>
-                  (authorBoxes[index] = box as InstanceType<typeof AuthorBox>)
-              "
+              :ref="(box) => keepBox(author.key, box)"
               v-model:name="author.name"
               :roles="author.roles"
               :kind="kind"

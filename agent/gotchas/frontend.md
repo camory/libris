@@ -215,8 +215,9 @@ Read whole by a run that changes `frontend/`, after `every-run.md`.
   given the chosen `kind`, not the answer's; then the text button
   *Ajouter un auteur*, which pushes `{ name: "", roles: ["WRITER"] }` and,
   after `nextTick`, calls `focusName()` on it, reached through a function
-  `:ref` into `authorBoxes` (a focus case awaits `flushPromises()` after
-  the tap). `AuthorBox` (props `roles`, `kind`, model `name`, exposing
+  `:ref` into `authorBoxes`, a `Map` by the box's `key`, never by its
+  position, which a box removed from the middle shifts (a focus case
+  awaits `flushPromises()` after the tap). `AuthorBox` (props `roles`, `kind`, model `name`, exposing
   `focusName()` through `defineExpose`) draws the
   name textbox *Nom de l'auteur*, a hairline, and the roles line, a button
   with `aria-expanded="false"`, `aria-label` *Rôles* then its words, and
