@@ -97,6 +97,60 @@ describe("editionOf", () => {
     ]);
   });
 
+  it("sends each name without the spaces at its ends", () => {
+    // Given
+    const draft: EditionDraft = {
+      ...filled,
+      authors: [{ name: "  Albert Uderzo ", roles: ["ARTIST"] }],
+    };
+
+    // When
+    const edition = read(draft);
+
+    // Then
+    expect(edition.authors).toEqual([
+      { name: "Albert Uderzo", role: "ARTIST" },
+    ]);
+  });
+
+  it("sends no author for a box whose name is empty", () => {
+    // Given
+    const draft: EditionDraft = {
+      ...filled,
+      authors: [
+        { name: "René Goscinny", roles: ["WRITER"] },
+        { name: "", roles: ["WRITER", "ARTIST"] },
+      ],
+    };
+
+    // When
+    const edition = read(draft);
+
+    // Then
+    expect(edition.authors).toEqual([
+      { name: "René Goscinny", role: "WRITER" },
+    ]);
+  });
+
+  it("sends no author for a box whose name holds spaces alone", () => {
+    // Given
+    const draft: EditionDraft = {
+      ...filled,
+      authors: [
+        { name: "   ", roles: ["WRITER"] },
+        { name: "Albert Uderzo", roles: ["ARTIST"] },
+      ],
+    };
+
+    // When
+    const edition = read(draft);
+
+    // Then
+    expect(edition.authors).toEqual([
+      { name: "Albert Uderzo", role: "ARTIST" },
+    ]);
+  });
+
   function read(draft: EditionDraft) {
     return editionOf(onePiece1.isbn13, draft, "fr");
   }

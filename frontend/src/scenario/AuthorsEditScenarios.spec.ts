@@ -222,7 +222,7 @@ describe("Authors edit", () => {
     ]);
   });
 
-  it.skip("S5 An author of the house is matched by name", async () => {
+  it("S5 An author of the house is matched by name", async () => {
     // Given
     const add = librisAdds(on(lea.defaultBookshelf));
     const screen = await formOf(onePiece1, {
@@ -366,7 +366,7 @@ describe("Authors edit", () => {
     expect(add.asked).toEqual([]);
   });
 
-  it.skip("S9 An empty row is dropped, an empty name", async () => {
+  it("S9 An empty row is dropped, an empty name", async () => {
     // Given
     const add = librisAdds(on(lea.defaultBookshelf));
     const screen = await formOf(onePiece1, { add });
@@ -380,7 +380,7 @@ describe("Authors edit", () => {
     expect(sentAuthors(add)).toEqual([onePiece1.authors]);
   });
 
-  it.skip("S9 An empty row is dropped, spaces alone and no role", async () => {
+  it("S9 An empty row is dropped, spaces alone and no role", async () => {
     // Given
     const add = librisAdds(on(lea.defaultBookshelf));
     const screen = await formOf(onePiece1, { add });

@@ -48,9 +48,12 @@ export function editionOf(
 }
 
 function sourceAuthorsOf(authors: Author[]): SourceAuthor[] {
-  return authors.flatMap(({ name, roles }) =>
-    roles.map((role) => ({ name, role })),
-  );
+  return authors.flatMap(({ name, roles }) => {
+    const trimmed = text(name);
+    return trimmed === null
+      ? []
+      : roles.map((role) => ({ name: trimmed, role }));
+  });
 }
 
 export type Refusal =
