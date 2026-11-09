@@ -325,9 +325,9 @@ States:
 To release with Tophe: `v0.18.0` of `camory/libris-api`, one operation
 added, two descriptions reworded, no shape changed but the split below:
 
-- `PUT /api/v1/books/{id}` → request: the fields of `Edition` but
-  `isbn13`, a schema split from `Edition`, which then adds `isbn13` to it,
-  and no `coverSource`, named when written; `200` `Book`, the edition as
+- `PUT /api/v1/books/{id}` → request: `EditionDetails`, the fields of
+  `Edition` but `isbn13`, and no `coverSource`, split from `Edition`,
+  which composes over it adding `isbn13`; `200` `Book`, the edition as
   saved with its copies on the reader's bookshelves, none included; `400`
   `Problem` `/problems/validation`, the body refused or the id not one;
   `404` `Problem` `/problems/not-found` when no edition has that id. Keys
