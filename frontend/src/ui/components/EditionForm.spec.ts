@@ -974,6 +974,21 @@ describe("EditionForm", () => {
     expect(scrollIntoView.mock.contexts[0]).toBe(series);
   });
 
+  it("suggests under an author's box the house's names", async () => {
+    // Given
+    const fields = screen(onePiece1, [], [], {
+      authorNames: ["René Goscinny", "Albert Uderzo", "Hergé"],
+    });
+    const name = fields.getByRole("textbox", { name: "Nom de l'auteur" });
+    await fireEvent.focus(name);
+
+    // When
+    await fireEvent.input(name, { target: { value: "er" } });
+
+    // Then
+    expect(suggestions(fields)).toEqual(["Albert Uderzo", "Hergé"]);
+  });
+
   it("says Existante in Série for a series of the house", () => {
     // When
     const wrapper = form(onePiece1, [], [], { seriesNames: houseSeries });
@@ -1211,6 +1226,7 @@ describe("EditionForm", () => {
       shownSource,
       attachTo,
       seriesNames = null,
+      authorNames = null,
     }: {
       adding?: boolean;
       failed?: boolean;
@@ -1218,6 +1234,7 @@ describe("EditionForm", () => {
       shownSource?: string;
       attachTo?: HTMLElement;
       seriesNames?: string[] | null;
+      authorNames?: string[] | null;
     } = {},
   ) {
     return mount(EditionForm, {
@@ -1230,6 +1247,7 @@ describe("EditionForm", () => {
         failed,
         shownSource,
         seriesNames,
+        authorNames,
       },
       slots: corner === undefined ? {} : { corner },
       global: { plugins: [createLibrisI18n()] },

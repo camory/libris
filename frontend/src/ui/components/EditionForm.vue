@@ -35,6 +35,7 @@ const props = defineProps<{
   failed: boolean;
   shownSource?: string | null;
   seriesNames: string[] | null;
+  authorNames: string[] | null;
 }>();
 
 const emit = defineEmits<{
@@ -295,6 +296,7 @@ function add() {
               v-model:roles="author.roles"
               :kind="kind"
               :disabled="adding"
+              :author-names="authorNames"
               @remove="removeAuthor(author.key)"
             />
           </div>
