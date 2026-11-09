@@ -225,3 +225,23 @@ Format:
 - Left over: the roles' line enabled while the add runs (T147); the trash
   at the line's right over the chevron, in both schemes, checked by hand by
   Tophe.
+
+## 2026-11-09 — T147 An author's roles chosen — done
+- Did: `roleChoicesOf` and `rolesToggled` in `SourceEdition.ts`; each
+  `AuthorBox` opens on its roles' line the group *Rôles* of four toggles,
+  writes its model `roles`, closes on its line or a `click` on `document`
+  outside it; the form binds `v-model:roles`, the lines `disabled` while
+  `adding`. S4 un-skipped and green.
+- Decided: the open box's outline is `open ? 'border-accent' :
+  'border-border'`, not a second colour class beside `border-border`,
+  which Tailwind's emission order would settle (found in self-review).
+- Deviations from the brief: steps 10 and 12 mount attached to
+  `document.body` (`box()` gains an optional `attachTo`): a click on a
+  detached tree never reaches `document`, so step 10 stayed red with the
+  listener and step 12's mutation could not red (gotcha added). Step 9
+  was green on its first run, step 4's green already toggling the list;
+  kept as a guard, its mutation run (PR body). Steps 5, 8, 11, 12, 14 and
+  16 were guards, their mutations run and reverted (PR body).
+- Left over: the checks by hand of the list, the outline and the chevron,
+  in both schemes, for Tophe (PR body); names trimmed and empty boxes
+  dropped (T148).
