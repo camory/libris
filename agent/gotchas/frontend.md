@@ -247,7 +247,11 @@ Read whole by a run that changes `frontend/`, after `every-run.md`.
   the box, 4 under it (the root's `gap-1`), before the roles' group,
   `SuggestionList` draws `suggestionsFor(name, authorNames ?? [], locale)`
   while the name has the focus and no row was tapped since the last
-  keystroke or focus; a tap writes the name to the model. The name's
+  keystroke or focus; a tap writes the name to the model. In the name's
+  line, between the textbox and the trash, 8 before the trash,
+  `NameStatusWord` draws `nameStatus(name, authorNames, locale)` as
+  `isbn.form.authors.nameStatus.<status>` (*Existant*, *Nouveau*), none
+  while `authorNames` is `null`. The name's
   `focus` calls `scrollIntoView({ block: "start" })` on the bordered box
   (name and roles' line, `scroll-mt-28`). Its spec's `box()` and
   `screen()` take `authorNames` fifth and fourth, `null` by default, and
@@ -287,11 +291,14 @@ Read whole by a run that changes `frontend/`, after `every-run.md`.
   `font-semibold`, `after`; a row's `mousedown` is prevented so the box
   keeps the focus, and *Série*'s `focus` alone calls
   `scrollIntoView({ block: "start" })` on it. *Série*'s box, in a
-  `relative` wrapper, draws at its right `seriesNameStatus(values.series,
-  seriesNames, locale)` (`src/domain/Series.ts`, `null` for a blank text
-  or unknown names) as `isbn.form.seriesNameStatus.<status>`, its colour
-  and `Check` from the `statusLooks` record, and takes `pr-32` while it
-  does. Its spec's `form()` takes `{ adding, failed, corner, shownSource,
+  `relative` wrapper, draws at its right `nameStatus(values.series,
+  seriesNames, locale)` (`src/domain/NameStatus.ts`, `existing` or `new`,
+  `null` for a blank text or unknown names) through `NameStatusWord`
+  (props `status` and `word`, the caller translating the word and placing
+  it through a falling-through `class`; `Check` at 22 and `text-accent`
+  for `existing`, `text-muted` alone for `new`, no spec of its own,
+  `AuthorBox` its other caller) as `isbn.form.seriesNameStatus.<status>`,
+  and takes `pr-32` while it does. Its spec's `form()` takes `{ adding, failed, corner, shownSource,
   attachTo, seriesNames, authorNames }` fourth, `false` and none by
   default (`seriesNames` and `authorNames` `null`, so no word), and gives the edition's own `isbn13`
   when there is one; the focus case passes `attachTo: document.body` and
