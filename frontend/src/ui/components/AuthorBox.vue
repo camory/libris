@@ -46,10 +46,14 @@ const suggestions = computed(() =>
 onMounted(() => document.addEventListener("click", closeOutside));
 onUnmounted(() => document.removeEventListener("click", closeOutside));
 
-defineExpose({ focusName });
+defineExpose({ focusName, focusRoles });
 
 function focusName() {
   nameBox.value?.focus();
+}
+
+function focusRoles() {
+  rolesLine.value?.focus();
 }
 
 function nameFocused() {

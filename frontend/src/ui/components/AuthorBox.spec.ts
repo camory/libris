@@ -513,6 +513,20 @@ describe("AuthorBox", () => {
     expect(wrapper.findAllComponents(CircleAlert)).toHaveLength(1);
   });
 
+  it("focuses its roles' line on focusRoles", () => {
+    // Given
+    const wrapper = box("Albert Uderzo", [], "BD", document.body);
+
+    // When
+    wrapper.vm.focusRoles();
+
+    // Then
+    expect(document.activeElement).toBe(
+      rolesLine(within(wrapper.element as HTMLElement)),
+    );
+    wrapper.unmount();
+  });
+
   function rolesLine(box: ReturnType<typeof screen>) {
     return box
       .queryAllByRole("button")
