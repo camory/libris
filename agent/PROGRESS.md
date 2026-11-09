@@ -310,3 +310,18 @@ Format:
 - Left over: the checks by hand of the word against `1-filled.jpg` and
   `4-author-suggested.jpg`, and *Série*'s unmoved, for Tophe (PR body);
   S8 (T151, T152).
+
+## 2026-11-09 — T151 An author without a role refused — done
+- Did: on the add's tap, an author's box with a name and no role is
+  refused, outlined in `danger`, *Rôle manquant* under it, nothing sent,
+  the first refused focused in the form's order. S8 *Rôle manquant* green.
+- Decided: `focusFirstRefused(refused)` in `EditionForm`, a refactor
+  commit of its own; the authors' refusals kept in a `Map` by the box's
+  `key`, so a box removed takes its message away; the message a `mt-1`
+  line right under the bordered box, the root's `gap-1` making the 8.
+- Deviations from the brief: none. Steps 3 and 10 to 12 were guards,
+  their mutations run and reverted (PR body). The run was continued from
+  a handoff after steps 0 to 13.
+- Left over: the checks by hand of the `danger` outline, the message's
+  place and the scroll against `5-refused.jpg`, for Tophe (PR body);
+  *Auteur en double* (T152).

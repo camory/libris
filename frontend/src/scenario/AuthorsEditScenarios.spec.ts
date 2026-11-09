@@ -331,7 +331,7 @@ describe("Authors edit", () => {
     expect(names(screen)[0].value).toBe("René Gosc");
   });
 
-  it.skip("S8 A refused author, Rôle manquant", async () => {
+  it("S8 A refused author, Rôle manquant", async () => {
     // Given
     const add = librisAdds(on(lea.defaultBookshelf));
     const screen = await formOf(asterix1, { add });

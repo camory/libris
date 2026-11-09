@@ -5,8 +5,10 @@ import { useI18n } from "vue-i18n";
 import type { Copy } from "../../domain/Copy";
 import type { CoverCandidate } from "../../domain/Cover";
 import {
+  authorRefusalsOf,
   editionOf,
   refusalsOf,
+  type AuthorRefusal,
   type EditionDraft,
   type Refusal,
   type Refusals,
@@ -64,6 +66,7 @@ const fields = [
   "pages",
 ] as const;
 type Field = (typeof fields)[number];
+const volumeAt = fields.indexOf("volume");
 const numeric = new Set<string>(["volume", "year", "pages"]);
 const language = answered?.language ?? null;
 const values = reactive<Record<Field, string>>({
@@ -159,6 +162,7 @@ function messageOf(refusal: Refusal) {
 
 const id = useId();
 const refusals = ref<Refusals>({});
+const authorRefusals = ref(new Map<number, AuthorRefusal | null>());
 const boxes: Partial<Record<Field, HTMLInputElement>> = {};
 const authorBoxes = new Map<number, InstanceType<typeof AuthorBox>>();
 let addAuthorButton = null as HTMLButtonElement | null;
@@ -171,13 +175,25 @@ function add() {
     authors: authors.value.map(({ name, roles }) => ({ name, roles })),
   };
   refusals.value = refusalsOf(draft, locale.value);
-  const first = fields.find((field) => refusals.value[field]);
-  if (first) {
-    boxes[first]?.focus();
-    boxes[first]?.scrollIntoView?.({ block: "center" });
-    return;
-  }
+  const refused = authorRefusalsOf(draft.authors);
+  authorRefusals.value = new Map(
+    authors.value.map(({ key }, index) => [key, refused[index] ?? null]),
+  );
+  if (focusFirstRefused(refused)) return;
   emit("add", editionOf(props.isbn13, draft, locale.value));
+}
+
+function focusFirstRefused(refused: (AuthorRefusal | null)[]) {
+  const field = fields.find((each) => refusals.value[each]);
+  const author = authors.value.find((_, index) => refused[index]);
+  if (field && (!author || fields.indexOf(field) <= volumeAt)) {
+    boxes[field]?.focus();
+    boxes[field]?.scrollIntoView?.({ block: "center" });
+    return true;
+  }
+  if (!author) return false;
+  authorBoxes.get(author.key)?.focusRoles();
+  return true;
 }
 </script>
 
@@ -284,6 +300,7 @@ function add() {
               :kind="kind"
               :disabled="adding"
               :author-names="authorNames"
+              :refusal="authorRefusals.get(author.key)"
               @remove="removeAuthor(author.key)"
             />
           </div>

@@ -120,6 +120,9 @@ const fr = {
         add: "Ajouter un auteur",
         remove: "Retirer {name}",
         removeUnnamed: "Retirer l'auteur",
+        refusal: {
+          missingRole: "Rôle manquant",
+        },
       },
       collection: "Collection",
       publisher: "Éditeur",

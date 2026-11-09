@@ -82,6 +82,14 @@ export function refusalsOf(draft: EditionDraft, locale: string): Refusals {
   return refusals;
 }
 
+export type AuthorRefusal = "missingRole";
+
+export function authorRefusalsOf(authors: Author[]): (AuthorRefusal | null)[] {
+  return authors.map(({ name, roles }) =>
+    text(name) !== null && roles.length === 0 ? "missingRole" : null,
+  );
+}
+
 function isWholeNumber(value: string) {
   return /^\d+$/.test(value) && Number(value) >= 1;
 }

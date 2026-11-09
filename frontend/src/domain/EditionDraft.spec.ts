@@ -1,6 +1,11 @@
 import { describe, expect, it } from "vitest";
 import { onePiece1 } from "../fixture/SourceEditions";
-import { editionOf, refusalsOf, type EditionDraft } from "./EditionDraft";
+import {
+  authorRefusalsOf,
+  editionOf,
+  refusalsOf,
+  type EditionDraft,
+} from "./EditionDraft";
 
 const filled: EditionDraft = {
   kind: "MANGA",
@@ -295,4 +300,33 @@ describe("refusalsOf", () => {
   function check(draft: EditionDraft) {
     return refusalsOf(draft, "fr");
   }
+});
+
+describe("authorRefusalsOf", () => {
+  it("refuses a box with a name and no role", () => {
+    // When
+    const refusals = authorRefusalsOf([
+      { name: "René Goscinny", roles: ["WRITER"] },
+      { name: "Albert Uderzo", roles: [] },
+    ]);
+
+    // Then
+    expect(refusals).toEqual([null, "missingRole"]);
+  });
+
+  it("refuses no box whose name is empty", () => {
+    // When
+    const refusals = authorRefusalsOf([{ name: "", roles: [] }]);
+
+    // Then
+    expect(refusals).toEqual([null]);
+  });
+
+  it("refuses no box whose name holds spaces alone", () => {
+    // When
+    const refusals = authorRefusalsOf([{ name: "   ", roles: [] }]);
+
+    // Then
+    expect(refusals).toEqual([null]);
+  });
 });

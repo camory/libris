@@ -1,7 +1,8 @@
 <script setup lang="ts">
-import { Check, ChevronDown, Trash2 } from "@lucide/vue";
+import { Check, ChevronDown, CircleAlert, Trash2 } from "@lucide/vue";
 import { computed, onMounted, onUnmounted, ref, useTemplateRef } from "vue";
 import { useI18n } from "vue-i18n";
+import type { AuthorRefusal } from "../../domain/EditionDraft";
 import { nameStatus } from "../../domain/NameStatus";
 import {
   roleChoicesOf,
@@ -18,6 +19,7 @@ const props = defineProps<{
   kind: Kind;
   disabled?: boolean;
   authorNames: string[] | null;
+  refusal?: AuthorRefusal | null;
 }>();
 
 const name = defineModel<string>("name", { required: true });
@@ -44,10 +46,15 @@ const suggestions = computed(() =>
 onMounted(() => document.addEventListener("click", closeOutside));
 onUnmounted(() => document.removeEventListener("click", closeOutside));
 
-defineExpose({ focusName });
+defineExpose({ focusName, focusRoles });
 
 function focusName() {
   nameBox.value?.focus();
+}
+
+function focusRoles() {
+  rolesLine.value?.focus();
+  box.value?.scrollIntoView?.({ block: "center" });
 }
 
 function nameFocused() {
@@ -79,6 +86,12 @@ const trash = computed(() =>
     ? t("isbn.form.authors.removeUnnamed")
     : t("isbn.form.authors.remove", { name: name.value }),
 );
+const outline = computed(() => {
+  if (props.refusal) return "border-danger";
+  return open.value
+    ? "border-accent"
+    : "border-border focus-within:border-accent";
+});
 const words = computed(() =>
   roles.value.map((role) => t(`role.${props.kind}.${role}`)).join(", "),
 );
@@ -91,8 +104,8 @@ const label = computed(() =>
   <div class="flex flex-col gap-1">
     <div
       ref="box"
-      class="scroll-mt-28 rounded-xl border-[1.5px] bg-surface focus-within:border-accent"
-      :class="open ? 'border-accent' : 'border-border'"
+      class="scroll-mt-28 rounded-xl border-[1.5px] bg-surface"
+      :class="outline"
     >
       <div class="flex items-center pr-0.75">
         <input
@@ -136,6 +149,10 @@ const label = computed(() =>
         </span>
       </button>
     </div>
+    <p v-if="refusal" class="mt-1 flex items-start gap-2 text-body text-danger">
+      <CircleAlert :size="22" class="shrink-0" />
+      <span>{{ t(`isbn.form.authors.refusal.${refusal}`) }}</span>
+    </p>
     <SuggestionList
       v-if="suggestions.length"
       :suggestions="suggestions"

@@ -1,7 +1,8 @@
-import { Check, ChevronDown, Trash2 } from "@lucide/vue";
+import { Check, ChevronDown, CircleAlert, Trash2 } from "@lucide/vue";
 import { fireEvent, within } from "@testing-library/dom";
 import { mount } from "@vue/test-utils";
 import { afterEach, describe, expect, it, vi } from "vitest";
+import type { AuthorRefusal } from "../../domain/EditionDraft";
 import type { AuthorRole, Kind } from "../../domain/SourceEdition";
 import { createLibrisI18n } from "../i18n";
 import AuthorBox from "./AuthorBox.vue";
@@ -495,6 +496,59 @@ describe("AuthorBox", () => {
     expect(view.queryByText("Nouveau")).toBeNull();
   });
 
+  it("says Rôle manquant under its box when refused for its role", () => {
+    // When
+    const wrapper = box(
+      "Albert Uderzo",
+      [],
+      "BD",
+      undefined,
+      null,
+      "missingRole",
+    );
+
+    // Then
+    const view = within(wrapper.element as HTMLElement);
+    expect(view.getAllByText("Rôle manquant")).toHaveLength(1);
+    expect(wrapper.findAllComponents(CircleAlert)).toHaveLength(1);
+  });
+
+  it("focuses its roles' line on focusRoles", () => {
+    // Given
+    const wrapper = box("Albert Uderzo", [], "BD", document.body);
+
+    // When
+    wrapper.vm.focusRoles();
+
+    // Then
+    expect(document.activeElement).toBe(
+      rolesLine(within(wrapper.element as HTMLElement)),
+    );
+    wrapper.unmount();
+  });
+
+  it("brings its box into view on focusRoles", () => {
+    // Given
+    const scrollIntoView = vi.fn();
+    Object.defineProperty(HTMLElement.prototype, "scrollIntoView", {
+      configurable: true,
+      value: scrollIntoView,
+    });
+    const wrapper = box("Albert Uderzo", [], "BD");
+
+    // When
+    wrapper.vm.focusRoles();
+
+    // Then
+    expect(scrollIntoView).toHaveBeenCalledExactlyOnceWith({ block: "center" });
+    const scrolled = scrollIntoView.mock.contexts[0] as HTMLElement;
+    const view = within(wrapper.element as HTMLElement);
+    expect(
+      scrolled.contains(view.getByRole("textbox", { name: "Nom de l'auteur" })),
+    ).toBe(true);
+    expect(scrolled.contains(rolesLine(view) ?? null)).toBe(true);
+  });
+
   function rolesLine(box: ReturnType<typeof screen>) {
     return box
       .queryAllByRole("button")
@@ -541,9 +595,11 @@ describe("AuthorBox", () => {
     roles: AuthorRole[],
     kind: Kind,
     authorNames: string[] | null = null,
+    refusal?: AuthorRefusal | null,
   ) {
     return within(
-      box(name, roles, kind, undefined, authorNames).element as HTMLElement,
+      box(name, roles, kind, undefined, authorNames, refusal)
+        .element as HTMLElement,
     );
   }
 
@@ -553,9 +609,10 @@ describe("AuthorBox", () => {
     kind: Kind,
     attachTo?: HTMLElement,
     authorNames: string[] | null = null,
+    refusal?: AuthorRefusal | null,
   ) {
     return mount(AuthorBox, {
-      props: { name, roles, kind, authorNames },
+      props: { name, roles, kind, authorNames, refusal },
       global: { plugins: [createLibrisI18n()] },
       attachTo,
     });
