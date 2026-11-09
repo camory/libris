@@ -267,6 +267,21 @@ describe("AuthorBox", () => {
     expectClosed(box);
   });
 
+  it("keeps its list open on a role's tap", async () => {
+    // Given
+    const wrapper = box("René Goscinny", ["WRITER"], "BD", document.body);
+    const roles = within(wrapper.element as HTMLElement);
+    await fireEvent.click(rolesLine(roles)!);
+
+    // When
+    await fireEvent.click(role(roles, "couleurs"));
+
+    // Then
+    expect(rolesLine(roles)?.getAttribute("aria-expanded")).toBe("true");
+    expect(roles.getAllByRole("group", { name: "Rôles" })).toHaveLength(1);
+    wrapper.unmount();
+  });
+
   function rolesLine(box: ReturnType<typeof screen>) {
     return box
       .queryAllByRole("button")
