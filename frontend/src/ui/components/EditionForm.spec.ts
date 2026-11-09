@@ -892,6 +892,55 @@ describe("EditionForm", () => {
     wrapper.unmount();
   });
 
+  it("focuses a refused volume before a refused author", async () => {
+    // Given
+    const wrapper = form(asterix1, [], [], { attachTo: document.body });
+    const screen = within(wrapper.element as HTMLElement);
+    await typeIn(screen, "Série", "");
+    await release(screen, 0, "scénario");
+
+    // When
+    await tapAdd(screen);
+
+    // Then
+    expect(document.activeElement).toBe(
+      screen.getByRole("textbox", { name: "Album" }),
+    );
+    wrapper.unmount();
+  });
+
+  it("keeps an author's refusal until the next tap", async () => {
+    // Given
+    const wrapper = form(asterix1);
+    const screen = within(wrapper.element as HTMLElement);
+    await release(screen, 0, "scénario");
+    await tapAdd(screen);
+
+    // When
+    await fireEvent.click(rolesLines(screen)[0]!);
+    await fireEvent.click(role(screen, "scénario"));
+
+    // Then
+    expect(wrapper.text()).toContain("Rôle manquant");
+    expect(wrapper.emitted("add")).toBeUndefined();
+  });
+
+  it("drops a refused author's message with its box", async () => {
+    // Given
+    const wrapper = form(asterix1);
+    const screen = within(wrapper.element as HTMLElement);
+    await release(screen, 0, "scénario");
+    await tapAdd(screen);
+
+    // When
+    await fireEvent.click(
+      screen.getByRole("button", { name: "Retirer René Goscinny" }),
+    );
+
+    // Then
+    expect(wrapper.text()).not.toContain("Rôle manquant");
+  });
+
   it("suggests under Série the names that contain the text", async () => {
     // Given
     const fields = screen(onePiece1, [], [], { seriesNames: houseSeries });
