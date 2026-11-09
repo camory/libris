@@ -141,10 +141,33 @@ describe("AuthorBox", () => {
     expect(wrapper.emitted("update:name")).toEqual([["René"]]);
   });
 
+  it("opens the roles' list on its line's tap", async () => {
+    // Given
+    const box = screen("René Goscinny", ["WRITER"], "BD");
+
+    // When
+    await fireEvent.click(rolesLine(box)!);
+
+    // Then
+    expect(rolesLine(box)?.getAttribute("aria-expanded")).toBe("true");
+    expect(rowsOf(box).map((row) => row.textContent?.trim())).toEqual([
+      "scénario",
+      "dessin",
+      "couleurs",
+      "traduction",
+    ]);
+  });
+
   function rolesLine(box: ReturnType<typeof screen>) {
     return box
       .queryAllByRole("button")
       .find((button) => button.hasAttribute("aria-expanded"));
+  }
+
+  function rowsOf(box: ReturnType<typeof screen>) {
+    return within(box.getByRole("group", { name: "Rôles" })).getAllByRole(
+      "button",
+    );
   }
 
   function screen(name: string, roles: AuthorRole[], kind: Kind) {
