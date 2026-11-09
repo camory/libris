@@ -168,7 +168,8 @@ Priorities: **P1** = needed before the family uses it, **P2** = soon after,
 - Add an ouvrage to a bookshelf: the edition is created if its ISBN is
   unknown, with kind, title, subtitle, series and volume number, authors by
   role, publisher, collection, publication year, ISBN-13, language, page
-  count, summary, cover URL and tags; the copy is created on the reader's
+  count, summary, cover URL and tags, else written with the fields sent;
+  the copy is created on the reader's
   default bookshelf, or on another bookshelf they own when they choose one.
 - View and edit an edition; remove a copy from a bookshelf.
 - List the catalogue with filters (kind, series, bookshelf, tag; reading
