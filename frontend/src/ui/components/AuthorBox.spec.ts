@@ -480,6 +480,21 @@ describe("AuthorBox", () => {
     expect(view.queryByText("Nouveau")).toBeNull();
   });
 
+  it("says the word of the name typed", async () => {
+    // Given
+    const view = screen("René Gosc", ["WRITER"], "BD", ["René Goscinny"]);
+
+    // When
+    await fireEvent.input(
+      view.getByRole("textbox", { name: "Nom de l'auteur" }),
+      { target: { value: "René Goscinny" } },
+    );
+
+    // Then
+    expect(view.getAllByText("Existant")).toHaveLength(1);
+    expect(view.queryByText("Nouveau")).toBeNull();
+  });
+
   function rolesLine(box: ReturnType<typeof screen>) {
     return box
       .queryAllByRole("button")
