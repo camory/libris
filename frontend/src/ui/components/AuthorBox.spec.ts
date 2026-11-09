@@ -255,6 +255,18 @@ describe("AuthorBox", () => {
     wrapper.unmount();
   });
 
+  it("closes its list on a tap outside the box", async () => {
+    // Given
+    const box = screen("René Goscinny", ["WRITER"], "BD");
+    await fireEvent.click(rolesLine(box)!);
+
+    // When
+    await fireEvent.click(document.body);
+
+    // Then
+    expectClosed(box);
+  });
+
   function rolesLine(box: ReturnType<typeof screen>) {
     return box
       .queryAllByRole("button")
