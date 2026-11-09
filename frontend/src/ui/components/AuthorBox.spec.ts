@@ -239,6 +239,22 @@ describe("AuthorBox", () => {
     expectClosed(box);
   });
 
+  it("closes its list on a tap on its name", async () => {
+    // Given
+    const wrapper = box("René Goscinny", ["WRITER"], "BD", document.body);
+    const roles = within(wrapper.element as HTMLElement);
+    await fireEvent.click(rolesLine(roles)!);
+
+    // When
+    await fireEvent.click(
+      roles.getByRole("textbox", { name: "Nom de l'auteur" }),
+    );
+
+    // Then
+    expectClosed(roles);
+    wrapper.unmount();
+  });
+
   function rolesLine(box: ReturnType<typeof screen>) {
     return box
       .queryAllByRole("button")
@@ -267,10 +283,16 @@ describe("AuthorBox", () => {
     return within(box(name, roles, kind).element as HTMLElement);
   }
 
-  function box(name: string, roles: AuthorRole[], kind: Kind) {
+  function box(
+    name: string,
+    roles: AuthorRole[],
+    kind: Kind,
+    attachTo?: HTMLElement,
+  ) {
     return mount(AuthorBox, {
       props: { name, roles, kind },
       global: { plugins: [createLibrisI18n()] },
+      attachTo,
     });
   }
 });

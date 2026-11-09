@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { Check, ChevronDown, Trash2 } from "@lucide/vue";
-import { computed, ref, useTemplateRef } from "vue";
+import { computed, onMounted, onUnmounted, ref, useTemplateRef } from "vue";
 import { useI18n } from "vue-i18n";
 import {
   roleChoicesOf,
@@ -24,11 +24,24 @@ const { t } = useI18n();
 
 const nameBox = useTemplateRef("nameBox");
 const open = ref(false);
+const rolesLine = useTemplateRef("rolesLine");
+const rolesList = useTemplateRef("rolesList");
+
+onMounted(() => document.addEventListener("click", closeOutside));
+onUnmounted(() => document.removeEventListener("click", closeOutside));
 
 defineExpose({ focusName });
 
 function focusName() {
   nameBox.value?.focus();
+}
+
+function closeOutside(event: MouseEvent) {
+  const target = event.target as Node;
+  if (rolesLine.value?.contains(target) || rolesList.value?.contains(target)) {
+    return;
+  }
+  open.value = false;
 }
 
 const trash = computed(() =>
@@ -65,6 +78,7 @@ const label = computed(() =>
       </div>
       <div class="mx-3.5 border-t border-border"></div>
       <button
+        ref="rolesLine"
         type="button"
         :aria-expanded="open"
         :aria-label="label"
@@ -83,6 +97,7 @@ const label = computed(() =>
     </div>
     <div
       v-if="open"
+      ref="rolesList"
       role="group"
       :aria-label="t('isbn.form.authors.roles')"
       class="flex flex-col divide-y divide-border rounded-xl border-[1.5px] border-border bg-surface"
