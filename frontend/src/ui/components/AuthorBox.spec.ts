@@ -1,7 +1,8 @@
-import { Check, ChevronDown, Trash2 } from "@lucide/vue";
+import { Check, ChevronDown, CircleAlert, Trash2 } from "@lucide/vue";
 import { fireEvent, within } from "@testing-library/dom";
 import { mount } from "@vue/test-utils";
 import { afterEach, describe, expect, it, vi } from "vitest";
+import type { AuthorRefusal } from "../../domain/EditionDraft";
 import type { AuthorRole, Kind } from "../../domain/SourceEdition";
 import { createLibrisI18n } from "../i18n";
 import AuthorBox from "./AuthorBox.vue";
@@ -495,6 +496,23 @@ describe("AuthorBox", () => {
     expect(view.queryByText("Nouveau")).toBeNull();
   });
 
+  it("says Rôle manquant under its box when refused for its role", () => {
+    // When
+    const wrapper = box(
+      "Albert Uderzo",
+      [],
+      "BD",
+      undefined,
+      null,
+      "missingRole",
+    );
+
+    // Then
+    const view = within(wrapper.element as HTMLElement);
+    expect(view.getAllByText("Rôle manquant")).toHaveLength(1);
+    expect(wrapper.findAllComponents(CircleAlert)).toHaveLength(1);
+  });
+
   function rolesLine(box: ReturnType<typeof screen>) {
     return box
       .queryAllByRole("button")
@@ -541,9 +559,11 @@ describe("AuthorBox", () => {
     roles: AuthorRole[],
     kind: Kind,
     authorNames: string[] | null = null,
+    refusal?: AuthorRefusal | null,
   ) {
     return within(
-      box(name, roles, kind, undefined, authorNames).element as HTMLElement,
+      box(name, roles, kind, undefined, authorNames, refusal)
+        .element as HTMLElement,
     );
   }
 
@@ -553,9 +573,10 @@ describe("AuthorBox", () => {
     kind: Kind,
     attachTo?: HTMLElement,
     authorNames: string[] | null = null,
+    refusal?: AuthorRefusal | null,
   ) {
     return mount(AuthorBox, {
-      props: { name, roles, kind, authorNames },
+      props: { name, roles, kind, authorNames, refusal },
       global: { plugins: [createLibrisI18n()] },
       attachTo,
     });
