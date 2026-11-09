@@ -238,7 +238,8 @@ Read whole by a run that changes `frontend/`, after `every-run.md`.
   `defineExpose`; prop `refusal`, optional, an `AuthorRefusal`: while set
   the box takes `border-danger` and neither `accent` class, and a line
   under the box, 4 under it plus the root's `gap-1`, draws `CircleAlert`
-  and `isbn.form.authors.refusal.<code>` (*Rôle manquant*)) draws the name's line, the
+  and `isbn.form.authors.refusal.<code>` (*Rôle manquant*, *Auteur en
+  double*)) draws the name's line, the
   textbox *Nom de l'auteur* then the trash, an `IconButton` drawing
   `Trash2` at 22, named `isbn.form.authors.remove` (*Retirer {name}*) or
   `removeUnnamed` (*Retirer l'auteur*) while the name is `""`; then a
@@ -280,8 +281,11 @@ Read whole by a run that changes `frontend/`, after `every-run.md`.
   (beside `editionOf`, a `Refusals` record from a text field to
   `missing`, `invalidNumber`, `unknownLanguage` or `withoutSeries`, a
   volume number with a blank series, `invalidNumber` winning over it)
-  and `authorRefusalsOf(draft.authors)` (one `"missingRole"` or `null` per
-  box, in order, a box whose trimmed name is empty never refused) and
+  and `authorRefusalsOf(draft.authors, locale)` (one `"twice"`,
+  `"missingRole"` or `null` per box, in order, a box whose trimmed name is
+  empty never refused, `"twice"` for one whose trimmed name equals under
+  `nameOrder(locale)` that of a box before it, whatever the roles, and
+  winning over `"missingRole"`) and
   emits `add` only when both answer none; otherwise it keeps those
   answers until the next tap, the authors' in `authorRefusals`, a `Map` by
   the box's `key` given to each box as `refusal` (an author box takes no
@@ -291,8 +295,9 @@ Read whole by a run that changes `frontend/`, after `every-run.md`.
   kind chosen now, not at the tap), and `focusFirstRefused` focuses then
   `scrollIntoView({ block: "center" })`s the first refused in the form's
   order (title … volume, the authors, collection … pages), reaching a
-  field through a function `:ref` into `boxes`, an author through its
-  box's `focusRoles()`. Under
+  field through a function `:ref` into `boxes`, a `"twice"` author through
+  its box's `focusName()` (whose own `block: "start"` scroll is the only
+  one), any other through `focusRoles()`. Under
   the field of `offered` (*Série*, `seriesNames ?? []`, and *Langue*,
   `languageWords(locale)`) that has the focus (`suggesting`, set on
   `focus` and cleared on `blur`), while no row has been tapped since the

@@ -325,3 +325,18 @@ Format:
 - Left over: the checks by hand of the `danger` outline, the message's
   place and the scroll against `5-refused.jpg`, for Tophe (PR body);
   *Auteur en double* (T152).
+
+## 2026-11-09 — T152 An author named twice refused — done
+- Did: on the add's tap, a box whose name matches the name of a box before
+  it, ignoring case, accents and end spaces, whatever the roles, is
+  refused, *Auteur en double* under it, its name focused. S8 green whole.
+- Decided: `authorRefusalsOf` reads an empty name first and answers `null`,
+  then the double, then the missing role, so `"twice"` wins as the brief
+  chose; `focusFirstRefused` takes the index of the first refused box and
+  asks `focusName()` or `focusRoles()` by its code.
+- Deviations from the brief: the scenario's un-skip landed in step 1's
+  commit, not in a commit of its own once green (a `git add -A` swept it
+  in; history not rewritten). Steps 5 and 8 were guards, their mutations
+  run and reverted (PR body).
+- Left over: the checks by hand of the doubled box's outline, its message
+  and the name's scroll against `5-refused.jpg`, for Tophe (PR body).
