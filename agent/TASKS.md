@@ -108,7 +108,7 @@ frontend task.
       top of what the keyboard leaves, checked by hand. Realises S6's
       suggestions and S7; un-skips their frontend tests, S6 the suggestions.
 
-- [ ] T150 Frontend: Existant or Nouveau.
+- [x] T150 Frontend: Existant or Nouveau.
       Once a name holds text, its line says *Existant* after a check in
       `accent` when it names an author of the house, ignoring case,
       accents and end spaces, else *Nouveau* in `muted`, 8 before the

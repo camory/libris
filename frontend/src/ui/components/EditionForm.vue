@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { Check, CircleAlert } from "@lucide/vue";
+import { CircleAlert } from "@lucide/vue";
 import { computed, nextTick, reactive, ref, useId } from "vue";
 import { useI18n } from "vue-i18n";
 import type { Copy } from "../../domain/Copy";
@@ -12,7 +12,7 @@ import {
   type Refusals,
 } from "../../domain/EditionDraft";
 import { languageWord, languageWords } from "../../domain/Language";
-import { seriesNameStatus, type SeriesNameStatus } from "../../domain/Series";
+import { nameStatus } from "../../domain/NameStatus";
 import {
   authorsInOrder,
   type Author,
@@ -24,6 +24,7 @@ import AuthorBox from "./AuthorBox.vue";
 import BookshelvesHolding from "./BookshelvesHolding.vue";
 import CoverChoice from "./CoverChoice.vue";
 import DockedAdd from "./DockedAdd.vue";
+import NameStatusWord from "./NameStatusWord.vue";
 import SuggestionList from "./SuggestionList.vue";
 
 const props = defineProps<{
@@ -95,16 +96,8 @@ const suggestions = computed(() => {
 });
 
 const seriesStatus = computed(() =>
-  seriesNameStatus(values.series, props.seriesNames, locale.value),
+  nameStatus(values.series, props.seriesNames, locale.value),
 );
-
-const statusLooks: Record<
-  SeriesNameStatus,
-  { colour: string; checked: boolean }
-> = {
-  existing: { colour: "text-accent", checked: true },
-  new: { colour: "text-muted", checked: false },
-};
 
 function keyed(author: Author) {
   lastKey += 1;
@@ -256,18 +249,12 @@ function add() {
                 'pr-32': field === 'series' && seriesStatus,
               }"
             />
-            <span
+            <NameStatusWord
               v-if="field === 'series' && seriesStatus"
-              class="pointer-events-none absolute inset-y-0 right-3.5 flex items-center gap-2 text-body font-semibold"
-              :class="statusLooks[seriesStatus].colour"
-            >
-              <Check
-                v-if="statusLooks[seriesStatus].checked"
-                :size="22"
-                class="shrink-0"
-              />
-              {{ t(`isbn.form.seriesNameStatus.${seriesStatus}`) }}
-            </span>
+              :status="seriesStatus"
+              :word="t(`isbn.form.seriesNameStatus.${seriesStatus}`)"
+              class="pointer-events-none absolute inset-y-0 right-3.5"
+            />
           </div>
           <SuggestionList
             v-if="field === suggesting && suggestions.length"

@@ -2,6 +2,7 @@
 import { Check, ChevronDown, Trash2 } from "@lucide/vue";
 import { computed, onMounted, onUnmounted, ref, useTemplateRef } from "vue";
 import { useI18n } from "vue-i18n";
+import { nameStatus } from "../../domain/NameStatus";
 import {
   roleChoicesOf,
   rolesToggled,
@@ -10,6 +11,7 @@ import {
 } from "../../domain/SourceEdition";
 import { suggestionsFor } from "../../domain/Suggestion";
 import IconButton from "./IconButton.vue";
+import NameStatusWord from "./NameStatusWord.vue";
 import SuggestionList from "./SuggestionList.vue";
 
 const props = defineProps<{
@@ -69,6 +71,9 @@ function closeOutside(event: MouseEvent) {
   open.value = false;
 }
 
+const status = computed(() =>
+  nameStatus(name.value, props.authorNames, locale.value),
+);
 const trash = computed(() =>
   name.value === ""
     ? t("isbn.form.authors.removeUnnamed")
@@ -100,6 +105,12 @@ const label = computed(() =>
           @blur="focused = false"
           @input="chosen = false"
           class="h-12 min-w-0 flex-1 bg-transparent pl-3.5 text-field outline-none"
+        />
+        <NameStatusWord
+          v-if="status"
+          :status="status"
+          :word="t(`isbn.form.authors.nameStatus.${status}`)"
+          class="mr-2 shrink-0"
         />
         <IconButton :label="trash" :disabled="disabled" @click="emit('remove')">
           <Trash2 :size="22" />

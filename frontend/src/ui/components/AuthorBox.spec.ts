@@ -443,6 +443,58 @@ describe("AuthorBox", () => {
     expect(scrolled.contains(rolesLine(view) ?? null)).toBe(true);
   });
 
+  it("says Existant after a check for a name of the house", () => {
+    // When
+    const wrapper = box("René Goscinny", ["WRITER"], "BD", undefined, [
+      "René Goscinny",
+      "Hergé",
+    ]);
+
+    // Then
+    const view = within(wrapper.element as HTMLElement);
+    expect(view.getAllByText("Existant")).toHaveLength(1);
+    expect(wrapper.findAllComponents(Check)).toHaveLength(1);
+    expect(view.queryByText("Nouveau")).toBeNull();
+  });
+
+  it("says Nouveau for a name the house does not hold", () => {
+    // When
+    const wrapper = box("René Gosc", ["WRITER"], "BD", undefined, [
+      "René Goscinny",
+      "Hergé",
+    ]);
+
+    // Then
+    const view = within(wrapper.element as HTMLElement);
+    expect(view.getAllByText("Nouveau")).toHaveLength(1);
+    expect(view.queryByText("Existant")).toBeNull();
+    expect(wrapper.findAllComponents(Check)).toHaveLength(0);
+  });
+
+  it("says no word while the house's names are unknown", () => {
+    // When
+    const view = screen("René Goscinny", ["WRITER"], "BD", null);
+
+    // Then
+    expect(view.queryByText("Existant")).toBeNull();
+    expect(view.queryByText("Nouveau")).toBeNull();
+  });
+
+  it("says the word of the name typed", async () => {
+    // Given
+    const view = screen("René Gosc", ["WRITER"], "BD", ["René Goscinny"]);
+
+    // When
+    await fireEvent.input(
+      view.getByRole("textbox", { name: "Nom de l'auteur" }),
+      { target: { value: "René Goscinny" } },
+    );
+
+    // Then
+    expect(view.getAllByText("Existant")).toHaveLength(1);
+    expect(view.queryByText("Nouveau")).toBeNull();
+  });
+
   function rolesLine(box: ReturnType<typeof screen>) {
     return box
       .queryAllByRole("button")

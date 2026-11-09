@@ -266,7 +266,7 @@ describe("Authors edit", () => {
     expect(names(screen)[0].value).toBe(" RE ");
   });
 
-  it.skip("S6 The authors of the house are suggested, a tap", async () => {
+  it("S6 The authors of the house are suggested, a tap", async () => {
     // Given
     const screen = await formOf(onePiece1, {
       authors: theHouseHoldsTheAuthors(...houseAuthors),
@@ -285,7 +285,7 @@ describe("Authors edit", () => {
     await screen.findByText("Existant");
   });
 
-  it.skip("S6 The authors of the house are suggested, Existant", async () => {
+  it("S6 The authors of the house are suggested, Existant", async () => {
     // Given
     const screen = await formOf(onePiece1, {
       authors: theHouseHoldsTheAuthors(...houseAuthors),
@@ -300,7 +300,7 @@ describe("Authors edit", () => {
     expect(names(screen)[0].value).toBe(" rené GOSCINNY ");
   });
 
-  it.skip("S6 The authors of the house are suggested, Nouveau", async () => {
+  it("S6 The authors of the house are suggested, Nouveau", async () => {
     // Given
     const screen = await formOf(onePiece1, {
       authors: theHouseHoldsTheAuthors(...houseAuthors),

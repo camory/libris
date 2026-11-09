@@ -290,3 +290,23 @@ Format:
   left as is since history is not rewritten.
 - Left over: the checks by hand of the rows and the scroll, for Tophe (PR
   body); *Existant* / *Nouveau* and S6 *a tap* (T150); S8 (T151, T152).
+
+## 2026-11-09 — T150 Existant or Nouveau — done
+- Did: once an author's name holds text, its line says *Existant* after a
+  check or *Nouveau*, 8 before the trash, and nothing while the house's
+  names are unknown. S6 *a tap*, *Existant* and *Nouveau* un-skipped and
+  green; S7 green.
+- Decided: the un-skip is committed once the scenarios were green, as in
+  T148, its red read first; `NameStatusWord` takes no `class` of its own
+  for its place, `AuthorBox` giving `mr-2 shrink-0` and `EditionForm` its
+  former overlay classes.
+- Deviations from the brief: step 3 came before step 2's refactor: once
+  `NameStatusWord` branches on the status, *Nouveau* without a check would
+  have gone green inside the refactor, leaving step 3 no red. Step 2's
+  green drew the check always, step 3's red read on the `Check` count.
+  Steps 4 to 6 were guards, their mutations run and reverted (PR body).
+  A `style(frontend)` commit puts `AuthorBox`'s imports in order (found in
+  self-review).
+- Left over: the checks by hand of the word against `1-filled.jpg` and
+  `4-author-suggested.jpg`, and *Série*'s unmoved, for Tophe (PR body);
+  S8 (T151, T152).
