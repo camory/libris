@@ -31,6 +31,14 @@ const open = ref(false);
 const rolesLine = useTemplateRef("rolesLine");
 const rolesList = useTemplateRef("rolesList");
 
+const focused = ref(false);
+const chosen = ref(false);
+const suggestions = computed(() =>
+  focused.value && !chosen.value
+    ? suggestionsFor(name.value, props.authorNames ?? [], locale.value)
+    : [],
+);
+
 onMounted(() => document.addEventListener("click", closeOutside));
 onUnmounted(() => document.removeEventListener("click", closeOutside));
 
@@ -60,14 +68,6 @@ function closeOutside(event: MouseEvent) {
   }
   open.value = false;
 }
-
-const focused = ref(false);
-const chosen = ref(false);
-const suggestions = computed(() =>
-  focused.value && !chosen.value
-    ? suggestionsFor(name.value, props.authorNames ?? [], locale.value)
-    : [],
-);
 
 const trash = computed(() =>
   name.value === ""
