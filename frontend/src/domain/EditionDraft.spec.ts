@@ -321,4 +321,12 @@ describe("authorRefusalsOf", () => {
     // Then
     expect(refusals).toEqual([null]);
   });
+
+  it("refuses no box whose name holds spaces alone", () => {
+    // When
+    const refusals = authorRefusalsOf([{ name: "   ", roles: [] }]);
+
+    // Then
+    expect(refusals).toEqual([null]);
+  });
 });
