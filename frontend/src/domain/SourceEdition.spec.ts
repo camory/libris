@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { authorsInOrder } from "./SourceEdition";
+import { authorsInOrder, roleChoicesOf, rolesToggled } from "./SourceEdition";
 
 describe("authorsInOrder", () => {
   it("answers an author listed under several roles once, each role once, in the order scénario, dessin, couleurs, traduction", () => {
@@ -59,5 +59,38 @@ describe("authorsInOrder", () => {
       { name: "emmanuel Guibert", roles: ["WRITER"] },
       { name: "Fabien Vehlmann", roles: ["WRITER"] },
     ]);
+  });
+});
+
+describe("roleChoicesOf", () => {
+  it("answers the four roles in the card's order, those given chosen", () => {
+    // When
+    const choices = roleChoicesOf(["TRANSLATOR", "WRITER"]);
+
+    // Then
+    expect(choices).toEqual([
+      { role: "WRITER", chosen: true },
+      { role: "ARTIST", chosen: false },
+      { role: "COLOURIST", chosen: false },
+      { role: "TRANSLATOR", chosen: true },
+    ]);
+  });
+});
+
+describe("rolesToggled", () => {
+  it("releases a role chosen", () => {
+    // When
+    const roles = rolesToggled(["WRITER", "ARTIST"], "ARTIST");
+
+    // Then
+    expect(roles).toEqual(["WRITER"]);
+  });
+
+  it("chooses a role in the card's order", () => {
+    // When
+    const roles = rolesToggled(["TRANSLATOR"], "WRITER");
+
+    // Then
+    expect(roles).toEqual(["WRITER", "TRANSLATOR"]);
   });
 });

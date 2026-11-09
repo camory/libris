@@ -52,6 +52,21 @@ export function authorsInOrder(
     .sort((a, b) => byRole(a.roles[0], b.roles[0]) || byName(a.name, b.name));
 }
 
+export function roleChoicesOf(
+  roles: AuthorRole[],
+): { role: AuthorRole; chosen: boolean }[] {
+  return ROLES.map((role) => ({ role, chosen: roles.includes(role) }));
+}
+
+export function rolesToggled(
+  roles: AuthorRole[],
+  role: AuthorRole,
+): AuthorRole[] {
+  return roles.includes(role)
+    ? roles.filter((each) => each !== role)
+    : [...roles, role].sort(byRole);
+}
+
 function byRole(a: AuthorRole, b: AuthorRole) {
   return ROLES.indexOf(a) - ROLES.indexOf(b);
 }

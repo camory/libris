@@ -202,8 +202,8 @@ Read whole by a run that changes `frontend/`, after `every-run.md`.
   (`src/domain/EditionDraft.ts`), whose `draft.authors` are the boxes
   (`Author[]`), sent as one `SourceAuthor` per name and role, in order. Its root is a plain block holding the
   card-shaped `<form>` then `DockedAdd`. While `adding` its textboxes,
-  radios, author names and trashes and *Ajouter un auteur* are `disabled`
-  (the roles lines not yet). It fills its text once, at setup: `kind`
+  radios, author names, trashes and roles' lines and *Ajouter un auteur*
+  are `disabled`. It fills its text once, at setup: `kind`
   from `edition.kind`, a `values` record for the nine `input`s drawn by one
   `v-for` over `fields` (`isbn.form.<field>`), numbers as their digits,
   `null` as `""`, the language through `languageWord`, and `summary`, a
@@ -212,8 +212,8 @@ Read whole by a run that changes `frontend/`, after `every-run.md`.
   after *Tome* inside that `v-for`, also with no author, then one
   `AuthorBox` per box of `authors`, a `ref` list built once at setup from
   `authorsInOrder(answer's authors, locale)`, each `{ key, name, roles }`
-  keyed by a counter (`keyed`), never by its name, bound `v-model:name`,
-  given the chosen `kind`, not the answer's; then the text button
+  keyed by a counter (`keyed`), never by its name, bound `v-model:name`
+  and `v-model:roles`, given the chosen `kind`, not the answer's; then the text button
   *Ajouter un auteur*, which pushes `{ name: "", roles: ["WRITER"] }` and,
   after `nextTick`, calls `focusName()` on it, reached through a function
   `:ref` into `authorBoxes`, a `Map` by the box's `key`, never by its
@@ -221,20 +221,26 @@ Read whole by a run that changes `frontend/`, after `every-run.md`.
   awaits `flushPromises()` after the tap). On a box's `remove` the form
   filters that key out of `authors` and focuses *Ajouter un auteur*,
   reached through a function `:ref` into `addAuthorButton`.
-  `AuthorBox` (props `roles`, `kind`, `disabled`, optional, on the name and
-  the trash, model `name`, emitting `remove` with no payload, exposing
+  `AuthorBox` (props `kind` and `disabled`, optional, on the name, the
+  trash and the roles' line, models `name` and `roles`, emitting `remove` with no payload, exposing
   `focusName()` through `defineExpose`) draws the name's line, the
   textbox *Nom de l'auteur* then the trash, an `IconButton` drawing
   `Trash2` at 22, named `isbn.form.authors.remove` (*Retirer {name}*) or
   `removeUnnamed` (*Retirer l'auteur*) while the name is `""`; then a
   hairline, and the roles line, a button
-  with `aria-expanded="false"`, `aria-label` *Rôles* then its words, and
+  with `aria-expanded`, `aria-label` *Rôles* then its words, and
   `ChevronDown`; the words are `isbn.form.authors.{label,name,roles,add}`.
+  Its root is a block holding the box then, 4 under it while the line is
+  open, the group *Rôles* (`aria-label`) of four `aria-pressed` rows from
+  `roleChoicesOf(roles)` (`SourceEdition.ts`, the card's order), a row's
+  tap writing `rolesToggled(roles, role)` to the model; a `click` on
+  `document` whose `composedPath()` holds neither its line nor its list
+  closes it, the listener added on mount and removed on unmount.
   Its spec's `valuesOf` leaves out the name boxes, `suggestions` the roles
   lines (`aria-expanded`), the trashes (`trashes()`, buttons named from
   *Retirer*) and *Ajouter un auteur*; `disabledOf` reads the fields, the
-  kinds, the dots, the names, the trashes and *Ajouter un auteur*, 18 over
-  `onePiece1`. The volume's
+  kinds, the dots, the names, the trashes, the roles' lines and *Ajouter
+  un auteur*, 19 over `onePiece1`. The volume's
   label is `isbn.form.volume.<kind>` (*Album* for a BD), built with the
   chosen kind, as `withoutSeries`' words are. Each label points at its
   box through `for` and an id built on `useId()`; the kinds are three
@@ -332,6 +338,25 @@ Read whole by a run that changes `frontend/`, after `every-run.md`.
   navigation still runs, so the history listeners and `isReady()` are wired
   as usual. Drop that line and every scenario that does not query through
   `findBy*` fails on an empty host holding the tab bar alone.
+- A `click` dispatched on an element of a detached tree bubbles up to the
+  tree's own root and never reaches `document`: a listener on `document`
+  sees a click on `document.body`, but not one on the component's own
+  elements. A case about where such a click lands inside the component
+  mounts with `attachTo: document.body` and unmounts at its end
+  (`AuthorBox`'s *closes its list on a tap on its name*, *keeps its list
+  open on a role's tap*).
+- A browser runs a microtask checkpoint after each listener of a click the
+  reader makes, so Vue re-renders between a row's `@click` and a listener
+  higher up: an element the render drops (a `v-if` icon, the `svg` that
+  was `event.target`) is detached when `document` hears the click, and
+  `contains(event.target)` answers false. `fireEvent` dispatches
+  synchronously, with no render in between, and hides it. A `document`
+  listener reads `event.composedPath()`, fixed at dispatch; a case
+  re-renders mid-dispatch from a `document.body` listener calling
+  `wrapper.vm.$.update()` (`AuthorBox`'s *keeps its list open on a tap on
+  a chosen role's check*, T147's rework). After the dispatch,
+  `composedPath()` answers `[]`, so deferring the listener does not model
+  the browser.
 - `aria-labelledby` does not resolve on a detached tree: a `getByRole(…, {
   name })` over it throws `root.getElementById is not a function`, and every
   component spec and scenario mounts detached. A list is named with

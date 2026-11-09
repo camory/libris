@@ -1,4 +1,4 @@
-import { ChevronDown, Trash2 } from "@lucide/vue";
+import { Check, ChevronDown, Trash2 } from "@lucide/vue";
 import { fireEvent, within } from "@testing-library/dom";
 import { mount } from "@vue/test-utils";
 import { describe, expect, it } from "vitest";
@@ -141,20 +141,213 @@ describe("AuthorBox", () => {
     expect(wrapper.emitted("update:name")).toEqual([["René"]]);
   });
 
+  it("opens the roles' list on its line's tap", async () => {
+    // Given
+    const box = screen("René Goscinny", ["WRITER"], "BD");
+
+    // When
+    await fireEvent.click(rolesLine(box)!);
+
+    // Then
+    expect(rolesLine(box)?.getAttribute("aria-expanded")).toBe("true");
+    expect(rowsOf(box).map((row) => row.textContent?.trim())).toEqual([
+      "scénario",
+      "dessin",
+      "couleurs",
+      "traduction",
+    ]);
+  });
+
+  it("words a book's roles as a book's in the list", async () => {
+    // Given
+    const box = screen("Victor Hugo", ["WRITER"], "BOOK");
+
+    // When
+    await fireEvent.click(rolesLine(box)!);
+
+    // Then
+    expect(rowsOf(box).map((row) => row.textContent?.trim())).toEqual([
+      "texte",
+      "illustration",
+      "couleurs",
+      "traduction",
+    ]);
+  });
+
+  it("presses the roles chosen", async () => {
+    // Given
+    const wrapper = box("René Goscinny", ["WRITER", "ARTIST"], "BD");
+    const view = within(wrapper.element as HTMLElement);
+
+    // When
+    await fireEvent.click(rolesLine(view)!);
+
+    // Then
+    const rows = rowsOf(view);
+    expect(rows.map((row) => row.getAttribute("aria-pressed"))).toEqual([
+      "true",
+      "true",
+      "false",
+      "false",
+    ]);
+    const checks = wrapper.findAllComponents(Check);
+    expect(checks).toHaveLength(2);
+    expect(
+      checks.map((check) =>
+        rows.findIndex((row) => row.contains(check.element)),
+      ),
+    ).toEqual([0, 1]);
+  });
+
+  it("hands on the roles with a role released", async () => {
+    // Given
+    const wrapper = box("René Goscinny", ["WRITER", "ARTIST"], "BD");
+    const view = within(wrapper.element as HTMLElement);
+    await fireEvent.click(rolesLine(view)!);
+
+    // When
+    await fireEvent.click(role(view, "dessin"));
+
+    // Then
+    expect(wrapper.emitted("update:roles")).toEqual([[["WRITER"]]]);
+  });
+
+  it("hands on a role chosen in the card's order", async () => {
+    // Given
+    const wrapper = box("René Goscinny", ["TRANSLATOR"], "BD");
+    const view = within(wrapper.element as HTMLElement);
+    await fireEvent.click(rolesLine(view)!);
+
+    // When
+    await fireEvent.click(role(view, "scénario"));
+
+    // Then
+    expect(wrapper.emitted("update:roles")).toEqual([
+      [["WRITER", "TRANSLATOR"]],
+    ]);
+  });
+
+  it("closes its list on its line's second tap", async () => {
+    // Given
+    const box = screen("René Goscinny", ["WRITER"], "BD");
+    await fireEvent.click(rolesLine(box)!);
+
+    // When
+    await fireEvent.click(rolesLine(box)!);
+
+    // Then
+    expectClosed(box);
+  });
+
+  it("closes its list on a tap on its name", async () => {
+    // Given
+    const wrapper = box("René Goscinny", ["WRITER"], "BD", document.body);
+    const view = within(wrapper.element as HTMLElement);
+    await fireEvent.click(rolesLine(view)!);
+
+    // When
+    await fireEvent.click(
+      view.getByRole("textbox", { name: "Nom de l'auteur" }),
+    );
+
+    // Then
+    expectClosed(view);
+    wrapper.unmount();
+  });
+
+  it("closes its list on a tap outside the box", async () => {
+    // Given
+    const box = screen("René Goscinny", ["WRITER"], "BD");
+    await fireEvent.click(rolesLine(box)!);
+
+    // When
+    await fireEvent.click(document.body);
+
+    // Then
+    expectClosed(box);
+  });
+
+  it("keeps its list open on a role's tap", async () => {
+    // Given
+    const wrapper = box("René Goscinny", ["WRITER"], "BD", document.body);
+    const view = within(wrapper.element as HTMLElement);
+    await fireEvent.click(rolesLine(view)!);
+
+    // When
+    await fireEvent.click(role(view, "couleurs"));
+
+    // Then
+    expect(rolesLine(view)?.getAttribute("aria-expanded")).toBe("true");
+    expect(view.getAllByRole("group", { name: "Rôles" })).toHaveLength(1);
+    wrapper.unmount();
+  });
+
+  it("keeps its list open on a tap on a chosen role's check", async () => {
+    // Given
+    const wrapper = box(
+      "René Goscinny",
+      ["WRITER", "ARTIST"],
+      "BD",
+      document.body,
+    );
+    const view = within(wrapper.element as HTMLElement);
+    await fireEvent.click(rolesLine(view)!);
+    rendersBeforeDocumentHears(wrapper);
+
+    // When
+    await fireEvent.click(wrapper.findAllComponents(Check)[0]!.element);
+
+    // Then
+    expect(wrapper.emitted("update:roles")).toEqual([[["ARTIST"]]]);
+    expect(rolesLine(view)?.getAttribute("aria-expanded")).toBe("true");
+    expect(view.getAllByRole("group", { name: "Rôles" })).toHaveLength(1);
+    wrapper.unmount();
+  });
+
   function rolesLine(box: ReturnType<typeof screen>) {
     return box
       .queryAllByRole("button")
       .find((button) => button.hasAttribute("aria-expanded"));
   }
 
+  function expectClosed(box: ReturnType<typeof screen>) {
+    expect(rolesLine(box)?.getAttribute("aria-expanded")).toBe("false");
+    expect(box.queryByRole("group", { name: "Rôles" })).toBeNull();
+  }
+
+  function rowsOf(box: ReturnType<typeof screen>) {
+    return within(box.getByRole("group", { name: "Rôles" })).getAllByRole(
+      "button",
+    );
+  }
+
+  function role(box: ReturnType<typeof screen>, word: string) {
+    return within(box.getByRole("group", { name: "Rôles" })).getByRole(
+      "button",
+      { name: word },
+    );
+  }
+
+  function rendersBeforeDocumentHears(wrapper: ReturnType<typeof box>) {
+    document.body.addEventListener("click", () => wrapper.vm.$.update(), {
+      once: true,
+    });
+  }
+
   function screen(name: string, roles: AuthorRole[], kind: Kind) {
     return within(box(name, roles, kind).element as HTMLElement);
   }
 
-  function box(name: string, roles: AuthorRole[], kind: Kind) {
+  function box(
+    name: string,
+    roles: AuthorRole[],
+    kind: Kind,
+    attachTo?: HTMLElement,
+  ) {
     return mount(AuthorBox, {
       props: { name, roles, kind },
       global: { plugins: [createLibrisI18n()] },
+      attachTo,
     });
   }
 });

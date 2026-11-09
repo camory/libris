@@ -200,7 +200,7 @@ describe("Authors edit", () => {
     ]);
   });
 
-  it.skip("S4 A name and its roles are changed", async () => {
+  it("S4 A name and its roles are changed", async () => {
     // Given
     const add = librisAdds(on(lea.defaultBookshelf));
     const screen = await formOf(onePiece1, { add });

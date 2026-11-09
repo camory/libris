@@ -304,6 +304,24 @@ describe("EditionForm", () => {
     expect(names(fields)[0].value).toBe("René");
   });
 
+  it("keeps the roles chosen when the kind changes", async () => {
+    // Given
+    const fields = screen(asterix1);
+    await fireEvent.click(rolesLines(fields)[1]!);
+    await fireEvent.click(role(fields, "couleurs"));
+
+    // When
+    await fireEvent.change(fields.getByRole("radio", { name: "Livre" }), {
+      target: { checked: true },
+    });
+
+    // Then
+    expect(authorsOf(fields)[1]).toEqual({
+      name: "Albert Uderzo",
+      roles: "illustration, couleurs",
+    });
+  });
+
   it("shows Auteurs with no author", () => {
     // When
     const wrapper = form();
@@ -389,6 +407,27 @@ describe("EditionForm", () => {
       authors: [
         { name: "Eiichiro Oda", role: "WRITER" },
         { name: "Eiichiro Oda", role: "ARTIST" },
+      ],
+    });
+  });
+
+  it("sends the roles chosen in a box", async () => {
+    // Given
+    const wrapper = form(onePiece1);
+    const fields = within(wrapper.element as HTMLElement);
+    await fireEvent.click(rolesLines(fields)[0]!);
+    await fireEvent.click(role(fields, "dessin"));
+    await fireEvent.click(role(fields, "traduction"));
+
+    // When
+    await tapAdd(fields);
+
+    // Then
+    const name = onePiece1.authors[0]?.name;
+    expect(wrapper.emitted("add")?.[0]?.[0]).toMatchObject({
+      authors: [
+        { name, role: "WRITER" },
+        { name, role: "TRANSLATOR" },
       ],
     });
   });
@@ -599,7 +638,7 @@ describe("EditionForm", () => {
     );
 
     // Then
-    expect(disabledOf(fields)).toEqual(Array(18).fill(true));
+    expect(disabledOf(fields)).toEqual(Array(19).fill(true));
   });
 
   it("takes edits again once the add failed", () => {
@@ -613,7 +652,7 @@ describe("EditionForm", () => {
       "Erreur lors de l'ajout, veuillez réessayer plus tard.",
     );
     expect(disabledOf(within(wrapper.element as HTMLElement))).toEqual(
-      Array(18).fill(false),
+      Array(19).fill(false),
     );
   });
 
@@ -1058,6 +1097,13 @@ describe("EditionForm", () => {
       .filter((button) => button.hasAttribute("aria-expanded"));
   }
 
+  function role(fields: ReturnType<typeof screen>, word: string) {
+    return within(fields.getByRole("group", { name: "Rôles" })).getByRole(
+      "button",
+      { name: word },
+    );
+  }
+
   function trashes(fields: ReturnType<typeof screen>) {
     return fields.queryAllByRole<HTMLButtonElement>("button", {
       name: /^Retirer\b/,
@@ -1093,6 +1139,7 @@ describe("EditionForm", () => {
       }),
       ...names(fields),
       ...trashes(fields),
+      ...(rolesLines(fields) as HTMLButtonElement[]),
       fields.getByRole<HTMLButtonElement>("button", {
         name: "Ajouter un auteur",
       }),
