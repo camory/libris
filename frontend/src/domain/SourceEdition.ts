@@ -58,6 +58,13 @@ export function roleChoicesOf(
   return ROLES.map((role) => ({ role, chosen: roles.includes(role) }));
 }
 
+export function rolesToggled(
+  roles: AuthorRole[],
+  role: AuthorRole,
+): AuthorRole[] {
+  return roles.filter((each) => each !== role);
+}
+
 function byRole(a: AuthorRole, b: AuthorRole) {
   return ROLES.indexOf(a) - ROLES.indexOf(b);
 }

@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { authorsInOrder, roleChoicesOf } from "./SourceEdition";
+import { authorsInOrder, roleChoicesOf, rolesToggled } from "./SourceEdition";
 
 describe("authorsInOrder", () => {
   it("answers an author listed under several roles once, each role once, in the order scénario, dessin, couleurs, traduction", () => {
@@ -74,5 +74,15 @@ describe("roleChoicesOf", () => {
       { role: "COLOURIST", chosen: false },
       { role: "TRANSLATOR", chosen: true },
     ]);
+  });
+});
+
+describe("rolesToggled", () => {
+  it("releases a role chosen", () => {
+    // When
+    const roles = rolesToggled(["WRITER", "ARTIST"], "ARTIST");
+
+    // Then
+    expect(roles).toEqual(["WRITER"]);
   });
 });
