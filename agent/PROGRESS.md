@@ -276,16 +276,17 @@ Format:
 - Left over: the refusals of a box with no role or a name twice (T151,
   T152), suggestions (T149, T150).
 
-## 2026-11-09 — T149 The authors of the house suggested — handoff
-- Done: test plan steps 0 to 15, each its own commit; self-review read
-  the components' diff and moved `AuthorBox`'s suggestions state up.
-- Start with: the rest of the self-review (`git diff main...HEAD`), then
-  *Finish*: gotchas (`frontend.md`: authors' names item, `EditionForm`/
-  `AuthorBox` item with `authorNames`, `SuggestionList`, rows and scroll;
-  `mountView`'s `authorsApi` seventh, `open`'s sixth), tick, diary, PR.
-- Decided: `SuggestionList` takes `class="-mt-1"` from `EditionForm`;
-  `AuthorBox`'s root `gap-1` gives its 4. The scroll goes to the bordered
-  box (name and roles' line), `scroll-mt-28`. Deviations: none.
-- Guards: 13, `list()` moved to the view's setup: red, no button *Hergé*
-  (step 12 stayed green). 14, `useListAuthorNames`' `catch` taken off:
-  *Unhandled Rejection TypeError: Failed to fetch*, 1 error. Reverted.
+## 2026-11-09 — T149 The authors of the house suggested — done
+- Did: an author's box suggests, while its name has the focus, the house's
+  author names `IsbnView` asks for on each lookup; a tap fills the name;
+  the name's focus brings the box to the top. S6 *the suggestions* and S7
+  un-skipped and green.
+- Decided: `SuggestionList` takes `class="-mt-1"` from `EditionForm`,
+  `AuthorBox`'s root `gap-1` giving its 4; the scroll goes to the bordered
+  box (name and roles' line), `scroll-mt-28`, as the brief's margin.
+- Deviations from the brief: none. Steps 13 and 14 were guards, their
+  mutations run and reverted (PR body). The run was continued from a
+  handoff after steps 0 to 15. One commit subject runs to 73 characters,
+  left as is since history is not rewritten.
+- Left over: the checks by hand of the rows and the scroll, for Tophe (PR
+  body); *Existant* / *Nouveau* and S6 *a tap* (T150); S8 (T151, T152).
