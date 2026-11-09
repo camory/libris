@@ -4,18 +4,19 @@ import { computed, ref, useTemplateRef } from "vue";
 import { useI18n } from "vue-i18n";
 import {
   roleChoicesOf,
+  rolesToggled,
   type AuthorRole,
   type Kind,
 } from "../../domain/SourceEdition";
 import IconButton from "./IconButton.vue";
 
 const props = defineProps<{
-  roles: AuthorRole[];
   kind: Kind;
   disabled?: boolean;
 }>();
 
 const name = defineModel<string>("name", { required: true });
+const roles = defineModel<AuthorRole[]>("roles", { required: true });
 
 const emit = defineEmits<{ remove: [] }>();
 
@@ -36,7 +37,7 @@ const trash = computed(() =>
     : t("isbn.form.authors.remove", { name: name.value }),
 );
 const words = computed(() =>
-  props.roles.map((role) => t(`role.${props.kind}.${role}`)).join(", "),
+  roles.value.map((role) => t(`role.${props.kind}.${role}`)).join(", "),
 );
 const label = computed(() =>
   [t("isbn.form.authors.roles"), words.value].filter(Boolean).join(" "),
@@ -91,6 +92,7 @@ const label = computed(() =>
         :key="choice.role"
         type="button"
         :aria-pressed="choice.chosen"
+        @click="roles = rolesToggled(roles, choice.role)"
         class="mx-3.5 flex h-11 items-center gap-2 text-left text-field"
       >
         <span class="flex-1">{{ t(`role.${kind}.${choice.role}`) }}</span>

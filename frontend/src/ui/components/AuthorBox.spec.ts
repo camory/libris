@@ -199,6 +199,19 @@ describe("AuthorBox", () => {
     ).toEqual([0, 1]);
   });
 
+  it("hands on the roles with a role released", async () => {
+    // Given
+    const wrapper = box("René Goscinny", ["WRITER", "ARTIST"], "BD");
+    const roles = within(wrapper.element as HTMLElement);
+    await fireEvent.click(rolesLine(roles)!);
+
+    // When
+    await fireEvent.click(role(roles, "dessin"));
+
+    // Then
+    expect(wrapper.emitted("update:roles")).toEqual([[["WRITER"]]]);
+  });
+
   function rolesLine(box: ReturnType<typeof screen>) {
     return box
       .queryAllByRole("button")
@@ -208,6 +221,13 @@ describe("AuthorBox", () => {
   function rowsOf(box: ReturnType<typeof screen>) {
     return within(box.getByRole("group", { name: "Rôles" })).getAllByRole(
       "button",
+    );
+  }
+
+  function role(box: ReturnType<typeof screen>, word: string) {
+    return within(box.getByRole("group", { name: "Rôles" })).getByRole(
+      "button",
+      { name: word },
     );
   }
 
