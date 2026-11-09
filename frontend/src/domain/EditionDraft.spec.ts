@@ -389,4 +389,18 @@ describe("authorRefusalsOf", () => {
     // Then
     expect(refusals).toEqual([null, null]);
   });
+
+  it("refuses a doubled box with no role as doubled", () => {
+    // When
+    const refusals = authorRefusalsOf(
+      [
+        { name: "René Goscinny", roles: ["WRITER"] },
+        { name: "René Goscinny", roles: [] },
+      ],
+      "fr",
+    );
+
+    // Then
+    expect(refusals).toEqual([null, "twice"]);
+  });
 });
