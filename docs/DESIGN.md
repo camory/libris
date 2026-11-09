@@ -61,7 +61,8 @@ hierarchy; colour (`text`, `muted`, `accent`) carries the role; size does the
 rest.
 
 An ouvrage's screen has no page title: the card title of its card is the
-screen's `h1`, the overline outside it.
+screen's `h1`, the overline outside it. While a form shows in the card's
+place, the `h1` is the ouvrage's title as answered, visually hidden.
 
 ### U03 — Page: header, content, tab bar
 Every screen is one column, designed at 390 px wide and read top to bottom.
@@ -215,7 +216,9 @@ current view, with no label.
 
 **Primary button.** One per thing it serves, the field or the card, and
 never two side by side. It is the next step of the screen's flow: *Chercher*
-for the field, *Ajouter à ma bibliothèque* for the card. 50 tall, radius 12,
+for the field, *Ajouter à ma bibliothèque* for the card, *Enregistrer* for
+the form of an ouvrage the house holds, opened from its page and present
+while the form is. 50 tall, radius 12,
 `accent` with white on it, `accent` pressed shade on press. For a card it
 sits 8 below, full width, and its label is a verb in the infinitive in the
 `button` step. For a field it sits on the field's line, at its right, 8
@@ -223,7 +226,8 @@ apart, a 50 square, and shows a glyph alone (U07), white: its `aria-label` is
 the verb, *Chercher*. While its action runs it is busy: the button dims and
 accepts nothing, a white spinner turns, at the left of the label or in the
 place of the glyph, and the label or the `aria-label` becomes the action in
-progress with an ellipsis, *Recherche en cours…*; the field stays editable,
+progress with an ellipsis, *Recherche en cours…*, *Enregistrement en
+cours…*; the field stays editable,
 while the fields of a form look the same and accept nothing.
 It comes back to itself when the answer arrives, whatever the answer is.
 
@@ -345,7 +349,8 @@ of words, so the catalogue reads as the spec's table and the component
 picks an entry and never branches.
 
 **Form card.** A form that edits an ouvrage is shaped like a card: the
-card's block, its top part and its bookshelf row, then the fields (U04),
+card's block, its top part and its bookshelf rows, without their trash,
+then the fields (U04),
 14 apart, each with its label or under one that names several; its primary
 button under it as under the card (U03). A form opened from a card's pencil
 takes the card's place, and the pencil becomes the cross in the same corner.
