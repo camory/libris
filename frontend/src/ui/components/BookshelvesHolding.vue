@@ -10,6 +10,7 @@ const props = defineProps<{
   copies: Copy[];
   removing?: boolean;
   removalFailed?: boolean;
+  withoutTrash?: boolean;
 }>();
 
 const emit = defineEmits<{ remove: [copyId: string] }>();
@@ -94,7 +95,7 @@ function remove(bookshelfId: string) {
           </p>
         </div>
         <IconButton
-          v-if="bookshelf.role === 'OWNER'"
+          v-if="!withoutTrash && bookshelf.role === 'OWNER'"
           :label="t('isbn.card.removal.trash')"
           :disabled="removing"
           @click="ask(bookshelf.id)"

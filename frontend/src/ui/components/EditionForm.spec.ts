@@ -579,6 +579,17 @@ describe("EditionForm", () => {
     expect(text).not.toContain("Dans aucune de vos bibliothèques");
   });
 
+  it("draws its bookshelf rows without trash", () => {
+    // When
+    const fields = screen(onePiece1, [onLea]);
+
+    // Then
+    expect(fields.getByText("Dans Bibliothèque de Léa")).toBeDefined();
+    expect(
+      fields.queryAllByRole("button", { name: "Retirer un exemplaire" }),
+    ).toEqual([]);
+  });
+
   it("sends the fields as the reader left them", async () => {
     // Given
     const wrapper = form(onePiece1);

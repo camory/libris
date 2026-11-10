@@ -224,7 +224,7 @@ function focusFirstRefused(refused: (AuthorRefusal | null)[]) {
         </div>
       </div>
 
-      <BookshelvesHolding :copies="copies" />
+      <BookshelvesHolding :copies="copies" without-trash />
 
       <div
         class="flex h-11 rounded-xl border-[1.5px] border-border bg-surface p-0.5"
