@@ -7,8 +7,11 @@ import fr.amory.libris.bibliography.domain.ContributionRole.ARTIST
 import fr.amory.libris.bibliography.domain.ContributionRole.WRITER
 import fr.amory.libris.bibliography.domain.Contributions
 import fr.amory.libris.bibliography.domain.Kind.MANGA
+import fr.amory.libris.bibliography.domain.SeriesEntry
 import fr.amory.libris.bibliography.domain.edition.Edition
 import fr.amory.libris.bibliography.domain.edition.EditionId
+import fr.amory.libris.bibliography.domain.series.Series
+import fr.amory.libris.bibliography.domain.series.SeriesId
 import fr.amory.libris.bibliography.fixture.EditionsInMemory
 import fr.amory.libris.bibliography.fixture.SeriesInMemory
 import fr.amory.libris.library.application.ReaderBookshelf
@@ -37,7 +40,7 @@ class SaveEditionTest {
   private val editions = EditionsInMemory().also { it.insert(ONE_PIECE_2_HELD) }
   private val seriesRepository = SeriesInMemory()
   private val saveEdition =
-    SaveEdition(EditEdition(editions, seriesRepository, withoutTransaction()), bookshelves, copies)
+    SaveEdition(EditEdition(editions, seriesRepository, withoutTransaction()), bookshelves, copies, seriesRepository)
 
   @Test
   fun `an edition whose copies sit on another reader's bookshelf alone is answered with none`() {
@@ -68,6 +71,18 @@ class SaveEditionTest {
     result.shouldBeInstanceOf<Saved>().held.copies shouldBe listOf(
       CopyOnBookshelf(leasCopy.id, ReaderBookshelf(leasBookshelf.id, "Bibliothèque de Léa", OWNER)),
     )
+  }
+
+  @Test
+  fun `a series sent in another capitalisation is answered under the house's spelling`() {
+    // Given
+    seriesRepository.findOrInsert(Series(SeriesId.new(), "One piece"))
+
+    // When
+    val result = saveEdition(lea, ONE_PIECE_2, asEdited().copy(series = SeriesEntry("ONE PIECE", 2)))
+
+    // Then
+    result.shouldBeInstanceOf<Saved>().held.series shouldBe SeriesEntry("One piece", 2)
   }
 
   private fun bookshelfOf(name: String, vararg memberships: Membership): Bookshelf =
