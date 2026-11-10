@@ -405,10 +405,11 @@ Read whole by a run that changes `backend/`, after `every-run.md`.
   `SET name = CASE WHEN series.id = :ownSeriesId THEN EXCLUDED.name ELSE
   series.name END RETURNING id, name`, answering the stored series whole,
   and `findOrInsert` calls it with `ownSeriesId = null` (a null parameter
-  there is typed by the comparison, PostgreSQL accepts it). With the collation inside the
-  inner parentheses, `ON CONFLICT (((BTRIM(name)) COLLATE …))` or, for an
-  index on the bare column, `ON CONFLICT ((name COLLATE …))`, PostgreSQL
-  infers no index (`there is no unique or exclusion constraint matching the
+  there is typed by the comparison, PostgreSQL accepts it). With the
+  collation inside the inner parentheses,
+  `ON CONFLICT (((BTRIM(name)) COLLATE …))` or, for an index on the bare
+  column, `ON CONFLICT ((name COLLATE …))`, PostgreSQL infers no index
+  (`there is no unique or exclusion constraint matching the
   ON CONFLICT specification`); the collation goes after the expression.
   Two names of one edition and role that the index matches but
   `Contributions.of` does not (`Jo Nesbø`, `Jo Nesbo`) meet one author id:

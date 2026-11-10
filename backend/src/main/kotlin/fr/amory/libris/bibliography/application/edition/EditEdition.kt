@@ -31,7 +31,8 @@ class EditEdition(
 
   private fun write(held: Edition, details: EditionDetails) =
     transactions.executeWithoutResult {
-      editions.update(editedOf(held, details, details.series?.let { seriesVolumeOf(it, held.seriesVolume?.seriesId) }))
+      val seriesVolume = details.series?.let { seriesVolumeOf(it, held.seriesVolume?.seriesId) }
+      editions.update(editedOf(held, details, seriesVolume))
     }
 
   private fun seriesVolumeOf(seriesEntry: SeriesEntry, ownSeriesId: SeriesId?): SeriesVolume =
