@@ -146,3 +146,17 @@ Format:
   `EditionDetailsRequest` repeats eleven fields of `NewBookRequest`; when
   T154 adds its validation, the two requests share one shape or one
   validation, so the field rules are not written twice.
+
+## 2026-11-10 — T154 The ouvrage saved as edited — handoff
+- Done: steps 1 to 4 of the test plan, one commit each. Start at step 5
+  (`EditionDetailsRequestTest`, a blank title refused).
+- Step 1's red: S4's first case fails on the page's title, S4's second on
+  `Libris refused: Refusal(status=404, type=/problems/not-found…)`, S5's
+  other series reads `Astérix` for `Tintin`, S5's other author `[]`.
+  `ApiContractTest` on `main`: `tests="50"`.
+- Decided: `EditionDetailsValidation` sits below the request (stepdown); it
+  has `Accepted` only so far, `Refused` comes with step 5. `validate` builds
+  the details by hand for now (`mapNotNull` on the authors); steps 5 to 7
+  switch it to `EditionDetails.of` and the add's refusals.
+- Deviations: none. No guard so far, no mutation run.
+- Gate: red only on the four scenarios of step 1, not yet reached.
