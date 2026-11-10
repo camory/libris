@@ -26,7 +26,7 @@ import { suggestionsFor } from "../../domain/Suggestion";
 import AuthorBox from "./AuthorBox.vue";
 import BookshelvesHolding from "./BookshelvesHolding.vue";
 import CoverChoice from "./CoverChoice.vue";
-import DockedAdd from "./DockedAdd.vue";
+import DockedButton from "./DockedButton.vue";
 import NameStatusWord from "./NameStatusWord.vue";
 import SuggestionList from "./SuggestionList.vue";
 
@@ -37,7 +37,7 @@ const props = defineProps<{
   covers: CoverCandidate[];
   held: boolean;
   action: "add" | "save";
-  adding: boolean;
+  busy: boolean;
   failed: boolean;
   shownSource?: string | null;
   seriesNames: string[] | null;
@@ -46,7 +46,7 @@ const props = defineProps<{
 
 const emit = defineEmits<{
   coverSource: [source: string | null];
-  add: [edition: SourceEdition];
+  send: [edition: SourceEdition];
 }>();
 
 defineSlots<{ corner?: () => unknown }>();
@@ -170,7 +170,7 @@ const boxes: Partial<Record<Field, HTMLInputElement>> = {};
 const authorBoxes = new Map<number, InstanceType<typeof AuthorBox>>();
 let addAuthorButton = null as HTMLButtonElement | null;
 
-function add() {
+function send() {
   const draft: EditionDraft = {
     kind: kind.value,
     ...values,
@@ -183,7 +183,7 @@ function add() {
     authors.value.map(({ key }, index) => [key, refused[index] ?? null]),
   );
   if (focusFirstRefused(refused)) return;
-  emit("add", editionOf(props.isbn13, draft, locale.value));
+  emit("send", editionOf(props.isbn13, draft, locale.value));
 }
 
 function focusFirstRefused(refused: (AuthorRefusal | null)[]) {
@@ -213,7 +213,7 @@ function focusFirstRefused(refused: (AuthorRefusal | null)[]) {
           :covers="covers"
           :title="edition?.title ?? ''"
           :held="held"
-          :disabled="adding"
+          :disabled="busy"
           :shown-source="shownSource"
           @cover-source="emit('coverSource', $event)"
         />
@@ -241,7 +241,7 @@ function focusFirstRefused(refused: (AuthorRefusal | null)[]) {
             type="radio"
             name="kind"
             :value="each"
-            :disabled="adding"
+            :disabled="busy"
             class="sr-only"
           />
           {{ t(`isbn.form.kind.${each}`) }}
@@ -259,7 +259,7 @@ function focusFirstRefused(refused: (AuthorRefusal | null)[]) {
               :ref="(box) => (boxes[field] = box as HTMLInputElement)"
               v-model="values[field]"
               type="text"
-              :disabled="adding"
+              :disabled="busy"
               :inputmode="numeric.has(field) ? 'numeric' : undefined"
               :aria-invalid="refusals[field] ? 'true' : undefined"
               @focus="focused(field)"
@@ -304,7 +304,7 @@ function focusFirstRefused(refused: (AuthorRefusal | null)[]) {
               v-model:name="author.name"
               v-model:roles="author.roles"
               :kind="kind"
-              :disabled="adding"
+              :disabled="busy"
               :author-names="authorNames"
               :refusal="authorRefusals.get(author.key)"
               @remove="removeAuthor(author.key)"
@@ -313,7 +313,7 @@ function focusFirstRefused(refused: (AuthorRefusal | null)[]) {
           <button
             :ref="(button) => (addAuthorButton = button as HTMLButtonElement)"
             type="button"
-            :disabled="adding"
+            :disabled="busy"
             class="-ml-3 h-11 self-start px-3 text-button text-accent"
             @click="addAuthor"
           >
@@ -330,11 +330,16 @@ function focusFirstRefused(refused: (AuthorRefusal | null)[]) {
           :id="`${id}-summary`"
           v-model="summary"
           rows="3"
-          :disabled="adding"
+          :disabled="busy"
           class="field-sizing-content min-h-[calc(3lh+27px)] w-full resize-none rounded-xl border-[1.5px] border-border bg-surface px-3.5 py-3 text-field outline-none focus:border-accent"
         ></textarea>
       </div>
     </form>
-    <DockedAdd :action="action" :adding="adding" :failed="failed" @add="add" />
+    <DockedButton
+      :action="action"
+      :busy="busy"
+      :failed="failed"
+      @press="send"
+    />
   </div>
 </template>

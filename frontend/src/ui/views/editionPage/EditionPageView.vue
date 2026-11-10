@@ -123,11 +123,11 @@ const failure = computed(() =>
         :covers="covers"
         held
         action="save"
-        :adding="saving"
+        :busy="saving"
         :failed="saveState.status === 'notSaved'"
         :series-names="seriesNames"
         :author-names="authorNames"
-        @add="saveEdits"
+        @send="saveEdits"
       >
         <template #corner>
           <IconButton

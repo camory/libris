@@ -5,11 +5,11 @@ import BusySpinner from "./BusySpinner.vue";
 
 defineProps<{
   action: "add" | "save";
-  adding: boolean;
+  busy: boolean;
   failed: boolean;
 }>();
 
-const emit = defineEmits<{ add: [] }>();
+const emit = defineEmits<{ press: [] }>();
 
 const words = {
   add: { idle: "isbn.add", busy: "isbn.adding", error: "isbn.addError" },
@@ -26,12 +26,12 @@ const { t } = useI18n();
     >
       <button
         type="button"
-        :disabled="adding"
+        :disabled="busy"
         class="flex h-[50px] items-center justify-center gap-2 rounded-xl bg-accent text-button text-white active:bg-accent-pressed disabled:opacity-70"
-        @click="emit('add')"
+        @click="emit('press')"
       >
-        <BusySpinner v-if="adding" class="size-4" />
-        {{ t(adding ? words[action].busy : words[action].idle) }}
+        <BusySpinner v-if="busy" class="size-4" />
+        {{ t(busy ? words[action].busy : words[action].idle) }}
       </button>
       <p v-if="failed" class="flex items-start gap-2 text-body text-danger">
         <CircleAlert :size="22" class="shrink-0" />

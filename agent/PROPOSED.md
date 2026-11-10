@@ -484,7 +484,7 @@
   on T124, out of its scope).
 - 2026-11-03 Frontend: the message of U05, the round alert icon at 22 and
   the words in `danger`, is drawn by hand in twelve components and views
-  (`DockedAdd`, `EditionForm`, `IsbnView`, `HomeView`…); one component of
+  (`DockedButton`, `EditionForm`, `IsbnView`, `HomeView`…); one component of
   `ui/components` would draw it once (found on T124, out of its scope:
   `ui/views` is outside its footprint).
 - 2026-11-03 Frontend: `EditionForm` and `ReaderChoice` call
@@ -555,7 +555,3 @@
   `errors`, and `CoverController` and `IsbnController` build theirs inline
   (Duplicated Code): one function beside `problem` in `Problems.kt` would
   serve them all (found on T154, 2026-11-10).
-- Frontend: `DockedAdd`, its `adding`, `failed` and `add` name the
-  lookup's act, while the page's form saves through it with
-  `action="save"`: a name for what it is, settled with T162's busy word or
-  after it (found on T160, 2026-11-10).
