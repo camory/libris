@@ -11,13 +11,6 @@ import java.util.UUID
 private const val INSERT_SERIES =
   """
     INSERT INTO series (id, name) VALUES (:id, :name)
-    ON CONFLICT ((BTRIM(name)) COLLATE ignoring_case_and_accents) DO UPDATE SET name = series.name
-    RETURNING id, name
-    """
-
-private const val RESPELL_SERIES =
-  """
-    INSERT INTO series (id, name) VALUES (:id, :name)
     ON CONFLICT ((BTRIM(name)) COLLATE ignoring_case_and_accents) DO UPDATE
     SET name = CASE WHEN series.id = :ownSeriesId THEN EXCLUDED.name ELSE series.name END
     RETURNING id, name
@@ -32,16 +25,11 @@ private const val FIND_SERIES_BY_IDS =
 @Repository
 class JdbcSeriesRepository(private val jdbcClient: JdbcClient) : SeriesRepository {
   override fun findOrInsert(series: Series): Series =
-    jdbcClient
-      .sql(INSERT_SERIES)
-      .param("id", series.id.value)
-      .param("name", series.name)
-      .query { rs, _ -> seriesOf(rs) }
-      .single()
+    respellOrFindOrInsert(series, ownSeriesId = null)
 
   override fun respellOrFindOrInsert(series: Series, ownSeriesId: SeriesId?): Series =
     jdbcClient
-      .sql(RESPELL_SERIES)
+      .sql(INSERT_SERIES)
       .param("id", series.id.value)
       .param("name", series.name)
       .param("ownSeriesId", ownSeriesId?.value)
