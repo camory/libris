@@ -6,11 +6,13 @@ import { useRouter } from "vue-router";
 import { authorsApiKey } from "../../../application/AuthorsApi";
 import { catalogueApiKey } from "../../../application/CatalogueApi";
 import { copiesApiKey } from "../../../application/CopiesApi";
+import { editionsApiKey } from "../../../application/EditionsApi";
 import { seriesApiKey } from "../../../application/SeriesApi";
 import { useFindCatalogueEdition } from "../../../application/useFindCatalogueEdition";
 import { useListAuthorNames } from "../../../application/useListAuthorNames";
 import { useListSeriesNames } from "../../../application/useListSeriesNames";
 import { useRemoveCopy } from "../../../application/useRemoveCopy";
+import { useSaveEdition } from "../../../application/useSaveEdition";
 import type { CoverCandidate } from "../../../domain/Cover";
 import EditionForm from "../../components/EditionForm.vue";
 import HeldEditionCardSkeleton from "../../components/HeldEditionCardSkeleton.vue";
@@ -31,6 +33,7 @@ const { names: authorNames, list: listAuthorNames } = useListAuthorNames(
   inject(authorsApiKey)!,
 );
 const editing = ref(false);
+const { save } = useSaveEdition(inject(editionsApiKey)!);
 let removedId: string | null = null;
 const { state: removal, remove } = useRemoveCopy(
   inject(copiesApiKey)!,
@@ -110,6 +113,7 @@ const failure = computed(() =>
         :failed="false"
         :series-names="seriesNames"
         :author-names="authorNames"
+        @add="save(id, $event)"
       >
         <template #corner>
           <IconButton :label="t('isbn.cancelEdit')" @click="editing = false">

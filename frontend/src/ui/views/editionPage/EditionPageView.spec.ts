@@ -18,6 +18,10 @@ import {
   type CopiesApi,
   type RemoveAnswer,
 } from "../../../application/CopiesApi";
+import {
+  editionsApiKey,
+  type EditionsApi,
+} from "../../../application/EditionsApi";
 import { seriesApiKey, type SeriesApi } from "../../../application/SeriesApi";
 import type { Book } from "../../../domain/Book";
 import {
@@ -30,6 +34,7 @@ import {
 import { FakeAuthorsApi } from "../../../fixture/FakeAuthorsApi";
 import { FakeCatalogueApi } from "../../../fixture/FakeCatalogueApi";
 import { FakeCopiesApi } from "../../../fixture/FakeCopiesApi";
+import { FakeEditionsApi } from "../../../fixture/FakeEditionsApi";
 import { FakeSeriesApi } from "../../../fixture/FakeSeriesApi";
 import { normalised } from "../../../fixture/normalised";
 import HeldEditionCardSkeleton from "../../components/HeldEditionCardSkeleton.vue";
@@ -46,11 +51,13 @@ const mountEditionPageView = (
     router = createLibrisRouter(),
     seriesApi = new FakeSeriesApi([]),
     authorsApi = new FakeAuthorsApi([]),
+    editionsApi = new FakeEditionsApi(new Error("no save here")),
   }: {
     copiesApi?: CopiesApi;
     router?: Router;
     seriesApi?: SeriesApi;
     authorsApi?: AuthorsApi;
+    editionsApi?: EditionsApi;
   } = {},
 ) =>
   mount(EditionPageView, {
@@ -63,6 +70,7 @@ const mountEditionPageView = (
         [copiesApiKey]: copiesApi,
         [seriesApiKey]: seriesApi,
         [authorsApiKey]: authorsApi,
+        [editionsApiKey]: editionsApi,
       },
     },
   });
@@ -646,6 +654,26 @@ describe("EditionPageView", () => {
       screen.getByRole<HTMLInputElement>("textbox", { name: "Titre" }).value,
     ).toBe("Astérix le Gaulois");
   });
+
+  it("saves the edits under the ouvrage's id", async () => {
+    // Given
+    const editionsApi = new FakeEditionsApi({
+      outcome: "saved",
+      book: asterixWithIsbn,
+    });
+    const screen = await pageOf(asterixWithIsbn, { editionsApi });
+    await tapPencil(screen);
+    await typeTitle(screen, "Astérix le gaulois");
+
+    // When
+    screen.getByRole("button", { name: "Enregistrer" }).click();
+    await flushPromises();
+
+    // Then
+    expect(
+      editionsApi.asked.map(({ id, edition }) => [id, edition.title]),
+    ).toEqual([[asterixWithIsbn.id, "Astérix le gaulois"]]);
+  });
 });
 
 function seen(wrapper: ReturnType<typeof mountEditionPageView>) {
@@ -664,7 +692,11 @@ async function routerOn(...paths: string[]) {
 
 async function pageOf(
   book: Book,
-  ports: { seriesApi?: SeriesApi; authorsApi?: AuthorsApi } = {},
+  ports: {
+    seriesApi?: SeriesApi;
+    authorsApi?: AuthorsApi;
+    editionsApi?: EditionsApi;
+  } = {},
 ) {
   const wrapper = mountEditionPageView(
     { outcome: "found", book },
