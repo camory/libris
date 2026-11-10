@@ -125,3 +125,21 @@ Format:
   as the phases before it did.
 - Left over: the backlog is empty; the next feature needs its spec,
   written with Tophe.
+
+## 2026-11-10 — T153 The save on v0.18.0, an unknown edition refused — done
+- Did: the backend pins `v0.18.0`; `PUT /api/v1/books/{id}` is served by
+  `CatalogueController.save` through `SaveEdition`, which answers
+  `NoSuchEdition` to every id and stores nothing. S7 runs and passes.
+- Decided: `SaveEditionResult.NoSuchEdition` is written qualified in the
+  controller, since `find` already imports the read's `NoSuchEdition`
+  (the form of `AddMemberResult.NoSuchBookshelf` in `BookshelfController`).
+  The two id fixtures are named after their keys, `ONE_PIECE_2` and
+  `UNKNOWN_BOOK`, and sit last, below `NOT_MY_COPY`, as the last helper
+  first reaches them.
+- Deviations from the brief: none. Step 2's red was Boot's plain `405`,
+  not the `404` the gotcha named (the path is mapped for `GET`), thrown
+  when the answer is built, at `lea.saves`; the `backend.md` item now
+  says so.
+- Left over: T154 writes the edition behind `SaveEdition` and removes the
+  two `@Suppress("UnusedParameter")` (its brief); S2, S4, S5, S6 stay
+  skipped for their tasks.
