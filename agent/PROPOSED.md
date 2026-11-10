@@ -543,11 +543,6 @@
   adds (Duplicated Code), one per context since `bibliography` never
   depends on `library`. Open: whether a shared kernel of the domain should
   hold one (found on T143, 2026-11-08).
-- Backend: `BookshelfController` and `CatalogueController` each hold a
-  private `invalid(errors)` building the validation problem with its
-  `errors`, and `CoverController` and `IsbnController` build theirs inline
-  (Duplicated Code): one function beside `problem` in `Problems.kt` would
-  serve them all (found on T154, 2026-11-10).
 - Frontend: `DockedAdd`, its `adding`, `failed` and `add` name the
   lookup's act, while the page's form saves through it with
   `action="save"`: a name for what it is, settled with T162's busy word or

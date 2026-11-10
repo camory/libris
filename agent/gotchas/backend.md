@@ -301,8 +301,10 @@ Read whole by a run that changes `backend/`, after `every-run.md`.
   so a stub keeps matching when the query grows clauses; assert the query in
   full from `server.allServeEvents` instead.
 - A problem detail is built in the controller with `problem(status, type)`
-  of `Problems.kt` and answered with `.asResponse()`; Spring writes
-  `application/problem+json` and derives `title` from the status.
+  of `Problems.kt`, a validation problem with its `errors` with
+  `validationProblem(errors)` beside it, and answered with `.asResponse()`;
+  Spring writes `application/problem+json` and derives `title` from the
+  status.
   `ProblemAdvice` answers what fails before a controller runs: a path
   variable of the wrong type and an unreadable body, as
   `/problems/validation` without `detail`, through one `@ExceptionHandler`
