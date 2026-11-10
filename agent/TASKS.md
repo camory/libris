@@ -114,7 +114,7 @@ guard every frontend task.
       pencil and its trash back, *Enregistrer* gone, and the pencil reopens
       the form as answered. Realises S8; un-skips its frontend test.
 
-- [ ] T162 Frontend: the ouvrage saved as edited.
+- [x] T162 Frontend: the ouvrage saved as edited.
       *Enregistrer* saves the form through the editions' port: each text
       field without the spaces at its ends, spaces alone as no value, the
       authors as authors-edit S5 and S9 say, neither the ISBN nor the

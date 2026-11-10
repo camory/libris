@@ -168,14 +168,16 @@ Read whole by a run that changes `frontend/`, after `every-run.md`.
   pencil once none of the reader's copies is left on it.
   `useFindCatalogueEdition`'s `refresh(id)` asks again with no `loading`
   step, the card staying mounted, while `find(id)` shows the skeleton
-  first; its spec's `mountEditionPageView(found, id, { copiesApi, router,
-  seriesApi, authorsApi })` takes the ports and the router in an options
-  object third, each optional: a `FakeCopiesApi` rejecting, a fresh
-  `createLibrisRouter()`, `new FakeSeriesApi([])` and `new
-  FakeAuthorsApi([])` by default; `pageOf(book, { seriesApi, authorsApi
-  })` mounts the found book, `tapPencil(screen)` opens its form,
-  `typeTitle(screen, title)` types in its *Titre* and `tapCross(screen)`
-  taps its cross.
+  first and `show(book)` makes it `found` with that book, asking nothing;
+  its spec's `mountEditionPageView(found, id, { copiesApi, router,
+  seriesApi, authorsApi, editionsApi })` takes the ports and the router in
+  an options object third, each optional: a `FakeCopiesApi` rejecting, a
+  fresh `createLibrisRouter()`, `new FakeSeriesApi([])`, `new
+  FakeAuthorsApi([])` and a `FakeEditionsApi` rejecting by default;
+  `pageOf(book, { seriesApi, authorsApi, editionsApi })` mounts the found
+  book, `tapPencil(screen)` opens its form, `typeTitle(screen, title)`
+  types in its *Titre*, `tapSave(screen)` taps *Enregistrer* and
+  `tapCross(screen)` taps its cross.
   `Copy.bookshelf` is a `ReaderBookshelf` (`src/domain/Copy.ts`),
   a `Bookshelf` with a required `role`, as in the contract: a test builds
   a copy's bookshelf by spreading a fixture with a role, `{ ...salon,
@@ -223,8 +225,14 @@ Read whole by a run that changes `frontend/`, after `every-run.md`.
   sends the `PUT /books/{id}`, the id through `encodeURIComponent`, and
   hands any answer but `200` to `problemOf`. `HeldEditionEditScenarios`'
   `open()` gives `world.save`, the other scenario files a
-  `FakeEditionsApi(new Error("no save in this scenario"))`; no view reads
-  the port yet.
+  `FakeEditionsApi(new Error("no save in this scenario"))`.
+  `EditionPageView` reads the port through `useSaveEdition(editionsApi)`,
+  which exposes `state` (`ready`, `saving`, `saved` with the `Book`
+  answered; a problem answer leaves it `saving` until T163) and
+  `save(id, edition)`, which takes the form's `SourceEdition` and hands the
+  port a copy without `isbn13`; the page's `saveEdits` awaits it and, once
+  `saved`, hands the book to `useFindCatalogueEdition`'s `show` and puts
+  `editing` back to false.
 - `EditionForm` takes `isbn13`, `edition` (a `SourceEdition` or a `Book`,
   absent for an unknown ISBN), `copies`, `covers`, `held` (handed to
   `CoverChoice`, `IsbnView` passing its own), `action` (`"add"` from
@@ -531,7 +539,8 @@ Read whole by a run that changes `frontend/`, after `every-run.md`.
   while `adding`, as the
   card's dots; `EditionPageView` fills it with the pencil on the card of
   a book with an ISBN, whatever the reader's role, and with the cross on
-  the form that pencil opens (`editing`), drawing then the title as
+  the form that pencil opens (`editing`), disabled while the save runs,
+  drawing then the title as
   answered in an `sr-only` `h1` above the form; the page's cross puts
   `editing` back to false, so the form, in the page's `v-if` chain,
   unmounts with its edits and the next pencil builds it afresh from the
@@ -734,7 +743,11 @@ Read whole by a run that changes `frontend/`, after `every-run.md`.
 - `@typescript-eslint/no-unused-vars` has no `argsIgnorePattern`: an
   `_`-prefixed parameter is still an error, so a cycle whose signature is
   fixed before its body uses the argument leaves `eslint .`, and the gate,
-  red until the cycle that reads it.
+  red until the cycle that reads it. Nor has it `ignoreRestSiblings`, so
+  `const { isbn13, ...details } = edition` is an error too, and TypeScript
+  refuses `delete` on a required property: `useSaveEdition`'s `detailsOf`
+  spreads the edition and drops the field with
+  `Reflect.deleteProperty(details, "isbn13")`.
 - `BarcodeDetector` is not in TypeScript's DOM library. The two interfaces
   the camera adapter needs are written in
   `src/infra/camera/CameraBarcodeScanner.ts` and are not `declare global`:
@@ -790,8 +803,9 @@ Read whole by a run that changes `frontend/`, after `every-run.md`.
   block.
 - The lookup's add is docked: `DockedAdd` (props `action`, required,
   `"add"` reading `isbn.add` and `"save"` `isbn.save` *Enregistrer*,
-  `adding`, `failed`, emitting `add`) draws the button, *Ajout en cours…*
-  while `adding`, and
+  `adding`, `failed`, emitting `add`) draws the button, while `adding`
+  *Ajout en cours…* (`isbn.adding`) for `"add"` and *Enregistrement en
+  cours…* (`isbn.saving`) for `"save"`, and
   the message under it when `failed`. It is drawn in two places: inside
   `EditionForm`'s root block, after the `<form>`, and in `IsbnView` after
   the card of every found answer, the two sharing the view's `flex flex-col`
