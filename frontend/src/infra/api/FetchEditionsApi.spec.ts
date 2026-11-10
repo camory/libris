@@ -48,4 +48,18 @@ describe("FetchEditionsApi", () => {
     // Then
     expect(answer).toEqual({ outcome: "problem", type: "/problems/not-found" });
   });
+
+  it("answers a problem when the id is not one", async () => {
+    // Given
+    const api = new FetchEditionsApi(inject("mockBaseUrl"));
+
+    // When
+    const answer = await api.save("not-a-uuid", editOnePiece2);
+
+    // Then
+    expect(answer).toEqual({
+      outcome: "problem",
+      type: "/problems/validation",
+    });
+  });
 });
