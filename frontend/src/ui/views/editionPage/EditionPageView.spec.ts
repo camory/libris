@@ -621,8 +621,7 @@ describe("EditionPageView", () => {
     });
 
     // When
-    screen.getByRole("button", { name: "Annuler les modifications" }).click();
-    await flushPromises();
+    await tapCross(screen);
 
     // Then
     expect(screen.queryByRole("textbox", { name: "Titre" })).toBeNull();
@@ -643,8 +642,7 @@ describe("EditionPageView", () => {
     await fireEvent.input(screen.getByRole("textbox", { name: "Titre" }), {
       target: { value: "Astérix le gaulois" },
     });
-    screen.getByRole("button", { name: "Annuler les modifications" }).click();
-    await flushPromises();
+    await tapCross(screen);
 
     // When
     await tapPencil(screen);
@@ -685,6 +683,11 @@ async function pageOf(
 
 async function tapPencil(screen: ReturnType<typeof within>) {
   screen.getByRole("button", { name: "Modifier" }).click();
+  await flushPromises();
+}
+
+async function tapCross(screen: ReturnType<typeof within>) {
+  screen.getByRole("button", { name: "Annuler les modifications" }).click();
   await flushPromises();
 }
 
