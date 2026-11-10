@@ -18,6 +18,7 @@ import fr.amory.libris.library.application.catalogue.BrowseCatalogue
 import fr.amory.libris.library.application.catalogue.FindCatalogueEdition
 import fr.amory.libris.library.application.catalogue.FindCatalogueSeries
 import fr.amory.libris.library.application.catalogue.ListCatalogueSeries
+import fr.amory.libris.library.application.catalogue.SaveEdition
 import fr.amory.libris.library.application.lookup.LookupIsbnForReader
 import fr.amory.libris.library.fixture.bookshelfOwnedBy
 import fr.amory.libris.library.fixture.readerNamed
@@ -49,6 +50,7 @@ import org.springframework.test.web.servlet.client.RestTestClient
     ListSeriesNames::class,
     ListAuthorNames::class,
     RemoveCopy::class,
+    SaveEdition::class,
   ],
 )
 class SecurityConfigTest @Autowired constructor(

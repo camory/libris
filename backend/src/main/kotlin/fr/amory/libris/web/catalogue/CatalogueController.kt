@@ -8,6 +8,9 @@ import fr.amory.libris.library.application.catalogue.FindCatalogueEdition
 import fr.amory.libris.library.application.catalogue.FindCatalogueEditionResult.Found
 import fr.amory.libris.library.application.catalogue.FindCatalogueEditionResult.NoSuchEdition
 import fr.amory.libris.library.application.catalogue.HeldEdition
+import fr.amory.libris.library.application.catalogue.SaveEdition
+import fr.amory.libris.library.application.catalogue.SaveEditionResult
+import fr.amory.libris.library.application.catalogue.SaveEditionResult.Saved
 import fr.amory.libris.library.domain.reader.Reader
 import fr.amory.libris.web.bookshelf.CopyResponse
 import fr.amory.libris.web.cover.coverPathOf
@@ -22,6 +25,8 @@ import org.springframework.http.ResponseEntity
 import org.springframework.security.core.annotation.AuthenticationPrincipal
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
+import org.springframework.web.bind.annotation.PutMapping
+import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
 import java.util.UUID
@@ -29,7 +34,8 @@ import java.util.UUID
 @RestController
 class CatalogueController(
   private val browseCatalogue: BrowseCatalogue,
-  private val findCatalogueEdition: FindCatalogueEdition) {
+  private val findCatalogueEdition: FindCatalogueEdition,
+  private val saveEdition: SaveEdition) {
   @GetMapping("/api/v1/books")
   fun books(@AuthenticationPrincipal reader: Reader, @RequestParam("after") after: UUID?): BookPageResponse =
     BookPageResponse.from(browseCatalogue(reader.id, after?.let { EditionId(it) }))
@@ -39,6 +45,17 @@ class CatalogueController(
     when (val result = findCatalogueEdition(reader.id, EditionId(id))) {
       is Found      -> ResponseEntity.status(OK).body(BookResponse.from(result.held))
       NoSuchEdition -> problem(NOT_FOUND, NOT_FOUND_PROBLEM).asResponse()
+    }
+
+  @PutMapping("/api/v1/books/{id}")
+  @Suppress("UnusedParameter")
+  fun save(
+    @AuthenticationPrincipal reader: Reader,
+    @PathVariable("id") id: UUID,
+    @RequestBody request: EditionDetailsRequest): ResponseEntity<Any> =
+    when (val result = saveEdition(reader.id, EditionId(id))) {
+      is Saved                        -> ResponseEntity.status(OK).body(BookResponse.from(result.held))
+      SaveEditionResult.NoSuchEdition -> problem(NOT_FOUND, NOT_FOUND_PROBLEM).asResponse()
     }
 }
 
