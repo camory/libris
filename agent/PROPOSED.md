@@ -543,13 +543,6 @@
   adds (Duplicated Code), one per context since `bibliography` never
   depends on `library`. Open: whether a shared kernel of the domain should
   hold one (found on T143, 2026-11-08).
-- Backend: `NewEdition` and `EditionDetails` repeat the edition's fields,
-  and so do `NewBookRequest` and `EditionDetailsRequest`, each request
-  refusing a blank title, author and series by itself (Duplicated Code).
-  T158 converts one into the other with `NewEdition.toEditionDetails()`,
-  so the add of a held ISBN writes through `EditEdition`; whether
-  `NewEdition` composes `EditionDetails` is still open (found on T154,
-  2026-11-10; rewritten on T158, 2026-11-10).
 - Frontend: `DockedAdd`, its `adding`, `failed` and `add` name the
   lookup's act, while the page's form saves through it with
   `action="save"`: a name for what it is, settled with T162's busy word or

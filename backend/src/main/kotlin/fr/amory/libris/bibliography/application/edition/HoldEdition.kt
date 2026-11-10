@@ -1,6 +1,7 @@
 package fr.amory.libris.bibliography.application.edition
 
 import fr.amory.libris.bibliography.application.edition.EditEditionResult.Edited
+import fr.amory.libris.bibliography.domain.Isbn
 import fr.amory.libris.bibliography.domain.SeriesEntry
 import fr.amory.libris.bibliography.domain.cover.AwaitedCover
 import fr.amory.libris.bibliography.domain.cover.AwaitedCoverRepository
@@ -25,12 +26,13 @@ class HoldEdition(
     newEdition.isbn?.let { editions.findByIsbn(it) }?.let { written(it, newEdition) } ?: inserted(newEdition)
 
   private fun written(held: Edition, newEdition: NewEdition): Edition =
-    checkNotNull(editEdition(held.id, newEdition.toEditionDetails()) as? Edited).edition
+    checkNotNull(editEdition(held.id, newEdition.details) as? Edited).edition
 
   private fun inserted(newEdition: NewEdition): Edition =
     checkNotNull(
       transactions.execute {
-        val edition = editionOf(newEdition, newEdition.series?.let { seriesVolumeOf(it) })
+        val details = newEdition.details
+        val edition = editionOf(newEdition.isbn, details, details.series?.let { seriesVolumeOf(it) })
         editions.insert(edition)
         edition.isbn?.let { awaitedCovers.insert(AwaitedCover(it, newEdition.coverSource)) }
         edition
@@ -43,21 +45,21 @@ class HoldEdition(
       seriesEntry.volumeNumber,
     )
 
-  private fun editionOf(newEdition: NewEdition, seriesVolume: SeriesVolume?): Edition =
+  private fun editionOf(isbn: Isbn?, details: EditionDetails, seriesVolume: SeriesVolume?): Edition =
     Edition(
       id = EditionId.new(),
-      isbn = newEdition.isbn,
-      kind = newEdition.kind,
-      title = newEdition.title,
-      subtitle = newEdition.subtitle,
-      contributions = newEdition.contributions,
+      isbn = isbn,
+      kind = details.kind,
+      title = details.title,
+      subtitle = details.subtitle,
+      contributions = details.contributions,
       seriesVolume = seriesVolume,
-      collection = newEdition.collection,
-      publisher = newEdition.publisher,
-      publicationYear = newEdition.publicationYear,
-      language = newEdition.language,
-      pageCount = newEdition.pageCount,
-      summary = newEdition.summary,
+      collection = details.collection,
+      publisher = details.publisher,
+      publicationYear = details.publicationYear,
+      language = details.language,
+      pageCount = details.pageCount,
+      summary = details.summary,
       coverName = null,
     )
 }

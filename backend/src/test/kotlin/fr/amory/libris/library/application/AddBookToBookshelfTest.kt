@@ -1,6 +1,7 @@
 package fr.amory.libris.library.application
 
 import fr.amory.libris.bibliography.application.edition.EditEdition
+import fr.amory.libris.bibliography.application.edition.EditionDetails
 import fr.amory.libris.bibliography.application.edition.HoldEdition
 import fr.amory.libris.bibliography.application.edition.NewEdition
 import fr.amory.libris.bibliography.domain.Contribution
@@ -223,17 +224,19 @@ class AddBookToBookshelfTest {
   private fun onePieceTomeOne(): NewEdition =
     NewEdition(
       isbn = isbnOf(ONE_PIECE),
-      kind = MANGA,
-      title = "Romance dawn",
-      subtitle = "À l'aube d'une grande aventure",
-      contributions = Contributions.of(listOf(Contribution("Eiichiro Oda", WRITER))),
-      series = SeriesEntry("One piece", 1),
-      collection = "Shonen manga",
-      publisher = "Glénat",
-      publicationYear = 2013,
-      language = "fr",
-      pageCount = 208,
-      summary = "Luffy prend la mer pour devenir le roi des pirates.",
+      details = EditionDetails(
+        kind = MANGA,
+        title = "Romance dawn",
+        subtitle = "À l'aube d'une grande aventure",
+        contributions = Contributions.of(listOf(Contribution("Eiichiro Oda", WRITER))),
+        series = SeriesEntry("One piece", 1),
+        collection = "Shonen manga",
+        publisher = "Glénat",
+        publicationYear = 2013,
+        language = "fr",
+        pageCount = 208,
+        summary = "Luffy prend la mer pour devenir le roi des pirates.",
+      ),
       coverSource = null,
     )
 }
