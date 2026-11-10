@@ -108,7 +108,7 @@ guard every frontend task.
       `h1` stays the title as answered, visually hidden (U02). Realises S3;
       un-skips its frontend test.
 
-- [ ] T161 Frontend: the cross drops the edits.
+- [x] T161 Frontend: the cross drops the edits.
       On the ouvrage's page the cross drops the edits with no question, as
       edition-form S13: the card shows again as Libris answered it, its
       pencil and its trash back, *Enregistrer* gone, and the pencil reopens

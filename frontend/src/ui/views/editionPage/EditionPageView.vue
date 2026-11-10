@@ -112,7 +112,7 @@ const failure = computed(() =>
         :author-names="authorNames"
       >
         <template #corner>
-          <IconButton :label="t('isbn.cancelEdit')">
+          <IconButton :label="t('isbn.cancelEdit')" @click="editing = false">
             <X :size="22" class="shrink-0" />
           </IconButton>
         </template>

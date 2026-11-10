@@ -272,3 +272,18 @@ Format:
 - Left over: T161 to T163 per the backlog; the `DockedAdd` naming item in
   `agent/PROPOSED.md`; the page card and form checked by hand by Tophe, in
   both schemes.
+
+## 2026-11-10 — T161 The cross drops the edits — done
+- Did: the cross of the ouvrage's page form puts `editing` back to false:
+  the card shows again as Libris answered it, its pencil and its trash
+  back, and the next pencil builds the form afresh. S8 runs and passes.
+- Decided: the spec's `tapCross(screen)` helper joined `tapPencil` in the
+  refactor step, the two cases repeating the cross's tap.
+- Deviations from the brief: step 2's mutation hid the kept-mounted form
+  with `aria-hidden` instead of `v-show`: under `v-show` jsdom keeps the
+  `display: none` read first on the detached tree, and five cases red on
+  the form never shown, not on the edits coming back. With `aria-hidden`
+  the guard alone reds, on the typed title (in the PR). Step 1 was a red as
+  foreseen; steps 2 and 3 are guards, run and reverted.
+- Left over: T162 (the save, S4) and T163 (its failure, S9) per the
+  backlog; the cross checked by hand by Tophe on the page.

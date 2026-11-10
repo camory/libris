@@ -173,7 +173,9 @@ Read whole by a run that changes `frontend/`, after `every-run.md`.
   object third, each optional: a `FakeCopiesApi` rejecting, a fresh
   `createLibrisRouter()`, `new FakeSeriesApi([])` and `new
   FakeAuthorsApi([])` by default; `pageOf(book, { seriesApi, authorsApi
-  })` mounts the found book and `tapPencil(screen)` opens its form.
+  })` mounts the found book, `tapPencil(screen)` opens its form,
+  `typeTitle(screen, title)` types in its *Titre* and `tapCross(screen)`
+  taps its cross.
   `Copy.bookshelf` is a `ReaderBookshelf` (`src/domain/Copy.ts`),
   a `Bookshelf` with a required `role`, as in the contract: a test builds
   a copy's bookshelf by spreading a fixture with a role, `{ ...salon,
@@ -530,7 +532,10 @@ Read whole by a run that changes `frontend/`, after `every-run.md`.
   card's dots; `EditionPageView` fills it with the pencil on the card of
   a book with an ISBN, whatever the reader's role, and with the cross on
   the form that pencil opens (`editing`), drawing then the title as
-  answered in an `sr-only` `h1` above the form; each an `IconButton` (prop `label`, the icon in its
+  answered in an `sr-only` `h1` above the form; the page's cross puts
+  `editing` back to false, so the form, in the page's `v-if` chain,
+  unmounts with its edits and the next pencil builds it afresh from the
+  answer the page holds, no request sent; each an `IconButton` (prop `label`, the icon in its
   default slot, `class`, `disabled` and `@click` falling through to its
   `button`), as the camera's toggle. Its
   callers are `IsbnView`, for every found answer, and
@@ -545,7 +550,10 @@ Read whole by a run that changes `frontend/`, after `every-run.md`.
 - jsdom clears its computed-style cache only when the tree is attached to
   the document, and every component spec and scenario mounts detached: an
   element whose `hidden` attribute or `v-show` style changes keeps the
-  `display` read first, so Testing Library keeps it hidden or visible.
+  `display` read first, so Testing Library keeps it hidden or visible: a
+  guard's mutation that hides a kept-mounted form under `v-show` reds every
+  case on the form never shown, and hides it with `aria-hidden` instead
+  (T161).
   Toggle what a query must see with `aria-hidden`, which is read as an
   attribute, and hide it on screen with a class, which draws nothing in the
   specs (`CoverChoice`'s images).

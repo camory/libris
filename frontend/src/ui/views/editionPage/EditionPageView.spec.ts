@@ -559,9 +559,7 @@ describe("EditionPageView", () => {
     await tapPencil(screen);
 
     // When
-    await fireEvent.input(screen.getByRole("textbox", { name: "Titre" }), {
-      target: { value: "Astérix le gaulois" },
-    });
+    await typeTitle(screen, "Astérix le gaulois");
 
     // Then
     expect(screen.getAllByRole("heading")).toEqual([
@@ -611,6 +609,43 @@ describe("EditionPageView", () => {
       [],
     );
   });
+
+  it("shows the card again on the cross, the edits dropped", async () => {
+    // Given
+    const screen = await pageOf(asterixWithIsbn);
+    await tapPencil(screen);
+    await typeTitle(screen, "Astérix le gaulois");
+
+    // When
+    await tapCross(screen);
+
+    // Then
+    expect(screen.queryByRole("textbox", { name: "Titre" })).toBeNull();
+    expect(screen.queryByRole("button", { name: "Enregistrer" })).toBeNull();
+    expect(
+      screen.queryByRole("button", { name: "Annuler les modifications" }),
+    ).toBeNull();
+    expect(screen.getByRole("button", { name: "Modifier" })).toBeDefined();
+    expect(
+      screen.getByRole("button", { name: "Retirer un exemplaire" }),
+    ).toBeDefined();
+  });
+
+  it("reopens the form as answered after the cross", async () => {
+    // Given
+    const screen = await pageOf(asterixWithIsbn);
+    await tapPencil(screen);
+    await typeTitle(screen, "Astérix le gaulois");
+    await tapCross(screen);
+
+    // When
+    await tapPencil(screen);
+
+    // Then
+    expect(
+      screen.getByRole<HTMLInputElement>("textbox", { name: "Titre" }).value,
+    ).toBe("Astérix le Gaulois");
+  });
 });
 
 function seen(wrapper: ReturnType<typeof mountEditionPageView>) {
@@ -643,6 +678,17 @@ async function pageOf(
 async function tapPencil(screen: ReturnType<typeof within>) {
   screen.getByRole("button", { name: "Modifier" }).click();
   await flushPromises();
+}
+
+async function tapCross(screen: ReturnType<typeof within>) {
+  screen.getByRole("button", { name: "Annuler les modifications" }).click();
+  await flushPromises();
+}
+
+async function typeTitle(screen: ReturnType<typeof within>, title: string) {
+  await fireEvent.input(screen.getByRole("textbox", { name: "Titre" }), {
+    target: { value: title },
+  });
 }
 
 async function askingToRemove(

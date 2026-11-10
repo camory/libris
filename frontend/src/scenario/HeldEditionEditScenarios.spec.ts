@@ -224,7 +224,7 @@ describe("Held edition edit", () => {
     expect(pencil(screen)).toBeDefined();
   });
 
-  it.skip("S8 The cross drops the edits", async () => {
+  it("S8 The cross drops the edits", async () => {
     // Given
     const screen = await formOfThePage({});
     await fill(screen, "Titre", "Astérix le gaulois");
