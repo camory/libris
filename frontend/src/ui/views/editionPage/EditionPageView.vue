@@ -1,14 +1,20 @@
 <script setup lang="ts">
-import { CircleAlert } from "@lucide/vue";
-import { computed, inject, watch } from "vue";
+import { CircleAlert, Pencil, X } from "@lucide/vue";
+import { computed, inject, ref, watch } from "vue";
 import { useI18n } from "vue-i18n";
 import { useRouter } from "vue-router";
+import { authorsApiKey } from "../../../application/AuthorsApi";
 import { catalogueApiKey } from "../../../application/CatalogueApi";
 import { copiesApiKey } from "../../../application/CopiesApi";
+import { seriesApiKey } from "../../../application/SeriesApi";
 import { useFindCatalogueEdition } from "../../../application/useFindCatalogueEdition";
+import { useListAuthorNames } from "../../../application/useListAuthorNames";
+import { useListSeriesNames } from "../../../application/useListSeriesNames";
 import { useRemoveCopy } from "../../../application/useRemoveCopy";
 import type { CoverCandidate } from "../../../domain/Cover";
+import EditionForm from "../../components/EditionForm.vue";
 import HeldEditionCardSkeleton from "../../components/HeldEditionCardSkeleton.vue";
+import IconButton from "../../components/IconButton.vue";
 import SourceEditionCard from "../../components/SourceEditionCard.vue";
 
 const props = defineProps<{ id: string }>();
@@ -18,6 +24,13 @@ const router = useRouter();
 const { state, find, refresh } = useFindCatalogueEdition(
   inject(catalogueApiKey)!,
 );
+const { names: seriesNames, list: listSeriesNames } = useListSeriesNames(
+  inject(seriesApiKey)!,
+);
+const { names: authorNames, list: listAuthorNames } = useListAuthorNames(
+  inject(authorsApiKey)!,
+);
+const editing = ref(false);
 let removedId: string | null = null;
 const { state: removal, remove } = useRemoveCopy(
   inject(copiesApiKey)!,
@@ -55,6 +68,12 @@ async function removeCopy(copyId: string) {
   await remove(copyId);
 }
 
+function edit() {
+  editing.value = true;
+  void listSeriesNames();
+  void listAuthorNames();
+}
+
 watch(
   () => props.id,
   (id) => void find(id),
@@ -76,6 +95,29 @@ const failure = computed(() =>
 <template>
   <main class="mx-auto w-full max-w-120 px-5 pt-5 pb-5">
     <HeldEditionCardSkeleton v-if="state.status === 'loading'" />
+    <template
+      v-else-if="state.status === 'found' && editing && state.book.isbn13"
+    >
+      <h1 class="sr-only">{{ state.book.title }}</h1>
+      <EditionForm
+        :isbn13="state.book.isbn13"
+        :edition="state.book"
+        :copies="state.book.copies"
+        :covers="covers"
+        held
+        action="save"
+        :adding="false"
+        :failed="false"
+        :series-names="seriesNames"
+        :author-names="authorNames"
+      >
+        <template #corner>
+          <IconButton :label="t('isbn.cancelEdit')">
+            <X :size="22" class="shrink-0" />
+          </IconButton>
+        </template>
+      </EditionForm>
+    </template>
     <SourceEditionCard
       v-else-if="state.status === 'found'"
       :edition="state.book"
@@ -86,7 +128,13 @@ const failure = computed(() =>
       :removing="removal.status === 'removing'"
       :removal-failed="removal.status === 'unavailable'"
       @remove="removeCopy"
-    />
+    >
+      <template v-if="state.book.isbn13" #corner>
+        <IconButton :label="t('isbn.edit')" @click="edit">
+          <Pencil :size="22" class="shrink-0" />
+        </IconButton>
+      </template>
+    </SourceEditionCard>
     <p v-else class="flex items-start gap-2 text-body text-danger">
       <CircleAlert :size="22" class="shrink-0" />
       <span>{{ failure }}</span>

@@ -2,6 +2,7 @@
 import { CircleAlert } from "@lucide/vue";
 import { computed, nextTick, reactive, ref, useId } from "vue";
 import { useI18n } from "vue-i18n";
+import type { Book } from "../../domain/Book";
 import type { Copy } from "../../domain/Copy";
 import type { CoverCandidate } from "../../domain/Cover";
 import {
@@ -31,10 +32,11 @@ import SuggestionList from "./SuggestionList.vue";
 
 const props = defineProps<{
   isbn13: string;
-  edition?: SourceEdition;
+  edition?: SourceEdition | Book;
   copies: Copy[];
   covers: CoverCandidate[];
   held: boolean;
+  action: "add" | "save";
   adding: boolean;
   failed: boolean;
   shownSource?: string | null;
@@ -224,7 +226,7 @@ function focusFirstRefused(refused: (AuthorRefusal | null)[]) {
         </div>
       </div>
 
-      <BookshelvesHolding :copies="copies" />
+      <BookshelvesHolding :copies="copies" without-trash />
 
       <div
         class="flex h-11 rounded-xl border-[1.5px] border-border bg-surface p-0.5"
@@ -333,6 +335,6 @@ function focusFirstRefused(refused: (AuthorRefusal | null)[]) {
         ></textarea>
       </div>
     </form>
-    <DockedAdd :adding="adding" :failed="failed" @add="add" />
+    <DockedAdd :action="action" :adding="adding" :failed="failed" @add="add" />
   </div>
 </template>

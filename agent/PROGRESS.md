@@ -256,3 +256,19 @@ Format:
   step 12 and the close.
 - Left over: T160 to T163 per the backlog; the lookup card and form of a
   held ISBN checked by hand by Tophe, in both schemes.
+
+## 2026-11-10 — T160 The pencil opens the form on the ouvrage's page — done
+- Did: the ouvrage's page offers *Modifier* on the card of a book with an
+  ISBN, whatever the role; its tap shows the lookup's form with the cross,
+  *Enregistrer* docked and the answered title as a hidden `h1`. S3 passes.
+- Decided: the form and its `sr-only` `h1` sit in one `<template>` branch
+  of the page's `v-if` chain, before the card's, on `editing` and a
+  non-null `isbn13`, so the form's `isbn13` is narrowed with no cast.
+  `edit()` sets `editing` and asks both lists of names, unawaited.
+  The spec's `pageOf` and `tapPencil` helpers carry the pencil's cases.
+- Deviations from the brief: none. Steps 1 to 3 and 5 to 8 were reds as
+  foreseen; steps 4, 9 and 10 are guards, their mutations run and
+  reverted (listed in the PR).
+- Left over: T161 to T163 per the backlog; the `DockedAdd` naming item in
+  `agent/PROPOSED.md`; the page card and form checked by hand by Tophe, in
+  both schemes.

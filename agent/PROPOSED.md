@@ -555,3 +555,7 @@
   `errors`, and `CoverController` and `IsbnController` build theirs inline
   (Duplicated Code): one function beside `problem` in `Problems.kt` would
   serve them all (found on T154, 2026-11-10).
+- Frontend: `DockedAdd`, its `adding`, `failed` and `add` name the
+  lookup's act, while the page's form saves through it with
+  `action="save"`: a name for what it is, settled with T162's busy word or
+  after it (found on T160, 2026-11-10).

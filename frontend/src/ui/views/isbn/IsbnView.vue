@@ -301,6 +301,7 @@ async function send(edition: SourceEdition) {
           :copies="shownCopies"
           :covers="covers"
           :held="held"
+          action="add"
           :shown-source="coverSource"
           :adding="adding"
           :failed="failed"
@@ -345,6 +346,7 @@ async function send(edition: SourceEdition) {
       </KeepAlive>
       <DockedAdd
         v-if="answerShown === 'card' && edition"
+        action="add"
         :adding="adding"
         :failed="failed"
         @add="send(edition)"

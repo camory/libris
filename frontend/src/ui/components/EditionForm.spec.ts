@@ -579,6 +579,28 @@ describe("EditionForm", () => {
     expect(text).not.toContain("Dans aucune de vos bibliothèques");
   });
 
+  it("draws its bookshelf rows without trash", () => {
+    // When
+    const fields = screen(onePiece1, [onLea]);
+
+    // Then
+    expect(fields.getByText("Dans Bibliothèque de Léa")).toBeDefined();
+    expect(
+      fields.queryAllByRole("button", { name: "Retirer un exemplaire" }),
+    ).toEqual([]);
+  });
+
+  it("offers Enregistrer when it saves", () => {
+    // When
+    const fields = screen(onePiece1, [], [], { action: "save" });
+
+    // Then
+    expect(fields.getByRole("button", { name: "Enregistrer" })).toBeDefined();
+    expect(
+      fields.queryByRole("button", { name: "Ajouter à ma bibliothèque" }),
+    ).toBeNull();
+  });
+
   it("sends the fields as the reader left them", async () => {
     // Given
     const wrapper = form(onePiece1);
@@ -1396,6 +1418,7 @@ describe("EditionForm", () => {
       seriesNames = null,
       authorNames = null,
       held = false,
+      action = "add",
     }: {
       adding?: boolean;
       failed?: boolean;
@@ -1405,6 +1428,7 @@ describe("EditionForm", () => {
       seriesNames?: string[] | null;
       authorNames?: string[] | null;
       held?: boolean;
+      action?: "add" | "save";
     } = {},
   ) {
     return mount(EditionForm, {
@@ -1419,6 +1443,7 @@ describe("EditionForm", () => {
         seriesNames,
         authorNames,
         held,
+        action,
       },
       slots: corner === undefined ? {} : { corner },
       global: { plugins: [createLibrisI18n()] },

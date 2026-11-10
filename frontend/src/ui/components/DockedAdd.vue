@@ -3,7 +3,11 @@ import { CircleAlert } from "@lucide/vue";
 import { useI18n } from "vue-i18n";
 import BusySpinner from "./BusySpinner.vue";
 
-defineProps<{ adding: boolean; failed: boolean }>();
+defineProps<{
+  action: "add" | "save";
+  adding: boolean;
+  failed: boolean;
+}>();
 
 const emit = defineEmits<{ add: [] }>();
 
@@ -22,7 +26,7 @@ const { t } = useI18n();
         @click="emit('add')"
       >
         <BusySpinner v-if="adding" class="size-4" />
-        {{ adding ? t("isbn.adding") : t("isbn.add") }}
+        {{ adding ? t("isbn.adding") : t(`isbn.${action}`) }}
       </button>
       <p v-if="failed" class="flex items-start gap-2 text-body text-danger">
         <CircleAlert :size="22" class="shrink-0" />

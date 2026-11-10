@@ -145,7 +145,7 @@ describe("Held edition edit", () => {
     expect(screen.queryByLabelText("Titre")).toBeNull();
   });
 
-  it.skip("S3 The pencil opens the form on the ouvrage's page", async () => {
+  it("S3 The pencil opens the form on the ouvrage's page", async () => {
     // Given
     const screen = open(pageOf(asterix), { catalogue: librisAnswers(asterix) });
     await screen.findByRole("button", trashName);

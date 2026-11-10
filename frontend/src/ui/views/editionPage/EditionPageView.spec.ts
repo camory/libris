@@ -1,5 +1,5 @@
 import { BookOpen, CircleAlert } from "@lucide/vue";
-import { waitFor, within } from "@testing-library/dom";
+import { fireEvent, waitFor, within } from "@testing-library/dom";
 import { flushPromises, mount } from "@vue/test-utils";
 import { afterEach, describe, expect, it } from "vitest";
 import type { Router } from "vue-router";
@@ -10,10 +10,15 @@ import {
   type FindBookAnswer,
 } from "../../../application/CatalogueApi";
 import {
+  authorsApiKey,
+  type AuthorsApi,
+} from "../../../application/AuthorsApi";
+import {
   copiesApiKey,
   type CopiesApi,
   type RemoveAnswer,
 } from "../../../application/CopiesApi";
+import { seriesApiKey, type SeriesApi } from "../../../application/SeriesApi";
 import type { Book } from "../../../domain/Book";
 import {
   asterixEtSesAmis,
@@ -22,8 +27,10 @@ import {
   romanceDawn,
   salon,
 } from "../../../fixture/Books";
+import { FakeAuthorsApi } from "../../../fixture/FakeAuthorsApi";
 import { FakeCatalogueApi } from "../../../fixture/FakeCatalogueApi";
 import { FakeCopiesApi } from "../../../fixture/FakeCopiesApi";
+import { FakeSeriesApi } from "../../../fixture/FakeSeriesApi";
 import { normalised } from "../../../fixture/normalised";
 import HeldEditionCardSkeleton from "../../components/HeldEditionCardSkeleton.vue";
 import PageTitleSkeleton from "../../components/PageTitleSkeleton.vue";
@@ -34,8 +41,17 @@ import EditionPageView from "./EditionPageView.vue";
 const mountEditionPageView = (
   found: FindBookAnswer | CatalogueApi,
   id = asterixLeGaulois.id,
-  copiesApi: CopiesApi = new FakeCopiesApi(new Error("no removal here")),
-  router: Router = createLibrisRouter(),
+  {
+    copiesApi = new FakeCopiesApi(new Error("no removal here")),
+    router = createLibrisRouter(),
+    seriesApi = new FakeSeriesApi([]),
+    authorsApi = new FakeAuthorsApi([]),
+  }: {
+    copiesApi?: CopiesApi;
+    router?: Router;
+    seriesApi?: SeriesApi;
+    authorsApi?: AuthorsApi;
+  } = {},
 ) =>
   mount(EditionPageView, {
     props: { id },
@@ -45,6 +61,8 @@ const mountEditionPageView = (
         [catalogueApiKey]:
           "outcome" in found ? new FakeCatalogueApi([], found) : found,
         [copiesApiKey]: copiesApi,
+        [seriesApiKey]: seriesApi,
+        [authorsApiKey]: authorsApi,
       },
     },
   });
@@ -236,7 +254,7 @@ describe("EditionPageView", () => {
     const wrapper = mountEditionPageView(
       { outcome: "found", book: romanceDawnTwiceOnLea },
       romanceDawn.id,
-      copiesApi,
+      { copiesApi },
     );
     await flushPromises();
     const screen = within(wrapper.element as HTMLElement);
@@ -258,7 +276,7 @@ describe("EditionPageView", () => {
     const wrapper = mountEditionPageView(
       { outcome: "found", book: romanceDawnTwiceOnLea },
       romanceDawn.id,
-      new LibrisNotRemoving(),
+      { copiesApi: new LibrisNotRemoving() },
     );
     await flushPromises();
     const screen = within(wrapper.element as HTMLElement);
@@ -286,7 +304,7 @@ describe("EditionPageView", () => {
         ],
       ),
       romanceDawn.id,
-      new FakeCopiesApi({ outcome: "removed" }),
+      { copiesApi: new FakeCopiesApi({ outcome: "removed" }) },
     );
     await flushPromises();
     const screen = within(wrapper.element as HTMLElement);
@@ -310,7 +328,7 @@ describe("EditionPageView", () => {
         book: romanceDawnTwiceOnLea,
       }),
       romanceDawn.id,
-      new FakeCopiesApi({ outcome: "removed" }),
+      { copiesApi: new FakeCopiesApi({ outcome: "removed" }) },
     );
     await flushPromises();
     const screen = within(wrapper.element as HTMLElement);
@@ -333,7 +351,7 @@ describe("EditionPageView", () => {
     const wrapper = mountEditionPageView(
       { outcome: "found", book: romanceDawnTwiceOnLea },
       romanceDawn.id,
-      new FakeCopiesApi(new TypeError("Failed to fetch")),
+      { copiesApi: new FakeCopiesApi(new TypeError("Failed to fetch")) },
     );
     await flushPromises();
     const screen = within(wrapper.element as HTMLElement);
@@ -481,6 +499,118 @@ describe("EditionPageView", () => {
     // Then
     await waitFor(() => expect(window.location.pathname).toBe("/catalogue"));
   });
+
+  it("offers the pencil on the card whatever the reader's role", async () => {
+    // Given
+    const wrapper = mountEditionPageView({
+      outcome: "found",
+      book: asterixWithIsbnOnlyViewed,
+    });
+
+    // When
+    await flushPromises();
+
+    // Then
+    const screen = within(wrapper.element as HTMLElement);
+    expect(screen.getAllByRole("button")).toEqual([
+      screen.getByRole("button", { name: "Modifier" }),
+    ]);
+  });
+
+  it("offers no pencil on an ouvrage with no ISBN", async () => {
+    // Given
+    const wrapper = mountEditionPageView({
+      outcome: "found",
+      book: asterixLeGaulois,
+    });
+
+    // When
+    await flushPromises();
+
+    // Then
+    expect(
+      within(wrapper.element as HTMLElement).queryByRole("button", {
+        name: "Modifier",
+      }),
+    ).toBeNull();
+  });
+
+  it("shows the form in place of the card on the pencil", async () => {
+    // Given
+    const screen = await pageOf(asterixWithIsbn);
+
+    // When
+    await tapPencil(screen);
+
+    // Then
+    expect(
+      screen.getByRole<HTMLInputElement>("textbox", { name: "Titre" }).value,
+    ).toBe("Astérix le Gaulois");
+    expect(screen.getByText("9782012101333")).toBeDefined();
+    expect(
+      screen.getByRole("button", { name: "Annuler les modifications" }),
+    ).toBeDefined();
+    expect(screen.queryByRole("button", { name: "Modifier" })).toBeNull();
+  });
+
+  it("keeps the answered title as the page's heading while the form shows", async () => {
+    // Given
+    const screen = await pageOf(asterixWithIsbn);
+    await tapPencil(screen);
+
+    // When
+    await fireEvent.input(screen.getByRole("textbox", { name: "Titre" }), {
+      target: { value: "Astérix le gaulois" },
+    });
+
+    // Then
+    expect(screen.getAllByRole("heading")).toEqual([
+      screen.getByRole("heading", { level: 1, name: "Astérix le Gaulois" }),
+    ]);
+  });
+
+  it("says Existante in Série for a series of the house", async () => {
+    // Given
+    const screen = await pageOf(asterixWithIsbn, {
+      seriesApi: new FakeSeriesApi([], undefined, ["Astérix"]),
+    });
+
+    // When
+    await tapPencil(screen);
+
+    // Then
+    expect(screen.getByText("Existante")).toBeDefined();
+  });
+
+  it("says Existant for an author of the house", async () => {
+    // Given
+    const screen = await pageOf(asterixWithIsbn, {
+      authorsApi: new FakeAuthorsApi(["René Goscinny"]),
+    });
+
+    // When
+    await tapPencil(screen);
+
+    // Then
+    expect(screen.getAllByText("Existant")).toHaveLength(1);
+  });
+
+  it("shows the stored cover in the form with no dot", async () => {
+    // Given
+    const screen = await pageOf(romanceDawnWithIsbn);
+
+    // When
+    await tapPencil(screen);
+
+    // Then
+    const cover = screen.getByRole("img", {
+      name: "Couverture de Romance dawn",
+    });
+    expect(cover.getAttribute("src")).toBe(romanceDawn.coverUrl);
+    expect(screen.queryAllByRole("button", { name: /^Couverture / })).toEqual(
+      [],
+    );
+  });
 });
 
 function seen(wrapper: ReturnType<typeof mountEditionPageView>) {
@@ -497,6 +627,24 @@ async function routerOn(...paths: string[]) {
   return router;
 }
 
+async function pageOf(
+  book: Book,
+  ports: { seriesApi?: SeriesApi; authorsApi?: AuthorsApi } = {},
+) {
+  const wrapper = mountEditionPageView(
+    { outcome: "found", book },
+    book.id,
+    ports,
+  );
+  await flushPromises();
+  return within(wrapper.element as HTMLElement);
+}
+
+async function tapPencil(screen: ReturnType<typeof within>) {
+  screen.getByRole("button", { name: "Modifier" }).click();
+  await flushPromises();
+}
+
 async function askingToRemove(
   router: Router,
   catalogue: FindBookAnswer | CatalogueApi = {
@@ -505,12 +653,10 @@ async function askingToRemove(
   },
   copiesApi: CopiesApi = new FakeCopiesApi({ outcome: "removed" }),
 ) {
-  const wrapper = mountEditionPageView(
-    catalogue,
-    romanceDawn.id,
+  const wrapper = mountEditionPageView(catalogue, romanceDawn.id, {
     copiesApi,
     router,
-  );
+  });
   await flushPromises();
   const screen = within(wrapper.element as HTMLElement);
   screen.getByRole("button", { name: "Retirer un exemplaire" }).click();
@@ -550,6 +696,24 @@ const romanceDawnViewedOnSalon: Book = {
 const romanceDawnOnLeaAndViewedOnSalon: Book = {
   ...romanceDawn,
   copies: [...romanceDawnOnceOnLea.copies, ...romanceDawnViewedOnSalon.copies],
+};
+
+const asterixWithIsbn: Book = {
+  ...asterixLeGaulois,
+  isbn13: "9782012101333",
+};
+
+const asterixWithIsbnOnlyViewed: Book = {
+  ...asterixWithIsbn,
+  copies: asterixWithIsbn.copies.map((copy) => ({
+    ...copy,
+    bookshelf: { ...copy.bookshelf, role: "VIEWER" },
+  })),
+};
+
+const romanceDawnWithIsbn: Book = {
+  ...romanceDawn,
+  isbn13: "9782723488525",
 };
 
 const noSuchOuvrage: FindBookAnswer = {
