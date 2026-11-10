@@ -345,22 +345,24 @@ private val COPY_OF_ASTERIX_1 = CopyOnBookshelf(
 
 private val NEW_ONE_PIECE_1 = NewEdition(
   isbn = isbnOf("9782723488525"),
-  kind = MANGA,
-  title = "Romance dawn",
-  subtitle = "à l'aube d'une grande aventure",
-  contributions = Contributions.of(
-    listOf(
-      Contribution("Eiichirō Oda", WRITER),
-      Contribution("Eiichirō Oda", ARTIST),
+  details = EditionDetails(
+    kind = MANGA,
+    title = "Romance dawn",
+    subtitle = "à l'aube d'une grande aventure",
+    contributions = Contributions.of(
+      listOf(
+        Contribution("Eiichirō Oda", WRITER),
+        Contribution("Eiichirō Oda", ARTIST),
+      ),
     ),
+    series = SeriesEntry("One piece", 1),
+    collection = "Shonen manga",
+    publisher = "Glénat",
+    publicationYear = 2013,
+    language = "fr",
+    pageCount = 203,
+    summary = null,
   ),
-  series = SeriesEntry("One piece", 1),
-  collection = "Shonen manga",
-  publisher = "Glénat",
-  publicationYear = 2013,
-  language = "fr",
-  pageCount = 203,
-  summary = null,
   coverSource = INVENTAIRE,
 )
 
