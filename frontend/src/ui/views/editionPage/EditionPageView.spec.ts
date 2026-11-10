@@ -760,12 +760,7 @@ describe("EditionPageView", () => {
 
   it("says the save failed when Libris refuses it", async () => {
     // Given
-    const screen = await pageOf(asterixWithIsbn, {
-      editionsApi: new FakeEditionsApi({
-        outcome: "problem",
-        type: "/problems/validation",
-      }),
-    });
+    const screen = await pageOf(asterixWithIsbn, { editionsApi: refused() });
     await tapPencil(screen);
     await typeTitle(screen, "Astérix le gaulois");
 
@@ -782,12 +777,7 @@ describe("EditionPageView", () => {
 
   it("keeps the form as left once the save failed", async () => {
     // Given
-    const screen = await pageOf(asterixWithIsbn, {
-      editionsApi: new FakeEditionsApi({
-        outcome: "problem",
-        type: "/problems/validation",
-      }),
-    });
+    const screen = await pageOf(asterixWithIsbn, { editionsApi: refused() });
     await tapPencil(screen);
     await typeTitle(screen, "Astérix le gaulois");
 
@@ -853,6 +843,13 @@ async function tapSave(screen: ReturnType<typeof within>) {
 async function typeTitle(screen: ReturnType<typeof within>, title: string) {
   await fireEvent.input(screen.getByRole("textbox", { name: "Titre" }), {
     target: { value: title },
+  });
+}
+
+function refused() {
+  return new FakeEditionsApi({
+    outcome: "problem",
+    type: "/problems/validation",
   });
 }
 
