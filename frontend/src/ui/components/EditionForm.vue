@@ -35,6 +35,7 @@ const props = defineProps<{
   copies: Copy[];
   covers: CoverCandidate[];
   held: boolean;
+  action: "add" | "save";
   adding: boolean;
   failed: boolean;
   shownSource?: string | null;
@@ -333,6 +334,6 @@ function focusFirstRefused(refused: (AuthorRefusal | null)[]) {
         ></textarea>
       </div>
     </form>
-    <DockedAdd :adding="adding" :failed="failed" @add="add" />
+    <DockedAdd :action="action" :adding="adding" :failed="failed" @add="add" />
   </div>
 </template>

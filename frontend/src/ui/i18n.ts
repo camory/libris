@@ -59,6 +59,7 @@ const fr = {
     cancelEdit: "Annuler les modifications",
     searching: "Recherche en cours…",
     add: "Ajouter à ma bibliothèque",
+    save: "Enregistrer",
     adding: "Ajout en cours…",
     invalid: "ISBN invalide",
     error: "Erreur lors de la recherche, veuillez réessayer plus tard.",
