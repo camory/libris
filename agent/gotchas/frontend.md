@@ -239,17 +239,17 @@ Read whole by a run that changes `frontend/`, after `every-run.md`.
 - `EditionForm` takes `isbn13`, `edition` (a `SourceEdition` or a `Book`,
   absent for an unknown ISBN), `copies`, `covers`, `held` (handed to
   `CoverChoice`, `IsbnView` passing its own), `action` (`"add"` from
-  `IsbnView`, `"save"` from `EditionPageView`, handed to `DockedAdd`),
-  `adding`, `failed` and
+  `IsbnView`, `"save"` from `EditionPageView`, handed to `DockedButton`),
+  `busy`, `failed` and
   `seriesNames` and `authorNames`, required,
   `shownSource`, optional, as the card's, and the named slot `corner` as
-  the card's, emits `coverSource` as the card does, and `add` with the edition its
+  the card's, emits `coverSource` as the card does, and `send` with the edition its
   fields read as, `editionOf(isbn13, draft, locale)`
   (`src/domain/EditionDraft.ts`), whose `draft.authors` are the boxes
   (`Author[]`), sent as one `SourceAuthor` per name and role, in order,
   each name trimmed, a box whose trimmed name is empty sending nothing
   whatever its roles. Its root is a plain block holding the
-  card-shaped `<form>` then `DockedAdd`. While `adding` its textboxes,
+  card-shaped `<form>` then `DockedButton`. While `busy` its textboxes,
   radios, author names, trashes and roles' lines and *Ajouter un auteur*
   are `disabled`. It fills its text once, at setup: `kind`
   from `edition.kind`, a `values` record for the nine `input`s drawn by one
@@ -316,7 +316,7 @@ Read whole by a run that changes `frontend/`, after `every-run.md`.
   `IsbnView.spec.ts`'s `field()` still finds the one `ISBN` textbox. A
   case that types in a field the mutation makes a `number` input finds
   it with `getByLabelText`: a role query reds on the `spinbutton` before
-  the value is read. On the add's tap it asks `refusalsOf(draft, locale)`
+  the value is read. On the dock's press it asks `refusalsOf(draft, locale)`
   (beside `editionOf`, a `Refusals` record from a text field to
   `missing`, `invalidNumber`, `unknownLanguage` or `withoutSeries`, a
   volume number with a blank series, `invalidNumber` winning over it)
@@ -325,7 +325,7 @@ Read whole by a run that changes `frontend/`, after `every-run.md`.
   empty never refused, `"twice"` for one whose trimmed name equals under
   `nameOrder(locale)` that of a box before it, whatever the roles, and
   winning over `"missingRole"`) and
-  emits `add` only when both answer none; otherwise it keeps those
+  emits `send` only when both answer none; otherwise it keeps those
   answers until the next tap, the authors' in `authorRefusals`, a `Map` by
   the box's `key` given to each box as `refusal` (an author box takes no
   `aria-invalid`), marks each refused field's box `aria-invalid="true"`
@@ -356,7 +356,7 @@ Read whole by a run that changes `frontend/`, after `every-run.md`.
   it through a falling-through `class`; `Check` at 22 and `text-accent`
   for `existing`, `text-muted` alone for `new`, no spec of its own,
   `AuthorBox` its other caller) as `isbn.form.seriesNameStatus.<status>`,
-  and takes `pr-32` while it does. Its spec's `form()` takes `{ adding, failed, corner, shownSource,
+  and takes `pr-32` while it does. Its spec's `form()` takes `{ busy, failed, corner, shownSource,
   attachTo, seriesNames, authorNames, held, action }` fourth, `false` and
   none by default (`seriesNames` and `authorNames` `null`, so no word,
   `action` `"add"`), and gives the edition's own `isbn13`
@@ -740,7 +740,7 @@ Read whole by a run that changes `frontend/`, after `every-run.md`.
   template as a ref still, and the view reads it through a `computed`
   (`addState`). Its function is called from the script through `.value`
   (`send`'s `addBookToBookshelf.value.add(edition, sentCoverSource.value)`),
-  the template's `@add="send(edition)"` narrowed by `vue-tsc` to a
+  the template's `@press="send(edition)"` narrowed by `vue-tsc` to a
   defined `edition` by the dock's own `v-if="answerShown === 'card' &&
   edition"`.
 - `@typescript-eslint/no-unused-vars` has no `argsIgnorePattern`: an
@@ -804,11 +804,11 @@ Read whole by a run that changes `frontend/`, after `every-run.md`.
   The list is never built from two-letter pairs: the browser has words for
   withdrawn codes (`iw`, `mo`, `in`). The catalogue holds no `language`
   block.
-- The lookup's add is docked: `DockedAdd` (props `action`, required,
-  `"add"` reading `isbn.add` and `"save"` `isbn.save` *Enregistrer*,
-  `adding`, `failed`, emitting `add`) draws the button, while `adding`
-  *Ajout en cours…* (`isbn.adding`) for `"add"` and *Enregistrement en
-  cours…* (`isbn.saving`) for `"save"`, and
+- The form's primary button is docked: `DockedButton` (props `action`,
+  required, `"add"` reading `isbn.add` and `"save"` `isbn.save`
+  *Enregistrer*, `busy`, `failed`, emitting `press`) draws the button,
+  while `busy` *Ajout en cours…* (`isbn.adding`) for `"add"` and
+  *Enregistrement en cours…* (`isbn.saving`) for `"save"`, and
   the message under it when `failed`, `isbn.addError` for `"add"` and
   `isbn.saveError` for `"save"`, the three words of each from one `words`
   record. It is drawn in two places: inside

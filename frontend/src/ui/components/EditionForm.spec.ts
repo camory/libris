@@ -403,7 +403,7 @@ describe("EditionForm", () => {
     await tapAdd(fields);
 
     // Then
-    expect(wrapper.emitted("add")?.[0]?.[0]).toMatchObject({
+    expect(wrapper.emitted("send")?.[0]?.[0]).toMatchObject({
       authors: [
         { name: "Eiichiro Oda", role: "WRITER" },
         { name: "Eiichiro Oda", role: "ARTIST" },
@@ -424,7 +424,7 @@ describe("EditionForm", () => {
 
     // Then
     const name = onePiece1.authors[0]?.name;
-    expect(wrapper.emitted("add")?.[0]?.[0]).toMatchObject({
+    expect(wrapper.emitted("send")?.[0]?.[0]).toMatchObject({
       authors: [
         { name, role: "WRITER" },
         { name, role: "TRANSLATOR" },
@@ -604,7 +604,7 @@ describe("EditionForm", () => {
   it("says Enregistrement en cours… while it saves", () => {
     // When
     const fields = within(
-      form(onePiece1, [], [], { action: "save", adding: true })
+      form(onePiece1, [], [], { action: "save", busy: true })
         .element as HTMLElement,
     );
 
@@ -638,7 +638,7 @@ describe("EditionForm", () => {
     );
 
     // Then
-    expect(wrapper.emitted("add")).toEqual([
+    expect(wrapper.emitted("send")).toEqual([
       [{ ...onePiece1, title: "Romance Dawn" }],
     ]);
   });
@@ -657,7 +657,7 @@ describe("EditionForm", () => {
     );
 
     // Then
-    expect(wrapper.emitted("add")?.[0]?.[0]).toMatchObject({ kind: "BD" });
+    expect(wrapper.emitted("send")?.[0]?.[0]).toMatchObject({ kind: "BD" });
   });
 
   it("sends an unknown ISBN's digits and no author", async () => {
@@ -674,7 +674,7 @@ describe("EditionForm", () => {
     );
 
     // Then
-    expect(wrapper.emitted("add")).toEqual([
+    expect(wrapper.emitted("send")).toEqual([
       [
         {
           isbn13: "9782000000006",
@@ -697,7 +697,7 @@ describe("EditionForm", () => {
   it("accepts nothing while the add runs", () => {
     // When
     const fields = within(
-      form(onePiece1, [], [inventaire, openLibrary], { adding: true })
+      form(onePiece1, [], [inventaire, openLibrary], { busy: true })
         .element as HTMLElement,
     );
 
@@ -730,7 +730,7 @@ describe("EditionForm", () => {
     await tapAdd(screen);
 
     // Then
-    expect(wrapper.emitted("add")).toBeUndefined();
+    expect(wrapper.emitted("send")).toBeUndefined();
     expect(wrapper.text()).toContain("Titre manquant");
     expect(isRefused(screen, "Titre")).toBe(true);
   });
@@ -759,7 +759,7 @@ describe("EditionForm", () => {
     await tapAdd(screen);
 
     // Then
-    expect(wrapper.emitted("add")).toBeUndefined();
+    expect(wrapper.emitted("send")).toBeUndefined();
     expect(wrapper.text()).toMatch(/Tome.*Tome sans série.*Auteurs/s);
     expect(isRefused(screen, "Tome")).toBe(true);
   });
@@ -796,7 +796,7 @@ describe("EditionForm", () => {
     // Then
     expect(wrapper.text()).toContain("Album sans série");
     expect(wrapper.text()).not.toContain("Tome sans série");
-    expect(wrapper.emitted("add")).toBeUndefined();
+    expect(wrapper.emitted("send")).toBeUndefined();
   });
 
   it("says Langue inconnue under a word naming no language", async () => {
@@ -902,7 +902,7 @@ describe("EditionForm", () => {
     await tapAdd(screen);
 
     // Then
-    expect(wrapper.emitted("add")).toEqual([
+    expect(wrapper.emitted("send")).toEqual([
       [{ ...onePiece1, title: "Romance Dawn" }],
     ]);
     expect(wrapper.text()).not.toContain("Titre manquant");
@@ -918,7 +918,7 @@ describe("EditionForm", () => {
     await tapAdd(screen);
 
     // Then
-    expect(wrapper.emitted("add")).toBeUndefined();
+    expect(wrapper.emitted("send")).toBeUndefined();
     expect(wrapper.text()).toMatch(/Auteurs.*Rôle manquant.*dessin/s);
   });
 
@@ -990,7 +990,7 @@ describe("EditionForm", () => {
 
     // Then
     expect(document.activeElement).toBe(names(screen)[2]);
-    expect(wrapper.emitted("add")).toBeUndefined();
+    expect(wrapper.emitted("send")).toBeUndefined();
     wrapper.unmount();
   });
 
@@ -1028,7 +1028,7 @@ describe("EditionForm", () => {
 
     // Then
     expect(wrapper.text()).toContain("Rôle manquant");
-    expect(wrapper.emitted("add")).toBeUndefined();
+    expect(wrapper.emitted("send")).toBeUndefined();
   });
 
   it("drops a refused author's message with its box", async () => {
@@ -1433,7 +1433,7 @@ describe("EditionForm", () => {
     copies: Copy[] = [],
     covers: CoverCandidate[] = [],
     {
-      adding = false,
+      busy = false,
       failed = false,
       corner,
       shownSource,
@@ -1443,7 +1443,7 @@ describe("EditionForm", () => {
       held = false,
       action = "add",
     }: {
-      adding?: boolean;
+      busy?: boolean;
       failed?: boolean;
       corner?: string;
       shownSource?: string;
@@ -1460,7 +1460,7 @@ describe("EditionForm", () => {
         edition,
         copies,
         covers,
-        adding,
+        busy,
         failed,
         shownSource,
         seriesNames,

@@ -30,7 +30,7 @@ import type { CoverCandidate } from "../../../domain/Cover";
 import { Isbn } from "../../../domain/Isbn";
 import type { SourceEdition } from "../../../domain/SourceEdition";
 import BusySpinner from "../../components/BusySpinner.vue";
-import DockedAdd from "../../components/DockedAdd.vue";
+import DockedButton from "../../components/DockedButton.vue";
 import EditionForm from "../../components/EditionForm.vue";
 import IconButton from "../../components/IconButton.vue";
 import SourceEditionCard from "../../components/SourceEditionCard.vue";
@@ -303,12 +303,12 @@ async function send(edition: SourceEdition) {
           :held="held"
           action="add"
           :shown-source="coverSource"
-          :adding="adding"
+          :busy="adding"
           :failed="failed"
           :series-names="seriesNames"
           :author-names="authorNames"
           @cover-source="coverSource = $event"
-          @add="send($event)"
+          @send="send($event)"
         >
           <template v-if="editing" #corner>
             <IconButton
@@ -344,12 +344,12 @@ async function send(edition: SourceEdition) {
           </template>
         </SourceEditionCard>
       </KeepAlive>
-      <DockedAdd
+      <DockedButton
         v-if="answerShown === 'card' && edition"
         action="add"
-        :adding="adding"
+        :busy="adding"
         :failed="failed"
-        @add="send(edition)"
+        @press="send(edition)"
       />
     </div>
 
