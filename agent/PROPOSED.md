@@ -550,11 +550,6 @@
   so the add of a held ISBN writes through `EditEdition`; whether
   `NewEdition` composes `EditionDetails` is still open (found on T154,
   2026-11-10; rewritten on T158, 2026-11-10).
-- Backend: `BookshelfController` and `CatalogueController` each hold a
-  private `invalid(errors)` building the validation problem with its
-  `errors`, and `CoverController` and `IsbnController` build theirs inline
-  (Duplicated Code): one function beside `problem` in `Problems.kt` would
-  serve them all (found on T154, 2026-11-10).
 - Frontend: `DockedAdd`, its `adding`, `failed` and `add` name the
   lookup's act, while the page's form saves through it with
   `action="save"`: a name for what it is, settled with T162's busy word or

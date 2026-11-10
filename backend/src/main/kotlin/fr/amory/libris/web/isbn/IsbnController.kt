@@ -18,11 +18,10 @@ import fr.amory.libris.library.domain.reader.Reader
 import fr.amory.libris.web.bookshelf.CopyResponse
 import fr.amory.libris.web.cover.coverPathOf
 import fr.amory.libris.web.problem.NOT_FOUND_PROBLEM
-import fr.amory.libris.web.problem.VALIDATION_PROBLEM
 import fr.amory.libris.web.problem.ValidationErrorResponse
 import fr.amory.libris.web.problem.asResponse
 import fr.amory.libris.web.problem.problem
-import org.springframework.http.HttpStatus.BAD_REQUEST
+import fr.amory.libris.web.problem.validationProblem
 import org.springframework.http.HttpStatus.NOT_FOUND
 import org.springframework.http.HttpStatus.SERVICE_UNAVAILABLE
 import org.springframework.http.ProblemDetail
@@ -47,9 +46,7 @@ class IsbnController(private val lookupIsbnForReader: LookupIsbnForReader) {
   }
 
   private fun notAnIsbn(): ProblemDetail =
-    problem(BAD_REQUEST, VALIDATION_PROBLEM).apply {
-      setProperty("errors", listOf(ValidationErrorResponse(field = "isbn", code = "not-an-isbn")))
-    }
+    validationProblem(listOf(ValidationErrorResponse(field = "isbn", code = "not-an-isbn")))
 }
 
 data class IsbnResponse(

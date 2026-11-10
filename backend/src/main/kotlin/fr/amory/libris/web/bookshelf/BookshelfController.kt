@@ -27,16 +27,14 @@ import fr.amory.libris.web.bookshelf.NewBookValidation.Accepted
 import fr.amory.libris.web.bookshelf.NewBookValidation.Refused
 import fr.amory.libris.web.problem.CONFLICT_PROBLEM
 import fr.amory.libris.web.problem.NOT_FOUND_PROBLEM
-import fr.amory.libris.web.problem.VALIDATION_PROBLEM
 import fr.amory.libris.web.problem.ValidationErrorResponse
 import fr.amory.libris.web.problem.asResponse
 import fr.amory.libris.web.problem.problem
-import org.springframework.http.HttpStatus.BAD_REQUEST
+import fr.amory.libris.web.problem.validationProblem
 import org.springframework.http.HttpStatus.CONFLICT
 import org.springframework.http.HttpStatus.CREATED
 import org.springframework.http.HttpStatus.NOT_FOUND
 import org.springframework.http.HttpStatus.OK
-import org.springframework.http.ProblemDetail
 import org.springframework.http.ResponseEntity
 import org.springframework.security.core.annotation.AuthenticationPrincipal
 import org.springframework.web.bind.annotation.GetMapping
@@ -59,7 +57,7 @@ class BookshelfController(
 
   @PostMapping("/api/v1/bookshelves")
   fun create(@AuthenticationPrincipal reader: Reader, @RequestBody request: NewBookshelfRequest): ResponseEntity<Any> {
-    val name = request.validate() ?: return invalid(listOf(ValidationErrorResponse("name", "blank"))).asResponse()
+    val name = request.validate() ?: return blankName()
     return when (val result = createBookshelf(reader.id, name)) {
       is Created -> ResponseEntity.status(CREATED).body(BookshelfResponse.from(result.bookshelf))
       NameTaken  -> problem(CONFLICT, CONFLICT_PROBLEM).asResponse()
@@ -79,7 +77,7 @@ class BookshelfController(
     @PathVariable("id") id: UUID,
     @RequestBody request: NewBookRequest): ResponseEntity<Any> =
     when (val validation = request.validate()) {
-      is Refused  -> invalid(validation.errors).asResponse()
+      is Refused  -> validationProblem(validation.errors).asResponse()
       is Accepted -> responseOf(addBookToBookshelf(reader.id, BookshelfId(id), validation.newEdition))
     }
 
@@ -91,12 +89,12 @@ class BookshelfController(
     when (val result = addMemberToBookshelf(reader.id, BookshelfId(id), request.toMembership())) {
       is AddMemberResult.Added        -> ResponseEntity.status(CREATED).body(MemberResponse.from(result.member))
       AddMemberResult.NoSuchBookshelf -> notFound()
-      UnknownReader                   -> invalid(listOf(ValidationErrorResponse("readerId", "unknown"))).asResponse()
+      UnknownReader                   -> unknownReader()
       AlreadyAMember                  -> problem(CONFLICT, CONFLICT_PROBLEM).asResponse()
     }
 
-  private fun invalid(errors: List<ValidationErrorResponse>): ProblemDetail =
-    problem(BAD_REQUEST, VALIDATION_PROBLEM).apply { setProperty("errors", errors) }
+  private fun blankName(): ResponseEntity<Any> =
+    validationProblem(listOf(ValidationErrorResponse("name", "blank"))).asResponse()
 
   private fun notFound(): ResponseEntity<Any> =
     problem(NOT_FOUND, NOT_FOUND_PROBLEM).asResponse()
@@ -106,6 +104,9 @@ class BookshelfController(
       is Added                    -> ResponseEntity.status(CREATED).body(CopyResponse.from(result.copy))
       NoSuchBookshelf, NotAnOwner -> notFound()
     }
+
+  private fun unknownReader(): ResponseEntity<Any> =
+    validationProblem(listOf(ValidationErrorResponse("readerId", "unknown"))).asResponse()
 }
 
 data class ReaderBookshelfResponse(
