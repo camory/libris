@@ -22,6 +22,7 @@ export class FetchEditionsApi implements EditionsApi {
         headers: {
           Accept: "application/json, application/problem+json",
           "Content-Type": "application/json",
+          "X-Requested-With": "XMLHttpRequest",
         },
         body: JSON.stringify(edition),
       },

@@ -1,4 +1,4 @@
-import { describe, expect, inject, it } from "vitest";
+import { afterEach, describe, expect, inject, it, vi } from "vitest";
 import type { EditionDetails } from "../../application/EditionsApi";
 import { aBook } from "../../fixture/EditionShapes";
 import { FetchEditionsApi } from "./FetchEditionsApi";
@@ -21,6 +21,10 @@ const editOnePiece2: EditionDetails = {
 };
 
 describe("FetchEditionsApi", () => {
+  afterEach(() => {
+    vi.unstubAllGlobals();
+  });
+
   it("saves the edition", async () => {
     // Given
     const api = new FetchEditionsApi(inject("mockBaseUrl"));
@@ -60,6 +64,30 @@ describe("FetchEditionsApi", () => {
     expect(answer).toEqual({
       outcome: "problem",
       type: "/problems/validation",
+    });
+  });
+
+  it("says the save comes from the application", async () => {
+    // Given
+    const api = new FetchEditionsApi("http://libris.invalid");
+    const sent: RequestInit[] = [];
+    vi.stubGlobal("fetch", (_url: string, init: RequestInit) => {
+      sent.push(init);
+      return Promise.resolve(
+        new Response(null, {
+          status: 404,
+          headers: { "Content-Type": "application/problem+json" },
+        }),
+      );
+    });
+
+    // When
+    await api.save("3c4d5e6f-7a8b-4c9d-8e0f-1a2b3c4d5e6f", editOnePiece2);
+
+    // Then
+    expect(sent[0]).toMatchObject({
+      method: "PUT",
+      headers: { "X-Requested-With": "XMLHttpRequest" },
     });
   });
 });
