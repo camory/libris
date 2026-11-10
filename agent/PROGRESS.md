@@ -324,5 +324,6 @@ Format:
   emptied title saved and the form closed, one line before `save.asked`.
   Steps 1 to 4 were reds as foreseen; steps 5 to 7 guards, run and reverted.
 - Left over: the *Not saved* state checked by hand by Tophe against the
-  spec's mockup, in both schemes; the message staying across the cross
-  until the next save, named in the PR for Tophe's check.
+  spec's mockup, in both schemes. The message stayed across the cross
+  into the next pencil's form; on Tophe's call a fix-up gave
+  `useSaveEdition` a `reset`, called by the page's `edit()`.

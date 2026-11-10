@@ -233,9 +233,9 @@ Read whole by a run that changes `frontend/`, after `every-run.md`.
   `SourceEdition` and hands the port a copy without `isbn13`; the page's
   `saveEdits` awaits it and, once `saved`, hands the book to
   `useFindCatalogueEdition`'s `show` and puts `editing` back to false;
-  the page passes `notSaved` to the form as `failed`, and leaves it so
-  across the cross until the next save, so the next pencil's form shows
-  the message again.
+  the page passes `notSaved` to the form as `failed`, and its pencil's
+  `edit()` calls the composable's `reset` (`forgetSave`), back to `ready`,
+  so a form opened after a failed save and the cross shows no message.
 - `EditionForm` takes `isbn13`, `edition` (a `SourceEdition` or a `Book`,
   absent for an unknown ISBN), `copies`, `covers`, `held` (handed to
   `CoverChoice`, `IsbnView` passing its own), `action` (`"add"` from

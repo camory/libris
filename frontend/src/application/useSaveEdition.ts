@@ -12,6 +12,7 @@ export type SaveState =
 export function useSaveEdition(editionsApi: EditionsApi): {
   state: Ref<SaveState>;
   save: (id: string, edition: SourceEdition) => Promise<void>;
+  reset: () => void;
 } {
   const state = ref<SaveState>({ status: "ready" });
 
@@ -28,7 +29,11 @@ export function useSaveEdition(editionsApi: EditionsApi): {
     }
   }
 
-  return { state, save };
+  function reset() {
+    state.value = { status: "ready" };
+  }
+
+  return { state, save, reset };
 }
 
 function detailsOf(edition: SourceEdition): EditionDetails {

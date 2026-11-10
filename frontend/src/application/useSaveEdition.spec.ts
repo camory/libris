@@ -92,6 +92,20 @@ describe("useSaveEdition", () => {
     // Then
     expect(state.value).toEqual({ status: "notSaved" });
   });
+
+  it("is ready again once reset", async () => {
+    // Given
+    const { state, save, reset } = useSaveEdition(
+      new FakeEditionsApi({ outcome: "problem", type: "/problems/validation" }),
+    );
+    await save(id, onePiece2);
+
+    // When
+    reset();
+
+    // Then
+    expect(state.value).toEqual({ status: "ready" });
+  });
 });
 
 class LibrisNotSaving implements EditionsApi {

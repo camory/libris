@@ -34,7 +34,11 @@ const { names: authorNames, list: listAuthorNames } = useListAuthorNames(
   inject(authorsApiKey)!,
 );
 const editing = ref(false);
-const { state: saveState, save } = useSaveEdition(inject(editionsApiKey)!);
+const {
+  state: saveState,
+  save,
+  reset: forgetSave,
+} = useSaveEdition(inject(editionsApiKey)!);
 const saving = computed(() => saveState.value.status === "saving");
 let removedId: string | null = null;
 const { state: removal, remove } = useRemoveCopy(
@@ -74,6 +78,7 @@ async function removeCopy(copyId: string) {
 }
 
 function edit() {
+  forgetSave();
   editing.value = true;
   void listSeriesNames();
   void listAuthorNames();

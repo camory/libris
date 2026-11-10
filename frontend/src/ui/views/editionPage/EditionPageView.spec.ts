@@ -792,6 +792,25 @@ describe("EditionPageView", () => {
     expect(title.disabled).toBe(false);
     expect(screen.getByRole("button", { name: "Enregistrer" })).toBeDefined();
   });
+
+  it("opens the form without the failed save's message once the cross dropped it", async () => {
+    // Given
+    const screen = await pageOf(asterixWithIsbn, { editionsApi: refused() });
+    await tapPencil(screen);
+    await typeTitle(screen, "Astérix le gaulois");
+    await tapSave(screen);
+    await tapCross(screen);
+
+    // When
+    await tapPencil(screen);
+
+    // Then
+    expect(
+      screen.queryByText(
+        "Erreur lors de l'enregistrement, veuillez réessayer plus tard.",
+      ),
+    ).toBeNull();
+  });
 });
 
 function seen(wrapper: ReturnType<typeof mountEditionPageView>) {
