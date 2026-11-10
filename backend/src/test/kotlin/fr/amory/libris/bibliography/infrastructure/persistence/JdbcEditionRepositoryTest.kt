@@ -248,6 +248,88 @@ class JdbcEditionRepositoryTest @Autowired constructor(
   }
 
   @Test
+  fun `an update naming the edition's own author in other capitals respells that author for every edition`() {
+    // Given
+    val tomeOne = onePieceTomeOne()
+    val tomeTwo = tomeOne.copy(
+      id = EditionId.new(),
+      isbn = isbnOf(ONE_PIECE_TOME_TWO),
+      title = "Aux prises avec Baggy et ses hommes",
+      seriesVolume = SeriesVolume(ONE_PIECE_SERIES.id, 2),
+    )
+    editions.insert(tomeOne)
+    editions.insert(tomeTwo)
+    val respelled = Contributions.of(
+      listOf(Contribution("EIICHIRO ODA", WRITER), Contribution("Akiko Indei", TRANSLATOR)),
+    )
+
+    // When
+    editions.update(tomeOne.copy(contributions = respelled))
+
+    // Then
+    editions.findByIsbn(isbnOf(ONE_PIECE_TOME_TWO)) shouldBe tomeTwo.copy(contributions = respelled)
+    rowsOf("author") shouldBe 2
+  }
+
+  @Test
+  fun `an update naming another author of the house leaves that author as stored`() {
+    // Given
+    val tomeOne = onePieceTomeOne().copy(
+      contributions = Contributions.of(listOf(Contribution("Eiichiro Oda", WRITER))),
+    )
+    val tomeTwo = tomeOne.copy(
+      id = EditionId.new(),
+      isbn = isbnOf(ONE_PIECE_TOME_TWO),
+      title = "Aux prises avec Baggy et ses hommes",
+      contributions = Contributions.of(listOf(Contribution("Akiko Indei", TRANSLATOR))),
+      seriesVolume = SeriesVolume(ONE_PIECE_SERIES.id, 2),
+    )
+    editions.insert(tomeOne)
+    editions.insert(tomeTwo)
+
+    // When
+    editions.update(
+      tomeOne.copy(
+        contributions = Contributions.of(
+          listOf(Contribution("Eiichiro Oda", WRITER), Contribution("akiko indei", TRANSLATOR)),
+        ),
+      ),
+    )
+
+    // Then
+    editions.findByIsbn(isbnOf(ONE_PIECE))?.contributions?.toList() shouldContainExactlyInAnyOrder
+      listOf(Contribution("Eiichiro Oda", WRITER), Contribution("Akiko Indei", TRANSLATOR))
+    editions.findByIsbn(isbnOf(ONE_PIECE_TOME_TWO)) shouldBe tomeTwo
+  }
+
+  @Test
+  fun `an update naming the edition's own author under another role respells that author`() {
+    // Given
+    val tomeOne = onePieceTomeOne()
+    val tomeTwo = tomeOne.copy(
+      id = EditionId.new(),
+      isbn = isbnOf(ONE_PIECE_TOME_TWO),
+      title = "Aux prises avec Baggy et ses hommes",
+      seriesVolume = SeriesVolume(ONE_PIECE_SERIES.id, 2),
+    )
+    editions.insert(tomeOne)
+    editions.insert(tomeTwo)
+
+    // When
+    editions.update(
+      tomeOne.copy(
+        contributions = Contributions.of(
+          listOf(Contribution("EIICHIRO ODA", ARTIST), Contribution("Akiko Indei", TRANSLATOR)),
+        ),
+      ),
+    )
+
+    // Then
+    editions.findByIsbn(isbnOf(ONE_PIECE_TOME_TWO))?.contributions?.toList() shouldContainExactlyInAnyOrder
+      listOf(Contribution("EIICHIRO ODA", WRITER), Contribution("Akiko Indei", TRANSLATOR))
+  }
+
+  @Test
   fun `no id finds no edition`() {
     // Given
     editions.insert(onePieceTomeOne())

@@ -70,7 +70,7 @@ guard every frontend task.
       the rule unit tested where it is decided (D07). Realises S5, its
       series; un-skips that backend test.
 
-- [ ] T157 Backend: an edition's own author respelled for the house.
+- [x] T157 Backend: an edition's own author respelled for the house.
       A save naming an author who matches one of the edition's own authors,
       as PRD §3 matches names and whatever roles the save gives them, gives
       that author the spelling sent, for every edition carrying them (D12);
