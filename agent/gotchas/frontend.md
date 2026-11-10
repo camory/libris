@@ -78,12 +78,12 @@ Read whole by a run that changes `frontend/`, after `every-run.md`.
   `2a3b4c5d-6e7f-4a8b-9c0d-1e2f3a4b5c6d` with exactly the `EditOnePiece2`
   body (a `200` to another body), and `400` to `not-a-uuid` or a mistyped
   field (T159). `FetchIsbnApi`, `FetchBookshelfApi`, `FetchBookshelvesApi`,
-  `FetchSeriesApi`'s find, `FetchCatalogueApi`'s find, `FetchCopiesApi` and `FetchEditionsApi` hand a non-2xx
-  answer to `infra/api/problemOf`, which maps the statuses the
-  contract names (400, 404, 409 for the creation and the add of a member, 400 and
-  404 for the choice of the default, the finds of a series and of an
-  ouvrage, the removal of a copy and the save of an edition, and 503 for the lookup)
-  to the `/problems/…`
+  `FetchSeriesApi`'s find, `FetchCatalogueApi`'s find, `FetchCopiesApi`
+  and `FetchEditionsApi` hand a non-2xx answer to `infra/api/problemOf`,
+  which maps the statuses the contract names (400, 404, 409 for the
+  creation and the add of a member, 400 and 404 for the choice of the
+  default, the finds of a series and of an ouvrage, the removal of a copy
+  and the save of an edition, and 503 for the lookup) to the `/problems/…`
   slugs only when the `Content-Type` is `application/problem+json`, and
   reads the body's `type` otherwise: a proxy's `text/plain` 404 or 503 then
   rejects on `response.json()`, as it did before the mapping, and is never
@@ -515,8 +515,9 @@ Read whole by a run that changes `frontend/`, after `every-run.md`.
   top part's text column, inside a `flex min-w-0 flex-1 gap-2` wrapper;
   `IsbnView` fills it with the pencil *Modifier* on the card of an ISBN
   the house lacks or holds with none of the reader's copies shown
-  (`!held || shownCopies.length === 0`) and the cross *Annuler les modifications* on the form
-  that pencil opens (`editing`), both disabled while `adding`, as the
+  (`!held || shownCopies.length === 0`) and the cross *Annuler les
+  modifications* on the form that pencil opens (`editing`), both disabled
+  while `adding`, as the
   card's dots, each an `IconButton` (prop `label`, the icon in its
   default slot, `class`, `disabled` and `@click` falling through to its
   `button`), as the camera's toggle. Its
