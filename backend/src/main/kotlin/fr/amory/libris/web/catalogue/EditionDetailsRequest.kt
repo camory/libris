@@ -8,6 +8,8 @@ import fr.amory.libris.bibliography.domain.SeriesEntry
 import fr.amory.libris.web.bookshelf.NewAuthorRequest
 import fr.amory.libris.web.bookshelf.NewSeriesRequest
 import fr.amory.libris.web.catalogue.EditionDetailsValidation.Accepted
+import fr.amory.libris.web.catalogue.EditionDetailsValidation.Refused
+import fr.amory.libris.web.problem.ValidationErrorResponse
 
 data class EditionDetailsRequest(
   val kind: Kind,
@@ -21,24 +23,26 @@ data class EditionDetailsRequest(
   val language: String?,
   val pageCount: Int?,
   val summary: String?) {
-  fun validate(): EditionDetailsValidation =
-    Accepted(
-      EditionDetails(
-        kind = kind,
-        title = title,
-        subtitle = subtitle,
-        contributions = Contributions.of(authors.mapNotNull { Contribution.of(it.name, it.role) }),
-        series = series?.let { SeriesEntry.of(it.name, it.volumeNumber) },
-        collection = collection,
-        publisher = publisher,
-        publicationYear = publicationYear,
-        language = language,
-        pageCount = pageCount,
-        summary = summary,
-      ),
+  fun validate(): EditionDetailsValidation {
+    val details = EditionDetails.of(
+      kind = kind,
+      title = title,
+      subtitle = subtitle,
+      contributions = Contributions.of(authors.mapNotNull { Contribution.of(it.name, it.role) }),
+      series = series?.let { SeriesEntry.of(it.name, it.volumeNumber) },
+      collection = collection,
+      publisher = publisher,
+      publicationYear = publicationYear,
+      language = language,
+      pageCount = pageCount,
+      summary = summary,
     )
+    return if (details != null) Accepted(details) else Refused(listOf(ValidationErrorResponse("title", "blank")))
+  }
 }
 
 sealed interface EditionDetailsValidation {
   data class Accepted(val details: EditionDetails) : EditionDetailsValidation
+
+  data class Refused(val errors: List<ValidationErrorResponse>) : EditionDetailsValidation
 }

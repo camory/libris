@@ -10,6 +10,8 @@ import fr.amory.libris.bibliography.domain.SeriesEntry
 import fr.amory.libris.web.bookshelf.NewAuthorRequest
 import fr.amory.libris.web.bookshelf.NewSeriesRequest
 import fr.amory.libris.web.catalogue.EditionDetailsValidation.Accepted
+import fr.amory.libris.web.catalogue.EditionDetailsValidation.Refused
+import fr.amory.libris.web.problem.ValidationErrorResponse
 import io.kotest.matchers.shouldBe
 import org.junit.jupiter.api.Test
 
@@ -39,10 +41,19 @@ class EditionDetailsRequestTest {
     )
   }
 
-  private fun baggyAndHisMen() =
+  @Test
+  fun `a blank title is refused`() {
+    // Given
+    val request = baggyAndHisMen(title = " ")
+
+    // When / Then
+    request.validate() shouldBe Refused(listOf(ValidationErrorResponse("title", "blank")))
+  }
+
+  private fun baggyAndHisMen(title: String = "Aux prises avec Baggy et ses hommes") =
     EditionDetailsRequest(
       kind = MANGA,
-      title = "Aux prises avec Baggy et ses hommes",
+      title = title,
       subtitle = "Le clown pirate",
       authors = listOf(NewAuthorRequest("Eiichirō Oda", WRITER), NewAuthorRequest("Eiichirō Oda", ARTIST)),
       series = NewSeriesRequest("One Piece", 2),
