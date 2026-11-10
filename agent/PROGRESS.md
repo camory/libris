@@ -148,15 +148,16 @@ Format:
   validation, so the field rules are not written twice.
 
 ## 2026-11-10 — T154 The ouvrage saved as edited — handoff
-- Done: steps 1 to 4 of the test plan, one commit each. Start at step 5
-  (`EditionDetailsRequestTest`, a blank title refused).
-- Step 1's red: S4's first case fails on the page's title, S4's second on
-  `Libris refused: Refusal(status=404, type=/problems/not-found…)`, S5's
-  other series reads `Astérix` for `Tintin`, S5's other author `[]`.
-  `ApiContractTest` on `main`: `tests="50"`.
-- Decided: `EditionDetailsValidation` sits below the request (stepdown); it
-  has `Accepted` only so far, `Refused` comes with step 5. `validate` builds
-  the details by hand for now (`mapNotNull` on the authors); steps 5 to 7
-  switch it to `EditionDetails.of` and the add's refusals.
-- Deviations: none. No guard so far, no mutation run.
-- Gate: red only on the four scenarios of step 1, not yet reached.
+- Done: steps 1 to 12, one commit each. Start at step 13 (`SaveEditionTest`,
+  the copy on another reader's bookshelf left out; the signature change, the
+  controller, `ApiContractTest`'s stubs and both `@Suppress` with it).
+- Step 1's red: S4's first case on the page's title, S4's second on the
+  not-found refusal, S5's other series `Astérix` for `Tintin`, other author
+  `[]`. `ApiContractTest` on `main`: `tests="50"`.
+- Decided: `EditEdition` grew its constructor one cycle at a time (step 8 a
+  constant `NoSuchEdition` with `@Suppress("UnusedParameter")`, as T153's
+  `SaveEdition`, gone at step 9); it reads the held edition by
+  `findByIds(listOf(id))`, writes in `executeWithoutResult`, then reads it
+  back. Step 12's double is `EditionsRespellingAuthors`, delegating to
+  `EditionsInMemory`. No guard so far, no mutation run.
+- Deviations: none. Gate: red only on the four scenarios of step 1.
