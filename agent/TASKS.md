@@ -98,7 +98,7 @@ guard every frontend task.
       none (U04, U06). Walking skeleton; realises S1, S2; un-skips their
       frontend tests.
 
-- [ ] T160 Frontend: the pencil opens the form on the ouvrage's page.
+- [x] T160 Frontend: the pencil opens the form on the ouvrage's page.
       The page's card carries the pencil *Modifier* in its top right corner
       whatever the reader's role; a tap shows in its place the lookup's
       form filled as Libris answered, the authors as rows, the stored cover

@@ -169,7 +169,10 @@ Read whole by a run that changes `frontend/`, after `every-run.md`.
   `useFindCatalogueEdition`'s `refresh(id)` asks again with no `loading`
   step, the card staying mounted, while `find(id)` shows the skeleton
   first; its spec's `mountEditionPageView` takes the copies' port third, a
-  `FakeCopiesApi` rejecting by default. `Copy.bookshelf` is a `ReaderBookshelf` (`src/domain/Copy.ts`),
+  `FakeCopiesApi` rejecting by default, and the series' and the authors'
+  ports fifth and sixth, `new FakeSeriesApi([])` and `new
+  FakeAuthorsApi([])` by default; `pageOf(book, seriesApi?, authorsApi?)`
+  mounts the found book and `tapPencil(screen)` opens its form. `Copy.bookshelf` is a `ReaderBookshelf` (`src/domain/Copy.ts`),
   a `Bookshelf` with a required `role`, as in the contract: a test builds
   a copy's bookshelf by spreading a fixture with a role, `{ ...salon,
   role: "OWNER" }`, and the card draws the trash on an `OWNER` row only.
@@ -218,9 +221,11 @@ Read whole by a run that changes `frontend/`, after `every-run.md`.
   `open()` gives `world.save`, the other scenario files a
   `FakeEditionsApi(new Error("no save in this scenario"))`; no view reads
   the port yet.
-- `EditionForm` takes `isbn13`, `edition` (a `SourceEdition`, absent for
-  an unknown ISBN), `copies`, `covers`, `held` (handed to `CoverChoice`,
-  `IsbnView` passing its own), `adding`, `failed` and
+- `EditionForm` takes `isbn13`, `edition` (a `SourceEdition` or a `Book`,
+  absent for an unknown ISBN), `copies`, `covers`, `held` (handed to
+  `CoverChoice`, `IsbnView` passing its own), `action` (`"add"` from
+  `IsbnView`, `"save"` from `EditionPageView`, handed to `DockedAdd`),
+  `adding`, `failed` and
   `seriesNames` and `authorNames`, required,
   `shownSource`, optional, as the card's, and the named slot `corner` as
   the card's, emits `coverSource` as the card does, and `add` with the edition its
@@ -337,8 +342,9 @@ Read whole by a run that changes `frontend/`, after `every-run.md`.
   for `existing`, `text-muted` alone for `new`, no spec of its own,
   `AuthorBox` its other caller) as `isbn.form.seriesNameStatus.<status>`,
   and takes `pr-32` while it does. Its spec's `form()` takes `{ adding, failed, corner, shownSource,
-  attachTo, seriesNames, authorNames, held }` fourth, `false` and none by
-  default (`seriesNames` and `authorNames` `null`, so no word), and gives the edition's own `isbn13`
+  attachTo, seriesNames, authorNames, held, action }` fourth, `false` and
+  none by default (`seriesNames` and `authorNames` `null`, so no word,
+  `action` `"add"`), and gives the edition's own `isbn13`
   when there is one; the focus case passes `attachTo: document.body` and
   unmounts at its end, and the file's `afterEach` deletes a
   `scrollIntoView` a case defined.
@@ -487,7 +493,8 @@ Read whole by a run that changes `frontend/`, after `every-run.md`.
   source's name drawn only when `held` is false; `AuthorLines` (props
   `authors`, `kind`) and `BookshelvesHolding` (prop `copies`), which draws
   one row per bookshelf, the trash *Retirer un exemplaire* on an `OWNER`'s
-  alone, *Dans* and the name (`isbn.card.bookshelf`) and, past one copy,
+  alone and on none with the optional prop `withoutTrash`, which
+  `EditionForm` passes, *Dans* and the name (`isbn.card.bookshelf`) and, past one copy,
   the count on a second line of its own (`isbn.card.count`, *2
   exemplaires*), and holds `asking`, the id of the bookshelf whose trash
   was tapped, whose row it draws as the question (`isbn.card.removal`),
@@ -501,7 +508,7 @@ Read whole by a run that changes `frontend/`, after `every-run.md`.
   its buttons enabled; the row keeps its own `failed`, set from the
   prop's changes and cleared by the cross and every trash, so a question
   opened after a failure shows no message while the prop stays true. `SourceEditionCard` passes `removing`, `removalFailed` and `remove` through;
-  `EditionForm` passes neither, and `IsbnView` listens on both its cards;
+  `EditionForm` passes none of them, and `IsbnView` listens on both its cards;
   the form draws the same rows. A row's text
   reads its name and its count as two elements: `getByText("Dans
   Bibliothèque de Léa")` and `getByText("2 exemplaires")`, never one
@@ -518,7 +525,10 @@ Read whole by a run that changes `frontend/`, after `every-run.md`.
   (`!held || shownCopies.length === 0`) and the cross *Annuler les
   modifications* on the form that pencil opens (`editing`), both disabled
   while `adding`, as the
-  card's dots, each an `IconButton` (prop `label`, the icon in its
+  card's dots; `EditionPageView` fills it with the pencil on the card of
+  a book with an ISBN, whatever the reader's role, and with the cross on
+  the form that pencil opens (`editing`), drawing then the title as
+  answered in an `sr-only` `h1` above the form; each an `IconButton` (prop `label`, the icon in its
   default slot, `class`, `disabled` and `@click` falling through to its
   `button`), as the camera's toggle. Its
   callers are `IsbnView`, for every found answer, and
@@ -768,8 +778,10 @@ Read whole by a run that changes `frontend/`, after `every-run.md`.
   The list is never built from two-letter pairs: the browser has words for
   withdrawn codes (`iw`, `mo`, `in`). The catalogue holds no `language`
   block.
-- The lookup's add is docked: `DockedAdd` (props `adding`, `failed`,
-  emitting `add`) draws the button, *Ajout en cours…* while `adding`, and
+- The lookup's add is docked: `DockedAdd` (props `action`, required,
+  `"add"` reading `isbn.add` and `"save"` `isbn.save` *Enregistrer*,
+  `adding`, `failed`, emitting `add`) draws the button, *Ajout en cours…*
+  while `adding`, and
   the message under it when `failed`. It is drawn in two places: inside
   `EditionForm`'s root block, after the `<form>`, and in `IsbnView` after
   the card of every found answer, the two sharing the view's `flex flex-col`
