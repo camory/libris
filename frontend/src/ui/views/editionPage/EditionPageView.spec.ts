@@ -700,6 +700,25 @@ describe("EditionPageView", () => {
       screen.getByRole<HTMLInputElement>("textbox", { name: "Titre" }).disabled,
     ).toBe(true);
   });
+
+  it("keeps the cross from dropping the edits while the save runs", async () => {
+    // Given
+    const screen = await pageOf(asterixWithIsbn, {
+      editionsApi: new LibrisNotSaving(),
+    });
+    await tapPencil(screen);
+    await typeTitle(screen, "Astérix le gaulois");
+
+    // When
+    await tapSave(screen);
+
+    // Then
+    expect(
+      screen.getByRole<HTMLButtonElement>("button", {
+        name: "Annuler les modifications",
+      }).disabled,
+    ).toBe(true);
+  });
 });
 
 function seen(wrapper: ReturnType<typeof mountEditionPageView>) {
