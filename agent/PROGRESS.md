@@ -297,8 +297,8 @@ Format:
   spread then `Reflect.deleteProperty` (ESLint refuses the unused rest
   sibling, TypeScript `delete` on a required field). The view saves under
   its `id` prop, the id it found the ouvrage by: `state.book` is not
-  narrowed inside the form's handler. The dock's busy word comes from a
-  `busyWords` record by `action`. A `refactor` commit gave the view a
+  narrowed inside the form's handler. The dock's idle and busy words come
+  from one `words` record by `action`. A `refactor` commit gave the view a
   `saving` computed, read by the form's `adding` and the cross.
 - Deviations from the brief: none in approach. The S4 un-skip was the first
   commit, red on *Astérix · album 1* not found; every step 1 to 10 was a
