@@ -287,3 +287,23 @@ Format:
   foreseen; steps 2 and 3 are guards, run and reverted.
 - Left over: T162 (the save, S4) and T163 (its failure, S9) per the
   backlog; the cross checked by hand by Tophe on the page.
+
+## 2026-11-10 — T162 The ouvrage saved as edited — done
+- Did: *Enregistrer* on the ouvrage's page saves through
+  `useSaveEdition(editionsApi)`, busy then, its cross disabled; once saved
+  the card shows the book Libris answered, through the find's new `show`.
+  S4 runs and passes.
+- Decided: the composable drops `isbn13` in a private `detailsOf`, a
+  spread then `Reflect.deleteProperty` (ESLint refuses the unused rest
+  sibling, TypeScript `delete` on a required field). The view saves under
+  its `id` prop, the id it found the ouvrage by: `state.book` is not
+  narrowed inside the form's handler. The dock's idle and busy words come
+  from one `words` record by `action`. A `refactor` commit gave the view a
+  `saving` computed, read by the form's `adding` and the cross.
+- Deviations from the brief: none in approach. The S4 un-skip was the first
+  commit, red on *Astérix · album 1* not found; every step 1 to 10 was a
+  real red; step 11 the guard, its mutation run and reverted (in the PR).
+- Left over: T163 (a problem answer or a rejected save: today the first
+  leaves the state `saving`, the second rejects out of the form's handler)
+  per the backlog; the *Saving* and *Saved* states checked by hand by
+  Tophe, in both schemes.

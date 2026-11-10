@@ -179,7 +179,7 @@ describe("Held edition edit", () => {
     expect(saveButton(screen)).toBeDefined();
   });
 
-  it.skip("S4 The ouvrage is saved as edited", async () => {
+  it("S4 The ouvrage is saved as edited", async () => {
     // Given
     const save = librisSaves({
       ...asterix,

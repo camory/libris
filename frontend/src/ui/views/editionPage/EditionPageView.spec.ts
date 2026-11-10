@@ -18,6 +18,11 @@ import {
   type CopiesApi,
   type RemoveAnswer,
 } from "../../../application/CopiesApi";
+import {
+  editionsApiKey,
+  type EditionsApi,
+  type SaveAnswer,
+} from "../../../application/EditionsApi";
 import { seriesApiKey, type SeriesApi } from "../../../application/SeriesApi";
 import type { Book } from "../../../domain/Book";
 import {
@@ -30,6 +35,7 @@ import {
 import { FakeAuthorsApi } from "../../../fixture/FakeAuthorsApi";
 import { FakeCatalogueApi } from "../../../fixture/FakeCatalogueApi";
 import { FakeCopiesApi } from "../../../fixture/FakeCopiesApi";
+import { FakeEditionsApi } from "../../../fixture/FakeEditionsApi";
 import { FakeSeriesApi } from "../../../fixture/FakeSeriesApi";
 import { normalised } from "../../../fixture/normalised";
 import HeldEditionCardSkeleton from "../../components/HeldEditionCardSkeleton.vue";
@@ -46,11 +52,13 @@ const mountEditionPageView = (
     router = createLibrisRouter(),
     seriesApi = new FakeSeriesApi([]),
     authorsApi = new FakeAuthorsApi([]),
+    editionsApi = new FakeEditionsApi(new Error("no save here")),
   }: {
     copiesApi?: CopiesApi;
     router?: Router;
     seriesApi?: SeriesApi;
     authorsApi?: AuthorsApi;
+    editionsApi?: EditionsApi;
   } = {},
 ) =>
   mount(EditionPageView, {
@@ -63,12 +71,19 @@ const mountEditionPageView = (
         [copiesApiKey]: copiesApi,
         [seriesApiKey]: seriesApi,
         [authorsApiKey]: authorsApi,
+        [editionsApiKey]: editionsApi,
       },
     },
   });
 
 class LibrisNotRemoving implements CopiesApi {
   remove(): Promise<RemoveAnswer> {
+    return new Promise(() => {});
+  }
+}
+
+class LibrisNotSaving implements EditionsApi {
+  save(): Promise<SaveAnswer> {
     return new Promise(() => {});
   }
 }
@@ -646,6 +661,102 @@ describe("EditionPageView", () => {
       screen.getByRole<HTMLInputElement>("textbox", { name: "Titre" }).value,
     ).toBe("Astérix le Gaulois");
   });
+
+  it("saves the edits under the ouvrage's id", async () => {
+    // Given
+    const editionsApi = new FakeEditionsApi({
+      outcome: "saved",
+      book: asterixWithIsbn,
+    });
+    const screen = await pageOf(asterixWithIsbn, { editionsApi });
+    await tapPencil(screen);
+    await typeTitle(screen, "Astérix le gaulois");
+
+    // When
+    await tapSave(screen);
+
+    // Then
+    expect(
+      editionsApi.asked.map(({ id, edition }) => [id, edition.title]),
+    ).toEqual([[asterixWithIsbn.id, "Astérix le gaulois"]]);
+  });
+
+  it("says Enregistrement en cours… while the save runs, the fields accepting nothing", async () => {
+    // Given
+    const screen = await pageOf(asterixWithIsbn, {
+      editionsApi: new LibrisNotSaving(),
+    });
+    await tapPencil(screen);
+    await typeTitle(screen, "Astérix le gaulois");
+
+    // When
+    await tapSave(screen);
+
+    // Then
+    expect(
+      screen.getByRole("button", { name: "Enregistrement en cours…" }),
+    ).toBeDefined();
+    expect(
+      screen.getByRole<HTMLInputElement>("textbox", { name: "Titre" }).disabled,
+    ).toBe(true);
+  });
+
+  it("keeps the cross from dropping the edits while the save runs", async () => {
+    // Given
+    const screen = await pageOf(asterixWithIsbn, {
+      editionsApi: new LibrisNotSaving(),
+    });
+    await tapPencil(screen);
+    await typeTitle(screen, "Astérix le gaulois");
+
+    // When
+    await tapSave(screen);
+
+    // Then
+    expect(
+      screen.getByRole<HTMLButtonElement>("button", {
+        name: "Annuler les modifications",
+      }).disabled,
+    ).toBe(true);
+  });
+
+  it("closes the form once saved", async () => {
+    // Given
+    const screen = await pageOf(asterixWithIsbn, {
+      editionsApi: new FakeEditionsApi({
+        outcome: "saved",
+        book: asterixWithIsbn,
+      }),
+    });
+    await tapPencil(screen);
+    await typeTitle(screen, "Astérix le gaulois");
+
+    // When
+    await tapSave(screen);
+
+    // Then
+    expect(screen.queryByRole("textbox", { name: "Titre" })).toBeNull();
+    expect(screen.queryByRole("button", { name: "Enregistrer" })).toBeNull();
+    expect(screen.getByRole("button", { name: "Modifier" })).toBeDefined();
+  });
+
+  it("shows the card as Libris answered the save", async () => {
+    // Given
+    const screen = await pageOf(asterixWithIsbn, {
+      editionsApi: new FakeEditionsApi({
+        outcome: "saved",
+        book: { ...asterixWithIsbn, subtitle: "Une aventure d'Astérix" },
+      }),
+    });
+    await tapPencil(screen);
+    await typeTitle(screen, "Astérix le gaulois");
+
+    // When
+    await tapSave(screen);
+
+    // Then
+    expect(screen.getByText("Une aventure d'Astérix")).toBeDefined();
+  });
 });
 
 function seen(wrapper: ReturnType<typeof mountEditionPageView>) {
@@ -664,7 +775,11 @@ async function routerOn(...paths: string[]) {
 
 async function pageOf(
   book: Book,
-  ports: { seriesApi?: SeriesApi; authorsApi?: AuthorsApi } = {},
+  ports: {
+    seriesApi?: SeriesApi;
+    authorsApi?: AuthorsApi;
+    editionsApi?: EditionsApi;
+  } = {},
 ) {
   const wrapper = mountEditionPageView(
     { outcome: "found", book },
@@ -682,6 +797,11 @@ async function tapPencil(screen: ReturnType<typeof within>) {
 
 async function tapCross(screen: ReturnType<typeof within>) {
   screen.getByRole("button", { name: "Annuler les modifications" }).click();
+  await flushPromises();
+}
+
+async function tapSave(screen: ReturnType<typeof within>) {
+  screen.getByRole("button", { name: "Enregistrer" }).click();
   await flushPromises();
 }
 

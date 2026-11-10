@@ -11,6 +11,11 @@ defineProps<{
 
 const emit = defineEmits<{ add: [] }>();
 
+const words = {
+  add: { idle: "isbn.add", busy: "isbn.adding" },
+  save: { idle: "isbn.save", busy: "isbn.saving" },
+};
+
 const { t } = useI18n();
 </script>
 
@@ -26,7 +31,7 @@ const { t } = useI18n();
         @click="emit('add')"
       >
         <BusySpinner v-if="adding" class="size-4" />
-        {{ adding ? t("isbn.adding") : t(`isbn.${action}`) }}
+        {{ t(adding ? words[action].busy : words[action].idle) }}
       </button>
       <p v-if="failed" class="flex items-start gap-2 text-body text-danger">
         <CircleAlert :size="22" class="shrink-0" />
