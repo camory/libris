@@ -1,5 +1,5 @@
 import { BookOpen, CircleAlert } from "@lucide/vue";
-import { waitFor, within } from "@testing-library/dom";
+import { fireEvent, waitFor, within } from "@testing-library/dom";
 import { flushPromises, mount } from "@vue/test-utils";
 import { afterEach, describe, expect, it } from "vitest";
 import type { Router } from "vue-router";
@@ -544,6 +544,22 @@ describe("EditionPageView", () => {
       screen.getByRole("button", { name: "Annuler les modifications" }),
     ).toBeDefined();
     expect(screen.queryByRole("button", { name: "Modifier" })).toBeNull();
+  });
+
+  it("keeps the answered title as the page's heading while the form shows", async () => {
+    // Given
+    const screen = await pageOf(asterixWithIsbn);
+    await tapPencil(screen);
+
+    // When
+    await fireEvent.input(screen.getByRole("textbox", { name: "Titre" }), {
+      target: { value: "Astérix le gaulois" },
+    });
+
+    // Then
+    expect(screen.getAllByRole("heading")).toEqual([
+      screen.getByRole("heading", { level: 1, name: "Astérix le Gaulois" }),
+    ]);
   });
 });
 

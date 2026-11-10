@@ -79,25 +79,29 @@ const failure = computed(() =>
 <template>
   <main class="mx-auto w-full max-w-120 px-5 pt-5 pb-5">
     <HeldEditionCardSkeleton v-if="state.status === 'loading'" />
-    <EditionForm
+    <template
       v-else-if="state.status === 'found' && editing && state.book.isbn13"
-      :isbn13="state.book.isbn13"
-      :edition="state.book"
-      :copies="state.book.copies"
-      :covers="covers"
-      held
-      action="save"
-      :adding="false"
-      :failed="false"
-      :series-names="null"
-      :author-names="null"
     >
-      <template #corner>
-        <IconButton :label="t('isbn.cancelEdit')">
-          <X :size="22" class="shrink-0" />
-        </IconButton>
-      </template>
-    </EditionForm>
+      <h1 class="sr-only">{{ state.book.title }}</h1>
+      <EditionForm
+        :isbn13="state.book.isbn13"
+        :edition="state.book"
+        :copies="state.book.copies"
+        :covers="covers"
+        held
+        action="save"
+        :adding="false"
+        :failed="false"
+        :series-names="null"
+        :author-names="null"
+      >
+        <template #corner>
+          <IconButton :label="t('isbn.cancelEdit')">
+            <X :size="22" class="shrink-0" />
+          </IconButton>
+        </template>
+      </EditionForm>
+    </template>
     <SourceEditionCard
       v-else-if="state.status === 'found'"
       :edition="state.book"
