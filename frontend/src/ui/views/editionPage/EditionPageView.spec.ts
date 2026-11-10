@@ -561,6 +561,20 @@ describe("EditionPageView", () => {
       screen.getByRole("heading", { level: 1, name: "Astérix le Gaulois" }),
     ]);
   });
+
+  it("says Existante in Série for a series of the house", async () => {
+    // Given
+    const screen = await pageOf(
+      asterixWithIsbn,
+      new FakeSeriesApi([], undefined, ["Astérix"]),
+    );
+
+    // When
+    await tapPencil(screen);
+
+    // Then
+    expect(screen.getByText("Existante")).toBeDefined();
+  });
 });
 
 function seen(wrapper: ReturnType<typeof mountEditionPageView>) {
@@ -577,8 +591,14 @@ async function routerOn(...paths: string[]) {
   return router;
 }
 
-async function pageOf(book: Book) {
-  const wrapper = mountEditionPageView({ outcome: "found", book }, book.id);
+async function pageOf(book: Book, seriesApi?: SeriesApi) {
+  const wrapper = mountEditionPageView(
+    { outcome: "found", book },
+    book.id,
+    undefined,
+    undefined,
+    seriesApi,
+  );
   await flushPromises();
   return within(wrapper.element as HTMLElement);
 }

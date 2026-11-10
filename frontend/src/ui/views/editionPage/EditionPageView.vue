@@ -5,7 +5,9 @@ import { useI18n } from "vue-i18n";
 import { useRouter } from "vue-router";
 import { catalogueApiKey } from "../../../application/CatalogueApi";
 import { copiesApiKey } from "../../../application/CopiesApi";
+import { seriesApiKey } from "../../../application/SeriesApi";
 import { useFindCatalogueEdition } from "../../../application/useFindCatalogueEdition";
+import { useListSeriesNames } from "../../../application/useListSeriesNames";
 import { useRemoveCopy } from "../../../application/useRemoveCopy";
 import type { CoverCandidate } from "../../../domain/Cover";
 import EditionForm from "../../components/EditionForm.vue";
@@ -19,6 +21,9 @@ const { t } = useI18n();
 const router = useRouter();
 const { state, find, refresh } = useFindCatalogueEdition(
   inject(catalogueApiKey)!,
+);
+const { names: seriesNames, list: listSeriesNames } = useListSeriesNames(
+  inject(seriesApiKey)!,
 );
 const editing = ref(false);
 let removedId: string | null = null;
@@ -58,6 +63,11 @@ async function removeCopy(copyId: string) {
   await remove(copyId);
 }
 
+function edit() {
+  editing.value = true;
+  void listSeriesNames();
+}
+
 watch(
   () => props.id,
   (id) => void find(id),
@@ -92,7 +102,7 @@ const failure = computed(() =>
         action="save"
         :adding="false"
         :failed="false"
-        :series-names="null"
+        :series-names="seriesNames"
         :author-names="null"
       >
         <template #corner>
@@ -114,7 +124,7 @@ const failure = computed(() =>
       @remove="removeCopy"
     >
       <template v-if="state.book.isbn13" #corner>
-        <IconButton :label="t('isbn.edit')" @click="editing = true">
+        <IconButton :label="t('isbn.edit')" @click="edit">
           <Pencil :size="22" class="shrink-0" />
         </IconButton>
       </template>
