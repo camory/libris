@@ -66,6 +66,19 @@ describe("useSaveEdition", () => {
     // Then
     expect(state.value).toEqual({ status: "saved", book: asterixLeGaulois });
   });
+
+  it("is not saved when Libris refuses the save", async () => {
+    // Given
+    const { state, save } = useSaveEdition(
+      new FakeEditionsApi({ outcome: "problem", type: "/problems/validation" }),
+    );
+
+    // When
+    await save(id, onePiece2);
+
+    // Then
+    expect(state.value).toEqual({ status: "notSaved" });
+  });
 });
 
 class LibrisNotSaving implements EditionsApi {

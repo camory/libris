@@ -4,7 +4,10 @@ import type { SourceEdition } from "../domain/SourceEdition";
 import type { EditionDetails, EditionsApi } from "./EditionsApi";
 
 export type SaveState =
-  { status: "ready" } | { status: "saving" } | { status: "saved"; book: Book };
+  | { status: "ready" }
+  | { status: "saving" }
+  | { status: "saved"; book: Book }
+  | { status: "notSaved" };
 
 export function useSaveEdition(editionsApi: EditionsApi): {
   state: Ref<SaveState>;
@@ -15,8 +18,10 @@ export function useSaveEdition(editionsApi: EditionsApi): {
   async function save(id: string, edition: SourceEdition) {
     state.value = { status: "saving" };
     const answer = await editionsApi.save(id, detailsOf(edition));
-    if (answer.outcome === "saved")
-      state.value = { status: "saved", book: answer.book };
+    state.value =
+      answer.outcome === "saved"
+        ? { status: "saved", book: answer.book }
+        : { status: "notSaved" };
   }
 
   return { state, save };
