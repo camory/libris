@@ -18,7 +18,8 @@ private const val INSERT_SERIES =
 private const val RESPELL_SERIES =
   """
     INSERT INTO series (id, name) VALUES (:id, :name)
-    ON CONFLICT ((BTRIM(name)) COLLATE ignoring_case_and_accents) DO UPDATE SET name = EXCLUDED.name
+    ON CONFLICT ((BTRIM(name)) COLLATE ignoring_case_and_accents) DO UPDATE
+    SET name = CASE WHEN series.id = :ownSeriesId THEN EXCLUDED.name ELSE series.name END
     RETURNING id, name
     """
 
@@ -43,6 +44,7 @@ class JdbcSeriesRepository(private val jdbcClient: JdbcClient) : SeriesRepositor
       .sql(RESPELL_SERIES)
       .param("id", series.id.value)
       .param("name", series.name)
+      .param("ownSeriesId", ownSeriesId?.value)
       .query { rs, _ -> seriesOf(rs) }
       .single()
 

@@ -14,6 +14,9 @@ class SeriesInMemory : SeriesRepository {
 
   override fun respellOrFindOrInsert(series: Series, ownSeriesId: SeriesId?): Series {
     val found = findOrInsert(series)
+    if (found.id != ownSeriesId) {
+      return found
+    }
     val respelled = Series(found.id, series.name)
     storedSeries[storedSeries.indexOf(found)] = respelled
     return respelled

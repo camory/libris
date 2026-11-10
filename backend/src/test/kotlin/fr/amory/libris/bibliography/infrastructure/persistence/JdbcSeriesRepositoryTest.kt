@@ -84,6 +84,20 @@ class JdbcSeriesRepositoryTest @Autowired constructor(private val seriesReposito
   }
 
   @Test
+  fun `a name matching another series of the house leaves it as stored, an own series given`() {
+    // Given
+    val asterix = seriesRepository.findOrInsert(Series(SeriesId.new(), "Astérix"))
+    val tintin = seriesRepository.findOrInsert(Series(SeriesId.new(), "Tintin"))
+
+    // When
+    val stored = seriesRepository.respellOrFindOrInsert(Series(SeriesId.new(), "tintin "), ownSeriesId = asterix.id)
+
+    // Then
+    stored shouldBe tintin
+    seriesRepository.findById(asterix.id) shouldBe asterix
+  }
+
+  @Test
   fun `an id no series has finds none`() {
     seriesRepository.findById(SeriesId.new()) shouldBe null
   }
