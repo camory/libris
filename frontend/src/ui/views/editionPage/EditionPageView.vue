@@ -14,6 +14,7 @@ import { useListSeriesNames } from "../../../application/useListSeriesNames";
 import { useRemoveCopy } from "../../../application/useRemoveCopy";
 import { useSaveEdition } from "../../../application/useSaveEdition";
 import type { CoverCandidate } from "../../../domain/Cover";
+import type { SourceEdition } from "../../../domain/SourceEdition";
 import EditionForm from "../../components/EditionForm.vue";
 import HeldEditionCardSkeleton from "../../components/HeldEditionCardSkeleton.vue";
 import IconButton from "../../components/IconButton.vue";
@@ -78,6 +79,11 @@ function edit() {
   void listAuthorNames();
 }
 
+async function saveEdits(edition: SourceEdition) {
+  await save(props.id, edition);
+  if (saveState.value.status === "saved") editing.value = false;
+}
+
 watch(
   () => props.id,
   (id) => void find(id),
@@ -114,7 +120,7 @@ const failure = computed(() =>
         :failed="false"
         :series-names="seriesNames"
         :author-names="authorNames"
-        @add="save(id, $event)"
+        @add="saveEdits"
       >
         <template #corner>
           <IconButton
