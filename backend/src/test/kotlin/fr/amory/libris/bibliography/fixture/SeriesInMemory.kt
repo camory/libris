@@ -12,6 +12,13 @@ class SeriesInMemory : SeriesRepository {
   override fun findOrInsert(series: Series): Series =
     storedSeries.find { it.name.lowercase() == series.name.lowercase() } ?: series.also { storedSeries += it }
 
+  override fun respellOrFindOrInsert(series: Series, ownSeriesId: SeriesId?): Series {
+    val found = findOrInsert(series)
+    val respelled = Series(found.id, series.name)
+    storedSeries[storedSeries.indexOf(found)] = respelled
+    return respelled
+  }
+
   override fun findById(seriesId: SeriesId): Series? =
     storedSeries.find { it.id == seriesId }
 

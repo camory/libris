@@ -15,6 +15,13 @@ private const val INSERT_SERIES =
     RETURNING id, name
     """
 
+private const val RESPELL_SERIES =
+  """
+    INSERT INTO series (id, name) VALUES (:id, :name)
+    ON CONFLICT ((BTRIM(name)) COLLATE ignoring_case_and_accents) DO UPDATE SET name = EXCLUDED.name
+    RETURNING id, name
+    """
+
 private const val FIND_SERIES_BY_ID =
   "SELECT series.id, series.name FROM series WHERE series.id = :id"
 
@@ -26,6 +33,14 @@ class JdbcSeriesRepository(private val jdbcClient: JdbcClient) : SeriesRepositor
   override fun findOrInsert(series: Series): Series =
     jdbcClient
       .sql(INSERT_SERIES)
+      .param("id", series.id.value)
+      .param("name", series.name)
+      .query { rs, _ -> seriesOf(rs) }
+      .single()
+
+  override fun respellOrFindOrInsert(series: Series, ownSeriesId: SeriesId?): Series =
+    jdbcClient
+      .sql(RESPELL_SERIES)
       .param("id", series.id.value)
       .param("name", series.name)
       .query { rs, _ -> seriesOf(rs) }
