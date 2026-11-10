@@ -337,6 +337,33 @@ describe("IsbnView", () => {
     ).toBe("https://covers.openlibrary.org/b/id/1-L.jpg");
   });
 
+  it("opens the form of a held ISBN with the house's cover alone", async () => {
+    // Given
+    const screen = open(
+      new FakeIsbnApi({
+        ...held,
+        covers: [
+          { source: "inventaire.io", url: "https://inventaire.io/img/1" },
+        ],
+      }),
+    );
+    await ask(screen, "9782723488525");
+
+    // When
+    await press(screen, "Modifier");
+
+    // Then
+    expect(screen.getByRole("textbox", { name: "Titre" })).toBeDefined();
+    expect(
+      screen
+        .getByRole("img", { name: "Couverture de Romance dawn" })
+        .getAttribute("src"),
+    ).toBe("https://inventaire.io/img/1");
+    expect(screen.queryAllByRole("button", { name: /^Couverture / })).toEqual(
+      [],
+    );
+  });
+
   it("keeps on the card the cover shown in the form", async () => {
     // Given
     const screen = open(new FakeIsbnApi(covered));
