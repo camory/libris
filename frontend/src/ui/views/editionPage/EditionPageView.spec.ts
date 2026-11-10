@@ -779,6 +779,29 @@ describe("EditionPageView", () => {
       ),
     ).toBeDefined();
   });
+
+  it("keeps the form as left once the save failed", async () => {
+    // Given
+    const screen = await pageOf(asterixWithIsbn, {
+      editionsApi: new FakeEditionsApi({
+        outcome: "problem",
+        type: "/problems/validation",
+      }),
+    });
+    await tapPencil(screen);
+    await typeTitle(screen, "Astérix le gaulois");
+
+    // When
+    await tapSave(screen);
+
+    // Then
+    const title = screen.getByRole<HTMLInputElement>("textbox", {
+      name: "Titre",
+    });
+    expect(title.value).toBe("Astérix le gaulois");
+    expect(title.disabled).toBe(false);
+    expect(screen.getByRole("button", { name: "Enregistrer" })).toBeDefined();
+  });
 });
 
 function seen(wrapper: ReturnType<typeof mountEditionPageView>) {
