@@ -30,6 +30,18 @@ class JdbcCarriedSeriesTest @Autowired constructor(
     // Then
     found shouldBe setOf(asterix.id)
   }
+
+  @Test
+  fun `an edition without a series carries none`() {
+    // Given
+    editions.insert(edition(seriesVolume = null))
+
+    // When
+    val found = carriedSeries.findAll()
+
+    // Then
+    found shouldBe emptySet()
+  }
 }
 
 private fun edition(seriesVolume: SeriesVolume?): Edition =

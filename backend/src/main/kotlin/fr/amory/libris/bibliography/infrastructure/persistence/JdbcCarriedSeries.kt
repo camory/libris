@@ -7,7 +7,7 @@ import org.springframework.stereotype.Repository
 import java.util.UUID
 
 private const val FIND_ALL_CARRIED_SERIES =
-  "SELECT edition.series_id FROM edition"
+  "SELECT edition.series_id FROM edition WHERE edition.series_id IS NOT NULL"
 
 @Repository
 class JdbcCarriedSeries(private val jdbcClient: JdbcClient) : CarriedSeries {
