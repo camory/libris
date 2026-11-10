@@ -53,7 +53,6 @@ class HeldEditionEditScenarios @Autowired constructor(
   }
 
   @Test
-  @Disabled("held edition edit")
   fun `S4 The ouvrage is saved as edited`() {
     // Given
     lea.hasAdded(ASTERIX_LE_GAULOIS_AS_STORED, to = lea.defaultBookshelf)
@@ -72,7 +71,6 @@ class HeldEditionEditScenarios @Autowired constructor(
   }
 
   @Test
-  @Disabled("held edition edit")
   fun `S4 The ouvrage is saved as edited, its copies on another reader's bookshelf alone`() {
     // Given
     val sam = libris.reader("sam", "Sam")
@@ -108,7 +106,6 @@ class HeldEditionEditScenarios @Autowired constructor(
   }
 
   @Test
-  @Disabled("held edition edit")
   fun `S5 Its own name is respelled for the house, another series of the house`() {
     // Given
     lea.hasAdded(ASTERIX_LE_GAULOIS, LA_SERPE_D_OR, LE_LOTUS_BLEU, to = lea.defaultBookshelf)
@@ -139,7 +136,6 @@ class HeldEditionEditScenarios @Autowired constructor(
   }
 
   @Test
-  @Disabled("held edition edit")
   fun `S5 Its own name is respelled for the house, another author of the house`() {
     // Given
     lea.hasAdded(ASTERIX_LE_GAULOIS, LA_SERPE_D_OR.copy(authors = emptyList()), to = lea.defaultBookshelf)
