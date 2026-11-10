@@ -240,11 +240,19 @@ Format:
   move); whether `NewEdition` composes `EditionDetails` stays in
   `agent/PROPOSED.md`.
 
-## 2026-11-10 — T159 The save on v0.18.0, the pencil of a held ISBN — handoff
-- Done: steps 1 to 11, one commit each. Start with step 12 (un-skip S2, guard), then the gotchas, PROGRESS, tick, self-review, PR.
-- Scenario red read first, before step 2 (S1 case 1 and S2: no button *Modifier*), then re-skipped until steps 11 and 12.
-- Decided: the corner shows on `!held || shownCopies.length === 0`, keeping the pencil of an ISBN the house lacks whatever its copies; `CoversScenarios` got its two lines by hand, Prettier rewrites the rest of it.
-- Guard step 10: `IsbnView` passing `:held="false"` to the form reds it, `expected [ …(1) ] to deeply equal []` (the dot is there); reverted.
-- Guard step 11: the corner back to `v-if="!held"` reds S1 case 1, `Unable to find … role "button" and name "Modifier"`; reverted.
-- Steps 3 and 4 were reds as foreseen: `TypeError: Cannot read properties of undefined (reading 'map')` (the problem read as a book), then `type: "U3nHKhLelm"` (the mock's random type, 400 not mapped).
-- Deviations: none so far.
+## 2026-11-10 — T159 The save on v0.18.0, the pencil of a held ISBN — done
+- Did: the frontend pins `v0.18.0`; `FetchEditionsApi` sends the `PUT
+  /books/{id}` and `editionsApi` joins `LibrisPorts`; the lookup's card of
+  a held ISBN with none of the reader's copies carries *Modifier*, its form
+  the house's cover without dots. S1 and S2 run and pass.
+- Decided: the corner shows on `!held || shownCopies.length === 0`, so an
+  ISBN the house lacks keeps its pencil whatever its copies; the
+  `held` prop of `EditionForm` is required, the spec's `form()` giving
+  `false` by default. The two scenario lines of `CoversScenarios` were
+  written by hand, Prettier rewriting the rest of that file.
+- Deviations from the brief: none. Steps 3 and 4 were reds as foreseen;
+  steps 10 to 12 are guards, their mutations run and reverted (listed in
+  the PR). The run handed off once, after step 11; the second run did
+  step 12 and the close.
+- Left over: T160 to T163 per the backlog; the lookup card and form of a
+  held ISBN checked by hand by Tophe, in both schemes.

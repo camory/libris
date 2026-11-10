@@ -24,7 +24,7 @@ Read whole by a run that changes `frontend/`, after `every-run.md`.
   an `afterEach`, or the contract case passes only by running first.
 - `vitest.global-setup.ts` starts `contracteer mock` on port 9099 over the
   contract the frontend pins, a `raw.githubusercontent.com` URL of
-  `camory/libris-api` (`v0.17.0` since T144); it starts in about four seconds
+  `camory/libris-api` (`v0.18.0` since T159); it starts in about four seconds
   and logs `Contracteer mock server started on port 9099` last, and the
   setup resolves on that line and kills the process in its teardown. The
   mock generates values, so an `infra/api` spec asserts shape and types,
@@ -73,12 +73,16 @@ Read whole by a run that changes `frontend/`, after `every-run.md`.
   `a%2Fb`, and a generated `200` of one or two copies in 30 tries, never
   none (T113). `GET /series-names` answers a generated `200` of one or two
   names of one character in 30 tries, never none (T121); `GET
-  /author-names` the same in 30 tries (T144). `FetchIsbnApi`, `FetchBookshelfApi`, `FetchBookshelvesApi`,
-  `FetchSeriesApi`'s find, `FetchCatalogueApi`'s find and `FetchCopiesApi` hand a non-2xx
+  /author-names` the same in 30 tries (T144). `PUT /books/{id}` answers a
+  `200` with a generated book to a valid body on any uuid, `404` to
+  `2a3b4c5d-6e7f-4a8b-9c0d-1e2f3a4b5c6d` with exactly the `EditOnePiece2`
+  body (a `200` to another body), and `400` to `not-a-uuid` or a mistyped
+  field (T159). `FetchIsbnApi`, `FetchBookshelfApi`, `FetchBookshelvesApi`,
+  `FetchSeriesApi`'s find, `FetchCatalogueApi`'s find, `FetchCopiesApi` and `FetchEditionsApi` hand a non-2xx
   answer to `infra/api/problemOf`, which maps the statuses the
   contract names (400, 404, 409 for the creation and the add of a member, 400 and
   404 for the choice of the default, the finds of a series and of an
-  ouvrage and the removal of a copy, and 503 for the lookup)
+  ouvrage, the removal of a copy and the save of an edition, and 503 for the lookup)
   to the `/problems/…`
   slugs only when the `Content-Type` is `application/problem+json`, and
   reads the body's `type` otherwise: a proxy's `text/plain` 404 or 503 then
@@ -158,7 +162,8 @@ Read whole by a run that changes `frontend/`, after `every-run.md`.
   rebuilds `addBookToBookshelf`, which ends the *Added* state and brings
   the dock back; after an add it
   also makes `edition` the sent one, `covers` the sent candidate, `held`
-  true and `editing` false, so the card is the house's: no pencil, no dots.
+  true and `editing` false, so the card is the house's: no dots, and the
+  pencil once none of the reader's copies is left on it.
   `useFindCatalogueEdition`'s `refresh(id)` asks again with no `loading`
   step, the card staying mounted, while `find(id)` shows the skeleton
   first; its spec's `mountEditionPageView` takes the copies' port third, a
@@ -204,13 +209,16 @@ Read whole by a run that changes `frontend/`, after `every-run.md`.
   (`application/EditionsApi.ts`, `editionsApiKey`), `edition` an
   `EditionDetails` (a `SourceEdition` without `isbn13`), answering `saved`
   with the `Book` or a problem; `FakeEditionsApi` takes its answer,
-  `SaveAnswer | Error`, and records `asked`. It is no port of `LibrisPorts`
-  yet and has no client: `HeldEditionEditScenarios`' `open()` provides it
-  with `app.provide(editionsApiKey, …)` after `createLibrisApp`. `v0.18.0`
-  is released, so the task writes the client over `PUT /books/{id}` and
-  moves the port into `LibrisPorts`.
+  `SaveAnswer | Error`, and records `asked`. `editionsApi` is a port of
+  `LibrisPorts` since T159, provided by `createLibrisApp`; `FetchEditionsApi`
+  sends the `PUT /books/{id}`, the id through `encodeURIComponent`, and
+  hands any answer but `200` to `problemOf`. `HeldEditionEditScenarios`'
+  `open()` gives `world.save`, the other scenario files a
+  `FakeEditionsApi(new Error("no save in this scenario"))`; no view reads
+  the port yet.
 - `EditionForm` takes `isbn13`, `edition` (a `SourceEdition`, absent for
-  an unknown ISBN), `copies`, `covers`, `adding`, `failed` and
+  an unknown ISBN), `copies`, `covers`, `held` (handed to `CoverChoice`,
+  `IsbnView` passing its own), `adding`, `failed` and
   `seriesNames` and `authorNames`, required,
   `shownSource`, optional, as the card's, and the named slot `corner` as
   the card's, emits `coverSource` as the card does, and `add` with the edition its
@@ -327,7 +335,7 @@ Read whole by a run that changes `frontend/`, after `every-run.md`.
   for `existing`, `text-muted` alone for `new`, no spec of its own,
   `AuthorBox` its other caller) as `isbn.form.seriesNameStatus.<status>`,
   and takes `pr-32` while it does. Its spec's `form()` takes `{ adding, failed, corner, shownSource,
-  attachTo, seriesNames, authorNames }` fourth, `false` and none by
+  attachTo, seriesNames, authorNames, held }` fourth, `false` and none by
   default (`seriesNames` and `authorNames` `null`, so no word), and gives the edition's own `isbn13`
   when there is one; the focus case passes `attachTo: document.body` and
   unmounts at its end, and the file's `afterEach` deletes a
@@ -504,7 +512,8 @@ Read whole by a run that changes `frontend/`, after `every-run.md`.
   named slot `corner`, card and form alike, is drawn at the right of the
   top part's text column, inside a `flex min-w-0 flex-1 gap-2` wrapper;
   `IsbnView` fills it with the pencil *Modifier* on the card of an ISBN
-  the house lacks and the cross *Annuler les modifications* on the form
+  the house lacks or holds with none of the reader's copies shown
+  (`!held || shownCopies.length === 0`) and the cross *Annuler les modifications* on the form
   that pencil opens (`editing`), both disabled while `adding`, as the
   card's dots, each an `IconButton` (prop `label`, the icon in its
   default slot, `class`, `disabled` and `@click` falling through to its
