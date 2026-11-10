@@ -18,13 +18,16 @@ import fr.amory.libris.bibliography.domain.series.SeriesVolume
 import fr.amory.libris.bibliography.fixture.EditionsInMemory
 import fr.amory.libris.bibliography.fixture.SeriesInMemory
 import fr.amory.libris.bibliography.fixture.isbnOf
+import fr.amory.libris.fixture.Transaction
+import fr.amory.libris.fixture.TransactionsObserving
 import io.kotest.matchers.shouldBe
 import org.junit.jupiter.api.Test
+import org.springframework.transaction.support.TransactionOperations.withoutTransaction
 
 class EditEditionTest {
   private val editions = EditionsInMemory()
   private val seriesRepository = SeriesInMemory()
-  private val editEdition = EditEdition(editions, seriesRepository)
+  private val editEdition = EditEdition(editions, seriesRepository, withoutTransaction())
 
   @Test
   fun `an edition the house lacks is no such edition`() {
@@ -82,6 +85,27 @@ class EditEditionTest {
     // Then
     editions.stored.single().seriesVolume shouldBe SeriesVolume(stored.id, 1)
     seriesRepository.stored shouldBe listOf(stored)
+  }
+
+  @Test
+  fun `the series and the edition are written in one transaction`() {
+    // Given
+    editions.insert(asterixLeGaulois())
+    val transactions = TransactionsObserving {
+      Pair(seriesRepository.stored.map { it.name }, editions.stored.map { it.title })
+    }
+    val editEdition = EditEdition(editions, seriesRepository, transactions)
+
+    // When
+    editEdition(ASTERIX_LE_GAULOIS, asEdited().copy(series = SeriesEntry("Astérix", 1)))
+
+    // Then
+    transactions.recorded shouldBe listOf(
+      Transaction(
+        before = Pair(emptyList(), listOf("Asterix le gaulois")),
+        after = Pair(listOf("Astérix"), listOf("Astérix le Gaulois")),
+      ),
+    )
   }
 
   private fun asterixLeGaulois(): Edition =

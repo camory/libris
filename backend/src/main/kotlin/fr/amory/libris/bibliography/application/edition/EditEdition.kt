@@ -11,19 +11,28 @@ import fr.amory.libris.bibliography.domain.series.SeriesId
 import fr.amory.libris.bibliography.domain.series.SeriesRepository
 import fr.amory.libris.bibliography.domain.series.SeriesVolume
 import org.springframework.stereotype.Service
+import org.springframework.transaction.support.TransactionOperations
 
 @Service
 class EditEdition(
   private val editions: EditionRepository,
-  private val seriesRepository: SeriesRepository) {
+  private val seriesRepository: SeriesRepository,
+  private val transactions: TransactionOperations) {
   operator fun invoke(editionId: EditionId, details: EditionDetails): EditEditionResult {
     val held = editions
       .findByIds(listOf(editionId))
       .singleOrNull() ?: return NoSuchEdition
-    val edited = editedOf(held, details, details.series?.let { seriesVolumeOf(it) })
-    editions.update(edited)
-    return Edited(edited)
+    return Edited(written(held, details))
   }
+
+  private fun written(held: Edition, details: EditionDetails): Edition =
+    checkNotNull(
+      transactions.execute {
+        val edited = editedOf(held, details, details.series?.let { seriesVolumeOf(it) })
+        editions.update(edited)
+        edited
+      },
+    )
 
   private fun seriesVolumeOf(seriesEntry: SeriesEntry): SeriesVolume =
     SeriesVolume(
