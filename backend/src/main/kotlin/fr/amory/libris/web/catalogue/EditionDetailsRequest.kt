@@ -24,11 +24,12 @@ data class EditionDetailsRequest(
   val pageCount: Int?,
   val summary: String?) {
   fun validate(): EditionDetailsValidation {
+    val contributions = authors.map { Contribution.of(it.name, it.role) }
     val details = EditionDetails.of(
       kind = kind,
       title = title,
       subtitle = subtitle,
-      contributions = Contributions.of(authors.mapNotNull { Contribution.of(it.name, it.role) }),
+      contributions = Contributions.of(contributions.filterNotNull()),
       series = series?.let { SeriesEntry.of(it.name, it.volumeNumber) },
       collection = collection,
       publisher = publisher,
@@ -37,7 +38,11 @@ data class EditionDetailsRequest(
       pageCount = pageCount,
       summary = summary,
     )
-    return if (details != null) Accepted(details) else Refused(listOf(ValidationErrorResponse("title", "blank")))
+    val errors = buildList {
+      if (details == null) add(ValidationErrorResponse("title", "blank"))
+      if (null in contributions) add(ValidationErrorResponse("authors", "blank"))
+    }
+    return if (details != null && errors.isEmpty()) Accepted(details) else Refused(errors)
   }
 }
 

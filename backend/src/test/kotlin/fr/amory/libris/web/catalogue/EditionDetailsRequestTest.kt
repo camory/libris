@@ -50,12 +50,23 @@ class EditionDetailsRequestTest {
     request.validate() shouldBe Refused(listOf(ValidationErrorResponse("title", "blank")))
   }
 
-  private fun baggyAndHisMen(title: String = "Aux prises avec Baggy et ses hommes") =
+  @Test
+  fun `an author without a name is refused`() {
+    // Given
+    val request = baggyAndHisMen(artist = " ")
+
+    // When / Then
+    request.validate() shouldBe Refused(listOf(ValidationErrorResponse("authors", "blank")))
+  }
+
+  private fun baggyAndHisMen(
+    title: String = "Aux prises avec Baggy et ses hommes",
+    artist: String = "Eiichirō Oda") =
     EditionDetailsRequest(
       kind = MANGA,
       title = title,
       subtitle = "Le clown pirate",
-      authors = listOf(NewAuthorRequest("Eiichirō Oda", WRITER), NewAuthorRequest("Eiichirō Oda", ARTIST)),
+      authors = listOf(NewAuthorRequest("Eiichirō Oda", WRITER), NewAuthorRequest(artist, ARTIST)),
       series = NewSeriesRequest("One Piece", 2),
       collection = "Shonen manga",
       publisher = "Glénat",
