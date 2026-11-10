@@ -416,8 +416,8 @@ Read whole by a run that changes `backend/`, after `every-run.md`.
   name takes `SeriesRepository` (`SeriesInMemory` in `bibliography.fixture`,
   names matched with `lowercase()` alone, unlike the index: no accents, no
   trimming).
-- `JdbcClient`'s `query(…)` has `single()`, `optional()` and `list()`, no
-  `singleOrNull()`: a finder of one row that may be missing answers
+- `JdbcClient`'s `query(…)` has `single()`, `optional()`, `list()` and
+  `set()` (`JdbcCarriedSeries`), no `singleOrNull()`: a finder of one row that may be missing answers
   `.optional().orElse(null)`; `single()` throws
   `EmptyResultDataAccessException` on no row.
   `query(String::class.java).list()` answers a `List<String?>`, which a

@@ -167,3 +167,21 @@ Format:
 - Left over: T155–T158 per the backlog. Two PROPOSED items: `NewEdition`
   and `EditionDetails` (and their requests) repeating the edition's fields,
   for T158; the validation problem built in four controllers.
+
+## 2026-11-10 — T155 A name no edition carries is not suggested — done
+- Did: the authors' names are those a contribution references
+  (`JdbcAuthorNames`, `EXISTS`); the series' names are those of the ids
+  `CarriedSeries` answers, read through `SeriesRepository.findByIds`.
+  `SeriesRepository.findAll` is gone. S6 runs and passes.
+- Decided: `JdbcCarriedSeries` reads `series_id` from `edition` alone,
+  `IS NOT NULL`, and answers a `Set` through `JdbcClient`'s `set()`, so no
+  `DISTINCT`. The authors' statement keeps each name once with a semi-join
+  rather than `DISTINCT`, the tree's form (see the catalogue order item of
+  `backend.md`). `ListSeriesNamesTest` builds its `SeriesInMemory` in two
+  statements instead of `apply`, since the case needs *Astérix*'s id.
+- Deviations from the brief: the criterion's `grep -rn "findAll"` over
+  `bibliography/domain/series` answers one line, the brief's own
+  `CarriedSeries.findAll`; `SeriesRepository` has none. Nothing else.
+  `ApiContractTest`: `tests="50"` on the untouched tree and after.
+- Left over: T156–T158 per the backlog; the name rows no edition carries
+  stay for an administration page (PRD §4.10).
