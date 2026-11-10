@@ -611,6 +611,30 @@ describe("EditionPageView", () => {
       [],
     );
   });
+
+  it("shows the card again on the cross, the edits dropped", async () => {
+    // Given
+    const screen = await pageOf(asterixWithIsbn);
+    await tapPencil(screen);
+    await fireEvent.input(screen.getByRole("textbox", { name: "Titre" }), {
+      target: { value: "Astérix le gaulois" },
+    });
+
+    // When
+    screen.getByRole("button", { name: "Annuler les modifications" }).click();
+    await flushPromises();
+
+    // Then
+    expect(screen.queryByRole("textbox", { name: "Titre" })).toBeNull();
+    expect(screen.queryByRole("button", { name: "Enregistrer" })).toBeNull();
+    expect(
+      screen.queryByRole("button", { name: "Annuler les modifications" }),
+    ).toBeNull();
+    expect(screen.getByRole("button", { name: "Modifier" })).toBeDefined();
+    expect(
+      screen.getByRole("button", { name: "Retirer un exemplaire" }),
+    ).toBeDefined();
+  });
 });
 
 function seen(wrapper: ReturnType<typeof mountEditionPageView>) {
