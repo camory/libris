@@ -16,6 +16,10 @@ data class EditionDetails(
   val language: String?,
   val pageCount: Int?,
   val summary: String?) {
+  init {
+    require(title.isNotBlank()) { "the details of an edition need a title" }
+  }
+
   companion object {
     @Suppress("LongParameterList")
     fun of(
