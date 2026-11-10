@@ -13,14 +13,20 @@ import fr.amory.libris.library.application.catalogue.SaveEditionResult
 import fr.amory.libris.library.application.catalogue.SaveEditionResult.Saved
 import fr.amory.libris.library.domain.reader.Reader
 import fr.amory.libris.web.bookshelf.CopyResponse
+import fr.amory.libris.web.catalogue.EditionDetailsValidation.Accepted
+import fr.amory.libris.web.catalogue.EditionDetailsValidation.Refused
 import fr.amory.libris.web.cover.coverPathOf
 import fr.amory.libris.web.isbn.IsbnAuthorResponse
 import fr.amory.libris.web.isbn.IsbnSeriesResponse
 import fr.amory.libris.web.problem.NOT_FOUND_PROBLEM
+import fr.amory.libris.web.problem.VALIDATION_PROBLEM
+import fr.amory.libris.web.problem.ValidationErrorResponse
 import fr.amory.libris.web.problem.asResponse
 import fr.amory.libris.web.problem.problem
+import org.springframework.http.HttpStatus.BAD_REQUEST
 import org.springframework.http.HttpStatus.NOT_FOUND
 import org.springframework.http.HttpStatus.OK
+import org.springframework.http.ProblemDetail
 import org.springframework.http.ResponseEntity
 import org.springframework.security.core.annotation.AuthenticationPrincipal
 import org.springframework.web.bind.annotation.GetMapping
@@ -48,12 +54,20 @@ class CatalogueController(
     }
 
   @PutMapping("/api/v1/books/{id}")
-  @Suppress("UnusedParameter")
   fun save(
     @AuthenticationPrincipal reader: Reader,
     @PathVariable("id") id: UUID,
     @RequestBody request: EditionDetailsRequest): ResponseEntity<Any> =
-    when (val result = saveEdition(reader.id, EditionId(id))) {
+    when (val validation = request.validate()) {
+      is Refused  -> invalid(validation.errors).asResponse()
+      is Accepted -> responseOf(saveEdition(reader.id, EditionId(id), validation.details))
+    }
+
+  private fun invalid(errors: List<ValidationErrorResponse>): ProblemDetail =
+    problem(BAD_REQUEST, VALIDATION_PROBLEM).apply { setProperty("errors", errors) }
+
+  private fun responseOf(result: SaveEditionResult): ResponseEntity<Any> =
+    when (result) {
       is Saved                        -> ResponseEntity.status(OK).body(BookResponse.from(result.held))
       SaveEditionResult.NoSuchEdition -> problem(NOT_FOUND, NOT_FOUND_PROBLEM).asResponse()
     }

@@ -3,6 +3,7 @@ package fr.amory.libris
 import dev.contracteer.verifier.junit.ContracteerServerPort
 import dev.contracteer.verifier.junit.ContracteerTest
 import fr.amory.libris.bibliography.application.cover.FindCover
+import fr.amory.libris.bibliography.application.edition.EditionDetails
 import fr.amory.libris.bibliography.application.edition.ListAuthorNames
 import fr.amory.libris.bibliography.application.edition.NewEdition
 import fr.amory.libris.bibliography.application.lookup.EditionLookupResult
@@ -270,8 +271,9 @@ class ApiContractTest @Autowired constructor(
   }
 
   private fun savingABookAnswers() {
-    given(saveEdition(CONTRACTEER.id, ONE_PIECE_2)).willReturn(SaveEditionResult.Saved(ASTERIX_1_HELD))
-    given(saveEdition(CONTRACTEER.id, UNKNOWN_BOOK)).willReturn(SaveEditionResult.NoSuchEdition)
+    given(saveEdition(CONTRACTEER.id, ONE_PIECE_2, EDIT_ONE_PIECE_2))
+      .willReturn(SaveEditionResult.Saved(ASTERIX_1_HELD))
+    given(saveEdition(CONTRACTEER.id, UNKNOWN_BOOK, EDIT_ONE_PIECE_2)).willReturn(SaveEditionResult.NoSuchEdition)
   }
 
   private fun noCopy(answer: EditionLookupResult) =
@@ -419,6 +421,25 @@ private val MY_COPY = CopyId(UUID.fromString("4d5e6f70-8192-4a3b-9c4d-5e6f708192
 private val NOT_MY_COPY = CopyId(UUID.fromString("8b9c0d1e-2f3a-4b4c-9d5e-6f7a8b9c0d1e"))
 
 private val ONE_PIECE_2 = EditionId(UUID.fromString("3c4d5e6f-7a8b-4c9d-8e0f-1a2b3c4d5e6f"))
+
+private val EDIT_ONE_PIECE_2 = EditionDetails(
+  kind = MANGA,
+  title = "Aux prises avec Baggy et ses hommes",
+  subtitle = null,
+  contributions = Contributions.of(
+    listOf(
+      Contribution("Eiichirō Oda", WRITER),
+      Contribution("Eiichirō Oda", ARTIST),
+    ),
+  ),
+  series = SeriesEntry("One Piece", 2),
+  collection = "Shonen manga",
+  publisher = "Glénat",
+  publicationYear = 2013,
+  language = "fr",
+  pageCount = 208,
+  summary = "Luffy et Zoro affrontent le pirate Baggy le clown.",
+)
 
 private val UNKNOWN_BOOK = EditionId(UUID.fromString("2a3b4c5d-6e7f-4a8b-9c0d-1e2f3a4b5c6d"))
 
