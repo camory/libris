@@ -147,17 +147,23 @@ Format:
   T154 adds its validation, the two requests share one shape or one
   validation, so the field rules are not written twice.
 
-## 2026-11-10 — T154 The ouvrage saved as edited — handoff
-- Done: steps 1 to 12, one commit each. Start at step 13 (`SaveEditionTest`,
-  the copy on another reader's bookshelf left out; the signature change, the
-  controller, `ApiContractTest`'s stubs and both `@Suppress` with it).
-- Step 1's red: S4's first case on the page's title, S4's second on the
-  not-found refusal, S5's other series `Astérix` for `Tintin`, other author
-  `[]`. `ApiContractTest` on `main`: `tests="50"`.
-- Decided: `EditEdition` grew its constructor one cycle at a time (step 8 a
-  constant `NoSuchEdition` with `@Suppress("UnusedParameter")`, as T153's
-  `SaveEdition`, gone at step 9); it reads the held edition by
-  `findByIds(listOf(id))`, writes in `executeWithoutResult`, then reads it
-  back. Step 12's double is `EditionsRespellingAuthors`, delegating to
-  `EditionsInMemory`. No guard so far, no mutation run.
-- Deviations: none. Gate: red only on the four scenarios of step 1.
+## 2026-11-10 — T154 The ouvrage saved as edited — done
+- Did: `PUT /api/v1/books/{id}` validates the body as `EditionDetails` and
+  writes it over the held edition through `EditEdition` (bibliography),
+  which `SaveEdition` (library) answers with the reader's copies and the
+  house's series name. S4, both, and S5's other series and author pass.
+- Decided: both use cases grew their constructor one cycle at a time, a
+  parameter no case read yet held for one cycle under
+  `@Suppress("UnusedParameter")` (step 8's `EditEdition`, step 13's
+  `SaveEdition`), gone the next. `EditEdition` reads the held edition by
+  `findByIds`, writes in `executeWithoutResult`, then reads it back; step
+  12's double is `EditionsRespellingAuthors`, private to `EditEditionTest`.
+  The contract stubs' fixture is `EDIT_ONE_PIECE_2`, below `ONE_PIECE_2`.
+- Deviations from the brief: the tidy step moved the reader's copies and
+  the series entry, written twice once `SaveEdition` had them, from
+  `FindCatalogueEdition` into `HeldEditionReads.kt`, two internal functions
+  both use cases call (a file outside *Files and modules*).
+  `ApiContractTest` on `main` and after: `tests="50"`.
+- Left over: T155–T158 per the backlog. Two PROPOSED items: `NewEdition`
+  and `EditionDetails` (and their requests) repeating the edition's fields,
+  for T158; the validation problem built in four controllers.
