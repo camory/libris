@@ -303,6 +303,33 @@ class JdbcEditionRepositoryTest @Autowired constructor(
   }
 
   @Test
+  fun `an update naming the edition's own author under another role respells that author`() {
+    // Given
+    val tomeOne = onePieceTomeOne()
+    val tomeTwo = tomeOne.copy(
+      id = EditionId.new(),
+      isbn = isbnOf(ONE_PIECE_TOME_TWO),
+      title = "Aux prises avec Baggy et ses hommes",
+      seriesVolume = SeriesVolume(ONE_PIECE_SERIES.id, 2),
+    )
+    editions.insert(tomeOne)
+    editions.insert(tomeTwo)
+
+    // When
+    editions.update(
+      tomeOne.copy(
+        contributions = Contributions.of(
+          listOf(Contribution("EIICHIRO ODA", ARTIST), Contribution("Akiko Indei", TRANSLATOR)),
+        ),
+      ),
+    )
+
+    // Then
+    editions.findByIsbn(isbnOf(ONE_PIECE_TOME_TWO))?.contributions?.toList() shouldContainExactlyInAnyOrder
+      listOf(Contribution("EIICHIRO ODA", WRITER), Contribution("Akiko Indei", TRANSLATOR))
+  }
+
+  @Test
   fun `no id finds no edition`() {
     // Given
     editions.insert(onePieceTomeOne())
