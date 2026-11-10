@@ -25,12 +25,13 @@ data class EditionDetailsRequest(
   val summary: String?) {
   fun validate(): EditionDetailsValidation {
     val contributions = authors.map { Contribution.of(it.name, it.role) }
+    val seriesEntry = series?.let { SeriesEntry.of(it.name, it.volumeNumber) }
     val details = EditionDetails.of(
       kind = kind,
       title = title,
       subtitle = subtitle,
       contributions = Contributions.of(contributions.filterNotNull()),
-      series = series?.let { SeriesEntry.of(it.name, it.volumeNumber) },
+      series = seriesEntry,
       collection = collection,
       publisher = publisher,
       publicationYear = publicationYear,
@@ -41,6 +42,7 @@ data class EditionDetailsRequest(
     val errors = buildList {
       if (details == null) add(ValidationErrorResponse("title", "blank"))
       if (null in contributions) add(ValidationErrorResponse("authors", "blank"))
+      if (series != null && seriesEntry == null) add(ValidationErrorResponse("series", "blank"))
     }
     return if (details != null && errors.isEmpty()) Accepted(details) else Refused(errors)
   }
