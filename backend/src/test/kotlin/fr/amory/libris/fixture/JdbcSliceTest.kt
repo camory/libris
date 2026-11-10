@@ -2,6 +2,7 @@ package fr.amory.libris.fixture
 
 import fr.amory.libris.bibliography.infrastructure.persistence.JdbcAuthorNames
 import fr.amory.libris.bibliography.infrastructure.persistence.JdbcAwaitedCoverRepository
+import fr.amory.libris.bibliography.infrastructure.persistence.JdbcCarriedSeries
 import fr.amory.libris.bibliography.infrastructure.persistence.JdbcEditionRepository
 import fr.amory.libris.bibliography.infrastructure.persistence.JdbcSeriesRepository
 import fr.amory.libris.library.infrastructure.persistence.JdbcBookshelfRepository
@@ -24,6 +25,7 @@ import org.springframework.context.annotation.Import
   CleanSchema::class,
   JdbcAuthorNames::class,
   JdbcAwaitedCoverRepository::class,
+  JdbcCarriedSeries::class,
   JdbcEditionRepository::class,
   JdbcSeriesRepository::class,
   JdbcBookshelfRepository::class,
