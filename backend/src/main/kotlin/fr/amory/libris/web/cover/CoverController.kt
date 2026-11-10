@@ -4,12 +4,11 @@ import fr.amory.libris.bibliography.application.cover.FindCover
 import fr.amory.libris.bibliography.domain.cover.Cover
 import fr.amory.libris.bibliography.domain.cover.CoverName
 import fr.amory.libris.web.problem.NOT_FOUND_PROBLEM
-import fr.amory.libris.web.problem.VALIDATION_PROBLEM
 import fr.amory.libris.web.problem.ValidationErrorResponse
 import fr.amory.libris.web.problem.asResponse
 import fr.amory.libris.web.problem.problem
+import fr.amory.libris.web.problem.validationProblem
 import org.springframework.http.HttpHeaders.CACHE_CONTROL
-import org.springframework.http.HttpStatus.BAD_REQUEST
 import org.springframework.http.HttpStatus.NOT_FOUND
 import org.springframework.http.MediaType.parseMediaType
 import org.springframework.http.ProblemDetail
@@ -27,9 +26,7 @@ class CoverController(private val findCover: FindCover) {
   }
 
   private fun notACoverName(): ProblemDetail =
-    problem(BAD_REQUEST, VALIDATION_PROBLEM).apply {
-      setProperty("errors", listOf(ValidationErrorResponse(field = "name", code = "not-a-cover-name")))
-    }
+    validationProblem(listOf(ValidationErrorResponse(field = "name", code = "not-a-cover-name")))
 
   private fun pictureOf(cover: Cover): ResponseEntity<Any> =
     ResponseEntity

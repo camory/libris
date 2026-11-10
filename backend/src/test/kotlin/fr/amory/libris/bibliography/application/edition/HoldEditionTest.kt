@@ -76,7 +76,7 @@ class HoldEditionTest {
     val stored = seriesRepository.findOrInsert(Series(SeriesId.new(), "One piece"))
 
     // When
-    val edition = holdEdition(onePieceTomeOne().copy(series = SeriesEntry("ONE PIECE", 1)))
+    val edition = holdEdition(onePieceTomeOne(series = SeriesEntry("ONE PIECE", 1)))
 
     // Then
     edition.seriesVolume shouldBe SeriesVolume(stored.id, 1)
@@ -200,20 +200,22 @@ class HoldEditionTest {
     transactions.recorded shouldBe listOf(Transaction(before = Triple(0, 0, 0), after = Triple(1, 1, 1)))
   }
 
-  private fun onePieceTomeOne(): NewEdition =
+  private fun onePieceTomeOne(series: SeriesEntry = SeriesEntry("One piece", 1)): NewEdition =
     NewEdition(
       isbn = isbnOf(ONE_PIECE),
-      kind = MANGA,
-      title = "Romance dawn",
-      subtitle = "À l'aube d'une grande aventure",
-      contributions = Contributions.of(listOf(Contribution("Eiichiro Oda", WRITER))),
-      series = SeriesEntry("One piece", 1),
-      collection = "Shonen manga",
-      publisher = "Glénat",
-      publicationYear = 2013,
-      language = "fr",
-      pageCount = 208,
-      summary = "Luffy prend la mer pour devenir le roi des pirates.",
+      details = EditionDetails(
+        kind = MANGA,
+        title = "Romance dawn",
+        subtitle = "À l'aube d'une grande aventure",
+        contributions = Contributions.of(listOf(Contribution("Eiichiro Oda", WRITER))),
+        series = series,
+        collection = "Shonen manga",
+        publisher = "Glénat",
+        publicationYear = 2013,
+        language = "fr",
+        pageCount = 208,
+        summary = "Luffy prend la mer pour devenir le roi des pirates.",
+      ),
       coverSource = null,
     )
 }
