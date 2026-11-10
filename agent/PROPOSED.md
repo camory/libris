@@ -546,9 +546,10 @@
 - Backend: `NewEdition` and `EditionDetails` repeat the edition's fields,
   and so do `NewBookRequest` and `EditionDetailsRequest`, each request
   refusing a blank title, author and series by itself (Duplicated Code).
-  Open for T158, whose add of a held ISBN writes the fields as the save
-  does: whether `NewEdition` composes `EditionDetails` (found on T154,
-  2026-11-10).
+  T158 converts one into the other with `NewEdition.toEditionDetails()`,
+  so the add of a held ISBN writes through `EditEdition`; whether
+  `NewEdition` composes `EditionDetails` is still open (found on T154,
+  2026-11-10; rewritten on T158, 2026-11-10).
 - Backend: `BookshelfController` and `CatalogueController` each hold a
   private `invalid(errors)` building the validation problem with its
   `errors`, and `CoverController` and `IsbnController` build theirs inline

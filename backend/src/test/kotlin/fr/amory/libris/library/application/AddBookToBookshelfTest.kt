@@ -1,5 +1,6 @@
 package fr.amory.libris.library.application
 
+import fr.amory.libris.bibliography.application.edition.EditEdition
 import fr.amory.libris.bibliography.application.edition.HoldEdition
 import fr.amory.libris.bibliography.application.edition.NewEdition
 import fr.amory.libris.bibliography.domain.Contribution
@@ -37,12 +38,14 @@ private const val ONE_PIECE = "9782723488525"
 
 class AddBookToBookshelfTest {
   private val editions = EditionsInMemory()
+  private val seriesRepository = SeriesInMemory()
   private val awaitedCovers = AwaitedCoversInMemory()
   private val copies = CopiesInMemory()
   private val bookshelves = BookshelvesInMemory()
   private val coverWorker = CoverWorkerObserving {}
   private val clock = MutableClock()
-  private val holdEdition = HoldEdition(editions, SeriesInMemory(), awaitedCovers, withoutTransaction())
+  private val editEdition = EditEdition(editions, seriesRepository, withoutTransaction())
+  private val holdEdition = HoldEdition(editions, seriesRepository, awaitedCovers, withoutTransaction(), editEdition)
   private val addBookToBookshelf =
     AddBookToBookshelf(holdEdition, copies, bookshelves, withoutTransaction(), coverWorker, clock)
 

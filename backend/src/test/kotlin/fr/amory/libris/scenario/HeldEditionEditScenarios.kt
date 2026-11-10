@@ -23,7 +23,6 @@ import fr.amory.libris.scenario.dsl.unknownBook
 import io.kotest.matchers.collections.shouldBeEmpty
 import io.kotest.matchers.collections.shouldContainExactlyInAnyOrder
 import io.kotest.matchers.shouldBe
-import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 
@@ -34,7 +33,6 @@ class HeldEditionEditScenarios @Autowired constructor(
   private val lea = libris.reader("lea", "Léa")
 
   @Test
-  @Disabled("held edition edit")
   fun `S2 A held ISBN is added as edited`() {
     // Given
     val sam = libris.reader("sam", "Sam")
@@ -147,7 +145,6 @@ class HeldEditionEditScenarios @Autowired constructor(
   }
 
   @Test
-  @Disabled("held edition edit")
   fun `S5 Its own name is respelled for the house, the add of a held ISBN`() {
     // Given
     val sam = libris.reader("sam", "Sam")

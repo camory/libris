@@ -1,14 +1,18 @@
 package fr.amory.libris.bibliography.application.edition
 
 import fr.amory.libris.bibliography.domain.Contribution
+import fr.amory.libris.bibliography.domain.ContributionRole.ARTIST
 import fr.amory.libris.bibliography.domain.ContributionRole.WRITER
 import fr.amory.libris.bibliography.domain.Contributions
+import fr.amory.libris.bibliography.domain.Kind.BOOK
 import fr.amory.libris.bibliography.domain.Kind.MANGA
 import fr.amory.libris.bibliography.domain.SeriesEntry
 import fr.amory.libris.bibliography.domain.cover.AwaitedCover
+import fr.amory.libris.bibliography.domain.cover.CoverName
 import fr.amory.libris.bibliography.domain.cover.CoverSource.INVENTAIRE
 import fr.amory.libris.bibliography.domain.cover.CoverSource.OPEN_LIBRARY
 import fr.amory.libris.bibliography.domain.edition.Edition
+import fr.amory.libris.bibliography.domain.edition.EditionId
 import fr.amory.libris.bibliography.domain.series.Series
 import fr.amory.libris.bibliography.domain.series.SeriesId
 import fr.amory.libris.bibliography.domain.series.SeriesVolume
@@ -27,7 +31,8 @@ class HoldEditionTest {
   private val editions = EditionsInMemory()
   private val seriesRepository = SeriesInMemory()
   private val awaitedCovers = AwaitedCoversInMemory()
-  private val holdEdition = HoldEdition(editions, seriesRepository, awaitedCovers, withoutTransaction())
+  private val editEdition = EditEdition(editions, seriesRepository, withoutTransaction())
+  private val holdEdition = HoldEdition(editions, seriesRepository, awaitedCovers, withoutTransaction(), editEdition)
 
   @Test
   fun `the house lacking the ISBN gains the edition`() {
@@ -92,15 +97,47 @@ class HoldEditionTest {
   }
 
   @Test
-  fun `an ISBN the house holds finds or inserts no series`() {
+  fun `an ISBN the house holds is written with the fields sent, its id, ISBN and cover name kept`() {
     // Given
-    holdEdition(onePieceTomeOne())
+    val held = Edition(
+      id = EditionId.new(),
+      isbn = isbnOf(ONE_PIECE),
+      kind = BOOK,
+      title = "One piece",
+      subtitle = "Tome 1",
+      contributions = Contributions.of(listOf(Contribution("Oda", ARTIST))),
+      seriesVolume = null,
+      collection = "Shonen",
+      publisher = "Glenat",
+      publicationYear = 2000,
+      language = "ja",
+      pageCount = 200,
+      summary = "Luffy.",
+      coverName = ONE_PIECE_COVER,
+    )
+    editions.insert(held)
 
     // When
-    holdEdition(onePieceTomeOne().copy(series = SeriesEntry("Naruto", 1)))
+    val edition = holdEdition(onePieceTomeOne())
 
     // Then
-    seriesRepository.stored.map { it.name } shouldBe listOf("One piece")
+    edition shouldBe Edition(
+      id = held.id,
+      isbn = isbnOf(ONE_PIECE),
+      kind = MANGA,
+      title = "Romance dawn",
+      subtitle = "À l'aube d'une grande aventure",
+      contributions = Contributions.of(listOf(Contribution("Eiichiro Oda", WRITER))),
+      seriesVolume = SeriesVolume(seriesRepository.stored.single().id, 1),
+      collection = "Shonen manga",
+      publisher = "Glénat",
+      publicationYear = 2013,
+      language = "fr",
+      pageCount = 208,
+      summary = "Luffy prend la mer pour devenir le roi des pirates.",
+      coverName = ONE_PIECE_COVER,
+    )
+    editions.stored shouldBe listOf(edition)
   }
 
   @Test
@@ -154,7 +191,7 @@ class HoldEditionTest {
     val transactions = TransactionsObserving {
       Triple(seriesRepository.stored.size, editions.stored.size, awaitedCovers.stored.size)
     }
-    val holdEdition = HoldEdition(editions, seriesRepository, awaitedCovers, transactions)
+    val holdEdition = HoldEdition(editions, seriesRepository, awaitedCovers, transactions, editEdition)
 
     // When
     holdEdition(onePieceTomeOne())
@@ -182,3 +219,4 @@ class HoldEditionTest {
 }
 
 private const val ONE_PIECE = "9782723488525"
+private val ONE_PIECE_COVER = CoverName("9f86d081884c7d659a2feaa0c55ad015a3bf4f1b2b0b822cd15d6c15b0f00a08")

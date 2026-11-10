@@ -78,7 +78,7 @@ guard every frontend task.
       T154 says. The rule unit tested where it is decided (D07). Realises
       S5, its author; un-skips that backend test.
 
-- [ ] T158 Backend: a held ISBN added as edited.
+- [x] T158 Backend: a held ISBN added as edited.
       The add of an ISBN the house holds writes the fields sent over the
       house's as the save does, its own names respelled as T156 and T157
       say, and puts the copy on the bookshelf as before (PRD §4.1); the

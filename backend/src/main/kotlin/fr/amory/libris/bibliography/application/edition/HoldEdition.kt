@@ -1,5 +1,6 @@
 package fr.amory.libris.bibliography.application.edition
 
+import fr.amory.libris.bibliography.application.edition.EditEditionResult.Edited
 import fr.amory.libris.bibliography.domain.SeriesEntry
 import fr.amory.libris.bibliography.domain.cover.AwaitedCover
 import fr.amory.libris.bibliography.domain.cover.AwaitedCoverRepository
@@ -18,9 +19,13 @@ class HoldEdition(
   private val editions: EditionRepository,
   private val seriesRepository: SeriesRepository,
   private val awaitedCovers: AwaitedCoverRepository,
-  private val transactions: TransactionOperations) {
+  private val transactions: TransactionOperations,
+  private val editEdition: EditEdition) {
   operator fun invoke(newEdition: NewEdition): Edition =
-    newEdition.isbn?.let { editions.findByIsbn(it) } ?: inserted(newEdition)
+    newEdition.isbn?.let { editions.findByIsbn(it) }?.let { written(it, newEdition) } ?: inserted(newEdition)
+
+  private fun written(held: Edition, newEdition: NewEdition): Edition =
+    checkNotNull(editEdition(held.id, newEdition.toEditionDetails()) as? Edited).edition
 
   private fun inserted(newEdition: NewEdition): Edition =
     checkNotNull(

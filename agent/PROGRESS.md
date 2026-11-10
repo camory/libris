@@ -222,3 +222,20 @@ Format:
   `ApiContractTest`: `tests="50"` on main and after.
 - Left over: T158 (the add of a held ISBN respelling its own names,
   `HoldEdition`) per the backlog.
+
+## 2026-11-10 — T158 A held ISBN added as edited — done
+- Did: `HoldEdition` takes `EditEdition` and writes an ISBN the house holds
+  through it with `NewEdition.toEditionDetails()`, answering the edition
+  read back. *S2* and *S5 …, the add of a held ISBN* run and pass.
+- Decided: the held branch reads the result as
+  `checkNotNull(… as? Edited).edition`, so an impossible `NoSuchEdition`
+  fails as `EditEdition`'s own read-back does; `editEdition` is the last
+  constructor parameter of `HoldEdition`.
+- Deviations from the brief: none. Step 2's red was `List is empty.` on
+  the stored series (the held edition came back untouched, no series
+  written); step 3 needed no fix, both scenarios went green with step 2.
+  The tidy step found nothing to change beyond the repetition the
+  PROPOSED item names. `ApiContractTest`: `tests="50"` on main and after.
+- Left over: T159 (the frontend's pencil on the lookup's card, the pin
+  move); whether `NewEdition` composes `EditionDetails` stays in
+  `agent/PROPOSED.md`.
