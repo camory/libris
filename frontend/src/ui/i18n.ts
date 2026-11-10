@@ -65,6 +65,7 @@ const fr = {
     invalid: "ISBN invalide",
     error: "Erreur lors de la recherche, veuillez réessayer plus tard.",
     addError: "Erreur lors de l'ajout, veuillez réessayer plus tard.",
+    saveError: "Erreur lors de l'enregistrement, veuillez réessayer plus tard.",
     card: {
       series: {
         BOOK: "{name} · tome {volume}",
