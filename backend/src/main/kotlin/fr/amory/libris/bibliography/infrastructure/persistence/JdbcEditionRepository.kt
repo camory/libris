@@ -35,13 +35,6 @@ private const val UPDATE_EDITION =
     WHERE edition.id = :id
     """
 
-private const val INSERT_AUTHOR =
-  """
-    INSERT INTO author (id, name) VALUES (:id, :name)
-    ON CONFLICT ((BTRIM(name)) COLLATE ignoring_case_and_accents) DO UPDATE SET name = author.name
-    RETURNING id
-    """
-
 private const val RESPELL_OR_INSERT_AUTHOR =
   """
     INSERT INTO author (id, name) VALUES (:id, :name)
@@ -89,12 +82,12 @@ class JdbcEditionRepository(private val jdbcClient: JdbcClient) : EditionReposit
 
   override fun insert(edition: Edition) {
     write(INSERT_EDITION, edition)
-    insertContributionsOf(edition, authorIdsOf(edition, INSERT_AUTHOR))
+    insertContributionsOf(edition, authorIdsOf(edition))
   }
 
   override fun update(edition: Edition) {
     write(UPDATE_EDITION, edition)
-    val authorIds = authorIdsOf(edition, RESPELL_OR_INSERT_AUTHOR)
+    val authorIds = authorIdsOf(edition)
     jdbcClient
       .sql(DELETE_CONTRIBUTIONS)
       .param("editionId", edition.id.value)
@@ -145,10 +138,10 @@ class JdbcEditionRepository(private val jdbcClient: JdbcClient) : EditionReposit
       .update()
   }
 
-  private fun authorIdsOf(edition: Edition, authorStatement: String): Map<Contribution, UUID> =
+  private fun authorIdsOf(edition: Edition): Map<Contribution, UUID> =
     edition.contributions.associateWith { contribution ->
       jdbcClient
-        .sql(authorStatement)
+        .sql(RESPELL_OR_INSERT_AUTHOR)
         .param("id", uuids.generate())
         .param("name", contribution.name)
         .param("editionId", edition.id.value)
