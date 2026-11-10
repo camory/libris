@@ -185,3 +185,21 @@ Format:
   `ApiContractTest`: `tests="50"` on the untouched tree and after.
 - Left over: T156–T158 per the backlog; the name rows no edition carries
   stay for an administration page (PRD §4.10).
+
+## 2026-11-10 — T156 An edition's own series respelled for the house — done
+- Did: `SeriesRepository.respellOrFindOrInsert(series, ownSeriesId)`; its
+  statement gives the row the name lands on the name sent only when that
+  row is the own series. `EditEdition` calls it with the held edition's
+  series id. *S5 …, its series* runs and passes.
+- Decided: the tidy step made `findOrInsert` the same statement with
+  `ownSeriesId = null`, so the adapter holds one insert of a series; the
+  fake's method goes through its `findOrInsert` and respells the match
+  only when its id is the own series'. The JDBC case's local is `asterix`,
+  not the brief's `astérix` (detekt's naming pattern).
+- Deviations from the brief: none in approach. Step 3 was a real red
+  (step 2's smallest green set `EXCLUDED.name` on any conflict), so no
+  guard. A throwaway JDBC case, deleted, proved the statement takes a null
+  `ownSeriesId` before the tidy step made every `findOrInsert` prove it.
+  `ApiContractTest`: `tests="50"` on main and after.
+- Left over: T157 (the own author) and T158 (the add of a held ISBN
+  respelling its own series, `HoldEdition`) per the backlog.

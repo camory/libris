@@ -59,7 +59,9 @@ Read whole by a run that changes `backend/`, after `every-run.md`.
   the signature its brief names one cycle at a time),
   `SwallowedException`, `TooGenericExceptionCaught` and `UnusedParameter`
   stay quiet when the parameter is named `ignored`. An elvis over a
-  platform type Kotlin reads as non-null is unreachable code.
+  platform type Kotlin reads as non-null is unreachable code, and so, in a
+  test source, is every line after `val x = list.find { … } ?: return …`
+  (`UnreachableCode`, T156): write the branch with an `if` instead.
 - A gradle command piped into `tail` or `grep` answers the pipe's exit
   status, not Gradle's: a red `detekt` read through `| tail -5` looks green
   unless `BUILD FAILED` is in the lines kept. Read for `BUILD SUCCESSFUL`,
@@ -399,8 +401,11 @@ Read whole by a run that changes `backend/`, after `every-run.md`.
   with that first spelling. Authors (since `V015`) and series (since
   `V014`) are unique on `((BTRIM(name)) COLLATE ignoring_case_and_accents)`,
   so case, accents and the spaces at the ends do not count.
-  `JdbcSeriesRepository.findOrInsert` is that statement with `RETURNING id,
-  name`, answering the stored series whole. With the collation inside the
+  `JdbcSeriesRepository.respellOrFindOrInsert` is that statement with
+  `SET name = CASE WHEN series.id = :ownSeriesId THEN EXCLUDED.name ELSE
+  series.name END RETURNING id, name`, answering the stored series whole,
+  and `findOrInsert` calls it with `ownSeriesId = null` (a null parameter
+  there is typed by the comparison, PostgreSQL accepts it). With the collation inside the
   inner parentheses, `ON CONFLICT (((BTRIM(name)) COLLATE …))` or, for an
   index on the bare column, `ON CONFLICT ((name COLLATE …))`, PostgreSQL
   infers no index (`there is no unique or exclusion constraint matching the
@@ -415,7 +420,7 @@ Read whole by a run that changes `backend/`, after `every-run.md`.
   `JdbcEditionRepositoryTest` and `JdbcCatalogueEditionsTest`. A use case reading an edition's series
   name takes `SeriesRepository` (`SeriesInMemory` in `bibliography.fixture`,
   names matched with `lowercase()` alone, unlike the index: no accents, no
-  trimming).
+  trimming; its `respellOrFindOrInsert` respells only the own series).
 - `JdbcClient`'s `query(…)` has `single()`, `optional()`, `list()` and
   `set()` (`JdbcCarriedSeries`), no `singleOrNull()`: a finder of one row
   that may be missing answers `.optional().orElse(null)`; `single()` throws
