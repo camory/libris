@@ -45,7 +45,13 @@ private const val INSERT_AUTHOR =
 private const val RESPELL_OR_INSERT_AUTHOR =
   """
     INSERT INTO author (id, name) VALUES (:id, :name)
-    ON CONFLICT ((BTRIM(name)) COLLATE ignoring_case_and_accents) DO UPDATE SET name = EXCLUDED.name
+    ON CONFLICT ((BTRIM(name)) COLLATE ignoring_case_and_accents) DO UPDATE
+    SET name = CASE
+                 WHEN EXISTS (SELECT 1 FROM contribution
+                              WHERE contribution.edition_id = :editionId AND contribution.author_id = author.id)
+                 THEN EXCLUDED.name
+                 ELSE author.name
+               END
     RETURNING id
     """
 
@@ -83,16 +89,17 @@ class JdbcEditionRepository(private val jdbcClient: JdbcClient) : EditionReposit
 
   override fun insert(edition: Edition) {
     write(INSERT_EDITION, edition)
-    insertContributionsOf(edition, INSERT_AUTHOR)
+    insertContributionsOf(edition, authorIdsOf(edition, INSERT_AUTHOR))
   }
 
   override fun update(edition: Edition) {
     write(UPDATE_EDITION, edition)
+    val authorIds = authorIdsOf(edition, RESPELL_OR_INSERT_AUTHOR)
     jdbcClient
       .sql(DELETE_CONTRIBUTIONS)
       .param("editionId", edition.id.value)
       .update()
-    insertContributionsOf(edition, RESPELL_OR_INSERT_AUTHOR)
+    insertContributionsOf(edition, authorIds)
   }
 
   override fun findByIsbn(isbn: Isbn): Edition? =
@@ -138,9 +145,19 @@ class JdbcEditionRepository(private val jdbcClient: JdbcClient) : EditionReposit
       .update()
   }
 
-  private fun insertContributionsOf(edition: Edition, authorStatement: String) {
-    edition.contributions.forEach { contribution ->
-      val authorId = nameIdOf(authorStatement, contribution.name)
+  private fun authorIdsOf(edition: Edition, authorStatement: String): Map<Contribution, UUID> =
+    edition.contributions.associateWith { contribution ->
+      jdbcClient
+        .sql(authorStatement)
+        .param("id", uuids.generate())
+        .param("name", contribution.name)
+        .param("editionId", edition.id.value)
+        .query(UUID::class.java)
+        .single()
+    }
+
+  private fun insertContributionsOf(edition: Edition, authorIds: Map<Contribution, UUID>) {
+    authorIds.forEach { (contribution, authorId) ->
       jdbcClient
         .sql(INSERT_CONTRIBUTION)
         .param("editionId", edition.id.value)
@@ -180,12 +197,4 @@ class JdbcEditionRepository(private val jdbcClient: JdbcClient) : EditionReposit
 
   private fun contributionsOf(rows: List<EditionRow>): Contributions =
     Contributions.of(rows.mapNotNull { it.contribution })
-
-  private fun nameIdOf(statement: String, name: String): UUID =
-    jdbcClient
-      .sql(statement)
-      .param("id", uuids.generate())
-      .param("name", name)
-      .query(UUID::class.java)
-      .single()
 }
