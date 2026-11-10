@@ -9,6 +9,7 @@ import fr.amory.libris.bibliography.domain.edition.Edition
 import fr.amory.libris.bibliography.domain.edition.EditionId
 import fr.amory.libris.fixture.JdbcSliceTest
 import io.kotest.matchers.collections.shouldContainExactlyInAnyOrder
+import io.kotest.matchers.shouldBe
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 
@@ -17,7 +18,7 @@ class JdbcAuthorNamesTest @Autowired constructor(
   private val authorNames: JdbcAuthorNames,
   private val editions: JdbcEditionRepository) {
   @Test
-  fun `the name of every author stored is found`() {
+  fun `the name of every author an edition carries is found once`() {
     // Given
     editions.insert(edition("Tintin au Tibet", Contribution("Hergé", WRITER), Contribution("Hergé", ARTIST)))
     editions.insert(
@@ -29,6 +30,20 @@ class JdbcAuthorNamesTest @Autowired constructor(
 
     // Then
     names shouldContainExactlyInAnyOrder listOf("Hergé", "René Goscinny", "Albert Uderzo")
+  }
+
+  @Test
+  fun `an author no edition carries is not found`() {
+    // Given
+    val tintin = edition("Tintin au Tibet", Contribution("Hergé", WRITER), Contribution("René Goscinny", WRITER))
+    editions.insert(tintin)
+    editions.update(tintin.copy(contributions = Contributions.of(listOf(Contribution("Hergé", WRITER)))))
+
+    // When
+    val names = authorNames.findAll()
+
+    // Then
+    names shouldBe listOf("Hergé")
   }
 }
 

@@ -5,7 +5,10 @@ import org.springframework.jdbc.core.simple.JdbcClient
 import org.springframework.stereotype.Repository
 
 private const val FIND_ALL_AUTHOR_NAMES =
-  "SELECT author.name FROM author"
+  """
+    SELECT author.name FROM author
+    WHERE EXISTS (SELECT 1 FROM contribution WHERE contribution.author_id = author.id)
+    """
 
 @Repository
 class JdbcAuthorNames(private val jdbcClient: JdbcClient) : AuthorNames {
