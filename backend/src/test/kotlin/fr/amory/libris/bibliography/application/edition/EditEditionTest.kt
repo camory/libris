@@ -82,10 +82,10 @@ class EditEditionTest {
     val stored = seriesRepository.findOrInsert(Series(SeriesId.new(), "Astérix"))
 
     // When
-    editEdition(ASTERIX_LE_GAULOIS, asEdited().copy(series = SeriesEntry("ASTÉRIX", 1)))
+    editEdition(ASTERIX_LE_GAULOIS, asEdited().copy(series = SeriesEntry("ASTÉRIX", 2)))
 
     // Then
-    editions.stored.single().seriesVolume shouldBe SeriesVolume(stored.id, 1)
+    editions.stored.single().seriesVolume shouldBe SeriesVolume(stored.id, 2)
     seriesRepository.stored shouldBe listOf(stored)
   }
 
