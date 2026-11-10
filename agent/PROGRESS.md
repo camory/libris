@@ -239,3 +239,12 @@ Format:
 - Left over: T159 (the frontend's pencil on the lookup's card, the pin
   move); whether `NewEdition` composes `EditionDetails` stays in
   `agent/PROPOSED.md`.
+
+## 2026-11-10 — T159 The save on v0.18.0, the pencil of a held ISBN — handoff
+- Done: steps 1 to 11, one commit each. Start with step 12 (un-skip S2, guard), then the gotchas, PROGRESS, tick, self-review, PR.
+- Scenario red read first, before step 2 (S1 case 1 and S2: no button *Modifier*), then re-skipped until steps 11 and 12.
+- Decided: the corner shows on `!held || shownCopies.length === 0`, keeping the pencil of an ISBN the house lacks whatever its copies; `CoversScenarios` got its two lines by hand, Prettier rewrites the rest of it.
+- Guard step 10: `IsbnView` passing `:held="false"` to the form reds it, `expected [ …(1) ] to deeply equal []` (the dot is there); reverted.
+- Guard step 11: the corner back to `v-if="!held"` reds S1 case 1, `Unable to find … role "button" and name "Modifier"`; reverted.
+- Steps 3 and 4 were reds as foreseen: `TypeError: Cannot read properties of undefined (reading 'map')` (the problem read as a book), then `type: "U3nHKhLelm"` (the mock's random type, 400 not mapped).
+- Deviations: none so far.
