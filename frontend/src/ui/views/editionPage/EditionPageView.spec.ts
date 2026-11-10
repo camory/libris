@@ -559,9 +559,7 @@ describe("EditionPageView", () => {
     await tapPencil(screen);
 
     // When
-    await fireEvent.input(screen.getByRole("textbox", { name: "Titre" }), {
-      target: { value: "Astérix le gaulois" },
-    });
+    await typeTitle(screen, "Astérix le gaulois");
 
     // Then
     expect(screen.getAllByRole("heading")).toEqual([
@@ -616,9 +614,7 @@ describe("EditionPageView", () => {
     // Given
     const screen = await pageOf(asterixWithIsbn);
     await tapPencil(screen);
-    await fireEvent.input(screen.getByRole("textbox", { name: "Titre" }), {
-      target: { value: "Astérix le gaulois" },
-    });
+    await typeTitle(screen, "Astérix le gaulois");
 
     // When
     await tapCross(screen);
@@ -639,9 +635,7 @@ describe("EditionPageView", () => {
     // Given
     const screen = await pageOf(asterixWithIsbn);
     await tapPencil(screen);
-    await fireEvent.input(screen.getByRole("textbox", { name: "Titre" }), {
-      target: { value: "Astérix le gaulois" },
-    });
+    await typeTitle(screen, "Astérix le gaulois");
     await tapCross(screen);
 
     // When
@@ -689,6 +683,12 @@ async function tapPencil(screen: ReturnType<typeof within>) {
 async function tapCross(screen: ReturnType<typeof within>) {
   screen.getByRole("button", { name: "Annuler les modifications" }).click();
   await flushPromises();
+}
+
+async function typeTitle(screen: ReturnType<typeof within>, title: string) {
+  await fireEvent.input(screen.getByRole("textbox", { name: "Titre" }), {
+    target: { value: title },
+  });
 }
 
 async function askingToRemove(

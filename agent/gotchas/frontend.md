@@ -173,8 +173,9 @@ Read whole by a run that changes `frontend/`, after `every-run.md`.
   object third, each optional: a `FakeCopiesApi` rejecting, a fresh
   `createLibrisRouter()`, `new FakeSeriesApi([])` and `new
   FakeAuthorsApi([])` by default; `pageOf(book, { seriesApi, authorsApi
-  })` mounts the found book, `tapPencil(screen)` opens its form and
-  `tapCross(screen)` taps its cross.
+  })` mounts the found book, `tapPencil(screen)` opens its form,
+  `typeTitle(screen, title)` types in its *Titre* and `tapCross(screen)`
+  taps its cross.
   `Copy.bookshelf` is a `ReaderBookshelf` (`src/domain/Copy.ts`),
   a `Bookshelf` with a required `role`, as in the contract: a test builds
   a copy's bookshelf by spreading a fixture with a role, `{ ...salon,
