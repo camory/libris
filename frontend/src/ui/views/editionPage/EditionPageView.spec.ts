@@ -41,10 +41,17 @@ import EditionPageView from "./EditionPageView.vue";
 const mountEditionPageView = (
   found: FindBookAnswer | CatalogueApi,
   id = asterixLeGaulois.id,
-  copiesApi: CopiesApi = new FakeCopiesApi(new Error("no removal here")),
-  router: Router = createLibrisRouter(),
-  seriesApi: SeriesApi = new FakeSeriesApi([]),
-  authorsApi: AuthorsApi = new FakeAuthorsApi([]),
+  {
+    copiesApi = new FakeCopiesApi(new Error("no removal here")),
+    router = createLibrisRouter(),
+    seriesApi = new FakeSeriesApi([]),
+    authorsApi = new FakeAuthorsApi([]),
+  }: {
+    copiesApi?: CopiesApi;
+    router?: Router;
+    seriesApi?: SeriesApi;
+    authorsApi?: AuthorsApi;
+  } = {},
 ) =>
   mount(EditionPageView, {
     props: { id },
@@ -247,7 +254,7 @@ describe("EditionPageView", () => {
     const wrapper = mountEditionPageView(
       { outcome: "found", book: romanceDawnTwiceOnLea },
       romanceDawn.id,
-      copiesApi,
+      { copiesApi },
     );
     await flushPromises();
     const screen = within(wrapper.element as HTMLElement);
@@ -269,7 +276,7 @@ describe("EditionPageView", () => {
     const wrapper = mountEditionPageView(
       { outcome: "found", book: romanceDawnTwiceOnLea },
       romanceDawn.id,
-      new LibrisNotRemoving(),
+      { copiesApi: new LibrisNotRemoving() },
     );
     await flushPromises();
     const screen = within(wrapper.element as HTMLElement);
@@ -297,7 +304,7 @@ describe("EditionPageView", () => {
         ],
       ),
       romanceDawn.id,
-      new FakeCopiesApi({ outcome: "removed" }),
+      { copiesApi: new FakeCopiesApi({ outcome: "removed" }) },
     );
     await flushPromises();
     const screen = within(wrapper.element as HTMLElement);
@@ -321,7 +328,7 @@ describe("EditionPageView", () => {
         book: romanceDawnTwiceOnLea,
       }),
       romanceDawn.id,
-      new FakeCopiesApi({ outcome: "removed" }),
+      { copiesApi: new FakeCopiesApi({ outcome: "removed" }) },
     );
     await flushPromises();
     const screen = within(wrapper.element as HTMLElement);
@@ -344,7 +351,7 @@ describe("EditionPageView", () => {
     const wrapper = mountEditionPageView(
       { outcome: "found", book: romanceDawnTwiceOnLea },
       romanceDawn.id,
-      new FakeCopiesApi(new TypeError("Failed to fetch")),
+      { copiesApi: new FakeCopiesApi(new TypeError("Failed to fetch")) },
     );
     await flushPromises();
     const screen = within(wrapper.element as HTMLElement);
@@ -564,10 +571,9 @@ describe("EditionPageView", () => {
 
   it("says Existante in Série for a series of the house", async () => {
     // Given
-    const screen = await pageOf(
-      asterixWithIsbn,
-      new FakeSeriesApi([], undefined, ["Astérix"]),
-    );
+    const screen = await pageOf(asterixWithIsbn, {
+      seriesApi: new FakeSeriesApi([], undefined, ["Astérix"]),
+    });
 
     // When
     await tapPencil(screen);
@@ -578,11 +584,9 @@ describe("EditionPageView", () => {
 
   it("says Existant for an author of the house", async () => {
     // Given
-    const screen = await pageOf(
-      asterixWithIsbn,
-      undefined,
-      new FakeAuthorsApi(["René Goscinny"]),
-    );
+    const screen = await pageOf(asterixWithIsbn, {
+      authorsApi: new FakeAuthorsApi(["René Goscinny"]),
+    });
 
     // When
     await tapPencil(screen);
@@ -625,16 +629,12 @@ async function routerOn(...paths: string[]) {
 
 async function pageOf(
   book: Book,
-  seriesApi?: SeriesApi,
-  authorsApi?: AuthorsApi,
+  ports: { seriesApi?: SeriesApi; authorsApi?: AuthorsApi } = {},
 ) {
   const wrapper = mountEditionPageView(
     { outcome: "found", book },
     book.id,
-    undefined,
-    undefined,
-    seriesApi,
-    authorsApi,
+    ports,
   );
   await flushPromises();
   return within(wrapper.element as HTMLElement);
@@ -653,12 +653,10 @@ async function askingToRemove(
   },
   copiesApi: CopiesApi = new FakeCopiesApi({ outcome: "removed" }),
 ) {
-  const wrapper = mountEditionPageView(
-    catalogue,
-    romanceDawn.id,
+  const wrapper = mountEditionPageView(catalogue, romanceDawn.id, {
     copiesApi,
     router,
-  );
+  });
   await flushPromises();
   const screen = within(wrapper.element as HTMLElement);
   screen.getByRole("button", { name: "Retirer un exemplaire" }).click();

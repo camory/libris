@@ -168,11 +168,13 @@ Read whole by a run that changes `frontend/`, after `every-run.md`.
   pencil once none of the reader's copies is left on it.
   `useFindCatalogueEdition`'s `refresh(id)` asks again with no `loading`
   step, the card staying mounted, while `find(id)` shows the skeleton
-  first; its spec's `mountEditionPageView` takes the copies' port third, a
-  `FakeCopiesApi` rejecting by default, and the series' and the authors'
-  ports fifth and sixth, `new FakeSeriesApi([])` and `new
-  FakeAuthorsApi([])` by default; `pageOf(book, seriesApi?, authorsApi?)`
-  mounts the found book and `tapPencil(screen)` opens its form. `Copy.bookshelf` is a `ReaderBookshelf` (`src/domain/Copy.ts`),
+  first; its spec's `mountEditionPageView(found, id, { copiesApi, router,
+  seriesApi, authorsApi })` takes the ports and the router in an options
+  object third, each optional: a `FakeCopiesApi` rejecting, a fresh
+  `createLibrisRouter()`, `new FakeSeriesApi([])` and `new
+  FakeAuthorsApi([])` by default; `pageOf(book, { seriesApi, authorsApi
+  })` mounts the found book and `tapPencil(screen)` opens its form.
+  `Copy.bookshelf` is a `ReaderBookshelf` (`src/domain/Copy.ts`),
   a `Bookshelf` with a required `role`, as in the contract: a test builds
   a copy's bookshelf by spreading a fixture with a role, `{ ...salon,
   role: "OWNER" }`, and the card draws the trash on an `OWNER` row only.
@@ -690,8 +692,8 @@ Read whole by a run that changes `frontend/`, after `every-run.md`.
   "opened from another screen" pushes that screen, then the page.
   `window.history.length` read before and after is the proof that no
   entry was added (it grows by one on a `push`). `EditionPageView.spec.ts`'
-  `mountEditionPageView` takes the router fourth, `routerOn(...paths)`
-  builds one already there. Vitest hides the `console.log` of a passing
+  `mountEditionPageView` takes the router in its options object,
+  `routerOn(...paths)` builds one already there. Vitest hides the `console.log` of a passing
   case: a `throw` shows a value while debugging.
 - With `vi.useFakeTimers()` on, a helper that waits on a real timer never
   resolves: the `settled()` of `ServiceWorkerAppUpdate.spec.ts` leaves the
