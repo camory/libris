@@ -509,6 +509,24 @@ describe("EditionPageView", () => {
       screen.getByRole("button", { name: "Modifier" }),
     ]);
   });
+
+  it("offers no pencil on an ouvrage with no ISBN", async () => {
+    // Given
+    const wrapper = mountEditionPageView({
+      outcome: "found",
+      book: asterixLeGaulois,
+    });
+
+    // When
+    await flushPromises();
+
+    // Then
+    expect(
+      within(wrapper.element as HTMLElement).queryByRole("button", {
+        name: "Modifier",
+      }),
+    ).toBeNull();
+  });
 });
 
 function seen(wrapper: ReturnType<typeof mountEditionPageView>) {
