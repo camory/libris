@@ -5,6 +5,7 @@ import { FetchBookshelfApi } from "./infra/api/FetchBookshelfApi";
 import { FetchBookshelvesApi } from "./infra/api/FetchBookshelvesApi";
 import { FetchCatalogueApi } from "./infra/api/FetchCatalogueApi";
 import { FetchCopiesApi } from "./infra/api/FetchCopiesApi";
+import { FetchEditionsApi } from "./infra/api/FetchEditionsApi";
 import { FetchIsbnApi } from "./infra/api/FetchIsbnApi";
 import { FetchMeApi } from "./infra/api/FetchMeApi";
 import { FetchReadersApi } from "./infra/api/FetchReadersApi";
@@ -30,6 +31,7 @@ export function bootstrap(origin: string, revision: string): App {
       beeper: new WebAudioBeeper(() => new AudioContext()),
       beepSetting: new WebStorageBeepSetting(localStorage),
       authorsApi: new FetchAuthorsApi(origin),
+      editionsApi: new FetchEditionsApi(origin),
     },
     revision,
   );
