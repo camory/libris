@@ -1,6 +1,7 @@
 package fr.amory.libris.web.problem
 
 import org.springframework.http.HttpStatus
+import org.springframework.http.HttpStatus.BAD_REQUEST
 import org.springframework.http.ProblemDetail
 import org.springframework.http.ResponseEntity
 import java.net.URI
@@ -17,6 +18,9 @@ fun problem(status: HttpStatus, type: String): ProblemDetail =
   ProblemDetail.forStatus(status).apply {
     this.type = URI.create(type)
   }
+
+fun validationProblem(errors: List<ValidationErrorResponse>): ProblemDetail =
+  problem(BAD_REQUEST, VALIDATION_PROBLEM).apply { setProperty("errors", errors) }
 
 fun ProblemDetail.asResponse(): ResponseEntity<Any> =
   ResponseEntity.status(status).body(this)

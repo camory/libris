@@ -19,14 +19,11 @@ import fr.amory.libris.web.cover.coverPathOf
 import fr.amory.libris.web.isbn.IsbnAuthorResponse
 import fr.amory.libris.web.isbn.IsbnSeriesResponse
 import fr.amory.libris.web.problem.NOT_FOUND_PROBLEM
-import fr.amory.libris.web.problem.VALIDATION_PROBLEM
-import fr.amory.libris.web.problem.ValidationErrorResponse
 import fr.amory.libris.web.problem.asResponse
 import fr.amory.libris.web.problem.problem
-import org.springframework.http.HttpStatus.BAD_REQUEST
+import fr.amory.libris.web.problem.validationProblem
 import org.springframework.http.HttpStatus.NOT_FOUND
 import org.springframework.http.HttpStatus.OK
-import org.springframework.http.ProblemDetail
 import org.springframework.http.ResponseEntity
 import org.springframework.security.core.annotation.AuthenticationPrincipal
 import org.springframework.web.bind.annotation.GetMapping
@@ -59,12 +56,9 @@ class CatalogueController(
     @PathVariable("id") id: UUID,
     @RequestBody request: EditionDetailsRequest): ResponseEntity<Any> =
     when (val validation = request.validate()) {
-      is Refused  -> invalid(validation.errors).asResponse()
+      is Refused  -> validationProblem(validation.errors).asResponse()
       is Accepted -> responseOf(saveEdition(reader.id, EditionId(id), validation.details))
     }
-
-  private fun invalid(errors: List<ValidationErrorResponse>): ProblemDetail =
-    problem(BAD_REQUEST, VALIDATION_PROBLEM).apply { setProperty("errors", errors) }
 
   private fun responseOf(result: SaveEditionResult): ResponseEntity<Any> =
     when (result) {
