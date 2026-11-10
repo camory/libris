@@ -61,6 +61,7 @@ const fr = {
     add: "Ajouter à ma bibliothèque",
     save: "Enregistrer",
     adding: "Ajout en cours…",
+    saving: "Enregistrement en cours…",
     invalid: "ISBN invalide",
     error: "Erreur lors de la recherche, veuillez réessayer plus tard.",
     addError: "Erreur lors de l'ajout, veuillez réessayer plus tard.",

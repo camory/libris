@@ -601,6 +601,19 @@ describe("EditionForm", () => {
     ).toBeNull();
   });
 
+  it("says Enregistrement en cours… while it saves", () => {
+    // When
+    const fields = within(
+      form(onePiece1, [], [], { action: "save", adding: true })
+        .element as HTMLElement,
+    );
+
+    // Then
+    expect(
+      fields.getByRole("button", { name: "Enregistrement en cours…" }),
+    ).toBeDefined();
+  });
+
   it("sends the fields as the reader left them", async () => {
     // Given
     const wrapper = form(onePiece1);
