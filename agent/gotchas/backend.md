@@ -69,7 +69,8 @@ Read whole by a run that changes `backend/`, after `every-run.md`.
 - detekt's `TooManyFunctions` keeps its default `thresholdInClasses: 11`
   (`config/detekt/detekt.yml` does not override it) and reports a class
   that reaches 11 functions, private ones included: `JdbcEditionRepository`
-  sits at 10 since T066, so a function it gains costs another its place.
+  sits at 10 since T066 (T157 traded `nameIdOf` for `authorIdsOf`), so a
+  function it gains costs another its place.
 - `UnusedPrivateMember` fails two private overloads of one name that are
   called only from lambdas (`map { responseOf(it) }`), though both are used;
   give them distinct names (`bookOf`, `copyOf`).
@@ -396,9 +397,18 @@ Read whole by a run that changes `backend/`, after `every-run.md`.
   author.name RETURNING id`. The conflict target is the expression the
   unique index carries, not the column; and `DO UPDATE` is what makes
   `RETURNING` answer the row that already exists, where `DO NOTHING`
-  answers no row at all and costs a second statement. The row keeps the
-  spelling that created it, so an edition naming it otherwise reads back
-  with that first spelling. Authors (since `V015`) and series (since
+  answers no row at all and costs a second statement. With `SET name =
+  author.name` the row keeps the spelling that created it, so an edition
+  naming it otherwise reads back with that first spelling, as after an
+  `insert` still. `JdbcEditionRepository`'s author statement,
+  `RESPELL_OR_INSERT_AUTHOR`, sets `name = CASE WHEN EXISTS (SELECT 1 FROM
+  contribution WHERE contribution.edition_id = :editionId AND
+  contribution.author_id = author.id) THEN EXCLUDED.name ELSE author.name
+  END`: in `update` it respells an author the edition already references,
+  whatever the role, so `update` resolves its author ids before it deletes
+  the edition's contributions; `insert` runs the same statement and never
+  respells, since an edition not yet stored has no contribution rows.
+  Authors (since `V015`) and series (since
   `V014`) are unique on `((BTRIM(name)) COLLATE ignoring_case_and_accents)`,
   so case, accents and the spaces at the ends do not count.
   `JdbcSeriesRepository.respellOrFindOrInsert` is that statement with

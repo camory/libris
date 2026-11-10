@@ -203,3 +203,22 @@ Format:
   `ApiContractTest`: `tests="50"` on main and after.
 - Left over: T157 (the own author) and T158 (the add of a held ISBN
   respelling its own series, `HoldEdition`) per the backlog.
+
+## 2026-11-10 — T157 An edition's own author respelled for the house — done
+- Did: `JdbcEditionRepository`'s author statement gives the row a name
+  lands on the name sent only when the edition already references that
+  row, whatever the role. *S5 …, its author* runs and passes.
+- Decided: `update` resolves the author ids before it deletes the
+  edition's contributions, so the statement's `EXISTS` still sees the own
+  authors; `nameIdOf` became `authorIdsOf`, which answers a
+  `Map<Contribution, UUID>` that `insertContributionsOf` links, keeping
+  the class at 10 functions. The tidy step gave `insert` the same
+  statement: an edition not yet stored has no contribution rows, so it
+  never respells, as T156's `findOrInsert` shares the series statement.
+- Deviations from the brief: none in approach. Step 3 was a real red
+  against step 2's smallest green (an update-only statement with
+  `EXCLUDED.name` on every conflict), so it needed no guard mutation; step 4
+  was the guard, its mutation run and reverted.
+  `ApiContractTest`: `tests="50"` on main and after.
+- Left over: T158 (the add of a held ISBN respelling its own names,
+  `HoldEdition`) per the backlog.
