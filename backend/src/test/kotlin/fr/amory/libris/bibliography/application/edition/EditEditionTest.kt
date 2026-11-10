@@ -8,19 +8,23 @@ import fr.amory.libris.bibliography.domain.ContributionRole.WRITER
 import fr.amory.libris.bibliography.domain.Contributions
 import fr.amory.libris.bibliography.domain.Kind.BD
 import fr.amory.libris.bibliography.domain.Kind.BOOK
+import fr.amory.libris.bibliography.domain.SeriesEntry
 import fr.amory.libris.bibliography.domain.cover.CoverName
 import fr.amory.libris.bibliography.domain.edition.Edition
 import fr.amory.libris.bibliography.domain.edition.EditionId
+import fr.amory.libris.bibliography.domain.series.Series
 import fr.amory.libris.bibliography.domain.series.SeriesId
 import fr.amory.libris.bibliography.domain.series.SeriesVolume
 import fr.amory.libris.bibliography.fixture.EditionsInMemory
+import fr.amory.libris.bibliography.fixture.SeriesInMemory
 import fr.amory.libris.bibliography.fixture.isbnOf
 import io.kotest.matchers.shouldBe
 import org.junit.jupiter.api.Test
 
 class EditEditionTest {
   private val editions = EditionsInMemory()
-  private val editEdition = EditEdition(editions)
+  private val seriesRepository = SeriesInMemory()
+  private val editEdition = EditEdition(editions, seriesRepository)
 
   @Test
   fun `an edition the house lacks is no such edition`() {
@@ -64,6 +68,20 @@ class EditEditionTest {
     )
     result shouldBe Edited(edited)
     editions.stored shouldBe listOf(edited)
+  }
+
+  @Test
+  fun `a series name the house holds, in another capitalisation, reaches the stored series`() {
+    // Given
+    editions.insert(asterixLeGaulois())
+    val stored = seriesRepository.findOrInsert(Series(SeriesId.new(), "Astérix"))
+
+    // When
+    editEdition(ASTERIX_LE_GAULOIS, asEdited().copy(series = SeriesEntry("ASTÉRIX", 1)))
+
+    // Then
+    editions.stored.single().seriesVolume shouldBe SeriesVolume(stored.id, 1)
+    seriesRepository.stored shouldBe listOf(stored)
   }
 
   private fun asterixLeGaulois(): Edition =
