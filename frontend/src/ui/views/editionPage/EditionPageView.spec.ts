@@ -21,6 +21,7 @@ import {
 import {
   editionsApiKey,
   type EditionsApi,
+  type SaveAnswer,
 } from "../../../application/EditionsApi";
 import { seriesApiKey, type SeriesApi } from "../../../application/SeriesApi";
 import type { Book } from "../../../domain/Book";
@@ -77,6 +78,12 @@ const mountEditionPageView = (
 
 class LibrisNotRemoving implements CopiesApi {
   remove(): Promise<RemoveAnswer> {
+    return new Promise(() => {});
+  }
+}
+
+class LibrisNotSaving implements EditionsApi {
+  save(): Promise<SaveAnswer> {
     return new Promise(() => {});
   }
 }
@@ -666,13 +673,32 @@ describe("EditionPageView", () => {
     await typeTitle(screen, "Astérix le gaulois");
 
     // When
-    screen.getByRole("button", { name: "Enregistrer" }).click();
-    await flushPromises();
+    await tapSave(screen);
 
     // Then
     expect(
       editionsApi.asked.map(({ id, edition }) => [id, edition.title]),
     ).toEqual([[asterixWithIsbn.id, "Astérix le gaulois"]]);
+  });
+
+  it("says Enregistrement en cours… while the save runs, the fields accepting nothing", async () => {
+    // Given
+    const screen = await pageOf(asterixWithIsbn, {
+      editionsApi: new LibrisNotSaving(),
+    });
+    await tapPencil(screen);
+    await typeTitle(screen, "Astérix le gaulois");
+
+    // When
+    await tapSave(screen);
+
+    // Then
+    expect(
+      screen.getByRole("button", { name: "Enregistrement en cours…" }),
+    ).toBeDefined();
+    expect(
+      screen.getByRole<HTMLInputElement>("textbox", { name: "Titre" }).disabled,
+    ).toBe(true);
   });
 });
 
@@ -714,6 +740,11 @@ async function tapPencil(screen: ReturnType<typeof within>) {
 
 async function tapCross(screen: ReturnType<typeof within>) {
   screen.getByRole("button", { name: "Annuler les modifications" }).click();
+  await flushPromises();
+}
+
+async function tapSave(screen: ReturnType<typeof within>) {
+  screen.getByRole("button", { name: "Enregistrer" }).click();
   await flushPromises();
 }
 

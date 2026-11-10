@@ -33,7 +33,7 @@ const { names: authorNames, list: listAuthorNames } = useListAuthorNames(
   inject(authorsApiKey)!,
 );
 const editing = ref(false);
-const { save } = useSaveEdition(inject(editionsApiKey)!);
+const { state: saveState, save } = useSaveEdition(inject(editionsApiKey)!);
 let removedId: string | null = null;
 const { state: removal, remove } = useRemoveCopy(
   inject(copiesApiKey)!,
@@ -109,7 +109,7 @@ const failure = computed(() =>
         :covers="covers"
         held
         action="save"
-        :adding="false"
+        :adding="saveState.status === 'saving'"
         :failed="false"
         :series-names="seriesNames"
         :author-names="authorNames"
