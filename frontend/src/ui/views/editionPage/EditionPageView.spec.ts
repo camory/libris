@@ -10,10 +10,15 @@ import {
   type FindBookAnswer,
 } from "../../../application/CatalogueApi";
 import {
+  authorsApiKey,
+  type AuthorsApi,
+} from "../../../application/AuthorsApi";
+import {
   copiesApiKey,
   type CopiesApi,
   type RemoveAnswer,
 } from "../../../application/CopiesApi";
+import { seriesApiKey, type SeriesApi } from "../../../application/SeriesApi";
 import type { Book } from "../../../domain/Book";
 import {
   asterixEtSesAmis,
@@ -22,8 +27,10 @@ import {
   romanceDawn,
   salon,
 } from "../../../fixture/Books";
+import { FakeAuthorsApi } from "../../../fixture/FakeAuthorsApi";
 import { FakeCatalogueApi } from "../../../fixture/FakeCatalogueApi";
 import { FakeCopiesApi } from "../../../fixture/FakeCopiesApi";
+import { FakeSeriesApi } from "../../../fixture/FakeSeriesApi";
 import { normalised } from "../../../fixture/normalised";
 import HeldEditionCardSkeleton from "../../components/HeldEditionCardSkeleton.vue";
 import PageTitleSkeleton from "../../components/PageTitleSkeleton.vue";
@@ -36,6 +43,8 @@ const mountEditionPageView = (
   id = asterixLeGaulois.id,
   copiesApi: CopiesApi = new FakeCopiesApi(new Error("no removal here")),
   router: Router = createLibrisRouter(),
+  seriesApi: SeriesApi = new FakeSeriesApi([]),
+  authorsApi: AuthorsApi = new FakeAuthorsApi([]),
 ) =>
   mount(EditionPageView, {
     props: { id },
@@ -45,6 +54,8 @@ const mountEditionPageView = (
         [catalogueApiKey]:
           "outcome" in found ? new FakeCatalogueApi([], found) : found,
         [copiesApiKey]: copiesApi,
+        [seriesApiKey]: seriesApi,
+        [authorsApiKey]: authorsApi,
       },
     },
   });
@@ -481,6 +492,23 @@ describe("EditionPageView", () => {
     // Then
     await waitFor(() => expect(window.location.pathname).toBe("/catalogue"));
   });
+
+  it("offers the pencil on the card whatever the reader's role", async () => {
+    // Given
+    const wrapper = mountEditionPageView({
+      outcome: "found",
+      book: asterixWithIsbnOnlyViewed,
+    });
+
+    // When
+    await flushPromises();
+
+    // Then
+    const screen = within(wrapper.element as HTMLElement);
+    expect(screen.getAllByRole("button")).toEqual([
+      screen.getByRole("button", { name: "Modifier" }),
+    ]);
+  });
 });
 
 function seen(wrapper: ReturnType<typeof mountEditionPageView>) {
@@ -550,6 +578,19 @@ const romanceDawnViewedOnSalon: Book = {
 const romanceDawnOnLeaAndViewedOnSalon: Book = {
   ...romanceDawn,
   copies: [...romanceDawnOnceOnLea.copies, ...romanceDawnViewedOnSalon.copies],
+};
+
+const asterixWithIsbn: Book = {
+  ...asterixLeGaulois,
+  isbn13: "9782012101333",
+};
+
+const asterixWithIsbnOnlyViewed: Book = {
+  ...asterixWithIsbn,
+  copies: asterixWithIsbn.copies.map((copy) => ({
+    ...copy,
+    bookshelf: { ...copy.bookshelf, role: "VIEWER" },
+  })),
 };
 
 const noSuchOuvrage: FindBookAnswer = {

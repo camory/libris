@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { CircleAlert } from "@lucide/vue";
+import { CircleAlert, Pencil } from "@lucide/vue";
 import { computed, inject, watch } from "vue";
 import { useI18n } from "vue-i18n";
 import { useRouter } from "vue-router";
@@ -9,6 +9,7 @@ import { useFindCatalogueEdition } from "../../../application/useFindCatalogueEd
 import { useRemoveCopy } from "../../../application/useRemoveCopy";
 import type { CoverCandidate } from "../../../domain/Cover";
 import HeldEditionCardSkeleton from "../../components/HeldEditionCardSkeleton.vue";
+import IconButton from "../../components/IconButton.vue";
 import SourceEditionCard from "../../components/SourceEditionCard.vue";
 
 const props = defineProps<{ id: string }>();
@@ -86,7 +87,13 @@ const failure = computed(() =>
       :removing="removal.status === 'removing'"
       :removal-failed="removal.status === 'unavailable'"
       @remove="removeCopy"
-    />
+    >
+      <template v-if="state.book.isbn13" #corner>
+        <IconButton :label="t('isbn.edit')">
+          <Pencil :size="22" class="shrink-0" />
+        </IconButton>
+      </template>
+    </SourceEditionCard>
     <p v-else class="flex items-start gap-2 text-body text-danger">
       <CircleAlert :size="22" class="shrink-0" />
       <span>{{ failure }}</span>
