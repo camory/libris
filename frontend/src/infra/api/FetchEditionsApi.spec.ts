@@ -34,4 +34,18 @@ describe("FetchEditionsApi", () => {
     // Then
     expect(answer).toEqual({ outcome: "saved", book: aBook });
   });
+
+  it("answers a problem when no edition has the id", async () => {
+    // Given
+    const api = new FetchEditionsApi(inject("mockBaseUrl"));
+
+    // When
+    const answer = await api.save(
+      "2a3b4c5d-6e7f-4a8b-9c0d-1e2f3a4b5c6d",
+      editOnePiece2,
+    );
+
+    // Then
+    expect(answer).toEqual({ outcome: "problem", type: "/problems/not-found" });
+  });
 });
