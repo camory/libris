@@ -356,4 +356,14 @@ hold: its card has no pencil.
 
 ## Tasks
 
-Left for the planner.
+- T153 — S7, the backend on `v0.18.0` — backend
+- T154 — S4, S5 another series and another author of the house — backend
+- T155 — S6 — backend
+- T156 — S5 its series — backend
+- T157 — S5 its author — backend
+- T158 — S2, S5 the add of a held ISBN — backend
+- T159 — S1, S2, the frontend on `v0.18.0` — frontend
+- T160 — S3 — frontend
+- T161 — S8 — frontend
+- T162 — S4 — frontend
+- T163 — S9 — frontend

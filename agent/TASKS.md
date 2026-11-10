@@ -16,6 +16,138 @@
 >
 > Follow-ups and ideas go to `agent/PROPOSED.md`, never here.
 
+## Held edition edit — specs/held-edition-edit.md
+
+Contract: release `v0.18.0` of `camory/libris-api`, after `v0.17.0`: one
+operation added, the save of an edition the house holds, its body
+`EditionDetails` split from `Edition` with no shape changed; the add of an
+ISBN the house holds now writes the fields sent, and the series' and the
+authors' names are those some edition carries, both said in reworded
+descriptions. An operation is added, so the backend goes first: its pin
+moves in T153 with the save answering not found, T154 writes the fields
+sent, T155 drops from the names those no edition carries, T156 and T157
+respell an edition's own series and authors, and T158 writes the add of a
+held ISBN as the save does. The frontend pin moves in T159, once T158 is
+deployed: the pencil of the lookup's card first, then the ouvrage's page,
+its form, its cross, its save and its failure. No other task touches the
+contract (D04). The frontend tests of edition-form and authors-edit, and
+S1's second case here, edition-form's S4 moved (#379), stay green and
+guard every frontend task.
+
+- [ ] T153 Backend: the save on `v0.18.0`, an unknown edition refused.
+      `ApiContractTest` pins `v0.18.0`, the backend's one bump (D04). The
+      save of an edition is served by a use case the controller calls
+      (D02), answering, for now, not found whatever the id and storing
+      nothing; an id that is not one is the validation problem. Contracteer
+      verifies both keys, the generated `400` cases and every other answer
+      unchanged (D07). Walking skeleton; realises S7; un-skips its backend
+      test.
+
+- [ ] T154 Backend: the ouvrage saved as edited.
+      An edition the house holds is written with the fields sent over its
+      own, kind to summary, its ISBN and its cover kept, the last save
+      winning (D11); its series found or inserted by name (D12) and its
+      authors matched as the add matches them (PRD §3), so a name of the
+      house lands on it, kept. Libris answers it with the reader's copies,
+      none included (D12). The `agent/PROPOSED.md` item on the edition's
+      `update` goes, answered by S6. Realises S4 and S5's other names;
+      un-skips the tests of S4, both, and S5's other series and author.
+
+- [ ] T155 Backend: a name no edition carries is not suggested.
+      The series' names and the authors' names answer only those some
+      edition of the house carries, each once, in no promised order (D11);
+      the house keeps the others, and an edition that names one again lands
+      on it under its spelling (D12). Contracteer verifies both operations
+      on their shape as before (D07). Realises S6; un-skips its backend
+      test.
+
+- [ ] T156 Backend: an edition's own series respelled for the house.
+      A save whose series' name matches the edition's own series, ignoring
+      case, accents and end spaces (PRD §3), gives that series the spelling
+      sent, for every edition of it: the house holds no second series of
+      it, and no respelling merges two (D12). Any other name lands as T154
+      says. Kept atomically where the series is found or inserted (D12),
+      the rule unit tested where it is decided (D07). Realises S5, its
+      series; un-skips that backend test.
+
+- [ ] T157 Backend: an edition's own author respelled for the house.
+      A save naming an author who matches one of the edition's own authors,
+      as PRD §3 matches names and whatever roles the save gives them, gives
+      that author the spelling sent, for every edition carrying them (D12);
+      the house holds no second author of it, and any other name lands as
+      T154 says. The rule unit tested where it is decided (D07). Realises
+      S5, its author; un-skips that backend test.
+
+- [ ] T158 Backend: a held ISBN added as edited.
+      The add of an ISBN the house holds writes the fields sent over the
+      house's as the save does, its own names respelled as T156 and T157
+      say, and puts the copy on the bookshelf as before (PRD §4.1); the
+      stored cover stays, the cover source ignored. An add of what the
+      lookup answered changes nothing; the add of an ISBN the house lacks
+      creates the edition, as before, and never respells. Realises S2 and
+      S5, the add of a held ISBN; un-skips their backend tests.
+
+- [ ] T159 Frontend: the save on `v0.18.0`, the pencil of a held ISBN.
+      Precondition (human): T158 deployed (D04). `vitest.global-setup.ts`
+      pins `v0.18.0`, the frontend's one bump; the editions' client, tested
+      on the mock's `200`, `400` and `404`, joins the application's ports,
+      the scenario file's provision moving into them (#379, D05, D07). The
+      lookup's card of an edition the house holds with none of the reader's
+      copies carries the pencil *Modifier*, its form the house's fields and
+      cover, and adds it as edited; a card with a copy of the reader's has
+      none (U04, U06). Walking skeleton; realises S1, S2; un-skips their
+      frontend tests.
+
+- [ ] T160 Frontend: the pencil opens the form on the ouvrage's page.
+      The page's card carries the pencil *Modifier* in its top right corner
+      whatever the reader's role; a tap shows in its place the lookup's
+      form filled as Libris answered, the authors as rows, the stored cover
+      or its stand-in and the ISBN under its label, neither edited, the
+      bookshelf rows without trash, the cross *Annuler les modifications*
+      (U04, U06), and *Enregistrer* docked above the tab bar (U03); the
+      `h1` stays the title as answered, visually hidden (U02). Realises S3;
+      un-skips its frontend test.
+
+- [ ] T161 Frontend: the cross drops the edits.
+      On the ouvrage's page the cross drops the edits with no question, as
+      edition-form S13: the card shows again as Libris answered it, its
+      pencil and its trash back, *Enregistrer* gone, and the pencil reopens
+      the form as answered. Realises S8; un-skips its frontend test.
+
+- [ ] T162 Frontend: the ouvrage saved as edited.
+      *Enregistrer* saves the form through the editions' port: each text
+      field without the spaces at its ends, spaces alone as no value, the
+      authors as authors-edit S5 and S9 say, neither the ISBN nor the
+      cover. While it runs, the button reads *Enregistrement en cours…*
+      with its spinner and the form, its cross included, accepts nothing
+      (U04). Saved, the card shows the edition as Libris answered it, with
+      its copies and its pencil, the form and the button gone. Realises S4;
+      un-skips its frontend test.
+
+- [ ] T163 Frontend: a refused or failed save.
+      A save answered by the validation or the not-found problem, or not
+      answered, says *Erreur lors de l'enregistrement, veuillez réessayer
+      plus tard.* 8 under the button, docked with it, the form left as the
+      reader left it, open to edits (U04, U05). Before any request the tap
+      checks the fields and the authors as the add's does, the first
+      refused focused, nothing sent (edition-form S10, authors-edit S8,
+      S9). Realises S9; un-skips its four frontend tests, the title emptied
+      perhaps green already through the form's own check.
+
+*Done (Tophe, on the Pixel, from the installed app on staging): in
+Catalogue, open an ouvrage and tap the pencil; read its form filled, its
+authors as rows, its bookshelf row without trash, Enregistrer docked above
+the tab bar. Change its title, tap the cross, read the card as it was. Tap
+the pencil, change its title, retype its series in other capitals, tap
+Enregistrer: the card shows the new title and the series as typed; in
+Séries, the series reads the new spelling. Open an ouvrage of another
+series, type the name of a series of the house in small letters, save: the
+card reads it under the house's spelling. Remove the last copy of an
+ouvrage from its page and scan its ISBN: the card says Dans aucune de vos
+bibliothèques and carries the pencil; tap it, change its title, add it:
+the card shows the new title and Dans Bibliothèque de Christophe. Scan an
+ouvrage you hold: its card has no pencil.*
+
 ## Done
 
 - Phase 0 — Foundations, T001 to T012, done 2026-09-10 with `v0.1.3` on the
@@ -125,11 +257,11 @@
 ## Questions for the human
 
 - **No spec yet**, so nothing is planned for them: PRD §4.1 beyond the
-  add, its form and the authors in it, the listing, the edition page and
-  removing a copy — editing an edition the house holds, its authors
-  included, adding an ouvrage with no ISBN, the filters and sorts of the
-  list, and on the edition page the link to its series and its tags —
-  §4.2 search, §4.3 beyond
+  add, its form and the authors in it, the listing, the edition page,
+  removing a copy and editing an edition the house holds — changing an
+  edition's cover, adding an ouvrage with no ISBN, the filters and sorts
+  of the list, and on the edition page the link to its series and its
+  tags — §4.2 search, §4.3 beyond
   creating a bookshelf, adding a member and choosing the default —
   removing a member, changing a member's role, adding to a bookshelf other
   than the default, moving and lending a copy, its condition and
