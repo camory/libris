@@ -635,6 +635,25 @@ describe("EditionPageView", () => {
       screen.getByRole("button", { name: "Retirer un exemplaire" }),
     ).toBeDefined();
   });
+
+  it("reopens the form as answered after the cross", async () => {
+    // Given
+    const screen = await pageOf(asterixWithIsbn);
+    await tapPencil(screen);
+    await fireEvent.input(screen.getByRole("textbox", { name: "Titre" }), {
+      target: { value: "Astérix le gaulois" },
+    });
+    screen.getByRole("button", { name: "Annuler les modifications" }).click();
+    await flushPromises();
+
+    // When
+    await tapPencil(screen);
+
+    // Then
+    expect(
+      screen.getByRole<HTMLInputElement>("textbox", { name: "Titre" }).value,
+    ).toBe("Astérix le Gaulois");
+  });
 });
 
 function seen(wrapper: ReturnType<typeof mountEditionPageView>) {
