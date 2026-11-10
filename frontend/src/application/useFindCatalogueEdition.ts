@@ -12,6 +12,7 @@ export function useFindCatalogueEdition(catalogueApi: CatalogueApi): {
   state: Ref<FoundEditionState>;
   find: (id: string) => Promise<void>;
   refresh: (id: string) => Promise<void>;
+  show: (book: Book) => void;
 } {
   const state = ref<FoundEditionState>({ status: "loading" });
 
@@ -28,7 +29,11 @@ export function useFindCatalogueEdition(catalogueApi: CatalogueApi): {
     }
   }
 
-  return { state, find, refresh };
+  function show(book: Book) {
+    state.value = { status: "found", book };
+  }
+
+  return { state, find, refresh, show };
 }
 
 function stateOf(answer: FindBookAnswer): FoundEditionState {

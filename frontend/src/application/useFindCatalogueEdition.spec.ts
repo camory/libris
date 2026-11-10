@@ -110,4 +110,15 @@ describe("useFindCatalogueEdition", () => {
     // Then
     expect(state.value).toEqual({ status: "unavailable" });
   });
+
+  it("shows the ouvrage it is given, asking nothing", () => {
+    // Given
+    const { state, show } = useFindCatalogueEdition(new FakeCatalogueApi([]));
+
+    // When
+    show(asterixLeGaulois);
+
+    // Then
+    expect(state.value).toEqual({ status: "found", book: asterixLeGaulois });
+  });
 });
