@@ -53,6 +53,19 @@ describe("useSaveEdition", () => {
     // Then
     expect(state.value).toEqual({ status: "saving" });
   });
+
+  it("is saved with the ouvrage Libris answered", async () => {
+    // Given
+    const { state, save } = useSaveEdition(
+      new FakeEditionsApi({ outcome: "saved", book: asterixLeGaulois }),
+    );
+
+    // When
+    await save(id, onePiece2);
+
+    // Then
+    expect(state.value).toEqual({ status: "saved", book: asterixLeGaulois });
+  });
 });
 
 class LibrisNotSaving implements EditionsApi {

@@ -14,7 +14,9 @@ export function useSaveEdition(editionsApi: EditionsApi): {
 
   async function save(id: string, edition: SourceEdition) {
     state.value = { status: "saving" };
-    await editionsApi.save(id, detailsOf(edition));
+    const answer = await editionsApi.save(id, detailsOf(edition));
+    if (answer.outcome === "saved")
+      state.value = { status: "saved", book: answer.book };
   }
 
   return { state, save };
