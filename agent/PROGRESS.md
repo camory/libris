@@ -142,4 +142,7 @@ Format:
   says so.
 - Left over: T154 writes the edition behind `SaveEdition` and removes the
   two `@Suppress("UnusedParameter")` (its brief); S2, S4, S5, S6 stay
-  skipped for their tasks.
+  skipped for their tasks. The reviewer's suggestion (#381):
+  `EditionDetailsRequest` repeats eleven fields of `NewBookRequest`; when
+  T154 adds its validation, the two requests share one shape or one
+  validation, so the field rules are not written twice.
