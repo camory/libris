@@ -4,12 +4,7 @@ import type {
   SaveAnswer,
 } from "../../application/EditionsApi";
 import { bookOf, type BookResponse } from "./bookOf";
-import { problemOf } from "./problemOf";
-
-const problems = new Map([
-  [400, "/problems/validation"],
-  [404, "/problems/not-found"],
-]);
+import { problemOf, validationOrNotFound } from "./problemOf";
 
 export class FetchEditionsApi implements EditionsApi {
   constructor(private readonly baseUrl: string) {}
@@ -27,7 +22,8 @@ export class FetchEditionsApi implements EditionsApi {
         body: JSON.stringify(edition),
       },
     );
-    if (response.status !== 200) return problemOf(response, problems);
+    if (response.status !== 200)
+      return problemOf(response, validationOrNotFound);
     const body = (await response.json()) as BookResponse;
     return { outcome: "saved", book: bookOf(body) };
   }

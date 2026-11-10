@@ -2,7 +2,7 @@ import type { FindSeriesAnswer, SeriesApi } from "../../application/SeriesApi";
 import type { Series } from "../../domain/Series";
 import type { Kind } from "../../domain/SourceEdition";
 import { bookOf, type BookResponse } from "./bookOf";
-import { problemOf } from "./problemOf";
+import { problemOf, validationOrNotFound } from "./problemOf";
 
 interface SeriesResponse {
   id: string;
@@ -15,11 +15,6 @@ interface SeriesResponse {
 interface SeriesWithBooksResponse extends SeriesResponse {
   books: BookResponse[];
 }
-
-const problems = new Map([
-  [400, "/problems/validation"],
-  [404, "/problems/not-found"],
-]);
 
 export class FetchSeriesApi implements SeriesApi {
   constructor(private readonly baseUrl: string) {}
@@ -42,7 +37,8 @@ export class FetchSeriesApi implements SeriesApi {
         headers: { Accept: "application/json, application/problem+json" },
       },
     );
-    if (response.status !== 200) return problemOf(response, problems);
+    if (response.status !== 200)
+      return problemOf(response, validationOrNotFound);
     const body = (await response.json()) as SeriesWithBooksResponse;
     return {
       outcome: "found",

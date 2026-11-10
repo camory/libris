@@ -87,7 +87,9 @@ Read whole by a run that changes `frontend/`, after `every-run.md`.
   slugs only when the `Content-Type` is `application/problem+json`, and
   reads the body's `type` otherwise: a proxy's `text/plain` 404 or 503 then
   rejects on `response.json()`, as it did before the mapping, and is never
-  taken for an answer of Libris.
+  taken for an answer of Libris. A client whose contract names 400 and 404
+  alone passes `problemOf`'s `validationOrNotFound`; one naming another
+  status (409, 503) writes its own map.
 - A scenario file builds the application through `createLibrisApp` over the
   fakes of `src/fixture`; only `infra/api` specs and the smoke case *the
   application runs over the mock* use `inject("mockBaseUrl")`. A new port
