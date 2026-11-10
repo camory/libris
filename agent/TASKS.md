@@ -61,7 +61,7 @@ guard every frontend task.
       on their shape as before (D07). Realises S6; un-skips its backend
       test.
 
-- [ ] T156 Backend: an edition's own series respelled for the house.
+- [x] T156 Backend: an edition's own series respelled for the house.
       A save whose series' name matches the edition's own series, ignoring
       case, accents and end spaces (PRD §3), gives that series the spelling
       sent, for every edition of it: the house holds no second series of

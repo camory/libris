@@ -91,7 +91,6 @@ class HeldEditionEditScenarios @Autowired constructor(
   }
 
   @Test
-  @Disabled("held edition edit")
   fun `S5 Its own name is respelled for the house, its series`() {
     // Given
     lea.hasAdded(ASTERIX_LE_GAULOIS, LA_SERPE_D_OR, to = lea.defaultBookshelf)
