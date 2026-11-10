@@ -7,7 +7,7 @@ name misspelled, and the card of every copy shows the correction. Now,
 because the form corrects only an ouvrage the house lacks: an edition
 stored wrong stays wrong on every card, even once its last copy is gone
 and its ISBN scanned again.
-**Status:** draft
+**Status:** done 2026-11-10
 
 ## Scenarios
 
@@ -353,6 +353,7 @@ page and scan its ISBN: the card says *Dans aucune de vos bibliothèques*
 and carries the pencil; tap it, change its title, add it: the card shows
 the new title and *Dans Bibliothèque de Christophe*. Scan an ouvrage you
 hold: its card has no pencil.
+Checked by Tophe on staging, recorded on 2026-11-10.
 
 ## Tasks
 
