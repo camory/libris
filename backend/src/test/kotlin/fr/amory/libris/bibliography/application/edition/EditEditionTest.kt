@@ -90,6 +90,20 @@ class EditEditionTest {
   }
 
   @Test
+  fun `a series name matching the edition's own series respells it`() {
+    // Given
+    editions.insert(asterixLeGaulois())
+    seriesRepository.findOrInsert(Series(ASTERIX, "Astérix"))
+
+    // When
+    editEdition(ASTERIX_LE_GAULOIS, asEdited().copy(series = SeriesEntry("ASTÉRIX", 2)))
+
+    // Then
+    seriesRepository.stored shouldBe listOf(Series(ASTERIX, "ASTÉRIX"))
+    editions.stored.single().seriesVolume shouldBe SeriesVolume(ASTERIX, 2)
+  }
+
+  @Test
   fun `the series and the edition are written in one transaction`() {
     // Given
     editions.insert(asterixLeGaulois())

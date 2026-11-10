@@ -31,12 +31,12 @@ class EditEdition(
 
   private fun write(held: Edition, details: EditionDetails) =
     transactions.executeWithoutResult {
-      editions.update(editedOf(held, details, details.series?.let { seriesVolumeOf(it) }))
+      editions.update(editedOf(held, details, details.series?.let { seriesVolumeOf(it, held.seriesVolume?.seriesId) }))
     }
 
-  private fun seriesVolumeOf(seriesEntry: SeriesEntry): SeriesVolume =
+  private fun seriesVolumeOf(seriesEntry: SeriesEntry, ownSeriesId: SeriesId?): SeriesVolume =
     SeriesVolume(
-      seriesRepository.findOrInsert(Series(SeriesId.new(), seriesEntry.name)).id,
+      seriesRepository.respellOrFindOrInsert(Series(SeriesId.new(), seriesEntry.name), ownSeriesId).id,
       seriesEntry.volumeNumber,
     )
 
