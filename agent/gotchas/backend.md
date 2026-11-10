@@ -501,7 +501,8 @@ Read whole by a run that changes `backend/`, after `every-run.md`.
 - `TransactionsObserving` and `Transaction` live in the root
   `fr.amory.libris.fixture`, shared by both contexts' use-case tests.
 - A use case called inside another's block (`HoldEdition` inside
-  `AddBookToBookshelf`'s) opens a block of its own, which Spring's
+  `AddBookToBookshelf`'s, `EditEdition` inside the add's since T158)
+  opens a block of its own, which Spring's
   `TransactionTemplate` joins to the caller's. `TransactionsObserving` would
   record it as a second transaction: the caller's test builds the callee over
   `withoutTransaction()`, so the one block recorded is the caller's, and the
