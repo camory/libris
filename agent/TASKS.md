@@ -53,7 +53,7 @@ guard every frontend task.
       `update` goes, answered by S6. Realises S4 and S5's other names;
       un-skips the tests of S4, both, and S5's other series and author.
 
-- [ ] T155 Backend: a name no edition carries is not suggested.
+- [x] T155 Backend: a name no edition carries is not suggested.
       The series' names and the authors' names answer only those some
       edition of the house carries, each once, in no promised order (D11);
       the house keeps the others, and an edition that names one again lands

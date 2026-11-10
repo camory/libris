@@ -21,9 +21,6 @@ private const val FIND_SERIES_BY_ID =
 private const val FIND_SERIES_BY_IDS =
   "SELECT series.id, series.name FROM series WHERE series.id IN (:ids)"
 
-private const val FIND_ALL_SERIES =
-  "SELECT series.id, series.name FROM series"
-
 @Repository
 class JdbcSeriesRepository(private val jdbcClient: JdbcClient) : SeriesRepository {
   override fun findOrInsert(series: Series): Series =
@@ -52,12 +49,6 @@ class JdbcSeriesRepository(private val jdbcClient: JdbcClient) : SeriesRepositor
         .query { rs, _ -> seriesOf(rs) }
         .list()
     }
-
-  override fun findAll(): List<Series> =
-    jdbcClient
-      .sql(FIND_ALL_SERIES)
-      .query { rs, _ -> seriesOf(rs) }
-      .list()
 
   private fun seriesOf(rs: ResultSet): Series =
     Series(SeriesId(rs.getObject("id", UUID::class.java)), rs.getString("name"))

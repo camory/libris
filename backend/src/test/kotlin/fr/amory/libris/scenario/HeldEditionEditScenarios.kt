@@ -163,7 +163,6 @@ class HeldEditionEditScenarios @Autowired constructor(
   }
 
   @Test
-  @Disabled("held edition edit")
   fun `S6 A name no edition carries is not suggested`() {
     // Given
     lea.hasAdded(ASTERIX_LE_GAULOIS, to = lea.defaultBookshelf)
