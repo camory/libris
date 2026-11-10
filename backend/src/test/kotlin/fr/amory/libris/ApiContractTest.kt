@@ -140,7 +140,7 @@ class ApiContractTest @Autowired constructor(
   private val listSeriesNames: ListSeriesNames,
   private val listAuthorNames: ListAuthorNames,
   private val removeCopy: RemoveCopy) {
-  @ContracteerTest(openApiDoc = "https://raw.githubusercontent.com/camory/libris-api/v0.17.0/openapi.yaml")
+  @ContracteerTest(openApiDoc = "https://raw.githubusercontent.com/camory/libris-api/v0.18.0/openapi.yaml")
   fun `the API matches the contract`() {
     contracteerIsWelcomed()
     isbnLookupsAnswer()
