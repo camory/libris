@@ -393,22 +393,21 @@ Read whole by a run that changes `backend/`, after `every-run.md`.
   a migration reading through the same mapping would refuse the start.
 - A name row shared by many parents is inserted or matched in one statement:
   `INSERT INTO author (id, name) VALUES (:id, :name) ON CONFLICT
-  ((BTRIM(name)) COLLATE ignoring_case_and_accents) DO UPDATE SET name =
-  author.name RETURNING id`. The conflict target is the expression the
-  unique index carries, not the column; and `DO UPDATE` is what makes
-  `RETURNING` answer the row that already exists, where `DO NOTHING`
-  answers no row at all and costs a second statement. With `SET name =
-  author.name` the row keeps the spelling that created it, so an edition
-  naming it otherwise reads back with that first spelling, as after an
-  `insert` still. `JdbcEditionRepository`'s author statement,
-  `RESPELL_OR_INSERT_AUTHOR`, sets `name = CASE WHEN EXISTS (SELECT 1 FROM
-  contribution WHERE contribution.edition_id = :editionId AND
-  contribution.author_id = author.id) THEN EXCLUDED.name ELSE author.name
-  END`: in `update` it respells an author the edition already references,
-  whatever the role, so `update` resolves its author ids before it deletes
-  the edition's contributions; `insert` runs the same statement and never
-  respells, since an edition not yet stored has no contribution rows.
-  Authors (since `V015`) and series (since
+  ((BTRIM(name)) COLLATE ignoring_case_and_accents) DO UPDATE SET name = …
+  RETURNING id`. The conflict target is the expression the unique index
+  carries, not the column; and `DO UPDATE` is what makes `RETURNING`
+  answer the row that already exists, where `DO NOTHING` answers no row at
+  all and costs a second statement. `JdbcEditionRepository`'s author
+  statement, `RESPELL_OR_INSERT_AUTHOR`, sets `name = CASE WHEN EXISTS
+  (SELECT 1 FROM contribution WHERE contribution.edition_id = :editionId
+  AND contribution.author_id = author.id) THEN EXCLUDED.name ELSE
+  author.name END`: an author the edition does not reference yet keeps the
+  spelling that created the row, so an edition naming it otherwise reads
+  back with that stored spelling; in `update` it respells an author the
+  edition already references, whatever the role, so `update` resolves its
+  author ids before it deletes the edition's contributions; `insert` runs
+  the same statement and never respells, since an edition not yet stored
+  has no contribution rows. Authors (since `V015`) and series (since
   `V014`) are unique on `((BTRIM(name)) COLLATE ignoring_case_and_accents)`,
   so case, accents and the spaces at the ends do not count.
   `JdbcSeriesRepository.respellOrFindOrInsert` is that statement with
