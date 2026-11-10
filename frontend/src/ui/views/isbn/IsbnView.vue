@@ -300,6 +300,7 @@ async function send(edition: SourceEdition) {
           :edition="edition"
           :copies="shownCopies"
           :covers="covers"
+          :held="held"
           :shown-source="coverSource"
           :adding="adding"
           :failed="failed"

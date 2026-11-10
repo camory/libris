@@ -34,6 +34,7 @@ const props = defineProps<{
   edition?: SourceEdition;
   copies: Copy[];
   covers: CoverCandidate[];
+  held: boolean;
   adding: boolean;
   failed: boolean;
   shownSource?: string | null;
@@ -209,7 +210,7 @@ function focusFirstRefused(refused: (AuthorRefusal | null)[]) {
         <CoverChoice
           :covers="covers"
           :title="edition?.title ?? ''"
-          :held="false"
+          :held="held"
           :disabled="adding"
           :shown-source="shownSource"
           @cover-source="emit('coverSource', $event)"
