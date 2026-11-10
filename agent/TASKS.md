@@ -124,7 +124,7 @@ guard every frontend task.
       its copies and its pencil, the form and the button gone. Realises S4;
       un-skips its frontend test.
 
-- [ ] T163 Frontend: a refused or failed save.
+- [x] T163 Frontend: a refused or failed save.
       A save answered by the validation or the not-found problem, or not
       answered, says *Erreur lors de l'enregistrement, veuillez réessayer
       plus tard.* 8 under the button, docked with it, the form left as the
