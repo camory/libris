@@ -331,7 +331,7 @@ async function send(edition: SourceEdition) {
           @cover-source="coverSource = $event"
           @remove="removeCopy"
         >
-          <template v-if="!held" #corner>
+          <template #corner>
             <IconButton
               :label="t('isbn.edit')"
               :disabled="adding"

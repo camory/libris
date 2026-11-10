@@ -398,6 +398,17 @@ describe("IsbnView", () => {
     expect(screen.queryByRole("textbox", { name: "Titre" })).toBeNull();
   });
 
+  it("offers the pencil on the card of an ISBN the house holds with none of the reader's copies", async () => {
+    // Given
+    const screen = open(new FakeIsbnApi(held));
+
+    // When
+    await ask(screen, "9782723488525");
+
+    // Then
+    expect(screen.getAllByRole("button", { name: "Modifier" })).toHaveLength(1);
+  });
+
   it("says in which bookshelf the reader already has a copy", async () => {
     // Given
     const shelved: IsbnAnswer = {
@@ -1277,7 +1288,7 @@ describe("IsbnView", () => {
 
     // Then
     expect(screen.getByRole("heading", { name: "Romance dawn" })).toBeDefined();
-    expect(screen.queryByRole("button", { name: "Modifier" })).toBeNull();
+    expect(screen.getByRole("button", { name: "Modifier" })).toBeDefined();
     expect(
       screen.queryByRole("button", { name: "Couverture inventaire.io" }),
     ).toBeNull();
