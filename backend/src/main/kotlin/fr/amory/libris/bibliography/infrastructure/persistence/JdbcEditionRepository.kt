@@ -42,6 +42,13 @@ private const val INSERT_AUTHOR =
     RETURNING id
     """
 
+private const val RESPELL_OR_INSERT_AUTHOR =
+  """
+    INSERT INTO author (id, name) VALUES (:id, :name)
+    ON CONFLICT ((BTRIM(name)) COLLATE ignoring_case_and_accents) DO UPDATE SET name = EXCLUDED.name
+    RETURNING id
+    """
+
 private const val INSERT_CONTRIBUTION =
   """
     INSERT INTO contribution (edition_id, author_id, role) VALUES (:editionId, :authorId, :role)
@@ -76,7 +83,7 @@ class JdbcEditionRepository(private val jdbcClient: JdbcClient) : EditionReposit
 
   override fun insert(edition: Edition) {
     write(INSERT_EDITION, edition)
-    insertContributionsOf(edition)
+    insertContributionsOf(edition, INSERT_AUTHOR)
   }
 
   override fun update(edition: Edition) {
@@ -85,7 +92,7 @@ class JdbcEditionRepository(private val jdbcClient: JdbcClient) : EditionReposit
       .sql(DELETE_CONTRIBUTIONS)
       .param("editionId", edition.id.value)
       .update()
-    insertContributionsOf(edition)
+    insertContributionsOf(edition, RESPELL_OR_INSERT_AUTHOR)
   }
 
   override fun findByIsbn(isbn: Isbn): Edition? =
@@ -131,9 +138,9 @@ class JdbcEditionRepository(private val jdbcClient: JdbcClient) : EditionReposit
       .update()
   }
 
-  private fun insertContributionsOf(edition: Edition) {
+  private fun insertContributionsOf(edition: Edition, authorStatement: String) {
     edition.contributions.forEach { contribution ->
-      val authorId = nameIdOf(INSERT_AUTHOR, contribution.name)
+      val authorId = nameIdOf(authorStatement, contribution.name)
       jdbcClient
         .sql(INSERT_CONTRIBUTION)
         .param("editionId", edition.id.value)
