@@ -337,6 +337,33 @@ describe("IsbnView", () => {
     ).toBe("https://covers.openlibrary.org/b/id/1-L.jpg");
   });
 
+  it("opens the form of a held ISBN with the house's cover alone", async () => {
+    // Given
+    const screen = open(
+      new FakeIsbnApi({
+        ...held,
+        covers: [
+          { source: "inventaire.io", url: "https://inventaire.io/img/1" },
+        ],
+      }),
+    );
+    await ask(screen, "9782723488525");
+
+    // When
+    await press(screen, "Modifier");
+
+    // Then
+    expect(screen.getByRole("textbox", { name: "Titre" })).toBeDefined();
+    expect(
+      screen
+        .getByRole("img", { name: "Couverture de Romance dawn" })
+        .getAttribute("src"),
+    ).toBe("https://inventaire.io/img/1");
+    expect(screen.queryAllByRole("button", { name: /^Couverture / })).toEqual(
+      [],
+    );
+  });
+
   it("keeps on the card the cover shown in the form", async () => {
     // Given
     const screen = open(new FakeIsbnApi(covered));
@@ -396,6 +423,29 @@ describe("IsbnView", () => {
     // Then
     expect(screen.getByRole("heading", { name: "Romance dawn" })).toBeDefined();
     expect(screen.queryByRole("textbox", { name: "Titre" })).toBeNull();
+  });
+
+  it("offers the pencil on the card of an ISBN the house holds with none of the reader's copies", async () => {
+    // Given
+    const screen = open(new FakeIsbnApi(held));
+
+    // When
+    await ask(screen, "9782723488525");
+
+    // Then
+    expect(screen.getAllByRole("button", { name: "Modifier" })).toHaveLength(1);
+  });
+
+  it("offers no pencil on the card of an ISBN the reader has a copy of", async () => {
+    // Given
+    const screen = open(new FakeIsbnApi(heldOnChambre));
+
+    // When
+    await ask(screen, "9782723488525");
+
+    // Then
+    expect(screen.getByText("Dans Chambre")).toBeDefined();
+    expect(screen.queryByRole("button", { name: "Modifier" })).toBeNull();
   });
 
   it("says in which bookshelf the reader already has a copy", async () => {
@@ -1277,7 +1327,7 @@ describe("IsbnView", () => {
 
     // Then
     expect(screen.getByRole("heading", { name: "Romance dawn" })).toBeDefined();
-    expect(screen.queryByRole("button", { name: "Modifier" })).toBeNull();
+    expect(screen.getByRole("button", { name: "Modifier" })).toBeDefined();
     expect(
       screen.queryByRole("button", { name: "Couverture inventaire.io" }),
     ).toBeNull();

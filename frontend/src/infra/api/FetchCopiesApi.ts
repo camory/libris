@@ -1,10 +1,5 @@
 import type { CopiesApi, RemoveAnswer } from "../../application/CopiesApi";
-import { problemOf } from "./problemOf";
-
-const problems = new Map([
-  [400, "/problems/validation"],
-  [404, "/problems/not-found"],
-]);
+import { problemOf, validationOrNotFound } from "./problemOf";
 
 export class FetchCopiesApi implements CopiesApi {
   constructor(private readonly baseUrl: string) {}
@@ -17,7 +12,8 @@ export class FetchCopiesApi implements CopiesApi {
         "X-Requested-With": "XMLHttpRequest",
       },
     });
-    if (response.status !== 204) return problemOf(response, problems);
+    if (response.status !== 204)
+      return problemOf(response, validationOrNotFound);
     return { outcome: "removed" };
   }
 }

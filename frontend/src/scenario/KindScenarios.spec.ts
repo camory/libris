@@ -18,6 +18,7 @@ import { FakeBookshelfApi } from "../fixture/FakeBookshelfApi";
 import { FakeBookshelvesApi } from "../fixture/FakeBookshelvesApi";
 import { FakeCatalogueApi } from "../fixture/FakeCatalogueApi";
 import { FakeCopiesApi } from "../fixture/FakeCopiesApi";
+import { FakeEditionsApi } from "../fixture/FakeEditionsApi";
 import { FakeIsbnApi } from "../fixture/FakeIsbnApi";
 import { FakeMeApi } from "../fixture/FakeMeApi";
 import { FakeReadersApi } from "../fixture/FakeReadersApi";
@@ -81,6 +82,7 @@ describe("Kind", () => {
         beeper: new FakeBeeper(),
         beepSetting: new FakeBeepSetting(),
         authorsApi: new FakeAuthorsApi([]),
+        editionsApi: new FakeEditionsApi(new Error("no save in this scenario")),
       },
       "sha-abc1234",
     );

@@ -8,7 +8,7 @@ import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import type { App } from "vue";
 import type { BookshelfApi } from "../application/BookshelfApi";
 import type { CatalogueApi } from "../application/CatalogueApi";
-import { editionsApiKey, type EditionsApi } from "../application/EditionsApi";
+import type { EditionsApi } from "../application/EditionsApi";
 import type { IsbnApi } from "../application/IsbnApi";
 import { createLibrisApp } from "../createLibrisApp";
 import type { Book } from "../domain/Book";
@@ -67,7 +67,7 @@ describe("Held edition edit", () => {
     window.history.replaceState(null, "", "/");
   });
 
-  it.skip("S1 A held ISBN with none of the reader's copies shows the pencil, none of the reader's copies", async () => {
+  it("S1 A held ISBN with none of the reader's copies shows the pencil, none of the reader's copies", async () => {
     // Given
     const screen = open("/isbn", { isbn: theHouseHolds(onePiece2, []) });
 
@@ -100,7 +100,7 @@ describe("Held edition edit", () => {
     expect(screen.queryByRole("button", { name: "Modifier" })).toBeNull();
   });
 
-  it.skip("S2 A held ISBN is added as edited", async () => {
+  it("S2 A held ISBN is added as edited", async () => {
     // Given
     const add = librisAdds(on(lea.defaultBookshelf));
     const screen = open("/isbn", { isbn: theHouseHolds(onePiece2, []), add });
@@ -369,12 +369,11 @@ describe("Held edition edit", () => {
         beeper: new FakeBeeper(),
         beepSetting: new FakeBeepSetting(),
         authorsApi: new FakeAuthorsApi([]),
+        editionsApi:
+          world.save ??
+          new FakeEditionsApi(new Error("no save in this scenario")),
       },
       "sha-abc1234",
-    );
-    app.provide(
-      editionsApiKey,
-      world.save ?? new FakeEditionsApi(new Error("no save in this scenario")),
     );
     app.mount(host);
     return within(host);

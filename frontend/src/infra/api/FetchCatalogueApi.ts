@@ -4,17 +4,12 @@ import type {
   FindBookAnswer,
 } from "../../application/CatalogueApi";
 import { bookOf, type BookResponse } from "./bookOf";
-import { problemOf } from "./problemOf";
+import { problemOf, validationOrNotFound } from "./problemOf";
 
 interface BookPageResponse {
   books: BookResponse[];
   next: string | null;
 }
-
-const problems = new Map([
-  [400, "/problems/validation"],
-  [404, "/problems/not-found"],
-]);
 
 export class FetchCatalogueApi implements CatalogueApi {
   constructor(private readonly baseUrl: string) {}
@@ -39,7 +34,8 @@ export class FetchCatalogueApi implements CatalogueApi {
         headers: { Accept: "application/json, application/problem+json" },
       },
     );
-    if (response.status !== 200) return problemOf(response, problems);
+    if (response.status !== 200)
+      return problemOf(response, validationOrNotFound);
     const body = (await response.json()) as BookResponse;
     return { outcome: "found", book: bookOf(body) };
   }

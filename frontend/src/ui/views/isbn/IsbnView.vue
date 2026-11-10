@@ -300,6 +300,7 @@ async function send(edition: SourceEdition) {
           :edition="edition"
           :copies="shownCopies"
           :covers="covers"
+          :held="held"
           :shown-source="coverSource"
           :adding="adding"
           :failed="failed"
@@ -331,7 +332,7 @@ async function send(edition: SourceEdition) {
           @cover-source="coverSource = $event"
           @remove="removeCopy"
         >
-          <template v-if="!held" #corner>
+          <template v-if="!held || shownCopies.length === 0" #corner>
             <IconButton
               :label="t('isbn.edit')"
               :disabled="adding"

@@ -19,9 +19,10 @@ true; the diary keeps the date it was found.
   run dev`, `contracteer mock`). Start it as a background task, wait with
   `curl --retry 30 --retry-connrefused`, stop it by task id. A foreground
   `sleep` is refused.
-- A headless run that ends its turn to wait for a background task gets no
-  wake-up: the run is asked for its final report at once. Run the gate in
-  the foreground.
+- A headless run that ends its turn to wait for a background task is asked
+  for its final report at once, before the task's result, and woken again
+  when the task ends, which gives a second report (T159's review). Run the
+  gate in the foreground.
 - `pkill -f` or `pgrep -af` with a pattern that appears in the tool call's
   own command line kills or matches the call itself (exit 144). Match on
   something else, or stop the process from what started it.
@@ -120,7 +121,7 @@ true; the diary keeps the date it was found.
   read it there after the gate, never count by hand.
 - No schema of the contract says `additionalProperties: false` since
   `v0.11.0`; the backend pins `v0.18.0` since T153, the frontend
-  `v0.17.0` since T144, so no verifier refuses an extra field in any
+  `v0.18.0` since T159, so no verifier refuses an extra field in any
   answer. The
   keyword cannot sit on a branch of an `allOf` anyway: the standard applies
   each branch on its own, so the base refuses the fields the other branch

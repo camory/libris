@@ -87,7 +87,7 @@ guard every frontend task.
       creates the edition, as before, and never respells. Realises S2 and
       S5, the add of a held ISBN; un-skips their backend tests.
 
-- [ ] T159 Frontend: the save on `v0.18.0`, the pencil of a held ISBN.
+- [x] T159 Frontend: the save on `v0.18.0`, the pencil of a held ISBN.
       Precondition (human): T158 deployed (D04). `vitest.global-setup.ts`
       pins `v0.18.0`, the frontend's one bump; the editions' client, tested
       on the mock's `200`, `400` and `404`, joins the application's ports,

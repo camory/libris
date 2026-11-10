@@ -17,6 +17,7 @@ import {
 } from "./application/BookshelvesApi";
 import { catalogueApiKey, type CatalogueApi } from "./application/CatalogueApi";
 import { copiesApiKey, type CopiesApi } from "./application/CopiesApi";
+import { editionsApiKey, type EditionsApi } from "./application/EditionsApi";
 import { isbnApiKey, type IsbnApi } from "./application/IsbnApi";
 import { meApiKey, type MeApi } from "./application/MeApi";
 import { readersApiKey, type ReadersApi } from "./application/ReadersApi";
@@ -40,6 +41,7 @@ export interface LibrisPorts {
   beeper: Beeper;
   beepSetting: BeepSetting;
   authorsApi: AuthorsApi;
+  editionsApi: EditionsApi;
 }
 
 export function createLibrisApp(ports: LibrisPorts, revision: string): App {
@@ -62,6 +64,7 @@ export function createLibrisApp(ports: LibrisPorts, revision: string): App {
   app.provide(beeperKey, ports.beeper);
   app.provide(beepSettingKey, ports.beepSetting);
   app.provide(authorsApiKey, ports.authorsApi);
+  app.provide(editionsApiKey, ports.editionsApi);
   app.provide(revisionKey, revision);
   app.provide(LUCIDE_CONTEXT, { strokeWidth: 1.8 });
   return app;

@@ -2,6 +2,11 @@ interface ProblemResponse {
   type: string;
 }
 
+export const validationOrNotFound = new Map([
+  [400, "/problems/validation"],
+  [404, "/problems/not-found"],
+]);
+
 export async function problemOf(
   response: Response,
   statuses: Map<number, string>,

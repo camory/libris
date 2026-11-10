@@ -497,6 +497,25 @@ describe("EditionForm", () => {
     expect(covers.getByText("inventaire.io")).toBeDefined();
   });
 
+  it("shows the house's cover with no dots when held", () => {
+    // Given
+    const cover = { source: "Libris", url: "/api/v1/books/8b3f/cover" };
+
+    // When
+    const covers = screen(onePiece1, [], [cover], { held: true });
+
+    // Then
+    expect(
+      covers
+        .getByRole("img", { name: "Couverture de Romance dawn" })
+        .getAttribute("src"),
+    ).toBe("/api/v1/books/8b3f/cover");
+    expect(covers.queryAllByRole("button", { name: /^Couverture / })).toEqual(
+      [],
+    );
+    expect(covers.queryByText("Libris")).toBeNull();
+  });
+
   it("shows first the cover the screen names", () => {
     // When
     const covers = within(
@@ -1376,6 +1395,7 @@ describe("EditionForm", () => {
       attachTo,
       seriesNames = null,
       authorNames = null,
+      held = false,
     }: {
       adding?: boolean;
       failed?: boolean;
@@ -1384,6 +1404,7 @@ describe("EditionForm", () => {
       attachTo?: HTMLElement;
       seriesNames?: string[] | null;
       authorNames?: string[] | null;
+      held?: boolean;
     } = {},
   ) {
     return mount(EditionForm, {
@@ -1397,6 +1418,7 @@ describe("EditionForm", () => {
         shownSource,
         seriesNames,
         authorNames,
+        held,
       },
       slots: corner === undefined ? {} : { corner },
       global: { plugins: [createLibrisI18n()] },

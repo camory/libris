@@ -1,12 +1,7 @@
 import type { AddAnswer, BookshelfApi } from "../../application/BookshelfApi";
 import type { SourceEdition } from "../../domain/SourceEdition";
 import { copyOf, type CopyResponse } from "./copyOf";
-import { problemOf } from "./problemOf";
-
-const problems = new Map([
-  [400, "/problems/validation"],
-  [404, "/problems/not-found"],
-]);
+import { problemOf, validationOrNotFound } from "./problemOf";
 
 export class FetchBookshelfApi implements BookshelfApi {
   constructor(private readonly baseUrl: string) {}
@@ -49,6 +44,6 @@ export class FetchBookshelfApi implements BookshelfApi {
         copy: copyOf(body),
       };
     }
-    return problemOf(response, problems);
+    return problemOf(response, validationOrNotFound);
   }
 }
