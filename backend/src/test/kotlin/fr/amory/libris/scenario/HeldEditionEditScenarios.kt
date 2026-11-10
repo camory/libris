@@ -188,7 +188,6 @@ class HeldEditionEditScenarios @Autowired constructor(
   }
 
   @Test
-  @Disabled("held edition edit")
   fun `S7 An edition Libris does not know is not saved`() {
     // Given
     val book = libris.unknownBook()

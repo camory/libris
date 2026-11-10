@@ -34,7 +34,7 @@ contract (D04). The frontend tests of edition-form and authors-edit, and
 S1's second case here, edition-form's S4 moved (#379), stay green and
 guard every frontend task.
 
-- [ ] T153 Backend: the save on `v0.18.0`, an unknown edition refused.
+- [x] T153 Backend: the save on `v0.18.0`, an unknown edition refused.
       `ApiContractTest` pins `v0.18.0`, the backend's one bump (D04). The
       save of an edition is served by a use case the controller calls
       (D02), answering, for now, not found whatever the id and storing

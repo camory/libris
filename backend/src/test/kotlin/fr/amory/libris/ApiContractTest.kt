@@ -66,6 +66,8 @@ import fr.amory.libris.library.application.catalogue.FindCatalogueSeries
 import fr.amory.libris.library.application.catalogue.FindCatalogueSeriesResult
 import fr.amory.libris.library.application.catalogue.HeldEdition
 import fr.amory.libris.library.application.catalogue.ListCatalogueSeries
+import fr.amory.libris.library.application.catalogue.SaveEdition
+import fr.amory.libris.library.application.catalogue.SaveEditionResult
 import fr.amory.libris.library.application.lookup.CopyOnBookshelf
 import fr.amory.libris.library.application.lookup.IsbnLookup
 import fr.amory.libris.library.application.lookup.LookupIsbnForReader
@@ -117,6 +119,7 @@ import java.util.UUID
     ListSeriesNames::class,
     ListAuthorNames::class,
     RemoveCopy::class,
+    SaveEdition::class,
   ],
 )
 @Suppress("LongParameterList")
@@ -139,8 +142,9 @@ class ApiContractTest @Autowired constructor(
   private val findCatalogueEdition: FindCatalogueEdition,
   private val listSeriesNames: ListSeriesNames,
   private val listAuthorNames: ListAuthorNames,
-  private val removeCopy: RemoveCopy) {
-  @ContracteerTest(openApiDoc = "https://raw.githubusercontent.com/camory/libris-api/v0.17.0/openapi.yaml")
+  private val removeCopy: RemoveCopy,
+  private val saveEdition: SaveEdition) {
+  @ContracteerTest(openApiDoc = "https://raw.githubusercontent.com/camory/libris-api/v0.18.0/openapi.yaml")
   fun `the API matches the contract`() {
     contracteerIsWelcomed()
     isbnLookupsAnswer()
@@ -159,6 +163,7 @@ class ApiContractTest @Autowired constructor(
     seriesNamesAnswer()
     authorNamesAnswer()
     removingACopyAnswers()
+    savingABookAnswers()
   }
 
   private fun contracteerIsWelcomed() {
@@ -262,6 +267,11 @@ class ApiContractTest @Autowired constructor(
     val contracteer = ReaderId(eq(CONTRACTEER.id.value) ?: CONTRACTEER.id.value)
     given(removeCopy(contracteer, CopyId(any() ?: MY_COPY.value))).willReturn(Removed)
     given(removeCopy(CONTRACTEER.id, NOT_MY_COPY)).willReturn(NoSuchCopy)
+  }
+
+  private fun savingABookAnswers() {
+    given(saveEdition(CONTRACTEER.id, ONE_PIECE_2)).willReturn(SaveEditionResult.Saved(ASTERIX_1_HELD))
+    given(saveEdition(CONTRACTEER.id, UNKNOWN_BOOK)).willReturn(SaveEditionResult.NoSuchEdition)
   }
 
   private fun noCopy(answer: EditionLookupResult) =
@@ -407,6 +417,10 @@ private val TOPHE_AS_OWNER = Membership(readerId("6e7f8091-a2b3-4c4d-9e5f-6a7b8c
 private val MY_COPY = CopyId(UUID.fromString("4d5e6f70-8192-4a3b-9c4d-5e6f708192a3"))
 
 private val NOT_MY_COPY = CopyId(UUID.fromString("8b9c0d1e-2f3a-4b4c-9d5e-6f7a8b9c0d1e"))
+
+private val ONE_PIECE_2 = EditionId(UUID.fromString("3c4d5e6f-7a8b-4c9d-8e0f-1a2b3c4d5e6f"))
+
+private val UNKNOWN_BOOK = EditionId(UUID.fromString("2a3b4c5d-6e7f-4a8b-9c0d-1e2f3a4b5c6d"))
 
 private fun bookshelfId(id: String) =
   BookshelfId(UUID.fromString(id))

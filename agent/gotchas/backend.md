@@ -326,9 +326,11 @@ Read whole by a run that changes `backend/`, after `every-run.md`.
   that answered `null` (an argument no stub names, a matcher that missed)
   or a framework failure no handler turned into a problem, or a path no
   controller maps yet, its `auto:` cases included. A scenario sending to
-  a path no controller maps gets Boot's plain `404` JSON instead, which
-  the DSL's `refusal` throws on (`not a problem: 404 NOT_FOUND`): a `404`
-  there is not yet the `/problems/not-found` a case expects.
+  a path no controller maps gets Boot's plain `404` JSON instead, and to a
+  path mapped for another method only (a `PUT` where a `GET` is served)
+  Boot's plain `405`; the DSL's `refusal` throws on either (`not a
+  problem: 404 NOT_FOUND`), when the answer is built, so the stack points
+  at the call (`lea.saves`), not at the line reading `refusal`.
 - The JDK `HttpClient` writes header values as US-ASCII (`Léa` leaves as
   `L?a`) and Tomcat reads them as ISO-8859-1. The scenario client and the
   web slice's client are built on `SimpleClientHttpRequestFactory`, which
