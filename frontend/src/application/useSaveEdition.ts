@@ -13,6 +13,7 @@ export function useSaveEdition(editionsApi: EditionsApi): {
   const state = ref<SaveState>({ status: "ready" });
 
   async function save(id: string, edition: SourceEdition) {
+    state.value = { status: "saving" };
     await editionsApi.save(id, detailsOf(edition));
   }
 

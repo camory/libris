@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import { asterixLeGaulois } from "../fixture/Books";
 import { FakeEditionsApi } from "../fixture/FakeEditionsApi";
 import { onePiece2 } from "../fixture/SourceEditions";
+import type { EditionsApi, SaveAnswer } from "./EditionsApi";
 import { useSaveEdition } from "./useSaveEdition";
 
 const id = "4d5e6f7a-8b9c-4d0e-9f1a-2b3c4d5e6f7a";
@@ -41,4 +42,21 @@ describe("useSaveEdition", () => {
       },
     ]);
   });
+
+  it("is saving while Libris has not answered", () => {
+    // Given
+    const { state, save } = useSaveEdition(new LibrisNotSaving());
+
+    // When
+    void save(id, onePiece2);
+
+    // Then
+    expect(state.value).toEqual({ status: "saving" });
+  });
 });
+
+class LibrisNotSaving implements EditionsApi {
+  save(): Promise<SaveAnswer> {
+    return new Promise(() => {});
+  }
+}
