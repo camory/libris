@@ -278,12 +278,6 @@
   `CLAUDE.md` forbids; D03 already puts the extensions in a migration of their
   own. The first search task adds them to the table, and writes `search_text`
   from the adapter on every insert and update (decided on T034, 2026-09-21).
-- Backend: `EditionRepository` declares `insert` and `findByIsbn` only. D11
-  names `insert` and `update` as the pair a port exposes, and nothing of this
-  phase changes a stored edition; the task that edits one adds `update` with
-  the case that wants it, and with it the question of what happens to the
-  `series` and `author` rows the old values named (found on T034,
-  2026-09-21).
 - Backend: an edition carries no tag. PRD §3 gives it zero or more and D11
   names a `tag` table, but no lookup answers a tag and no scenario of this
   phase names one. The task that first shows or sets a tag writes the table,
@@ -549,3 +543,14 @@
   adds (Duplicated Code), one per context since `bibliography` never
   depends on `library`. Open: whether a shared kernel of the domain should
   hold one (found on T143, 2026-11-08).
+- Backend: `NewEdition` and `EditionDetails` repeat the edition's fields,
+  and so do `NewBookRequest` and `EditionDetailsRequest`, each request
+  refusing a blank title, author and series by itself (Duplicated Code).
+  Open for T158, whose add of a held ISBN writes the fields as the save
+  does: whether `NewEdition` composes `EditionDetails` (found on T154,
+  2026-11-10).
+- Backend: `BookshelfController` and `CatalogueController` each hold a
+  private `invalid(errors)` building the validation problem with its
+  `errors`, and `CoverController` and `IsbnController` build theirs inline
+  (Duplicated Code): one function beside `problem` in `Problems.kt` would
+  serve them all (found on T154, 2026-11-10).

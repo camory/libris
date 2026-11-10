@@ -43,7 +43,7 @@ guard every frontend task.
       unchanged (D07). Walking skeleton; realises S7; un-skips its backend
       test.
 
-- [ ] T154 Backend: the ouvrage saved as edited.
+- [x] T154 Backend: the ouvrage saved as edited.
       An edition the house holds is written with the fields sent over its
       own, kind to summary, its ISBN and its cover kept, the last save
       winning (D11); its series found or inserted by name (D12) and its

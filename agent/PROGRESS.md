@@ -146,3 +146,24 @@ Format:
   `EditionDetailsRequest` repeats eleven fields of `NewBookRequest`; when
   T154 adds its validation, the two requests share one shape or one
   validation, so the field rules are not written twice.
+
+## 2026-11-10 — T154 The ouvrage saved as edited — done
+- Did: `PUT /api/v1/books/{id}` validates the body as `EditionDetails` and
+  writes it over the held edition through `EditEdition` (bibliography),
+  which `SaveEdition` (library) answers with the reader's copies and the
+  house's series name. S4, both, and S5's other series and author pass.
+- Decided: both use cases grew their constructor one cycle at a time, a
+  parameter no case read yet held for one cycle under
+  `@Suppress("UnusedParameter")` (step 8's `EditEdition`, step 13's
+  `SaveEdition`), gone the next. `EditEdition` reads the held edition by
+  `findByIds`, writes in `executeWithoutResult`, then reads it back; step
+  12's double is `EditionsRespellingAuthors`, private to `EditEditionTest`.
+  The contract stubs' fixture is `EDIT_ONE_PIECE_2`, below `ONE_PIECE_2`.
+- Deviations from the brief: the tidy step moved the reader's copies and
+  the series entry, written twice once `SaveEdition` had them, from
+  `FindCatalogueEdition` into `HeldEditionReads.kt`, two internal functions
+  both use cases call (a file outside *Files and modules*).
+  `ApiContractTest` on `main` and after: `tests="50"`.
+- Left over: T155–T158 per the backlog. Two PROPOSED items: `NewEdition`
+  and `EditionDetails` (and their requests) repeating the edition's fields,
+  for T158; the validation problem built in four controllers.
