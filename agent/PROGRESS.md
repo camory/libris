@@ -307,3 +307,23 @@ Format:
   leaves the state `saving`, the second rejects out of the form's handler)
   per the backlog; the *Saving* and *Saved* states checked by hand by
   Tophe, in both schemes.
+
+## 2026-11-10 — T163 A refused or failed save — done
+- Did: a save Libris refuses (any problem) or does not answer leaves the
+  ouvrage's page form open as left, *Erreur lors de l'enregistrement,
+  veuillez réessayer plus tard.* under the docked *Enregistrer*. S9 passes.
+- Decided: `useSaveEdition` gains `notSaved` and a catch, as
+  `useAddBookToBookshelf`'s `notAdded`; the dock's error word joins its
+  `words` record by `action`; the page's spec gained a `refused()` port
+  helper in a `refactor` commit once two cases repeated it.
+- Deviations from the brief: the S9 un-skip was the first commit, its three
+  cases read red on the missing sentence before any unit test, as the
+  implementer rules ask, where the brief put the un-skip last; *the title
+  emptied* was green on its un-skip and stayed a guard. Its mutation (the
+  form emitting past `focusFirstRefused`) reds on *Titre* not found, the
+  emptied title saved and the form closed, one line before `save.asked`.
+  Steps 1 to 4 were reds as foreseen; steps 5 to 7 guards, run and reverted.
+- Left over: the *Not saved* state checked by hand by Tophe against the
+  spec's mockup, in both schemes. The message stayed across the cross
+  into the next pencil's form; on Tophe's call a fix-up gave
+  `useSaveEdition` a `reset`, called by the page's `edit()`.

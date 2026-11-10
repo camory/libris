@@ -228,11 +228,14 @@ Read whole by a run that changes `frontend/`, after `every-run.md`.
   `FakeEditionsApi(new Error("no save in this scenario"))`.
   `EditionPageView` reads the port through `useSaveEdition(editionsApi)`,
   which exposes `state` (`ready`, `saving`, `saved` with the `Book`
-  answered; a problem answer leaves it `saving` until T163) and
-  `save(id, edition)`, which takes the form's `SourceEdition` and hands the
-  port a copy without `isbn13`; the page's `saveEdits` awaits it and, once
-  `saved`, hands the book to `useFindCatalogueEdition`'s `show` and puts
-  `editing` back to false.
+  answered, `notSaved` for any problem answer and for a rejection) and
+  `save(id, edition)`, which never rejects, takes the form's
+  `SourceEdition` and hands the port a copy without `isbn13`; the page's
+  `saveEdits` awaits it and, once `saved`, hands the book to
+  `useFindCatalogueEdition`'s `show` and puts `editing` back to false;
+  the page passes `notSaved` to the form as `failed`, and its pencil's
+  `edit()` calls the composable's `reset` (`forgetSave`), back to `ready`,
+  so a form opened after a failed save and the cross shows no message.
 - `EditionForm` takes `isbn13`, `edition` (a `SourceEdition` or a `Book`,
   absent for an unknown ISBN), `copies`, `covers`, `held` (handed to
   `CoverChoice`, `IsbnView` passing its own), `action` (`"add"` from
@@ -806,7 +809,9 @@ Read whole by a run that changes `frontend/`, after `every-run.md`.
   `adding`, `failed`, emitting `add`) draws the button, while `adding`
   *Ajout en cours…* (`isbn.adding`) for `"add"` and *Enregistrement en
   cours…* (`isbn.saving`) for `"save"`, and
-  the message under it when `failed`. It is drawn in two places: inside
+  the message under it when `failed`, `isbn.addError` for `"add"` and
+  `isbn.saveError` for `"save"`, the three words of each from one `words`
+  record. It is drawn in two places: inside
   `EditionForm`'s root block, after the `<form>`, and in `IsbnView` after
   the card of every found answer, the two sharing the view's `flex flex-col`
   block, so that each dock sticks over the block it closes; the view's dock

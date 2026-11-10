@@ -242,7 +242,7 @@ describe("Held edition edit", () => {
     );
   });
 
-  it.skip.each([
+  it.each([
     {
       case: "the save answers the validation problem",
       save: () =>
@@ -280,7 +280,7 @@ describe("Held edition edit", () => {
     expect(saveButton(screen)).toBeDefined();
   });
 
-  it.skip("S9 A refused or failed save, the title emptied", async () => {
+  it("S9 A refused or failed save, the title emptied", async () => {
     // Given
     const save = librisSaves(asterix);
     const screen = await formOfThePage({ save });

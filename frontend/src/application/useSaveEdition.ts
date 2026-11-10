@@ -4,22 +4,36 @@ import type { SourceEdition } from "../domain/SourceEdition";
 import type { EditionDetails, EditionsApi } from "./EditionsApi";
 
 export type SaveState =
-  { status: "ready" } | { status: "saving" } | { status: "saved"; book: Book };
+  | { status: "ready" }
+  | { status: "saving" }
+  | { status: "saved"; book: Book }
+  | { status: "notSaved" };
 
 export function useSaveEdition(editionsApi: EditionsApi): {
   state: Ref<SaveState>;
   save: (id: string, edition: SourceEdition) => Promise<void>;
+  reset: () => void;
 } {
   const state = ref<SaveState>({ status: "ready" });
 
   async function save(id: string, edition: SourceEdition) {
     state.value = { status: "saving" };
-    const answer = await editionsApi.save(id, detailsOf(edition));
-    if (answer.outcome === "saved")
-      state.value = { status: "saved", book: answer.book };
+    try {
+      const answer = await editionsApi.save(id, detailsOf(edition));
+      state.value =
+        answer.outcome === "saved"
+          ? { status: "saved", book: answer.book }
+          : { status: "notSaved" };
+    } catch {
+      state.value = { status: "notSaved" };
+    }
   }
 
-  return { state, save };
+  function reset() {
+    state.value = { status: "ready" };
+  }
+
+  return { state, save, reset };
 }
 
 function detailsOf(edition: SourceEdition): EditionDetails {

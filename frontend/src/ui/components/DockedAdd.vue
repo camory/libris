@@ -12,8 +12,8 @@ defineProps<{
 const emit = defineEmits<{ add: [] }>();
 
 const words = {
-  add: { idle: "isbn.add", busy: "isbn.adding" },
-  save: { idle: "isbn.save", busy: "isbn.saving" },
+  add: { idle: "isbn.add", busy: "isbn.adding", error: "isbn.addError" },
+  save: { idle: "isbn.save", busy: "isbn.saving", error: "isbn.saveError" },
 };
 
 const { t } = useI18n();
@@ -35,7 +35,7 @@ const { t } = useI18n();
       </button>
       <p v-if="failed" class="flex items-start gap-2 text-body text-danger">
         <CircleAlert :size="22" class="shrink-0" />
-        <span>{{ t("isbn.addError") }}</span>
+        <span>{{ t(words[action].error) }}</span>
       </p>
     </div>
   </div>

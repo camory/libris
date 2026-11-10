@@ -757,6 +757,60 @@ describe("EditionPageView", () => {
     // Then
     expect(screen.getByText("Une aventure d'Astérix")).toBeDefined();
   });
+
+  it("says the save failed when Libris refuses it", async () => {
+    // Given
+    const screen = await pageOf(asterixWithIsbn, { editionsApi: refused() });
+    await tapPencil(screen);
+    await typeTitle(screen, "Astérix le gaulois");
+
+    // When
+    await tapSave(screen);
+
+    // Then
+    expect(
+      screen.getByText(
+        "Erreur lors de l'enregistrement, veuillez réessayer plus tard.",
+      ),
+    ).toBeDefined();
+  });
+
+  it("keeps the form as left once the save failed", async () => {
+    // Given
+    const screen = await pageOf(asterixWithIsbn, { editionsApi: refused() });
+    await tapPencil(screen);
+    await typeTitle(screen, "Astérix le gaulois");
+
+    // When
+    await tapSave(screen);
+
+    // Then
+    const title = screen.getByRole<HTMLInputElement>("textbox", {
+      name: "Titre",
+    });
+    expect(title.value).toBe("Astérix le gaulois");
+    expect(title.disabled).toBe(false);
+    expect(screen.getByRole("button", { name: "Enregistrer" })).toBeDefined();
+  });
+
+  it("opens the form without the failed save's message once the cross dropped it", async () => {
+    // Given
+    const screen = await pageOf(asterixWithIsbn, { editionsApi: refused() });
+    await tapPencil(screen);
+    await typeTitle(screen, "Astérix le gaulois");
+    await tapSave(screen);
+    await tapCross(screen);
+
+    // When
+    await tapPencil(screen);
+
+    // Then
+    expect(
+      screen.queryByText(
+        "Erreur lors de l'enregistrement, veuillez réessayer plus tard.",
+      ),
+    ).toBeNull();
+  });
 });
 
 function seen(wrapper: ReturnType<typeof mountEditionPageView>) {
@@ -808,6 +862,13 @@ async function tapSave(screen: ReturnType<typeof within>) {
 async function typeTitle(screen: ReturnType<typeof within>, title: string) {
   await fireEvent.input(screen.getByRole("textbox", { name: "Titre" }), {
     target: { value: title },
+  });
+}
+
+function refused() {
+  return new FakeEditionsApi({
+    outcome: "problem",
+    type: "/problems/validation",
   });
 }
 

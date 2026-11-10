@@ -614,6 +614,16 @@ describe("EditionForm", () => {
     ).toBeDefined();
   });
 
+  it("says the save failed when it failed", () => {
+    // When
+    const wrapper = form(onePiece1, [], [], { action: "save", failed: true });
+
+    // Then
+    expect(wrapper.text()).toContain(
+      "Erreur lors de l'enregistrement, veuillez réessayer plus tard.",
+    );
+  });
+
   it("sends the fields as the reader left them", async () => {
     // Given
     const wrapper = form(onePiece1);
