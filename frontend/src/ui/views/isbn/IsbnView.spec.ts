@@ -409,6 +409,18 @@ describe("IsbnView", () => {
     expect(screen.getAllByRole("button", { name: "Modifier" })).toHaveLength(1);
   });
 
+  it("offers no pencil on the card of an ISBN the reader has a copy of", async () => {
+    // Given
+    const screen = open(new FakeIsbnApi(heldOnChambre));
+
+    // When
+    await ask(screen, "9782723488525");
+
+    // Then
+    expect(screen.getByText("Dans Chambre")).toBeDefined();
+    expect(screen.queryByRole("button", { name: "Modifier" })).toBeNull();
+  });
+
   it("says in which bookshelf the reader already has a copy", async () => {
     // Given
     const shelved: IsbnAnswer = {
