@@ -19,20 +19,20 @@ class EditEdition(
   private val seriesRepository: SeriesRepository,
   private val transactions: TransactionOperations) {
   operator fun invoke(editionId: EditionId, details: EditionDetails): EditEditionResult {
-    val held = editions
-      .findByIds(listOf(editionId))
-      .singleOrNull() ?: return NoSuchEdition
-    return Edited(written(held, details))
+    val held = heldOf(editionId) ?: return NoSuchEdition
+    write(held, details)
+    return Edited(checkNotNull(heldOf(editionId)))
   }
 
-  private fun written(held: Edition, details: EditionDetails): Edition =
-    checkNotNull(
-      transactions.execute {
-        val edited = editedOf(held, details, details.series?.let { seriesVolumeOf(it) })
-        editions.update(edited)
-        edited
-      },
-    )
+  private fun heldOf(editionId: EditionId): Edition? =
+    editions
+      .findByIds(listOf(editionId))
+      .singleOrNull()
+
+  private fun write(held: Edition, details: EditionDetails) =
+    transactions.executeWithoutResult {
+      editions.update(editedOf(held, details, details.series?.let { seriesVolumeOf(it) }))
+    }
 
   private fun seriesVolumeOf(seriesEntry: SeriesEntry): SeriesVolume =
     SeriesVolume(

@@ -12,6 +12,7 @@ import fr.amory.libris.bibliography.domain.SeriesEntry
 import fr.amory.libris.bibliography.domain.cover.CoverName
 import fr.amory.libris.bibliography.domain.edition.Edition
 import fr.amory.libris.bibliography.domain.edition.EditionId
+import fr.amory.libris.bibliography.domain.edition.EditionRepository
 import fr.amory.libris.bibliography.domain.series.Series
 import fr.amory.libris.bibliography.domain.series.SeriesId
 import fr.amory.libris.bibliography.domain.series.SeriesVolume
@@ -21,6 +22,7 @@ import fr.amory.libris.bibliography.fixture.isbnOf
 import fr.amory.libris.fixture.Transaction
 import fr.amory.libris.fixture.TransactionsObserving
 import io.kotest.matchers.shouldBe
+import io.kotest.matchers.types.shouldBeInstanceOf
 import org.junit.jupiter.api.Test
 import org.springframework.transaction.support.TransactionOperations.withoutTransaction
 
@@ -108,6 +110,24 @@ class EditEditionTest {
     )
   }
 
+  @Test
+  fun `the edition answered is the one the house holds after the write`() {
+    // Given
+    val editions = EditionsRespellingAuthors(mapOf("rene goscinny" to "René Goscinny"))
+    editions.insert(asterixLeGaulois())
+    val editEdition = EditEdition(editions, seriesRepository, withoutTransaction())
+
+    // When
+    val result = editEdition(
+      ASTERIX_LE_GAULOIS,
+      asEdited().copy(contributions = Contributions.of(listOf(Contribution("rene goscinny", WRITER)))),
+    )
+
+    // Then
+    result.shouldBeInstanceOf<Edited>().edition.contributions.toList() shouldBe
+      listOf(Contribution("René Goscinny", WRITER))
+  }
+
   private fun asterixLeGaulois(): Edition =
     Edition(
       id = ASTERIX_LE_GAULOIS,
@@ -142,6 +162,16 @@ class EditEditionTest {
       pageCount = 48,
       summary = "Nous sommes en 50 avant Jésus-Christ.",
     )
+}
+
+private class EditionsRespellingAuthors(
+  private val houseSpellings: Map<String, String>,
+  private val editions: EditionsInMemory = EditionsInMemory()) : EditionRepository by editions {
+  override fun update(edition: Edition) =
+    editions.update(edition.copy(contributions = Contributions.of(edition.contributions.map { respelled(it) })))
+
+  private fun respelled(contribution: Contribution): Contribution =
+    contribution.copy(name = houseSpellings[contribution.name] ?: contribution.name)
 }
 
 private val ASTERIX_LE_GAULOIS = EditionId.new()
