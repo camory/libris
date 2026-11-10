@@ -527,6 +527,24 @@ describe("EditionPageView", () => {
       }),
     ).toBeNull();
   });
+
+  it("shows the form in place of the card on the pencil", async () => {
+    // Given
+    const screen = await pageOf(asterixWithIsbn);
+
+    // When
+    await tapPencil(screen);
+
+    // Then
+    expect(
+      screen.getByRole<HTMLInputElement>("textbox", { name: "Titre" }).value,
+    ).toBe("Astérix le Gaulois");
+    expect(screen.getByText("9782012101333")).toBeDefined();
+    expect(
+      screen.getByRole("button", { name: "Annuler les modifications" }),
+    ).toBeDefined();
+    expect(screen.queryByRole("button", { name: "Modifier" })).toBeNull();
+  });
 });
 
 function seen(wrapper: ReturnType<typeof mountEditionPageView>) {
@@ -541,6 +559,17 @@ async function routerOn(...paths: string[]) {
   for (const path of paths) await router.push(path);
   await router.isReady();
   return router;
+}
+
+async function pageOf(book: Book) {
+  const wrapper = mountEditionPageView({ outcome: "found", book }, book.id);
+  await flushPromises();
+  return within(wrapper.element as HTMLElement);
+}
+
+async function tapPencil(screen: ReturnType<typeof within>) {
+  screen.getByRole("button", { name: "Modifier" }).click();
+  await flushPromises();
 }
 
 async function askingToRemove(

@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { CircleAlert, Pencil } from "@lucide/vue";
-import { computed, inject, watch } from "vue";
+import { CircleAlert, Pencil, X } from "@lucide/vue";
+import { computed, inject, ref, watch } from "vue";
 import { useI18n } from "vue-i18n";
 import { useRouter } from "vue-router";
 import { catalogueApiKey } from "../../../application/CatalogueApi";
@@ -8,6 +8,7 @@ import { copiesApiKey } from "../../../application/CopiesApi";
 import { useFindCatalogueEdition } from "../../../application/useFindCatalogueEdition";
 import { useRemoveCopy } from "../../../application/useRemoveCopy";
 import type { CoverCandidate } from "../../../domain/Cover";
+import EditionForm from "../../components/EditionForm.vue";
 import HeldEditionCardSkeleton from "../../components/HeldEditionCardSkeleton.vue";
 import IconButton from "../../components/IconButton.vue";
 import SourceEditionCard from "../../components/SourceEditionCard.vue";
@@ -19,6 +20,7 @@ const router = useRouter();
 const { state, find, refresh } = useFindCatalogueEdition(
   inject(catalogueApiKey)!,
 );
+const editing = ref(false);
 let removedId: string | null = null;
 const { state: removal, remove } = useRemoveCopy(
   inject(copiesApiKey)!,
@@ -77,6 +79,25 @@ const failure = computed(() =>
 <template>
   <main class="mx-auto w-full max-w-120 px-5 pt-5 pb-5">
     <HeldEditionCardSkeleton v-if="state.status === 'loading'" />
+    <EditionForm
+      v-else-if="state.status === 'found' && editing && state.book.isbn13"
+      :isbn13="state.book.isbn13"
+      :edition="state.book"
+      :copies="state.book.copies"
+      :covers="covers"
+      held
+      action="save"
+      :adding="false"
+      :failed="false"
+      :series-names="null"
+      :author-names="null"
+    >
+      <template #corner>
+        <IconButton :label="t('isbn.cancelEdit')">
+          <X :size="22" class="shrink-0" />
+        </IconButton>
+      </template>
+    </EditionForm>
     <SourceEditionCard
       v-else-if="state.status === 'found'"
       :edition="state.book"
@@ -89,7 +110,7 @@ const failure = computed(() =>
       @remove="removeCopy"
     >
       <template v-if="state.book.isbn13" #corner>
-        <IconButton :label="t('isbn.edit')">
+        <IconButton :label="t('isbn.edit')" @click="editing = true">
           <Pencil :size="22" class="shrink-0" />
         </IconButton>
       </template>

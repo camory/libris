@@ -2,6 +2,7 @@
 import { CircleAlert } from "@lucide/vue";
 import { computed, nextTick, reactive, ref, useId } from "vue";
 import { useI18n } from "vue-i18n";
+import type { Book } from "../../domain/Book";
 import type { Copy } from "../../domain/Copy";
 import type { CoverCandidate } from "../../domain/Cover";
 import {
@@ -31,7 +32,7 @@ import SuggestionList from "./SuggestionList.vue";
 
 const props = defineProps<{
   isbn13: string;
-  edition?: SourceEdition;
+  edition?: SourceEdition | Book;
   copies: Copy[];
   covers: CoverCandidate[];
   held: boolean;
