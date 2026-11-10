@@ -67,7 +67,7 @@ describe("Held edition edit", () => {
     window.history.replaceState(null, "", "/");
   });
 
-  it.skip("S1 A held ISBN with none of the reader's copies shows the pencil, none of the reader's copies", async () => {
+  it("S1 A held ISBN with none of the reader's copies shows the pencil, none of the reader's copies", async () => {
     // Given
     const screen = open("/isbn", { isbn: theHouseHolds(onePiece2, []) });
 
