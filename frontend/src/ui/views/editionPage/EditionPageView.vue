@@ -24,7 +24,7 @@ const props = defineProps<{ id: string }>();
 
 const { t } = useI18n();
 const router = useRouter();
-const { state, find, refresh } = useFindCatalogueEdition(
+const { state, find, refresh, show } = useFindCatalogueEdition(
   inject(catalogueApiKey)!,
 );
 const { names: seriesNames, list: listSeriesNames } = useListSeriesNames(
@@ -81,7 +81,9 @@ function edit() {
 
 async function saveEdits(edition: SourceEdition) {
   await save(props.id, edition);
-  if (saveState.value.status === "saved") editing.value = false;
+  if (saveState.value.status !== "saved") return;
+  show(saveState.value.book);
+  editing.value = false;
 }
 
 watch(

@@ -739,6 +739,24 @@ describe("EditionPageView", () => {
     expect(screen.queryByRole("button", { name: "Enregistrer" })).toBeNull();
     expect(screen.getByRole("button", { name: "Modifier" })).toBeDefined();
   });
+
+  it("shows the card as Libris answered the save", async () => {
+    // Given
+    const screen = await pageOf(asterixWithIsbn, {
+      editionsApi: new FakeEditionsApi({
+        outcome: "saved",
+        book: { ...asterixWithIsbn, subtitle: "Une aventure d'Astérix" },
+      }),
+    });
+    await tapPencil(screen);
+    await typeTitle(screen, "Astérix le gaulois");
+
+    // When
+    await tapSave(screen);
+
+    // Then
+    expect(screen.getByText("Une aventure d'Astérix")).toBeDefined();
+  });
 });
 
 function seen(wrapper: ReturnType<typeof mountEditionPageView>) {
