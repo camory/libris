@@ -34,6 +34,7 @@ const { names: authorNames, list: listAuthorNames } = useListAuthorNames(
 );
 const editing = ref(false);
 const { state: saveState, save } = useSaveEdition(inject(editionsApiKey)!);
+const saving = computed(() => saveState.value.status === "saving");
 let removedId: string | null = null;
 const { state: removal, remove } = useRemoveCopy(
   inject(copiesApiKey)!,
@@ -109,7 +110,7 @@ const failure = computed(() =>
         :covers="covers"
         held
         action="save"
-        :adding="saveState.status === 'saving'"
+        :adding="saving"
         :failed="false"
         :series-names="seriesNames"
         :author-names="authorNames"
@@ -118,7 +119,7 @@ const failure = computed(() =>
         <template #corner>
           <IconButton
             :label="t('isbn.cancelEdit')"
-            :disabled="saveState.status === 'saving'"
+            :disabled="saving"
             @click="editing = false"
           >
             <X :size="22" class="shrink-0" />
