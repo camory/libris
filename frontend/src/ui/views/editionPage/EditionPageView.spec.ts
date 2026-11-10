@@ -757,6 +757,28 @@ describe("EditionPageView", () => {
     // Then
     expect(screen.getByText("Une aventure d'Astérix")).toBeDefined();
   });
+
+  it("says the save failed when Libris refuses it", async () => {
+    // Given
+    const screen = await pageOf(asterixWithIsbn, {
+      editionsApi: new FakeEditionsApi({
+        outcome: "problem",
+        type: "/problems/validation",
+      }),
+    });
+    await tapPencil(screen);
+    await typeTitle(screen, "Astérix le gaulois");
+
+    // When
+    await tapSave(screen);
+
+    // Then
+    expect(
+      screen.getByText(
+        "Erreur lors de l'enregistrement, veuillez réessayer plus tard.",
+      ),
+    ).toBeDefined();
+  });
 });
 
 function seen(wrapper: ReturnType<typeof mountEditionPageView>) {

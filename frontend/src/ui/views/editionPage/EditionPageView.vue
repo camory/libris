@@ -119,7 +119,7 @@ const failure = computed(() =>
         held
         action="save"
         :adding="saving"
-        :failed="false"
+        :failed="saveState.status === 'notSaved'"
         :series-names="seriesNames"
         :author-names="authorNames"
         @add="saveEdits"
