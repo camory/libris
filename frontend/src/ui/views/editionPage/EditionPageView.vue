@@ -3,10 +3,12 @@ import { CircleAlert, Pencil, X } from "@lucide/vue";
 import { computed, inject, ref, watch } from "vue";
 import { useI18n } from "vue-i18n";
 import { useRouter } from "vue-router";
+import { authorsApiKey } from "../../../application/AuthorsApi";
 import { catalogueApiKey } from "../../../application/CatalogueApi";
 import { copiesApiKey } from "../../../application/CopiesApi";
 import { seriesApiKey } from "../../../application/SeriesApi";
 import { useFindCatalogueEdition } from "../../../application/useFindCatalogueEdition";
+import { useListAuthorNames } from "../../../application/useListAuthorNames";
 import { useListSeriesNames } from "../../../application/useListSeriesNames";
 import { useRemoveCopy } from "../../../application/useRemoveCopy";
 import type { CoverCandidate } from "../../../domain/Cover";
@@ -24,6 +26,9 @@ const { state, find, refresh } = useFindCatalogueEdition(
 );
 const { names: seriesNames, list: listSeriesNames } = useListSeriesNames(
   inject(seriesApiKey)!,
+);
+const { names: authorNames, list: listAuthorNames } = useListAuthorNames(
+  inject(authorsApiKey)!,
 );
 const editing = ref(false);
 let removedId: string | null = null;
@@ -66,6 +71,7 @@ async function removeCopy(copyId: string) {
 function edit() {
   editing.value = true;
   void listSeriesNames();
+  void listAuthorNames();
 }
 
 watch(
@@ -103,7 +109,7 @@ const failure = computed(() =>
         :adding="false"
         :failed="false"
         :series-names="seriesNames"
-        :author-names="null"
+        :author-names="authorNames"
       >
         <template #corner>
           <IconButton :label="t('isbn.cancelEdit')">

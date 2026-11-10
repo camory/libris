@@ -575,6 +575,21 @@ describe("EditionPageView", () => {
     // Then
     expect(screen.getByText("Existante")).toBeDefined();
   });
+
+  it("says Existant for an author of the house", async () => {
+    // Given
+    const screen = await pageOf(
+      asterixWithIsbn,
+      undefined,
+      new FakeAuthorsApi(["René Goscinny"]),
+    );
+
+    // When
+    await tapPencil(screen);
+
+    // Then
+    expect(screen.getAllByText("Existant")).toHaveLength(1);
+  });
 });
 
 function seen(wrapper: ReturnType<typeof mountEditionPageView>) {
@@ -591,13 +606,18 @@ async function routerOn(...paths: string[]) {
   return router;
 }
 
-async function pageOf(book: Book, seriesApi?: SeriesApi) {
+async function pageOf(
+  book: Book,
+  seriesApi?: SeriesApi,
+  authorsApi?: AuthorsApi,
+) {
   const wrapper = mountEditionPageView(
     { outcome: "found", book },
     book.id,
     undefined,
     undefined,
     seriesApi,
+    authorsApi,
   );
   await flushPromises();
   return within(wrapper.element as HTMLElement);
