@@ -24,6 +24,21 @@ data class NewEdition(
     require(title.isNotBlank()) { "a new edition needs a title" }
   }
 
+  fun toEditionDetails(): EditionDetails =
+    EditionDetails(
+      kind = kind,
+      title = title,
+      subtitle = subtitle,
+      contributions = contributions,
+      series = series,
+      collection = collection,
+      publisher = publisher,
+      publicationYear = publicationYear,
+      language = language,
+      pageCount = pageCount,
+      summary = summary,
+    )
+
   companion object {
     @Suppress("LongParameterList")
     fun of(
