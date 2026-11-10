@@ -100,7 +100,7 @@ describe("Held edition edit", () => {
     expect(screen.queryByRole("button", { name: "Modifier" })).toBeNull();
   });
 
-  it.skip("S2 A held ISBN is added as edited", async () => {
+  it("S2 A held ISBN is added as edited", async () => {
     // Given
     const add = librisAdds(on(lea.defaultBookshelf));
     const screen = open("/isbn", { isbn: theHouseHolds(onePiece2, []), add });
