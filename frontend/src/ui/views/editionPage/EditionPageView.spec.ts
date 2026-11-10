@@ -590,6 +590,23 @@ describe("EditionPageView", () => {
     // Then
     expect(screen.getAllByText("Existant")).toHaveLength(1);
   });
+
+  it("shows the stored cover in the form with no dot", async () => {
+    // Given
+    const screen = await pageOf(romanceDawnWithIsbn);
+
+    // When
+    await tapPencil(screen);
+
+    // Then
+    const cover = screen.getByRole("img", {
+      name: "Couverture de Romance dawn",
+    });
+    expect(cover.getAttribute("src")).toBe(romanceDawn.coverUrl);
+    expect(screen.queryAllByRole("button", { name: /^Couverture / })).toEqual(
+      [],
+    );
+  });
 });
 
 function seen(wrapper: ReturnType<typeof mountEditionPageView>) {
@@ -694,6 +711,11 @@ const asterixWithIsbnOnlyViewed: Book = {
     ...copy,
     bookshelf: { ...copy.bookshelf, role: "VIEWER" },
   })),
+};
+
+const romanceDawnWithIsbn: Book = {
+  ...romanceDawn,
+  isbn13: "9782723488525",
 };
 
 const noSuchOuvrage: FindBookAnswer = {
