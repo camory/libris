@@ -261,10 +261,7 @@ centre, so that three fill a cover's 96 of width. The dot is drawn 6 under
 the picture: its 44 of height reaches 12 over the picture's edge and 12
 over what follows.
 
-Every control is at least 44 tall and wide, the dot alone 32 wide. On
-the lookup screen, reachable one-handed at the bottom half of the screen,
-the field, its button and the tab bar are the lowest things on the page,
-the title is the highest.
+Every control is at least 44 tall and wide, the dot alone 32 wide.
 
 ### U05 — Feedback: message, skeleton, empty state
 A screen answers under the control that asked, in the place the answer will
