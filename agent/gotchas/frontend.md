@@ -185,9 +185,23 @@ Read whole by a run that changes `frontend/`, after `every-run.md`.
   Every client maps a copy with `copyOf` (`infra/api/copyOf.ts`, beside
   its `CopyResponse`), and its spec checks one with
   `copiesWithIdAndReaderBookshelf` from `fixture/EditionShapes.ts`.
-  `FakeCatalogueApi`'s find takes a single answer, given at every find, or
+  `FakeCatalogueApi`'s browse answers its pages in order, the last one
+  repeating, and its find takes a single answer, given at every find, or
   a list answered in order, whose last answer then repeats: the page
   before a removal, then after it.
+- The search is `SearchApi.search(query, after)` (`application/SearchApi.ts`,
+  `searchApiKey`), answering a `SearchPage`, a `BookPage` with `near`.
+  `FakeSearchApi` answers by query, `{ goscinny: [page, …] }`, each query
+  its answers in order, a query with none left rejecting; an answer may be
+  an `Error` or a promise the test settles later; `asked` holds each
+  `{ query, after }`. The port has no client and no place in `LibrisPorts`
+  yet: `SearchScenarios`' `open()` provides it through `app.provide`, a
+  `FakeSearchApi()` by default. The task that pins `v0.19.0` writes its
+  client over `GET /books` with `q`, adds `searchApi` to `LibrisPorts`, and
+  moves that `open()`'s `app.provide` into its ports. S6 fakes `setTimeout`
+  and `clearTimeout` alone and goes back to real timers before it waits,
+  which drops a timer still pending: the search key and the cross act
+  with no timer.
 - The series' names are `SeriesApi.names()`, and `FakeSeriesApi` takes them
   third, `string[] | Error`, `[]` by default; a scenario that varies them
   passes `undefined` second to keep the find's default.

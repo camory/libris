@@ -69,7 +69,7 @@ order of the catalogue; *ast* answering them; *uderzo serpe* answering
 d'or*, its title typed whole, apostrophe included, answering it; *one
 piece 2* answering tome 2 and neither tome 12 nor tome 20; an edition
 whose copies sit on another reader's bookshelf alone not answered to its
-title; frontend scenario test over the catalogue's fake, the rows the
+title; frontend scenario test over the catalogue's fakes, the rows the
 answer's, in its order.
 
 **S2 A whole ISBN finds its edition** · backend
@@ -116,9 +116,10 @@ words are *Aucun ouvrage ne correspond à « asterik ».*, the query between
 guillemets as sent, then *Les plus proches :* above the near rows. Proof:
 backend scenario test over HTTP, two cases: *asterik* answering the
 *Astérix* albums, said to be near; *gaston* answering none, not said to
-be near; frontend scenario test over the catalogue's fake, two cases: the
-fake answering near rows to *asterik*, the sentence, *Les plus proches :*
-and the rows; the fake answering none to *gaston*, the sentence alone.
+be near; frontend scenario test over the catalogue's fakes, two cases:
+the search's fake answering near rows to *asterik*, the sentence, *Les
+plus proches :* and the rows; the search's fake answering none to
+*gaston*, the sentence alone.
 
 **S4 Results come in pages** · frontend, backend
 
@@ -139,7 +140,7 @@ The pages are the catalogue's (catalogue S2): fifty editions, and an
 each said to be near. Proof: backend scenario test over HTTP with
 fifty-one editions in which the words are found, the first page naming a
 next and the second none; frontend scenario test over the catalogue's
-fake with two pages of a search, the second asked with the same query
+fakes with two pages of a search, the second asked with the same query
 and the first page's next.
 
 **S5 An edition is found by what it holds now** · backend
@@ -182,7 +183,7 @@ spaces at the ends not counted, ask nothing: the whole catalogue shows,
 as without a search. The cross empties the box and shows the whole
 catalogue at once. While Libris answers, the rows shown stay, with no
 skeleton, until the answer replaces them. Proof: frontend scenario test
-over the catalogue's fake with the clock faked, one per case: a word
+over the catalogue's fakes with the clock faked, one per case: a word
 typed at speed then a pause, one request; the search key, a request with
 no pause; one character, the whole catalogue; the cross, the whole
 catalogue.
