@@ -15,6 +15,7 @@ private const val RANKED =
     WITH ranked AS NOT MATERIALIZED (
         SELECT edition.id,
                edition.isbn13,
+               edition.search_vector,
                COALESCE(series.name, edition.title) COLLATE ignoring_case_and_accents AS name,
                edition.volume_number,
                edition.title COLLATE ignoring_case_and_accents AS title
@@ -58,12 +59,22 @@ private const val FIND_PAGE =
     $IN_CATALOGUE_ORDER
     """
 
-private const val FIND_SEARCHED_PAGE =
+private const val FIND_PAGE_OF_ISBN =
   """
     $RANKED
     SELECT ranked.id
     FROM ranked
     WHERE ranked.isbn13 = :isbn13
+      AND $HELD_BY_READER_AFTER
+    $IN_CATALOGUE_ORDER
+    """
+
+private const val FIND_PAGE_OF_WORDS =
+  """
+    $RANKED
+    SELECT ranked.id
+    FROM ranked
+    WHERE ranked.search_vector @@ PLAINTO_TSQUERY('words_ignoring_case_and_accents', :words)
       AND $HELD_BY_READER_AFTER
     $IN_CATALOGUE_ORDER
     """
@@ -87,7 +98,7 @@ class JdbcCatalogueEditions(private val jdbcClient: JdbcClient) : CatalogueEditi
     pageOf(jdbcClient.sql(FIND_PAGE), readerId, after, size)
 
   override fun findPage(readerId: ReaderId, query: CatalogueQuery, after: EditionId?, size: Int): EditionIdPage =
-    pageOf(jdbcClient.sql(FIND_SEARCHED_PAGE).param("isbn13", query.isbn?.digits), readerId, after, size)
+    pageOf(searchOf(query), readerId, after, size)
 
   override fun findFirstOfEachSeries(readerId: ReaderId): Set<EditionId> =
     jdbcClient
@@ -95,6 +106,11 @@ class JdbcCatalogueEditions(private val jdbcClient: JdbcClient) : CatalogueEditi
       .param("readerId", readerId.value)
       .query { rs, _ -> EditionId(rs.getObject("id", UUID::class.java)) }
       .set()
+
+  private fun searchOf(query: CatalogueQuery): StatementSpec =
+    query.isbn
+      ?.let { jdbcClient.sql(FIND_PAGE_OF_ISBN).param("isbn13", it.digits) }
+      ?: jdbcClient.sql(FIND_PAGE_OF_WORDS).param("words", query.text)
 
   private fun pageOf(statement: StatementSpec, readerId: ReaderId, after: EditionId?, size: Int): EditionIdPage {
     val following = statement

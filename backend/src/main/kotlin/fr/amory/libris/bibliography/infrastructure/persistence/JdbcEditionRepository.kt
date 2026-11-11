@@ -20,9 +20,9 @@ import java.util.UUID
 private const val INSERT_EDITION =
   """
     INSERT INTO edition (id, isbn13, kind, title, subtitle, series_id, volume_number, collection,
-                         publisher, publication_year, language, page_count, summary, cover_name)
+                         publisher, publication_year, language, page_count, summary, cover_name, search_text)
     VALUES (:id, :isbn13, :kind, :title, :subtitle, :seriesId, :volumeNumber, :collection,
-            :publisher, :publicationYear, :language, :pageCount, :summary, :coverName)
+            :publisher, :publicationYear, :language, :pageCount, :summary, :coverName, :title)
     """
 
 private const val UPDATE_EDITION =
