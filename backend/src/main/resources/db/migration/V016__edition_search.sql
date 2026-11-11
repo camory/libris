@@ -7,7 +7,12 @@ ALTER TEXT SEARCH CONFIGURATION words_ignoring_case_and_accents
 ALTER TABLE edition ADD COLUMN search_text text;
 
 UPDATE edition
-SET search_text = CONCAT_WS(' ', edition.title, edition.subtitle);
+SET search_text = CONCAT_WS(
+      ' ',
+      edition.title,
+      edition.subtitle,
+      (SELECT series.name FROM series WHERE series.id = edition.series_id)
+    );
 
 ALTER TABLE edition ALTER COLUMN search_text SET NOT NULL;
 

@@ -23,7 +23,7 @@ private const val INSERT_EDITION =
                          publisher, publication_year, language, page_count, summary, cover_name, search_text)
     VALUES (:id, :isbn13, :kind, :title, :subtitle, :seriesId, :volumeNumber, :collection,
             :publisher, :publicationYear, :language, :pageCount, :summary, :coverName,
-            CONCAT_WS(' ', :title, CAST(:subtitle AS text)))
+            CONCAT_WS(' ', :title, CAST(:subtitle AS text), (SELECT series.name FROM series WHERE series.id = :seriesId)))
     """
 
 private const val UPDATE_EDITION =

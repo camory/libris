@@ -350,6 +350,19 @@ class JdbcCatalogueEditionsTest @Autowired constructor(
   }
 
   @Test
+  fun `a word of the series' name finds its edition`() {
+    // Given
+    val lesCigares = heldOn(leasBookshelf, edition("Les cigares du pharaon", "Tintin", 4))
+    heldOn(leasBookshelf, edition("Pierre et le loup"))
+
+    // When
+    val page = catalogueEditions.findPage(lea.id, CatalogueQuery("tintin"), null, PAGE_SIZE)
+
+    // Then
+    page shouldBe EditionIdPage(listOf(lesCigares.id), null)
+  }
+
+  @Test
   fun `the first of each series is its first tome`() {
     // Given
     heldOn(leasBookshelf, edition("Aux prises avec Baggy", "One piece", 2))
