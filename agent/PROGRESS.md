@@ -194,3 +194,20 @@ Format:
   on that test, and was finished by a second run.
 - Left over: `update` writing `search_text` (T166), the tome (T167), near
   matches (T168), the frontend's pin (T169).
+
+## 2026-11-11 — T165 Words find an added edition — reworked
+- Did: `V016`'s configuration also puts `numword`, `numhword` and
+  `hword_numpart` through `unaccent, simple`, so a word joining letters and
+  digits is found ignoring accents; two slice cases prove it.
+- Decided: the reviewer's verdict of 2026-11-11 amended nothing; its
+  blocking finding was the task line's "ignoring accents" and D03, which the
+  brief's *Files* line had narrowed to three token types. Its suggestion, a
+  refactor of 0dd2c2cc in a commit of its own, concerns pushed history,
+  which is not rewritten: nothing to apply on the branch.
+- Decided: two cases, not one. `pokemon` finding *Pokémon2* proves
+  `numword`; `rouge-pokemon2` finding *Rouge-Pokémon2* reds unless both
+  `numhword` and `hword_numpart` are mapped (each alone run, red); with the
+  digits in the first part, `numhword` alone was enough (gotcha).
+- Deviations from the brief: the configuration names six token types where
+  the brief's *Files* named three, as the review asks.
+- Left over: nothing new; T166 to T169 as before.

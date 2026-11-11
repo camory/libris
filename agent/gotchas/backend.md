@@ -644,6 +644,19 @@ Read whole by a run that changes `backend/`, after `every-run.md`.
   migration fails on `duplicate key value violates unique constraint
   "pg_ts_config_cfgname_index"`; drop it by hand through `jshell` (seen
   2026-11-11).
+- PostgreSQL's default parser reads a word of letters as `word`
+  (`asciiword` when ASCII alone) and a word joining letters and digits as
+  `numword` (`Pokémon2`, `Été85`), hyphenated ones as `hword`/`numhword`
+  with their parts `hword_part`/`hword_numpart`/`hword_asciipart`; a
+  mapping that leaves out a type keeps that type's accents, so
+  `words_ignoring_case_and_accents` puts `word`, `numword`, `numhword`,
+  `hword`, `hword_part` and `hword_numpart` through `unaccent, simple`
+  (T165's review). Accented letters never form a `host`, `email` or `file`
+  token (`Dé.Slump` reads `de`, `slump`). `ts_debug`'s `lexemes` shows
+  `unaccent`'s output alone (`Café` reads `{Cafe}`); `TO_TSVECTOR` is the
+  truth (`'cafe'`). A query's word that is a prefix of the whole
+  hyphenated word also matches it, so a case proving `hword_numpart` puts
+  the digits in a part after the first (probed 2026-11-11).
 - `placing` is a reserved word of PostgreSQL: as a table alias it is a
   syntax error (`syntax error at or near "placing"`).
 - A generated column and an index expression take only `IMMUTABLE`
