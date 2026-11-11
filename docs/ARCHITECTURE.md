@@ -133,17 +133,23 @@ order of the catalogue, not ranked, over:
   subtitle, series name, author names, and tag names once it holds tags.
   The domain never sees it.
 - `edition.search_vector`, a generated column derived from `search_text` and
-  indexed with GIN, using one custom text search configuration: `unaccent`,
-  then plain tokens, so that "Astérix", "asterix" and a romanised manga
-  title match alike; each word of a query is a prefix, every one required.
-  No French stemming: on the house's titles it over-matched, *petit*
-  finding *Peter Pan*, and the near matches cover what it would catch, a
-  plural where the title has the singular.
+  the volume number, indexed with GIN, using one custom text search
+  configuration: `unaccent`, then plain tokens, so that "Astérix",
+  "asterix" and a romanised manga title match alike; each word of a query
+  is a prefix, every one required. No French stemming: on the house's
+  titles it over-matched, *petit* finding *Peter Pan*, and the near
+  matches cover what it would catch, a plural where the title has the
+  singular.
 - a `pg_trgm` index on `search_text` for the near matches, queried only
   when the words find nothing.
-- the edition's volume number, read beside `search_text` for a word of
-  digits alone, which also finds the tome of that number exactly; and its
-  ISBN, which alone answers a query that reads as a whole ISBN.
+- the edition's volume number, held in `search_vector` as one exact token,
+  `#` then the number (`#2`), never in `search_text`: a word of digits alone
+  is asked as a prefix or as that token, so it also finds the tome of that
+  number exactly, `02` included, in the one query the GIN index serves; no
+  typed word reads as that token, the parser dropping the `#`. Asked row by
+  row beside the index, a word cost 26–41 ms on 10 000 editions, against
+  0.3 ms through it (measured 2026-11-12, PRD §5).
+- its ISBN, which alone answers a query that reads as a whole ISBN.
 
 The search's migrations create the `unaccent` and `pg_trgm` extensions; both
 are trusted, so the application user, which owns the database, needs no
