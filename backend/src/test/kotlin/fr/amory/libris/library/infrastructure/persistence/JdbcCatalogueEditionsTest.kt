@@ -560,6 +560,18 @@ class JdbcCatalogueEditionsTest @Autowired constructor(
   }
 
   @Test
+  fun `tome is a word like any other`() {
+    // Given
+    heldOn(leasBookshelf, edition("Aux prises avec Baggy et ses hommes", "One piece", 2))
+
+    // When
+    val page = catalogueEditions.findPage(lea.id, CatalogueQuery("one piece tome 2"), null, PAGE_SIZE)
+
+    // Then
+    page shouldBe EditionIdPage(emptyList(), null)
+  }
+
+  @Test
   fun `an edition saved with another title is found by its new title`() {
     // Given
     val romanceDawn = heldOn(leasBookshelf, edition("Romance dawn"))
