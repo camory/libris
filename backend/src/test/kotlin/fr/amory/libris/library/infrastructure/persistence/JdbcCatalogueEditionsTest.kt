@@ -405,6 +405,19 @@ class JdbcCatalogueEditionsTest @Autowired constructor(
   }
 
   @Test
+  fun `a hyphenated word of letters and digits is found ignoring accents`() {
+    // Given
+    val rougePokemon2 = heldOn(leasBookshelf, edition("Rouge-Pokémon2"))
+    heldOn(leasBookshelf, edition("Pierre et le loup"))
+
+    // When
+    val page = catalogueEditions.findPage(lea.id, CatalogueQuery("rouge-pokemon2"), null, PAGE_SIZE)
+
+    // Then
+    page shouldBe EditionIdPage(listOf(rougePokemon2.id), null)
+  }
+
+  @Test
   fun `a word is found when it begins a word`() {
     // Given
     val pierreEtLeLoup = heldOn(leasBookshelf, edition("Pierre et le loup"))
