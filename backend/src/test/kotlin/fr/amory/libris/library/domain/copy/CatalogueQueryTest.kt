@@ -29,4 +29,10 @@ class CatalogueQueryTest {
     // Given / When / Then
     CatalogueQuery.of("9782012101340")?.isbn shouldBe Isbn.of("9782012101340")
   }
+
+  @Test
+  fun `an ISBN with hyphens and spaces reads as its ISBN`() {
+    // Given / When / Then
+    CatalogueQuery.of("978-2-01 210134-0")?.isbn shouldBe Isbn.of("9782012101340")
+  }
 }
