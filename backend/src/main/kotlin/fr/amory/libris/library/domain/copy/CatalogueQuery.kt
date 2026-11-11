@@ -4,6 +4,6 @@ package fr.amory.libris.library.domain.copy
 value class CatalogueQuery(val text: String) {
   companion object {
     fun of(text: String): CatalogueQuery? =
-      text.takeIf { it.isNotEmpty() }?.let { CatalogueQuery(it) }
+      text.takeIf { it.isNotBlank() }?.let { CatalogueQuery(it) }
   }
 }

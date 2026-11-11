@@ -9,4 +9,10 @@ class CatalogueQueryTest {
     // Given / When / Then
     CatalogueQuery.of("") shouldBe null
   }
+
+  @Test
+  fun `a blank text is no query`() {
+    // Given / When / Then
+    CatalogueQuery.of("   ") shouldBe null
+  }
 }
