@@ -418,6 +418,19 @@ class JdbcCatalogueEditionsTest @Autowired constructor(
   }
 
   @Test
+  fun `words are found in any order`() {
+    // Given
+    val pierreEtLeLoup = heldOn(leasBookshelf, edition("Pierre et le loup"))
+    heldOn(leasBookshelf, edition("La serpe d'or"))
+
+    // When
+    val page = catalogueEditions.findPage(lea.id, CatalogueQuery("loup pierre"), null, PAGE_SIZE)
+
+    // Then
+    page shouldBe EditionIdPage(listOf(pierreEtLeLoup.id), null)
+  }
+
+  @Test
   fun `the first of each series is its first tome`() {
     // Given
     heldOn(leasBookshelf, edition("Aux prises avec Baggy", "One piece", 2))
