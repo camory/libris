@@ -135,3 +135,12 @@ Format:
   did.
 - Left over: the backlog is empty; the next feature needs its spec,
   written with Tophe.
+
+## 2026-11-11 — T164 The search on v0.19.0, a whole ISBN — handoff
+- Done: steps 1 to 12, one commit each. Baseline `tests="50"` in `ApiContractTest`'s XML, read on the brief's commit before step 1.
+- Next: step 13 (`BrowseCatalogueTest`, the search case; the fake's overload returns `answer` but records nothing yet), then step 14.
+- Decided: `JdbcCatalogueEditions` builds `FIND_PAGE` and `FIND_SEARCHED_PAGE` from three `const` parts (`RANKED`, `HELD_BY_READER_AFTER`, `IN_CATALOGUE_ORDER`) and one `pageOf(statement, …)`; `ranked` gains `edition.isbn13`. The parts sit above their users: a `const` template cannot reference a later `const` (`Variable 'RANKED' must be initialized`).
+- Deviation: step 3 added `near = false` to all three `CataloguePage`s of `BrowseCatalogueTest`, not the first alone (each one builds the page, so all three must compile).
+- Guard 8: `isbn` read only from a text of thirteen digits (`takeIf { Regex("[0-9]{13}").matches(it) }`) → red `Expected Isbn(digits=9782012101340) but actual was null`. Guard 9: the same mutation → red on the ISBN-10 case, same message.
+- Guard 11: `HELD_BY_READER_AFTER` swapped out of `FIND_SEARCHED_PAGE` (the semi-join, and with it the keyset, which no search case reaches) → red `editionIds: Unexpected elements from index 0`. Guard 12: `IS NOT DISTINCT FROM :isbn13` → red `expected:<[]> but was:<[EditionId(…)]>`.
+- Red at handoff: only the four cases of `SearchScenarios > S2` (the cited scenario, greened by step 13): each answers the whole catalogue.
