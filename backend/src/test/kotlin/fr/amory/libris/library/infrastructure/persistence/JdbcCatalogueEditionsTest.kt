@@ -313,7 +313,7 @@ class JdbcCatalogueEditionsTest @Autowired constructor(
   }
 
   @Test
-  fun `a query that reads as no ISBN finds no edition, for now`() {
+  fun `twelve digits of an ISBN find no edition`() {
     // Given
     heldOn(leasBookshelf, edition("Pierre et le loup"))
     heldOn(leasBookshelf, edition("La serpe d'or", "Astérix", 2, isbn = isbnOf(LA_SERPE_D_OR)))
