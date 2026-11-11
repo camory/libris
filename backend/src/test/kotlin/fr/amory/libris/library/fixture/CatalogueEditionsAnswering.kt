@@ -2,6 +2,7 @@ package fr.amory.libris.library.fixture
 
 import fr.amory.libris.bibliography.domain.edition.EditionId
 import fr.amory.libris.library.domain.copy.CatalogueEditions
+import fr.amory.libris.library.domain.copy.CatalogueQuery
 import fr.amory.libris.library.domain.copy.EditionIdPage
 import fr.amory.libris.library.domain.reader.ReaderId
 
@@ -16,6 +17,9 @@ class CatalogueEditionsAnswering(
     pagesAsked += Triple(readerId, after, size)
     return answer
   }
+
+  override fun findPage(readerId: ReaderId, query: CatalogueQuery, after: EditionId?, size: Int): EditionIdPage =
+    answer
 
   override fun findFirstOfEachSeries(readerId: ReaderId): Set<EditionId> = firstOfEachSeries
 }
