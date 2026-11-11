@@ -355,4 +355,16 @@ catalogue, the keyboard open.
 
 ## Tasks
 
-Filled by the planner.
+- T164 — S2, the backend on `v0.19.0` — backend
+- T165 — S5 an edition added, S4 — backend
+- T166 — S5 an edition whose title a reader changed — backend
+- T167 — S1 — backend
+- T168 — S3 — backend
+- T169 — S1, S10, the frontend on `v0.19.0` — frontend
+- T170 — S6 but the cross — frontend
+- T171 — S6 the cross — frontend
+- T172 — S3 — frontend
+- T173 — S4 — frontend
+- T174 — S8 — frontend
+- T175 — S9 — frontend
+- T176 — S7 — frontend
