@@ -627,14 +627,16 @@ Read whole by a run that changes `backend/`, after `every-run.md`.
   alone (`~ '^[0-9]+$'`, inside a `CASE` so no other lexeme is cast), when
   `volume_number` equals it cast to `numeric` (`02` is tome 2; `integer`
   overflows on twelve digits, `bigint` on 24, a `500`); the comparison
-  ends `IS TRUE`, since an edition without a tome answers `NULL` there,
-  which `BOOL_AND` skips. Never the text to `TO_TSQUERY`, whose syntax
-  `&`, `!`, `:` and parentheses break (`syntax error in tsquery`). A query
-  of no word gives `BOOL_AND` no row, `NULL`, which matches nothing. The
-  clause is asked row by row, so the GIN index no longer serves it. A
-  `const` string
-  template cannot reference a `const` declared below it (`Variable 'RANKED'
-  must be initialized`), so the parts sit above their users. The fake
+  ends `IS TRUE`: a lexeme of letters, whose `CASE` gives `NULL`, or an
+  edition without a tome answers `NULL` there, and `BOOL_AND` skips a
+  `NULL`, so without it a word found nowhere counts as found (*serpe loup*
+  answers *Pierre et le loup*). Never the text to `TO_TSQUERY`, whose
+  syntax `&`, `!`, `:` and parentheses break (`syntax error in tsquery`).
+  A query of no word gives `BOOL_AND` no row, `NULL`, which matches
+  nothing. The clause is asked row by row, so the GIN index no longer
+  serves it. A `const` string template cannot reference a `const`
+  declared below it (`Variable 'RANKED' must be initialized`), so the
+  parts sit above their users. The fake
   `CatalogueEditionsAnswering` records a catalogue page as `asked` and a
   search as `searched` (`SearchAsked`), both answering the one `answer`.
 - `edition.search_text` (`V016`, `NOT NULL`) is written by
@@ -667,9 +669,9 @@ Read whole by a run that changes `backend/`, after `every-run.md`.
   truth (`'cafe'`). A query's word that is a prefix of the whole
   hyphenated word also matches it, so a case proving `hword_numpart` puts
   the digits in a part after the first (probed 2026-11-11). A word of
-  digits reads as `uint` whatever its length (`978201210134`, 24 digits)
-  and keeps its leading zeros (`02`); `n°2` reads `n` and `2` (probed
-  2026-11-11).
+  digits reads as `uint` whatever its length (twelve digits,
+  `978201210134`, or 24) and keeps its leading zeros (`02`); `n°2` reads
+  `n` and `2` (probed 2026-11-11).
 - `placing` is a reserved word of PostgreSQL: as a table alias it is a
   syntax error (`syntax error at or near "placing"`).
 - A generated column and an index expression take only `IMMUTABLE`

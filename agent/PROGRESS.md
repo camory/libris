@@ -241,9 +241,10 @@ Format:
 - Decided: the word compared as `numeric`, inside a `CASE` on
   `~ '^[0-9]+$'`: a number, so `02` is tome 2, that no length overflows,
   and a cast PostgreSQL never tries on a lexeme of letters.
-- Decided: the comparison with the volume number ends `IS TRUE`: an
-  edition without a tome answers `NULL` there, which `BOOL_AND` skips, and
-  *serpe loup* found both editions (run as an extra mutation).
+- Decided: the comparison with the volume number ends `IS TRUE`: a
+  lexeme of letters (its `CASE` gives `NULL`) or an edition without a
+  tome answers `NULL` there, which `BOOL_AND` skips; without it *serpe
+  loup* found both editions (run as an extra mutation).
 - Decided: step 4 is a guard, step 2's green already comparing numbers.
 - Deviations from the brief: none.
 - Left over: the GIN index no longer serves the words' clause, asked row
