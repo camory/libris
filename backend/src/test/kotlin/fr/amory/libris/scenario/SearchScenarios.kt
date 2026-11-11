@@ -24,7 +24,6 @@ import org.springframework.beans.factory.annotation.Autowired
 class SearchScenarios @Autowired constructor(private val libris: Libris) {
   private val lea = libris.reader("lea", "Léa")
 
-  @Disabled("search")
   @ParameterizedTest(name = "S1 Words find the editions holding them, {argumentSetName}")
   @FieldSource("WORDS")
   fun `S1 Words find the editions holding them`(words: String, titles: List<String>) {
