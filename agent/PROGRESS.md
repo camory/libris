@@ -135,3 +135,36 @@ Format:
   did.
 - Left over: the backlog is empty; the next feature needs its spec,
   written with Tophe.
+
+## 2026-11-11 — T164 The search on v0.19.0, a whole ISBN — done
+- Did: the backend pins `v0.19.0`; `GET /api/v1/books` reads `q` through
+  `CatalogueQuery.of` and answers `near`, false; a whole ISBN narrows the
+  catalogue to the reader's edition of it, any other query to none.
+- Decided: `JdbcCatalogueEditions` shares the catalogue's statement with the
+  search through three `const` parts and one `pageOf` (gotcha in
+  `backend.md`); the ranking CTE carries `edition.isbn13`.
+- Decided: the fake records a search as a `SearchAsked`, beside the
+  catalogue's `asked` triples, so step 13 also proves no catalogue page was
+  asked.
+- Decided: step 13 went red through a behaviour, not only a compile error:
+  the use case took the query unused first, which the controller passed as
+  `null`, then the call to the overload greened it.
+- Deviations from the brief: step 3 gave `near = false` to all three
+  `CataloguePage`s of `BrowseCatalogueTest`, not the first alone, since each
+  must compile. The run handed off after step 12 and was finished by a
+  second run.
+- Left over: words (T165), the saved edition's search columns (T166), the
+  tome (T167), near matches (T168), the frontend's pin (T169).
+
+## 2026-11-11 — T164 The search on v0.19.0, a whole ISBN — reworked
+- Did: `JdbcCatalogueEditionsTest`'s five top-level fixtures (`PAGE_SIZE`,
+  `LESSER_TWIN`, `GREATER_TWIN`, `LA_SERPE_D_OR`, `ASTERIX_ET_LES_GOTHS`)
+  moved below the class and its helpers, in the order the class reaches
+  them; no test changed.
+- Decided: the reviewer's verdict of 2026-11-11 amended nothing; its
+  blocking finding was the stepdown rule the brief already holds. Its
+  suggestion, a refactor of green code in a commit of its own rather than
+  inside step 10's green, concerns pushed history, which is not rewritten:
+  nothing to apply on the branch.
+- Deviations from the brief: none.
+- Left over: nothing new; T165 to T169 as before.

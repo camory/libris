@@ -145,7 +145,7 @@ class ApiContractTest @Autowired constructor(
   private val listAuthorNames: ListAuthorNames,
   private val removeCopy: RemoveCopy,
   private val saveEdition: SaveEdition) {
-  @ContracteerTest(openApiDoc = "https://raw.githubusercontent.com/camory/libris-api/v0.18.0/openapi.yaml")
+  @ContracteerTest(openApiDoc = "https://raw.githubusercontent.com/camory/libris-api/v0.19.0/openapi.yaml")
   fun `the API matches the contract`() {
     contracteerIsWelcomed()
     isbnLookupsAnswer()
@@ -189,8 +189,8 @@ class ApiContractTest @Autowired constructor(
   }
 
   private fun catalogueAnswers() {
-    given(browseCatalogue(ReaderId(eq(CONTRACTEER.id.value) ?: CONTRACTEER.id.value), any()))
-      .willReturn(CataloguePage(listOf(ASTERIX_1_HELD), null))
+    given(browseCatalogue(ReaderId(eq(CONTRACTEER.id.value) ?: CONTRACTEER.id.value), any(), any()))
+      .willReturn(CataloguePage(listOf(ASTERIX_1_HELD), null, near = false))
   }
 
   private fun coversAnswer() {

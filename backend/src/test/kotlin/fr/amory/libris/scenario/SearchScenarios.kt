@@ -42,7 +42,6 @@ class SearchScenarios @Autowired constructor(private val libris: Libris) {
     answer.near shouldBe false
   }
 
-  @Disabled("search")
   @ParameterizedTest(name = "S2 A whole ISBN finds its edition, {argumentSetName}")
   @FieldSource("ISBNS")
   fun `S2 A whole ISBN finds its edition`(isbn: String, titles: List<String>) {

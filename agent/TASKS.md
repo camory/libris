@@ -31,7 +31,7 @@ the contract (D04). The catalogue's and the series list's tests on both
 sides, and S10's frontend test, running already, stay green and guard
 every task.
 
-- [ ] T164 Backend: the search on `v0.19.0`, a whole ISBN.
+- [x] T164 Backend: the search on `v0.19.0`, a whole ISBN.
       `ApiContractTest` pins `v0.19.0`, the backend's one bump (D04). The
       catalogue's page reads the words `q` and answers `near`, false for
       now: absent, empty or blank, the catalogue as before; a query that

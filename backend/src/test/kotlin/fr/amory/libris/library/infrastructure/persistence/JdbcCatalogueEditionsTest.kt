@@ -1,12 +1,14 @@
 package fr.amory.libris.library.infrastructure.persistence
 
 import fr.amory.libris.bibliography.domain.Contributions
+import fr.amory.libris.bibliography.domain.Isbn
 import fr.amory.libris.bibliography.domain.Kind.BD
 import fr.amory.libris.bibliography.domain.edition.Edition
 import fr.amory.libris.bibliography.domain.edition.EditionId
 import fr.amory.libris.bibliography.domain.series.Series
 import fr.amory.libris.bibliography.domain.series.SeriesId
 import fr.amory.libris.bibliography.domain.series.SeriesVolume
+import fr.amory.libris.bibliography.fixture.isbnOf
 import fr.amory.libris.bibliography.infrastructure.persistence.JdbcEditionRepository
 import fr.amory.libris.bibliography.infrastructure.persistence.JdbcSeriesRepository
 import fr.amory.libris.fixture.JdbcSliceTest
@@ -15,6 +17,7 @@ import fr.amory.libris.library.domain.bookshelf.BookshelfId
 import fr.amory.libris.library.domain.bookshelf.BookshelfName
 import fr.amory.libris.library.domain.bookshelf.Membership
 import fr.amory.libris.library.domain.bookshelf.MembershipRole.OWNER
+import fr.amory.libris.library.domain.copy.CatalogueQuery
 import fr.amory.libris.library.domain.copy.EditionIdPage
 import fr.amory.libris.library.fixture.bookshelfOf
 import fr.amory.libris.library.fixture.bookshelfOwnedBy
@@ -25,10 +28,6 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import java.util.UUID
-
-private const val PAGE_SIZE = 50
-private const val LESSER_TWIN = "00000000-0000-7000-8000-000000000001"
-private const val GREATER_TWIN = "00000000-0000-7000-8000-000000000002"
 
 @JdbcSliceTest
 class JdbcCatalogueEditionsTest @Autowired constructor(
@@ -287,6 +286,44 @@ class JdbcCatalogueEditionsTest @Autowired constructor(
   }
 
   @Test
+  fun `a whole ISBN finds the reader's edition of that ISBN alone`() {
+    // Given
+    val laSerpeDOr = heldOn(leasBookshelf, edition("La serpe d'or", "Astérix", 2, isbn = isbnOf(LA_SERPE_D_OR)))
+    heldOn(leasBookshelf, edition("Astérix et les Goths", "Astérix", 3, isbn = isbnOf(ASTERIX_ET_LES_GOTHS)))
+
+    // When
+    val page = catalogueEditions.findPage(lea.id, CatalogueQuery(LA_SERPE_D_OR), null, PAGE_SIZE)
+
+    // Then
+    page shouldBe EditionIdPage(listOf(laSerpeDOr.id), null)
+  }
+
+  @Test
+  fun `an ISBN finds no edition on another reader's bookshelf alone`() {
+    // Given
+    heldOn(tomsBookshelf, edition("La serpe d'or", "Astérix", 2, isbn = isbnOf(LA_SERPE_D_OR)))
+
+    // When
+    val page = catalogueEditions.findPage(lea.id, CatalogueQuery(LA_SERPE_D_OR), null, PAGE_SIZE)
+
+    // Then
+    page shouldBe EditionIdPage(emptyList(), null)
+  }
+
+  @Test
+  fun `a query that reads as no ISBN finds no edition, for now`() {
+    // Given
+    heldOn(leasBookshelf, edition("Pierre et le loup"))
+    heldOn(leasBookshelf, edition("La serpe d'or", "Astérix", 2, isbn = isbnOf(LA_SERPE_D_OR)))
+
+    // When
+    val page = catalogueEditions.findPage(lea.id, CatalogueQuery(LA_SERPE_D_OR.dropLast(1)), null, PAGE_SIZE)
+
+    // Then
+    page shouldBe EditionIdPage(emptyList(), null)
+  }
+
+  @Test
   fun `the first of each series is its first tome`() {
     // Given
     heldOn(leasBookshelf, edition("Aux prises avec Baggy", "One piece", 2))
@@ -379,10 +416,11 @@ class JdbcCatalogueEditionsTest @Autowired constructor(
     title: String,
     seriesName: String? = null,
     volumeNumber: Int? = null,
-    id: EditionId = EditionId.new()): Edition =
+    id: EditionId = EditionId.new(),
+    isbn: Isbn? = null): Edition =
     Edition(
       id = id,
-      isbn = null,
+      isbn = isbn,
       kind = BD,
       title = title,
       subtitle = null,
@@ -410,3 +448,9 @@ class JdbcCatalogueEditionsTest @Autowired constructor(
     return edition
   }
 }
+
+private const val PAGE_SIZE = 50
+private const val LESSER_TWIN = "00000000-0000-7000-8000-000000000001"
+private const val GREATER_TWIN = "00000000-0000-7000-8000-000000000002"
+private const val LA_SERPE_D_OR = "9782012101340"
+private const val ASTERIX_ET_LES_GOTHS = "9782012101357"

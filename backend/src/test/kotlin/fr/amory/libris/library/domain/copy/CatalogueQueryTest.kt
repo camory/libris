@@ -1,0 +1,44 @@
+package fr.amory.libris.library.domain.copy
+
+import fr.amory.libris.bibliography.domain.Isbn
+import io.kotest.assertions.throwables.shouldThrow
+import io.kotest.matchers.shouldBe
+import org.junit.jupiter.api.Test
+
+class CatalogueQueryTest {
+  @Test
+  fun `an empty text is no query`() {
+    // Given / When / Then
+    CatalogueQuery.of("") shouldBe null
+  }
+
+  @Test
+  fun `a blank text is no query`() {
+    // Given / When / Then
+    CatalogueQuery.of("   ") shouldBe null
+  }
+
+  @Test
+  fun `the constructor refuses a blank text`() {
+    // Given / When / Then
+    shouldThrow<IllegalArgumentException> { CatalogueQuery("   ") }
+  }
+
+  @Test
+  fun `a whole ISBN-13 reads as that ISBN`() {
+    // Given / When / Then
+    CatalogueQuery.of("9782012101340")?.isbn shouldBe Isbn.of("9782012101340")
+  }
+
+  @Test
+  fun `an ISBN with hyphens and spaces reads as its ISBN`() {
+    // Given / When / Then
+    CatalogueQuery.of("978-2-01 210134-0")?.isbn shouldBe Isbn.of("9782012101340")
+  }
+
+  @Test
+  fun `an ISBN-10 reads as its ISBN-13`() {
+    // Given / When / Then
+    CatalogueQuery.of("2012101348")?.isbn shouldBe Isbn.of("9782012101340")
+  }
+}

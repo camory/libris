@@ -7,6 +7,7 @@ import fr.amory.libris.library.application.ReaderBookshelf
 import fr.amory.libris.library.application.lookup.CopyOnBookshelf
 import fr.amory.libris.library.domain.bookshelf.BookshelfRepository
 import fr.amory.libris.library.domain.copy.CatalogueEditions
+import fr.amory.libris.library.domain.copy.CatalogueQuery
 import fr.amory.libris.library.domain.copy.CopyRepository
 import fr.amory.libris.library.domain.reader.ReaderId
 import org.springframework.stereotype.Service
@@ -20,8 +21,10 @@ class BrowseCatalogue(
   private val copies: CopyRepository,
   private val editions: EditionRepository,
   private val seriesRepository: SeriesRepository) {
-  operator fun invoke(readerId: ReaderId, after: EditionId?): CataloguePage {
-    val page = catalogueEditions.findPage(readerId, after, PAGE_SIZE)
+  operator fun invoke(readerId: ReaderId, query: CatalogueQuery?, after: EditionId?): CataloguePage {
+    val page = query
+      ?.let { catalogueEditions.findPage(readerId, it, after, PAGE_SIZE) }
+      ?: catalogueEditions.findPage(readerId, after, PAGE_SIZE)
     val readersBookshelves = bookshelves
       .findByMember(readerId)
       .mapNotNull { ReaderBookshelf.of(it, readerId) }
@@ -48,6 +51,7 @@ class BrowseCatalogue(
           )
         },
       page.next,
+      false,
     )
   }
 }

@@ -2,25 +2,30 @@ package fr.amory.libris.library.infrastructure.persistence
 
 import fr.amory.libris.bibliography.domain.edition.EditionId
 import fr.amory.libris.library.domain.copy.CatalogueEditions
+import fr.amory.libris.library.domain.copy.CatalogueQuery
 import fr.amory.libris.library.domain.copy.EditionIdPage
 import fr.amory.libris.library.domain.reader.ReaderId
 import org.springframework.jdbc.core.simple.JdbcClient
+import org.springframework.jdbc.core.simple.JdbcClient.StatementSpec
 import org.springframework.stereotype.Repository
 import java.util.UUID
 
-private const val FIND_PAGE =
+private const val RANKED =
   """
     WITH ranked AS NOT MATERIALIZED (
         SELECT edition.id,
+               edition.isbn13,
                COALESCE(series.name, edition.title) COLLATE ignoring_case_and_accents AS name,
                edition.volume_number,
                edition.title COLLATE ignoring_case_and_accents AS title
         FROM edition
         LEFT JOIN series ON series.id = edition.series_id
     )
-    SELECT ranked.id
-    FROM ranked
-    WHERE EXISTS (
+    """
+
+private const val HELD_BY_READER_AFTER =
+  """
+    EXISTS (
           SELECT FROM copy
           JOIN membership ON membership.bookshelf_id = copy.bookshelf_id
           WHERE copy.edition_id = ranked.id AND membership.reader_id = :readerId
@@ -36,8 +41,31 @@ private const val FIND_PAGE =
                             AND (ranked.title > place.title
                                  OR ranked.title = place.title AND ranked.id > place.id)))
       ))
+    """
+
+private const val IN_CATALOGUE_ORDER =
+  """
     ORDER BY ranked.name, ranked.volume_number, ranked.title, ranked.id
     LIMIT :size
+    """
+
+private const val FIND_PAGE =
+  """
+    $RANKED
+    SELECT ranked.id
+    FROM ranked
+    WHERE $HELD_BY_READER_AFTER
+    $IN_CATALOGUE_ORDER
+    """
+
+private const val FIND_SEARCHED_PAGE =
+  """
+    $RANKED
+    SELECT ranked.id
+    FROM ranked
+    WHERE ranked.isbn13 = :isbn13
+      AND $HELD_BY_READER_AFTER
+    $IN_CATALOGUE_ORDER
     """
 
 private const val FIND_FIRST_OF_EACH_SERIES =
@@ -55,9 +83,21 @@ private const val FIND_FIRST_OF_EACH_SERIES =
 
 @Repository
 class JdbcCatalogueEditions(private val jdbcClient: JdbcClient) : CatalogueEditions {
-  override fun findPage(readerId: ReaderId, after: EditionId?, size: Int): EditionIdPage {
-    val following = jdbcClient
-      .sql(FIND_PAGE)
+  override fun findPage(readerId: ReaderId, after: EditionId?, size: Int): EditionIdPage =
+    pageOf(jdbcClient.sql(FIND_PAGE), readerId, after, size)
+
+  override fun findPage(readerId: ReaderId, query: CatalogueQuery, after: EditionId?, size: Int): EditionIdPage =
+    pageOf(jdbcClient.sql(FIND_SEARCHED_PAGE).param("isbn13", query.isbn?.digits), readerId, after, size)
+
+  override fun findFirstOfEachSeries(readerId: ReaderId): Set<EditionId> =
+    jdbcClient
+      .sql(FIND_FIRST_OF_EACH_SERIES)
+      .param("readerId", readerId.value)
+      .query { rs, _ -> EditionId(rs.getObject("id", UUID::class.java)) }
+      .set()
+
+  private fun pageOf(statement: StatementSpec, readerId: ReaderId, after: EditionId?, size: Int): EditionIdPage {
+    val following = statement
       .param("readerId", readerId.value)
       .param("after", after?.value)
       .param("size", size + 1)
@@ -66,11 +106,4 @@ class JdbcCatalogueEditions(private val jdbcClient: JdbcClient) : CatalogueEditi
     val page = following.take(size)
     return EditionIdPage(page, if (following.size > size) page.last() else null)
   }
-
-  override fun findFirstOfEachSeries(readerId: ReaderId): Set<EditionId> =
-    jdbcClient
-      .sql(FIND_FIRST_OF_EACH_SERIES)
-      .param("readerId", readerId.value)
-      .query { rs, _ -> EditionId(rs.getObject("id", UUID::class.java)) }
-      .set()
 }
