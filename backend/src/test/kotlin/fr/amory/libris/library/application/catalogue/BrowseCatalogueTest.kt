@@ -19,12 +19,14 @@ import fr.amory.libris.library.domain.bookshelf.BookshelfName
 import fr.amory.libris.library.domain.bookshelf.Membership
 import fr.amory.libris.library.domain.bookshelf.MembershipRole.OWNER
 import fr.amory.libris.library.domain.bookshelf.MembershipRole.VIEWER
+import fr.amory.libris.library.domain.copy.CatalogueQuery
 import fr.amory.libris.library.domain.copy.Copy
 import fr.amory.libris.library.domain.copy.EditionIdPage
 import fr.amory.libris.library.domain.reader.ReaderId
 import fr.amory.libris.library.fixture.BookshelvesInMemory
 import fr.amory.libris.library.fixture.CatalogueEditionsAnswering
 import fr.amory.libris.library.fixture.CopiesInMemory
+import fr.amory.libris.library.fixture.SearchAsked
 import fr.amory.libris.library.fixture.bookshelfOf
 import fr.amory.libris.library.fixture.copyOn
 import io.kotest.matchers.shouldBe
@@ -53,7 +55,7 @@ class BrowseCatalogueTest {
     val browseCatalogue = browsing(EditionIdPage(listOf(CIGARES.id, PIERRE.id), next))
 
     // When
-    val page = browseCatalogue(lea, null)
+    val page = browseCatalogue(lea, null, null)
 
     // Then
     page shouldBe CataloguePage(
@@ -89,7 +91,7 @@ class BrowseCatalogueTest {
     val browseCatalogue = browsing(EditionIdPage(listOf(CIGARES.id), null))
 
     // When
-    val page = browseCatalogue(lea, null)
+    val page = browseCatalogue(lea, null, null)
 
     // Then
     page shouldBe CataloguePage(
@@ -114,7 +116,7 @@ class BrowseCatalogueTest {
     val browseCatalogue = browsing(EditionIdPage(listOf(CIGARES.id, PIERRE.id), next))
 
     // When
-    val page = browseCatalogue(lea, null)
+    val page = browseCatalogue(lea, null, null)
 
     // Then
     page shouldBe CataloguePage(
@@ -140,10 +142,26 @@ class BrowseCatalogueTest {
     val browseCatalogue = BrowseCatalogue(catalogueEditions, bookshelves, copies, editions, seriesRepository)
 
     // When
-    browseCatalogue(lea, after)
+    browseCatalogue(lea, null, after)
 
     // Then
     catalogueEditions.asked shouldBe listOf(Triple(lea, after, 50))
+  }
+
+  @Test
+  fun `a search asks the port for fifty editions of the reader after the one given, found by its query`() {
+    // Given
+    val after = EditionId.new()
+    val query = CatalogueQuery("9782012101340")
+    val catalogueEditions = CatalogueEditionsAnswering(EditionIdPage(emptyList(), null))
+    val browseCatalogue = BrowseCatalogue(catalogueEditions, bookshelves, copies, editions, seriesRepository)
+
+    // When
+    browseCatalogue(lea, query, after)
+
+    // Then
+    catalogueEditions.searched shouldBe listOf(SearchAsked(lea, query, after, 50))
+    catalogueEditions.asked shouldBe emptyList()
   }
 
   private fun browsing(answer: EditionIdPage): BrowseCatalogue =

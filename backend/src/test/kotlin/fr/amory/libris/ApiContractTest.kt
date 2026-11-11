@@ -189,7 +189,7 @@ class ApiContractTest @Autowired constructor(
   }
 
   private fun catalogueAnswers() {
-    given(browseCatalogue(ReaderId(eq(CONTRACTEER.id.value) ?: CONTRACTEER.id.value), any()))
+    given(browseCatalogue(ReaderId(eq(CONTRACTEER.id.value) ?: CONTRACTEER.id.value), any(), any()))
       .willReturn(CataloguePage(listOf(ASTERIX_1_HELD), null, near = false))
   }
 

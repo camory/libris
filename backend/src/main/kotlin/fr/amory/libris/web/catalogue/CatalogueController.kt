@@ -11,6 +11,7 @@ import fr.amory.libris.library.application.catalogue.HeldEdition
 import fr.amory.libris.library.application.catalogue.SaveEdition
 import fr.amory.libris.library.application.catalogue.SaveEditionResult
 import fr.amory.libris.library.application.catalogue.SaveEditionResult.Saved
+import fr.amory.libris.library.domain.copy.CatalogueQuery
 import fr.amory.libris.library.domain.reader.Reader
 import fr.amory.libris.web.bookshelf.CopyResponse
 import fr.amory.libris.web.catalogue.EditionDetailsValidation.Accepted
@@ -40,8 +41,11 @@ class CatalogueController(
   private val findCatalogueEdition: FindCatalogueEdition,
   private val saveEdition: SaveEdition) {
   @GetMapping("/api/v1/books")
-  fun books(@AuthenticationPrincipal reader: Reader, @RequestParam("after") after: UUID?): BookPageResponse =
-    BookPageResponse.from(browseCatalogue(reader.id, after?.let { EditionId(it) }))
+  fun books(
+    @AuthenticationPrincipal reader: Reader,
+    @RequestParam("q") q: String?,
+    @RequestParam("after") after: UUID?): BookPageResponse =
+    BookPageResponse.from(browseCatalogue(reader.id, q?.let(CatalogueQuery::of), after?.let { EditionId(it) }))
 
   @GetMapping("/api/v1/books/{id}")
   fun find(@AuthenticationPrincipal reader: Reader, @PathVariable("id") id: UUID): ResponseEntity<Any> =

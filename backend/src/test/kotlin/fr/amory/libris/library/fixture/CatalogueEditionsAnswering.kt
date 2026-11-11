@@ -11,15 +11,27 @@ class CatalogueEditionsAnswering(
   private val firstOfEachSeries: Set<EditionId> = emptySet()) : CatalogueEditions {
   private val pagesAsked = mutableListOf<Triple<ReaderId, EditionId?, Int>>()
 
+  private val searchesAsked = mutableListOf<SearchAsked>()
+
   val asked: List<Triple<ReaderId, EditionId?, Int>> get() = pagesAsked.toList()
+
+  val searched: List<SearchAsked> get() = searchesAsked.toList()
 
   override fun findPage(readerId: ReaderId, after: EditionId?, size: Int): EditionIdPage {
     pagesAsked += Triple(readerId, after, size)
     return answer
   }
 
-  override fun findPage(readerId: ReaderId, query: CatalogueQuery, after: EditionId?, size: Int): EditionIdPage =
-    answer
+  override fun findPage(readerId: ReaderId, query: CatalogueQuery, after: EditionId?, size: Int): EditionIdPage {
+    searchesAsked += SearchAsked(readerId, query, after, size)
+    return answer
+  }
 
   override fun findFirstOfEachSeries(readerId: ReaderId): Set<EditionId> = firstOfEachSeries
 }
+
+data class SearchAsked(
+  val readerId: ReaderId,
+  val query: CatalogueQuery,
+  val after: EditionId?,
+  val size: Int)
