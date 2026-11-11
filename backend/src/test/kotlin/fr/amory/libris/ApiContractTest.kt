@@ -190,7 +190,7 @@ class ApiContractTest @Autowired constructor(
 
   private fun catalogueAnswers() {
     given(browseCatalogue(ReaderId(eq(CONTRACTEER.id.value) ?: CONTRACTEER.id.value), any()))
-      .willReturn(CataloguePage(listOf(ASTERIX_1_HELD), null))
+      .willReturn(CataloguePage(listOf(ASTERIX_1_HELD), null, near = false))
   }
 
   private fun coversAnswer() {

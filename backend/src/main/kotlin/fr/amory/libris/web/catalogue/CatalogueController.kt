@@ -69,10 +69,15 @@ class CatalogueController(
 
 data class BookPageResponse(
   val books: List<BookResponse>,
-  val next: String?) {
+  val next: String?,
+  val near: Boolean) {
   companion object {
     fun from(page: CataloguePage): BookPageResponse =
-      BookPageResponse(books = page.held.map { BookResponse.from(it) }, next = page.next?.value?.toString())
+      BookPageResponse(
+        books = page.held.map { BookResponse.from(it) },
+        next = page.next?.value?.toString(),
+        near = page.near,
+      )
   }
 }
 

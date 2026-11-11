@@ -75,6 +75,7 @@ class BrowseCatalogueTest {
         ),
       ),
       next,
+      near = false,
     )
   }
 
@@ -100,6 +101,7 @@ class BrowseCatalogueTest {
         ),
       ),
       null,
+      near = false,
     )
   }
 
@@ -126,6 +128,7 @@ class BrowseCatalogueTest {
         ),
       ),
       next,
+      near = false,
     )
   }
 

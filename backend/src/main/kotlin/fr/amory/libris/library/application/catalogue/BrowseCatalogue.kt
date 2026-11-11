@@ -48,6 +48,7 @@ class BrowseCatalogue(
           )
         },
       page.next,
+      false,
     )
   }
 }
