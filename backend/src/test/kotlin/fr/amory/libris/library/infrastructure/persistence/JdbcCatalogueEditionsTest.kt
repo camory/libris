@@ -29,12 +29,6 @@ import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import java.util.UUID
 
-private const val PAGE_SIZE = 50
-private const val LESSER_TWIN = "00000000-0000-7000-8000-000000000001"
-private const val GREATER_TWIN = "00000000-0000-7000-8000-000000000002"
-private const val LA_SERPE_D_OR = "9782012101340"
-private const val ASTERIX_ET_LES_GOTHS = "9782012101357"
-
 @JdbcSliceTest
 class JdbcCatalogueEditionsTest @Autowired constructor(
   private val catalogueEditions: JdbcCatalogueEditions,
@@ -454,3 +448,9 @@ class JdbcCatalogueEditionsTest @Autowired constructor(
     return edition
   }
 }
+
+private const val PAGE_SIZE = 50
+private const val LESSER_TWIN = "00000000-0000-7000-8000-000000000001"
+private const val GREATER_TWIN = "00000000-0000-7000-8000-000000000002"
+private const val LA_SERPE_D_OR = "9782012101340"
+private const val ASTERIX_ET_LES_GOTHS = "9782012101357"
