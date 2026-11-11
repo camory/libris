@@ -378,12 +378,12 @@ question (U04). It has no fill,
 except an icon's filled variant: the star and the crown, filled with
 `currentColor`. Sizes are 22 for the alert of a message, the bookshelf
 rows of a card (U06), the stand-in of a row's missing cover, the glyph
-of a button and of a search field, and the chevron and the check of a list of several choices
-(U04), 32 on the tab bar, 48 for an empty state (U05). A component
-imports the icon it shows under its Lucide name: `House`, `ScanBarcode`,
-`Library`, `BookOpen`, `CircleAlert`, `Search`, `RefreshCw`, `CirclePlus`,
-`Check`, `Star`, `Crown`, `Pencil`, `X`, `Trash2`, `ChevronDown`. No
-hand-drawn icon, no icon font.
+of a button and of a search field, and the chevron and the check of a
+list of several choices (U04), 32 on the tab bar, 48 for an empty state
+(U05). A component imports the icon it shows under its Lucide name:
+`House`, `ScanBarcode`, `Library`, `BookOpen`, `CircleAlert`, `Search`,
+`RefreshCw`, `CirclePlus`, `Check`, `Star`, `Crown`, `Pencil`, `X`,
+`Trash2`, `ChevronDown`. No hand-drawn icon, no icon font.
 
 An icon next to a word is decoration: `aria-hidden`, the word carries the
 meaning. An icon alone is a button (U04) or a tab (U03) and carries its
