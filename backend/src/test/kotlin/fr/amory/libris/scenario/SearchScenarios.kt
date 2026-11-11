@@ -90,7 +90,6 @@ class SearchScenarios @Autowired constructor(private val libris: Libris) {
     secondPage.next shouldBe null
   }
 
-  @Disabled("search")
   @Test
   fun `S5 An edition is found by what it holds now, an edition added`() {
     // Given
