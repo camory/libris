@@ -74,8 +74,10 @@ private const val FIND_PAGE_OF_WORDS =
     $RANKED
     SELECT ranked.id
     FROM ranked
-    WHERE ranked.search_vector @@ (
-          SELECT CAST(STRING_AGG(QUOTE_LITERAL(word.lexeme) || ':*', ' & ') AS tsquery)
+    WHERE (
+          SELECT BOOL_AND(
+                     ranked.search_vector @@ CAST(QUOTE_LITERAL(word.lexeme) || ':*' AS tsquery)
+                     OR (ranked.volume_number = CASE WHEN word.lexeme ~ '^[0-9]+$' THEN CAST(word.lexeme AS numeric) END) IS TRUE)
           FROM UNNEST(TO_TSVECTOR('words_ignoring_case_and_accents', :words)) AS word
       )
       AND $HELD_BY_READER_AFTER
