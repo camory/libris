@@ -71,7 +71,6 @@ class SearchScenarios @Autowired constructor(private val libris: Libris) {
     answer.near shouldBe near
   }
 
-  @Disabled("search")
   @Test
   fun `S4 Results come in pages`() {
     // Given
