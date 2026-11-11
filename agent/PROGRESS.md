@@ -155,3 +155,16 @@ Format:
   second run.
 - Left over: words (T165), the saved edition's search columns (T166), the
   tome (T167), near matches (T168), the frontend's pin (T169).
+
+## 2026-11-11 — T164 The search on v0.19.0, a whole ISBN — reworked
+- Did: `JdbcCatalogueEditionsTest`'s five top-level fixtures (`PAGE_SIZE`,
+  `LESSER_TWIN`, `GREATER_TWIN`, `LA_SERPE_D_OR`, `ASTERIX_ET_LES_GOTHS`)
+  moved below the class and its helpers, in the order the class reaches
+  them; no test changed.
+- Decided: the reviewer's verdict of 2026-11-11 amended nothing; its
+  blocking finding was the stepdown rule the brief already holds. Its
+  suggestion, a refactor of green code in a commit of its own rather than
+  inside step 10's green, concerns pushed history, which is not rewritten:
+  nothing to apply on the branch.
+- Deviations from the brief: none.
+- Left over: nothing new; T165 to T169 as before.
