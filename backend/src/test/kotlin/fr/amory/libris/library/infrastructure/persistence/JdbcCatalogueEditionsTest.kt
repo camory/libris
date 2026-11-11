@@ -535,6 +535,20 @@ class JdbcCatalogueEditionsTest @Autowired constructor(
   }
 
   @Test
+  fun `an edition saved with another subtitle is found by its new subtitle`() {
+    // Given
+    val maus = heldOn(leasBookshelf, edition("Maus"))
+    heldOn(leasBookshelf, edition("Pierre et le loup"))
+    editions.update(maus.copy(subtitle = "Un survivant raconte"))
+
+    // When
+    val page = catalogueEditions.findPage(lea.id, CatalogueQuery("survivant"), null, PAGE_SIZE)
+
+    // Then
+    page shouldBe EditionIdPage(listOf(maus.id), null)
+  }
+
+  @Test
   fun `the first of each series is its first tome`() {
     // Given
     heldOn(leasBookshelf, edition("Aux prises avec Baggy", "One piece", 2))
