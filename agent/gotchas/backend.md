@@ -51,7 +51,9 @@ Read whole by a run that changes `backend/`, after `every-run.md`.
   (`kotlin.text.Charsets.UTF_8` after `org.…`), `VariableNaming` refuses a backticked property
   (`@ArchTest fun \`name\`(classes: JavaClasses)` instead of a `val`),
   `ReturnCount` allows two returns, `LongParameterList` refuses a function of
-  more than six parameters but exempts data classes (a shared fixture is a
+  six parameters or more and a constructor of seven or more
+  (`functionThreshold: 6`, read as `count >= threshold`) but exempts data
+  classes (a shared fixture is a
   value plus `copy(...)`, not a builder), `SpreadOperator` trips on
   `runApplication(*args)`, `UnusedPrivateProperty` fails a constructor
   argument no test uses yet and `UnusedParameter` a function parameter no
@@ -614,13 +616,47 @@ Read whole by a run that changes `backend/`, after `every-run.md`.
   out before `GREATER_TWIN`), or it passes or fails by the draw of fresh
   ones (measured 2026-10-15).
 - `JdbcCatalogueEditions` builds the catalogue's `FIND_PAGE` and the
-  search's `FIND_SEARCHED_PAGE` from three `const` parts (`RANKED`,
-  `HELD_BY_READER_AFTER`, `IN_CATALOGUE_ORDER`) and one `pageOf`; a clause
-  of the search goes in `FIND_SEARCHED_PAGE` alone. A `const` string
+  search's two statements, `FIND_PAGE_OF_ISBN` (a query `Isbn.of` reads)
+  and `FIND_PAGE_OF_WORDS` (any other), from three `const` parts (`RANKED`,
+  which carries `isbn13` and `search_vector`, `HELD_BY_READER_AFTER`,
+  `IN_CATALOGUE_ORDER`) and one `pageOf`; `searchOf` picks the statement.
+  The words' clause hands the query's text to `TO_TSVECTOR` through
+  `words_ignoring_case_and_accents`, and builds the `tsquery` from its
+  lexemes, each `QUOTE_LITERAL(lexeme) || ':*'`, joined by `' & '`, cast:
+  never the text to `TO_TSQUERY`, whose syntax `&`, `!`, `:` and
+  parentheses break (`syntax error in tsquery`). A query of no word builds
+  a `NULL` query, which matches nothing. A `const` string
   template cannot reference a `const` declared below it (`Variable 'RANKED'
   must be initialized`), so the parts sit above their users. The fake
   `CatalogueEditionsAnswering` records a catalogue page as `asked` and a
   search as `searched` (`SearchAsked`), both answering the one `answer`.
+- `edition.search_text` (`V016`, `NOT NULL`) is written by
+  `JdbcEditionRepository`'s `INSERT_EDITION` alone, from the title, the
+  subtitle, the name of the series its `series_id` names, read in the
+  statement, and the contributions' names, the parameter `authorNames`;
+  `update` leaves it as it was until T166. A raw `INSERT INTO edition` in
+  a test must give it. `search_vector` is generated from it.
+- Flyway 12.4's clean drops no text search configuration, but drops each
+  extension the user owns with `CASCADE`, which takes the configuration
+  built on `unaccent`'s dictionary and the generated column using it, so
+  `V016` re-runs on every cleaned schema. A configuration depending on no
+  extension (a plain `COPY = simple`) survives the clean, and the next
+  migration fails on `duplicate key value violates unique constraint
+  "pg_ts_config_cfgname_index"`; drop it by hand through `jshell` (seen
+  2026-11-11).
+- PostgreSQL's default parser reads a word of letters as `word`
+  (`asciiword` when ASCII alone) and a word joining letters and digits as
+  `numword` (`Pokémon2`, `Été85`), hyphenated ones as `hword`/`numhword`
+  with their parts `hword_part`/`hword_numpart`/`hword_asciipart`, a word
+  of letters, digits and a dot as `file` (`Café2.1`) and an address as
+  `email` (`été2@x.fr`); a mapping that leaves out a type keeps that
+  type's accents, so `words_ignoring_case_and_accents` puts all nineteen
+  types `simple` maps through `unaccent, simple`, `unaccent` handing a
+  token without accents to `simple` as it is. `ts_debug`'s `lexemes` shows
+  `unaccent`'s output alone (`Café` reads `{Cafe}`); `TO_TSVECTOR` is the
+  truth (`'cafe'`). A query's word that is a prefix of the whole
+  hyphenated word also matches it, so a case proving `hword_numpart` puts
+  the digits in a part after the first (probed 2026-11-11).
 - `placing` is a reserved word of PostgreSQL: as a table alias it is a
   syntax error (`syntax error at or near "placing"`).
 - A generated column and an index expression take only `IMMUTABLE`

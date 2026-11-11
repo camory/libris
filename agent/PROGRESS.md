@@ -168,3 +168,50 @@ Format:
   nothing to apply on the branch.
 - Deviations from the brief: none.
 - Left over: nothing new; T165 to T169 as before.
+
+## 2026-11-11 — T165 Words find an added edition — done
+- Did: `V016` brings `unaccent`, the configuration
+  `words_ignoring_case_and_accents`, `edition.search_text` (filled, then
+  `NOT NULL`), the generated `search_vector` and its GIN index; the insert
+  writes the text; a query that reads as no ISBN finds the reader's editions
+  by its words, each a prefix, all required. S5 (an edition added) and S4 pass.
+- Decided: `searchOf` picks `FIND_PAGE_OF_ISBN` or `FIND_PAGE_OF_WORDS`;
+  `write` takes a `StatementSpec`, so `insert` adds `authorNames` and
+  `JdbcEditionRepository` stays at ten functions; the slice test builds
+  subtitle and authors through `stored(editionTitled(…).copy(…))`.
+- Decided: the query's words are the lexemes of `TO_TSVECTOR` over the
+  query, each quoted and suffixed `:*`, joined by `&`, so no sign of the
+  `tsquery` syntax reaches `TO_TSQUERY`.
+- Deviations from the brief: the extension and `unaccent` in the
+  configuration came with step 3, not step 7, since a configuration on no
+  extension survives Flyway's clean and breaks the next migration (gotcha);
+  steps 7 and 11 are thus guards. Step 3 read the words with
+  `PLAINTO_TSQUERY`, which step 8's prefixes replaced.
+- Deviations from the brief: `V013__summary_for_stored_editionsTest`, a
+  test file the brief did not list, gives `search_text` in its raw insert,
+  which the `NOT NULL` column refused (four cases red at the gate).
+- Deviations from the brief: the run handed off after step 15, its gate red
+  on that test, and was finished by a second run.
+- Left over: `update` writing `search_text` (T166), the tome (T167), near
+  matches (T168), the frontend's pin (T169).
+
+## 2026-11-11 — T165 Words find an added edition — reworked
+- Did: `V016`'s configuration also puts `numword`, `numhword` and
+  `hword_numpart` through `unaccent, simple`, so a word joining letters and
+  digits is found ignoring accents; two slice cases prove it.
+- Decided: the reviewer's verdict of 2026-11-11 amended nothing; its
+  blocking finding was the task line's "ignoring accents" and D03, which the
+  brief's *Files* line had narrowed to three token types. Its suggestion, a
+  refactor of 0dd2c2cc in a commit of its own, concerns pushed history,
+  which is not rewritten: nothing to apply on the branch.
+- Decided: two cases, not one. `pokemon` finding *Pokémon2* proves
+  `numword`; `rouge-pokemon2` finding *Rouge-Pokémon2* reds unless both
+  `numhword` and `hword_numpart` are mapped (each alone run, red); with the
+  digits in the first part, `numhword` alone was enough (gotcha).
+- Deviations from the brief: the configuration names six token types where
+  the brief's *Files* named three, as the review asks.
+- Fixed up after the second review, on Tophe's call: the configuration puts
+  all nineteen types `simple` maps through `unaccent, simple`, since
+  `file` (`Café2.1`) and `email` kept their accents; `cafe` finding
+  *Café2.1* proves it.
+- Left over: nothing new; T166 to T169 as before.

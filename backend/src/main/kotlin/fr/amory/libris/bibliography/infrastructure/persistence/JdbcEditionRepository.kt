@@ -13,6 +13,7 @@ import fr.amory.libris.bibliography.domain.edition.EditionRepository
 import fr.amory.libris.bibliography.domain.series.SeriesId
 import fr.amory.libris.bibliography.domain.series.SeriesVolume
 import org.springframework.jdbc.core.simple.JdbcClient
+import org.springframework.jdbc.core.simple.JdbcClient.StatementSpec
 import org.springframework.stereotype.Repository
 import java.sql.ResultSet
 import java.util.UUID
@@ -20,9 +21,11 @@ import java.util.UUID
 private const val INSERT_EDITION =
   """
     INSERT INTO edition (id, isbn13, kind, title, subtitle, series_id, volume_number, collection,
-                         publisher, publication_year, language, page_count, summary, cover_name)
+                         publisher, publication_year, language, page_count, summary, cover_name, search_text)
     VALUES (:id, :isbn13, :kind, :title, :subtitle, :seriesId, :volumeNumber, :collection,
-            :publisher, :publicationYear, :language, :pageCount, :summary, :coverName)
+            :publisher, :publicationYear, :language, :pageCount, :summary, :coverName,
+            CONCAT_WS(' ', :title, CAST(:subtitle AS text),
+                      (SELECT series.name FROM series WHERE series.id = :seriesId), CAST(:authorNames AS text)))
     """
 
 private const val UPDATE_EDITION =
@@ -81,12 +84,13 @@ class JdbcEditionRepository(private val jdbcClient: JdbcClient) : EditionReposit
   private val uuids = Generators.timeBasedEpochGenerator()
 
   override fun insert(edition: Edition) {
-    write(INSERT_EDITION, edition)
+    val authorNames = edition.contributions.joinToString(" ") { it.name }
+    write(jdbcClient.sql(INSERT_EDITION).param("authorNames", authorNames.ifEmpty { null }), edition)
     insertContributionsOf(edition, authorIdsOf(edition))
   }
 
   override fun update(edition: Edition) {
-    write(UPDATE_EDITION, edition)
+    write(jdbcClient.sql(UPDATE_EDITION), edition)
     val authorIds = authorIdsOf(edition)
     jdbcClient
       .sql(DELETE_CONTRIBUTIONS)
@@ -118,9 +122,8 @@ class JdbcEditionRepository(private val jdbcClient: JdbcClient) : EditionReposit
         .map(::editionOf)
     }
 
-  private fun write(statement: String, edition: Edition) {
-    jdbcClient
-      .sql(statement)
+  private fun write(statement: StatementSpec, edition: Edition) {
+    statement
       .param("id", edition.id.value)
       .param("isbn13", edition.isbn?.digits)
       .param("kind", edition.kind.name)

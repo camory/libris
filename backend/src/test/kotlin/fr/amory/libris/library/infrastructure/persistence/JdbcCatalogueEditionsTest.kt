@@ -1,5 +1,7 @@
 package fr.amory.libris.library.infrastructure.persistence
 
+import fr.amory.libris.bibliography.domain.Contribution
+import fr.amory.libris.bibliography.domain.ContributionRole.ARTIST
 import fr.amory.libris.bibliography.domain.Contributions
 import fr.amory.libris.bibliography.domain.Isbn
 import fr.amory.libris.bibliography.domain.Kind.BD
@@ -311,13 +313,194 @@ class JdbcCatalogueEditionsTest @Autowired constructor(
   }
 
   @Test
-  fun `a query that reads as no ISBN finds no edition, for now`() {
+  fun `twelve digits of an ISBN find no edition`() {
     // Given
     heldOn(leasBookshelf, edition("Pierre et le loup"))
     heldOn(leasBookshelf, edition("La serpe d'or", "Astérix", 2, isbn = isbnOf(LA_SERPE_D_OR)))
 
     // When
     val page = catalogueEditions.findPage(lea.id, CatalogueQuery(LA_SERPE_D_OR.dropLast(1)), null, PAGE_SIZE)
+
+    // Then
+    page shouldBe EditionIdPage(emptyList(), null)
+  }
+
+  @Test
+  fun `a word of the title finds the reader's edition holding it`() {
+    // Given
+    val laSerpeDOr = heldOn(leasBookshelf, edition("La serpe d'or"))
+    heldOn(leasBookshelf, edition("Pierre et le loup"))
+
+    // When
+    val page = catalogueEditions.findPage(lea.id, CatalogueQuery("serpe"), null, PAGE_SIZE)
+
+    // Then
+    page shouldBe EditionIdPage(listOf(laSerpeDOr.id), null)
+  }
+
+  @Test
+  fun `a word of the subtitle finds its edition`() {
+    // Given
+    val maus = heldOn(leasBookshelf, stored(editionTitled("Maus").copy(subtitle = "Un survivant raconte")))
+    heldOn(leasBookshelf, edition("Pierre et le loup"))
+
+    // When
+    val page = catalogueEditions.findPage(lea.id, CatalogueQuery("survivant"), null, PAGE_SIZE)
+
+    // Then
+    page shouldBe EditionIdPage(listOf(maus.id), null)
+  }
+
+  @Test
+  fun `a word of the series' name finds its edition`() {
+    // Given
+    val lesCigares = heldOn(leasBookshelf, edition("Les cigares du pharaon", "Tintin", 4))
+    heldOn(leasBookshelf, edition("Pierre et le loup"))
+
+    // When
+    val page = catalogueEditions.findPage(lea.id, CatalogueQuery("tintin"), null, PAGE_SIZE)
+
+    // Then
+    page shouldBe EditionIdPage(listOf(lesCigares.id), null)
+  }
+
+  @Test
+  fun `a word of an author's name finds its edition`() {
+    // Given
+    val byUderzo = Contributions.of(listOf(Contribution("Albert Uderzo", ARTIST)))
+    val laSerpeDOr = heldOn(leasBookshelf, stored(editionTitled("La serpe d'or").copy(contributions = byUderzo)))
+    heldOn(leasBookshelf, edition("Pierre et le loup"))
+
+    // When
+    val page = catalogueEditions.findPage(lea.id, CatalogueQuery("uderzo"), null, PAGE_SIZE)
+
+    // Then
+    page shouldBe EditionIdPage(listOf(laSerpeDOr.id), null)
+  }
+
+  @Test
+  fun `a word is found ignoring accents`() {
+    // Given
+    val emile = heldOn(leasBookshelf, edition("Émile et les détectives"))
+    heldOn(leasBookshelf, edition("Pierre et le loup"))
+
+    // When
+    val page = catalogueEditions.findPage(lea.id, CatalogueQuery("emile"), null, PAGE_SIZE)
+
+    // Then
+    page shouldBe EditionIdPage(listOf(emile.id), null)
+  }
+
+  @Test
+  fun `a word of letters and digits is found ignoring accents`() {
+    // Given
+    val pokemon2 = heldOn(leasBookshelf, edition("Pokémon2"))
+    heldOn(leasBookshelf, edition("Pierre et le loup"))
+
+    // When
+    val page = catalogueEditions.findPage(lea.id, CatalogueQuery("pokemon"), null, PAGE_SIZE)
+
+    // Then
+    page shouldBe EditionIdPage(listOf(pokemon2.id), null)
+  }
+
+  @Test
+  fun `a hyphenated word of letters and digits is found ignoring accents`() {
+    // Given
+    val rougePokemon2 = heldOn(leasBookshelf, edition("Rouge-Pokémon2"))
+    heldOn(leasBookshelf, edition("Pierre et le loup"))
+
+    // When
+    val page = catalogueEditions.findPage(lea.id, CatalogueQuery("rouge-pokemon2"), null, PAGE_SIZE)
+
+    // Then
+    page shouldBe EditionIdPage(listOf(rougePokemon2.id), null)
+  }
+
+  @Test
+  fun `a word of letters, digits and a dot is found ignoring accents`() {
+    // Given
+    val cafe = heldOn(leasBookshelf, edition("Café2.1"))
+    heldOn(leasBookshelf, edition("Pierre et le loup"))
+
+    // When
+    val page = catalogueEditions.findPage(lea.id, CatalogueQuery("cafe"), null, PAGE_SIZE)
+
+    // Then
+    page shouldBe EditionIdPage(listOf(cafe.id), null)
+  }
+
+  @Test
+  fun `a word is found when it begins a word`() {
+    // Given
+    val pierreEtLeLoup = heldOn(leasBookshelf, edition("Pierre et le loup"))
+    heldOn(leasBookshelf, edition("La serpe d'or"))
+
+    // When
+    val page = catalogueEditions.findPage(lea.id, CatalogueQuery("pier"), null, PAGE_SIZE)
+
+    // Then
+    page shouldBe EditionIdPage(listOf(pierreEtLeLoup.id), null)
+  }
+
+  @Test
+  fun `every word is required`() {
+    // Given
+    heldOn(leasBookshelf, edition("La serpe d'or"))
+    heldOn(leasBookshelf, edition("Pierre et le loup"))
+
+    // When
+    val page = catalogueEditions.findPage(lea.id, CatalogueQuery("serpe loup"), null, PAGE_SIZE)
+
+    // Then
+    page shouldBe EditionIdPage(emptyList(), null)
+  }
+
+  @Test
+  fun `words are found in any order`() {
+    // Given
+    val pierreEtLeLoup = heldOn(leasBookshelf, edition("Pierre et le loup"))
+    heldOn(leasBookshelf, edition("La serpe d'or"))
+
+    // When
+    val page = catalogueEditions.findPage(lea.id, CatalogueQuery("loup pierre"), null, PAGE_SIZE)
+
+    // Then
+    page shouldBe EditionIdPage(listOf(pierreEtLeLoup.id), null)
+  }
+
+  @Test
+  fun `signs of the search syntax among the words are no words`() {
+    // Given
+    val laSerpeDOr = heldOn(leasBookshelf, edition("La serpe d'or"))
+    heldOn(leasBookshelf, edition("Pierre et le loup"))
+
+    // When
+    val page = catalogueEditions.findPage(lea.id, CatalogueQuery("serpe & !"), null, PAGE_SIZE)
+
+    // Then
+    page shouldBe EditionIdPage(listOf(laSerpeDOr.id), null)
+  }
+
+  @Test
+  fun `the page of a search after an edition starts just after it`() {
+    // Given
+    val romans = romansHeldOn(leasBookshelf, 1..3)
+
+    // When
+    val page = catalogueEditions.findPage(lea.id, CatalogueQuery("roman"), romans.getValue(1).id, PAGE_SIZE)
+
+    // Then
+    page shouldBe EditionIdPage(listOf(romans.getValue(2).id, romans.getValue(3).id), null)
+  }
+
+  @Test
+  fun `words find no edition on another reader's bookshelf alone`() {
+    // Given
+    heldOn(tomsBookshelf, edition("La serpe d'or"))
+
+    // When
+    val page = catalogueEditions.findPage(lea.id, CatalogueQuery("serpe"), null, PAGE_SIZE)
 
     // Then
     page shouldBe EditionIdPage(emptyList(), null)
@@ -418,24 +601,18 @@ class JdbcCatalogueEditionsTest @Autowired constructor(
     volumeNumber: Int? = null,
     id: EditionId = EditionId.new(),
     isbn: Isbn? = null): Edition =
-    Edition(
-      id = id,
-      isbn = isbn,
-      kind = BD,
-      title = title,
-      subtitle = null,
-      contributions = Contributions.of(emptyList()),
-      seriesVolume = seriesName?.let {
-        SeriesVolume(seriesRepository.findOrInsert(Series(SeriesId.new(), it)).id, volumeNumber)
-      },
-      collection = null,
-      publisher = null,
-      publicationYear = null,
-      language = null,
-      pageCount = null,
-      summary = null,
-      coverName = null,
-    ).also(editions::insert)
+    stored(
+      editionTitled(title).copy(
+        id = id,
+        isbn = isbn,
+        seriesVolume = seriesName?.let {
+          SeriesVolume(seriesRepository.findOrInsert(Series(SeriesId.new(), it)).id, volumeNumber)
+        },
+      ),
+    )
+
+  private fun stored(edition: Edition): Edition =
+    edition.also(editions::insert)
 
   private fun romansHeldOn(bookshelf: Bookshelf, numbers: IntRange): Map<Int, Edition> =
     numbers.reversed().associateWith { heldOn(bookshelf, roman(it)) }
@@ -448,6 +625,24 @@ class JdbcCatalogueEditionsTest @Autowired constructor(
     return edition
   }
 }
+
+private fun editionTitled(title: String): Edition =
+  Edition(
+    id = EditionId.new(),
+    isbn = null,
+    kind = BD,
+    title = title,
+    subtitle = null,
+    contributions = Contributions.of(emptyList()),
+    seriesVolume = null,
+    collection = null,
+    publisher = null,
+    publicationYear = null,
+    language = null,
+    pageCount = null,
+    summary = null,
+    coverName = null,
+  )
 
 private const val PAGE_SIZE = 50
 private const val LESSER_TWIN = "00000000-0000-7000-8000-000000000001"

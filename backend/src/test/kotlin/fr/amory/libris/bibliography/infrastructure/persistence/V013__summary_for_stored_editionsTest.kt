@@ -87,7 +87,10 @@ class V013__summary_for_stored_editionsTest @Autowired constructor(
   private fun editionStored(isbn13: String, summary: String? = null): UUID =
     UUID.randomUUID().also { id ->
       jdbcClient
-        .sql("INSERT INTO edition (id, isbn13, kind, title, summary) VALUES (:id, :isbn13, 'BOOK', 'Stocké', :summary)")
+        .sql(
+          "INSERT INTO edition (id, isbn13, kind, title, summary, search_text) " +
+            "VALUES (:id, :isbn13, 'BOOK', 'Stocké', :summary, 'Stocké')"
+        )
         .param("id", id)
         .param("isbn13", isbn13)
         .param("summary", summary)
