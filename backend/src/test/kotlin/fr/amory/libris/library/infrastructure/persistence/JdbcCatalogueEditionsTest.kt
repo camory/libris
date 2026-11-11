@@ -305,6 +305,18 @@ class JdbcCatalogueEditionsTest @Autowired constructor(
   }
 
   @Test
+  fun `an ISBN finds no edition on another reader's bookshelf alone`() {
+    // Given
+    heldOn(tomsBookshelf, edition("La serpe d'or", "Astérix", 2, isbn = isbnOf(LA_SERPE_D_OR)))
+
+    // When
+    val page = catalogueEditions.findPage(lea.id, CatalogueQuery(LA_SERPE_D_OR), null, PAGE_SIZE)
+
+    // Then
+    page shouldBe EditionIdPage(emptyList(), null)
+  }
+
+  @Test
   fun `the first of each series is its first tome`() {
     // Given
     heldOn(leasBookshelf, edition("Aux prises avec Baggy", "One piece", 2))
