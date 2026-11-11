@@ -1,5 +1,7 @@
 package fr.amory.libris.library.infrastructure.persistence
 
+import fr.amory.libris.bibliography.domain.Contribution
+import fr.amory.libris.bibliography.domain.ContributionRole.ARTIST
 import fr.amory.libris.bibliography.domain.Contributions
 import fr.amory.libris.bibliography.domain.Isbn
 import fr.amory.libris.bibliography.domain.Kind.BD
@@ -360,6 +362,20 @@ class JdbcCatalogueEditionsTest @Autowired constructor(
 
     // Then
     page shouldBe EditionIdPage(listOf(lesCigares.id), null)
+  }
+
+  @Test
+  fun `a word of an author's name finds its edition`() {
+    // Given
+    val byUderzo = Contributions.of(listOf(Contribution("Albert Uderzo", ARTIST)))
+    val laSerpeDOr = heldOn(leasBookshelf, stored(editionTitled("La serpe d'or").copy(contributions = byUderzo)))
+    heldOn(leasBookshelf, edition("Pierre et le loup"))
+
+    // When
+    val page = catalogueEditions.findPage(lea.id, CatalogueQuery("uderzo"), null, PAGE_SIZE)
+
+    // Then
+    page shouldBe EditionIdPage(listOf(laSerpeDOr.id), null)
   }
 
   @Test

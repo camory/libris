@@ -11,7 +11,11 @@ SET search_text = CONCAT_WS(
       ' ',
       edition.title,
       edition.subtitle,
-      (SELECT series.name FROM series WHERE series.id = edition.series_id)
+      (SELECT series.name FROM series WHERE series.id = edition.series_id),
+      (SELECT STRING_AGG(author.name, ' ')
+       FROM contribution
+       JOIN author ON author.id = contribution.author_id
+       WHERE contribution.edition_id = edition.id)
     );
 
 ALTER TABLE edition ALTER COLUMN search_text SET NOT NULL;
