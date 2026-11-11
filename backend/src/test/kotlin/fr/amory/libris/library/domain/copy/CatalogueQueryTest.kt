@@ -35,4 +35,10 @@ class CatalogueQueryTest {
     // Given / When / Then
     CatalogueQuery.of("978-2-01 210134-0")?.isbn shouldBe Isbn.of("9782012101340")
   }
+
+  @Test
+  fun `an ISBN-10 reads as its ISBN-13`() {
+    // Given / When / Then
+    CatalogueQuery.of("2012101348")?.isbn shouldBe Isbn.of("9782012101340")
+  }
 }
