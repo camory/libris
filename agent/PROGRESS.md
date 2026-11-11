@@ -170,7 +170,7 @@ Format:
 - Left over: nothing new; T165 to T169 as before.
 
 ## 2026-11-11 — T165 Words find an added edition — handoff
-- Done: steps 1 to 15, each its own commit; step 16's tidy (nothing to change) and gotchas (`backend.md`) done. Next: step 16's gate, tick T165, the diary entry, the PR.
+- Done: steps 1 to 15, each its own commit; step 16's tidy (nothing to change) and gotchas (`backend.md`) done. Gate RED, branch not pushed: the four cases of `V013__summary_for_stored_editionsTest` fail on `null value in column "search_text"`, its raw `INSERT INTO edition (id, isbn13, kind, title, summary)` giving none. First step next run: that insert gives `search_text` (a test file the brief did not list: a deviation to declare), then the gate, tick T165, the diary entry, the PR.
 - Deviation: the extension and `unaccent` in the configuration came with step 3, not step 7: a configuration on no extension survives Flyway's clean and the next migration fails on `pg_ts_config_cfgname_index` (gotcha). Step 7 is thus a guard.
 - Deviation: step 3 read the words with `PLAINTO_TSQUERY`; step 8 brought the lexemes of `TO_TSVECTOR` built into a prefix `tsquery`, so step 11 is a guard. Step 7's commit body names no mutation (written before it ran): it is below.
 - Decided: `searchOf` picks `FIND_PAGE_OF_ISBN` or `FIND_PAGE_OF_WORDS`; `write` takes a `StatementSpec`, so `insert` adds `authorNames` and `JdbcEditionRepository` stays at ten functions; the test builds subtitle and authors through `stored(editionTitled(…).copy(…))`.
