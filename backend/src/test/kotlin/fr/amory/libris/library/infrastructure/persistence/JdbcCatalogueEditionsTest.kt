@@ -507,6 +507,84 @@ class JdbcCatalogueEditionsTest @Autowired constructor(
   }
 
   @Test
+  fun `a word of digits finds the edition whose tome is that number`() {
+    // Given
+    val tomeTwo = heldOn(leasBookshelf, edition("Aux prises avec Baggy et ses hommes", "One piece", 2))
+    heldOn(leasBookshelf, edition("Le début de la légende", "One piece", 12))
+    heldOn(leasBookshelf, edition("Duel à Alubarna", "One piece", 20))
+    heldOn(leasBookshelf, edition("La serpe d'or", "Astérix", 2))
+
+    // When
+    val page = catalogueEditions.findPage(lea.id, CatalogueQuery("one piece 2"), null, PAGE_SIZE)
+
+    // Then
+    page shouldBe EditionIdPage(listOf(tomeTwo.id), null)
+  }
+
+  @Test
+  fun `a word of digits is still found where it begins a word`() {
+    // Given
+    val nineteenEightyFour = heldOn(leasBookshelf, edition("1984"))
+    heldOn(leasBookshelf, edition("Pierre et le loup"))
+
+    // When
+    val page = catalogueEditions.findPage(lea.id, CatalogueQuery("1984"), null, PAGE_SIZE)
+
+    // Then
+    page shouldBe EditionIdPage(listOf(nineteenEightyFour.id), null)
+  }
+
+  @Test
+  fun `a word of digits is the tome of the number it writes`() {
+    // Given
+    val tomeTwo = heldOn(leasBookshelf, edition("Aux prises avec Baggy et ses hommes", "One piece", 2))
+    heldOn(leasBookshelf, edition("Duel à Alubarna", "One piece", 20))
+
+    // When
+    val page = catalogueEditions.findPage(lea.id, CatalogueQuery("one piece 02"), null, PAGE_SIZE)
+
+    // Then
+    page shouldBe EditionIdPage(listOf(tomeTwo.id), null)
+  }
+
+  @Test
+  fun `a word of digits past any tome finds no edition`() {
+    // Given
+    heldOn(leasBookshelf, edition("Aux prises avec Baggy et ses hommes", "One piece", 2))
+
+    // When
+    val page = catalogueEditions.findPage(lea.id, CatalogueQuery("one piece 123456789012345678901234"), null, PAGE_SIZE)
+
+    // Then
+    page shouldBe EditionIdPage(emptyList(), null)
+  }
+
+  @Test
+  fun `tome is a word like any other`() {
+    // Given
+    heldOn(leasBookshelf, edition("Aux prises avec Baggy et ses hommes", "One piece", 2))
+
+    // When
+    val page = catalogueEditions.findPage(lea.id, CatalogueQuery("one piece tome 2"), null, PAGE_SIZE)
+
+    // Then
+    page shouldBe EditionIdPage(emptyList(), null)
+  }
+
+  @Test
+  fun `a query of no word finds no edition`() {
+    // Given
+    heldOn(leasBookshelf, edition("La serpe d'or"))
+    heldOn(leasBookshelf, edition("Pierre et le loup"))
+
+    // When
+    val page = catalogueEditions.findPage(lea.id, CatalogueQuery("& !"), null, PAGE_SIZE)
+
+    // Then
+    page shouldBe EditionIdPage(emptyList(), null)
+  }
+
+  @Test
   fun `an edition saved with another title is found by its new title`() {
     // Given
     val romanceDawn = heldOn(leasBookshelf, edition("Romance dawn"))
