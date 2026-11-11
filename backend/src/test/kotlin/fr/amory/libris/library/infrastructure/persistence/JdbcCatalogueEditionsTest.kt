@@ -431,6 +431,19 @@ class JdbcCatalogueEditionsTest @Autowired constructor(
   }
 
   @Test
+  fun `signs of the search syntax among the words are no words`() {
+    // Given
+    val laSerpeDOr = heldOn(leasBookshelf, edition("La serpe d'or"))
+    heldOn(leasBookshelf, edition("Pierre et le loup"))
+
+    // When
+    val page = catalogueEditions.findPage(lea.id, CatalogueQuery("serpe & !"), null, PAGE_SIZE)
+
+    // Then
+    page shouldBe EditionIdPage(listOf(laSerpeDOr.id), null)
+  }
+
+  @Test
   fun `the first of each series is its first tome`() {
     // Given
     heldOn(leasBookshelf, edition("Aux prises avec Baggy", "One piece", 2))
