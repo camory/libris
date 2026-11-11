@@ -36,7 +36,8 @@ private const val UPDATE_EDITION =
         publication_year = :publicationYear, language = :language, page_count = :pageCount,
         summary = :summary, cover_name = :coverName,
         search_text = CONCAT_WS(' ', :title, CAST(:subtitle AS text),
-                                (SELECT series.name FROM series WHERE series.id = :seriesId))
+                                (SELECT series.name FROM series WHERE series.id = :seriesId),
+                                CAST(:authorNames AS text))
     WHERE edition.id = :id
     """
 
@@ -92,7 +93,8 @@ class JdbcEditionRepository(private val jdbcClient: JdbcClient) : EditionReposit
   }
 
   override fun update(edition: Edition) {
-    write(jdbcClient.sql(UPDATE_EDITION), edition)
+    val authorNames = edition.contributions.joinToString(" ") { it.name }
+    write(jdbcClient.sql(UPDATE_EDITION).param("authorNames", authorNames.ifEmpty { null }), edition)
     val authorIds = authorIdsOf(edition)
     jdbcClient
       .sql(DELETE_CONTRIBUTIONS)

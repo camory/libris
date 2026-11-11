@@ -564,6 +564,20 @@ class JdbcCatalogueEditionsTest @Autowired constructor(
   }
 
   @Test
+  fun `an edition saved with another author is found by the author's name`() {
+    // Given
+    val laSerpeDOr = heldOn(leasBookshelf, edition("La serpe d'or"))
+    heldOn(leasBookshelf, edition("Pierre et le loup"))
+    editions.update(laSerpeDOr.copy(contributions = Contributions.of(listOf(Contribution("Albert Uderzo", ARTIST)))))
+
+    // When
+    val page = catalogueEditions.findPage(lea.id, CatalogueQuery("uderzo"), null, PAGE_SIZE)
+
+    // Then
+    page shouldBe EditionIdPage(listOf(laSerpeDOr.id), null)
+  }
+
+  @Test
   fun `the first of each series is its first tome`() {
     // Given
     heldOn(leasBookshelf, edition("Aux prises avec Baggy", "One piece", 2))
