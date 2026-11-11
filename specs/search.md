@@ -257,10 +257,11 @@ catalogue's fake.
 
 ## Screen
 
-Mockups: to draw with Tophe, one artboard per state marked *drawn* below,
-exported as `specs/search/<n>-<state>.jpg` in the same order. No route of
-its own: the ouvrages of the catalogue, route `/catalogue`, of
-`specs/catalogue.md` and `specs/series-list.md`, the query in `?q=`.
+Mockups: <https://claude.ai/artifact/1GndU1S8Yntbga8ZH9Wan5>, one artboard
+per state marked *drawn* below, exported as `specs/search/<n>-<state>.jpg`
+in the same order. No route of its own: the ouvrages of the catalogue,
+route `/catalogue`, of `specs/catalogue.md` and `specs/series-list.md`,
+the query in `?q=`.
 
 Top to bottom on a phone: the header of the catalogue, unchanged; the
 switch; the search box; the list, or what stands in its place; the tab
@@ -271,7 +272,8 @@ The search box is a field (U04) with no label above it: its
 série, auteur, ISBN*, the glyph `Search` at its left inside the box in
 `muted`, as decoration; once the box holds text, the cross `X`
 *Effacer la recherche* at its right, an icon button, and no clear button
-of the browser's own. It is a search input whose keyboard key reads
+of the browser's own. After a tap on the cross, the focus is in the box
+and the keyboard open. It is a search input whose keyboard key reads
 search. No primary button: the search runs as the reader types (S6).
 
 Under the box, the rows of the catalogue, as `specs/catalogue.md` draws
@@ -279,12 +281,18 @@ them, for the editions Libris answered, in its order; a row leads to its
 ouvrage's page. On arrival with a query, the catalogue's loading rows
 stand under the box holding it, until the answer.
 
+When the words find nothing, the sentence of S3 stands in the list's
+place, in `lead`, `muted`, left-aligned, with no icon; with near matches,
+*Les plus proches :* labels the block of their rows under it (U03).
+
 `docs/DESIGN.md` changes with this spec: U04 gains a *Search field*
 paragraph, a field with no label, its placeholder naming what it searches
 in place of an example value, the glyph at its left, the cross at its
-right once it holds text, and no primary button. Whether U05 gains the
-sentence of a search that finds nothing, which says that nothing matches
-rather than what will fill the space, is settled with the mockups.
+right once it holds text, the focus kept in the box after the cross, and
+no primary button; U05 gains a *No match* paragraph, the sentence of a
+search that finds nothing, in `lead`, `muted`, left-aligned, with no
+icon, which says that nothing matches rather than what will fill the
+space; U07 counts the glyph of a search field among its icons at 22.
 
 States:
 
@@ -340,7 +348,7 @@ that tome alone. Type *asterik*: the sentence, *Les plus proches :* and
 the *Astérix* albums. Type *gaston*: the sentence alone. Type the ISBN of
 an ouvrage with its hyphens: that ouvrage alone. Type the title of an
 ouvrage stored before the release: it is found. Tap the cross: the whole
-catalogue.
+catalogue, the keyboard open.
 
 ## Tasks
 
