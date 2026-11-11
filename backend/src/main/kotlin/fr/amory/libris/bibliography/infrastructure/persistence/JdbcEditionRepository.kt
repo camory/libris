@@ -13,19 +13,22 @@ import fr.amory.libris.bibliography.domain.edition.EditionRepository
 import fr.amory.libris.bibliography.domain.series.SeriesId
 import fr.amory.libris.bibliography.domain.series.SeriesVolume
 import org.springframework.jdbc.core.simple.JdbcClient
-import org.springframework.jdbc.core.simple.JdbcClient.StatementSpec
 import org.springframework.stereotype.Repository
 import java.sql.ResultSet
 import java.util.UUID
+
+private const val SEARCH_TEXT =
+  """
+    CONCAT_WS(' ', :title, CAST(:subtitle AS text), (SELECT series.name FROM series WHERE series.id = :seriesId),
+              CAST(:authorNames AS text))
+    """
 
 private const val INSERT_EDITION =
   """
     INSERT INTO edition (id, isbn13, kind, title, subtitle, series_id, volume_number, collection,
                          publisher, publication_year, language, page_count, summary, cover_name, search_text)
     VALUES (:id, :isbn13, :kind, :title, :subtitle, :seriesId, :volumeNumber, :collection,
-            :publisher, :publicationYear, :language, :pageCount, :summary, :coverName,
-            CONCAT_WS(' ', :title, CAST(:subtitle AS text),
-                      (SELECT series.name FROM series WHERE series.id = :seriesId), CAST(:authorNames AS text)))
+            :publisher, :publicationYear, :language, :pageCount, :summary, :coverName, $SEARCH_TEXT)
     """
 
 private const val UPDATE_EDITION =
@@ -34,7 +37,7 @@ private const val UPDATE_EDITION =
     SET isbn13 = :isbn13, kind = :kind, title = :title, subtitle = :subtitle, series_id = :seriesId,
         volume_number = :volumeNumber, collection = :collection, publisher = :publisher,
         publication_year = :publicationYear, language = :language, page_count = :pageCount,
-        summary = :summary, cover_name = :coverName
+        summary = :summary, cover_name = :coverName, search_text = $SEARCH_TEXT
     WHERE edition.id = :id
     """
 
@@ -84,13 +87,12 @@ class JdbcEditionRepository(private val jdbcClient: JdbcClient) : EditionReposit
   private val uuids = Generators.timeBasedEpochGenerator()
 
   override fun insert(edition: Edition) {
-    val authorNames = edition.contributions.joinToString(" ") { it.name }
-    write(jdbcClient.sql(INSERT_EDITION).param("authorNames", authorNames.ifEmpty { null }), edition)
+    write(INSERT_EDITION, edition)
     insertContributionsOf(edition, authorIdsOf(edition))
   }
 
   override fun update(edition: Edition) {
-    write(jdbcClient.sql(UPDATE_EDITION), edition)
+    write(UPDATE_EDITION, edition)
     val authorIds = authorIdsOf(edition)
     jdbcClient
       .sql(DELETE_CONTRIBUTIONS)
@@ -122,8 +124,9 @@ class JdbcEditionRepository(private val jdbcClient: JdbcClient) : EditionReposit
         .map(::editionOf)
     }
 
-  private fun write(statement: StatementSpec, edition: Edition) {
-    statement
+  private fun write(sql: String, edition: Edition) {
+    jdbcClient
+      .sql(sql)
       .param("id", edition.id.value)
       .param("isbn13", edition.isbn?.digits)
       .param("kind", edition.kind.name)
@@ -138,6 +141,7 @@ class JdbcEditionRepository(private val jdbcClient: JdbcClient) : EditionReposit
       .param("pageCount", edition.pageCount)
       .param("summary", edition.summary)
       .param("coverName", edition.coverName?.value)
+      .param("authorNames", edition.contributions.joinToString(" ") { it.name }.ifEmpty { null })
       .update()
   }
 

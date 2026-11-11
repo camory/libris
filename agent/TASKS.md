@@ -54,7 +54,7 @@ every task.
       received (D11), `near` false. Realises S5, an edition added, and S4;
       un-skips their backend tests.
 
-- [ ] T166 Backend: a saved edition found by its new words.
+- [x] T166 Backend: a saved edition found by its new words.
       A save of an edition the house holds, and the add of a held ISBN
       written as a save (held-edition-edit S2), rewrite what it is searched
       by: found by its new title, never by its old one (D03). A name

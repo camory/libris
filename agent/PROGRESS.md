@@ -215,3 +215,18 @@ Format:
   `file` (`Café2.1`) and `email` kept their accents; `cafe` finding
   *Café2.1* proves it.
 - Left over: nothing new; T166 to T169 as before.
+
+## 2026-11-11 — T166 A saved edition found by its new words — done
+- Did: `JdbcEditionRepository.update` writes `edition.search_text` from the
+  same four fields as `insert`, so a saved edition is found by its words as
+  they now stand and never by those it no longer holds; S5's second case runs.
+- Decided: the two statements share the expression through the `const` part
+  `SEARCH_TEXT`, and `write` sets `authorNames` itself, so it takes the
+  statement's text again instead of a `StatementSpec`; the class stays at
+  ten functions.
+- Decided: each field joined the update's text in the cycle of its own case
+  (title, subtitle, series, authors), the refactor in a commit after them.
+- Deviations from the brief: none.
+- Left over: an edition saved on a deployment that ran T165 without T166
+  (staging alone) keeps its earlier text until saved again, no re-fill;
+  the tome (T167), near matches (T168), the frontend (T169 on).

@@ -507,6 +507,92 @@ class JdbcCatalogueEditionsTest @Autowired constructor(
   }
 
   @Test
+  fun `an edition saved with another title is found by its new title`() {
+    // Given
+    val romanceDawn = heldOn(leasBookshelf, edition("Romance dawn"))
+    heldOn(leasBookshelf, edition("Pierre et le loup"))
+    editions.update(romanceDawn.copy(title = "À l'aube d'une grande aventure"))
+
+    // When
+    val page = catalogueEditions.findPage(lea.id, CatalogueQuery("aventure"), null, PAGE_SIZE)
+
+    // Then
+    page shouldBe EditionIdPage(listOf(romanceDawn.id), null)
+  }
+
+  @Test
+  fun `an edition saved with another title is no longer found by its old title`() {
+    // Given
+    val romanceDawn = heldOn(leasBookshelf, edition("Romance dawn"))
+    heldOn(leasBookshelf, edition("Pierre et le loup"))
+    editions.update(romanceDawn.copy(title = "À l'aube d'une grande aventure"))
+
+    // When
+    val page = catalogueEditions.findPage(lea.id, CatalogueQuery("romance"), null, PAGE_SIZE)
+
+    // Then
+    page shouldBe EditionIdPage(emptyList(), null)
+  }
+
+  @Test
+  fun `an edition saved with another subtitle is found by its new subtitle`() {
+    // Given
+    val maus = heldOn(leasBookshelf, edition("Maus"))
+    heldOn(leasBookshelf, edition("Pierre et le loup"))
+    editions.update(maus.copy(subtitle = "Un survivant raconte"))
+
+    // When
+    val page = catalogueEditions.findPage(lea.id, CatalogueQuery("survivant"), null, PAGE_SIZE)
+
+    // Then
+    page shouldBe EditionIdPage(listOf(maus.id), null)
+  }
+
+  @Test
+  fun `an edition saved into a series is found by the series' name`() {
+    // Given
+    val lesCigares = heldOn(leasBookshelf, edition("Les cigares du pharaon"))
+    heldOn(leasBookshelf, edition("Pierre et le loup"))
+    val tintin = seriesRepository.findOrInsert(Series(SeriesId.new(), "Tintin"))
+    editions.update(lesCigares.copy(seriesVolume = SeriesVolume(tintin.id, 4)))
+
+    // When
+    val page = catalogueEditions.findPage(lea.id, CatalogueQuery("tintin"), null, PAGE_SIZE)
+
+    // Then
+    page shouldBe EditionIdPage(listOf(lesCigares.id), null)
+  }
+
+  @Test
+  fun `an edition saved with another author is found by the author's name`() {
+    // Given
+    val laSerpeDOr = heldOn(leasBookshelf, edition("La serpe d'or"))
+    heldOn(leasBookshelf, edition("Pierre et le loup"))
+    editions.update(laSerpeDOr.copy(contributions = Contributions.of(listOf(Contribution("Albert Uderzo", ARTIST)))))
+
+    // When
+    val page = catalogueEditions.findPage(lea.id, CatalogueQuery("uderzo"), null, PAGE_SIZE)
+
+    // Then
+    page shouldBe EditionIdPage(listOf(laSerpeDOr.id), null)
+  }
+
+  @Test
+  fun `an author respelled by a save leaves the author's other editions found by the name respelled`() {
+    // Given
+    val byUderzo = Contributions.of(listOf(Contribution("Albert Uderzo", ARTIST)))
+    val laSerpeDOr = heldOn(leasBookshelf, stored(editionTitled("La serpe d'or").copy(contributions = byUderzo)))
+    val lesGoths = heldOn(leasBookshelf, stored(editionTitled("Astérix et les Goths").copy(contributions = byUderzo)))
+    editions.update(laSerpeDOr.copy(contributions = Contributions.of(listOf(Contribution("Albert Udérzo", ARTIST)))))
+
+    // When
+    val page = catalogueEditions.findPage(lea.id, CatalogueQuery("udérzo"), null, PAGE_SIZE)
+
+    // Then
+    page shouldBe EditionIdPage(listOf(lesGoths.id, laSerpeDOr.id), null)
+  }
+
+  @Test
   fun `the first of each series is its first tome`() {
     // Given
     heldOn(leasBookshelf, edition("Aux prises avec Baggy", "One piece", 2))

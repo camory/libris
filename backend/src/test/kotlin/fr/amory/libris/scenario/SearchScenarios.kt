@@ -101,7 +101,6 @@ class SearchScenarios @Autowired constructor(private val libris: Libris) {
     answer.books shouldBe lea.catalogueRowsOf(listOf("La serpe d'or"))
   }
 
-  @Disabled("search")
   @Test
   fun `S5 An edition is found by what it holds now, an edition whose title a reader changed`() {
     // Given

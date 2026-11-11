@@ -271,13 +271,6 @@
   The task that next edits either file formats it, as T032 did for
   `vitest.global-setup.ts` (found on T032, 2026-09-19).
 
-- Backend: `V003__edition.sql` creates none of the search columns D03
-  describes — no `search_text`, no generated `search_vector`, no GIN or
-  trigram index, no `unaccent` and no `pg_trgm` extension. Search is PRD §4.2,
-  which has neither spec nor task, and a column no test exercises is what
-  `CLAUDE.md` forbids; D03 already puts the extensions in a migration of their
-  own. The first search task adds them to the table, and writes `search_text`
-  from the adapter on every insert and update (decided on T034, 2026-09-21).
 - Backend: an edition carries no tag. PRD §3 gives it zero or more and D11
   names a `tag` table, but no lookup answers a tag and no scenario of this
   phase names one. The task that first shows or sets a tag writes the table,
