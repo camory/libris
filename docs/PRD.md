@@ -178,10 +178,13 @@ Priorities: **P1** = needed before the family uses it, **P2** = soon after,
   reading states and loans.
 
 ### 4.2 Search (P1)
-- One search box over the reader's catalogue that finds editions by title,
-  series, author, ISBN, tag, with accent- and case-insensitive matching
-  (`Asterix` finds *Astérix*) and typo tolerance for short queries.
-- Results ranked by relevance, grouped or sortable by series.
+- One search box over the reader's catalogue that finds editions as the
+  reader types, by title, subtitle, series, tome, author and ISBN, and by
+  tag once Libris holds tags, with accent- and case-insensitive matching
+  (`Asterix` finds *Astérix*) and typo tolerance when the words find
+  nothing.
+- Results in the order a shelf reads, the catalogue's, a series' editions
+  together; no ranking by relevance.
 - Backed by PostgreSQL full-text search; no separate search service.
 
 ### 4.3 Bookshelves and copies (P1)
