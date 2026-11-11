@@ -136,11 +136,22 @@ Format:
 - Left over: the backlog is empty; the next feature needs its spec,
   written with Tophe.
 
-## 2026-11-11 — T164 The search on v0.19.0, a whole ISBN — handoff
-- Done: steps 1 to 12, one commit each. Baseline `tests="50"` in `ApiContractTest`'s XML, read on the brief's commit before step 1.
-- Next: step 13 (`BrowseCatalogueTest`, the search case; the fake's overload returns `answer` but records nothing yet), then step 14.
-- Decided: `JdbcCatalogueEditions` builds `FIND_PAGE` and `FIND_SEARCHED_PAGE` from three `const` parts (`RANKED`, `HELD_BY_READER_AFTER`, `IN_CATALOGUE_ORDER`) and one `pageOf(statement, …)`; `ranked` gains `edition.isbn13`. The parts sit above their users: a `const` template cannot reference a later `const` (`Variable 'RANKED' must be initialized`).
-- Deviation: step 3 added `near = false` to all three `CataloguePage`s of `BrowseCatalogueTest`, not the first alone (each one builds the page, so all three must compile).
-- Guard 8: `isbn` read only from a text of thirteen digits (`takeIf { Regex("[0-9]{13}").matches(it) }`) → red `Expected Isbn(digits=9782012101340) but actual was null`. Guard 9: the same mutation → red on the ISBN-10 case, same message.
-- Guard 11: `HELD_BY_READER_AFTER` swapped out of `FIND_SEARCHED_PAGE` (the semi-join, and with it the keyset, which no search case reaches) → red `editionIds: Unexpected elements from index 0`. Guard 12: `IS NOT DISTINCT FROM :isbn13` → red `expected:<[]> but was:<[EditionId(…)]>`.
-- Red at handoff: only the four cases of `SearchScenarios > S2` (the cited scenario, greened by step 13): each answers the whole catalogue.
+## 2026-11-11 — T164 The search on v0.19.0, a whole ISBN — done
+- Did: the backend pins `v0.19.0`; `GET /api/v1/books` reads `q` through
+  `CatalogueQuery.of` and answers `near`, false; a whole ISBN narrows the
+  catalogue to the reader's edition of it, any other query to none.
+- Decided: `JdbcCatalogueEditions` shares the catalogue's statement with the
+  search through three `const` parts and one `pageOf` (gotcha in
+  `backend.md`); the ranking CTE carries `edition.isbn13`.
+- Decided: the fake records a search as a `SearchAsked`, beside the
+  catalogue's `asked` triples, so step 13 also proves no catalogue page was
+  asked.
+- Decided: step 13 went red through a behaviour, not only a compile error:
+  the use case took the query unused first, which the controller passed as
+  `null`, then the call to the overload greened it.
+- Deviations from the brief: step 3 gave `near = false` to all three
+  `CataloguePage`s of `BrowseCatalogueTest`, not the first alone, since each
+  must compile. The run handed off after step 12 and was finished by a
+  second run.
+- Left over: words (T165), the saved edition's search columns (T166), the
+  tome (T167), near matches (T168), the frontend's pin (T169).

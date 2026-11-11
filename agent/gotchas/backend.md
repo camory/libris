@@ -613,6 +613,14 @@ Read whole by a run that changes `backend/`, after `every-run.md`.
   missing key to pick the wrong edition fixes the ids (`LESSER_TWIN` came
   out before `GREATER_TWIN`), or it passes or fails by the draw of fresh
   ones (measured 2026-10-15).
+- `JdbcCatalogueEditions` builds the catalogue's `FIND_PAGE` and the
+  search's `FIND_SEARCHED_PAGE` from three `const` parts (`RANKED`,
+  `HELD_BY_READER_AFTER`, `IN_CATALOGUE_ORDER`) and one `pageOf`; a clause
+  of the search goes in `FIND_SEARCHED_PAGE` alone. A `const` string
+  template cannot reference a `const` declared below it (`Variable 'RANKED'
+  must be initialized`), so the parts sit above their users. The fake
+  `CatalogueEditionsAnswering` records a catalogue page as `asked` and a
+  search as `searched` (`SearchAsked`), both answering the one `answer`.
 - `placing` is a reserved word of PostgreSQL: as a table alias it is a
   syntax error (`syntax error at or near "placing"`).
 - A generated column and an index expression take only `IMMUTABLE`
