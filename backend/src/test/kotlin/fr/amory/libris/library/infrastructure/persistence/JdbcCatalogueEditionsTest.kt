@@ -392,6 +392,19 @@ class JdbcCatalogueEditionsTest @Autowired constructor(
   }
 
   @Test
+  fun `a word of letters and digits is found ignoring accents`() {
+    // Given
+    val pokemon2 = heldOn(leasBookshelf, edition("Pokémon2"))
+    heldOn(leasBookshelf, edition("Pierre et le loup"))
+
+    // When
+    val page = catalogueEditions.findPage(lea.id, CatalogueQuery("pokemon"), null, PAGE_SIZE)
+
+    // Then
+    page shouldBe EditionIdPage(listOf(pokemon2.id), null)
+  }
+
+  @Test
   fun `a word is found when it begins a word`() {
     // Given
     val pierreEtLeLoup = heldOn(leasBookshelf, edition("Pierre et le loup"))

@@ -2,7 +2,7 @@ CREATE EXTENSION unaccent;
 
 CREATE TEXT SEARCH CONFIGURATION words_ignoring_case_and_accents (COPY = simple);
 ALTER TEXT SEARCH CONFIGURATION words_ignoring_case_and_accents
-    ALTER MAPPING FOR word, hword, hword_part WITH unaccent, simple;
+    ALTER MAPPING FOR word, numword, hword, hword_part WITH unaccent, simple;
 
 ALTER TABLE edition ADD COLUMN search_text text;
 
