@@ -168,3 +168,11 @@ Format:
   nothing to apply on the branch.
 - Deviations from the brief: none.
 - Left over: nothing new; T165 to T169 as before.
+
+## 2026-11-11 — T165 Words find an added edition — handoff
+- Done: steps 1 to 15, each its own commit; step 16's tidy (nothing to change) and gotchas (`backend.md`) done. Next: step 16's gate, tick T165, the diary entry, the PR.
+- Deviation: the extension and `unaccent` in the configuration came with step 3, not step 7: a configuration on no extension survives Flyway's clean and the next migration fails on `pg_ts_config_cfgname_index` (gotcha). Step 7 is thus a guard.
+- Deviation: step 3 read the words with `PLAINTO_TSQUERY`; step 8 brought the lexemes of `TO_TSVECTOR` built into a prefix `tsquery`, so step 11 is a guard. Step 7's commit body names no mutation (written before it ran): it is below.
+- Decided: `searchOf` picks `FIND_PAGE_OF_ISBN` or `FIND_PAGE_OF_WORDS`; `write` takes a `StatementSpec`, so `insert` adds `authorNames` and `JdbcEditionRepository` stays at ten functions; the test builds subtitle and authors through `stored(editionTitled(…).copy(…))`.
+- Guards, mutation → red read: 7 `word` mapped without `unaccent` → empty page; 9 `' | '` → both editions; 10 `' <-> '` → empty page; 11 text to `TO_TSQUERY` → `syntax error in tsquery`; 12 semi-join without keyset → Roman 01 to 03; 13 keyset without semi-join → Tom's edition; 14 `:isbn13` in `search_text` → the edition found.
+- Step 15 output (DB at V015, rolled back): `search_text: La serpe d'or Une aventure gauloise Astérix René Goscinny Albert Uderzo`; serpe, aventure, asterix, goscinny, uderzo each find 1 edition; pharaon finds 0. Script: `/tmp/fill.jsh` is gone with the sandbox; rewrite from this if needed.
