@@ -21,7 +21,7 @@ export class FakeCatalogueApi implements CatalogueApi {
 
   browse(after: string | null): Promise<BookPage> {
     this.asked.push(after);
-    const page = this.pages.shift();
+    const page = this.pages.length > 1 ? this.pages.shift() : this.pages.at(0);
     if (page === undefined) return Promise.reject(Error("No page left"));
     return page instanceof Error ? Promise.reject(page) : Promise.resolve(page);
   }
