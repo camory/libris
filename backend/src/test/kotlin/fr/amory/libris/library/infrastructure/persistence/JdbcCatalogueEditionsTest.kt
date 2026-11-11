@@ -444,6 +444,18 @@ class JdbcCatalogueEditionsTest @Autowired constructor(
   }
 
   @Test
+  fun `the page of a search after an edition starts just after it`() {
+    // Given
+    val romans = romansHeldOn(leasBookshelf, 1..3)
+
+    // When
+    val page = catalogueEditions.findPage(lea.id, CatalogueQuery("roman"), romans.getValue(1).id, PAGE_SIZE)
+
+    // Then
+    page shouldBe EditionIdPage(listOf(romans.getValue(2).id, romans.getValue(3).id), null)
+  }
+
+  @Test
   fun `the first of each series is its first tome`() {
     // Given
     heldOn(leasBookshelf, edition("Aux prises avec Baggy", "One piece", 2))
