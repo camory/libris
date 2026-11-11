@@ -139,6 +139,18 @@ check in `accent`, or *Nouvelle* in `muted`, for a series; *Existant* or
 A field of several lines, a summary, is three lines tall when empty and
 grows with its text; it keeps the line breaks typed.
 
+**Search field.** A field that narrows the list under it as the reader
+types: the box of a field with no label above it, its `aria-label`
+naming what it searches, *Rechercher dans le catalogue*, its placeholder
+in `muted` naming the fields searched in place of an example value,
+*Titre, série, auteur, ISBN*. The glyph `Search` sits inside the box at
+its left, in `muted`, 8 before the text, as decoration; once the box
+holds text, the cross *Effacer la recherche* sits at its right, an icon
+button, and the browser's own clear button never shows. After a tap on
+the cross, the focus is in the box and the keyboard open. It is a search
+input, its keyboard key reading search, with no primary button: the
+search runs as the reader types.
+
 **Suggestions.** While a field has the focus and holds text, up to five
 values it may take show in a block of their own 4 under its box, on
 `surface`, a 1.5 `border` outline, radius 12: one row per value, 44 tall,
@@ -249,10 +261,10 @@ centre, so that three fill a cover's 96 of width. The dot is drawn 6 under
 the picture: its 44 of height reaches 12 over the picture's edge and 12
 over what follows.
 
-Every control is at least 44 tall and wide, the dot alone 32 wide;
-reachable one-handed at the bottom half of the screen: the field, its
-button and the tab bar are the lowest things on the page, the title is the
-highest.
+Every control is at least 44 tall and wide, the dot alone 32 wide. On
+the lookup screen, reachable one-handed at the bottom half of the screen,
+the field, its button and the tab bar are the lowest things on the page,
+the title is the highest.
 
 ### U05 — Feedback: message, skeleton, empty state
 A screen answers under the control that asked, in the place the answer will
@@ -279,6 +291,12 @@ lands. It appears with the busy button (U04) and leaves with it.
 padding around. The sentence says what will fill the space, not that it is
 empty. The lookup screen has none: before the first search, the space under
 the field is simply empty.
+
+**No match.** A search that finds nothing says so in one sentence where
+its answer would stand: the `lead` step, `muted`, left-aligned, with no
+icon, the words searched between guillemets, *Aucun ouvrage ne
+correspond à « gaston ».* It is not an empty state: it says that nothing
+matches, not what will fill the space.
 
 No toast: an answer stays where it landed until the next one replaces it,
 and it never floats over the page. The camera sheet is a block of the
@@ -363,7 +381,7 @@ question (U04). It has no fill,
 except an icon's filled variant: the star and the crown, filled with
 `currentColor`. Sizes are 22 for the alert of a message, the bookshelf
 rows of a card (U06), the stand-in of a row's missing cover, the glyph
-of a button, and the chevron and the check of a list of several choices
+of a button and of a search field, and the chevron and the check of a list of several choices
 (U04), 32 on the tab bar, 48 for an empty state (U05). A component
 imports the icon it shows under its Lucide name: `House`, `ScanBarcode`,
 `Library`, `BookOpen`, `CircleAlert`, `Search`, `RefreshCw`, `CirclePlus`,
