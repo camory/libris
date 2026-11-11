@@ -145,11 +145,11 @@ order of the catalogue, not ranked, over:
   digits alone, which also finds the tome of that number exactly; and its
   ISBN, which alone answers a query that reads as a whole ISBN.
 
-The search migration creates the `unaccent` and `pg_trgm` extensions; both are
-trusted, so the application user, which owns the database, needs no superuser.
-No Elasticsearch, Meilisearch, ParadeDB or embedded Lucene. If the search ever
-proves insufficient, `search_text` is exactly the document a Meilisearch
-container would index.
+The search's migrations create the `unaccent` and `pg_trgm` extensions; both
+are trusted, so the application user, which owns the database, needs no
+superuser. No Elasticsearch, Meilisearch, ParadeDB or embedded Lucene. If the
+search ever proves insufficient, `search_text` is exactly the document a
+Meilisearch container would index.
 
 ### D04 — Contract-first API, Contracteer on both sides
 The OpenAPI 3.1 document `openapi.yaml` in the repository

@@ -295,8 +295,3 @@ the keyboard open.*
   another reader. T081, T088 and T084 read such a refusal as no answer and
   show their S9 sentence; say if one should read otherwise. T135 reads
   the removal's `400`, which the screen never provokes, the same way.
-- **The search's two extensions.** D03 says the search migration creates
-  `unaccent` and `pg_trgm`; `CLAUDE.md` brings no migration ahead of the
-  task that exercises it. The plan follows the latter: T165 brings what
-  the words use, T168 the trigram index and its extension. Say if both
-  should land with T165 instead.
