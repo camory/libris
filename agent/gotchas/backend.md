@@ -631,11 +631,14 @@ Read whole by a run that changes `backend/`, after `every-run.md`.
   `CatalogueEditionsAnswering` records a catalogue page as `asked` and a
   search as `searched` (`SearchAsked`), both answering the one `answer`.
 - `edition.search_text` (`V016`, `NOT NULL`) is written by
-  `JdbcEditionRepository`'s `INSERT_EDITION` alone, from the title, the
+  `JdbcEditionRepository`'s `INSERT_EDITION` and `UPDATE_EDITION`, through
+  the `const` part `SEARCH_TEXT` above them both, from the title, the
   subtitle, the name of the series its `series_id` names, read in the
-  statement, and the contributions' names, the parameter `authorNames`;
-  `update` leaves it as it was until T166. A raw `INSERT INTO edition` in
-  a test must give it. `search_vector` is generated from it.
+  statement, and the contributions' names, the parameter `authorNames`
+  that `write` sets. A respelled author or series is not rewritten into
+  its other editions' text: a respell changes only what the search
+  configuration ignores. A raw `INSERT INTO edition` in a test must give
+  it. `search_vector` is generated from it.
 - Flyway 12.4's clean drops no text search configuration, but drops each
   extension the user owns with `CASCADE`, which takes the configuration
   built on `unaccent`'s dictionary and the generated column using it, so
