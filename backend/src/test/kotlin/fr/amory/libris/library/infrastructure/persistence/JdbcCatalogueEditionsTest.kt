@@ -522,6 +522,19 @@ class JdbcCatalogueEditionsTest @Autowired constructor(
   }
 
   @Test
+  fun `a word of digits is still found where it begins a word`() {
+    // Given
+    val nineteenEightyFour = heldOn(leasBookshelf, edition("1984"))
+    heldOn(leasBookshelf, edition("Pierre et le loup"))
+
+    // When
+    val page = catalogueEditions.findPage(lea.id, CatalogueQuery("1984"), null, PAGE_SIZE)
+
+    // Then
+    page shouldBe EditionIdPage(listOf(nineteenEightyFour.id), null)
+  }
+
+  @Test
   fun `an edition saved with another title is found by its new title`() {
     // Given
     val romanceDawn = heldOn(leasBookshelf, edition("Romance dawn"))
