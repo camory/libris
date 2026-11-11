@@ -126,19 +126,28 @@ so the library's web rendered the bibliography's types and could not reach
 the bibliography's paths).
 
 ### D03 — Database: PostgreSQL only
-PostgreSQL 18, nothing else. Search is one ranked SQL query over:
+PostgreSQL 18, nothing else. Search is one SQL query that answers in the
+order of the catalogue, not ranked, over:
 - `edition.search_text`, written by the persistence adapter on every insert
   and update of an edition from the names the aggregate holds: title,
-  subtitle, series name, author names, tag names. The domain never sees it.
+  subtitle, series name, author names, and tag names once it holds tags.
+  The domain never sees it.
 - `edition.search_vector`, a generated column derived from `search_text` and
-  indexed with GIN, using two custom text search configurations built on
-  `unaccent`: French stemming and plain tokens, so that both "Astérix" and a
-  romanised manga title match.
-- a `pg_trgm` index on `search_text` for typo tolerance on short queries.
+  indexed with GIN, using one custom text search configuration: `unaccent`,
+  then plain tokens, so that "Astérix", "asterix" and a romanised manga
+  title match alike; each word of a query is a prefix, every one required.
+  No French stemming: on the house's titles it over-matched, *petit*
+  finding *Peter Pan*, and the near matches cover what it would catch, a
+  plural where the title has the singular.
+- a `pg_trgm` index on `search_text` for the near matches, queried only
+  when the words find nothing.
+- the edition's volume number, read beside `search_text` for a word of
+  digits alone, which also finds the tome of that number exactly; and its
+  ISBN, which alone answers a query that reads as a whole ISBN.
 
 The search migration creates the `unaccent` and `pg_trgm` extensions; both are
 trusted, so the application user, which owns the database, needs no superuser.
-No Elasticsearch, Meilisearch, ParadeDB or embedded Lucene. If relevance ever
+No Elasticsearch, Meilisearch, ParadeDB or embedded Lucene. If the search ever
 proves insufficient, `search_text` is exactly the document a Meilisearch
 container would index.
 

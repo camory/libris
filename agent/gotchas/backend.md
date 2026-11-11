@@ -608,3 +608,15 @@ Read whole by a run that changes `backend/`, after `every-run.md`.
   ones (measured 2026-10-15).
 - `placing` is a reserved word of PostgreSQL: as a table alias it is a
   syntax error (`syntax error at or near "placing"`).
+- A generated column and an index expression take only `IMMUTABLE`
+  functions. `unaccent()` is `STABLE`, so a trigram index over unaccented
+  text calls it through an `IMMUTABLE` wrapper function; `concat_ws` is
+  `STABLE` too, so a generated column joins its texts with `||`.
+  `to_tsvector` with its configuration given as a `regconfig` is accepted
+  in a generated column. `edition.search_text` cannot be one: it carries
+  the series' and the authors' names, held in other tables. Probed during
+  the search grill, 2026-11-11.
+- The full text search never matches an ISBN typed with its hyphens. A
+  query that reads as a whole ISBN, `Isbn.of` answering one (hyphens and
+  spaces dropped, an ISBN-10 converted), is answered from `isbn13` alone,
+  never from `search_vector`. Probed during the search grill, 2026-11-11.
