@@ -21,9 +21,10 @@ order. A word is found in an edition when it begins a word of its title,
 its subtitle, its series' name or one of its authors' names, ignoring
 case and accents: *ast* is found in *Astérix*, *uderzo serpe* in *La
 Serpe d'or* by *Albert Uderzo*. A word of digits alone is also found in
-the edition whose tome is that number, exactly: *one piece 2* finds tome
-2, neither tome 12 nor tome 20. *tome* and *album* are words like any
-other, found only where a field holds them.
+the edition whose tome is the number it writes, exactly: *one piece 2*
+finds tome 2, neither tome 12 nor tome 20, and *one piece 02* finds tome
+2 as well. *tome* and *album* are words like any other, found only where
+a field holds them.
 
 The results stand in the order a shelf reads, the catalogue's, a series'
 editions together, whether the words or the near matches found them: no
@@ -35,8 +36,8 @@ reads, in place of "ranked by relevance, grouped or sortable by series".
 ranked; one text search configuration, `unaccent` then plain tokens,
 French stemming dropped, the near matches covering what it caught (a
 plural where the title has the singular); the trigram index serving only
-when the words find nothing; the tome read beside `search_text` for a
-word of digits.
+when the words find nothing; the tome an exact token of the indexed
+words, never written into `search_text`, for a word of digits.
 
 Not in this spec: tags, which Libris does not hold yet; the publisher and
 the collection; the filters and sorts of PRD §4.1; a search of the series
