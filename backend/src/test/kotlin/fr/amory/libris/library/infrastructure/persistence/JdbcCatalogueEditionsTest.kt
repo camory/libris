@@ -549,6 +549,21 @@ class JdbcCatalogueEditionsTest @Autowired constructor(
   }
 
   @Test
+  fun `an edition saved into a series is found by the series' name`() {
+    // Given
+    val lesCigares = heldOn(leasBookshelf, edition("Les cigares du pharaon"))
+    heldOn(leasBookshelf, edition("Pierre et le loup"))
+    val tintin = seriesRepository.findOrInsert(Series(SeriesId.new(), "Tintin"))
+    editions.update(lesCigares.copy(seriesVolume = SeriesVolume(tintin.id, 4)))
+
+    // When
+    val page = catalogueEditions.findPage(lea.id, CatalogueQuery("tintin"), null, PAGE_SIZE)
+
+    // Then
+    page shouldBe EditionIdPage(listOf(lesCigares.id), null)
+  }
+
+  @Test
   fun `the first of each series is its first tome`() {
     // Given
     heldOn(leasBookshelf, edition("Aux prises avec Baggy", "One piece", 2))
