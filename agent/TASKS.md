@@ -16,6 +16,148 @@
 >
 > Follow-ups and ideas go to `agent/PROPOSED.md`, never here.
 
+## Search — specs/search.md
+
+Contract: release `v0.19.0` of `camory/libris-api`, after `v0.18.0`: the
+catalogue's page takes the query parameter `q`, optional, and `BookPage`
+gains `near`, required; nothing else changed. A parameter and a response
+field are added, so the backend goes first: its pin moves in T164 with a
+whole ISBN read, T165 finds the words in an added edition, T166 in a saved
+one, T167 reads a tome's number, and T168 answers the near matches. The
+frontend pin moves in T169, once T168 is deployed: the box and its first
+answer, then the pause, the cross, the sentence of no match, the pages, the
+latest search alone, the failure and the address. No other task touches
+the contract (D04). The catalogue's and the series list's tests on both
+sides, and S10's frontend test, running already, stay green and guard
+every task.
+
+- [ ] T164 Backend: the search on `v0.19.0`, a whole ISBN.
+      `ApiContractTest` pins `v0.19.0`, the backend's one bump (D04). The
+      catalogue's page reads the words `q` and answers `near`, false for
+      now: absent, empty or blank, the catalogue as before; a query that
+      reads as a whole ISBN, its hyphens and spaces ignored, an ISBN-10
+      converted (PRD §3), answers the reader's edition of that ISBN alone
+      or none (D03); any other query answers none, for now. Contracteer
+      verifies the page's shape, `near` included, over its generated cases,
+      each carrying a random `q` (D07). Walking skeleton; realises S2;
+      un-skips its backend test, its four cases.
+
+- [ ] T165 Backend: words find an added edition.
+      Each word of a query, ignoring case and accents, is found when it
+      begins a word of the edition's title, subtitle, series' name or one
+      of its authors' names; every word is required, in any order (D03).
+      An edition added keeps what it is searched by with it, and the
+      editions stored before are filled by the migration that brings it,
+      with only the extension it uses: the trigrams' come with T168 (D02,
+      D03). The answer is the catalogue's rows of the reader's editions,
+      in its order and its pages of fifty, `after` naming the last one
+      received (D11), `near` false. Realises S5, an edition added, and S4;
+      un-skips their backend tests.
+
+- [ ] T166 Backend: a saved edition found by its new words.
+      A save of an edition the house holds, and the add of a held ISBN
+      written as a save (held-edition-edit S2), rewrite what it is searched
+      by: found by its new title, never by its old one (D03). A name
+      respelled for the house changes only what the search ignores, its
+      other editions found as before. The `agent/PROPOSED.md` item on the
+      search columns goes, answered by T165 and this task. Realises S5, an
+      edition whose title a reader changed; un-skips that backend test.
+
+- [ ] T167 Backend: a tome found by its number.
+      A word of digits alone is also found in the edition whose tome is
+      that number, exactly: *one piece 2* answers tome 2, neither tome 12
+      nor tome 20 (D03); *tome* and *album* are words like any other. A
+      title typed whole, apostrophe included, finds its edition; words of
+      two fields find the edition holding both; an edition on another
+      reader's bookshelf alone is never answered (PRD §3). Realises S1;
+      un-skips its backend test, its six cases, those but the tome perhaps
+      green already through T165.
+
+- [ ] T168 Backend: near matches when the words find nothing.
+      When the words find no edition of the reader's catalogue, Libris
+      answers the nearest by their trigrams, said near: *asterik* answers
+      the *Astérix* albums; it looks for them only then, so an edition the
+      words find never stands among near ones (D03). Near matches come in
+      the catalogue's order and pages, each page said near; a page with no
+      edition is never near, and a whole ISBN finds its edition or none,
+      never a near match (S2). The trigram index and its extension arrive
+      here (D02, D03). Realises S3; un-skips its backend test, both cases.
+
+- [ ] T169 Frontend: the search box on `v0.19.0`.
+      Precondition (human): T168 deployed (D04). `vitest.global-setup.ts`
+      pins `v0.19.0`, the frontend's one bump; the search's client over the
+      catalogue's page with `q`, tested on the mock's `200` and `400`,
+      joins the application's ports, the scenario file's provision moving
+      into them (D05, D07). The ouvrages of the catalogue show the search
+      field under the switch, scrolling with the list (U04): the box's
+      text without the spaces at its ends asks Libris, and the rows of its
+      answer's first page replace the catalogue's, in its order. The box
+      shows with the loading rows and leaves over an empty catalogue.
+      Walking skeleton; realises S1, S10; un-skips S1's frontend test.
+
+- [ ] T170 Frontend: the search waits for a pause.
+      The box asks Libris 300 ms after the last keystroke, a keystroke
+      within them starting the pause again: one request for a word typed
+      at speed. The keyboard's search key asks at once and closes the
+      keyboard. Fewer than two characters, the spaces at the ends not
+      counted, ask nothing and show the whole catalogue. While Libris
+      answers, the rows shown stay, with no skeleton, until the answer
+      replaces them. Realises S6 but the cross; un-skips its three
+      frontend tests, the search key perhaps green already.
+
+- [ ] T171 Frontend: the cross empties the search box.
+      Once the box holds text, the cross *Effacer la recherche* sits at
+      its right, an icon button, and the browser's own clear button never
+      shows (U04, U07). A tap empties the box and shows the whole
+      catalogue at once, no pause waited, the focus in the box and the
+      keyboard open. Realises S6, the cross; un-skips its frontend test.
+
+- [ ] T172 Frontend: no ouvrage matches.
+      An answer with no edition says *Aucun ouvrage ne correspond à
+      « gaston ».*, the query as sent between guillemets, in the list's
+      place (U05); an answer said near says it too, then *Les plus
+      proches :* labels the block of its rows under it (U03). Realises S3;
+      un-skips its two frontend tests.
+
+- [ ] T173 Frontend: the next pages of a search.
+      Reaching the end of a search's rows asks the next page of the same
+      query after the last one's `next` (D11), its rows following the
+      first without a gap or a repeat, the catalogue's two skeleton rows
+      under the last while it comes (U05); a page naming no next asks
+      nothing more. Realises S4; un-skips its frontend test.
+
+- [ ] T174 Frontend: only the latest search counts.
+      An answer to a search asked before the latest one is dropped,
+      whenever it arrives: the screen lists the latest search's answer
+      alone, and a next page of an earlier search arriving late is dropped
+      too. Realises S8; un-skips its frontend test.
+
+- [ ] T175 Frontend: Libris unavailable during a search.
+      A search not answered says *Erreur lors de la recherche, veuillez
+      réessayer plus tard.* with the alert icon in the list's place, no
+      row, the box keeping its text and its outline (U05); a next page not
+      answered leaves the rows listed and puts the sentence under them.
+      Realises S9; un-skips its two frontend tests.
+
+- [ ] T176 Frontend: the search kept in the address.
+      The address carries the query of the list shown,
+      `/catalogue?q=goscinny`, none under two characters, each search
+      replacing the history's entry instead of adding one. An address with
+      a query opens on its search, the box holding it and the catalogue's
+      loading rows under it until the answer. *Ouvrages* of the switch and
+      the *Catalogue* tab open the catalogue with no query (U03, U04).
+      Realises S7; un-skips its three frontend tests.
+
+*Done (Tophe, on the Pixel, from the installed app on staging): in
+Catalogue, read the box under the switch. Type goscinny: after a pause, the
+rows of his ouvrages in the order of the catalogue. Open one and come back:
+the box and the rows as left. Type a series and the number of a tome you
+hold: that tome alone. Type asterik: the sentence, Les plus proches : and
+the Astérix albums. Type gaston: the sentence alone. Type the ISBN of an
+ouvrage with its hyphens: that ouvrage alone. Type the title of an ouvrage
+stored before the release: it is found. Tap the cross: the whole catalogue,
+the keyboard open.*
+
 ## Done
 
 - Phase 0 — Foundations, T001 to T012, done 2026-09-10 with `v0.1.3` on the
@@ -136,16 +278,15 @@
   add, its form and the authors in it, the listing, the edition page,
   removing a copy and editing an edition the house holds — changing an
   edition's cover, adding an ouvrage with no ISBN, the filters and sorts
-  of the list, and on the edition page the link to its series and its
-  tags — §4.2 search, §4.3 beyond
-  creating a bookshelf, adding a member and choosing the default —
-  removing a member, changing a member's role, adding to a bookshelf other
-  than the default, moving and lending a copy, its condition and
-  acquisition date — §4.4 reading, §4.5 beyond the series list and the
-  series page — the series details, the tomes after the highest owned,
-  the number of published volumes and the completion, the series filter
-  and renaming a series — §4.6 wishlist, §4.9 import and export,
-  §4.10 administration, and the offline browsing of §4.8.
+  of the list, and on the edition page the link to its series and its tags
+  — §4.3 beyond creating a bookshelf, adding a member and choosing the
+  default — removing a member, changing a member's role, adding to a
+  bookshelf other than the default, moving and lending a copy, its
+  condition and acquisition date — §4.4 reading, §4.5 beyond the series
+  list and the series page — the series details, the tomes after the
+  highest owned, the number of published volumes and the completion, the
+  series filter and renaming a series — §4.6 wishlist, §4.9 import and
+  export, §4.10 administration, and the offline browsing of §4.8.
 - **A refusal the bookshelves screens never provoke.** The spec says what
   each form shows when Libris does not answer (S9), and the taken name
   (S3), not what it shows when Libris refuses otherwise: a blank name the
@@ -154,3 +295,8 @@
   another reader. T081, T088 and T084 read such a refusal as no answer and
   show their S9 sentence; say if one should read otherwise. T135 reads
   the removal's `400`, which the screen never provokes, the same way.
+- **The search's two extensions.** D03 says the search migration creates
+  `unaccent` and `pg_trgm`; `CLAUDE.md` brings no migration ahead of the
+  task that exercises it. The plan follows the latter: T165 brings what
+  the words use, T168 the trigram index and its extension. Say if both
+  should land with T165 instead.
