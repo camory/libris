@@ -578,6 +578,21 @@ class JdbcCatalogueEditionsTest @Autowired constructor(
   }
 
   @Test
+  fun `an author respelled by a save leaves the author's other editions found by the name respelled`() {
+    // Given
+    val byUderzo = Contributions.of(listOf(Contribution("Albert Uderzo", ARTIST)))
+    val laSerpeDOr = heldOn(leasBookshelf, stored(editionTitled("La serpe d'or").copy(contributions = byUderzo)))
+    val lesGoths = heldOn(leasBookshelf, stored(editionTitled("Astérix et les Goths").copy(contributions = byUderzo)))
+    editions.update(laSerpeDOr.copy(contributions = Contributions.of(listOf(Contribution("Albert Udérzo", ARTIST)))))
+
+    // When
+    val page = catalogueEditions.findPage(lea.id, CatalogueQuery("udérzo"), null, PAGE_SIZE)
+
+    // Then
+    page shouldBe EditionIdPage(listOf(lesGoths.id, laSerpeDOr.id), null)
+  }
+
+  @Test
   fun `the first of each series is its first tome`() {
     // Given
     heldOn(leasBookshelf, edition("Aux prises avec Baggy", "One piece", 2))
