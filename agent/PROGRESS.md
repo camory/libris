@@ -210,4 +210,8 @@ Format:
   digits in the first part, `numhword` alone was enough (gotcha).
 - Deviations from the brief: the configuration names six token types where
   the brief's *Files* named three, as the review asks.
+- Fixed up after the second review, on Tophe's call: the configuration puts
+  all nineteen types `simple` maps through `unaccent, simple`, since
+  `file` (`Café2.1`) and `email` kept their accents; `cafe` finding
+  *Café2.1* proves it.
 - Left over: nothing new; T166 to T169 as before.
