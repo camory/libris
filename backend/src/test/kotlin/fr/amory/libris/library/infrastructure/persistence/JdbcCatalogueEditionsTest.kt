@@ -337,6 +337,19 @@ class JdbcCatalogueEditionsTest @Autowired constructor(
   }
 
   @Test
+  fun `a word of the subtitle finds its edition`() {
+    // Given
+    val maus = heldOn(leasBookshelf, stored(editionTitled("Maus").copy(subtitle = "Un survivant raconte")))
+    heldOn(leasBookshelf, edition("Pierre et le loup"))
+
+    // When
+    val page = catalogueEditions.findPage(lea.id, CatalogueQuery("survivant"), null, PAGE_SIZE)
+
+    // Then
+    page shouldBe EditionIdPage(listOf(maus.id), null)
+  }
+
+  @Test
   fun `the first of each series is its first tome`() {
     // Given
     heldOn(leasBookshelf, edition("Aux prises avec Baggy", "One piece", 2))
@@ -431,24 +444,18 @@ class JdbcCatalogueEditionsTest @Autowired constructor(
     volumeNumber: Int? = null,
     id: EditionId = EditionId.new(),
     isbn: Isbn? = null): Edition =
-    Edition(
-      id = id,
-      isbn = isbn,
-      kind = BD,
-      title = title,
-      subtitle = null,
-      contributions = Contributions.of(emptyList()),
-      seriesVolume = seriesName?.let {
-        SeriesVolume(seriesRepository.findOrInsert(Series(SeriesId.new(), it)).id, volumeNumber)
-      },
-      collection = null,
-      publisher = null,
-      publicationYear = null,
-      language = null,
-      pageCount = null,
-      summary = null,
-      coverName = null,
-    ).also(editions::insert)
+    stored(
+      editionTitled(title).copy(
+        id = id,
+        isbn = isbn,
+        seriesVolume = seriesName?.let {
+          SeriesVolume(seriesRepository.findOrInsert(Series(SeriesId.new(), it)).id, volumeNumber)
+        },
+      ),
+    )
+
+  private fun stored(edition: Edition): Edition =
+    edition.also(editions::insert)
 
   private fun romansHeldOn(bookshelf: Bookshelf, numbers: IntRange): Map<Int, Edition> =
     numbers.reversed().associateWith { heldOn(bookshelf, roman(it)) }
@@ -461,6 +468,24 @@ class JdbcCatalogueEditionsTest @Autowired constructor(
     return edition
   }
 }
+
+private fun editionTitled(title: String): Edition =
+  Edition(
+    id = EditionId.new(),
+    isbn = null,
+    kind = BD,
+    title = title,
+    subtitle = null,
+    contributions = Contributions.of(emptyList()),
+    seriesVolume = null,
+    collection = null,
+    publisher = null,
+    publicationYear = null,
+    language = null,
+    pageCount = null,
+    summary = null,
+    coverName = null,
+  )
 
 private const val PAGE_SIZE = 50
 private const val LESSER_TWIN = "00000000-0000-7000-8000-000000000001"
