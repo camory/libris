@@ -535,6 +535,19 @@ class JdbcCatalogueEditionsTest @Autowired constructor(
   }
 
   @Test
+  fun `a word of digits is the tome of the number it writes`() {
+    // Given
+    val tomeTwo = heldOn(leasBookshelf, edition("Aux prises avec Baggy et ses hommes", "One piece", 2))
+    heldOn(leasBookshelf, edition("Duel à Alubarna", "One piece", 20))
+
+    // When
+    val page = catalogueEditions.findPage(lea.id, CatalogueQuery("one piece 02"), null, PAGE_SIZE)
+
+    // Then
+    page shouldBe EditionIdPage(listOf(tomeTwo.id), null)
+  }
+
+  @Test
   fun `an edition saved with another title is found by its new title`() {
     // Given
     val romanceDawn = heldOn(leasBookshelf, edition("Romance dawn"))
