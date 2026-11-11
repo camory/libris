@@ -333,10 +333,11 @@ To release with Tophe: `v0.19.0` of `camory/libris-api`, after
   the nearest to words that find none, false otherwise, on an empty page
   and with no `q`.
 
-Contracteer verifies the answer's shape, `near` included; whether the
-verifier's generated case carries a `q`, and whether the operation gains
-an example, is measured and settled with the release. The words, the
-ISBN, the near matches and the pages of a search are the tests' to show.
+Contracteer verifies the answer's shape, `near` included, with no
+example: its generated cases always carry a random `q` beside `after`,
+never a request without one, and its mock answers any `q` with a page
+(measured on Contracteer 4.1.1 at the release). The words, the ISBN, the
+near matches and the pages of a search are the tests' to show.
 
 ## Done
 
