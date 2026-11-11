@@ -621,20 +621,17 @@ Read whole by a run that changes `backend/`, after `every-run.md`.
   which carries `isbn13` and `search_vector`, `HELD_BY_READER_AFTER`,
   `IN_CATALOGUE_ORDER`) and one `pageOf`; `searchOf` picks the statement.
   The words' clause hands the query's text to `TO_TSVECTOR` through
-  `words_ignoring_case_and_accents` and asks each of its lexemes in turn,
-  `BOOL_AND` over `UNNEST`: found when `search_vector @@
-  CAST(QUOTE_LITERAL(lexeme) || ':*' AS tsquery)`, or, a lexeme of digits
-  alone (`~ '^[0-9]+$'`, inside a `CASE` so no other lexeme is cast), when
-  `volume_number` equals it cast to `numeric` (`02` is tome 2; `integer`
-  overflows on twelve digits, `bigint` on 24, a `500`); the comparison
-  ends `IS TRUE`: a lexeme of letters, whose `CASE` gives `NULL`, or an
-  edition without a tome answers `NULL` there, and `BOOL_AND` skips a
-  `NULL`, so without it a word found nowhere counts as found (*serpe loup*
-  answers *Pierre et le loup*). Never the text to `TO_TSQUERY`, whose
-  syntax `&`, `!`, `:` and parentheses break (`syntax error in tsquery`).
-  A query of no word gives `BOOL_AND` no row, `NULL`, which matches
-  nothing. The clause is asked row by row, so the GIN index no longer
-  serves it. A `const` string template cannot reference a `const`
+  `words_ignoring_case_and_accents` and builds one `tsquery` of its
+  lexemes, `STRING_AGG` over `UNNEST` joined by ` & `, each lexeme a
+  prefix, `QUOTE_LITERAL(lexeme) || ':*'`, and a lexeme of digits alone
+  (`~ '^[0-9]+$'`, inside a `CASE` so no other lexeme is cast) that prefix
+  or the tome's token, `('02':* | '#2')`, cast to `numeric` and back to
+  `text` so `02` is tome 2 (`integer` overflows on twelve digits, `bigint`
+  on 24, a `500`). Never the text to `TO_TSQUERY`, whose syntax `&`, `!`,
+  `:` and parentheses break (`syntax error in tsquery`). A query of no
+  word gives `STRING_AGG` no row, `NULL`, which matches nothing. The
+  `tsquery` is an `InitPlan` the GIN index serves. A `const` string
+  template cannot reference a `const`
   declared below it (`Variable 'RANKED' must be initialized`), so the
   parts sit above their users. The fake
   `CatalogueEditionsAnswering` records a catalogue page as `asked` and a
@@ -647,7 +644,19 @@ Read whole by a run that changes `backend/`, after `every-run.md`.
   that `write` sets. A respelled author or series is not rewritten into
   its other editions' text: a respell changes only what the search
   configuration ignores. A raw `INSERT INTO edition` in a test must give
-  it. `search_vector` is generated from it.
+  it.
+- `edition.search_vector` is generated from `search_text` and, for an
+  edition with a tome, one lexeme `#` then the number (`'#2'`), through
+  `ARRAY_TO_TSVECTOR`, which refuses a `NULL` element, hence the `CASE`.
+  `V016` created it and `V017` changed it with `ALTER COLUMN … SET
+  EXPRESSION`, which rewrites every row and rebuilds the GIN index. The
+  parser drops a typed `#` (`#2` reads `'2'`), so only the words' clause
+  reaches that token. Right after a bulk write, the GIN index's pending
+  list makes the planner scan `edition` instead: on 10 000 editions, 243
+  pending pages gave a `Seq Scan`, and `SELECT
+  gin_clean_pending_list('edition_search_vector')` (or autovacuum) gave the
+  `Bitmap Index Scan` back, so a timing taken just after seeding measures
+  the scan (2026-11-12).
 - Flyway 12.4's clean drops no text search configuration, but drops each
   extension the user owns with `CASCADE`, which takes the configuration
   built on `unaccent`'s dictionary and the generated column using it, so
@@ -679,7 +688,9 @@ Read whole by a run that changes `backend/`, after `every-run.md`.
   text calls it through an `IMMUTABLE` wrapper function; `concat_ws` is
   `STABLE` too, so a generated column joins its texts with `||`.
   `to_tsvector` with its configuration given as a `regconfig` is accepted
-  in a generated column. `edition.search_text` cannot be one: it carries
+  in a generated column, and so is `'#' || volume_number`, although
+  `textanycat` is `STABLE`: a SQL function, inlined before the check
+  (probed 2026-11-12). `edition.search_text` cannot be one: it carries
   the series' and the authors' names, held in other tables. Probed during
   the search grill, 2026-11-11.
 - The full text search never matches an ISBN typed with its hyphens. A

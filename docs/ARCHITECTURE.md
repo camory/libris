@@ -147,8 +147,8 @@ order of the catalogue, not ranked, over:
   is asked as a prefix or as that token, so it also finds the tome of that
   number exactly, `02` included, in the one query the GIN index serves; no
   typed word reads as that token, the parser dropping the `#`. Asked row by
-  row beside the index, a word cost 26–41 ms on 10 000 editions, against
-  0.3 ms through it (measured 2026-11-12, PRD §5).
+  row beside the index, a query cost 16–59 ms on 10 000 editions, against
+  0.3–2.7 ms through it (measured 2026-11-12, PRD §5).
 - its ISBN, which alone answers a query that reads as a whole ISBN.
 
 The search's migrations create the `unaccent` and `pg_trgm` extensions; both

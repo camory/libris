@@ -250,3 +250,18 @@ Format:
 - Left over: the GIN index no longer serves the words' clause, asked row
   by row, as the brief accepted; near matches (T168), the frontend (T169
   on).
+
+## 2026-11-12 — The tome a token of the search's words (side PR, no task) — done
+- Did: `V017` adds the tome to `edition.search_vector` as one exact
+  lexeme, `#` then the number; the words' clause of `JdbcCatalogueEditions`
+  is one `tsquery` again, a word of digits alone asked as a prefix or as
+  that token. Every answer kept: `JdbcCatalogueEditionsTest` and S1
+  unchanged and green, the token mutation-checked on both sides (the
+  migration and the clause, two tome cases red each).
+- Decided (Tophe, #404): the token before T168, as a side PR, since a
+  change keeping every answer has no red to start from.
+- Measured on 10 000 synthetic editions: the same rows as T167's clause
+  for ten queries; 0.3–2.7 ms against 16–59 ms, 7–9 ms for a word found
+  in 3 006 editions (the sort).
+- Left over: T167's left-over no longer holds, the GIN index serves the
+  words' clause; near matches (T168), the frontend (T169 on).
