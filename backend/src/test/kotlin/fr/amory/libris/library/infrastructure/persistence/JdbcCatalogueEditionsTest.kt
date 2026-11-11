@@ -572,6 +572,19 @@ class JdbcCatalogueEditionsTest @Autowired constructor(
   }
 
   @Test
+  fun `a query of no word finds no edition`() {
+    // Given
+    heldOn(leasBookshelf, edition("La serpe d'or"))
+    heldOn(leasBookshelf, edition("Pierre et le loup"))
+
+    // When
+    val page = catalogueEditions.findPage(lea.id, CatalogueQuery("& !"), null, PAGE_SIZE)
+
+    // Then
+    page shouldBe EditionIdPage(emptyList(), null)
+  }
+
+  @Test
   fun `an edition saved with another title is found by its new title`() {
     // Given
     val romanceDawn = heldOn(leasBookshelf, edition("Romance dawn"))
