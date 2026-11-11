@@ -65,11 +65,12 @@ Libris answers the catalogue. Proof: the shape of the answer, `near`
 included, verified by Contracteer on both sides; backend scenario test
 over HTTP, one per case: *asterix* answering two *Astérix* albums in the
 order of the catalogue; *ast* answering them; *uderzo serpe* answering
-*La Serpe d'or* and not another album of *Albert Uderzo*; *one piece 2*
-answering tome 2 and neither tome 12 nor tome 20; an edition whose copies
-sit on another reader's bookshelf alone not answered to its title;
-frontend scenario test over the catalogue's fake, the rows the answer's,
-in its order.
+*La Serpe d'or* and not another album of *Albert Uderzo*; *la serpe
+d'or*, its title typed whole, apostrophe included, answering it; *one
+piece 2* answering tome 2 and neither tome 12 nor tome 20; an edition
+whose copies sit on another reader's bookshelf alone not answered to its
+title; frontend scenario test over the catalogue's fake, the rows the
+answer's, in its order.
 
 **S2 A whole ISBN finds its edition** · backend
 

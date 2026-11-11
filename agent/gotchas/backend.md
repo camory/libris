@@ -350,6 +350,13 @@ Read whole by a run that changes `backend/`, after `every-run.md`.
   `FreshSources` on `ScenarioTest` resets their stubs and request journal
   before each case, so a case stubs every source it needs and `verify(0, …)`
   counts only the case's own requests.
+- The scenario DSL reads answers with a plain Jackson 3 `JsonMapper`, which
+  refuses a non-null primitive missing from the JSON (`Cannot map null into
+  type boolean`, `FAIL_ON_NULL_FOR_PRIMITIVES`): a non-null `Boolean` or
+  `Int` added to a DSL type fails every live scenario reading that type
+  until the backend sends it. So `SearchPage`, read by the search
+  scenarios alone, holds `near`, and `BookPage`, read by the catalogue's,
+  does not (measured 2026-11-11, the backend on `v0.18.0`).
 - `/actuator/health` answers `{"groups":["liveness","readiness"],
   "status":"UP"}`, not the bare status.
 - UNIMARC field 105 `$a` is fixed-length coded data whose form-of-contents

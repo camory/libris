@@ -18,10 +18,10 @@ class Libris(private val http: RestTestClient) {
   fun unknownReader() =
     Reader(this, "inconnu", "Inconnu", UUID.randomUUID().toString())
 
-  fun <T> get(reader: Reader, path: String, read: (String) -> T): Answer<T> =
+  fun <T> get(reader: Reader, path: String, vararg variables: Any, read: (String) -> T): Answer<T> =
     Answer(
       http.get()
-        .uri(path)
+        .uri(path, *variables)
         .headers { it.putAll(reader.headers) }
         .accept(APPLICATION_JSON, APPLICATION_PROBLEM_JSON)
         .exchange(),
