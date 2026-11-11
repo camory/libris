@@ -317,6 +317,19 @@ class JdbcCatalogueEditionsTest @Autowired constructor(
   }
 
   @Test
+  fun `a query that reads as no ISBN finds no edition, for now`() {
+    // Given
+    heldOn(leasBookshelf, edition("Pierre et le loup"))
+    heldOn(leasBookshelf, edition("La serpe d'or", "Astérix", 2, isbn = isbnOf(LA_SERPE_D_OR)))
+
+    // When
+    val page = catalogueEditions.findPage(lea.id, CatalogueQuery(LA_SERPE_D_OR.dropLast(1)), null, PAGE_SIZE)
+
+    // Then
+    page shouldBe EditionIdPage(emptyList(), null)
+  }
+
+  @Test
   fun `the first of each series is its first tome`() {
     // Given
     heldOn(leasBookshelf, edition("Aux prises avec Baggy", "One piece", 2))
