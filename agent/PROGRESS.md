@@ -169,10 +169,28 @@ Format:
 - Deviations from the brief: none.
 - Left over: nothing new; T165 to T169 as before.
 
-## 2026-11-11 — T165 Words find an added edition — handoff
-- Done: steps 1 to 15, each its own commit; step 16's tidy (nothing to change) and gotchas (`backend.md`) done. Gate RED, branch not pushed: the four cases of `V013__summary_for_stored_editionsTest` fail on `null value in column "search_text"`, its raw `INSERT INTO edition (id, isbn13, kind, title, summary)` giving none. First step next run: that insert gives `search_text` (a test file the brief did not list: a deviation to declare), then the gate, tick T165, the diary entry, the PR.
-- Deviation: the extension and `unaccent` in the configuration came with step 3, not step 7: a configuration on no extension survives Flyway's clean and the next migration fails on `pg_ts_config_cfgname_index` (gotcha). Step 7 is thus a guard.
-- Deviation: step 3 read the words with `PLAINTO_TSQUERY`; step 8 brought the lexemes of `TO_TSVECTOR` built into a prefix `tsquery`, so step 11 is a guard. Step 7's commit body names no mutation (written before it ran): it is below.
-- Decided: `searchOf` picks `FIND_PAGE_OF_ISBN` or `FIND_PAGE_OF_WORDS`; `write` takes a `StatementSpec`, so `insert` adds `authorNames` and `JdbcEditionRepository` stays at ten functions; the test builds subtitle and authors through `stored(editionTitled(…).copy(…))`.
-- Guards, mutation → red read: 7 `word` mapped without `unaccent` → empty page; 9 `' | '` → both editions; 10 `' <-> '` → empty page; 11 text to `TO_TSQUERY` → `syntax error in tsquery`; 12 semi-join without keyset → Roman 01 to 03; 13 keyset without semi-join → Tom's edition; 14 `:isbn13` in `search_text` → the edition found.
-- Step 15 output (DB at V015, rolled back): `search_text: La serpe d'or Une aventure gauloise Astérix René Goscinny Albert Uderzo`; serpe, aventure, asterix, goscinny, uderzo each find 1 edition; pharaon finds 0. Script: `/tmp/fill.jsh` is gone with the sandbox; rewrite from this if needed.
+## 2026-11-11 — T165 Words find an added edition — done
+- Did: `V016` brings `unaccent`, the configuration
+  `words_ignoring_case_and_accents`, `edition.search_text` (filled, then
+  `NOT NULL`), the generated `search_vector` and its GIN index; the insert
+  writes the text; a query that reads as no ISBN finds the reader's editions
+  by its words, each a prefix, all required. S5 (an edition added) and S4 pass.
+- Decided: `searchOf` picks `FIND_PAGE_OF_ISBN` or `FIND_PAGE_OF_WORDS`;
+  `write` takes a `StatementSpec`, so `insert` adds `authorNames` and
+  `JdbcEditionRepository` stays at ten functions; the slice test builds
+  subtitle and authors through `stored(editionTitled(…).copy(…))`.
+- Decided: the query's words are the lexemes of `TO_TSVECTOR` over the
+  query, each quoted and suffixed `:*`, joined by `&`, so no sign of the
+  `tsquery` syntax reaches `TO_TSQUERY`.
+- Deviations from the brief: the extension and `unaccent` in the
+  configuration came with step 3, not step 7, since a configuration on no
+  extension survives Flyway's clean and breaks the next migration (gotcha);
+  steps 7 and 11 are thus guards. Step 3 read the words with
+  `PLAINTO_TSQUERY`, which step 8's prefixes replaced.
+- Deviations from the brief: `V013__summary_for_stored_editionsTest`, a
+  test file the brief did not list, gives `search_text` in its raw insert,
+  which the `NOT NULL` column refused (four cases red at the gate).
+- Deviations from the brief: the run handed off after step 15, its gate red
+  on that test, and was finished by a second run.
+- Left over: `update` writing `search_text` (T166), the tome (T167), near
+  matches (T168), the frontend's pin (T169).

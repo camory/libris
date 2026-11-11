@@ -42,7 +42,7 @@ every task.
       each carrying a random `q` (D07). Walking skeleton; realises S2;
       un-skips its backend test, its four cases.
 
-- [ ] T165 Backend: words find an added edition.
+- [x] T165 Backend: words find an added edition.
       Each word of a query, ignoring case and accents, is found when it
       begins a word of the edition's title, subtitle, series' name or one
       of its authors' names; every word is required, in any order (D03).
