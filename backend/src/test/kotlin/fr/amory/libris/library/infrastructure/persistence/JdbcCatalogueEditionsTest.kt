@@ -507,6 +507,20 @@ class JdbcCatalogueEditionsTest @Autowired constructor(
   }
 
   @Test
+  fun `an edition saved with another title is found by its new title`() {
+    // Given
+    val romanceDawn = heldOn(leasBookshelf, edition("Romance dawn"))
+    heldOn(leasBookshelf, edition("Pierre et le loup"))
+    editions.update(romanceDawn.copy(title = "À l'aube d'une grande aventure"))
+
+    // When
+    val page = catalogueEditions.findPage(lea.id, CatalogueQuery("aventure"), null, PAGE_SIZE)
+
+    // Then
+    page shouldBe EditionIdPage(listOf(romanceDawn.id), null)
+  }
+
+  @Test
   fun `the first of each series is its first tome`() {
     // Given
     heldOn(leasBookshelf, edition("Aux prises avec Baggy", "One piece", 2))

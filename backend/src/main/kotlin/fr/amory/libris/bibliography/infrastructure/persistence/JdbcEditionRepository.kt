@@ -34,7 +34,7 @@ private const val UPDATE_EDITION =
     SET isbn13 = :isbn13, kind = :kind, title = :title, subtitle = :subtitle, series_id = :seriesId,
         volume_number = :volumeNumber, collection = :collection, publisher = :publisher,
         publication_year = :publicationYear, language = :language, page_count = :pageCount,
-        summary = :summary, cover_name = :coverName
+        summary = :summary, cover_name = :coverName, search_text = :title
     WHERE edition.id = :id
     """
 
