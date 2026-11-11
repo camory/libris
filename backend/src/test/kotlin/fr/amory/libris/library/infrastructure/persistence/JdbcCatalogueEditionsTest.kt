@@ -379,6 +379,19 @@ class JdbcCatalogueEditionsTest @Autowired constructor(
   }
 
   @Test
+  fun `a word is found ignoring accents`() {
+    // Given
+    val emile = heldOn(leasBookshelf, edition("Émile et les détectives"))
+    heldOn(leasBookshelf, edition("Pierre et le loup"))
+
+    // When
+    val page = catalogueEditions.findPage(lea.id, CatalogueQuery("emile"), null, PAGE_SIZE)
+
+    // Then
+    page shouldBe EditionIdPage(listOf(emile.id), null)
+  }
+
+  @Test
   fun `the first of each series is its first tome`() {
     // Given
     heldOn(leasBookshelf, edition("Aux prises avec Baggy", "One piece", 2))
