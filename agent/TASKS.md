@@ -63,7 +63,7 @@ every task.
       search columns goes, answered by T165 and this task. Realises S5, an
       edition whose title a reader changed; un-skips that backend test.
 
-- [ ] T167 Backend: a tome found by its number.
+- [x] T167 Backend: a tome found by its number.
       A word of digits alone is also found in the edition whose tome is
       that number, exactly: *one piece 2* answers tome 2, neither tome 12
       nor tome 20 (D03); *tome* and *album* are words like any other. A

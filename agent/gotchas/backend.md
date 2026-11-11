@@ -621,11 +621,18 @@ Read whole by a run that changes `backend/`, after `every-run.md`.
   which carries `isbn13` and `search_vector`, `HELD_BY_READER_AFTER`,
   `IN_CATALOGUE_ORDER`) and one `pageOf`; `searchOf` picks the statement.
   The words' clause hands the query's text to `TO_TSVECTOR` through
-  `words_ignoring_case_and_accents`, and builds the `tsquery` from its
-  lexemes, each `QUOTE_LITERAL(lexeme) || ':*'`, joined by `' & '`, cast:
-  never the text to `TO_TSQUERY`, whose syntax `&`, `!`, `:` and
-  parentheses break (`syntax error in tsquery`). A query of no word builds
-  a `NULL` query, which matches nothing. A `const` string
+  `words_ignoring_case_and_accents` and asks each of its lexemes in turn,
+  `BOOL_AND` over `UNNEST`: found when `search_vector @@
+  CAST(QUOTE_LITERAL(lexeme) || ':*' AS tsquery)`, or, a lexeme of digits
+  alone (`~ '^[0-9]+$'`, inside a `CASE` so no other lexeme is cast), when
+  `volume_number` equals it cast to `numeric` (`02` is tome 2; `integer`
+  overflows on twelve digits, `bigint` on 24, a `500`); the comparison
+  ends `IS TRUE`, since an edition without a tome answers `NULL` there,
+  which `BOOL_AND` skips. Never the text to `TO_TSQUERY`, whose syntax
+  `&`, `!`, `:` and parentheses break (`syntax error in tsquery`). A query
+  of no word gives `BOOL_AND` no row, `NULL`, which matches nothing. The
+  clause is asked row by row, so the GIN index no longer serves it. A
+  `const` string
   template cannot reference a `const` declared below it (`Variable 'RANKED'
   must be initialized`), so the parts sit above their users. The fake
   `CatalogueEditionsAnswering` records a catalogue page as `asked` and a
@@ -659,7 +666,10 @@ Read whole by a run that changes `backend/`, after `every-run.md`.
   `unaccent`'s output alone (`Café` reads `{Cafe}`); `TO_TSVECTOR` is the
   truth (`'cafe'`). A query's word that is a prefix of the whole
   hyphenated word also matches it, so a case proving `hword_numpart` puts
-  the digits in a part after the first (probed 2026-11-11).
+  the digits in a part after the first (probed 2026-11-11). A word of
+  digits reads as `uint` whatever its length (`978201210134`, 24 digits)
+  and keeps its leading zeros (`02`); `n°2` reads `n` and `2` (probed
+  2026-11-11).
 - `placing` is a reserved word of PostgreSQL: as a table alias it is a
   syntax error (`syntax error at or near "placing"`).
 - A generated column and an index expression take only `IMMUTABLE`

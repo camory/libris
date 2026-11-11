@@ -230,3 +230,22 @@ Format:
 - Left over: an edition saved on a deployment that ran T165 without T166
   (staging alone) keeps its earlier text until saved again, no re-fill;
   the tome (T167), near matches (T168), the frontend (T169 on).
+
+## 2026-11-11 — T167 A tome found by its number — done
+- Did: the words' clause of `JdbcCatalogueEditions` asks each word of the
+  query in turn: found when it begins a word of `search_vector` or, a word
+  of digits alone, when it is the edition's volume number; S1 runs whole.
+- Decided: each word asked through `BOOL_AND` over the query's lexemes, so
+  a query of no word gives no row, `NULL`, and finds nothing without a
+  clause of its own.
+- Decided: the word compared as `numeric`, inside a `CASE` on
+  `~ '^[0-9]+$'`: a number, so `02` is tome 2, that no length overflows,
+  and a cast PostgreSQL never tries on a lexeme of letters.
+- Decided: the comparison with the volume number ends `IS TRUE`: an
+  edition without a tome answers `NULL` there, which `BOOL_AND` skips, and
+  *serpe loup* found both editions (run as an extra mutation).
+- Decided: step 4 is a guard, step 2's green already comparing numbers.
+- Deviations from the brief: none.
+- Left over: the GIN index no longer serves the words' clause, asked row
+  by row, as the brief accepted; near matches (T168), the frontend (T169
+  on).
