@@ -74,7 +74,10 @@ private const val FIND_PAGE_OF_WORDS =
     $RANKED
     SELECT ranked.id
     FROM ranked
-    WHERE ranked.search_vector @@ PLAINTO_TSQUERY('words_ignoring_case_and_accents', :words)
+    WHERE ranked.search_vector @@ (
+          SELECT CAST(STRING_AGG(QUOTE_LITERAL(word.lexeme) || ':*', ' & ') AS tsquery)
+          FROM UNNEST(TO_TSVECTOR('words_ignoring_case_and_accents', :words)) AS word
+      )
       AND $HELD_BY_READER_AFTER
     $IN_CATALOGUE_ORDER
     """
