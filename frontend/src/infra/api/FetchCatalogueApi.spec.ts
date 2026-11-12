@@ -55,6 +55,28 @@ describe("FetchCatalogueApi", () => {
     await expect(page).rejects.toThrow();
   });
 
+  it("searches the words given", async () => {
+    // Given
+    const api = new FetchCatalogueApi("http://libris.invalid");
+    const requested: string[] = [];
+    vi.stubGlobal("fetch", (url: string) => {
+      requested.push(url);
+      return Promise.resolve(
+        new Response(JSON.stringify({ books: [], next: null, near: false }), {
+          status: 200,
+        }),
+      );
+    });
+
+    // When
+    await api.search("la serpe d'or", null);
+
+    // Then
+    expect(requested).toEqual([
+      "http://libris.invalid/api/v1/books?q=la+serpe+d%27or",
+    ]);
+  });
+
   it("finds the ouvrage with its copies", async () => {
     // Given
     const api = new FetchCatalogueApi(inject("mockBaseUrl"));

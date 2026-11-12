@@ -3,6 +3,7 @@ import type {
   CatalogueApi,
   FindBookAnswer,
 } from "../../application/CatalogueApi";
+import type { SearchApi, SearchPage } from "../../application/SearchApi";
 import { bookOf, type BookResponse } from "./bookOf";
 import { problemOf, validationOrNotFound } from "./problemOf";
 
@@ -11,7 +12,7 @@ interface BookPageResponse {
   next: string | null;
 }
 
-export class FetchCatalogueApi implements CatalogueApi {
+export class FetchCatalogueApi implements CatalogueApi, SearchApi {
   constructor(private readonly baseUrl: string) {}
 
   async browse(after: string | null): Promise<BookPage> {
@@ -25,6 +26,17 @@ export class FetchCatalogueApi implements CatalogueApi {
     }
     const body = (await response.json()) as BookPageResponse;
     return { books: body.books.map(bookOf), next: body.next };
+  }
+
+  async search(query: string, after: string | null): Promise<SearchPage> {
+    void after;
+    await fetch(
+      `${this.baseUrl}/api/v1/books?${new URLSearchParams({ q: query }).toString()}`,
+      {
+        headers: { Accept: "application/json, application/problem+json" },
+      },
+    );
+    return { books: [], next: null, near: false };
   }
 
   async find(id: string): Promise<FindBookAnswer> {
