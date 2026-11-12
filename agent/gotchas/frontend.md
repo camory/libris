@@ -243,11 +243,24 @@ Read whole by a run that changes `frontend/`, after `every-run.md`.
   button is hidden by `[&::-webkit-search-cancel-button]:appearance-none`
   on the box, which jsdom never draws: the proof is the rule in
   `dist/assets/*.css` after `npm run build`. It is drawn by
-  `CatalogueView` unless the catalogue is `empty`; the view calls `search`
-  on the field's `@search`, no `watch` on its `searchText`, and `rowsOf`
+  `CatalogueView` unless the catalogue is `empty`. The view takes the
+  prop `query` (`""` by default), which `router.ts` computes for the
+  catalogue's `""` child from the address's `q` when it is one string,
+  `""` otherwise (since T176); the box and a search start from it at
+  setup. Its `searchFor`, on the field's `@search`, writes
+  `router.replace({ path: "/catalogue", query })`, `?q=` the
+  `searchQueryOf` of the text or no query under two characters, keeps that
+  query as `lastAsked`, then calls `search`; no `watch` on `searchText`. A
+  `watch` on the prop follows a navigation while the view is shown (the
+  tab or *Ouvrages* gives `""`): a value other than `lastAsked` fills the
+  box and searches, so the view's own `replace` asks nothing more and
+  leaves the text typed since. `arriving`, true at setup when the prop
+  reads as a query, cleared by any change of the search state, draws the
+  five loading rows alone; they also stand while the catalogue is
+  `loading` and no search answer is held. `rowsShown()`
   puts the `found`, `near` or `unavailable` books in place of the
-  catalogue's, and none for `nothing`, once the catalogue's first page has
-  come (never over its `loading`), read from `answer`, the one `computed`
+  catalogue's, and none for `nothing`, the catalogue's own `loading`
+  included, read from `answer`, the one `computed`
   over the search state, which also gives the sentence, the label and
   `loadingMore` (the search's for `found` and `near`); the two skeleton
   rows read the catalogue's `loadingMore` while `answer.books` is
@@ -267,7 +280,14 @@ Read whole by a run that changes `frontend/`, after `every-run.md`.
   the `h2` label `catalogue.search.near` (*Les plus proches :*, `mt-5 pb-2`)
   between the sentence and the rows, whose `ul` takes it as `aria-label`.
   `CatalogueView.spec.ts`' `open()` takes the search port second,
-  `new FakeSearchApi()` by default; a case types with
+  `new FakeSearchApi()` by default, and `{ router, query }` third, a fresh
+  `createLibrisRouter()` and no prop by default; a case reading the
+  address passes `routerAt("/catalogue")` and reads `address()`, and the
+  file's `afterEach` puts jsdom's history back on `/`. The view is mounted
+  alone, not under a `RouterView`, so its own `replace` never changes the
+  prop: a navigation is `wrapper.setProps({ query })`, and a case of the
+  address losing its query first sets it to the query asked, or the
+  prop, `""` from the start, never changes; a case types with
   `fireEvent.input(getByRole("searchbox"), { target: { value } })`, then
   asks with `fireEvent.submit(box.form!)`: an input alone asks nothing
   before 300 ms, and a pause left pending on a still-mounted view asks the

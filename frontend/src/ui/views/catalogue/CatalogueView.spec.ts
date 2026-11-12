@@ -7,6 +7,7 @@ import {
 } from "@testing-library/dom";
 import { flushPromises, mount } from "@vue/test-utils";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import type { Router } from "vue-router";
 import {
   catalogueApiKey,
   type BookPage,
@@ -28,6 +29,11 @@ import CatalogueRowSkeleton from "../../components/CatalogueRowSkeleton.vue";
 import { createLibrisI18n } from "../../i18n";
 import { createLibrisRouter } from "../../router";
 import CatalogueView from "./CatalogueView.vue";
+
+interface OpenOptions {
+  router?: Router;
+  query?: string;
+}
 
 describe("CatalogueView", () => {
   let watched: {
@@ -60,6 +66,7 @@ describe("CatalogueView", () => {
 
   afterEach(() => {
     vi.unstubAllGlobals();
+    window.history.replaceState(null, "", "/");
   });
 
   it("shows the title and the hint", () => {
@@ -821,6 +828,244 @@ describe("CatalogueView", () => {
     expect(wrapper.findAllComponents(CatalogueRowSkeleton)).toHaveLength(0);
   });
 
+  it("writes the query asked in the address", async () => {
+    // Given
+    const router = await routerAt("/catalogue");
+    const { screen } = open(
+      new FakeCatalogueApi([firstPage()]),
+      new FakeSearchApi({ goscinny: [lastSearchPage()] }),
+      { router },
+    );
+    await flushPromises();
+
+    // When
+    await searchFor(screen, " goscinny ");
+
+    // Then
+    expect(address()).toBe("/catalogue?q=goscinny");
+  });
+
+  it("replaces the address's entry at each search", async () => {
+    // Given
+    const router = await routerAt("/catalogue");
+    const { screen } = open(
+      new FakeCatalogueApi([firstPage()]),
+      new FakeSearchApi({
+        goscinny: [lastSearchPage()],
+        oda: [{ books: [romanceDawn], next: null, near: false }],
+      }),
+      { router },
+    );
+    await flushPromises();
+    const entries = window.history.length;
+
+    // When
+    await searchFor(screen, "goscinny");
+    await searchFor(screen, "oda");
+
+    // Then
+    expect(address()).toBe("/catalogue?q=oda");
+    expect(window.history.length).toBe(entries);
+  });
+
+  it("writes no query under two characters", async () => {
+    // Given
+    const router = await routerAt("/catalogue");
+    const { screen } = open(
+      new FakeCatalogueApi([firstPage()]),
+      new FakeSearchApi({ goscinny: [lastSearchPage()] }),
+      { router },
+    );
+    await flushPromises();
+
+    // When
+    await searchFor(screen, "goscinny");
+    await searchFor(screen, " g ");
+
+    // Then
+    expect(address()).toBe("/catalogue");
+  });
+
+  it("opens on the search the address names", async () => {
+    // Given
+    const searchApi = new FakeSearchApi({ goscinny: [lastSearchPage()] });
+
+    // When
+    const { screen } = open(new FakeCatalogueApi([firstPage()]), searchApi, {
+      query: "goscinny",
+    });
+    await flushPromises();
+
+    // Then
+    expect(screen.getByRole<HTMLInputElement>("searchbox").value).toBe(
+      "goscinny",
+    );
+    expect(
+      screen.getAllByRole("listitem").map((row) => row.textContent),
+    ).toEqual([expect.stringContaining("Astérix le Gaulois")]);
+    expect(searchApi.asked).toEqual([{ query: "goscinny", after: null }]);
+  });
+
+  it("shows only the loading rows until the search the address names answers", async () => {
+    // Given
+    const searchApi = new FakeSearchApi({
+      goscinny: [new Promise<SearchPage>(() => {})],
+    });
+
+    // When
+    const { wrapper, screen } = open(
+      new FakeCatalogueApi([firstPage()]),
+      searchApi,
+      { query: "goscinny" },
+    );
+    await flushPromises();
+
+    // Then
+    expect(wrapper.findAllComponents(CatalogueRowSkeleton)).toHaveLength(5);
+    expect(screen.queryAllByRole("listitem")).toHaveLength(0);
+  });
+
+  it("keeps the catalogue's rows while a search typed is coming", async () => {
+    // Given
+    const { wrapper, screen } = open(
+      new FakeCatalogueApi([firstPage()]),
+      new FakeSearchApi({ goscinny: [new Promise<SearchPage>(() => {})] }),
+    );
+    await flushPromises();
+
+    // When
+    await searchFor(screen, "goscinny");
+
+    // Then
+    expect(screen.getAllByRole("listitem")).toHaveLength(2);
+    expect(wrapper.findAllComponents(CatalogueRowSkeleton)).toHaveLength(0);
+  });
+
+  it("shows the whole catalogue at once when the box is emptied before the address's search answers", async () => {
+    // Given
+    const { wrapper, screen } = open(
+      new FakeCatalogueApi([firstPage()]),
+      new FakeSearchApi({ goscinny: [new Promise<SearchPage>(() => {})] }),
+      { query: "goscinny" },
+    );
+    await flushPromises();
+
+    // When
+    await searchFor(screen, "");
+
+    // Then
+    expect(screen.getAllByRole("listitem")).toHaveLength(2);
+    expect(wrapper.findAllComponents(CatalogueRowSkeleton)).toHaveLength(0);
+  });
+
+  it("lists the search's answer come before the catalogue's first page", async () => {
+    // Given
+    const searchApi = new FakeSearchApi({ goscinny: [lastSearchPage()] });
+
+    // When
+    const { wrapper, screen } = open(
+      {
+        browse: () => new Promise<BookPage>(() => {}),
+        find: () => Promise.reject(Error("no find in this case")),
+      },
+      searchApi,
+      { query: "goscinny" },
+    );
+    await flushPromises();
+
+    // Then
+    expect(screen.getAllByRole("listitem")).toHaveLength(1);
+    expect(wrapper.findAllComponents(CatalogueRowSkeleton)).toHaveLength(0);
+  });
+
+  it("empties the box and shows the catalogue when the address loses its query", async () => {
+    // Given
+    const { wrapper, screen } = open(
+      new FakeCatalogueApi([firstPage()]),
+      new FakeSearchApi({ goscinny: [lastSearchPage()] }),
+    );
+    await flushPromises();
+    await searchFor(screen, "goscinny");
+    await wrapper.setProps({ query: "goscinny" });
+
+    // When
+    await wrapper.setProps({ query: "" });
+    await flushPromises();
+
+    // Then
+    expect(screen.getByRole<HTMLInputElement>("searchbox").value).toBe("");
+    expect(screen.getAllByRole("listitem")).toHaveLength(2);
+  });
+
+  it("searches the query the address takes", async () => {
+    // Given
+    const searchApi = new FakeSearchApi({
+      goscinny: [lastSearchPage()],
+      oda: [{ books: [romanceDawn], next: null, near: false }],
+    });
+    const { wrapper, screen } = open(
+      new FakeCatalogueApi([firstPage()]),
+      searchApi,
+    );
+    await flushPromises();
+    await searchFor(screen, "goscinny");
+    await wrapper.setProps({ query: "goscinny" });
+
+    // When
+    await wrapper.setProps({ query: "oda" });
+    await flushPromises();
+
+    // Then
+    expect(screen.getByRole<HTMLInputElement>("searchbox").value).toBe("oda");
+    expect(searchApi.asked.at(-1)).toEqual({ query: "oda", after: null });
+    expect(
+      screen.getAllByRole("listitem").map((row) => row.textContent),
+    ).toEqual([expect.stringContaining("Romance dawn")]);
+  });
+
+  it("asks nothing more when the address takes the query asked", async () => {
+    // Given
+    const searchApi = new FakeSearchApi({
+      goscinny: [lastSearchPage(), lastSearchPage()],
+    });
+    const { wrapper, screen } = open(
+      new FakeCatalogueApi([firstPage()]),
+      searchApi,
+    );
+    await flushPromises();
+    await searchFor(screen, "goscinny");
+
+    // When
+    await wrapper.setProps({ query: "goscinny" });
+    await flushPromises();
+
+    // Then
+    expect(searchApi.asked).toHaveLength(1);
+    expect(screen.getAllByRole("listitem")).toHaveLength(1);
+  });
+
+  it("keeps the text typed since when the address takes the query asked", async () => {
+    // Given
+    const searchApi = new FakeSearchApi({ goscinny: [lastSearchPage()] });
+    const { wrapper, screen } = open(
+      new FakeCatalogueApi([firstPage()]),
+      searchApi,
+    );
+    await flushPromises();
+    await searchFor(screen, "goscinny");
+    const box = screen.getByRole<HTMLInputElement>("searchbox");
+    await fireEvent.input(box, { target: { value: "goscinnyx" } });
+
+    // When
+    await wrapper.setProps({ query: "goscinny" });
+    await flushPromises();
+
+    // Then
+    expect(box.value).toBe("goscinnyx");
+    expect(searchApi.asked).toHaveLength(1);
+    wrapper.unmount();
+  });
+
   function firstPage(): BookPage {
     return {
       books: [asterixLeGaulois, asterixEtSesAmis],
@@ -843,10 +1088,12 @@ describe("CatalogueView", () => {
   function open(
     catalogueApi: CatalogueApi,
     searchApi: SearchApi = new FakeSearchApi(),
+    { router = createLibrisRouter(), query }: OpenOptions = {},
   ) {
     const wrapper = mount(CatalogueView, {
+      props: query === undefined ? {} : { query },
       global: {
-        plugins: [createLibrisI18n(), createLibrisRouter()],
+        plugins: [createLibrisI18n(), router],
         provide: {
           [catalogueApiKey]: catalogueApi,
           [searchApiKey]: searchApi,
@@ -854,6 +1101,17 @@ describe("CatalogueView", () => {
       },
     });
     return { wrapper, screen: within(wrapper.element as HTMLElement) };
+  }
+
+  async function routerAt(path: string) {
+    const router = createLibrisRouter();
+    await router.push(path);
+    await router.isReady();
+    return router;
+  }
+
+  function address() {
+    return window.location.pathname + window.location.search;
   }
 
   async function searchFor(

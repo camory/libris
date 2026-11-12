@@ -2,15 +2,19 @@
 import { BookOpen, CircleAlert } from "@lucide/vue";
 import { computed, inject, onUnmounted, ref, useTemplateRef, watch } from "vue";
 import { useI18n } from "vue-i18n";
+import { useRouter } from "vue-router";
 import { catalogueApiKey } from "../../../application/CatalogueApi";
 import { searchApiKey } from "../../../application/SearchApi";
 import { useBrowseCatalogue } from "../../../application/useBrowseCatalogue";
 import { useSearchCatalogue } from "../../../application/useSearchCatalogue";
 import type { Book } from "../../../domain/Book";
+import { searchQueryOf } from "../../../domain/SearchQuery";
 import CatalogueRow from "../../components/CatalogueRow.vue";
 import CatalogueRowSkeleton from "../../components/CatalogueRowSkeleton.vue";
 import CatalogueSwitch from "../../components/CatalogueSwitch.vue";
 import SearchField from "../../components/SearchField.vue";
+
+const props = withDefaults(defineProps<{ query?: string }>(), { query: "" });
 
 const { t } = useI18n();
 const { state, browse } = useBrowseCatalogue(inject(catalogueApiKey)!);
@@ -19,7 +23,31 @@ const {
   search,
   searchMore,
 } = useSearchCatalogue(inject(searchApiKey)!);
-const searchText = ref("");
+const router = useRouter();
+const searchText = ref(props.query);
+let lastAsked = props.query;
+const arriving = ref(searchQueryOf(props.query) !== null);
+watch(searchState, () => (arriving.value = false));
+
+watch(
+  () => props.query,
+  (query) => {
+    if (query === lastAsked) return;
+    lastAsked = query;
+    searchText.value = query;
+    void search(query);
+  },
+);
+
+function searchFor(text: string) {
+  const query = searchQueryOf(text);
+  lastAsked = query ?? "";
+  void router.replace({
+    path: "/catalogue",
+    query: query === null ? {} : { q: query },
+  });
+  void search(text);
+}
 
 interface Answer {
   sentence?: string;
@@ -76,8 +104,9 @@ const message = computed(() => {
     : undefined;
 });
 
-function rowsOf(catalogueBooks: Book[]): Book[] {
-  return answer.value.books ?? catalogueBooks;
+function rowsShown(): Book[] {
+  if (answer.value.books !== undefined) return answer.value.books;
+  return "books" in state.value ? state.value.books : [];
 }
 
 const rows = useTemplateRef("rows");
@@ -104,6 +133,7 @@ watch(
 onUnmounted(() => observer.disconnect());
 
 void browse();
+void search(props.query);
 </script>
 
 <template>
@@ -117,11 +147,13 @@ void browse();
       v-if="state.status !== 'empty'"
       v-model="searchText"
       class="mb-5"
-      @search="search"
+      @search="searchFor"
     />
 
     <div
-      v-if="state.status === 'loading'"
+      v-if="
+        arriving || (state.status === 'loading' && answer.books === undefined)
+      "
       class="divide-y divide-border overflow-hidden rounded-[14px] border border-border bg-surface"
     >
       <CatalogueRowSkeleton v-for="row in 5" :key="row" />
@@ -141,7 +173,7 @@ void browse();
         {{ answer.label }}
       </h2>
       <div
-        v-if="rowsOf(state.books).length > 0"
+        v-if="rowsShown().length > 0"
         class="divide-y divide-border overflow-hidden rounded-[14px] border border-border bg-surface"
       >
         <ul
@@ -149,7 +181,7 @@ void browse();
           :aria-label="answer.label"
           class="divide-y divide-border"
         >
-          <li v-for="book in rowsOf(state.books)" :key="book.id">
+          <li v-for="book in rowsShown()" :key="book.id">
             <CatalogueRow :book="book" />
           </li>
         </ul>
@@ -166,7 +198,7 @@ void browse();
       <p
         v-if="message"
         class="flex items-start gap-2 text-body text-danger"
-        :class="{ 'mt-5': rowsOf(state.books).length > 0 }"
+        :class="{ 'mt-5': rowsShown().length > 0 }"
       >
         <CircleAlert :size="22" class="shrink-0" />
         <span>{{ message }}</span>
