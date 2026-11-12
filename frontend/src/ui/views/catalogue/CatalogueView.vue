@@ -23,11 +23,11 @@ const {
   search,
   searchMore,
 } = useSearchCatalogue(inject(searchApiKey)!);
+const router = useRouter();
 const searchText = ref(props.query);
+let lastAsked = props.query;
 const arriving = ref(searchQueryOf(props.query) !== null);
 watch(searchState, () => (arriving.value = false));
-const router = useRouter();
-let lastAsked = props.query;
 
 watch(
   () => props.query,
