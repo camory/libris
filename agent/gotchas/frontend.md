@@ -222,11 +222,11 @@ Read whole by a run that changes `frontend/`, after `every-run.md`.
   literal `""` at once, and focuses the box; the browser's own clear
   button is hidden by `[&::-webkit-search-cancel-button]:appearance-none`
   on the box, which jsdom never draws: the proof is the rule in
-  `dist/assets/*.css` after `npm run build`. It is drawn by `CatalogueView` unless the
-  catalogue is `empty`; the view calls `search` on the field's `@search`,
-  no `watch` on its `searchText`, and `rowsOf` puts the found books in
-  place of the catalogue's once the catalogue's first page has come (never
-  over its `loading`).
+  `dist/assets/*.css` after `npm run build`. It is drawn by
+  `CatalogueView` unless the catalogue is `empty`; the view calls `search`
+  on the field's `@search`, no `watch` on its `searchText`, and `rowsOf`
+  puts the found books in place of the catalogue's once the catalogue's
+  first page has come (never over its `loading`).
   `CatalogueView.spec.ts`' `open()` takes the search port second,
   `new FakeSearchApi()` by default; a case types with
   `fireEvent.input(getByRole("searchbox"), { target: { value } })`, then
