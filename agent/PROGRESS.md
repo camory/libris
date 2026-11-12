@@ -393,7 +393,7 @@ Format:
   *…, none near either* went green at step 4, before the near steps, since
   it asserts nothing the near state draws; step 10's mutation reds it.
 - Deviations from the brief: step 7 names the list `Les plus
-  proches :` in its role query: `getByRole`'s name is compared
+  proches\u00A0:` in its role query: `getByRole`'s name is compared
   exactly, so a plain space finds nothing (gotcha added).
 - Left over: the next pages (T173), the order of answers (T174), the
   failure (T175), the address (T176); the guillemets proposal and the
