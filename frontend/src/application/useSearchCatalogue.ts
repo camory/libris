@@ -12,8 +12,11 @@ export type SearchState =
 export function useSearchCatalogue(searchApi: SearchApi): {
   state: Ref<SearchState>;
   search: (text: string) => Promise<void>;
+  searchMore: () => Promise<void>;
 } {
   const state = ref<SearchState>({ status: "ready" });
+  let searched = "";
+  let next: string | null = null;
 
   async function search(text: string) {
     const query = searchQueryOf(text);
@@ -22,10 +25,23 @@ export function useSearchCatalogue(searchApi: SearchApi): {
       return;
     }
     const page = await searchApi.search(query, null);
+    searched = query;
+    next = page.next;
     state.value = stateOf(query, page);
   }
 
-  return { state, search };
+  async function searchMore() {
+    const shown = state.value;
+    if (shown.status !== "found" && shown.status !== "near") return;
+    const page = await searchApi.search(searched, next);
+    next = page.next;
+    state.value = stateOf(searched, {
+      ...page,
+      books: [...shown.books, ...page.books],
+    });
+  }
+
+  return { state, search, searchMore };
 }
 
 function stateOf(query: string, page: SearchPage): SearchState {

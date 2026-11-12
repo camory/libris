@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { asterixLeGaulois, romanceDawn } from "../fixture/Books";
 import { FakeSearchApi } from "../fixture/FakeSearchApi";
+import type { SearchPage } from "./SearchApi";
 import { useSearchCatalogue } from "./useSearchCatalogue";
 
 describe("useSearchCatalogue", () => {
@@ -16,6 +17,23 @@ describe("useSearchCatalogue", () => {
 
     // When
     await search("goscinny");
+
+    // Then
+    expect(state.value).toEqual({
+      status: "found",
+      books: [romanceDawn, asterixLeGaulois],
+    });
+  });
+
+  it("holds the next page's books after the first's", async () => {
+    // Given
+    const { state, search, searchMore } = useSearchCatalogue(
+      new FakeSearchApi({ goscinny: [firstPage(), lastPage()] }),
+    );
+    await search("goscinny");
+
+    // When
+    await searchMore();
 
     // Then
     expect(state.value).toEqual({
@@ -116,4 +134,12 @@ describe("useSearchCatalogue", () => {
     // Then
     expect(state.value).toEqual({ status: "found", books: [romanceDawn] });
   });
+
+  function firstPage(near = false): SearchPage {
+    return { books: [romanceDawn], next: romanceDawn.id, near };
+  }
+
+  function lastPage(near = false): SearchPage {
+    return { books: [asterixLeGaulois], next: null, near };
+  }
 });
