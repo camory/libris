@@ -717,6 +717,31 @@ describe("CatalogueView", () => {
     expect(wrapper.findAllComponents(CatalogueRowSkeleton)).toHaveLength(0);
   });
 
+  it("says to try again later under the search's rows when its next page does not come", async () => {
+    // Given
+    const { wrapper, screen } = open(
+      new FakeCatalogueApi([firstPage()]),
+      new FakeSearchApi({
+        goscinny: [firstSearchPage(), new TypeError("Failed to fetch")],
+      }),
+    );
+    await flushPromises();
+    await searchFor(screen, "goscinny");
+
+    // When
+    theLastRowComes(true);
+    await flushPromises();
+
+    // Then
+    const message = screen.getByText(
+      "Erreur lors de la recherche, veuillez réessayer plus tard.",
+    );
+    expect(under(screen.getByRole("list"), message)).toBe(true);
+    expect(screen.getAllByRole("listitem")).toHaveLength(1);
+    expect(wrapper.findAllComponents(CircleAlert)).toHaveLength(1);
+    expect(wrapper.findAllComponents(CatalogueRowSkeleton)).toHaveLength(0);
+  });
+
   function firstPage(): BookPage {
     return {
       books: [asterixLeGaulois, asterixEtSesAmis],
