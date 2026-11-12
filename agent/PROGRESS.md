@@ -395,6 +395,9 @@ Format:
 - Deviations from the brief: step 7 names the list `Les plus
   proches\u00A0:` in its role query: `getByRole`'s name is compared
   exactly, so a plain space finds nothing (gotcha added).
+- Decided by Tophe at review: a non-breaking space inside guillemets,
+  now in `docs/DESIGN.md`'s words on screen and in
+  `catalogue.search.nothing`; the view reads the search state once, in
+  `answer`, for the states T173 to T175 add.
 - Left over: the next pages (T173), the order of answers (T174), the
-  failure (T175), the address (T176); the guillemets proposal and the
-  Pixel checks in the PR body.
+  failure (T175), the address (T176); the Pixel checks in the PR body.

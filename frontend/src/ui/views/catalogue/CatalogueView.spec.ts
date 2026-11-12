@@ -240,7 +240,9 @@ describe("CatalogueView", () => {
 
     // Then
     expect(
-      screen.getByText("Aucun ouvrage ne correspond à « gaston »."),
+      screen.getByText("Aucun ouvrage ne correspond à «\u00A0gaston\u00A0».", {
+        normalizer: (text) => text,
+      }),
     ).toBeDefined();
   });
 

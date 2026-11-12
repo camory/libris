@@ -404,9 +404,10 @@ cours…*). A title names the thing done on the screen, in the infinitive with
 its object: *Ajouter un ouvrage*. Four screens take a proper name instead:
 the home page, *Libris*, the application's name, a bookshelf's screen, the
 bookshelf's name, a series' screen, the series' name, and an ouvrage's
-screen, the ouvrage's title. Typography is
-French: the non-breaking space before `:`, `;` and `?`, guillemets « » for quotes, the middle dot
-` · ` to join two facts on one line (*One piece · tome 1*).
+screen, the ouvrage's title. Typography is French: the non-breaking space
+before `:`, `;` and `?`, guillemets « » for quotes with a non-breaking
+space inside each, the middle dot ` · ` to join two facts on one line
+(*One piece · tome 1*).
 
 Proper names keep their own spelling and case, *Open Library*, *BnF*,
 *Eiichirō Oda*; a title of an ouvrage is shown as the source gives it.

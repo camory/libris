@@ -229,9 +229,11 @@ Read whole by a run that changes `frontend/`, after `every-run.md`.
   on the field's `@search`, no `watch` on its `searchText`, and `rowsOf`
   puts the `found` or `near` books in place of the catalogue's, and none
   for `nothing`, once the catalogue's first page has come (never over its
-  `loading`); over `nothing` and `near` it draws first the sentence
-  `catalogue.search.nothing` (*Aucun ouvrage ne correspond à « gaston ».*,
-  the query asked, `lead` `muted`), and over `near` the `h2` label
+  `loading`), read from `answer`, the one `computed` over the search state,
+  which also gives the sentence and the label: over `nothing` and `near`
+  the sentence `catalogue.search.nothing` (*Aucun ouvrage ne correspond à
+  « gaston ».*, the query asked, U+00A0 inside the guillemets, `lead`
+  `muted`) comes first, and over `near` the `h2` label
   `catalogue.search.near` (*Les plus proches :*, `mt-5 pb-2`) between the
   sentence and the rows, whose `ul` takes it as `aria-label`.
   `CatalogueView.spec.ts`' `open()` takes the search port second,
