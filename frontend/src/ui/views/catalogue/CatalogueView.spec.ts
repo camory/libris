@@ -12,7 +12,11 @@ import {
   type BookPage,
   type CatalogueApi,
 } from "../../../application/CatalogueApi";
-import { searchApiKey, type SearchApi } from "../../../application/SearchApi";
+import {
+  searchApiKey,
+  type SearchApi,
+  type SearchPage,
+} from "../../../application/SearchApi";
 import {
   asterixEtSesAmis,
   asterixLeGaulois,
@@ -570,6 +574,112 @@ describe("CatalogueView", () => {
     expect(under(screen.getByRole("list"), message)).toBe(true);
   });
 
+  it("lists the search's next page under its first when its last row comes into view", async () => {
+    // Given
+    const { screen } = open(
+      new FakeCatalogueApi([{ books: [asterixEtSesAmis], next: null }]),
+      new FakeSearchApi({
+        goscinny: [firstSearchPage(), lastSearchPage()],
+      }),
+    );
+    await flushPromises();
+    await searchFor(screen, "goscinny");
+
+    // When
+    theLastRowComes(true);
+    await flushPromises();
+
+    // Then
+    const items = screen.getAllByRole("listitem");
+    expect(items).toHaveLength(2);
+    expect(within(items[0]!).getByText("Romance dawn")).toBeDefined();
+    expect(within(items[1]!).getByText("Astérix le Gaulois")).toBeDefined();
+  });
+
+  it("watches the search's last row alone", async () => {
+    // Given
+    const { screen } = open(
+      new FakeCatalogueApi([firstPage()]),
+      new FakeSearchApi({ goscinny: [firstSearchPage()] }),
+    );
+    await flushPromises();
+
+    // When
+    await searchFor(screen, "goscinny");
+
+    // Then
+    const targets = watchedTargets();
+    expect(targets).toHaveLength(1);
+    expect(
+      within(targets[0] as HTMLElement).getByText("Romance dawn"),
+    ).toBeDefined();
+  });
+
+  it("shows two skeleton rows under the search's rows while its next page is coming", async () => {
+    // Given
+    const { wrapper, screen } = open(
+      new FakeCatalogueApi([{ books: [asterixEtSesAmis], next: null }]),
+      new FakeSearchApi({
+        goscinny: [firstSearchPage(), new Promise(() => {})],
+      }),
+    );
+    await flushPromises();
+    await searchFor(screen, "goscinny");
+
+    // When
+    theLastRowComes(true);
+    await flushPromises();
+
+    // Then
+    const skeletons = wrapper.findAllComponents(CatalogueRowSkeleton);
+    expect(skeletons).toHaveLength(2);
+    expect(screen.getAllByRole("listitem")).toHaveLength(1);
+    expect(under(screen.getByRole("list"), skeletons[0]!.element)).toBe(true);
+  });
+
+  it("asks the catalogue no next page while a search is shown", async () => {
+    // Given
+    const catalogueApi = new FakeCatalogueApi([firstPage(), lastPage()]);
+    const { screen } = open(
+      catalogueApi,
+      new FakeSearchApi({ goscinny: [lastSearchPage()] }),
+    );
+    await flushPromises();
+    await searchFor(screen, "goscinny");
+
+    // When
+    theLastRowComes(true);
+    await flushPromises();
+
+    // Then
+    expect(catalogueApi.asked).toEqual([null]);
+  });
+
+  it("shows no catalogue skeleton under the search's rows", async () => {
+    // Given
+    const { wrapper, screen } = open(
+      {
+        browse: (after) =>
+          after === null
+            ? Promise.resolve(firstPage())
+            : new Promise<BookPage>(() => {}),
+        find: () => Promise.reject(Error("no find in this case")),
+      },
+      new FakeSearchApi({
+        goscinny: [{ books: [romanceDawn], next: null, near: false }],
+      }),
+    );
+    await flushPromises();
+    theLastRowComes(true);
+    await flushPromises();
+
+    // When
+    await searchFor(screen, "goscinny");
+
+    // Then
+    expect(wrapper.findAllComponents(CatalogueRowSkeleton)).toHaveLength(0);
+  });
+
   function firstPage(): BookPage {
     return {
       books: [asterixLeGaulois, asterixEtSesAmis],
@@ -579,6 +689,14 @@ describe("CatalogueView", () => {
 
   function lastPage(): BookPage {
     return { books: [romanceDawn], next: null };
+  }
+
+  function firstSearchPage(): SearchPage {
+    return { books: [romanceDawn], next: romanceDawn.id, near: false };
+  }
+
+  function lastSearchPage(): SearchPage {
+    return { books: [asterixLeGaulois], next: null, near: false };
   }
 
   function open(

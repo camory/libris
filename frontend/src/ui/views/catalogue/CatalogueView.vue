@@ -14,21 +14,29 @@ import SearchField from "../../components/SearchField.vue";
 
 const { t } = useI18n();
 const { state, browse } = useBrowseCatalogue(inject(catalogueApiKey)!);
-const { state: searchState, search } = useSearchCatalogue(
-  inject(searchApiKey)!,
-);
+const {
+  state: searchState,
+  search,
+  searchMore,
+} = useSearchCatalogue(inject(searchApiKey)!);
 const searchText = ref("");
 
 const answer = computed(() => {
   const shown = searchState.value;
   switch (shown.status) {
     case "found":
-      return { sentence: undefined, label: undefined, books: shown.books };
+      return {
+        sentence: undefined,
+        label: undefined,
+        books: shown.books,
+        loadingMore: shown.loadingMore,
+      };
     case "near":
       return {
         sentence: t("catalogue.search.nothing", { query: shown.query }),
         label: t("catalogue.search.near"),
         books: shown.books,
+        loadingMore: shown.loadingMore,
       };
     case "nothing":
       return {
@@ -47,12 +55,16 @@ function rowsOf(catalogueBooks: Book[]): Book[] {
 
 const rows = useTemplateRef("rows");
 const observer = new IntersectionObserver((entries) => {
-  if (entries.some((entry) => entry.isIntersecting)) void browse();
+  if (entries.some((entry) => entry.isIntersecting)) void growTheList();
 });
 let lastRow: Element | null = null;
 
+function growTheList() {
+  return answer.value.books === undefined ? browse() : searchMore();
+}
+
 watch(
-  state,
+  [state, searchState],
   () => {
     const row = rows.value?.lastElementChild ?? null;
     if (row === null || row === lastRow) return;
@@ -114,7 +126,7 @@ void browse();
             <CatalogueRow :book="book" />
           </li>
         </ul>
-        <template v-if="state.status === 'loadingMore'">
+        <template v-if="answer.loadingMore ?? state.status === 'loadingMore'">
           <CatalogueRowSkeleton v-for="row in 2" :key="row" />
         </template>
       </div>

@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { asterixLeGaulois, romanceDawn } from "../fixture/Books";
 import { FakeSearchApi } from "../fixture/FakeSearchApi";
+import type { SearchPage } from "./SearchApi";
 import { useSearchCatalogue } from "./useSearchCatalogue";
 
 describe("useSearchCatalogue", () => {
@@ -21,7 +22,133 @@ describe("useSearchCatalogue", () => {
     expect(state.value).toEqual({
       status: "found",
       books: [romanceDawn, asterixLeGaulois],
+      loadingMore: false,
     });
+  });
+
+  it("holds the next page's books after the first's", async () => {
+    // Given
+    const { state, search, searchMore } = useSearchCatalogue(
+      new FakeSearchApi({ goscinny: [firstPage(), lastPage()] }),
+    );
+    await search("goscinny");
+
+    // When
+    await searchMore();
+
+    // Then
+    expect(state.value).toEqual({
+      status: "found",
+      books: [romanceDawn, asterixLeGaulois],
+      loadingMore: false,
+    });
+  });
+
+  it("asks the next page of the same query after the last page's next", async () => {
+    // Given
+    const searchApi = new FakeSearchApi({
+      goscinny: [firstPage(), lastPage()],
+    });
+    const { search, searchMore } = useSearchCatalogue(searchApi);
+    await search("goscinny");
+
+    // When
+    await searchMore();
+
+    // Then
+    expect(searchApi.asked).toEqual([
+      { query: "goscinny", after: null },
+      { query: "goscinny", after: romanceDawn.id },
+    ]);
+  });
+
+  it("holds the books shown, loading more, while the next page comes", async () => {
+    // Given
+    const { state, search, searchMore } = useSearchCatalogue(
+      new FakeSearchApi({
+        goscinny: [firstPage(), new Promise(() => {})],
+      }),
+    );
+    await search("goscinny");
+
+    // When
+    void searchMore();
+
+    // Then
+    expect(state.value).toEqual({
+      status: "found",
+      books: [romanceDawn],
+      loadingMore: true,
+    });
+  });
+
+  it("holds the nearest of both pages, still said near", async () => {
+    // Given
+    const { state, search, searchMore } = useSearchCatalogue(
+      new FakeSearchApi({ asterik: [firstPage(true), lastPage(true)] }),
+    );
+    await search("asterik");
+
+    // When
+    await searchMore();
+
+    // Then
+    expect(state.value).toEqual({
+      status: "near",
+      query: "asterik",
+      books: [romanceDawn, asterixLeGaulois],
+      loadingMore: false,
+    });
+  });
+
+  it("holds the nearest still said near when the next page holds no book", async () => {
+    // Given
+    const { state, search, searchMore } = useSearchCatalogue(
+      new FakeSearchApi({
+        asterik: [firstPage(true), { books: [], next: null, near: false }],
+      }),
+    );
+    await search("asterik");
+
+    // When
+    await searchMore();
+
+    // Then
+    expect(state.value).toEqual({
+      status: "near",
+      query: "asterik",
+      books: [romanceDawn],
+      loadingMore: false,
+    });
+  });
+
+  it("asks nothing more after a page naming no next", async () => {
+    // Given
+    const searchApi = new FakeSearchApi({ goscinny: [lastPage()] });
+    const { search, searchMore } = useSearchCatalogue(searchApi);
+    await search("goscinny");
+
+    // When
+    await searchMore();
+
+    // Then
+    expect(searchApi.asked).toEqual([{ query: "goscinny", after: null }]);
+  });
+
+  it("asks nothing while the next page comes", async () => {
+    // Given
+    const searchApi = new FakeSearchApi({
+      goscinny: [firstPage(), new Promise(() => {})],
+    });
+    const { search, searchMore } = useSearchCatalogue(searchApi);
+    await search("goscinny");
+    void searchMore();
+
+    // When
+    await searchMore();
+
+    // Then
+    expect(searchApi.asked).toHaveLength(2);
   });
 
   it("holds no match, with the query asked, when the answer holds no edition", async () => {
@@ -55,6 +182,7 @@ describe("useSearchCatalogue", () => {
       status: "near",
       query: "asterik",
       books: [asterixLeGaulois],
+      loadingMore: false,
     });
   });
 
@@ -114,6 +242,18 @@ describe("useSearchCatalogue", () => {
     void search("oda");
 
     // Then
-    expect(state.value).toEqual({ status: "found", books: [romanceDawn] });
+    expect(state.value).toEqual({
+      status: "found",
+      books: [romanceDawn],
+      loadingMore: false,
+    });
   });
+
+  function firstPage(near = false): SearchPage {
+    return { books: [romanceDawn], next: romanceDawn.id, near };
+  }
+
+  function lastPage(near = false): SearchPage {
+    return { books: [asterixLeGaulois], next: null, near };
+  }
 });

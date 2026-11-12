@@ -401,3 +401,33 @@ Format:
   `answer`, for the states T173 to T175 add.
 - Left over: the next pages (T173), the order of answers (T174), the
   failure (T175), the address (T176); the Pixel checks in the PR body.
+
+## 2026-11-12 — T173 The next pages of a search — done
+- Did: `useSearchCatalogue` gains `searchMore()`, which asks the query it
+  keeps after the last page's `next`, and `loadingMore` on `found` and
+  `near`; `CatalogueView` grows and watches whichever list is drawn, and its
+  two skeleton rows follow that list. S4 runs whole.
+- Decided: the composable keeps the query asked and the cursor in two
+  plain `let`s beside `state`, as `useBrowseCatalogue` keeps its `next`; the
+  books of both pages are joined through the same `stateOf`, `near` kept
+  from the state shown (fix-up on the review: a next page of no book is
+  `near: false` and turned a near search `found`).
+- Decided: the view's observer calls `growTheList()`, `browse()` while
+  `answer.books` is `undefined`, `searchMore()` otherwise; over `nothing`
+  no row is drawn, so nothing calls back.
+- Decided: `answer` gives `loadingMore` for `found` and `near` alone, and
+  the skeleton reads `answer.loadingMore ?? state.status === 'loadingMore'`;
+  step 10 went green on `||` first, so step 12 had its own red.
+- Decided: the observer's `watch` follows `[state, searchState]`, which
+  also points it back at the catalogue's last row when the search is
+  emptied.
+- Deviations from the brief: S4 went green at step 8, not with the last
+  view step: its callback reaches the row it watched last, which still
+  calls `growTheList()` once the search's rows replace it. Fix-up on the
+  review: the scenarios' helper now calls back on the last row drawn alone,
+  if watched; with the watch on `state` alone, S4 fails on *The last row is
+  not observed*.
+- Left over: the order of answers (T174), the failure and the catalogue's
+  error under the search's rows (T175, in `agent/PROPOSED.md`), the
+  address (T176); the fetch client's two page readers moved to
+  `agent/PROPOSED.md`; the Pixel check in the PR body.
