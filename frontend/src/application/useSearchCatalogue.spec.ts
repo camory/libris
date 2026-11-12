@@ -22,6 +22,7 @@ describe("useSearchCatalogue", () => {
     expect(state.value).toEqual({
       status: "found",
       books: [romanceDawn, asterixLeGaulois],
+      loadingMore: false,
     });
   });
 
@@ -39,6 +40,7 @@ describe("useSearchCatalogue", () => {
     expect(state.value).toEqual({
       status: "found",
       books: [romanceDawn, asterixLeGaulois],
+      loadingMore: false,
     });
   });
 
@@ -58,6 +60,26 @@ describe("useSearchCatalogue", () => {
       { query: "goscinny", after: null },
       { query: "goscinny", after: romanceDawn.id },
     ]);
+  });
+
+  it("holds the books shown, loading more, while the next page comes", async () => {
+    // Given
+    const { state, search, searchMore } = useSearchCatalogue(
+      new FakeSearchApi({
+        goscinny: [firstPage(), new Promise(() => {})],
+      }),
+    );
+    await search("goscinny");
+
+    // When
+    void searchMore();
+
+    // Then
+    expect(state.value).toEqual({
+      status: "found",
+      books: [romanceDawn],
+      loadingMore: true,
+    });
   });
 
   it("holds no match, with the query asked, when the answer holds no edition", async () => {
@@ -91,6 +113,7 @@ describe("useSearchCatalogue", () => {
       status: "near",
       query: "asterik",
       books: [asterixLeGaulois],
+      loadingMore: false,
     });
   });
 
@@ -150,7 +173,11 @@ describe("useSearchCatalogue", () => {
     void search("oda");
 
     // Then
-    expect(state.value).toEqual({ status: "found", books: [romanceDawn] });
+    expect(state.value).toEqual({
+      status: "found",
+      books: [romanceDawn],
+      loadingMore: false,
+    });
   });
 
   function firstPage(near = false): SearchPage {

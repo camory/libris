@@ -5,8 +5,8 @@ import type { SearchApi, SearchPage } from "./SearchApi";
 
 export type SearchState =
   | { status: "ready" }
-  | { status: "found"; books: Book[] }
-  | { status: "near"; query: string; books: Book[] }
+  | { status: "found"; books: Book[]; loadingMore: boolean }
+  | { status: "near"; query: string; books: Book[]; loadingMore: boolean }
   | { status: "nothing"; query: string };
 
 export function useSearchCatalogue(searchApi: SearchApi): {
@@ -33,6 +33,7 @@ export function useSearchCatalogue(searchApi: SearchApi): {
   async function searchMore() {
     const shown = state.value;
     if (shown.status !== "found" && shown.status !== "near") return;
+    state.value = { ...shown, loadingMore: true };
     const page = await searchApi.search(searched, next);
     next = page.next;
     state.value = stateOf(searched, {
@@ -46,6 +47,7 @@ export function useSearchCatalogue(searchApi: SearchApi): {
 
 function stateOf(query: string, page: SearchPage): SearchState {
   if (page.books.length === 0) return { status: "nothing", query };
-  if (page.near) return { status: "near", query, books: page.books };
-  return { status: "found", books: page.books };
+  if (page.near)
+    return { status: "near", query, books: page.books, loadingMore: false };
+  return { status: "found", books: page.books, loadingMore: false };
 }
