@@ -213,11 +213,13 @@ Read whole by a run that changes `frontend/`, after `every-run.md`.
   so no `form` role) emits `search` with its text 300 ms after the last
   keystroke, each `input` clearing the pending `setTimeout` and calling
   the global one again, and at once on its form's `submit` (prevented),
-  which drops the pending pause and blurs the box. It is drawn by
-  `CatalogueView` unless the catalogue is `empty`; the view calls `search`
-  on the field's `@search`, no `watch` on its `searchText`, and `rowsOf`
-  puts the found books in place of the catalogue's once the catalogue's
-  first page has come (never over its `loading`).
+  which drops the pending pause and blurs the box; a `<button>` inside
+  that form submits it unless it says `type="button"`, so its press emits
+  the text and blurs the box. It is drawn by `CatalogueView` unless the
+  catalogue is `empty`; the view calls `search` on the field's `@search`,
+  no `watch` on its `searchText`, and `rowsOf` puts the found books in
+  place of the catalogue's once the catalogue's first page has come (never
+  over its `loading`).
   `CatalogueView.spec.ts`' `open()` takes the search port second,
   `new FakeSearchApi()` by default; a case types with
   `fireEvent.input(getByRole("searchbox"), { target: { value } })`, then
