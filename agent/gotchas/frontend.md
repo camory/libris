@@ -206,23 +206,28 @@ Read whole by a run that changes `frontend/`, after `every-run.md`.
   first page, `nothing` with the `query` asked for a page of no book,
   whatever its `near`, `near` with the `query` and the books for one said
   near, `found` with the books otherwise; `found` and `near` carry
-  `loadingMore`, `true` from the ask of a next page to its answer),
+  `loadingMore`, `true` from the ask of a next page to its answer;
+  `unavailable` with the `query`, the `books` still listed and `near`
+  when a page does not come: none and `near: false` for a first page,
+  the rows shown and their `near` for a next page),
   `searchMore()`, which over `found` or `near` asks the query kept with
   `after` the last page's `next` and holds both pages' books, `near` kept
   from the state shown (a page of no book is `near: false`), and asks
-  nothing once a page named no next nor while `loadingMore`, and does not
-  catch, and `search(text)`, which reads
+  nothing once a page named no next, while `loadingMore` nor over
+  `unavailable`, and `search(text)`, which reads
   `searchQueryOf(text)` (`src/domain/SearchQuery.ts`: the text trimmed,
   `null` under two characters): on `null` it asks nothing and holds
-  `ready` again, otherwise it asks the query with `after` `null`, keeps
-  the books it holds until the answer, and does not catch. Every
+  `ready` again, otherwise it asks the query with `after` `null` and keeps
+  the books it holds until the answer. Neither verb ever rejects: a
+  rejection of the port is read as `null` (`pageOf`). Every
   `search(text)` call, one under two characters and the same query again
   included, is a later search: the composable drops the answer of a search
   asked before the latest call, whenever it arrives, and a next page
   whose rows are no longer the latest search's, asked before it or while
-  it comes, so a dropped answer changes neither `state`, nor the query
-  kept, nor the cursor (T174); its spec's `later()` gives a `{ page,
-  arrives }` to hand `FakeSearchApi` and settle by hand. `SearchField`
+  it comes, so a dropped answer, a failure included, changes neither
+  `state`, nor the query kept, nor the cursor (T174, T175); its spec's
+  `later()` gives a `{ page, arrives, fails }` to hand `FakeSearchApi` and
+  settle or reject by hand. `SearchField`
   (`ui/components`, a `defineModel<string>` of the text as typed, a
   `type="search"` input, so a `searchbox`, inside a `<form>` with no name,
   so no `form` role) emits `search` with its text 300 ms after the last
@@ -240,19 +245,25 @@ Read whole by a run that changes `frontend/`, after `every-run.md`.
   `dist/assets/*.css` after `npm run build`. It is drawn by
   `CatalogueView` unless the catalogue is `empty`; the view calls `search`
   on the field's `@search`, no `watch` on its `searchText`, and `rowsOf`
-  puts the `found` or `near` books in place of the catalogue's, and none
+  puts the `found`, `near` or `unavailable` books in place of the catalogue's, and none
   for `nothing`, once the catalogue's first page has come (never over its
   `loading`), read from `answer`, the one `computed` over the search state,
   which also gives the sentence, the label and `loadingMore` (the search's
-  for `found` and `near`, `undefined` otherwise, so the two skeleton rows
+  for `found`, `near` and `unavailable`, `undefined` otherwise, so the
+  two skeleton rows
   read `answer.loadingMore ?? state.status === 'loadingMore'`, the list
-  shown's); the observer's callback calls `growTheList()`, `browse()`
+  shown's); one message paragraph says
+  `message`, the search's `catalogue.search.error` (*Erreur lors de la
+  recherche, veuillez réessayer plus tard.*) while a search is shown
+  (`answer.books` defined), the catalogue's `catalogue.error` otherwise,
+  with `mt-5` while rows are drawn above it; the observer's callback calls `growTheList()`, `browse()`
   while `answer.books` is `undefined` and `searchMore()` otherwise, and its
   `watch` follows `[state, searchState]`, so it watches the last row of
-  whichever list is drawn. `answer`'s sentence and label: over `nothing`
-  and `near` the sentence `catalogue.search.nothing` (*Aucun ouvrage ne
+  whichever list is drawn. `answer`'s sentence and label: over `nothing`,
+  `near` and an `unavailable` said near the sentence `catalogue.search.nothing` (*Aucun ouvrage ne
   correspond à « gaston ».*, the query asked, U+00A0 inside the guillemets,
-  `lead` `muted`) comes first, and over `near` the `h2` label
+  `lead` `muted`) comes first, and over `near`, or `unavailable` said
+  near, the `h2` label
   `catalogue.search.near` (*Les plus proches :*, `mt-5 pb-2`) between the
   sentence and the rows, whose `ul` takes it as `aria-label`.
   `CatalogueView.spec.ts`' `open()` takes the search port second,

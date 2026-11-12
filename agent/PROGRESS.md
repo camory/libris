@@ -453,3 +453,12 @@ Format:
 - Left over: the failure of a search, the latest's or an earlier one's,
   still escapes `search` and `searchMore` (T175); the Pixel check of two
   words typed apart on a slow network, in the PR body.
+
+## 2026-11-12 — T175 Libris unavailable during a search — handoff
+- Done: steps 1 to 13 of the test plan, each its own commit; the gotchas search item and the PROPOSED item (removed, answered) are rewritten. Next: self-review (`git diff main...HEAD`), tick T175, the diary entry, the PR.
+- Red of step 1: both S9 fail on *Unable to find an element with the text: Erreur lors de la recherche, veuillez réessayer plus tard.*, with two *Unhandled Rejection: TypeError: Failed to fetch*; both went green at step 9.
+- Decided: a rejection of the port is read as `null` by a private `pageOf`, so each verb keeps one drop check (refactor commit).
+- Deviation: one case beyond the plan, *shows no catalogue skeleton under the search's rows when its next page does not come* (red: 2 skeletons, the catalogue's `loadingMore` read over `unavailable`); `answer` gives `loadingMore: false` there.
+- Guards (mutation, red read, reverted): step 3, books shown kept on a first page's failure → books `[asterixLeGaulois]` against `[]`; step 6, `searchMore` asking over `unavailable` → `asked` length 3; step 10, rows kept only when the search held books (`books.length > 0 ? books : undefined`) → two `listitem`s; step 11, message paragraph moved above the rows → `under(...)` false (the catalogue's case reds too).
+- Steps 5, 8, 12 were red on arrival, not guards.
+- Left to Tophe in the PR: a search typed with the network off on the Pixel, the sentence's spacing against the mockup.

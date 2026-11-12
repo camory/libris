@@ -537,16 +537,6 @@
   depends on `library`. Open: whether a shared kernel of the domain should
   hold one (found on T143, 2026-11-08).
 - Frontend: `CatalogueView` draws the search's rows only once the catalogue's first page has come; a search answered while the catalogue is still `loading` shows the skeleton rows until then. Open: whether T170's rows kept while answering should cover it (found on T169, 2026-11-12).
-- Frontend: `CatalogueView` still draws the catalogue's error under the
-  search's rows: over a first page that did not come its error sentence,
-  with no `mt-5` above it, the margin reading `state.books.length` and not
-  the rows shown (its skeleton rows follow the list shown since T173).
-  The view tells the list shown in two ways: `growTheList()` reads
-  `answer.books === undefined`, the skeleton rows `answer.loadingMore ??`,
-  which disagree over `nothing` (no row drawn, so nothing shows it); the
-  error sentence following the list shown would make three, one rule for
-  all (found on T173's review). Open: whether T175 (the failing search)
-  covers it (found on T169's review, 2026-11-12).
 - Frontend: `FetchCatalogueApi`'s `browse` and `search` read a page alike
   (Duplicated Code); one private method reading a page would serve both,
   as the reviewer suggested on #407. No test of T173 touched the client
