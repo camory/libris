@@ -294,3 +294,13 @@ Format:
   characters, pushed before the handoff, left as it is.
 - Left over: no threshold setting (out of scope); the frontend's search
   (T169 on), whose pin moves once T168 is deployed.
+
+## 2026-11-12 — T169 The search box on v0.19.0 — handoff
+- Done: step 1 (pin `v0.19.0`, `npx vitest run src/infra` 100 green); S1
+  un-skipped and committed red (*Unable to find … searchbox "Rechercher dans
+  le catalogue"*), it goes green last at step 19; step 2 green.
+- Start with: step 3 (*fails when the API refuses the search*, on the mock).
+- Decided: `search` is a method of `FetchCatalogueApi`, which now declares
+  `implements CatalogueApi, SearchApi`; `after` is ignored (`void after`)
+  and the page answered empty until steps 4 to 6 read them.
+- No guard reached yet. Gate red by design: S1 un-skipped awaits steps 3–19.
