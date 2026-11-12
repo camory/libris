@@ -794,6 +794,33 @@ describe("CatalogueView", () => {
     expect(screen.getAllByRole("listitem")).toHaveLength(1);
   });
 
+  it("shows no catalogue skeleton under the search's rows when its next page does not come", async () => {
+    // Given
+    const { wrapper, screen } = open(
+      {
+        browse: (after) =>
+          after === null
+            ? Promise.resolve(firstPage())
+            : new Promise<BookPage>(() => {}),
+        find: () => Promise.reject(Error("no find in this case")),
+      },
+      new FakeSearchApi({
+        goscinny: [firstSearchPage(), new TypeError("Failed to fetch")],
+      }),
+    );
+    await flushPromises();
+    theLastRowComes(true);
+    await flushPromises();
+    await searchFor(screen, "goscinny");
+
+    // When
+    theLastRowComes(true);
+    await flushPromises();
+
+    // Then
+    expect(wrapper.findAllComponents(CatalogueRowSkeleton)).toHaveLength(0);
+  });
+
   function firstPage(): BookPage {
     return {
       books: [asterixLeGaulois, asterixEtSesAmis],

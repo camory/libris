@@ -51,6 +51,7 @@ const answer = computed(() => {
           : undefined,
         label: shown.near ? t("catalogue.search.near") : undefined,
         books: shown.books,
+        loadingMore: false,
         error: t("catalogue.search.error"),
       };
     default:
