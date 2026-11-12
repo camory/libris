@@ -863,7 +863,9 @@ Read whole by a run that changes `frontend/`, after `every-run.md`.
   with `vi.stubGlobal` or fails on `ReferenceError: IntersectionObserver is
   not defined`. The view builds it in `setup`, so the stub goes in before
   the mount, and the view spec's stub records the targets per observer
-  (`unobserve` drops one, `disconnect` all). A `watch` with
+  (`unobserve` drops one, `disconnect` all), as does the search scenarios'
+  stub, whose `theLastRowComesIntoView()` calls back on the last
+  `listitem` drawn alone and throws when no observer watches it. A `watch` with
   `flush: "post"` runs in the same flush as the render, before
   `findByText` resolves, which is what lets a scenario call back on the
   last row right after finding it.

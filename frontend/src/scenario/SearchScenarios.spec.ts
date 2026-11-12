@@ -494,19 +494,20 @@ describe("Search", () => {
     return new Promise((resolve) => setTimeout(resolve));
   }
 
-  const observed: {
+  const observers: {
     callback: IntersectionObserverCallback;
-    target: Element;
+    targets: Element[];
   }[] = [];
 
   function theLastRowComesIntoView() {
-    const last = observed.at(-1);
-    if (last === undefined) throw Error("No row is observed");
-    last.callback(
+    const last: Element = within(host).getAllByRole("listitem").at(-1)!;
+    const observer = observers.find(({ targets }) => targets.includes(last));
+    if (observer === undefined) throw Error("The last row is not observed");
+    observer.callback(
       [
         {
           isIntersecting: true,
-          target: last.target,
+          target: last,
         } as IntersectionObserverEntry,
       ],
       {} as IntersectionObserver,
@@ -520,16 +521,24 @@ describe("Search", () => {
   }
 
   function open(world: { catalogue?: CatalogueApi; search?: SearchApi }) {
-    observed.length = 0;
+    observers.length = 0;
     vi.stubGlobal(
       "IntersectionObserver",
       class {
-        constructor(private readonly callback: IntersectionObserverCallback) {}
-        observe(target: Element) {
-          observed.push({ callback: this.callback, target });
+        private readonly targets: Element[] = [];
+        constructor(callback: IntersectionObserverCallback) {
+          observers.push({ callback, targets: this.targets });
         }
-        unobserve() {}
-        disconnect() {}
+        observe(target: Element) {
+          this.targets.push(target);
+        }
+        unobserve(target: Element) {
+          const at = this.targets.indexOf(target);
+          if (at >= 0) this.targets.splice(at, 1);
+        }
+        disconnect() {
+          this.targets.length = 0;
+        }
       },
     );
     window.history.replaceState(null, "", "/catalogue");

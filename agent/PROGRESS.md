@@ -423,7 +423,10 @@ Format:
   emptied.
 - Deviations from the brief: S4 went green at step 8, not with the last
   view step: its callback reaches the row it watched last, which still
-  calls `growTheList()` once the search's rows replace it.
+  calls `growTheList()` once the search's rows replace it. Fix-up on the
+  review: the scenarios' helper now calls back on the last row drawn alone,
+  if watched; with the watch on `state` alone, S4 fails on *The last row is
+  not observed*.
 - Left over: the order of answers (T174), the failure and the catalogue's
   error under the search's rows (T175, in `agent/PROPOSED.md`), the
   address (T176); the fetch client's two page readers moved to
