@@ -82,6 +82,25 @@ describe("useSearchCatalogue", () => {
     });
   });
 
+  it("holds the nearest of both pages, still said near", async () => {
+    // Given
+    const { state, search, searchMore } = useSearchCatalogue(
+      new FakeSearchApi({ asterik: [firstPage(true), lastPage(true)] }),
+    );
+    await search("asterik");
+
+    // When
+    await searchMore();
+
+    // Then
+    expect(state.value).toEqual({
+      status: "near",
+      query: "asterik",
+      books: [romanceDawn, asterixLeGaulois],
+      loadingMore: false,
+    });
+  });
+
   it("holds no match, with the query asked, when the answer holds no edition", async () => {
     // Given
     const { state, search } = useSearchCatalogue(
