@@ -348,7 +348,7 @@ describe("Search", () => {
     expect(rows(screen)).toEqual([reads(romanceDawn)]);
   });
 
-  it.skip("S9 Libris unavailable", async () => {
+  it("S9 Libris unavailable", async () => {
     // Given
     const search = librisAnswers({
       goscinny: [new TypeError("Failed to fetch")],
@@ -366,7 +366,7 @@ describe("Search", () => {
     expect(box(screen).value).toBe("goscinny");
   });
 
-  it.skip("S9 Libris unavailable, on the next page", async () => {
+  it("S9 Libris unavailable, on the next page", async () => {
     // Given
     const search = librisAnswers({
       goscinny: [
