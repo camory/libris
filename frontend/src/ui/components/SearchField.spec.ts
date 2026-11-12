@@ -92,6 +92,19 @@ describe("SearchField", () => {
     // Then
     expect(wrapper.emitted("search")).toEqual([["gos"]]);
   });
+
+  it("asks at once on the search key", async () => {
+    // Given
+    vi.useFakeTimers({ toFake: ["setTimeout", "clearTimeout"] });
+    const wrapper = field();
+    await type(wrapper, "goscinny");
+
+    // When
+    await pressTheSearchKey(wrapper);
+
+    // Then
+    expect(wrapper.emitted("search")).toEqual([["goscinny"]]);
+  });
 });
 
 function field() {
@@ -102,7 +115,15 @@ function field() {
 }
 
 async function type(wrapper: ReturnType<typeof field>, text: string) {
-  await fireEvent.input(within(wrapper.element).getByRole("searchbox"), {
-    target: { value: text },
-  });
+  await fireEvent.input(box(wrapper), { target: { value: text } });
+}
+
+async function pressTheSearchKey(wrapper: ReturnType<typeof field>) {
+  const form = box(wrapper).form;
+  if (form === null) throw Error("The search box sits in no form");
+  await fireEvent.submit(form);
+}
+
+function box(wrapper: ReturnType<typeof field>) {
+  return within(wrapper.element).getByRole<HTMLInputElement>("searchbox");
 }
