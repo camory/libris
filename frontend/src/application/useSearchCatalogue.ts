@@ -14,7 +14,10 @@ export function useSearchCatalogue(searchApi: SearchApi): {
 
   async function search(text: string) {
     const query = searchQueryOf(text);
-    if (query === null) return;
+    if (query === null) {
+      state.value = { status: "ready" };
+      return;
+    }
     const page = await searchApi.search(query, null);
     state.value = { status: "found", books: page.books };
   }
