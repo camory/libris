@@ -76,7 +76,9 @@ is blocking. The *Rework* section of the PR body says how the run met them.
    a finding.
    Then `git log --stat origin/main..HEAD`: does each commit add one test with the
    code that passes it, refactors in their own commits (`tdd` skill, "One
-   cycle, one commit")? A commit adding several tests is a finding.
+   cycle, one commit")? A commit adding several tests is a finding. The
+   first commit un-skips the cited scenario tests alone and is red, its red
+   quoted in the PR body: that is the rule, not a finding.
    Before writing suggestions, invoke the `code-smells` skill: a suggestion
    about structure names its smell and the remedy.
 5. Trace before judging: when something seems missing, open the helper or

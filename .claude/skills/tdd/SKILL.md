@@ -104,7 +104,9 @@ the module.
   taught.
 - **One cycle, one commit.** Commit the test with the implementation that
   makes it pass, at green; a refactor is its own `refactor:` commit. A
-  commit that adds several tests is horizontal slicing made visible.
+  commit that adds several tests is horizontal slicing made visible. The
+  one commit left red is the task's first: the un-skip of the scenario
+  tests its line cites, alone, its red read and quoted in the PR body.
 - **Commit before you mutate.** A mutation check that ends with
   `git checkout <file>` restores the last commit and takes uncommitted work
   with it; commit the cycle first.

@@ -41,8 +41,9 @@ commit, declared in the entry.
   applicable) and read their output. Never skip, disable or weaken a test to
   get green. The scenario tests the task cites are un-skipped, never edited;
   the un-skip is the first cycle of the task, its red read before any
-  unit test, and they are the last tests to go green. If one cannot pass
-  as written, report `blocked` with the assertion.
+  unit test and committed alone, red, and they are the last tests to go
+  green. If one cannot pass as written, report `blocked` with the
+  assertion.
 - **The gates are recorded.** `cd backend && ./gradlew check` and
   `cd frontend && npm test` must each be run plainly, as the last thing in
   their command, nothing piped or chained after them. The sandbox records the
