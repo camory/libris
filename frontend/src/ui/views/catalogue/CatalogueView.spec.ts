@@ -248,6 +248,19 @@ describe("CatalogueView", () => {
     ).toBeNull();
   });
 
+  it("keeps the search box when the first page does not come", async () => {
+    // Given
+    const { screen } = open(
+      new FakeCatalogueApi([new TypeError("Failed to fetch")]),
+    );
+
+    // When
+    await flushPromises();
+
+    // Then
+    expect(screen.getAllByRole("searchbox")).toHaveLength(1);
+  });
+
   it("asks for the first page on each arrival", async () => {
     // Given
     const catalogueApi = new FakeCatalogueApi([
