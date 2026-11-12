@@ -22,6 +22,7 @@ function askAtOnce() {
 }
 
 function clear() {
+  clearTimeout(pending);
   text.value = "";
   emit("search", "");
 }

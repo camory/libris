@@ -182,6 +182,20 @@ describe("SearchField", () => {
     // Then
     expect(wrapper.emitted("search")).toEqual([[""]]);
   });
+
+  it("drops the pause on the cross", async () => {
+    // Given
+    vi.useFakeTimers({ toFake: ["setTimeout", "clearTimeout"] });
+    const wrapper = field();
+    await type(wrapper, "goscinny");
+
+    // When
+    await tapTheCross(wrapper);
+    vi.advanceTimersByTime(300);
+
+    // Then
+    expect(wrapper.emitted("search")).toEqual([[""]]);
+  });
 });
 
 function field(options: { attachTo?: HTMLElement } = {}) {
