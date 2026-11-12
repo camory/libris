@@ -23,4 +23,18 @@ describe("useSearchCatalogue", () => {
       books: [romanceDawn, asterixLeGaulois],
     });
   });
+
+  it("asks the words without the spaces at their ends", async () => {
+    // Given
+    const searchApi = new FakeSearchApi({
+      goscinny: [{ books: [], next: null, near: false }],
+    });
+    const { search } = useSearchCatalogue(searchApi);
+
+    // When
+    await search(" goscinny ");
+
+    // Then
+    expect(searchApi.asked).toEqual([{ query: "goscinny", after: null }]);
+  });
 });
