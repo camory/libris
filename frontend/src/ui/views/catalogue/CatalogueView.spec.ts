@@ -1,5 +1,10 @@
 import { BookOpen, CircleAlert } from "@lucide/vue";
-import { fireEvent, within } from "@testing-library/dom";
+import {
+  fireEvent,
+  queries,
+  within,
+  type BoundFunctions,
+} from "@testing-library/dom";
 import { flushPromises, mount } from "@vue/test-utils";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import {
@@ -219,6 +224,27 @@ describe("CatalogueView", () => {
     expect(items).toHaveLength(2);
     expect(within(items[0]!).getByText("Romance dawn")).toBeDefined();
     expect(within(items[1]!).getByText("Astérix le Gaulois")).toBeDefined();
+  });
+
+  it("says that no ouvrage matches the query asked", async () => {
+    // Given
+    const { screen } = open(
+      new FakeCatalogueApi([
+        { books: [asterixLeGaulois, asterixEtSesAmis], next: null },
+      ]),
+      new FakeSearchApi({
+        gaston: [{ books: [], next: null, near: false }],
+      }),
+    );
+    await flushPromises();
+
+    // When
+    await searchFor(screen, "gaston");
+
+    // Then
+    expect(
+      screen.getByText("Aucun ouvrage ne correspond à « gaston »."),
+    ).toBeDefined();
   });
 
   it("asks nothing while the reader types", async () => {
@@ -450,6 +476,16 @@ describe("CatalogueView", () => {
       },
     });
     return { wrapper, screen: within(wrapper.element as HTMLElement) };
+  }
+
+  async function searchFor(
+    screen: BoundFunctions<typeof queries>,
+    text: string,
+  ) {
+    const box = screen.getByRole<HTMLInputElement>("searchbox");
+    await fireEvent.input(box, { target: { value: text } });
+    await fireEvent.submit(box.form!);
+    await flushPromises();
   }
 
   function theLastRowComes(inView: boolean) {

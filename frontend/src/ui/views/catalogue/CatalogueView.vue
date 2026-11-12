@@ -75,6 +75,9 @@ void browse();
       <p class="text-lead text-muted">{{ t("catalogue.empty") }}</p>
     </div>
     <template v-else>
+      <p v-if="searchState.status === 'nothing'" class="text-lead text-muted">
+        {{ t("catalogue.search.nothing", { query: searchState.query }) }}
+      </p>
       <div
         v-if="rowsOf(state.books).length > 0"
         class="divide-y divide-border overflow-hidden rounded-[14px] border border-border bg-surface"

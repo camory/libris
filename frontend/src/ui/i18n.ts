@@ -160,6 +160,7 @@ const fr = {
       label: "Rechercher dans le catalogue",
       placeholder: "Titre, série, auteur, ISBN",
       clear: "Effacer la recherche",
+      nothing: "Aucun ouvrage ne correspond à « {query} ».",
     },
     series: {
       BOOK: "{name} · tome {volume}",
