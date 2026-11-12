@@ -461,9 +461,11 @@ Format:
   rows, one message paragraph for the list shown. S9 runs whole.
 - Decided: a rejection of the port is read as `null` by a private `pageOf`,
   so each verb keeps a single drop check for a late answer, failure or not.
-- Decided: `answer` gives `loadingMore: false` over `unavailable`, so the
-  catalogue's own `loadingMore` never draws its skeleton under the search's
-  rows.
+- Decided (review fix-up): the two skeleton rows read the catalogue's
+  `loadingMore` while `answer.books` is `undefined` and the search's
+  otherwise, the rule `message` and `growTheList()` read, so the
+  catalogue's own `loadingMore` never draws its skeleton under the
+  search's rows.
 - Decided: the message paragraph reads the search's error while a search is
   shown (`answer.books` defined) and the catalogue's otherwise, its `mt-5`
   reading the rows drawn; this answers the PROPOSED item on the catalogue's

@@ -249,9 +249,10 @@ Read whole by a run that changes `frontend/`, after `every-run.md`.
   catalogue's, and none for `nothing`, once the catalogue's first page has
   come (never over its `loading`), read from `answer`, the one `computed`
   over the search state, which also gives the sentence, the label and
-  `loadingMore` (the search's for `found`, `near` and `unavailable`,
-  `undefined` otherwise, so the two skeleton rows read `answer.loadingMore
-  ?? state.status === 'loadingMore'`, the list shown's); one message
+  `loadingMore` (the search's for `found` and `near`); the two skeleton
+  rows read the catalogue's `loadingMore` while `answer.books` is
+  `undefined`, `answer.loadingMore` otherwise, as `message` and
+  `growTheList()` tell the list shown; one message
   paragraph says `message`, the search's `catalogue.search.error` (*Erreur
   lors de la recherche, veuillez réessayer plus tard.*) while a search is
   shown (`answer.books` defined), the catalogue's `catalogue.error`

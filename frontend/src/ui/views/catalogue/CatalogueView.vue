@@ -51,7 +51,6 @@ const answer = computed(() => {
           : undefined,
         label: shown.near ? t("catalogue.search.near") : undefined,
         books: shown.books,
-        loadingMore: false,
         error: t("catalogue.search.error"),
       };
     default:
@@ -143,7 +142,13 @@ void browse();
             <CatalogueRow :book="book" />
           </li>
         </ul>
-        <template v-if="answer.loadingMore ?? state.status === 'loadingMore'">
+        <template
+          v-if="
+            answer.books === undefined
+              ? state.status === 'loadingMore'
+              : answer.loadingMore
+          "
+        >
           <CatalogueRowSkeleton v-for="row in 2" :key="row" />
         </template>
       </div>
