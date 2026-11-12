@@ -380,6 +380,23 @@ describe("useSearchCatalogue", () => {
     });
   });
 
+  it("shows the whole catalogue when a search arrives after the box is emptied", async () => {
+    // Given
+    const goscinny = later();
+    const { state, search } = useSearchCatalogue(
+      new FakeSearchApi({ goscinny: [goscinny.page] }),
+    );
+    const earlier = search("goscinny");
+    await search("");
+
+    // When
+    goscinny.arrives({ books: [romanceDawn], next: null, near: false });
+    await earlier;
+
+    // Then
+    expect(state.value).toEqual({ status: "ready" });
+  });
+
   function firstPage(near = false): SearchPage {
     return { books: [romanceDawn], next: romanceDawn.id, near };
   }

@@ -21,12 +21,12 @@ export function useSearchCatalogue(searchApi: SearchApi): {
   let shownSearch = 0;
 
   async function search(text: string) {
+    const asked = ++latest;
     const query = searchQueryOf(text);
     if (query === null) {
       state.value = { status: "ready" };
       return;
     }
-    const asked = ++latest;
     const page = await searchApi.search(query, null);
     if (asked !== latest) return;
     shownSearch = asked;
