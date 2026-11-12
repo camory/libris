@@ -101,6 +101,19 @@ describe("useSearchCatalogue", () => {
     });
   });
 
+  it("asks nothing more after a page naming no next", async () => {
+    // Given
+    const searchApi = new FakeSearchApi({ goscinny: [lastPage()] });
+    const { search, searchMore } = useSearchCatalogue(searchApi);
+    await search("goscinny");
+
+    // When
+    await searchMore();
+
+    // Then
+    expect(searchApi.asked).toEqual([{ query: "goscinny", after: null }]);
+  });
+
   it("holds no match, with the query asked, when the answer holds no edition", async () => {
     // Given
     const { state, search } = useSearchCatalogue(
