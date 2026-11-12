@@ -344,6 +344,29 @@ describe("CatalogueView", () => {
     expect(under(screen.getByText("Les plus proches :"), list)).toBe(true);
   });
 
+  it("says nothing of no match when the words find editions", async () => {
+    // Given
+    const { screen } = open(
+      new FakeCatalogueApi([
+        { books: [asterixLeGaulois, asterixEtSesAmis], next: null },
+      ]),
+      new FakeSearchApi({
+        goscinny: [{ books: [romanceDawn], next: null, near: false }],
+      }),
+    );
+    await flushPromises();
+
+    // When
+    await searchFor(screen, "goscinny");
+
+    // Then
+    expect(screen.queryByText(/Aucun ouvrage/)).toBeNull();
+    expect(screen.queryByText("Les plus proches :")).toBeNull();
+    expect(
+      screen.queryByRole("list", { name: "Les plus proches\u00A0:" }),
+    ).toBeNull();
+  });
+
   it("asks nothing while the reader types", async () => {
     // Given
     const searchApi = new FakeSearchApi({
