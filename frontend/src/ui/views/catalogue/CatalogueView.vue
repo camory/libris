@@ -92,8 +92,9 @@ const message = computed(() => {
     : undefined;
 });
 
-function rowsOf(catalogueBooks: Book[]): Book[] {
-  return answer.value.books ?? catalogueBooks;
+function rowsShown(): Book[] {
+  if (answer.value.books !== undefined) return answer.value.books;
+  return "books" in state.value ? state.value.books : [];
 }
 
 const rows = useTemplateRef("rows");
@@ -138,7 +139,9 @@ void search(props.query);
     />
 
     <div
-      v-if="state.status === 'loading' || arriving"
+      v-if="
+        arriving || (state.status === 'loading' && answer.books === undefined)
+      "
       class="divide-y divide-border overflow-hidden rounded-[14px] border border-border bg-surface"
     >
       <CatalogueRowSkeleton v-for="row in 5" :key="row" />
@@ -158,7 +161,7 @@ void search(props.query);
         {{ answer.label }}
       </h2>
       <div
-        v-if="rowsOf(state.books).length > 0"
+        v-if="rowsShown().length > 0"
         class="divide-y divide-border overflow-hidden rounded-[14px] border border-border bg-surface"
       >
         <ul
@@ -166,7 +169,7 @@ void search(props.query);
           :aria-label="answer.label"
           class="divide-y divide-border"
         >
-          <li v-for="book in rowsOf(state.books)" :key="book.id">
+          <li v-for="book in rowsShown()" :key="book.id">
             <CatalogueRow :book="book" />
           </li>
         </ul>
@@ -183,7 +186,7 @@ void search(props.query);
       <p
         v-if="message"
         class="flex items-start gap-2 text-body text-danger"
-        :class="{ 'mt-5': rowsOf(state.books).length > 0 }"
+        :class="{ 'mt-5': rowsShown().length > 0 }"
       >
         <CircleAlert :size="22" class="shrink-0" />
         <span>{{ message }}</span>

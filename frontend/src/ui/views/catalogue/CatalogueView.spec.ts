@@ -958,6 +958,26 @@ describe("CatalogueView", () => {
     expect(wrapper.findAllComponents(CatalogueRowSkeleton)).toHaveLength(0);
   });
 
+  it("lists the search's answer come before the catalogue's first page", async () => {
+    // Given
+    const searchApi = new FakeSearchApi({ goscinny: [lastSearchPage()] });
+
+    // When
+    const { wrapper, screen } = open(
+      {
+        browse: () => new Promise<BookPage>(() => {}),
+        find: () => Promise.reject(Error("no find in this case")),
+      },
+      searchApi,
+      { query: "goscinny" },
+    );
+    await flushPromises();
+
+    // Then
+    expect(screen.getAllByRole("listitem")).toHaveLength(1);
+    expect(wrapper.findAllComponents(CatalogueRowSkeleton)).toHaveLength(0);
+  });
+
   function firstPage(): BookPage {
     return {
       books: [asterixLeGaulois, asterixEtSesAmis],
