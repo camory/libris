@@ -698,6 +698,19 @@ class JdbcCatalogueEditionsTest @Autowired constructor(
   }
 
   @Test
+  fun `words found leave no room for near editions`() {
+    // Given
+    val lesGoths = heldOn(leasBookshelf, edition("Astérix et les Goths", "Astérix", 3))
+    heldOn(leasBookshelf, edition("Goth"))
+
+    // When
+    val page = catalogueEditions.findPage(lea.id, CatalogueQuery("goths"), null, PAGE_SIZE)
+
+    // Then
+    page shouldBe EditionIdPage(listOf(lesGoths.id), null, near = false)
+  }
+
+  @Test
   fun `the first of each series is its first tome`() {
     // Given
     heldOn(leasBookshelf, edition("Aux prises avec Baggy", "One piece", 2))
