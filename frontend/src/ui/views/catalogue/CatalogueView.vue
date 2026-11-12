@@ -21,7 +21,15 @@ const {
 } = useSearchCatalogue(inject(searchApiKey)!);
 const searchText = ref("");
 
-const answer = computed(() => {
+interface Answer {
+  sentence?: string;
+  label?: string;
+  books?: Book[];
+  loadingMore?: boolean;
+  error?: string;
+}
+
+const answer = computed<Answer>(() => {
   const shown = searchState.value;
   switch (shown.status) {
     case "found":
@@ -33,8 +41,7 @@ const answer = computed(() => {
       };
     case "near":
       return {
-        sentence: t("catalogue.search.nothing", { query: shown.query }),
-        label: t("catalogue.search.near"),
+        ...saidNear(shown.query),
         books: shown.books,
         loadingMore: shown.loadingMore,
       };
@@ -46,10 +53,7 @@ const answer = computed(() => {
       };
     case "unavailable":
       return {
-        sentence: shown.near
-          ? t("catalogue.search.nothing", { query: shown.query })
-          : undefined,
-        label: shown.near ? t("catalogue.search.near") : undefined,
+        ...(shown.near ? saidNear(shown.query) : {}),
         books: shown.books,
         error: t("catalogue.search.error"),
       };
@@ -57,6 +61,13 @@ const answer = computed(() => {
       return { sentence: undefined, label: undefined, books: undefined };
   }
 });
+
+function saidNear(query: string) {
+  return {
+    sentence: t("catalogue.search.nothing", { query }),
+    label: t("catalogue.search.near"),
+  };
+}
 
 const message = computed(() => {
   if (answer.value.books !== undefined) return answer.value.error;
