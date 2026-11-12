@@ -56,7 +56,7 @@ export function useSearchCatalogue(searchApi: SearchApi): {
         status: "unavailable",
         query: searched,
         books: shown.books,
-        near: false,
+        near: shown.status === "near",
       };
       return;
     }
