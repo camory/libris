@@ -3,6 +3,11 @@ import { Search } from "@lucide/vue";
 import { useI18n } from "vue-i18n";
 
 const text = defineModel<string>({ required: true });
+const emit = defineEmits<{ search: [text: string] }>();
+
+function pause() {
+  setTimeout(() => emit("search", text.value), 300);
+}
 
 const { t } = useI18n();
 </script>
@@ -19,6 +24,7 @@ const { t } = useI18n();
       :aria-label="t('catalogue.search.label')"
       :placeholder="t('catalogue.search.placeholder')"
       class="h-[50px] w-full rounded-xl border-[1.5px] border-border bg-surface pr-3.5 pl-11 text-field outline-none placeholder:text-muted focus:border-accent"
+      @input="pause"
     />
   </div>
 </template>
