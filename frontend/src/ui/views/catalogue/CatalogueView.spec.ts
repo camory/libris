@@ -986,6 +986,7 @@ describe("CatalogueView", () => {
     );
     await flushPromises();
     await searchFor(screen, "goscinny");
+    await wrapper.setProps({ query: "goscinny" });
 
     // When
     await wrapper.setProps({ query: "" });
