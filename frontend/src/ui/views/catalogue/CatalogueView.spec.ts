@@ -615,6 +615,28 @@ describe("CatalogueView", () => {
     ).toBeDefined();
   });
 
+  it("shows two skeleton rows under the search's rows while its next page is coming", async () => {
+    // Given
+    const { wrapper, screen } = open(
+      new FakeCatalogueApi([{ books: [asterixEtSesAmis], next: null }]),
+      new FakeSearchApi({
+        goscinny: [firstSearchPage(), new Promise(() => {})],
+      }),
+    );
+    await flushPromises();
+    await searchFor(screen, "goscinny");
+
+    // When
+    theLastRowComes(true);
+    await flushPromises();
+
+    // Then
+    const skeletons = wrapper.findAllComponents(CatalogueRowSkeleton);
+    expect(skeletons).toHaveLength(2);
+    expect(screen.getAllByRole("listitem")).toHaveLength(1);
+    expect(under(screen.getByRole("list"), skeletons[0]!.element)).toBe(true);
+  });
+
   function firstPage(): BookPage {
     return {
       books: [asterixLeGaulois, asterixEtSesAmis],

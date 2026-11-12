@@ -25,12 +25,18 @@ const answer = computed(() => {
   const shown = searchState.value;
   switch (shown.status) {
     case "found":
-      return { sentence: undefined, label: undefined, books: shown.books };
+      return {
+        sentence: undefined,
+        label: undefined,
+        books: shown.books,
+        loadingMore: shown.loadingMore,
+      };
     case "near":
       return {
         sentence: t("catalogue.search.nothing", { query: shown.query }),
         label: t("catalogue.search.near"),
         books: shown.books,
+        loadingMore: shown.loadingMore,
       };
     case "nothing":
       return {
@@ -120,7 +126,7 @@ void browse();
             <CatalogueRow :book="book" />
           </li>
         </ul>
-        <template v-if="state.status === 'loadingMore'">
+        <template v-if="state.status === 'loadingMore' || answer.loadingMore">
           <CatalogueRowSkeleton v-for="row in 2" :key="row" />
         </template>
       </div>
