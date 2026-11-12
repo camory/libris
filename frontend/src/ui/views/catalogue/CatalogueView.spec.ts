@@ -845,6 +845,29 @@ describe("CatalogueView", () => {
     expect(address()).toBe("/catalogue?q=goscinny");
   });
 
+  it("replaces the address's entry at each search", async () => {
+    // Given
+    const router = await routerAt("/catalogue");
+    const { screen } = open(
+      new FakeCatalogueApi([firstPage()]),
+      new FakeSearchApi({
+        goscinny: [lastSearchPage()],
+        oda: [{ books: [romanceDawn], next: null, near: false }],
+      }),
+      { router },
+    );
+    await flushPromises();
+    const entries = window.history.length;
+
+    // When
+    await searchFor(screen, "goscinny");
+    await searchFor(screen, "oda");
+
+    // Then
+    expect(address()).toBe("/catalogue?q=oda");
+    expect(window.history.length).toBe(entries);
+  });
+
   function firstPage(): BookPage {
     return {
       books: [asterixLeGaulois, asterixEtSesAmis],
