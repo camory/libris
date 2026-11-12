@@ -147,6 +147,16 @@ describe("SearchField", () => {
       }),
     ).toHaveLength(1);
   });
+
+  it("offers no cross while the box is empty", () => {
+    // When
+    const screen = within(field().element);
+
+    // Then
+    expect(
+      screen.queryByRole("button", { name: "Effacer la recherche" }),
+    ).toBeNull();
+  });
 });
 
 function field(options: { attachTo?: HTMLElement } = {}) {
