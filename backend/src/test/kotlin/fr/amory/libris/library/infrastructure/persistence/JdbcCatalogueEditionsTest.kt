@@ -737,6 +737,19 @@ class JdbcCatalogueEditionsTest @Autowired constructor(
   }
 
   @Test
+  fun `near editions come in the catalogue's pages`() {
+    // Given
+    val lesGoths = heldOn(leasBookshelf, edition("Astérix et les Goths", "Astérix", 3))
+    val laSerpeDOr = heldOn(leasBookshelf, edition("La serpe d'or", "Astérix", 2))
+
+    // When
+    val page = catalogueEditions.findPage(lea.id, CatalogueQuery("asterik"), laSerpeDOr.id, PAGE_SIZE)
+
+    // Then
+    page shouldBe EditionIdPage(listOf(lesGoths.id), null, near = true)
+  }
+
+  @Test
   fun `the first of each series is its first tome`() {
     // Given
     heldOn(leasBookshelf, edition("Aux prises avec Baggy", "One piece", 2))
