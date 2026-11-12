@@ -51,7 +51,7 @@ class BrowseCatalogue(
           )
         },
       page.next,
-      false,
+      page.near,
     )
   }
 }
