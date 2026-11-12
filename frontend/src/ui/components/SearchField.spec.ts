@@ -132,6 +132,83 @@ describe("SearchField", () => {
     expect(document.activeElement).not.toBe(box(wrapper));
     wrapper.unmount();
   });
+
+  it("offers the cross once the box holds text", async () => {
+    // Given
+    const wrapper = field();
+
+    // When
+    await type(wrapper, "goscinny");
+
+    // Then
+    expect(
+      within(wrapper.element).getAllByRole("button", {
+        name: "Effacer la recherche",
+      }),
+    ).toHaveLength(1);
+  });
+
+  it("offers no cross while the box is empty", () => {
+    // When
+    const screen = within(field().element);
+
+    // Then
+    expect(
+      screen.queryByRole("button", { name: "Effacer la recherche" }),
+    ).toBeNull();
+  });
+
+  it("empties the box on the cross", async () => {
+    // Given
+    const wrapper = field();
+    await type(wrapper, "goscinny");
+
+    // When
+    await tapTheCross(wrapper);
+
+    // Then
+    expect(wrapper.emitted("update:modelValue")?.at(-1)).toEqual([""]);
+  });
+
+  it("asks at once on the cross", async () => {
+    // Given
+    vi.useFakeTimers({ toFake: ["setTimeout", "clearTimeout"] });
+    const wrapper = field();
+    await type(wrapper, "goscinny");
+
+    // When
+    await tapTheCross(wrapper);
+
+    // Then
+    expect(wrapper.emitted("search")).toEqual([[""]]);
+  });
+
+  it("drops the pause on the cross", async () => {
+    // Given
+    vi.useFakeTimers({ toFake: ["setTimeout", "clearTimeout"] });
+    const wrapper = field();
+    await type(wrapper, "goscinny");
+
+    // When
+    await tapTheCross(wrapper);
+    vi.advanceTimersByTime(300);
+
+    // Then
+    expect(wrapper.emitted("search")).toEqual([[""]]);
+  });
+
+  it("keeps the focus in the box on the cross", async () => {
+    // Given
+    const wrapper = field({ attachTo: document.body });
+    await type(wrapper, "goscinny");
+
+    // When
+    await tapTheCross(wrapper);
+
+    // Then
+    expect(document.activeElement).toBe(box(wrapper));
+    wrapper.unmount();
+  });
 });
 
 function field(options: { attachTo?: HTMLElement } = {}) {
@@ -150,6 +227,14 @@ async function pressTheSearchKey(wrapper: ReturnType<typeof field>) {
   const form = box(wrapper).form;
   if (form === null) throw Error("The search box sits in no form");
   await fireEvent.submit(form);
+}
+
+async function tapTheCross(wrapper: ReturnType<typeof field>) {
+  await fireEvent.click(
+    within(wrapper.element).getByRole("button", {
+      name: "Effacer la recherche",
+    }),
+  );
 }
 
 function box(wrapper: ReturnType<typeof field>) {

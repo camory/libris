@@ -105,7 +105,7 @@ every task.
       replaces them. Realises S6 but the cross; un-skips its three
       frontend tests, the search key perhaps green already.
 
-- [ ] T171 Frontend: the cross empties the search box.
+- [x] T171 Frontend: the cross empties the search box.
       Once the box holds text, the cross *Effacer la recherche* sits at
       its right, an icon button, and the browser's own clear button never
       shows (U04, U07). A tap empties the box and shows the whole

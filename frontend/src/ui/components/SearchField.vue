@@ -1,7 +1,8 @@
 <script setup lang="ts">
-import { Search } from "@lucide/vue";
+import { Search, X } from "@lucide/vue";
 import { useTemplateRef } from "vue";
 import { useI18n } from "vue-i18n";
+import IconButton from "./IconButton.vue";
 
 const text = defineModel<string>({ required: true });
 const emit = defineEmits<{ search: [text: string] }>();
@@ -20,6 +21,13 @@ function askAtOnce() {
   box.value?.blur();
 }
 
+function clear() {
+  clearTimeout(pending);
+  text.value = "";
+  emit("search", "");
+  box.value?.focus();
+}
+
 const { t } = useI18n();
 </script>
 
@@ -35,8 +43,16 @@ const { t } = useI18n();
       type="search"
       :aria-label="t('catalogue.search.label')"
       :placeholder="t('catalogue.search.placeholder')"
-      class="h-[50px] w-full rounded-xl border-[1.5px] border-border bg-surface pr-3.5 pl-11 text-field outline-none placeholder:text-muted focus:border-accent"
+      class="h-[50px] w-full rounded-xl border-[1.5px] border-border bg-surface pr-13 pl-11 text-field outline-none placeholder:text-muted focus:border-accent [&::-webkit-search-cancel-button]:appearance-none"
       @input="pause"
     />
+    <IconButton
+      v-if="text !== ''"
+      :label="t('catalogue.search.clear')"
+      class="absolute top-1/2 right-[3px] -translate-y-1/2"
+      @click="clear"
+    >
+      <X :size="22" class="shrink-0" />
+    </IconButton>
   </form>
 </template>

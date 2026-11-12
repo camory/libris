@@ -209,7 +209,7 @@ describe("Search", () => {
     expect(search.asked).toEqual([{ query: "goscinny", after: null }]);
   });
 
-  it.skip("S6 The search runs when the reader pauses, the cross", async () => {
+  it("S6 The search runs when the reader pauses, the cross", async () => {
     // Given
     const search = librisAnswers({
       goscinny: [found(asterixLeGaulois, laSerpeDOr)],

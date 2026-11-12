@@ -357,3 +357,21 @@ Format:
   on the parent's re-render).
 - Deviations from the brief: none.
 - Left over: as in the entry above.
+
+## 2026-11-12 — T171 The cross empties the search box — done
+- Did: `SearchField` draws the cross *Effacer la recherche* while its text
+  is not empty; its tap empties the box, asks the whole catalogue at once
+  and keeps the focus in the box. S6 runs whole.
+- Decided: the box's right padding is `pr-13` whatever the text, as the
+  ISBN field's beside its scanner, so the text never runs under the cross
+  and no class follows the text.
+- Decided: the cross sits at `right-[3px]`, centred, as the ISBN field's
+  scanner; `clear()` drops the pause, writes the model, emits, then
+  focuses, in the brief's order.
+- Decided: the browser's clear button is hidden by an arbitrary variant
+  on the box, read in the built CSS; the un-skip was its own red commit,
+  read before any unit test, as T170's.
+- Deviations from the brief: none.
+- Left over: near (T172), the next pages (T173), the order of answers
+  (T174), the failure (T175), the address (T176); the Pixel checks listed
+  in the PR body.
