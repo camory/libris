@@ -33,7 +33,7 @@ export function useSearchCatalogue(searchApi: SearchApi): {
   async function searchMore() {
     const shown = state.value;
     if (shown.status !== "found" && shown.status !== "near") return;
-    if (next === null) return;
+    if (next === null || shown.loadingMore) return;
     state.value = { ...shown, loadingMore: true };
     const page = await searchApi.search(searched, next);
     next = page.next;

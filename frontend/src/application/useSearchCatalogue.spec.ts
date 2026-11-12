@@ -114,6 +114,22 @@ describe("useSearchCatalogue", () => {
     expect(searchApi.asked).toEqual([{ query: "goscinny", after: null }]);
   });
 
+  it("asks nothing while the next page comes", async () => {
+    // Given
+    const searchApi = new FakeSearchApi({
+      goscinny: [firstPage(), new Promise(() => {})],
+    });
+    const { search, searchMore } = useSearchCatalogue(searchApi);
+    await search("goscinny");
+    void searchMore();
+
+    // When
+    await searchMore();
+
+    // Then
+    expect(searchApi.asked).toHaveLength(2);
+  });
+
   it("holds no match, with the query asked, when the answer holds no edition", async () => {
     // Given
     const { state, search } = useSearchCatalogue(
