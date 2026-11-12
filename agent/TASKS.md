@@ -112,7 +112,7 @@ every task.
       catalogue at once, no pause waited, the focus in the box and the
       keyboard open. Realises S6, the cross; un-skips its frontend test.
 
-- [ ] T172 Frontend: no ouvrage matches.
+- [x] T172 Frontend: no ouvrage matches.
       An answer with no edition says *Aucun ouvrage ne correspond à
       « gaston ».*, the query as sent between guillemets, in the list's
       place (U05); an answer said near says it too, then *Les plus
