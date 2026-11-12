@@ -236,7 +236,7 @@ describe("Search", () => {
     expect(document.activeElement).toBe(box(screen));
   });
 
-  it.skip("S7 The search survives a visit", async () => {
+  it("S7 The search survives a visit", async () => {
     // Given
     const search = librisAnswers({
       goscinny: [
@@ -269,7 +269,7 @@ describe("Search", () => {
     expect(box(screen).value).toBe("goscinny");
   });
 
-  it.skip("S7 The search survives a visit, two searches", async () => {
+  it("S7 The search survives a visit, two searches", async () => {
     // Given
     const search = librisAnswers({
       goscinny: [found(asterixLeGaulois, laSerpeDOr)],
@@ -294,7 +294,7 @@ describe("Search", () => {
     expect(window.history.length).toBe(entries);
   });
 
-  it.skip("S7 The search survives a visit, Séries then Ouvrages", async () => {
+  it("S7 The search survives a visit, Séries then Ouvrages", async () => {
     // Given
     const search = librisAnswers({
       goscinny: [found(asterixLeGaulois, laSerpeDOr)],
