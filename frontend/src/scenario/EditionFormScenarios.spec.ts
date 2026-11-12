@@ -30,6 +30,7 @@ import { FakeEditionsApi } from "../fixture/FakeEditionsApi";
 import { FakeIsbnApi } from "../fixture/FakeIsbnApi";
 import { FakeMeApi } from "../fixture/FakeMeApi";
 import { FakeReadersApi } from "../fixture/FakeReadersApi";
+import { FakeSearchApi } from "../fixture/FakeSearchApi";
 import { FakeSeriesApi } from "../fixture/FakeSeriesApi";
 import { lea } from "../fixture/Readers";
 import { onePiece1 } from "../fixture/SourceEditions";
@@ -566,6 +567,7 @@ describe("Edition form", () => {
         beepSetting: new FakeBeepSetting(),
         authorsApi: new FakeAuthorsApi([]),
         editionsApi: new FakeEditionsApi(new Error("no save in this scenario")),
+        searchApi: new FakeSearchApi(),
       },
       "sha-abc1234",
     );

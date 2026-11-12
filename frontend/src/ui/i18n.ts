@@ -156,6 +156,10 @@ const fr = {
       books: "Ouvrages",
       series: "Séries",
     },
+    search: {
+      label: "Rechercher dans le catalogue",
+      placeholder: "Titre, série, auteur, ISBN",
+    },
     series: {
       BOOK: "{name} · tome {volume}",
       BD: "{name} · album {volume}",

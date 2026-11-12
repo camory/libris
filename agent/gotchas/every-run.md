@@ -121,7 +121,7 @@ true; the diary keeps the date it was found.
   read it there after the gate, never count by hand.
 - No schema of the contract says `additionalProperties: false` since
   `v0.11.0`; the backend pins `v0.19.0` since T164, the frontend
-  `v0.18.0` since T159, so no verifier refuses an extra field in any
+  since T169, so no verifier refuses an extra field in any
   answer. The
   keyword cannot sit on a branch of an `allOf` anyway: the standard applies
   each branch on its own, so the base refuses the fields the other branch

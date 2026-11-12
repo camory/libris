@@ -1,5 +1,5 @@
 import { BookOpen, CircleAlert } from "@lucide/vue";
-import { within } from "@testing-library/dom";
+import { fireEvent, within } from "@testing-library/dom";
 import { flushPromises, mount } from "@vue/test-utils";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import {
@@ -7,12 +7,14 @@ import {
   type BookPage,
   type CatalogueApi,
 } from "../../../application/CatalogueApi";
+import { searchApiKey, type SearchApi } from "../../../application/SearchApi";
 import {
   asterixEtSesAmis,
   asterixLeGaulois,
   romanceDawn,
 } from "../../../fixture/Books";
 import { FakeCatalogueApi } from "../../../fixture/FakeCatalogueApi";
+import { FakeSearchApi } from "../../../fixture/FakeSearchApi";
 import CatalogueRowSkeleton from "../../components/CatalogueRowSkeleton.vue";
 import { createLibrisI18n } from "../../i18n";
 import { createLibrisRouter } from "../../router";
@@ -84,6 +86,25 @@ describe("CatalogueView", () => {
     expect(under(viewSwitch, screen.getByRole("list"))).toBe(true);
   });
 
+  it("shows the search box under the switch, over the loading rows", () => {
+    // When
+    const { wrapper, screen } = open({
+      browse: () => new Promise<BookPage>(() => {}),
+      find: () => Promise.reject(Error("no find in this case")),
+    });
+
+    // Then
+    const box = screen.getByRole("searchbox", {
+      name: "Rechercher dans le catalogue",
+    });
+    expect(
+      under(screen.getByRole("navigation", { name: "Vue du catalogue" }), box),
+    ).toBe(true);
+    expect(
+      under(box, wrapper.findAllComponents(CatalogueRowSkeleton)[0]!.element),
+    ).toBe(true);
+  });
+
   it("shows five skeleton rows while the first page is coming", () => {
     // When
     const { wrapper } = open(new FakeCatalogueApi([{ books: [], next: null }]));
@@ -117,6 +138,17 @@ describe("CatalogueView", () => {
       screen.getByText("Les ouvrages de vos bibliothèques apparaîtront ici."),
     ).toBeDefined();
     expect(wrapper.findAllComponents(BookOpen)).toHaveLength(1);
+  });
+
+  it("shows no search box over an empty catalogue", async () => {
+    // Given
+    const { screen } = open(new FakeCatalogueApi([{ books: [], next: null }]));
+
+    // When
+    await flushPromises();
+
+    // Then
+    expect(screen.queryByRole("searchbox")).toBeNull();
   });
 
   it("lists one row per book of the first page", async () => {
@@ -156,6 +188,37 @@ describe("CatalogueView", () => {
     const [first, second] = screen.getAllByRole("listitem");
     expect(within(first!).getByText("Romance dawn")).toBeDefined();
     expect(within(second!).getByText("Astérix le Gaulois")).toBeDefined();
+  });
+
+  it("lists the search's rows in place of the catalogue's", async () => {
+    // Given
+    const { screen } = open(
+      new FakeCatalogueApi([
+        { books: [asterixLeGaulois, asterixEtSesAmis], next: null },
+      ]),
+      new FakeSearchApi({
+        goscinny: [
+          {
+            books: [romanceDawn, asterixLeGaulois],
+            next: null,
+            near: false,
+          },
+        ],
+      }),
+    );
+    await flushPromises();
+
+    // When
+    await fireEvent.input(screen.getByRole("searchbox"), {
+      target: { value: "goscinny" },
+    });
+    await flushPromises();
+
+    // Then
+    const items = screen.getAllByRole("listitem");
+    expect(items).toHaveLength(2);
+    expect(within(items[0]!).getByText("Romance dawn")).toBeDefined();
+    expect(within(items[1]!).getByText("Astérix le Gaulois")).toBeDefined();
   });
 
   it("offers each row as one link, and no button", async () => {
@@ -214,6 +277,19 @@ describe("CatalogueView", () => {
     expect(
       screen.queryByText("Les ouvrages de vos bibliothèques apparaîtront ici."),
     ).toBeNull();
+  });
+
+  it("keeps the search box when the first page does not come", async () => {
+    // Given
+    const { screen } = open(
+      new FakeCatalogueApi([new TypeError("Failed to fetch")]),
+    );
+
+    // When
+    await flushPromises();
+
+    // Then
+    expect(screen.getAllByRole("searchbox")).toHaveLength(1);
   });
 
   it("asks for the first page on each arrival", async () => {
@@ -339,11 +415,17 @@ describe("CatalogueView", () => {
     return { books: [romanceDawn], next: null };
   }
 
-  function open(catalogueApi: CatalogueApi) {
+  function open(
+    catalogueApi: CatalogueApi,
+    searchApi: SearchApi = new FakeSearchApi(),
+  ) {
     const wrapper = mount(CatalogueView, {
       global: {
         plugins: [createLibrisI18n(), createLibrisRouter()],
-        provide: { [catalogueApiKey]: catalogueApi },
+        provide: {
+          [catalogueApiKey]: catalogueApi,
+          [searchApiKey]: searchApi,
+        },
       },
     });
     return { wrapper, screen: within(wrapper.element as HTMLElement) };

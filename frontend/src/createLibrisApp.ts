@@ -22,6 +22,7 @@ import { isbnApiKey, type IsbnApi } from "./application/IsbnApi";
 import { meApiKey, type MeApi } from "./application/MeApi";
 import { readersApiKey, type ReadersApi } from "./application/ReadersApi";
 import { revisionKey } from "./application/Revision";
+import { searchApiKey, type SearchApi } from "./application/SearchApi";
 import { seriesApiKey, type SeriesApi } from "./application/SeriesApi";
 import AppRoot from "./ui/App.vue";
 import { createLibrisI18n } from "./ui/i18n";
@@ -42,6 +43,7 @@ export interface LibrisPorts {
   beepSetting: BeepSetting;
   authorsApi: AuthorsApi;
   editionsApi: EditionsApi;
+  searchApi: SearchApi;
 }
 
 export function createLibrisApp(ports: LibrisPorts, revision: string): App {
@@ -65,6 +67,7 @@ export function createLibrisApp(ports: LibrisPorts, revision: string): App {
   app.provide(beepSettingKey, ports.beepSetting);
   app.provide(authorsApiKey, ports.authorsApi);
   app.provide(editionsApiKey, ports.editionsApi);
+  app.provide(searchApiKey, ports.searchApi);
   app.provide(revisionKey, revision);
   app.provide(LUCIDE_CONTEXT, { strokeWidth: 1.8 });
   return app;

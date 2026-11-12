@@ -24,7 +24,7 @@ Read whole by a run that changes `frontend/`, after `every-run.md`.
   an `afterEach`, or the contract case passes only by running first.
 - `vitest.global-setup.ts` starts `contracteer mock` on port 9099 over the
   contract the frontend pins, a `raw.githubusercontent.com` URL of
-  `camory/libris-api` (`v0.18.0` since T159); it starts in about four seconds
+  `camory/libris-api` (`v0.19.0` since T169); it starts in about four seconds
   and logs `Contracteer mock server started on port 9099` last, and the
   setup resolves on that line and kills the process in its teardown. The
   mock generates values, so an `infra/api` spec asserts shape and types,
@@ -71,9 +71,12 @@ Read whole by a run that changes `frontend/`, after `every-run.md`.
   (T103). `GET /books/{id}` answers `404` for
   `3e4f5a6b-7c8d-4e9f-a0b1-c2d3e4f5a6b7`, `400` for `not-a-uuid` and
   `a%2Fb`, and a generated `200` of one or two copies in 30 tries, never
-  none (T113). `GET /series-names` answers a generated `200` of one or two
-  names of one character in 30 tries, never none (T121); `GET
-  /author-names` the same in 30 tries (T144). `PUT /books/{id}` answers a
+  none (T113). `GET /books` with `q` answers a generated `200` of one or
+  two books in 30 tries, never none, `near` either way, and `400` to an
+  `after` that is not an id (T169). `GET /series-names` answers a
+  generated `200` of one or two names of one character in 30 tries,
+  never none (T121); `GET /author-names` the same in 30 tries (T144).
+  `PUT /books/{id}` answers a
   `200` with a generated book to a valid body on any uuid, `404` to
   `2a3b4c5d-6e7f-4a8b-9c0d-1e2f3a4b5c6d` with exactly the `EditOnePiece2`
   body (a `200` to another body), and `400` to `not-a-uuid` or a mistyped
@@ -194,11 +197,24 @@ Read whole by a run that changes `frontend/`, after `every-run.md`.
   `FakeSearchApi` answers by query, `{ goscinny: [page, …] }`, each query
   its answers in order, a query with none left rejecting; an answer may be
   an `Error` or a promise the test settles later; `asked` holds each
-  `{ query, after }`. The port has no client and no place in `LibrisPorts`
-  yet: `SearchScenarios`' `open()` provides it through `app.provide`, a
-  `FakeSearchApi()` by default. The task that pins `v0.19.0` writes its
-  client over `GET /books` with `q`, adds `searchApi` to `LibrisPorts`, and
-  moves that `open()`'s `app.provide` into its ports. S6 fakes `setTimeout`
+  `{ query, after }`. `FetchCatalogueApi` serves it too (`q`, then `after`
+  when given, any answer but `200` rejected), `searchApi` of `LibrisPorts`
+  since T169, `bootstrap` giving one instance to both ports;
+  `SearchScenarios`' `open()` gives `world.search`, a `FakeSearchApi()` by
+  default, the other scenario files a `FakeSearchApi()`.
+  `useSearchCatalogue(searchApi)` holds `state` (`ready`, then `found` with
+  the first page's books) and `search(text)`, which asks
+  `searchQueryOf(text)` (`src/domain/SearchQuery.ts`, the text trimmed)
+  with `after` `null` and does not catch. `SearchField` (`ui/components`,
+  a `defineModel<string>` of the text as typed, a `type="search"` input,
+  so a `searchbox`) is drawn by `CatalogueView` unless the catalogue is
+  `empty`; the view's `watch` on its `searchText` calls `search` on each
+  change, and `rowsOf` puts the found books in place of the catalogue's
+  once the catalogue's first page has come (never over its `loading`).
+  `CatalogueView.spec.ts`' `open()` takes the search port second,
+  `new FakeSearchApi()` by default; a case types with
+  `fireEvent.input(getByRole("searchbox"), { target: { value } })`.
+  S6 fakes `setTimeout`
   and `clearTimeout` alone and goes back to real timers before it waits,
   which drops a timer still pending: the search key and the cross act
   with no timer.

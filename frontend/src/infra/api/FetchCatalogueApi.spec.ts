@@ -55,6 +55,95 @@ describe("FetchCatalogueApi", () => {
     await expect(page).rejects.toThrow();
   });
 
+  it("searches the words given", async () => {
+    // Given
+    const api = new FetchCatalogueApi("http://libris.invalid");
+    const requested: string[] = [];
+    vi.stubGlobal("fetch", (url: string) => {
+      requested.push(url);
+      return Promise.resolve(
+        new Response(JSON.stringify({ books: [], next: null, near: false }), {
+          status: 200,
+        }),
+      );
+    });
+
+    // When
+    await api.search("la serpe d'or", null);
+
+    // Then
+    expect(requested).toEqual([
+      "http://libris.invalid/api/v1/books?q=la+serpe+d%27or",
+    ]);
+  });
+
+  it("fails when the API refuses the search", async () => {
+    // Given
+    const api = new FetchCatalogueApi(inject("mockBaseUrl"));
+
+    // When
+    const page = api.search("goscinny", "not-an-id");
+
+    // Then
+    await expect(page).rejects.toThrow();
+  });
+
+  it("answers a page of the search", async () => {
+    // Given
+    const api = new FetchCatalogueApi(inject("mockBaseUrl"));
+
+    // When
+    const page = await api.search("goscinny", null);
+
+    // Then
+    expect(page.books.length).toBeGreaterThan(0);
+    for (const book of page.books) {
+      expect(book).toEqual(aBook);
+    }
+    expect(page.next).toEqual(aStringOrNull);
+    expect(typeof page.near).toBe("boolean");
+  });
+
+  it("reads whether the words were near", async () => {
+    // Given
+    const api = new FetchCatalogueApi("http://libris.invalid");
+    vi.stubGlobal("fetch", () =>
+      Promise.resolve(
+        new Response(JSON.stringify({ books: [], next: null, near: true }), {
+          status: 200,
+        }),
+      ),
+    );
+
+    // When
+    const page = await api.search("goscinny", null);
+
+    // Then
+    expect(page.near).toBe(true);
+  });
+
+  it("searches the page after the given book", async () => {
+    // Given
+    const api = new FetchCatalogueApi("http://libris.invalid");
+    const requested: string[] = [];
+    vi.stubGlobal("fetch", (url: string) => {
+      requested.push(url);
+      return Promise.resolve(
+        new Response(JSON.stringify({ books: [], next: null, near: false }), {
+          status: 200,
+        }),
+      );
+    });
+
+    // When
+    await api.search("goscinny", "5e0c1b2a-3948-4d5e-8a6f-0b1c2d3e4f50");
+
+    // Then
+    expect(requested).toEqual([
+      "http://libris.invalid/api/v1/books?q=goscinny&after=5e0c1b2a-3948-4d5e-8a6f-0b1c2d3e4f50",
+    ]);
+  });
+
   it("finds the ouvrage with its copies", async () => {
     // Given
     const api = new FetchCatalogueApi(inject("mockBaseUrl"));

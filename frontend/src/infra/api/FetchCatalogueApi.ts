@@ -3,6 +3,7 @@ import type {
   CatalogueApi,
   FindBookAnswer,
 } from "../../application/CatalogueApi";
+import type { SearchApi, SearchPage } from "../../application/SearchApi";
 import { bookOf, type BookResponse } from "./bookOf";
 import { problemOf, validationOrNotFound } from "./problemOf";
 
@@ -11,7 +12,11 @@ interface BookPageResponse {
   next: string | null;
 }
 
-export class FetchCatalogueApi implements CatalogueApi {
+interface SearchPageResponse extends BookPageResponse {
+  near: boolean;
+}
+
+export class FetchCatalogueApi implements CatalogueApi, SearchApi {
   constructor(private readonly baseUrl: string) {}
 
   async browse(after: string | null): Promise<BookPage> {
@@ -25,6 +30,22 @@ export class FetchCatalogueApi implements CatalogueApi {
     }
     const body = (await response.json()) as BookPageResponse;
     return { books: body.books.map(bookOf), next: body.next };
+  }
+
+  async search(query: string, after: string | null): Promise<SearchPage> {
+    const parameters = new URLSearchParams({ q: query });
+    if (after !== null) parameters.set("after", after);
+    const response = await fetch(
+      `${this.baseUrl}/api/v1/books?${parameters.toString()}`,
+      {
+        headers: { Accept: "application/json, application/problem+json" },
+      },
+    );
+    if (response.status !== 200) {
+      throw Error(`The search answered ${response.status}`);
+    }
+    const body = (await response.json()) as SearchPageResponse;
+    return { books: body.books.map(bookOf), next: body.next, near: body.near };
   }
 
   async find(id: string): Promise<FindBookAnswer> {

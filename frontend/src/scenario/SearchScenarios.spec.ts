@@ -8,11 +8,7 @@ import {
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import type { App } from "vue";
 import type { CatalogueApi } from "../application/CatalogueApi";
-import {
-  searchApiKey,
-  type SearchApi,
-  type SearchPage,
-} from "../application/SearchApi";
+import type { SearchApi, SearchPage } from "../application/SearchApi";
 import { createLibrisApp } from "../createLibrisApp";
 import type { Book } from "../domain/Book";
 import type { Bookshelf } from "../domain/Bookshelf";
@@ -57,7 +53,7 @@ describe("Search", () => {
     vi.unstubAllGlobals();
   });
 
-  it.skip("S1 Words find the editions holding them", async () => {
+  it("S1 Words find the editions holding them", async () => {
     // Given
     const search = librisAnswers({
       goscinny: [found(asterixLeGaulois, laSerpeDOr)],
@@ -568,10 +564,10 @@ describe("Search", () => {
         beepSetting: new FakeBeepSetting(),
         authorsApi: new FakeAuthorsApi([]),
         editionsApi: new FakeEditionsApi(new Error("no save in this scenario")),
+        searchApi: world.search ?? new FakeSearchApi(),
       },
       "sha-abc1234",
     );
-    app.provide(searchApiKey, world.search ?? new FakeSearchApi());
     app.mount(host);
     return within(host);
   }
