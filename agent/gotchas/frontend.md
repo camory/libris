@@ -245,27 +245,26 @@ Read whole by a run that changes `frontend/`, after `every-run.md`.
   `dist/assets/*.css` after `npm run build`. It is drawn by
   `CatalogueView` unless the catalogue is `empty`; the view calls `search`
   on the field's `@search`, no `watch` on its `searchText`, and `rowsOf`
-  puts the `found`, `near` or `unavailable` books in place of the catalogue's, and none
-  for `nothing`, once the catalogue's first page has come (never over its
-  `loading`), read from `answer`, the one `computed` over the search state,
-  which also gives the sentence, the label and `loadingMore` (the search's
-  for `found`, `near` and `unavailable`, `undefined` otherwise, so the
-  two skeleton rows
-  read `answer.loadingMore ?? state.status === 'loadingMore'`, the list
-  shown's); one message paragraph says
-  `message`, the search's `catalogue.search.error` (*Erreur lors de la
-  recherche, veuillez réessayer plus tard.*) while a search is shown
-  (`answer.books` defined), the catalogue's `catalogue.error` otherwise,
-  with `mt-5` while rows are drawn above it; the observer's callback calls `growTheList()`, `browse()`
-  while `answer.books` is `undefined` and `searchMore()` otherwise, and its
-  `watch` follows `[state, searchState]`, so it watches the last row of
-  whichever list is drawn. `answer`'s sentence and label: over `nothing`,
-  `near` and an `unavailable` said near the sentence `catalogue.search.nothing` (*Aucun ouvrage ne
+  puts the `found`, `near` or `unavailable` books in place of the
+  catalogue's, and none for `nothing`, once the catalogue's first page has
+  come (never over its `loading`), read from `answer`, the one `computed`
+  over the search state, which also gives the sentence, the label and
+  `loadingMore` (the search's for `found`, `near` and `unavailable`,
+  `undefined` otherwise, so the two skeleton rows read `answer.loadingMore
+  ?? state.status === 'loadingMore'`, the list shown's); one message
+  paragraph says `message`, the search's `catalogue.search.error` (*Erreur
+  lors de la recherche, veuillez réessayer plus tard.*) while a search is
+  shown (`answer.books` defined), the catalogue's `catalogue.error`
+  otherwise, with `mt-5` while rows are drawn above it; the observer's
+  callback calls `growTheList()`, `browse()` while `answer.books` is
+  `undefined` and `searchMore()` otherwise, and its `watch` follows `[state,
+  searchState]`, so it watches the last row of whichever list is drawn.
+  `answer`'s sentence and label: over `nothing`, `near` and an `unavailable`
+  said near the sentence `catalogue.search.nothing` (*Aucun ouvrage ne
   correspond à « gaston ».*, the query asked, U+00A0 inside the guillemets,
-  `lead` `muted`) comes first, and over `near`, or `unavailable` said
-  near, the `h2` label
-  `catalogue.search.near` (*Les plus proches :*, `mt-5 pb-2`) between the
-  sentence and the rows, whose `ul` takes it as `aria-label`.
+  `lead` `muted`) comes first, and over `near`, or `unavailable` said near,
+  the `h2` label `catalogue.search.near` (*Les plus proches :*, `mt-5 pb-2`)
+  between the sentence and the rows, whose `ul` takes it as `aria-label`.
   `CatalogueView.spec.ts`' `open()` takes the search port second,
   `new FakeSearchApi()` by default; a case types with
   `fireEvent.input(getByRole("searchbox"), { target: { value } })`, then

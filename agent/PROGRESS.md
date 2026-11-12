@@ -454,12 +454,25 @@ Format:
   still escapes `search` and `searchMore` (T175); the Pixel check of two
   words typed apart on a slow network, in the PR body.
 
-## 2026-11-12 — T175 Libris unavailable during a search — handoff
-- Done: steps 1 to 13 of the test plan, each its own commit; the gotchas search item and the PROPOSED item (removed, answered) are rewritten. Next: self-review (`git diff main...HEAD`), tick T175, the diary entry, the PR.
-- Red of step 1: both S9 fail on *Unable to find an element with the text: Erreur lors de la recherche, veuillez réessayer plus tard.*, with two *Unhandled Rejection: TypeError: Failed to fetch*; both went green at step 9.
-- Decided: a rejection of the port is read as `null` by a private `pageOf`, so each verb keeps one drop check (refactor commit).
-- Deviation: one case beyond the plan, *shows no catalogue skeleton under the search's rows when its next page does not come* (red: 2 skeletons, the catalogue's `loadingMore` read over `unavailable`); `answer` gives `loadingMore: false` there.
-- Guards (mutation, red read, reverted): step 3, books shown kept on a first page's failure → books `[asterixLeGaulois]` against `[]`; step 6, `searchMore` asking over `unavailable` → `asked` length 3; step 10, rows kept only when the search held books (`books.length > 0 ? books : undefined`) → two `listitem`s; step 11, message paragraph moved above the rows → `under(...)` false (the catalogue's case reds too).
-- Steps 5, 8, 12 were red on arrival, not guards.
-- Left to Tophe in the PR: a search typed with the network off on the Pixel, the sentence's spacing against the mockup.
-- Three commit subjects run 73 to 75 characters (the near, books-listed and guard-no-book ones); history is kept, the PR body must declare it.
+## 2026-11-12 — T175 Libris unavailable during a search — done
+- Did: `useSearchCatalogue` holds `unavailable` (query, books still listed,
+  `near`) when a page does not come, and neither verb rejects any more;
+  `CatalogueView` says the search's error in the list's place or under its
+  rows, one message paragraph for the list shown. S9 runs whole.
+- Decided: a rejection of the port is read as `null` by a private `pageOf`,
+  so each verb keeps a single drop check for a late answer, failure or not.
+- Decided: `answer` gives `loadingMore: false` over `unavailable`, so the
+  catalogue's own `loadingMore` never draws its skeleton under the search's
+  rows.
+- Decided: the message paragraph reads the search's error while a search is
+  shown (`answer.books` defined) and the catalogue's otherwise, its `mt-5`
+  reading the rows drawn; this answers the PROPOSED item on the catalogue's
+  error under the search's rows, removed.
+- Deviations from the brief: one case beyond the plan, *shows no catalogue
+  skeleton under the search's rows when its next page does not come* (red:
+  two skeletons). Steps 5, 8 and 12 were red on arrival, not guards. Three
+  commit subjects run 73 to 75 characters; history is not rewritten.
+- Run in two parts: a handoff after step 13, then the self-review and the
+  PR.
+- Left over: a search typed with the network off on the Pixel, and the
+  sentence's spacing against the mockup, for Tophe (in the PR body).
