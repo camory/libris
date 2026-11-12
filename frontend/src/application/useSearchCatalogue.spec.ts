@@ -478,6 +478,30 @@ describe("useSearchCatalogue", () => {
     });
   });
 
+  it("drops an earlier search's failure arriving after the latest search's answer", async () => {
+    // Given
+    const goscinny = later();
+    const { state, search } = useSearchCatalogue(
+      new FakeSearchApi({
+        goscinny: [goscinny.page],
+        oda: [{ books: [lePetitPrince], next: null, near: false }],
+      }),
+    );
+    const earlier = search("goscinny");
+    await search("oda");
+
+    // When
+    goscinny.fails(new TypeError("Failed to fetch"));
+    await earlier;
+
+    // Then
+    expect(state.value).toEqual({
+      status: "found",
+      books: [lePetitPrince],
+      loadingMore: false,
+    });
+  });
+
   it("shows the whole catalogue when a search arrives after the box is emptied", async () => {
     // Given
     const goscinny = later();
@@ -505,9 +529,11 @@ describe("useSearchCatalogue", () => {
 
   function later() {
     let arrives: (page: SearchPage) => void = () => {};
-    const page = new Promise<SearchPage>((resolve) => {
+    let fails: (error: Error) => void = () => {};
+    const page = new Promise<SearchPage>((resolve, reject) => {
       arrives = resolve;
+      fails = reject;
     });
-    return { page, arrives };
+    return { page, arrives, fails };
   }
 });

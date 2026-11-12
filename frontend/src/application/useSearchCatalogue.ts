@@ -32,6 +32,7 @@ export function useSearchCatalogue(searchApi: SearchApi): {
     try {
       page = await searchApi.search(query, null);
     } catch {
+      if (asked !== latest) return;
       state.value = { status: "unavailable", query, books: [], near: false };
       return;
     }
