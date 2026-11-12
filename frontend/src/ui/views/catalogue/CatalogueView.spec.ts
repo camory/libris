@@ -1023,6 +1023,27 @@ describe("CatalogueView", () => {
     ).toEqual([expect.stringContaining("Romance dawn")]);
   });
 
+  it("asks nothing more when the address takes the query asked", async () => {
+    // Given
+    const searchApi = new FakeSearchApi({
+      goscinny: [lastSearchPage(), lastSearchPage()],
+    });
+    const { wrapper, screen } = open(
+      new FakeCatalogueApi([firstPage()]),
+      searchApi,
+    );
+    await flushPromises();
+    await searchFor(screen, "goscinny");
+
+    // When
+    await wrapper.setProps({ query: "goscinny" });
+    await flushPromises();
+
+    // Then
+    expect(searchApi.asked).toHaveLength(1);
+    expect(screen.getAllByRole("listitem")).toHaveLength(1);
+  });
+
   function firstPage(): BookPage {
     return {
       books: [asterixLeGaulois, asterixEtSesAmis],
