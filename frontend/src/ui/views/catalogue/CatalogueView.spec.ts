@@ -997,6 +997,32 @@ describe("CatalogueView", () => {
     expect(screen.getAllByRole("listitem")).toHaveLength(2);
   });
 
+  it("searches the query the address takes", async () => {
+    // Given
+    const searchApi = new FakeSearchApi({
+      goscinny: [lastSearchPage()],
+      oda: [{ books: [romanceDawn], next: null, near: false }],
+    });
+    const { wrapper, screen } = open(
+      new FakeCatalogueApi([firstPage()]),
+      searchApi,
+    );
+    await flushPromises();
+    await searchFor(screen, "goscinny");
+    await wrapper.setProps({ query: "goscinny" });
+
+    // When
+    await wrapper.setProps({ query: "oda" });
+    await flushPromises();
+
+    // Then
+    expect(screen.getByRole<HTMLInputElement>("searchbox").value).toBe("oda");
+    expect(searchApi.asked.at(-1)).toEqual({ query: "oda", after: null });
+    expect(
+      screen.getAllByRole("listitem").map((row) => row.textContent),
+    ).toEqual([expect.stringContaining("Romance dawn")]);
+  });
+
   function firstPage(): BookPage {
     return {
       books: [asterixLeGaulois, asterixEtSesAmis],

@@ -27,11 +27,13 @@ const searchText = ref(props.query);
 const arriving = ref(searchQueryOf(props.query) !== null);
 watch(searchState, () => (arriving.value = false));
 const router = useRouter();
+let lastAsked = props.query;
 
 watch(
   () => props.query,
   (query) => {
-    if (query !== "") return;
+    if (query === lastAsked) return;
+    lastAsked = query;
     searchText.value = query;
     void search(query);
   },
@@ -39,6 +41,7 @@ watch(
 
 function searchFor(text: string) {
   const query = searchQueryOf(text);
+  lastAsked = query ?? "";
   void router.replace({
     path: "/catalogue",
     query: query === null ? {} : { q: query },
