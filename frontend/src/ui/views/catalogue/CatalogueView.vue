@@ -3,7 +3,10 @@ import { BookOpen, CircleAlert } from "@lucide/vue";
 import { inject, onUnmounted, ref, useTemplateRef, watch } from "vue";
 import { useI18n } from "vue-i18n";
 import { catalogueApiKey } from "../../../application/CatalogueApi";
+import { searchApiKey } from "../../../application/SearchApi";
 import { useBrowseCatalogue } from "../../../application/useBrowseCatalogue";
+import { useSearchCatalogue } from "../../../application/useSearchCatalogue";
+import type { Book } from "../../../domain/Book";
 import CatalogueRow from "../../components/CatalogueRow.vue";
 import CatalogueRowSkeleton from "../../components/CatalogueRowSkeleton.vue";
 import CatalogueSwitch from "../../components/CatalogueSwitch.vue";
@@ -11,7 +14,17 @@ import SearchField from "../../components/SearchField.vue";
 
 const { t } = useI18n();
 const { state, browse } = useBrowseCatalogue(inject(catalogueApiKey)!);
+const { state: searchState, search } = useSearchCatalogue(
+  inject(searchApiKey)!,
+);
 const searchText = ref("");
+watch(searchText, (text) => void search(text));
+
+function rowsOf(catalogueBooks: Book[]): Book[] {
+  return searchState.value.status === "found"
+    ? searchState.value.books
+    : catalogueBooks;
+}
 
 const rows = useTemplateRef("rows");
 const observer = new IntersectionObserver((entries) => {
@@ -63,11 +76,11 @@ void browse();
     </div>
     <template v-else>
       <div
-        v-if="state.books.length > 0"
+        v-if="rowsOf(state.books).length > 0"
         class="divide-y divide-border overflow-hidden rounded-[14px] border border-border bg-surface"
       >
         <ul ref="rows" class="divide-y divide-border">
-          <li v-for="book in state.books" :key="book.id">
+          <li v-for="book in rowsOf(state.books)" :key="book.id">
             <CatalogueRow :book="book" />
           </li>
         </ul>

@@ -1,5 +1,5 @@
 import { BookOpen, CircleAlert } from "@lucide/vue";
-import { within } from "@testing-library/dom";
+import { fireEvent, within } from "@testing-library/dom";
 import { flushPromises, mount } from "@vue/test-utils";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import {
@@ -188,6 +188,37 @@ describe("CatalogueView", () => {
     const [first, second] = screen.getAllByRole("listitem");
     expect(within(first!).getByText("Romance dawn")).toBeDefined();
     expect(within(second!).getByText("Astérix le Gaulois")).toBeDefined();
+  });
+
+  it("lists the search's rows in place of the catalogue's", async () => {
+    // Given
+    const { screen } = open(
+      new FakeCatalogueApi([
+        { books: [asterixLeGaulois, asterixEtSesAmis], next: null },
+      ]),
+      new FakeSearchApi({
+        goscinny: [
+          {
+            books: [romanceDawn, asterixLeGaulois],
+            next: null,
+            near: false,
+          },
+        ],
+      }),
+    );
+    await flushPromises();
+
+    // When
+    await fireEvent.input(screen.getByRole("searchbox"), {
+      target: { value: "goscinny" },
+    });
+    await flushPromises();
+
+    // Then
+    const items = screen.getAllByRole("listitem");
+    expect(items).toHaveLength(2);
+    expect(within(items[0]!).getByText("Romance dawn")).toBeDefined();
+    expect(within(items[1]!).getByText("Astérix le Gaulois")).toBeDefined();
   });
 
   it("offers each row as one link, and no button", async () => {
