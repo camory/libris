@@ -140,6 +140,17 @@ describe("CatalogueView", () => {
     expect(wrapper.findAllComponents(BookOpen)).toHaveLength(1);
   });
 
+  it("shows no search box over an empty catalogue", async () => {
+    // Given
+    const { screen } = open(new FakeCatalogueApi([{ books: [], next: null }]));
+
+    // When
+    await flushPromises();
+
+    // Then
+    expect(screen.queryByRole("searchbox")).toBeNull();
+  });
+
   it("lists one row per book of the first page", async () => {
     // Given
     const { wrapper, screen } = open(

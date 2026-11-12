@@ -42,7 +42,11 @@ void browse();
       <p class="text-body text-muted">{{ t("catalogue.hint") }}</p>
     </header>
     <CatalogueSwitch class="mb-5" />
-    <SearchField v-model="searchText" class="mb-5" />
+    <SearchField
+      v-if="state.status !== 'empty'"
+      v-model="searchText"
+      class="mb-5"
+    />
 
     <div
       v-if="state.status === 'loading'"
