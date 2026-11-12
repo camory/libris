@@ -25,7 +25,8 @@ When a step rewrites an existing test, say whether it adopts the current
 convention. Prescribe what each assertion proves, never the spec body.
 Each step is red before it is green, except a step marked **guard**: a
 case the earlier steps already satisfy, kept so it fails the day the
-constraint goes; a guard names the mutation that makes it red.
+constraint goes; a guard names the mutation that makes it red. Step 1
+un-skips the scenario tests the backlog line cites, red.
 
 ## Files and modules
 What is created or changed, grouped by module. Existing code to read first.
