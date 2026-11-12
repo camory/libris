@@ -23,6 +23,7 @@ function askAtOnce() {
 
 function clear() {
   text.value = "";
+  emit("search", "");
 }
 
 const { t } = useI18n();
