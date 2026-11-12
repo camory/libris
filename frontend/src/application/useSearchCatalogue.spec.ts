@@ -328,6 +328,34 @@ describe("useSearchCatalogue", () => {
     });
   });
 
+  it("drops a next page asked while a later search is coming", async () => {
+    // Given
+    const nextPage = later();
+    const oda = later();
+    const { state, search, searchMore } = useSearchCatalogue(
+      new FakeSearchApi({
+        goscinny: [firstPage(), nextPage.page],
+        oda: [oda.page],
+      }),
+    );
+    await search("goscinny");
+    const latest = search("oda");
+    const more = searchMore();
+
+    // When
+    oda.arrives({ books: [lePetitPrince], next: null, near: false });
+    await latest;
+    nextPage.arrives(lastPage());
+    await more;
+
+    // Then
+    expect(state.value).toEqual({
+      status: "found",
+      books: [lePetitPrince],
+      loadingMore: false,
+    });
+  });
+
   function firstPage(near = false): SearchPage {
     return { books: [romanceDawn], next: romanceDawn.id, near };
   }

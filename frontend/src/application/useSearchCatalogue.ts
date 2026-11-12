@@ -18,6 +18,7 @@ export function useSearchCatalogue(searchApi: SearchApi): {
   let searched = "";
   let next: string | null = null;
   let latest = 0;
+  let shownSearch = 0;
 
   async function search(text: string) {
     const query = searchQueryOf(text);
@@ -28,6 +29,7 @@ export function useSearchCatalogue(searchApi: SearchApi): {
     const asked = ++latest;
     const page = await searchApi.search(query, null);
     if (asked !== latest) return;
+    shownSearch = asked;
     searched = query;
     next = page.next;
     state.value = stateOf(query, page);
@@ -38,7 +40,7 @@ export function useSearchCatalogue(searchApi: SearchApi): {
     if (shown.status !== "found" && shown.status !== "near") return;
     if (next === null || shown.loadingMore) return;
     state.value = { ...shown, loadingMore: true };
-    const extended = latest;
+    const extended = shownSearch;
     const page = await searchApi.search(searched, next);
     if (extended !== latest) return;
     next = page.next;
