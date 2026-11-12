@@ -81,6 +81,12 @@ void browse();
       >
         {{ t("catalogue.search.nothing", { query: searchState.query }) }}
       </p>
+      <h2
+        v-if="searchState.status === 'near'"
+        class="mt-5 pb-2 text-label text-muted"
+      >
+        {{ t("catalogue.search.near") }}
+      </h2>
       <div
         v-if="rowsOf(state.books).length > 0"
         class="divide-y divide-border overflow-hidden rounded-[14px] border border-border bg-surface"

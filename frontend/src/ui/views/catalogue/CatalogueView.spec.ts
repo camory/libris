@@ -289,6 +289,35 @@ describe("CatalogueView", () => {
     ).toBeDefined();
   });
 
+  it("labels the nearest under the sentence", async () => {
+    // Given
+    const { screen } = open(
+      new FakeCatalogueApi([
+        { books: [asterixLeGaulois, asterixEtSesAmis], next: null },
+      ]),
+      new FakeSearchApi({
+        asterik: [
+          { books: [romanceDawn, asterixLeGaulois], next: null, near: true },
+        ],
+      }),
+    );
+    await flushPromises();
+
+    // When
+    await searchFor(screen, "asterik");
+
+    // Then
+    const label = screen.getByText("Les plus proches\u00A0:", {
+      normalizer: (text) => text,
+    });
+    expect(
+      under(
+        screen.getByText("Aucun ouvrage ne correspond à « asterik »."),
+        label,
+      ),
+    ).toBe(true);
+  });
+
   it("asks nothing while the reader types", async () => {
     // Given
     const searchApi = new FakeSearchApi({

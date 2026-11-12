@@ -161,6 +161,7 @@ const fr = {
       placeholder: "Titre, série, auteur, ISBN",
       clear: "Effacer la recherche",
       nothing: "Aucun ouvrage ne correspond à « {query} ».",
+      near: "Les plus proches\u00A0:",
     },
     series: {
       BOOK: "{name} · tome {volume}",
