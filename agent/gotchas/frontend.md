@@ -203,17 +203,30 @@ Read whole by a run that changes `frontend/`, after `every-run.md`.
   `SearchScenarios`' `open()` gives `world.search`, a `FakeSearchApi()` by
   default, the other scenario files a `FakeSearchApi()`.
   `useSearchCatalogue(searchApi)` holds `state` (`ready`, then `found` with
-  the first page's books) and `search(text)`, which asks
-  `searchQueryOf(text)` (`src/domain/SearchQuery.ts`, the text trimmed)
-  with `after` `null` and does not catch. `SearchField` (`ui/components`,
-  a `defineModel<string>` of the text as typed, a `type="search"` input,
-  so a `searchbox`) is drawn by `CatalogueView` unless the catalogue is
-  `empty`; the view's `watch` on its `searchText` calls `search` on each
-  change, and `rowsOf` puts the found books in place of the catalogue's
-  once the catalogue's first page has come (never over its `loading`).
+  the first page's books) and `search(text)`, which reads
+  `searchQueryOf(text)` (`src/domain/SearchQuery.ts`: the text trimmed,
+  `null` under two characters): on `null` it asks nothing and holds
+  `ready` again, otherwise it asks the query with `after` `null`, keeps
+  the books it holds until the answer, and does not catch. `SearchField`
+  (`ui/components`, a `defineModel<string>` of the text as typed, a
+  `type="search"` input, so a `searchbox`, inside a `<form>` with no name,
+  so no `form` role) emits `search` with its text 300 ms after the last
+  keystroke, each `input` clearing the pending `setTimeout` and calling
+  the global one again, and at once on its form's `submit` (prevented),
+  which drops the pending pause and blurs the box. It is drawn by
+  `CatalogueView` unless the catalogue is `empty`; the view calls `search`
+  on the field's `@search`, no `watch` on its `searchText`, and `rowsOf`
+  puts the found books in place of the catalogue's once the catalogue's
+  first page has come (never over its `loading`).
   `CatalogueView.spec.ts`' `open()` takes the search port second,
   `new FakeSearchApi()` by default; a case types with
-  `fireEvent.input(getByRole("searchbox"), { target: { value } })`.
+  `fireEvent.input(getByRole("searchbox"), { target: { value } })`, then
+  asks with `fireEvent.submit(box.form!)`: an input alone asks nothing
+  before 300 ms, and a pause left pending on a still-mounted view asks the
+  port in a later case. `SearchField.spec.ts`' `pressTheSearchKey` submits
+  the box's `form`, as the scenario's does. A mutation that emits from the
+  `@input` handler itself reads the model before `v-model` writes it (the
+  listener runs first) and emits the previous text.
   S6 fakes `setTimeout`
   and `clearTimeout` alone and goes back to real timers before it waits,
   which drops a timer still pending: the search key and the cross act
