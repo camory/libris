@@ -331,6 +331,22 @@ describe("useSearchCatalogue", () => {
     });
   });
 
+  it("asks nothing more once a next page did not come", async () => {
+    // Given
+    const searchApi = new FakeSearchApi({
+      goscinny: [firstPage(), new TypeError("Failed to fetch")],
+    });
+    const { search, searchMore } = useSearchCatalogue(searchApi);
+    await search("goscinny");
+    await searchMore();
+
+    // When
+    await searchMore();
+
+    // Then
+    expect(searchApi.asked).toHaveLength(2);
+  });
+
   it("holds the latest search's answer when an earlier one arrives after it", async () => {
     // Given
     const goscinny = later();
