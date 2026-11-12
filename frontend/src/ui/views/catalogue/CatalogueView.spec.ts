@@ -266,6 +266,29 @@ describe("CatalogueView", () => {
     expect(screen.queryAllByRole("listitem")).toEqual([]);
   });
 
+  it("says that no ouvrage matches when Libris answers the nearest", async () => {
+    // Given
+    const { screen } = open(
+      new FakeCatalogueApi([
+        { books: [asterixLeGaulois, asterixEtSesAmis], next: null },
+      ]),
+      new FakeSearchApi({
+        asterik: [
+          { books: [romanceDawn, asterixLeGaulois], next: null, near: true },
+        ],
+      }),
+    );
+    await flushPromises();
+
+    // When
+    await searchFor(screen, "asterik");
+
+    // Then
+    expect(
+      screen.getByText("Aucun ouvrage ne correspond à « asterik »."),
+    ).toBeDefined();
+  });
+
   it("asks nothing while the reader types", async () => {
     // Given
     const searchApi = new FakeSearchApi({

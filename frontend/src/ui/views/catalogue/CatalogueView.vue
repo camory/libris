@@ -75,7 +75,10 @@ void browse();
       <p class="text-lead text-muted">{{ t("catalogue.empty") }}</p>
     </div>
     <template v-else>
-      <p v-if="searchState.status === 'nothing'" class="text-lead text-muted">
+      <p
+        v-if="searchState.status === 'nothing' || searchState.status === 'near'"
+        class="text-lead text-muted"
+      >
         {{ t("catalogue.search.nothing", { query: searchState.query }) }}
       </p>
       <div
