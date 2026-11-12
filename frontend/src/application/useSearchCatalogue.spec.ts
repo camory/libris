@@ -42,6 +42,24 @@ describe("useSearchCatalogue", () => {
     });
   });
 
+  it("asks the next page of the same query after the last page's next", async () => {
+    // Given
+    const searchApi = new FakeSearchApi({
+      goscinny: [firstPage(), lastPage()],
+    });
+    const { search, searchMore } = useSearchCatalogue(searchApi);
+    await search("goscinny");
+
+    // When
+    await searchMore();
+
+    // Then
+    expect(searchApi.asked).toEqual([
+      { query: "goscinny", after: null },
+      { query: "goscinny", after: romanceDawn.id },
+    ]);
+  });
+
   it("holds no match, with the query asked, when the answer holds no edition", async () => {
     // Given
     const { state, search } = useSearchCatalogue(
