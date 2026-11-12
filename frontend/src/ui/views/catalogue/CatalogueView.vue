@@ -28,6 +28,15 @@ const arriving = ref(searchQueryOf(props.query) !== null);
 watch(searchState, () => (arriving.value = false));
 const router = useRouter();
 
+watch(
+  () => props.query,
+  (query) => {
+    if (query !== "") return;
+    searchText.value = query;
+    void search(query);
+  },
+);
+
 function searchFor(text: string) {
   const query = searchQueryOf(text);
   void router.replace({
