@@ -462,3 +462,4 @@ Format:
 - Guards (mutation, red read, reverted): step 3, books shown kept on a first page's failure → books `[asterixLeGaulois]` against `[]`; step 6, `searchMore` asking over `unavailable` → `asked` length 3; step 10, rows kept only when the search held books (`books.length > 0 ? books : undefined`) → two `listitem`s; step 11, message paragraph moved above the rows → `under(...)` false (the catalogue's case reds too).
 - Steps 5, 8, 12 were red on arrival, not guards.
 - Left to Tophe in the PR: a search typed with the network off on the Pixel, the sentence's spacing against the mockup.
+- Three commit subjects run 73 to 75 characters (the near, books-listed and guard-no-book ones); history is kept, the PR body must declare it.
