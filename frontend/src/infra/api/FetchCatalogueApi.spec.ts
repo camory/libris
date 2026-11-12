@@ -122,6 +122,28 @@ describe("FetchCatalogueApi", () => {
     expect(page.near).toBe(true);
   });
 
+  it("searches the page after the given book", async () => {
+    // Given
+    const api = new FetchCatalogueApi("http://libris.invalid");
+    const requested: string[] = [];
+    vi.stubGlobal("fetch", (url: string) => {
+      requested.push(url);
+      return Promise.resolve(
+        new Response(JSON.stringify({ books: [], next: null, near: false }), {
+          status: 200,
+        }),
+      );
+    });
+
+    // When
+    await api.search("goscinny", "5e0c1b2a-3948-4d5e-8a6f-0b1c2d3e4f50");
+
+    // Then
+    expect(requested).toEqual([
+      "http://libris.invalid/api/v1/books?q=goscinny&after=5e0c1b2a-3948-4d5e-8a6f-0b1c2d3e4f50",
+    ]);
+  });
+
   it("finds the ouvrage with its copies", async () => {
     // Given
     const api = new FetchCatalogueApi(inject("mockBaseUrl"));
