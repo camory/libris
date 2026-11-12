@@ -868,6 +868,24 @@ describe("CatalogueView", () => {
     expect(window.history.length).toBe(entries);
   });
 
+  it("writes no query under two characters", async () => {
+    // Given
+    const router = await routerAt("/catalogue");
+    const { screen } = open(
+      new FakeCatalogueApi([firstPage()]),
+      new FakeSearchApi({ goscinny: [lastSearchPage()] }),
+      { router },
+    );
+    await flushPromises();
+
+    // When
+    await searchFor(screen, "goscinny");
+    await searchFor(screen, " g ");
+
+    // Then
+    expect(address()).toBe("/catalogue");
+  });
+
   function firstPage(): BookPage {
     return {
       books: [asterixLeGaulois, asterixEtSesAmis],

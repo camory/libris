@@ -8,6 +8,7 @@ import { searchApiKey } from "../../../application/SearchApi";
 import { useBrowseCatalogue } from "../../../application/useBrowseCatalogue";
 import { useSearchCatalogue } from "../../../application/useSearchCatalogue";
 import type { Book } from "../../../domain/Book";
+import { searchQueryOf } from "../../../domain/SearchQuery";
 import CatalogueRow from "../../components/CatalogueRow.vue";
 import CatalogueRowSkeleton from "../../components/CatalogueRowSkeleton.vue";
 import CatalogueSwitch from "../../components/CatalogueSwitch.vue";
@@ -24,7 +25,11 @@ const searchText = ref("");
 const router = useRouter();
 
 function searchFor(text: string) {
-  void router.replace({ path: "/catalogue", query: { q: text.trim() } });
+  const query = searchQueryOf(text);
+  void router.replace({
+    path: "/catalogue",
+    query: query === null ? {} : { q: query },
+  });
   void search(text);
 }
 
