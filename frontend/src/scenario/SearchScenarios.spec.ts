@@ -133,7 +133,7 @@ describe("Search", () => {
     ]);
   });
 
-  it.skip("S6 The search runs when the reader pauses", async () => {
+  it("S6 The search runs when the reader pauses", async () => {
     // Given
     const search = librisAnswers({
       goscinny: [found(asterixLeGaulois, laSerpeDOr)],
@@ -161,7 +161,7 @@ describe("Search", () => {
     expect(search.asked).toEqual([{ query: "goscinny", after: null }]);
   });
 
-  it.skip("S6 The search runs when the reader pauses, the search key", async () => {
+  it("S6 The search runs when the reader pauses, the search key", async () => {
     // Given
     const search = librisAnswers({
       goscinny: [found(asterixLeGaulois, laSerpeDOr)],
@@ -184,7 +184,7 @@ describe("Search", () => {
     expect(search.asked).toEqual([{ query: "goscinny", after: null }]);
   });
 
-  it.skip("S6 The search runs when the reader pauses, one character", async () => {
+  it("S6 The search runs when the reader pauses, one character", async () => {
     // Given
     const search = librisAnswers({
       goscinny: [found(asterixLeGaulois, laSerpeDOr)],

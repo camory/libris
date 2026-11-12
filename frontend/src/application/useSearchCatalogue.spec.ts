@@ -37,4 +37,49 @@ describe("useSearchCatalogue", () => {
     // Then
     expect(searchApi.asked).toEqual([{ query: "goscinny", after: null }]);
   });
+
+  it("asks nothing under two characters", async () => {
+    // Given
+    const searchApi = new FakeSearchApi();
+    const { search } = useSearchCatalogue(searchApi);
+
+    // When
+    await search(" g ");
+
+    // Then
+    expect(searchApi.asked).toEqual([]);
+  });
+
+  it("shows the whole catalogue again under two characters", async () => {
+    // Given
+    const { state, search } = useSearchCatalogue(
+      new FakeSearchApi({
+        goscinny: [{ books: [romanceDawn], next: null, near: false }],
+      }),
+    );
+    await search("goscinny");
+
+    // When
+    await search("g");
+
+    // Then
+    expect(state.value).toEqual({ status: "ready" });
+  });
+
+  it("keeps the books found while the next search is answered", async () => {
+    // Given
+    const { state, search } = useSearchCatalogue(
+      new FakeSearchApi({
+        goscinny: [{ books: [romanceDawn], next: null, near: false }],
+        oda: [new Promise(() => {})],
+      }),
+    );
+    await search("goscinny");
+
+    // When
+    void search("oda");
+
+    // Then
+    expect(state.value).toEqual({ status: "found", books: [romanceDawn] });
+  });
 });

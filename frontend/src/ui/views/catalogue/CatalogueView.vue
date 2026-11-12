@@ -18,7 +18,6 @@ const { state: searchState, search } = useSearchCatalogue(
   inject(searchApiKey)!,
 );
 const searchText = ref("");
-watch(searchText, (text) => void search(text));
 
 function rowsOf(catalogueBooks: Book[]): Book[] {
   return searchState.value.status === "found"
@@ -59,6 +58,7 @@ void browse();
       v-if="state.status !== 'empty'"
       v-model="searchText"
       class="mb-5"
+      @search="search"
     />
 
     <div

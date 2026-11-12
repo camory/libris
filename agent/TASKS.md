@@ -95,7 +95,7 @@ every task.
       shows with the loading rows and leaves over an empty catalogue.
       Walking skeleton; realises S1, S10; un-skips S1's frontend test.
 
-- [ ] T170 Frontend: the search waits for a pause.
+- [x] T170 Frontend: the search waits for a pause.
       The box asks Libris 300 ms after the last keystroke, a keystroke
       within them starting the pause again: one request for a word typed
       at speed. The keyboard's search key asks at once and closes the
