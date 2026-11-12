@@ -162,6 +162,7 @@ const fr = {
       clear: "Effacer la recherche",
       nothing: "Aucun ouvrage ne correspond à «\u00A0{query}\u00A0».",
       near: "Les plus proches\u00A0:",
+      error: "Erreur lors de la recherche, veuillez réessayer plus tard.",
     },
     series: {
       BOOK: "{name} · tome {volume}",

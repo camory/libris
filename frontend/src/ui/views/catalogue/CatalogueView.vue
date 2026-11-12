@@ -44,6 +44,13 @@ const answer = computed(() => {
         label: undefined,
         books: [],
       };
+    case "unavailable":
+      return {
+        sentence: undefined,
+        label: undefined,
+        books: shown.books,
+        error: t("catalogue.search.error"),
+      };
     default:
       return { sentence: undefined, label: undefined, books: undefined };
   }
@@ -131,12 +138,12 @@ void browse();
         </template>
       </div>
       <p
-        v-if="state.status === 'unavailable'"
+        v-if="answer.error ?? state.status === 'unavailable'"
         class="flex items-start gap-2 text-body text-danger"
         :class="{ 'mt-5': state.books.length > 0 }"
       >
         <CircleAlert :size="22" class="shrink-0" />
-        <span>{{ t("catalogue.error") }}</span>
+        <span>{{ answer.error ?? t("catalogue.error") }}</span>
       </p>
     </template>
   </main>
