@@ -13,7 +13,6 @@ import fr.amory.libris.scenario.dsl.searches
 import io.kotest.matchers.collections.shouldBeEmpty
 import io.kotest.matchers.nulls.shouldNotBeNull
 import io.kotest.matchers.shouldBe
-import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.Arguments.argumentSet
@@ -55,7 +54,6 @@ class SearchScenarios @Autowired constructor(private val libris: Libris) {
     answer.near shouldBe false
   }
 
-  @Disabled("search")
   @ParameterizedTest(name = "S3 Near matches when the words find nothing, {argumentSetName}")
   @FieldSource("MISSPELLED")
   fun `S3 Near matches when the words find nothing`(words: String, titles: List<String>, near: Boolean) {
