@@ -7,6 +7,7 @@ import {
 } from "@testing-library/dom";
 import { flushPromises, mount } from "@vue/test-utils";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import type { Router } from "vue-router";
 import {
   catalogueApiKey,
   type BookPage,
@@ -28,6 +29,11 @@ import CatalogueRowSkeleton from "../../components/CatalogueRowSkeleton.vue";
 import { createLibrisI18n } from "../../i18n";
 import { createLibrisRouter } from "../../router";
 import CatalogueView from "./CatalogueView.vue";
+
+interface OpenOptions {
+  router?: Router;
+  query?: string;
+}
 
 describe("CatalogueView", () => {
   let watched: {
@@ -60,6 +66,7 @@ describe("CatalogueView", () => {
 
   afterEach(() => {
     vi.unstubAllGlobals();
+    window.history.replaceState(null, "", "/");
   });
 
   it("shows the title and the hint", () => {
@@ -821,6 +828,23 @@ describe("CatalogueView", () => {
     expect(wrapper.findAllComponents(CatalogueRowSkeleton)).toHaveLength(0);
   });
 
+  it("writes the query asked in the address", async () => {
+    // Given
+    const router = await routerAt("/catalogue");
+    const { screen } = open(
+      new FakeCatalogueApi([firstPage()]),
+      new FakeSearchApi({ goscinny: [lastSearchPage()] }),
+      { router },
+    );
+    await flushPromises();
+
+    // When
+    await searchFor(screen, " goscinny ");
+
+    // Then
+    expect(address()).toBe("/catalogue?q=goscinny");
+  });
+
   function firstPage(): BookPage {
     return {
       books: [asterixLeGaulois, asterixEtSesAmis],
@@ -843,10 +867,12 @@ describe("CatalogueView", () => {
   function open(
     catalogueApi: CatalogueApi,
     searchApi: SearchApi = new FakeSearchApi(),
+    { router = createLibrisRouter(), query }: OpenOptions = {},
   ) {
     const wrapper = mount(CatalogueView, {
+      props: query === undefined ? {} : { query },
       global: {
-        plugins: [createLibrisI18n(), createLibrisRouter()],
+        plugins: [createLibrisI18n(), router],
         provide: {
           [catalogueApiKey]: catalogueApi,
           [searchApiKey]: searchApi,
@@ -854,6 +880,17 @@ describe("CatalogueView", () => {
       },
     });
     return { wrapper, screen: within(wrapper.element as HTMLElement) };
+  }
+
+  async function routerAt(path: string) {
+    const router = createLibrisRouter();
+    await router.push(path);
+    await router.isReady();
+    return router;
+  }
+
+  function address() {
+    return window.location.pathname + window.location.search;
   }
 
   async function searchFor(

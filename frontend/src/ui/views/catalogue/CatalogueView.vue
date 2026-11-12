@@ -2,6 +2,7 @@
 import { BookOpen, CircleAlert } from "@lucide/vue";
 import { computed, inject, onUnmounted, ref, useTemplateRef, watch } from "vue";
 import { useI18n } from "vue-i18n";
+import { useRouter } from "vue-router";
 import { catalogueApiKey } from "../../../application/CatalogueApi";
 import { searchApiKey } from "../../../application/SearchApi";
 import { useBrowseCatalogue } from "../../../application/useBrowseCatalogue";
@@ -20,6 +21,12 @@ const {
   searchMore,
 } = useSearchCatalogue(inject(searchApiKey)!);
 const searchText = ref("");
+const router = useRouter();
+
+function searchFor(text: string) {
+  void router.replace({ path: "/catalogue", query: { q: text.trim() } });
+  void search(text);
+}
 
 interface Answer {
   sentence?: string;
@@ -117,7 +124,7 @@ void browse();
       v-if="state.status !== 'empty'"
       v-model="searchText"
       class="mb-5"
-      @search="search"
+      @search="searchFor"
     />
 
     <div
