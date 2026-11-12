@@ -596,6 +596,25 @@ describe("CatalogueView", () => {
     expect(within(items[1]!).getByText("Astérix le Gaulois")).toBeDefined();
   });
 
+  it("watches the search's last row alone", async () => {
+    // Given
+    const { screen } = open(
+      new FakeCatalogueApi([firstPage()]),
+      new FakeSearchApi({ goscinny: [firstSearchPage()] }),
+    );
+    await flushPromises();
+
+    // When
+    await searchFor(screen, "goscinny");
+
+    // Then
+    const targets = watchedTargets();
+    expect(targets).toHaveLength(1);
+    expect(
+      within(targets[0] as HTMLElement).getByText("Romance dawn"),
+    ).toBeDefined();
+  });
+
   function firstPage(): BookPage {
     return {
       books: [asterixLeGaulois, asterixEtSesAmis],

@@ -58,7 +58,7 @@ function growTheList() {
 }
 
 watch(
-  state,
+  [state, searchState],
   () => {
     const row = rows.value?.lastElementChild ?? null;
     if (row === null || row === lastRow) return;
