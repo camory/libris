@@ -16,6 +16,7 @@ import { ServiceWorkerAppUpdate } from "./infra/pwa/ServiceWorkerAppUpdate";
 import { WebStorageBeepSetting } from "./infra/storage/WebStorageBeepSetting";
 
 export function bootstrap(origin: string, revision: string): App {
+  const catalogueApi = new FetchCatalogueApi(origin);
   return createLibrisApp(
     {
       meApi: new FetchMeApi(origin, () => window.location.assign("/session")),
@@ -23,7 +24,7 @@ export function bootstrap(origin: string, revision: string): App {
       bookshelfApi: new FetchBookshelfApi(origin),
       barcodeScanner: new CameraBarcodeScanner(),
       appUpdate: new ServiceWorkerAppUpdate(() => window.location.reload()),
-      catalogueApi: new FetchCatalogueApi(origin),
+      catalogueApi,
       bookshelvesApi: new FetchBookshelvesApi(origin),
       readersApi: new FetchReadersApi(origin),
       seriesApi: new FetchSeriesApi(origin),
@@ -32,6 +33,7 @@ export function bootstrap(origin: string, revision: string): App {
       beepSetting: new WebStorageBeepSetting(localStorage),
       authorsApi: new FetchAuthorsApi(origin),
       editionsApi: new FetchEditionsApi(origin),
+      searchApi: catalogueApi,
     },
     revision,
   );
