@@ -119,12 +119,26 @@ describe("SearchField", () => {
     // Then
     expect(wrapper.emitted("search")).toEqual([["goscinny"]]);
   });
+
+  it("closes the keyboard on the search key", async () => {
+    // Given
+    const wrapper = field({ attachTo: document.body });
+    box(wrapper).focus();
+
+    // When
+    await pressTheSearchKey(wrapper);
+
+    // Then
+    expect(document.activeElement).not.toBe(box(wrapper));
+    wrapper.unmount();
+  });
 });
 
-function field() {
+function field(options: { attachTo?: HTMLElement } = {}) {
   return mount(SearchField, {
     props: { modelValue: "" },
     global: { plugins: [createLibrisI18n()] },
+    ...options,
   });
 }
 

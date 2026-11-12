@@ -1,9 +1,11 @@
 <script setup lang="ts">
 import { Search } from "@lucide/vue";
+import { useTemplateRef } from "vue";
 import { useI18n } from "vue-i18n";
 
 const text = defineModel<string>({ required: true });
 const emit = defineEmits<{ search: [text: string] }>();
+const box = useTemplateRef("box");
 
 let pending: number | undefined;
 
@@ -15,6 +17,7 @@ function pause() {
 function askAtOnce() {
   clearTimeout(pending);
   emit("search", text.value);
+  box.value?.blur();
 }
 
 const { t } = useI18n();
@@ -27,6 +30,7 @@ const { t } = useI18n();
       class="pointer-events-none absolute top-1/2 left-3.5 -translate-y-1/2 text-muted"
     />
     <input
+      ref="box"
       v-model="text"
       type="search"
       :aria-label="t('catalogue.search.label')"
