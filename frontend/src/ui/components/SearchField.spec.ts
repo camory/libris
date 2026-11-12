@@ -1,4 +1,4 @@
-import { within } from "@testing-library/dom";
+import { fireEvent, within } from "@testing-library/dom";
 import { Search } from "@lucide/vue";
 import { mount } from "@vue/test-utils";
 import { describe, expect, it } from "vitest";
@@ -34,6 +34,19 @@ describe("SearchField", () => {
 
     // Then
     expect(wrapper.findComponent(Search).exists()).toBe(true);
+  });
+
+  it("hands on the text as typed", async () => {
+    // Given
+    const wrapper = field();
+
+    // When
+    await fireEvent.input(within(wrapper.element).getByRole("searchbox"), {
+      target: { value: " goscinny " },
+    });
+
+    // Then
+    expect(wrapper.emitted("update:modelValue")).toEqual([[" goscinny "]]);
   });
 });
 
