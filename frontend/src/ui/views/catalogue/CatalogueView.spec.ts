@@ -700,6 +700,23 @@ describe("CatalogueView", () => {
     expect(wrapper.findAllComponents(CircleAlert)).toHaveLength(1);
   });
 
+  it("lists no row when the search does not come", async () => {
+    // Given
+    const { wrapper, screen } = open(
+      new FakeCatalogueApi([firstPage()]),
+      new FakeSearchApi({ goscinny: [new TypeError("Failed to fetch")] }),
+    );
+    await flushPromises();
+
+    // When
+    await searchFor(screen, "goscinny");
+
+    // Then
+    expect(screen.queryAllByRole("listitem")).toEqual([]);
+    expect(screen.queryByRole("list")).toBeNull();
+    expect(wrapper.findAllComponents(CatalogueRowSkeleton)).toHaveLength(0);
+  });
+
   function firstPage(): BookPage {
     return {
       books: [asterixLeGaulois, asterixEtSesAmis],
