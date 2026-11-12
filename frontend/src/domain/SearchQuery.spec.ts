@@ -9,4 +9,8 @@ describe("searchQueryOf", () => {
   it("asks nothing under two characters", () => {
     expect(searchQueryOf(" g ")).toBeNull();
   });
+
+  it("asks from two characters on", () => {
+    expect(searchQueryOf(" go ")).toBe("go");
+  });
 });
