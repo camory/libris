@@ -196,6 +196,19 @@ describe("SearchField", () => {
     // Then
     expect(wrapper.emitted("search")).toEqual([[""]]);
   });
+
+  it("keeps the focus in the box on the cross", async () => {
+    // Given
+    const wrapper = field({ attachTo: document.body });
+    await type(wrapper, "goscinny");
+
+    // When
+    await tapTheCross(wrapper);
+
+    // Then
+    expect(document.activeElement).toBe(box(wrapper));
+    wrapper.unmount();
+  });
 });
 
 function field(options: { attachTo?: HTMLElement } = {}) {

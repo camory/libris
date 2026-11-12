@@ -25,6 +25,7 @@ function clear() {
   clearTimeout(pending);
   text.value = "";
   emit("search", "");
+  box.value?.focus();
 }
 
 const { t } = useI18n();
