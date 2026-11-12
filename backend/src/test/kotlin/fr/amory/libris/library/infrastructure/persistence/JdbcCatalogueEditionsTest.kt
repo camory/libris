@@ -750,6 +750,19 @@ class JdbcCatalogueEditionsTest @Autowired constructor(
   }
 
   @Test
+  fun `no near edition either answers an empty page, not near`() {
+    // Given
+    heldOn(leasBookshelf, edition("Astérix et les Goths", "Astérix", 3))
+    heldOn(leasBookshelf, edition("La serpe d'or", "Astérix", 2))
+
+    // When
+    val page = catalogueEditions.findPage(lea.id, CatalogueQuery("gaston"), null, PAGE_SIZE)
+
+    // Then
+    page shouldBe EditionIdPage(emptyList(), null, near = false)
+  }
+
+  @Test
   fun `the first of each series is its first tome`() {
     // Given
     heldOn(leasBookshelf, edition("Aux prises avec Baggy", "One piece", 2))
