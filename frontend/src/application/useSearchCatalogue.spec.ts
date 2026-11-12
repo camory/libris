@@ -356,6 +356,30 @@ describe("useSearchCatalogue", () => {
     });
   });
 
+  it("drops an earlier answer to the same query asked again", async () => {
+    // Given
+    const first = later();
+    const second = later();
+    const { state, search } = useSearchCatalogue(
+      new FakeSearchApi({ goscinny: [first.page, second.page] }),
+    );
+    const earlier = search("goscinny");
+    const latest = search("goscinny");
+
+    // When
+    second.arrives({ books: [romanceDawn], next: null, near: false });
+    await latest;
+    first.arrives({ books: [asterixLeGaulois], next: null, near: false });
+    await earlier;
+
+    // Then
+    expect(state.value).toEqual({
+      status: "found",
+      books: [romanceDawn],
+      loadingMore: false,
+    });
+  });
+
   function firstPage(near = false): SearchPage {
     return { books: [romanceDawn], next: romanceDawn.id, near };
   }
