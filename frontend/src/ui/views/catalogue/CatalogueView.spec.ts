@@ -655,6 +655,31 @@ describe("CatalogueView", () => {
     expect(catalogueApi.asked).toEqual([null]);
   });
 
+  it("shows no catalogue skeleton under the search's rows", async () => {
+    // Given
+    const { wrapper, screen } = open(
+      {
+        browse: (after) =>
+          after === null
+            ? Promise.resolve(firstPage())
+            : new Promise<BookPage>(() => {}),
+        find: () => Promise.reject(Error("no find in this case")),
+      },
+      new FakeSearchApi({
+        goscinny: [{ books: [romanceDawn], next: null, near: false }],
+      }),
+    );
+    await flushPromises();
+    theLastRowComes(true);
+    await flushPromises();
+
+    // When
+    await searchFor(screen, "goscinny");
+
+    // Then
+    expect(wrapper.findAllComponents(CatalogueRowSkeleton)).toHaveLength(0);
+  });
+
   function firstPage(): BookPage {
     return {
       books: [asterixLeGaulois, asterixEtSesAmis],

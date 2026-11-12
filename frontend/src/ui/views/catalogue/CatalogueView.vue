@@ -126,7 +126,7 @@ void browse();
             <CatalogueRow :book="book" />
           </li>
         </ul>
-        <template v-if="state.status === 'loadingMore' || answer.loadingMore">
+        <template v-if="answer.loadingMore ?? state.status === 'loadingMore'">
           <CatalogueRowSkeleton v-for="row in 2" :key="row" />
         </template>
       </div>
