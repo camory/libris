@@ -17,14 +17,19 @@ export function useSearchCatalogue(searchApi: SearchApi): {
   const state = ref<SearchState>({ status: "ready" });
   let searched = "";
   let next: string | null = null;
+  let latest = 0;
+  let shownSearch = 0;
 
   async function search(text: string) {
+    const asked = ++latest;
     const query = searchQueryOf(text);
     if (query === null) {
       state.value = { status: "ready" };
       return;
     }
     const page = await searchApi.search(query, null);
+    if (asked !== latest) return;
+    shownSearch = asked;
     searched = query;
     next = page.next;
     state.value = stateOf(query, page);
@@ -35,7 +40,9 @@ export function useSearchCatalogue(searchApi: SearchApi): {
     if (shown.status !== "found" && shown.status !== "near") return;
     if (next === null || shown.loadingMore) return;
     state.value = { ...shown, loadingMore: true };
+    const extended = shownSearch;
     const page = await searchApi.search(searched, next);
+    if (extended !== latest) return;
     next = page.next;
     state.value = stateOf(searched, {
       ...page,

@@ -324,7 +324,7 @@ describe("Search", () => {
     expect(box(screen).value).toBe("");
   });
 
-  it.skip("S8 Only the latest search counts", async () => {
+  it("S8 Only the latest search counts", async () => {
     // Given
     const goscinny = later();
     const oda = later();
