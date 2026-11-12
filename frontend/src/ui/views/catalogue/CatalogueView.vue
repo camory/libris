@@ -14,9 +14,11 @@ import SearchField from "../../components/SearchField.vue";
 
 const { t } = useI18n();
 const { state, browse } = useBrowseCatalogue(inject(catalogueApiKey)!);
-const { state: searchState, search } = useSearchCatalogue(
-  inject(searchApiKey)!,
-);
+const {
+  state: searchState,
+  search,
+  searchMore,
+} = useSearchCatalogue(inject(searchApiKey)!);
 const searchText = ref("");
 
 const answer = computed(() => {
@@ -47,9 +49,13 @@ function rowsOf(catalogueBooks: Book[]): Book[] {
 
 const rows = useTemplateRef("rows");
 const observer = new IntersectionObserver((entries) => {
-  if (entries.some((entry) => entry.isIntersecting)) void browse();
+  if (entries.some((entry) => entry.isIntersecting)) void growTheList();
 });
 let lastRow: Element | null = null;
+
+function growTheList() {
+  return answer.value.books === undefined ? browse() : searchMore();
+}
 
 watch(
   state,

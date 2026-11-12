@@ -12,7 +12,11 @@ import {
   type BookPage,
   type CatalogueApi,
 } from "../../../application/CatalogueApi";
-import { searchApiKey, type SearchApi } from "../../../application/SearchApi";
+import {
+  searchApiKey,
+  type SearchApi,
+  type SearchPage,
+} from "../../../application/SearchApi";
 import {
   asterixEtSesAmis,
   asterixLeGaulois,
@@ -570,6 +574,28 @@ describe("CatalogueView", () => {
     expect(under(screen.getByRole("list"), message)).toBe(true);
   });
 
+  it("lists the search's next page under its first when its last row comes into view", async () => {
+    // Given
+    const { screen } = open(
+      new FakeCatalogueApi([{ books: [asterixEtSesAmis], next: null }]),
+      new FakeSearchApi({
+        goscinny: [firstSearchPage(), lastSearchPage()],
+      }),
+    );
+    await flushPromises();
+    await searchFor(screen, "goscinny");
+
+    // When
+    theLastRowComes(true);
+    await flushPromises();
+
+    // Then
+    const items = screen.getAllByRole("listitem");
+    expect(items).toHaveLength(2);
+    expect(within(items[0]!).getByText("Romance dawn")).toBeDefined();
+    expect(within(items[1]!).getByText("Astérix le Gaulois")).toBeDefined();
+  });
+
   function firstPage(): BookPage {
     return {
       books: [asterixLeGaulois, asterixEtSesAmis],
@@ -579,6 +605,14 @@ describe("CatalogueView", () => {
 
   function lastPage(): BookPage {
     return { books: [romanceDawn], next: null };
+  }
+
+  function firstSearchPage(): SearchPage {
+    return { books: [romanceDawn], next: romanceDawn.id, near: false };
+  }
+
+  function lastSearchPage(): SearchPage {
+    return { books: [asterixLeGaulois], next: null, near: false };
   }
 
   function open(
