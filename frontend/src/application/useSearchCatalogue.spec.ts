@@ -267,6 +267,28 @@ describe("useSearchCatalogue", () => {
     });
   });
 
+  it("lists no book of the search shown when the next search does not come", async () => {
+    // Given
+    const { state, search } = useSearchCatalogue(
+      new FakeSearchApi({
+        goscinny: [lastPage()],
+        oda: [new TypeError("Failed to fetch")],
+      }),
+    );
+    await search("goscinny");
+
+    // When
+    await search("oda");
+
+    // Then
+    expect(state.value).toEqual({
+      status: "unavailable",
+      query: "oda",
+      books: [],
+      near: false,
+    });
+  });
+
   it("holds the latest search's answer when an earlier one arrives after it", async () => {
     // Given
     const goscinny = later();
