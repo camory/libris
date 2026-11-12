@@ -215,7 +215,14 @@ Read whole by a run that changes `frontend/`, after `every-run.md`.
   `searchQueryOf(text)` (`src/domain/SearchQuery.ts`: the text trimmed,
   `null` under two characters): on `null` it asks nothing and holds
   `ready` again, otherwise it asks the query with `after` `null`, keeps
-  the books it holds until the answer, and does not catch. `SearchField`
+  the books it holds until the answer, and does not catch. Every
+  `search(text)` call, one under two characters and the same query again
+  included, is a later search: the composable drops the answer of a search
+  asked before the latest call, whenever it arrives, and a next page
+  whose rows are no longer the latest search's, asked before it or while
+  it comes, so a dropped answer changes neither `state`, nor the query
+  kept, nor the cursor (T174); its spec's `later()` gives a `{ page,
+  arrives }` to hand `FakeSearchApi` and settle by hand. `SearchField`
   (`ui/components`, a `defineModel<string>` of the text as typed, a
   `type="search"` input, so a `searchbox`, inside a `<form>` with no name,
   so no `form` role) emits `search` with its text 300 ms after the last

@@ -126,7 +126,7 @@ every task.
       under the last while it comes (U05); a page naming no next asks
       nothing more. Realises S4; un-skips its frontend test.
 
-- [ ] T174 Frontend: only the latest search counts.
+- [x] T174 Frontend: only the latest search counts.
       An answer to a search asked before the latest one is dropped,
       whenever it arrives: the screen lists the latest search's answer
       alone, and a next page of an earlier search arriving late is dropped

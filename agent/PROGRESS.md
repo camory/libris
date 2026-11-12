@@ -431,3 +431,25 @@ Format:
   error under the search's rows (T175, in `agent/PROPOSED.md`), the
   address (T176); the fetch client's two page readers moved to
   `agent/PROPOSED.md`; the Pixel check in the PR body.
+
+## 2026-11-12 — T174 Only the latest search counts — done
+- Did: `useSearchCatalogue` drops an answer of a search asked before the
+  latest `search(text)` call, and a next page whose rows are no longer the
+  latest search's, whenever either arrives. S8 runs whole.
+- Decided: two counters beside the query and the cursor, `latest` (each
+  `search(text)` call) and `shownSearch` (the search whose answer is in
+  `state`); a first page applies only while it is `latest`, a next page
+  only while the search it extends is still `latest`. A dropped answer
+  writes nothing, not the query kept nor the cursor.
+- Decided: a next page asked while a later search is coming is still
+  asked, over the search shown, and dropped on arrival; the brief left
+  that open and the steps read the state alone.
+- Decided: a next page dropped leaves `loadingMore: true` on the rows still
+  shown until the later search answers, which replaces them; no step asks
+  otherwise.
+- Deviations from the brief: none. Steps 3 and 6 were green on arrival and
+  are guards; step 5 was red under the step 4 implementation (which checked
+  against `latest` at the ask) and got its own cycle.
+- Left over: the failure of a search, the latest's or an earlier one's,
+  still escapes `search` and `searchMore` (T175); the Pixel check of two
+  words typed apart on a slow network, in the PR body.
