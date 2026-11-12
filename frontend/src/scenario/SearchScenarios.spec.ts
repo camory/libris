@@ -103,7 +103,7 @@ describe("Search", () => {
     expect(rows(screen)).toEqual([]);
   });
 
-  it.skip("S4 Results come in pages", async () => {
+  it("S4 Results come in pages", async () => {
     // Given
     const search = librisAnswers({
       goscinny: [
