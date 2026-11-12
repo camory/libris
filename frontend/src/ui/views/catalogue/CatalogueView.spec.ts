@@ -7,12 +7,14 @@ import {
   type BookPage,
   type CatalogueApi,
 } from "../../../application/CatalogueApi";
+import { searchApiKey, type SearchApi } from "../../../application/SearchApi";
 import {
   asterixEtSesAmis,
   asterixLeGaulois,
   romanceDawn,
 } from "../../../fixture/Books";
 import { FakeCatalogueApi } from "../../../fixture/FakeCatalogueApi";
+import { FakeSearchApi } from "../../../fixture/FakeSearchApi";
 import CatalogueRowSkeleton from "../../components/CatalogueRowSkeleton.vue";
 import { createLibrisI18n } from "../../i18n";
 import { createLibrisRouter } from "../../router";
@@ -82,6 +84,25 @@ describe("CatalogueView", () => {
     });
     expect(under(title, viewSwitch)).toBe(true);
     expect(under(viewSwitch, screen.getByRole("list"))).toBe(true);
+  });
+
+  it("shows the search box under the switch, over the loading rows", () => {
+    // When
+    const { wrapper, screen } = open({
+      browse: () => new Promise<BookPage>(() => {}),
+      find: () => Promise.reject(Error("no find in this case")),
+    });
+
+    // Then
+    const box = screen.getByRole("searchbox", {
+      name: "Rechercher dans le catalogue",
+    });
+    expect(
+      under(screen.getByRole("navigation", { name: "Vue du catalogue" }), box),
+    ).toBe(true);
+    expect(
+      under(box, wrapper.findAllComponents(CatalogueRowSkeleton)[0]!.element),
+    ).toBe(true);
   });
 
   it("shows five skeleton rows while the first page is coming", () => {
@@ -339,11 +360,17 @@ describe("CatalogueView", () => {
     return { books: [romanceDawn], next: null };
   }
 
-  function open(catalogueApi: CatalogueApi) {
+  function open(
+    catalogueApi: CatalogueApi,
+    searchApi: SearchApi = new FakeSearchApi(),
+  ) {
     const wrapper = mount(CatalogueView, {
       global: {
         plugins: [createLibrisI18n(), createLibrisRouter()],
-        provide: { [catalogueApiKey]: catalogueApi },
+        provide: {
+          [catalogueApiKey]: catalogueApi,
+          [searchApiKey]: searchApi,
+        },
       },
     });
     return { wrapper, screen: within(wrapper.element as HTMLElement) };

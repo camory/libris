@@ -1,15 +1,17 @@
 <script setup lang="ts">
 import { BookOpen, CircleAlert } from "@lucide/vue";
-import { inject, onUnmounted, useTemplateRef, watch } from "vue";
+import { inject, onUnmounted, ref, useTemplateRef, watch } from "vue";
 import { useI18n } from "vue-i18n";
 import { catalogueApiKey } from "../../../application/CatalogueApi";
 import { useBrowseCatalogue } from "../../../application/useBrowseCatalogue";
 import CatalogueRow from "../../components/CatalogueRow.vue";
 import CatalogueRowSkeleton from "../../components/CatalogueRowSkeleton.vue";
 import CatalogueSwitch from "../../components/CatalogueSwitch.vue";
+import SearchField from "../../components/SearchField.vue";
 
 const { t } = useI18n();
 const { state, browse } = useBrowseCatalogue(inject(catalogueApiKey)!);
+const searchText = ref("");
 
 const rows = useTemplateRef("rows");
 const observer = new IntersectionObserver((entries) => {
@@ -40,6 +42,7 @@ void browse();
       <p class="text-body text-muted">{{ t("catalogue.hint") }}</p>
     </header>
     <CatalogueSwitch class="mb-5" />
+    <SearchField v-model="searchText" class="mb-5" />
 
     <div
       v-if="state.status === 'loading'"
