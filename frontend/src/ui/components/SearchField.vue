@@ -43,7 +43,7 @@ const { t } = useI18n();
       type="search"
       :aria-label="t('catalogue.search.label')"
       :placeholder="t('catalogue.search.placeholder')"
-      class="h-[50px] w-full rounded-xl border-[1.5px] border-border bg-surface pr-13 pl-11 text-field outline-none placeholder:text-muted focus:border-accent"
+      class="h-[50px] w-full rounded-xl border-[1.5px] border-border bg-surface pr-13 pl-11 text-field outline-none placeholder:text-muted focus:border-accent [&::-webkit-search-cancel-button]:appearance-none"
       @input="pause"
     />
     <IconButton
