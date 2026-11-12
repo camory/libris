@@ -1,4 +1,5 @@
 import { within } from "@testing-library/dom";
+import { Search } from "@lucide/vue";
 import { mount } from "@vue/test-utils";
 import { describe, expect, it } from "vitest";
 import { createLibrisI18n } from "../i18n";
@@ -25,6 +26,14 @@ describe("SearchField", () => {
     expect(screen.getByRole("searchbox").getAttribute("placeholder")).toBe(
       "Titre, série, auteur, ISBN",
     );
+  });
+
+  it("shows the search glyph", () => {
+    // When
+    const wrapper = field();
+
+    // Then
+    expect(wrapper.findComponent(Search).exists()).toBe(true);
   });
 });
 
