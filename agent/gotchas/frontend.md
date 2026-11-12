@@ -73,9 +73,10 @@ Read whole by a run that changes `frontend/`, after `every-run.md`.
   `a%2Fb`, and a generated `200` of one or two copies in 30 tries, never
   none (T113). `GET /books` with `q` answers a generated `200` of one or
   two books in 30 tries, never none, `near` either way, and `400` to an
-  `after` that is not an id (T169). `GET /series-names` answers a generated `200` of one or two
-  names of one character in 30 tries, never none (T121); `GET
-  /author-names` the same in 30 tries (T144). `PUT /books/{id}` answers a
+  `after` that is not an id (T169). `GET /series-names` answers a
+  generated `200` of one or two names of one character in 30 tries,
+  never none (T121); `GET /author-names` the same in 30 tries (T144).
+  `PUT /books/{id}` answers a
   `200` with a generated book to a valid body on any uuid, `404` to
   `2a3b4c5d-6e7f-4a8b-9c0d-1e2f3a4b5c6d` with exactly the `EditOnePiece2`
   body (a `200` to another body), and `400` to `not-a-uuid` or a mistyped
@@ -209,9 +210,11 @@ Read whole by a run that changes `frontend/`, after `every-run.md`.
   so a `searchbox`) is drawn by `CatalogueView` unless the catalogue is
   `empty`; the view's `watch` on its `searchText` calls `search` on each
   change, and `rowsOf` puts the found books in place of the catalogue's
-  once the catalogue's first page has come (never over its `loading`). `CatalogueView.spec.ts`' `open()` takes the
-  search port second, `new FakeSearchApi()` by default; a case types with
-  `fireEvent.input(getByRole("searchbox"), { target: { value } })`. S6 fakes `setTimeout`
+  once the catalogue's first page has come (never over its `loading`).
+  `CatalogueView.spec.ts`' `open()` takes the search port second,
+  `new FakeSearchApi()` by default; a case types with
+  `fireEvent.input(getByRole("searchbox"), { target: { value } })`.
+  S6 fakes `setTimeout`
   and `clearTimeout` alone and goes back to real timers before it waits,
   which drops a timer still pending: the search key and the cross act
   with no timer.
