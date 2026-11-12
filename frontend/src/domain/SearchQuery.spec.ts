@@ -5,4 +5,8 @@ describe("searchQueryOf", () => {
   it("reads the words without the spaces at their ends", () => {
     expect(searchQueryOf("  uderzo serpe ")).toBe("uderzo serpe");
   });
+
+  it("asks nothing under two characters", () => {
+    expect(searchQueryOf(" g ")).toBeNull();
+  });
 });
