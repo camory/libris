@@ -57,7 +57,7 @@ describe("Search", () => {
     vi.unstubAllGlobals();
   });
 
-  it.skip("S1 Words find the editions holding them", async () => {
+  it("S1 Words find the editions holding them", async () => {
     // Given
     const search = librisAnswers({
       goscinny: [found(asterixLeGaulois, laSerpeDOr)],
