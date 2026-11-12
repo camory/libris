@@ -671,6 +671,98 @@ class JdbcCatalogueEditionsTest @Autowired constructor(
   }
 
   @Test
+  fun `a word misspelled finds the reader's nearest editions, said near`() {
+    // Given
+    val lesGoths = heldOn(leasBookshelf, edition("Astérix et les Goths", "Astérix", 3))
+    val laSerpeDOr = heldOn(leasBookshelf, edition("La serpe d'or", "Astérix", 2))
+    heldOn(leasBookshelf, edition("Pierre et le loup"))
+
+    // When
+    val page = catalogueEditions.findPage(lea.id, CatalogueQuery("asterik"), null, PAGE_SIZE)
+
+    // Then
+    page shouldBe EditionIdPage(listOf(laSerpeDOr.id, lesGoths.id), null, near = true)
+  }
+
+  @Test
+  fun `a word misspelled with an accent finds its nearest`() {
+    // Given
+    val lesGoths = heldOn(leasBookshelf, edition("Astérix et les Goths", "Astérix", 3))
+    val laSerpeDOr = heldOn(leasBookshelf, edition("La serpe d'or", "Astérix", 2))
+
+    // When
+    val page = catalogueEditions.findPage(lea.id, CatalogueQuery("astérik"), null, PAGE_SIZE)
+
+    // Then
+    page shouldBe EditionIdPage(listOf(laSerpeDOr.id, lesGoths.id), null, near = true)
+  }
+
+  @Test
+  fun `words found leave no room for near editions`() {
+    // Given
+    val lesGoths = heldOn(leasBookshelf, edition("Astérix et les Goths", "Astérix", 3))
+    heldOn(leasBookshelf, edition("Goth"))
+
+    // When
+    val page = catalogueEditions.findPage(lea.id, CatalogueQuery("goths"), null, PAGE_SIZE)
+
+    // Then
+    page shouldBe EditionIdPage(listOf(lesGoths.id), null, near = false)
+  }
+
+  @Test
+  fun `words found before after leave no near page after it`() {
+    // Given
+    val lesGoths = heldOn(leasBookshelf, edition("Astérix et les Goths", "Astérix", 3))
+    heldOn(leasBookshelf, edition("Goth"))
+
+    // When
+    val page = catalogueEditions.findPage(lea.id, CatalogueQuery("goths"), lesGoths.id, PAGE_SIZE)
+
+    // Then
+    page shouldBe EditionIdPage(emptyList(), null, near = false)
+  }
+
+  @Test
+  fun `words found on another reader's bookshelf alone leave the reader's near editions`() {
+    // Given
+    heldOn(tomsBookshelf, edition("Astérix et les Goths", "Astérix", 3))
+    val goth = heldOn(leasBookshelf, edition("Goth"))
+
+    // When
+    val page = catalogueEditions.findPage(lea.id, CatalogueQuery("goths"), null, PAGE_SIZE)
+
+    // Then
+    page shouldBe EditionIdPage(listOf(goth.id), null, near = true)
+  }
+
+  @Test
+  fun `near editions come in the catalogue's pages`() {
+    // Given
+    val lesGoths = heldOn(leasBookshelf, edition("Astérix et les Goths", "Astérix", 3))
+    val laSerpeDOr = heldOn(leasBookshelf, edition("La serpe d'or", "Astérix", 2))
+
+    // When
+    val page = catalogueEditions.findPage(lea.id, CatalogueQuery("asterik"), laSerpeDOr.id, PAGE_SIZE)
+
+    // Then
+    page shouldBe EditionIdPage(listOf(lesGoths.id), null, near = true)
+  }
+
+  @Test
+  fun `no near edition either answers an empty page, not near`() {
+    // Given
+    heldOn(leasBookshelf, edition("Astérix et les Goths", "Astérix", 3))
+    heldOn(leasBookshelf, edition("La serpe d'or", "Astérix", 2))
+
+    // When
+    val page = catalogueEditions.findPage(lea.id, CatalogueQuery("gaston"), null, PAGE_SIZE)
+
+    // Then
+    page shouldBe EditionIdPage(emptyList(), null, near = false)
+  }
+
+  @Test
   fun `the first of each series is its first tome`() {
     // Given
     heldOn(leasBookshelf, edition("Aux prises avec Baggy", "One piece", 2))

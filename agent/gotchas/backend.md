@@ -617,9 +617,25 @@ Read whole by a run that changes `backend/`, after `every-run.md`.
   ones (measured 2026-10-15).
 - `JdbcCatalogueEditions` builds the catalogue's `FIND_PAGE` and the
   search's two statements, `FIND_PAGE_OF_ISBN` (a query `Isbn.of` reads)
-  and `FIND_PAGE_OF_WORDS` (any other), from three `const` parts (`RANKED`,
-  which carries `isbn13` and `search_vector`, `HELD_BY_READER_AFTER`,
-  `IN_CATALOGUE_ORDER`) and one `pageOf`; `searchOf` picks the statement.
+  and `FIND_PAGE_OF_WORDS` (any other), from five `const` parts (`RANKED`,
+  which carries `isbn13`, `search_text` and `search_vector`,
+  `HELD_BY_READER`, `HELD_BY_READER_AFTER`, which is it plus the keyset,
+  `FOUND_BY_WORDS`, the words' clause, `IN_CATALOGUE_ORDER`, whose names
+  are unqualified so it orders the words' derived table too) and one
+  `pageOf`; `searchOf` picks the statement. Each statement selects `id`
+  and `near`, which `pageOf` reads (the page is near when one of its rows
+  is; the catalogue's and the ISBN's say `FALSE`). The words' statement
+  orders a `UNION ALL`, aliased `matched`, of two branches over `ranked`,
+  each carrying `name`, `volume_number` and `title`: the editions
+  `FOUND_BY_WORDS` finds through `HELD_BY_READER_AFTER`, then the near
+  ones, asked `WHERE NOT EXISTS (SELECT FROM ranked WHERE $FOUND_BY_WORDS
+  AND $HELD_BY_READER) AND WITHOUT_ACCENTS(:words) <%
+  WITHOUT_ACCENTS(ranked.search_text) AND $HELD_BY_READER_AFTER`. The
+  `FROM ranked` inside the `NOT EXISTS` hides the outer one, so the check
+  covers the reader's whole catalogue, whatever `after`, in one `InitPlan`
+  (a one-time filter on the near branch). A CTE of the found ids joined
+  back to `ranked` answers the same but re-scans every edition and copy:
+  11–22 ms against 7–10 on 10 000 editions (measured 2026-11-12).
   The words' clause hands the query's text to `TO_TSVECTOR` through
   `words_ignoring_case_and_accents` and builds one `tsquery` of its
   lexemes, `STRING_AGG` over `UNNEST` joined by ` & `, each lexeme a
@@ -692,7 +708,25 @@ Read whole by a run that changes `backend/`, after `every-run.md`.
   `textanycat` is `STABLE`: a SQL function, inlined before the check
   (probed 2026-11-12). `edition.search_text` cannot be one: it carries
   the series' and the authors' names, held in other tables. Probed during
-  the search grill, 2026-11-11.
+  the search grill, 2026-11-11. `V018`'s wrapper is `without_accents(text)`,
+  whose body is SQL-standard, `RETURN UNACCENT('unaccent', $1)`: on
+  PostgreSQL 18 an index build runs with `search_path` restricted to
+  `pg_catalog, pg_temp`, so a wrapper with a quoted `AS $$ … $$` body
+  fails `CREATE INDEX` (`function unaccent(unknown, text) does not
+  exist`), while a SQL-standard body binds `unaccent` and its dictionary at
+  creation and depends on the extension, so Flyway's clean drops it with
+  `unaccent`'s cascade (probed 2026-11-12). A quoted body with `SET
+  search_path` is not inlined, so the index's expression would not match
+  the clause's.
+- `<%` is pg_trgm's word similarity (the query against the nearest extent
+  of the text) at `pg_trgm.word_similarity_threshold`, 0.6 by default;
+  Libris sets no threshold. Both sides go through `WITHOUT_ACCENTS`:
+  *asterik* to the *Astérix* texts is 0.75, 0.375 with the accents kept.
+  The slice cases answering none nearest to the threshold are *one piece
+  tome 2* (0.588) and *serpe loup* (0.545): a fixture or a threshold that
+  moves them past 0.6 turns them near. The plan names
+  `edition_search_trigrams` (`Index Cond: (without_accents(search_text) %>
+  …)`) with `SET enable_seqscan = off` (2026-11-12).
 - The full text search never matches an ISBN typed with its hyphens. A
   query that reads as a whole ISBN, `Isbn.of` answering one (hyphens and
   spaces dropped, an ISBN-10 converted), is answered from `isbn13` alone,

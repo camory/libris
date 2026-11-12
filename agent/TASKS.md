@@ -73,7 +73,7 @@ every task.
       un-skips its backend test, its six cases, those but the tome perhaps
       green already through T165.
 
-- [ ] T168 Backend: near matches when the words find nothing.
+- [x] T168 Backend: near matches when the words find nothing.
       When the words find no edition of the reader's catalogue, Libris
       answers the nearest by their trigrams, said near: *asterik* answers
       the *Astérix* albums; it looks for them only then, so an edition the

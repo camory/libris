@@ -15,6 +15,7 @@ private const val RANKED =
     WITH ranked AS NOT MATERIALIZED (
         SELECT edition.id,
                edition.isbn13,
+               edition.search_text,
                edition.search_vector,
                COALESCE(series.name, edition.title) COLLATE ignoring_case_and_accents AS name,
                edition.volume_number,
@@ -24,13 +25,18 @@ private const val RANKED =
     )
     """
 
-private const val HELD_BY_READER_AFTER =
+private const val HELD_BY_READER =
   """
     EXISTS (
           SELECT FROM copy
           JOIN membership ON membership.bookshelf_id = copy.bookshelf_id
           WHERE copy.edition_id = ranked.id AND membership.reader_id = :readerId
       )
+    """
+
+private const val HELD_BY_READER_AFTER =
+  """
+    $HELD_BY_READER
       AND (CAST(:after AS uuid) IS NULL OR EXISTS (
           SELECT FROM ranked AS place
           WHERE place.id = :after
@@ -46,14 +52,14 @@ private const val HELD_BY_READER_AFTER =
 
 private const val IN_CATALOGUE_ORDER =
   """
-    ORDER BY ranked.name, ranked.volume_number, ranked.title, ranked.id
+    ORDER BY name, volume_number, title, id
     LIMIT :size
     """
 
 private const val FIND_PAGE =
   """
     $RANKED
-    SELECT ranked.id
+    SELECT ranked.id, FALSE AS near
     FROM ranked
     WHERE $HELD_BY_READER_AFTER
     $IN_CATALOGUE_ORDER
@@ -62,19 +68,16 @@ private const val FIND_PAGE =
 private const val FIND_PAGE_OF_ISBN =
   """
     $RANKED
-    SELECT ranked.id
+    SELECT ranked.id, FALSE AS near
     FROM ranked
     WHERE ranked.isbn13 = :isbn13
       AND $HELD_BY_READER_AFTER
     $IN_CATALOGUE_ORDER
     """
 
-private const val FIND_PAGE_OF_WORDS =
+private const val FOUND_BY_WORDS =
   """
-    $RANKED
-    SELECT ranked.id
-    FROM ranked
-    WHERE ranked.search_vector @@ (
+    ranked.search_vector @@ (
           SELECT CAST(STRING_AGG(
                      CASE WHEN word.lexeme ~ '^[0-9]+$'
                           THEN '(' || QUOTE_LITERAL(word.lexeme) || ':* | '
@@ -84,7 +87,24 @@ private const val FIND_PAGE_OF_WORDS =
                      ' & ') AS tsquery)
           FROM UNNEST(TO_TSVECTOR('words_ignoring_case_and_accents', :words)) AS word
       )
-      AND $HELD_BY_READER_AFTER
+    """
+
+private const val FIND_PAGE_OF_WORDS =
+  """
+    $RANKED
+    SELECT matched.id, matched.near
+    FROM (
+        SELECT ranked.id, FALSE AS near, ranked.name, ranked.volume_number, ranked.title
+        FROM ranked
+        WHERE $FOUND_BY_WORDS
+          AND $HELD_BY_READER_AFTER
+        UNION ALL
+        SELECT ranked.id, TRUE AS near, ranked.name, ranked.volume_number, ranked.title
+        FROM ranked
+        WHERE NOT EXISTS (SELECT FROM ranked WHERE $FOUND_BY_WORDS AND $HELD_BY_READER)
+          AND WITHOUT_ACCENTS(:words) <% WITHOUT_ACCENTS(ranked.search_text)
+          AND $HELD_BY_READER_AFTER
+    ) AS matched
     $IN_CATALOGUE_ORDER
     """
 
@@ -126,9 +146,15 @@ class JdbcCatalogueEditions(private val jdbcClient: JdbcClient) : CatalogueEditi
       .param("readerId", readerId.value)
       .param("after", after?.value)
       .param("size", size + 1)
-      .query { rs, _ -> EditionId(rs.getObject("id", UUID::class.java)) }
+      .query { rs, _ -> PageRow(EditionId(rs.getObject("id", UUID::class.java)), rs.getBoolean("near")) }
       .list()
     val page = following.take(size)
-    return EditionIdPage(page, if (following.size > size) page.last() else null)
+    return EditionIdPage(
+      page.map { it.editionId },
+      if (following.size > size) page.last().editionId else null,
+      page.any { it.near },
+    )
   }
 }
+
+private data class PageRow(val editionId: EditionId, val near: Boolean)
