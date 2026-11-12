@@ -71,6 +71,27 @@ describe("SearchField", () => {
     // Then
     expect(wrapper.emitted("search")).toEqual([["goscinny"]]);
   });
+
+  it("starts the pause again at each keystroke", async () => {
+    // Given
+    vi.useFakeTimers({ toFake: ["setTimeout", "clearTimeout"] });
+    const wrapper = field();
+
+    // When
+    await type(wrapper, "go");
+    vi.advanceTimersByTime(200);
+    await type(wrapper, "gos");
+    vi.advanceTimersByTime(200);
+
+    // Then
+    expect(wrapper.emitted("search")).toBeUndefined();
+
+    // When
+    vi.advanceTimersByTime(100);
+
+    // Then
+    expect(wrapper.emitted("search")).toEqual([["gos"]]);
+  });
 });
 
 function field() {

@@ -5,8 +5,11 @@ import { useI18n } from "vue-i18n";
 const text = defineModel<string>({ required: true });
 const emit = defineEmits<{ search: [text: string] }>();
 
+let pending: number | undefined;
+
 function pause() {
-  setTimeout(() => emit("search", text.value), 300);
+  clearTimeout(pending);
+  pending = setTimeout(() => emit("search", text.value), 300);
 }
 
 const { t } = useI18n();
