@@ -242,10 +242,10 @@ Read whole by a run that changes `frontend/`, after `every-run.md`.
   shown's); the observer's callback calls `growTheList()`, `browse()`
   while `answer.books` is `undefined` and `searchMore()` otherwise, and its
   `watch` follows `[state, searchState]`, so it watches the last row of
-  whichever list is drawn. `answer`'s sentence and label: over `nothing` and `near`
-  the sentence `catalogue.search.nothing` (*Aucun ouvrage ne correspond à
-  « gaston ».*, the query asked, U+00A0 inside the guillemets, `lead`
-  `muted`) comes first, and over `near` the `h2` label
+  whichever list is drawn. `answer`'s sentence and label: over `nothing`
+  and `near` the sentence `catalogue.search.nothing` (*Aucun ouvrage ne
+  correspond à « gaston ».*, the query asked, U+00A0 inside the guillemets,
+  `lead` `muted`) comes first, and over `near` the `h2` label
   `catalogue.search.near` (*Les plus proches :*, `mt-5 pb-2`) between the
   sentence and the rows, whose `ul` takes it as `aria-label`.
   `CatalogueView.spec.ts`' `open()` takes the search port second,
