@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { asterixLeGaulois, romanceDawn } from "../fixture/Books";
+import { asterixLeGaulois, lePetitPrince, romanceDawn } from "../fixture/Books";
 import { FakeSearchApi } from "../fixture/FakeSearchApi";
 import type { SearchPage } from "./SearchApi";
 import { useSearchCatalogue } from "./useSearchCatalogue";
@@ -300,6 +300,31 @@ describe("useSearchCatalogue", () => {
     expect(searchApi.asked.at(-1)).toEqual({
       query: "oda",
       after: romanceDawn.id,
+    });
+  });
+
+  it("drops a next page of an earlier search arriving after the latest search's answer", async () => {
+    // Given
+    const nextPage = later();
+    const { state, search, searchMore } = useSearchCatalogue(
+      new FakeSearchApi({
+        goscinny: [firstPage(), nextPage.page],
+        oda: [{ books: [lePetitPrince], next: null, near: false }],
+      }),
+    );
+    await search("goscinny");
+    const more = searchMore();
+    await search("oda");
+
+    // When
+    nextPage.arrives(lastPage());
+    await more;
+
+    // Then
+    expect(state.value).toEqual({
+      status: "found",
+      books: [lePetitPrince],
+      loadingMore: false,
     });
   });
 
