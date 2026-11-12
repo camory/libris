@@ -24,6 +24,21 @@ describe("useSearchCatalogue", () => {
     });
   });
 
+  it("holds no match, with the query asked, when the answer holds no edition", async () => {
+    // Given
+    const { state, search } = useSearchCatalogue(
+      new FakeSearchApi({
+        gaston: [{ books: [], next: null, near: false }],
+      }),
+    );
+
+    // When
+    await search(" gaston ");
+
+    // Then
+    expect(state.value).toEqual({ status: "nothing", query: "gaston" });
+  });
+
   it("asks the words without the spaces at their ends", async () => {
     // Given
     const searchApi = new FakeSearchApi({

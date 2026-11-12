@@ -4,7 +4,9 @@ import { searchQueryOf } from "../domain/SearchQuery";
 import type { SearchApi } from "./SearchApi";
 
 export type SearchState =
-  { status: "ready" } | { status: "found"; books: Book[] };
+  | { status: "ready" }
+  | { status: "found"; books: Book[] }
+  | { status: "nothing"; query: string };
 
 export function useSearchCatalogue(searchApi: SearchApi): {
   state: Ref<SearchState>;
@@ -19,7 +21,10 @@ export function useSearchCatalogue(searchApi: SearchApi): {
       return;
     }
     const page = await searchApi.search(query, null);
-    state.value = { status: "found", books: page.books };
+    state.value =
+      page.books.length === 0
+        ? { status: "nothing", query }
+        : { status: "found", books: page.books };
   }
 
   return { state, search };
