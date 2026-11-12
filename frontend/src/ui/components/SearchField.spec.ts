@@ -132,6 +132,21 @@ describe("SearchField", () => {
     expect(document.activeElement).not.toBe(box(wrapper));
     wrapper.unmount();
   });
+
+  it("offers the cross once the box holds text", async () => {
+    // Given
+    const wrapper = field();
+
+    // When
+    await type(wrapper, "goscinny");
+
+    // Then
+    expect(
+      within(wrapper.element).getAllByRole("button", {
+        name: "Effacer la recherche",
+      }),
+    ).toHaveLength(1);
+  });
 });
 
 function field(options: { attachTo?: HTMLElement } = {}) {
