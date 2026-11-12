@@ -266,10 +266,29 @@ Format:
 - Left over: T167's left-over no longer holds, the GIN index serves the
   words' clause; near matches (T168), the frontend (T169 on).
 
-## 2026-11-12 — T168 Near matches when the words find nothing — handoff
-- Done: steps 1 to 9, and of step 10 the tidy (`PageRow`), detekt and the self-review of `backend/src/main`. Start with the rest of step 10: the gate, the `EXPLAIN` through `jshell`, the gotchas of *Files*, tick T168, the diary entry, the PR.
-- Built: `FIND_PAGE_OF_WORDS` is CTEs `found` (the words over the reader's whole catalogue, `HELD_BY_READER`, no keyset) and `matched` (`found` `UNION ALL` the near ones, `WHERE NOT EXISTS (SELECT FROM found) AND WITHOUT_ACCENTS(:words) <% WITHOUT_ACCENTS(ranked.search_text)`), then the keyset and order over `ranked JOIN matched`. `RANKED` carries `search_text`; `HELD_BY_READER` split out of `HELD_BY_READER_AFTER`.
-- Deviation: `FIND_PAGE` and `FIND_PAGE_OF_ISBN` select `FALSE AS near`, since `pageOf`, shared by the three, reads a `near` column (the brief said they stay).
-- Step 1: *no edition near either* green on arrival, as the brief measured. Steps 4 to 9 green on arrival, guards; each mutation run, red read, reverted:
-  4 `:words <%` (accents kept): the case's page empty. 5 the `NOT EXISTS (SELECT FROM found)` dropped: the case reds (and 20 others, rows doubled). 6 `found` filtered by `HELD_BY_READER_AFTER`: *Goth* answered, near. 7a `found` without `HELD_BY_READER`: empty page, not near; 7b the outer filter letting near rows through unheld: *Astérix et les Goths* joins. 8 near rows exempt from the keyset (`matched.near AND $HELD_BY_READER OR $HELD_BY_READER_AFTER`): *La serpe d'or* joins. 9 the `<%` condition replaced by `:words IS NOT NULL`: the case's page holds both, near (and 7 others).
-- Learned: the SQL-standard body of `without_accents` with `UNACCENT('unaccent', $1)` migrates as the brief probed, no surprise.
+## 2026-11-12 — T168 Near matches when the words find nothing — done
+- Did: when the words find none of the reader's editions, the words'
+  statement answers those whose unaccented `search_text` is near the
+  unaccented query by pg_trgm's word similarity, in the catalogue's order
+  and pages, the page said `near`; `V018` brings `pg_trgm`,
+  `without_accents` and `edition_search_trigrams`; S3 runs, both cases.
+- Decided: the statement is CTEs, `found` (the words over the reader's
+  whole catalogue, `HELD_BY_READER`, no keyset) and `matched` (`found`
+  `UNION ALL` the near ones under `NOT EXISTS (SELECT FROM found)`), the
+  keyset and the order applied once, to `ranked JOIN matched`; so near is
+  decided over the whole catalogue, never the page after `after`.
+- Decided: `HELD_BY_READER` split out of `HELD_BY_READER_AFTER`, which is
+  it plus the keyset; `RANKED` carries `search_text`.
+- Decided: `pageOf` reads each row's `near` through a private `PageRow`,
+  the page near when one of its rows is (all or none, by the statement).
+- Decided: steps 4 to 9 green on arrival, guards, each mutation run and
+  reverted (listed in the PR body); step 1's *no edition near either*
+  green on arrival, as the brief measured.
+- Decided: the run handed off after steps 1 to 9 and the tidy; the
+  second run ran the gate, the `EXPLAIN`, the documents and the PR.
+- Deviations from the brief: `FIND_PAGE` and `FIND_PAGE_OF_ISBN` select
+  `FALSE AS near`, since `pageOf`, shared by the three statements, reads
+  the column (the brief said they stay); one commit subject is 76
+  characters, pushed before the handoff, left as it is.
+- Left over: no threshold setting (out of scope); the frontend's search
+  (T169 on), whose pin moves once T168 is deployed.
