@@ -317,3 +317,8 @@ Format:
 - Left over: found rows are not shown while the catalogue's first page is
   still coming, nor is a failed search caught; the pause, the cross, near,
   the next pages, the order, the failure and the address (T170 to T176).
+  The reviewer's suggestion (#407): `FetchCatalogueApi.search` repeats
+  `browse` line for line, the fetch on `/api/v1/books`, its `Accept`
+  header, the status check and `bookOf`; when T173 asks the search's next
+  pages, both call one private method reading a page of `/api/v1/books`,
+  so only the query string and `near` stay apart.
