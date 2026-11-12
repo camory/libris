@@ -53,6 +53,7 @@ export function useSearchCatalogue(searchApi: SearchApi): {
     try {
       page = await searchApi.search(searched, next);
     } catch {
+      if (extended !== latest) return;
       state.value = {
         status: "unavailable",
         query: searched,

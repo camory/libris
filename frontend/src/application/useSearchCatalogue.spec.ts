@@ -502,6 +502,31 @@ describe("useSearchCatalogue", () => {
     });
   });
 
+  it("drops a failing next page of an earlier search", async () => {
+    // Given
+    const nextPage = later();
+    const { state, search, searchMore } = useSearchCatalogue(
+      new FakeSearchApi({
+        goscinny: [firstPage(), nextPage.page],
+        oda: [{ books: [lePetitPrince], next: null, near: false }],
+      }),
+    );
+    await search("goscinny");
+    const more = searchMore();
+    await search("oda");
+
+    // When
+    nextPage.fails(new TypeError("Failed to fetch"));
+    await more;
+
+    // Then
+    expect(state.value).toEqual({
+      status: "found",
+      books: [lePetitPrince],
+      loadingMore: false,
+    });
+  });
+
   it("shows the whole catalogue when a search arrives after the box is emptied", async () => {
     // Given
     const goscinny = later();
