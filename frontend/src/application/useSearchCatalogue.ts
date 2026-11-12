@@ -28,15 +28,12 @@ export function useSearchCatalogue(searchApi: SearchApi): {
       state.value = { status: "ready" };
       return;
     }
-    let page: SearchPage;
-    try {
-      page = await searchApi.search(query, null);
-    } catch {
-      if (asked !== latest) return;
+    const page = await pageOf(query, null);
+    if (asked !== latest) return;
+    if (page === null) {
       state.value = { status: "unavailable", query, books: [], near: false };
       return;
     }
-    if (asked !== latest) return;
     shownSearch = asked;
     searched = query;
     next = page.next;
@@ -49,11 +46,9 @@ export function useSearchCatalogue(searchApi: SearchApi): {
     if (next === null || shown.loadingMore) return;
     state.value = { ...shown, loadingMore: true };
     const extended = shownSearch;
-    let page: SearchPage;
-    try {
-      page = await searchApi.search(searched, next);
-    } catch {
-      if (extended !== latest) return;
+    const page = await pageOf(searched, next);
+    if (extended !== latest) return;
+    if (page === null) {
       state.value = {
         status: "unavailable",
         query: searched,
@@ -62,13 +57,16 @@ export function useSearchCatalogue(searchApi: SearchApi): {
       };
       return;
     }
-    if (extended !== latest) return;
     next = page.next;
     state.value = stateOf(searched, {
       ...page,
       books: [...shown.books, ...page.books],
       near: shown.status === "near",
     });
+  }
+
+  function pageOf(query: string, after: string | null) {
+    return searchApi.search(query, after).catch(() => null);
   }
 
   return { state, search, searchMore };
