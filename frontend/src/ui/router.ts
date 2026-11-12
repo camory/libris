@@ -22,7 +22,13 @@ export function createLibrisRouter() {
       {
         path: "/catalogue",
         children: [
-          { path: "", component: CatalogueView },
+          {
+            path: "",
+            component: CatalogueView,
+            props: (route) => ({
+              query: typeof route.query.q === "string" ? route.query.q : "",
+            }),
+          },
           { path: "series", component: SeriesView },
           { path: "series/:id", component: SeriesPageView, props: true },
           { path: "ouvrages/:id", component: EditionPageView, props: true },

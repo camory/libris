@@ -886,6 +886,26 @@ describe("CatalogueView", () => {
     expect(address()).toBe("/catalogue");
   });
 
+  it("opens on the search the address names", async () => {
+    // Given
+    const searchApi = new FakeSearchApi({ goscinny: [lastSearchPage()] });
+
+    // When
+    const { screen } = open(new FakeCatalogueApi([firstPage()]), searchApi, {
+      query: "goscinny",
+    });
+    await flushPromises();
+
+    // Then
+    expect(screen.getByRole<HTMLInputElement>("searchbox").value).toBe(
+      "goscinny",
+    );
+    expect(
+      screen.getAllByRole("listitem").map((row) => row.textContent),
+    ).toEqual([expect.stringContaining("Astérix le Gaulois")]);
+    expect(searchApi.asked).toEqual([{ query: "goscinny", after: null }]);
+  });
+
   function firstPage(): BookPage {
     return {
       books: [asterixLeGaulois, asterixEtSesAmis],

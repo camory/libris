@@ -14,6 +14,8 @@ import CatalogueRowSkeleton from "../../components/CatalogueRowSkeleton.vue";
 import CatalogueSwitch from "../../components/CatalogueSwitch.vue";
 import SearchField from "../../components/SearchField.vue";
 
+const props = withDefaults(defineProps<{ query?: string }>(), { query: "" });
+
 const { t } = useI18n();
 const { state, browse } = useBrowseCatalogue(inject(catalogueApiKey)!);
 const {
@@ -21,7 +23,7 @@ const {
   search,
   searchMore,
 } = useSearchCatalogue(inject(searchApiKey)!);
-const searchText = ref("");
+const searchText = ref(props.query);
 const router = useRouter();
 
 function searchFor(text: string) {
@@ -116,6 +118,7 @@ watch(
 onUnmounted(() => observer.disconnect());
 
 void browse();
+void search(props.query);
 </script>
 
 <template>
