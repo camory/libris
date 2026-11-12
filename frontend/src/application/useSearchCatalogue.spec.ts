@@ -249,11 +249,43 @@ describe("useSearchCatalogue", () => {
     });
   });
 
+  it("holds the latest search's answer when an earlier one arrives after it", async () => {
+    // Given
+    const goscinny = later();
+    const oda = later();
+    const { state, search } = useSearchCatalogue(
+      new FakeSearchApi({ goscinny: [goscinny.page], oda: [oda.page] }),
+    );
+    const earlier = search("goscinny");
+    const latest = search("oda");
+
+    // When
+    oda.arrives({ books: [romanceDawn], next: null, near: false });
+    await latest;
+    goscinny.arrives({ books: [asterixLeGaulois], next: null, near: false });
+    await earlier;
+
+    // Then
+    expect(state.value).toEqual({
+      status: "found",
+      books: [romanceDawn],
+      loadingMore: false,
+    });
+  });
+
   function firstPage(near = false): SearchPage {
     return { books: [romanceDawn], next: romanceDawn.id, near };
   }
 
   function lastPage(near = false): SearchPage {
     return { books: [asterixLeGaulois], next: null, near };
+  }
+
+  function later() {
+    let arrives: (page: SearchPage) => void = () => {};
+    const page = new Promise<SearchPage>((resolve) => {
+      arrives = resolve;
+    });
+    return { page, arrives };
   }
 });

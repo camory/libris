@@ -17,6 +17,7 @@ export function useSearchCatalogue(searchApi: SearchApi): {
   const state = ref<SearchState>({ status: "ready" });
   let searched = "";
   let next: string | null = null;
+  let latest = 0;
 
   async function search(text: string) {
     const query = searchQueryOf(text);
@@ -24,7 +25,9 @@ export function useSearchCatalogue(searchApi: SearchApi): {
       state.value = { status: "ready" };
       return;
     }
+    const asked = ++latest;
     const page = await searchApi.search(query, null);
+    if (asked !== latest) return;
     searched = query;
     next = page.next;
     state.value = stateOf(query, page);
