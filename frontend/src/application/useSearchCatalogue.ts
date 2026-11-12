@@ -48,7 +48,18 @@ export function useSearchCatalogue(searchApi: SearchApi): {
     if (next === null || shown.loadingMore) return;
     state.value = { ...shown, loadingMore: true };
     const extended = shownSearch;
-    const page = await searchApi.search(searched, next);
+    let page: SearchPage;
+    try {
+      page = await searchApi.search(searched, next);
+    } catch {
+      state.value = {
+        status: "unavailable",
+        query: searched,
+        books: shown.books,
+        near: false,
+      };
+      return;
+    }
     if (extended !== latest) return;
     next = page.next;
     state.value = stateOf(searched, {

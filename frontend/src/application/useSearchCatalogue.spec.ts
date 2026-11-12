@@ -289,6 +289,27 @@ describe("useSearchCatalogue", () => {
     });
   });
 
+  it("keeps the books listed when the next page does not come", async () => {
+    // Given
+    const { state, search, searchMore } = useSearchCatalogue(
+      new FakeSearchApi({
+        goscinny: [firstPage(), new TypeError("Failed to fetch")],
+      }),
+    );
+    await search("goscinny");
+
+    // When
+    await searchMore();
+
+    // Then
+    expect(state.value).toEqual({
+      status: "unavailable",
+      query: "goscinny",
+      books: [romanceDawn],
+      near: false,
+    });
+  });
+
   it("holds the latest search's answer when an earlier one arrives after it", async () => {
     // Given
     const goscinny = later();
