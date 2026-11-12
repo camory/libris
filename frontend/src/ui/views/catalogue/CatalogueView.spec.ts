@@ -1044,6 +1044,28 @@ describe("CatalogueView", () => {
     expect(screen.getAllByRole("listitem")).toHaveLength(1);
   });
 
+  it("keeps the text typed since when the address takes the query asked", async () => {
+    // Given
+    const searchApi = new FakeSearchApi({ goscinny: [lastSearchPage()] });
+    const { wrapper, screen } = open(
+      new FakeCatalogueApi([firstPage()]),
+      searchApi,
+    );
+    await flushPromises();
+    await searchFor(screen, "goscinny");
+    const box = screen.getByRole<HTMLInputElement>("searchbox");
+    await fireEvent.input(box, { target: { value: "goscinnyx" } });
+
+    // When
+    await wrapper.setProps({ query: "goscinny" });
+    await flushPromises();
+
+    // Then
+    expect(box.value).toBe("goscinnyx");
+    expect(searchApi.asked).toHaveLength(1);
+    wrapper.unmount();
+  });
+
   function firstPage(): BookPage {
     return {
       books: [asterixLeGaulois, asterixEtSesAmis],
