@@ -214,10 +214,7 @@ describe("CatalogueView", () => {
     await flushPromises();
 
     // When
-    const box = screen.getByRole<HTMLInputElement>("searchbox");
-    await fireEvent.input(box, { target: { value: "goscinny" } });
-    await fireEvent.submit(box.form!);
-    await flushPromises();
+    await searchFor(screen, "goscinny");
 
     // Then
     const items = screen.getAllByRole("listitem");
