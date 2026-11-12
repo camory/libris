@@ -40,7 +40,8 @@ export class FetchCatalogueApi implements CatalogueApi, SearchApi {
     if (response.status !== 200) {
       throw Error(`The search answered ${response.status}`);
     }
-    return { books: [], next: null, near: false };
+    const body = (await response.json()) as BookPageResponse;
+    return { books: body.books.map(bookOf), next: body.next, near: false };
   }
 
   async find(id: string): Promise<FindBookAnswer> {

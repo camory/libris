@@ -88,6 +88,22 @@ describe("FetchCatalogueApi", () => {
     await expect(page).rejects.toThrow();
   });
 
+  it("answers a page of the search", async () => {
+    // Given
+    const api = new FetchCatalogueApi(inject("mockBaseUrl"));
+
+    // When
+    const page = await api.search("goscinny", null);
+
+    // Then
+    expect(page.books.length).toBeGreaterThan(0);
+    for (const book of page.books) {
+      expect(book).toEqual(aBook);
+    }
+    expect(page.next).toEqual(aStringOrNull);
+    expect(typeof page.near).toBe("boolean");
+  });
+
   it("finds the ouvrage with its copies", async () => {
     // Given
     const api = new FetchCatalogueApi(inject("mockBaseUrl"));
