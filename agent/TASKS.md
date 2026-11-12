@@ -83,7 +83,7 @@ every task.
       never a near match (S2). The trigram index and its extension arrive
       here (D02, D03). Realises S3; un-skips its backend test, both cases.
 
-- [ ] T169 Frontend: the search box on `v0.19.0`.
+- [x] T169 Frontend: the search box on `v0.19.0`.
       Precondition (human): T168 deployed (D04). `vitest.global-setup.ts`
       pins `v0.19.0`, the frontend's one bump; the search's client over the
       catalogue's page with `q`, tested on the mock's `200` and `400`,

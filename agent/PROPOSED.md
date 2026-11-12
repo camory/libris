@@ -536,3 +536,4 @@
   adds (Duplicated Code), one per context since `bibliography` never
   depends on `library`. Open: whether a shared kernel of the domain should
   hold one (found on T143, 2026-11-08).
+- Frontend: `CatalogueView` draws the search's rows only once the catalogue's first page has come; a search answered while the catalogue is still `loading` shows the skeleton rows until then. Open: whether T170's rows kept while answering should cover it (found on T169, 2026-11-12).

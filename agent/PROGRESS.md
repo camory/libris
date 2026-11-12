@@ -295,12 +295,25 @@ Format:
 - Left over: no threshold setting (out of scope); the frontend's search
   (T169 on), whose pin moves once T168 is deployed.
 
-## 2026-11-12 — T169 The search box on v0.19.0 — handoff
-- Done: steps 1 to 15, one commit each; S1 un-skipped red (*Unable to find … searchbox "Rechercher dans le catalogue"*), green last at step 19.
-- Start with: step 16 (*shows no search box over an empty catalogue*); S10 reds since step 15, as the brief foresaw.
-- Deviation: step 3's green sends `after` (the mock answers `400` only on an `after` that is not an id), so step 6 was green on arrival. Mutations: `after` dropped reds steps 3 and 6; `after` set before `q` reds step 6 (`?after=…&q=goscinny`). Both reverted.
-- Step 7: `SearchScenarios.spec.ts` imports `SearchApi, SearchPage` as types alone, `searchApiKey` unused once the `app.provide` moved into the ports; `bootstrap` gives one `catalogueApi` to both ports.
-- Step 10's red is the fake rejecting ` goscinny ` (*No answer left to  goscinny *), the untrimmed text sent.
-- Step 14 types with `fireEvent.input` on the `searchbox` role, not `wrapper.get("input")`, a tag query.
-- `SearchField`: glyph `left-3.5`, text `pl-11` (14 + 22 + 8); drawn with `mb-5` under the switch's `mb-5`, held in `CatalogueView`'s `searchText`.
-- No guard reached yet (steps 17, 19 left). Gate red, 2 of 942: S1 (third row, *Romance dawn*, kept) and S10 (*expected <input type="search"> to be null*), both cited, for steps 16 to 19; not pushed.
+## 2026-11-12 — T169 The search box on v0.19.0 — done
+- Did: the frontend pins `v0.19.0`; `FetchCatalogueApi` serves `searchApi`,
+  a port of `LibrisPorts`; the ouvrages draw `SearchField` under the switch,
+  the typed words asking Libris and its first page replacing the rows. S1 runs.
+- Decided: `bootstrap` builds one `FetchCatalogueApi` for both ports.
+- Decided: `SearchField` sits between the switch and the rows with `mb-5`,
+  as the switch; glyph `left-3.5`, text `pl-11` (14 + 22 + 8).
+- Decided: the view holds `searchText` and a `watch` calls `search` on
+  each change; `rowsOf(state.books)` answers the found books once `found`,
+  so the catalogue's states, its error and its observer stay as they were.
+- Decided: `SearchScenarios.spec.ts` imports `SearchApi, SearchPage` as
+  types alone, `searchApiKey` unused once its `app.provide` moved.
+- Decided: step 14 and 18 type through `fireEvent.input` on the
+  `searchbox` role, no tag query.
+- Decided: the run handed off after step 15; the second run did 16 to 19,
+  the gate, the documents and the PR.
+- Deviations from the brief: step 3's green sends `after` (the mock answers
+  `400` only on an `after` that is not an id), so step 6 was green on
+  arrival, checked by mutation (listed in the PR body).
+- Left over: found rows are not shown while the catalogue's first page is
+  still coming, nor is a failed search caught; the pause, the cross, near,
+  the next pages, the order, the failure and the address (T170 to T176).
