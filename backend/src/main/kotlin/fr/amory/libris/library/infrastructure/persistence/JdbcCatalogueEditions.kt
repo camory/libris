@@ -52,7 +52,7 @@ private const val HELD_BY_READER_AFTER =
 
 private const val IN_CATALOGUE_ORDER =
   """
-    ORDER BY ranked.name, ranked.volume_number, ranked.title, ranked.id
+    ORDER BY name, volume_number, title, id
     LIMIT :size
     """
 
@@ -75,37 +75,36 @@ private const val FIND_PAGE_OF_ISBN =
     $IN_CATALOGUE_ORDER
     """
 
+private const val FOUND_BY_WORDS =
+  """
+    ranked.search_vector @@ (
+          SELECT CAST(STRING_AGG(
+                     CASE WHEN word.lexeme ~ '^[0-9]+$'
+                          THEN '(' || QUOTE_LITERAL(word.lexeme) || ':* | '
+                               || QUOTE_LITERAL('#' || CAST(CAST(word.lexeme AS numeric) AS text)) || ')'
+                          ELSE QUOTE_LITERAL(word.lexeme) || ':*'
+                     END,
+                     ' & ') AS tsquery)
+          FROM UNNEST(TO_TSVECTOR('words_ignoring_case_and_accents', :words)) AS word
+      )
+    """
+
 private const val FIND_PAGE_OF_WORDS =
   """
-    $RANKED,
-    found AS (
-        SELECT ranked.id
+    $RANKED
+    SELECT matched.id, matched.near
+    FROM (
+        SELECT ranked.id, FALSE AS near, ranked.name, ranked.volume_number, ranked.title
         FROM ranked
-        WHERE ranked.search_vector @@ (
-              SELECT CAST(STRING_AGG(
-                         CASE WHEN word.lexeme ~ '^[0-9]+$'
-                              THEN '(' || QUOTE_LITERAL(word.lexeme) || ':* | '
-                                   || QUOTE_LITERAL('#' || CAST(CAST(word.lexeme AS numeric) AS text)) || ')'
-                              ELSE QUOTE_LITERAL(word.lexeme) || ':*'
-                         END,
-                         ' & ') AS tsquery)
-              FROM UNNEST(TO_TSVECTOR('words_ignoring_case_and_accents', :words)) AS word
-          )
-          AND $HELD_BY_READER
-    ),
-    matched AS (
-        SELECT found.id, FALSE AS near
-        FROM found
+        WHERE $FOUND_BY_WORDS
+          AND $HELD_BY_READER_AFTER
         UNION ALL
-        SELECT ranked.id, TRUE AS near
+        SELECT ranked.id, TRUE AS near, ranked.name, ranked.volume_number, ranked.title
         FROM ranked
-        WHERE NOT EXISTS (SELECT FROM found)
+        WHERE NOT EXISTS (SELECT FROM ranked WHERE $FOUND_BY_WORDS AND $HELD_BY_READER)
           AND WITHOUT_ACCENTS(:words) <% WITHOUT_ACCENTS(ranked.search_text)
-    )
-    SELECT ranked.id, matched.near
-    FROM ranked
-    JOIN matched ON matched.id = ranked.id
-    WHERE $HELD_BY_READER_AFTER
+          AND $HELD_BY_READER_AFTER
+    ) AS matched
     $IN_CATALOGUE_ORDER
     """
 

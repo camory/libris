@@ -617,18 +617,25 @@ Read whole by a run that changes `backend/`, after `every-run.md`.
   ones (measured 2026-10-15).
 - `JdbcCatalogueEditions` builds the catalogue's `FIND_PAGE` and the
   search's two statements, `FIND_PAGE_OF_ISBN` (a query `Isbn.of` reads)
-  and `FIND_PAGE_OF_WORDS` (any other), from four `const` parts (`RANKED`,
+  and `FIND_PAGE_OF_WORDS` (any other), from five `const` parts (`RANKED`,
   which carries `isbn13`, `search_text` and `search_vector`,
   `HELD_BY_READER`, `HELD_BY_READER_AFTER`, which is it plus the keyset,
-  `IN_CATALOGUE_ORDER`) and one `pageOf`; `searchOf` picks the statement.
-  Each statement selects `id` and `near`, which `pageOf` reads (the page is
-  near when one of its rows is; the catalogue's and the ISBN's say `FALSE`).
-  The words' statement is CTEs: `found`, the editions the words find among
-  the reader's whole catalogue (`HELD_BY_READER`, no keyset), then
-  `matched`, `found` `UNION ALL` the near ones, asked `WHERE NOT EXISTS
-  (SELECT FROM found) AND WITHOUT_ACCENTS(:words) <%
-  WITHOUT_ACCENTS(ranked.search_text)`; the keyset and the order apply to
-  `ranked JOIN matched`, so near editions page as the found ones do.
+  `FOUND_BY_WORDS`, the words' clause, `IN_CATALOGUE_ORDER`, whose names
+  are unqualified so it orders the words' derived table too) and one
+  `pageOf`; `searchOf` picks the statement. Each statement selects `id`
+  and `near`, which `pageOf` reads (the page is near when one of its rows
+  is; the catalogue's and the ISBN's say `FALSE`). The words' statement
+  orders a `UNION ALL`, aliased `matched`, of two branches over `ranked`,
+  each carrying `name`, `volume_number` and `title`: the editions
+  `FOUND_BY_WORDS` finds through `HELD_BY_READER_AFTER`, then the near
+  ones, asked `WHERE NOT EXISTS (SELECT FROM ranked WHERE $FOUND_BY_WORDS
+  AND $HELD_BY_READER) AND WITHOUT_ACCENTS(:words) <%
+  WITHOUT_ACCENTS(ranked.search_text) AND $HELD_BY_READER_AFTER`. The
+  `FROM ranked` inside the `NOT EXISTS` hides the outer one, so the check
+  covers the reader's whole catalogue, whatever `after`, in one `InitPlan`
+  (a one-time filter on the near branch). A CTE of the found ids joined
+  back to `ranked` answers the same but re-scans every edition and copy:
+  11–22 ms against 7–10 on 10 000 editions (measured 2026-11-12).
   The words' clause hands the query's text to `TO_TSVECTOR` through
   `words_ignoring_case_and_accents` and builds one `tsquery` of its
   lexemes, `STRING_AGG` over `UNNEST` joined by ` & `, each lexeme a

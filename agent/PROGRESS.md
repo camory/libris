@@ -272,11 +272,13 @@ Format:
   unaccented query by pg_trgm's word similarity, in the catalogue's order
   and pages, the page said `near`; `V018` brings `pg_trgm`,
   `without_accents` and `edition_search_trigrams`; S3 runs, both cases.
-- Decided: the statement is CTEs, `found` (the words over the reader's
-  whole catalogue, `HELD_BY_READER`, no keyset) and `matched` (`found`
-  `UNION ALL` the near ones under `NOT EXISTS (SELECT FROM found)`), the
-  keyset and the order applied once, to `ranked JOIN matched`; so near is
-  decided over the whole catalogue, never the page after `after`.
+- Decided: near is decided over the reader's whole catalogue, never the
+  page after `after`. Review fix-up, Tophe's call: the statement first
+  joined a CTE of the found ids back to `ranked`, 11–22 ms on 10 000
+  editions where `main` took 4–6 for the same rows; it is now a `UNION
+  ALL` of the found branch and the near one, gated by `NOT EXISTS` over
+  the reader's whole catalogue and ordered once, 7–10 ms; `FOUND_BY_WORDS`
+  serves both, `IN_CATALOGUE_ORDER` names its columns unqualified.
 - Decided: `HELD_BY_READER` split out of `HELD_BY_READER_AFTER`, which is
   it plus the keyset; `RANKED` carries `search_text`.
 - Decided: `pageOf` reads each row's `near` through a private `PageRow`,
