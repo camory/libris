@@ -21,6 +21,10 @@ function askAtOnce() {
   box.value?.blur();
 }
 
+function clear() {
+  text.value = "";
+}
+
 const { t } = useI18n();
 </script>
 
@@ -43,6 +47,7 @@ const { t } = useI18n();
       v-if="text !== ''"
       :label="t('catalogue.search.clear')"
       class="absolute top-1/2 right-[3px] -translate-y-1/2"
+      @click="clear"
     >
       <X :size="22" class="shrink-0" />
     </IconButton>

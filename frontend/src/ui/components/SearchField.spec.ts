@@ -157,6 +157,18 @@ describe("SearchField", () => {
       screen.queryByRole("button", { name: "Effacer la recherche" }),
     ).toBeNull();
   });
+
+  it("empties the box on the cross", async () => {
+    // Given
+    const wrapper = field();
+    await type(wrapper, "goscinny");
+
+    // When
+    await tapTheCross(wrapper);
+
+    // Then
+    expect(wrapper.emitted("update:modelValue")?.at(-1)).toEqual([""]);
+  });
 });
 
 function field(options: { attachTo?: HTMLElement } = {}) {
@@ -175,6 +187,14 @@ async function pressTheSearchKey(wrapper: ReturnType<typeof field>) {
   const form = box(wrapper).form;
   if (form === null) throw Error("The search box sits in no form");
   await fireEvent.submit(form);
+}
+
+async function tapTheCross(wrapper: ReturnType<typeof field>) {
+  await fireEvent.click(
+    within(wrapper.element).getByRole("button", {
+      name: "Effacer la recherche",
+    }),
+  );
 }
 
 function box(wrapper: ReturnType<typeof field>) {
