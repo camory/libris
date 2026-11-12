@@ -20,7 +20,11 @@ const { state: searchState, search } = useSearchCatalogue(
 const searchText = ref("");
 
 function rowsOf(catalogueBooks: Book[]): Book[] {
-  if (searchState.value.status === "found") return searchState.value.books;
+  if (
+    searchState.value.status === "found" ||
+    searchState.value.status === "near"
+  )
+    return searchState.value.books;
   if (searchState.value.status === "nothing") return [];
   return catalogueBooks;
 }
@@ -91,7 +95,15 @@ void browse();
         v-if="rowsOf(state.books).length > 0"
         class="divide-y divide-border overflow-hidden rounded-[14px] border border-border bg-surface"
       >
-        <ul ref="rows" class="divide-y divide-border">
+        <ul
+          ref="rows"
+          :aria-label="
+            searchState.status === 'near'
+              ? t('catalogue.search.near')
+              : undefined
+          "
+          class="divide-y divide-border"
+        >
           <li v-for="book in rowsOf(state.books)" :key="book.id">
             <CatalogueRow :book="book" />
           </li>

@@ -318,6 +318,32 @@ describe("CatalogueView", () => {
     ).toBe(true);
   });
 
+  it("lists the nearest in a list named after its label", async () => {
+    // Given
+    const { screen } = open(
+      new FakeCatalogueApi([
+        { books: [asterixLeGaulois, asterixEtSesAmis], next: null },
+      ]),
+      new FakeSearchApi({
+        asterik: [
+          { books: [romanceDawn, asterixLeGaulois], next: null, near: true },
+        ],
+      }),
+    );
+    await flushPromises();
+
+    // When
+    await searchFor(screen, "asterik");
+
+    // Then
+    const list = screen.getByRole("list", { name: "Les plus proches\u00A0:" });
+    const items = within(list).getAllByRole("listitem");
+    expect(items).toHaveLength(2);
+    expect(within(items[0]!).getByText("Romance dawn")).toBeDefined();
+    expect(within(items[1]!).getByText("Astérix le Gaulois")).toBeDefined();
+    expect(under(screen.getByText("Les plus proches :"), list)).toBe(true);
+  });
+
   it("asks nothing while the reader types", async () => {
     // Given
     const searchApi = new FakeSearchApi({
