@@ -119,7 +119,7 @@ every task.
       proches :* labels the block of its rows under it (U03). Realises S3;
       un-skips its two frontend tests.
 
-- [ ] T173 Frontend: the next pages of a search.
+- [x] T173 Frontend: the next pages of a search.
       Reaching the end of a search's rows asks the next page of the same
       query after the last one's `next` (D11), its rows following the
       first without a gap or a repeat, the catalogue's two skeleton rows
