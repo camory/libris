@@ -5,7 +5,7 @@ of its title, its series, one of its authors, its tome or its ISBN, as
 they type, misspelled or not, without scrolling to it. Now, because the
 catalogue lists every ouvrage of the house one by one, fifty at a time,
 and finding one means scrolling until it shows.
-**Status:** draft
+**Status:** done 2026-11-12
 
 ## Scenarios
 
@@ -353,6 +353,7 @@ the *Astérix* albums. Type *gaston*: the sentence alone. Type the ISBN of
 an ouvrage with its hyphens: that ouvrage alone. Type the title of an
 ouvrage stored before the release: it is found. Tap the cross: the whole
 catalogue, the keyboard open.
+Checked by Tophe on staging, recorded on 2026-11-12.
 
 ## Tasks
 
