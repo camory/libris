@@ -273,6 +273,36 @@ describe("useSearchCatalogue", () => {
     });
   });
 
+  it("asks the latest search's next page after an earlier answer arrives late", async () => {
+    // Given
+    const goscinny = later();
+    const oda = later();
+    const searchApi = new FakeSearchApi({
+      goscinny: [goscinny.page],
+      oda: [oda.page, lastPage()],
+    });
+    const { search, searchMore } = useSearchCatalogue(searchApi);
+    const earlier = search("goscinny");
+    const latest = search("oda");
+    oda.arrives(firstPage());
+    await latest;
+    goscinny.arrives({
+      books: [asterixLeGaulois],
+      next: asterixLeGaulois.id,
+      near: false,
+    });
+    await earlier;
+
+    // When
+    await searchMore();
+
+    // Then
+    expect(searchApi.asked.at(-1)).toEqual({
+      query: "oda",
+      after: romanceDawn.id,
+    });
+  });
+
   function firstPage(near = false): SearchPage {
     return { books: [romanceDawn], next: romanceDawn.id, near };
   }
