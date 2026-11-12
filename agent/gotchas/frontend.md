@@ -225,8 +225,12 @@ Read whole by a run that changes `frontend/`, after `every-run.md`.
   before 300 ms, and a pause left pending on a still-mounted view asks the
   port in a later case. `SearchField.spec.ts`' `pressTheSearchKey` submits
   the box's `form`, as the scenario's does. A mutation that emits from the
-  `@input` handler itself reads the model before `v-model` writes it (the
-  listener runs first) and emits the previous text.
+  `@input` handler itself emits the previous text, though `v-model`'s own
+  listener runs first (Vue 3.5 calls the directive's `created`, which adds
+  it, before patching the `onInput` prop): when the parent binds `v-model`,
+  as the view and S6 do, a `defineModel` ref reads the parent's prop, which
+  changes only when the parent re-renders. `searchQueryOf` counts
+  characters with `Array.from`, as `foldsOf` does, so `" 𠮷 "` asks nothing.
   S6 fakes `setTimeout`
   and `clearTimeout` alone and goes back to real timers before it waits,
   which drops a timer still pending: the search key and the cross act

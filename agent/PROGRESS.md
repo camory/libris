@@ -343,3 +343,17 @@ Format:
 - Left over: the cross (T171), near (T172), the next pages (T173), the
   order of answers (T174), the failure (T175), the address (T176); the
   phone checks listed in the PR body.
+
+## 2026-11-12 — T170 The search waits for a pause — reworked
+- Did: `searchQueryOf` counts the trimmed text's characters with
+  `Array.from`, not its UTF-16 code units, so one character outside the
+  BMP (`" 𠮷 "`) asks nothing; the gotchas' item on the `@input` mutation
+  gives its true cause.
+- Decided: the reviewer's verdict on #408 settled nothing new: its blocking
+  finding is the brief's two-character criterion, unmet beyond the BMP,
+  met by one red-first case in `SearchQuery.spec.ts`; its suggestion,
+  applied, corrects the cause the first run wrote (`v-model`'s listener
+  runs first in Vue 3.5; the model reads the parent's prop, which changes
+  on the parent's re-render).
+- Deviations from the brief: none.
+- Left over: as in the entry above.
