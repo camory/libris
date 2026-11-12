@@ -104,6 +104,24 @@ describe("FetchCatalogueApi", () => {
     expect(typeof page.near).toBe("boolean");
   });
 
+  it("reads whether the words were near", async () => {
+    // Given
+    const api = new FetchCatalogueApi("http://libris.invalid");
+    vi.stubGlobal("fetch", () =>
+      Promise.resolve(
+        new Response(JSON.stringify({ books: [], next: null, near: true }), {
+          status: 200,
+        }),
+      ),
+    );
+
+    // When
+    const page = await api.search("goscinny", null);
+
+    // Then
+    expect(page.near).toBe(true);
+  });
+
   it("finds the ouvrage with its copies", async () => {
     // Given
     const api = new FetchCatalogueApi(inject("mockBaseUrl"));

@@ -12,6 +12,10 @@ interface BookPageResponse {
   next: string | null;
 }
 
+interface SearchPageResponse extends BookPageResponse {
+  near: boolean;
+}
+
 export class FetchCatalogueApi implements CatalogueApi, SearchApi {
   constructor(private readonly baseUrl: string) {}
 
@@ -40,8 +44,8 @@ export class FetchCatalogueApi implements CatalogueApi, SearchApi {
     if (response.status !== 200) {
       throw Error(`The search answered ${response.status}`);
     }
-    const body = (await response.json()) as BookPageResponse;
-    return { books: body.books.map(bookOf), next: body.next, near: false };
+    const body = (await response.json()) as SearchPageResponse;
+    return { books: body.books.map(bookOf), next: body.next, near: body.near };
   }
 
   async find(id: string): Promise<FindBookAnswer> {
