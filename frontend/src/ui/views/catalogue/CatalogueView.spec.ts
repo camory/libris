@@ -637,6 +637,24 @@ describe("CatalogueView", () => {
     expect(under(screen.getByRole("list"), skeletons[0]!.element)).toBe(true);
   });
 
+  it("asks the catalogue no next page while a search is shown", async () => {
+    // Given
+    const catalogueApi = new FakeCatalogueApi([firstPage(), lastPage()]);
+    const { screen } = open(
+      catalogueApi,
+      new FakeSearchApi({ goscinny: [lastSearchPage()] }),
+    );
+    await flushPromises();
+    await searchFor(screen, "goscinny");
+
+    // When
+    theLastRowComes(true);
+    await flushPromises();
+
+    // Then
+    expect(catalogueApi.asked).toEqual([null]);
+  });
+
   function firstPage(): BookPage {
     return {
       books: [asterixLeGaulois, asterixEtSesAmis],
