@@ -37,4 +37,16 @@ describe("useSearchCatalogue", () => {
     // Then
     expect(searchApi.asked).toEqual([{ query: "goscinny", after: null }]);
   });
+
+  it("asks nothing under two characters", async () => {
+    // Given
+    const searchApi = new FakeSearchApi();
+    const { search } = useSearchCatalogue(searchApi);
+
+    // When
+    await search(" g ");
+
+    // Then
+    expect(searchApi.asked).toEqual([]);
+  });
 });
