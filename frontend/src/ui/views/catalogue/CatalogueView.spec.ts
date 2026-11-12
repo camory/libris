@@ -247,6 +247,25 @@ describe("CatalogueView", () => {
     ).toBeDefined();
   });
 
+  it("lists no row when no ouvrage matches", async () => {
+    // Given
+    const { screen } = open(
+      new FakeCatalogueApi([
+        { books: [asterixLeGaulois, asterixEtSesAmis], next: null },
+      ]),
+      new FakeSearchApi({
+        gaston: [{ books: [], next: null, near: false }],
+      }),
+    );
+    await flushPromises();
+
+    // When
+    await searchFor(screen, "gaston");
+
+    // Then
+    expect(screen.queryAllByRole("listitem")).toEqual([]);
+  });
+
   it("asks nothing while the reader types", async () => {
     // Given
     const searchApi = new FakeSearchApi({

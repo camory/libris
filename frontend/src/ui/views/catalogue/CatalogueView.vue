@@ -20,9 +20,9 @@ const { state: searchState, search } = useSearchCatalogue(
 const searchText = ref("");
 
 function rowsOf(catalogueBooks: Book[]): Book[] {
-  return searchState.value.status === "found"
-    ? searchState.value.books
-    : catalogueBooks;
+  if (searchState.value.status === "found") return searchState.value.books;
+  if (searchState.value.status === "nothing") return [];
+  return catalogueBooks;
 }
 
 const rows = useTemplateRef("rows");
