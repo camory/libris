@@ -16,6 +16,16 @@ describe("SearchField", () => {
       }),
     ).toHaveLength(1);
   });
+
+  it("shows an example of the words", () => {
+    // When
+    const screen = within(field().element);
+
+    // Then
+    expect(screen.getByRole("searchbox").getAttribute("placeholder")).toBe(
+      "Titre, série, auteur, ISBN",
+    );
+  });
 });
 
 function field() {

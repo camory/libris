@@ -158,6 +158,7 @@ const fr = {
     },
     search: {
       label: "Rechercher dans le catalogue",
+      placeholder: "Titre, série, auteur, ISBN",
     },
     series: {
       BOOK: "{name} · tome {volume}",
