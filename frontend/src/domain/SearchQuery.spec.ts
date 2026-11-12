@@ -10,6 +10,10 @@ describe("searchQueryOf", () => {
     expect(searchQueryOf(" g ")).toBeNull();
   });
 
+  it("counts a character of two code units as one", () => {
+    expect(searchQueryOf(" 𠮷 ")).toBeNull();
+  });
+
   it("asks from two characters on", () => {
     expect(searchQueryOf(" go ")).toBe("go");
   });
