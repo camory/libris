@@ -925,6 +925,22 @@ describe("CatalogueView", () => {
     expect(screen.queryAllByRole("listitem")).toHaveLength(0);
   });
 
+  it("keeps the catalogue's rows while a search typed is coming", async () => {
+    // Given
+    const { wrapper, screen } = open(
+      new FakeCatalogueApi([firstPage()]),
+      new FakeSearchApi({ goscinny: [new Promise<SearchPage>(() => {})] }),
+    );
+    await flushPromises();
+
+    // When
+    await searchFor(screen, "goscinny");
+
+    // Then
+    expect(screen.getAllByRole("listitem")).toHaveLength(2);
+    expect(wrapper.findAllComponents(CatalogueRowSkeleton)).toHaveLength(0);
+  });
+
   function firstPage(): BookPage {
     return {
       books: [asterixLeGaulois, asterixEtSesAmis],
