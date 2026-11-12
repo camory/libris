@@ -742,6 +742,38 @@ describe("CatalogueView", () => {
     expect(wrapper.findAllComponents(CatalogueRowSkeleton)).toHaveLength(0);
   });
 
+  it("keeps the nearest's sentence and label when their next page does not come", async () => {
+    // Given
+    const { screen } = open(
+      new FakeCatalogueApi([firstPage()]),
+      new FakeSearchApi({
+        goscinny: [
+          { ...firstSearchPage(), near: true },
+          new TypeError("Failed to fetch"),
+        ],
+      }),
+    );
+    await flushPromises();
+    await searchFor(screen, "goscinny");
+
+    // When
+    theLastRowComes(true);
+    await flushPromises();
+
+    // Then
+    expect(
+      screen.getByText("Aucun ouvrage ne correspond à « goscinny »."),
+    ).toBeDefined();
+    expect(
+      screen.getByRole("list", { name: "Les plus proches\u00A0:" }),
+    ).toBeDefined();
+    expect(
+      screen.getByText(
+        "Erreur lors de la recherche, veuillez réessayer plus tard.",
+      ),
+    ).toBeDefined();
+  });
+
   function firstPage(): BookPage {
     return {
       books: [asterixLeGaulois, asterixEtSesAmis],

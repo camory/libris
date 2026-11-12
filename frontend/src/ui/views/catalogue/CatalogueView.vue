@@ -46,8 +46,10 @@ const answer = computed(() => {
       };
     case "unavailable":
       return {
-        sentence: undefined,
-        label: undefined,
+        sentence: shown.near
+          ? t("catalogue.search.nothing", { query: shown.query })
+          : undefined,
+        label: shown.near ? t("catalogue.search.near") : undefined,
         books: shown.books,
         error: t("catalogue.search.error"),
       };
