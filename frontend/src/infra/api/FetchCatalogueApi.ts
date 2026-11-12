@@ -29,13 +29,17 @@ export class FetchCatalogueApi implements CatalogueApi, SearchApi {
   }
 
   async search(query: string, after: string | null): Promise<SearchPage> {
-    void after;
-    await fetch(
-      `${this.baseUrl}/api/v1/books?${new URLSearchParams({ q: query }).toString()}`,
+    const parameters = new URLSearchParams({ q: query });
+    if (after !== null) parameters.set("after", after);
+    const response = await fetch(
+      `${this.baseUrl}/api/v1/books?${parameters.toString()}`,
       {
         headers: { Accept: "application/json, application/problem+json" },
       },
     );
+    if (response.status !== 200) {
+      throw Error(`The search answered ${response.status}`);
+    }
     return { books: [], next: null, near: false };
   }
 

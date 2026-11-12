@@ -77,6 +77,17 @@ describe("FetchCatalogueApi", () => {
     ]);
   });
 
+  it("fails when the API refuses the search", async () => {
+    // Given
+    const api = new FetchCatalogueApi(inject("mockBaseUrl"));
+
+    // When
+    const page = api.search("goscinny", "not-an-id");
+
+    // Then
+    await expect(page).rejects.toThrow();
+  });
+
   it("finds the ouvrage with its copies", async () => {
     // Given
     const api = new FetchCatalogueApi(inject("mockBaseUrl"));
