@@ -249,6 +249,24 @@ describe("useSearchCatalogue", () => {
     });
   });
 
+  it("holds Libris unavailable, no book, when the first page does not come", async () => {
+    // Given
+    const { state, search } = useSearchCatalogue(
+      new FakeSearchApi({ goscinny: [new TypeError("Failed to fetch")] }),
+    );
+
+    // When
+    await search("goscinny");
+
+    // Then
+    expect(state.value).toEqual({
+      status: "unavailable",
+      query: "goscinny",
+      books: [],
+      near: false,
+    });
+  });
+
   it("holds the latest search's answer when an earlier one arrives after it", async () => {
     // Given
     const goscinny = later();

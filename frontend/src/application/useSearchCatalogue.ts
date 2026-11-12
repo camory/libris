@@ -7,7 +7,8 @@ export type SearchState =
   | { status: "ready" }
   | { status: "found"; books: Book[]; loadingMore: boolean }
   | { status: "near"; query: string; books: Book[]; loadingMore: boolean }
-  | { status: "nothing"; query: string };
+  | { status: "nothing"; query: string }
+  | { status: "unavailable"; query: string; books: Book[]; near: boolean };
 
 export function useSearchCatalogue(searchApi: SearchApi): {
   state: Ref<SearchState>;
@@ -27,7 +28,13 @@ export function useSearchCatalogue(searchApi: SearchApi): {
       state.value = { status: "ready" };
       return;
     }
-    const page = await searchApi.search(query, null);
+    let page: SearchPage;
+    try {
+      page = await searchApi.search(query, null);
+    } catch {
+      state.value = { status: "unavailable", query, books: [], near: false };
+      return;
+    }
     if (asked !== latest) return;
     shownSearch = asked;
     searched = query;
