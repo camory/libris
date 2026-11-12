@@ -58,6 +58,13 @@ const answer = computed(() => {
   }
 });
 
+const message = computed(() => {
+  if (answer.value.books !== undefined) return answer.value.error;
+  return state.value.status === "unavailable"
+    ? t("catalogue.error")
+    : undefined;
+});
+
 function rowsOf(catalogueBooks: Book[]): Book[] {
   return answer.value.books ?? catalogueBooks;
 }
@@ -140,12 +147,12 @@ void browse();
         </template>
       </div>
       <p
-        v-if="answer.error ?? state.status === 'unavailable'"
+        v-if="message"
         class="flex items-start gap-2 text-body text-danger"
-        :class="{ 'mt-5': state.books.length > 0 }"
+        :class="{ 'mt-5': rowsOf(state.books).length > 0 }"
       >
         <CircleAlert :size="22" class="shrink-0" />
-        <span>{{ answer.error ?? t("catalogue.error") }}</span>
+        <span>{{ message }}</span>
       </p>
     </template>
   </main>

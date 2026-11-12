@@ -774,6 +774,26 @@ describe("CatalogueView", () => {
     ).toBeDefined();
   });
 
+  it("shows the catalogue's error no more once a search is shown", async () => {
+    // Given
+    const { screen } = open(
+      new FakeCatalogueApi([new TypeError("Failed to fetch")]),
+      new FakeSearchApi({ goscinny: [lastSearchPage()] }),
+    );
+    await flushPromises();
+
+    // When
+    await searchFor(screen, "goscinny");
+
+    // Then
+    expect(
+      screen.queryByText(
+        "Erreur lors du chargement, veuillez réessayer plus tard.",
+      ),
+    ).toBeNull();
+    expect(screen.getAllByRole("listitem")).toHaveLength(1);
+  });
+
   function firstPage(): BookPage {
     return {
       books: [asterixLeGaulois, asterixEtSesAmis],
