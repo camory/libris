@@ -139,7 +139,7 @@ every task.
       answered leaves the rows listed and puts the sentence under them.
       Realises S9; un-skips its two frontend tests.
 
-- [ ] T176 Frontend: the search kept in the address.
+- [x] T176 Frontend: the search kept in the address.
       The address carries the query of the list shown,
       `/catalogue?q=goscinny`, none under two characters, each search
       replacing the history's entry instead of adding one. An address with

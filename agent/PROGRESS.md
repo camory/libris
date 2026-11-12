@@ -478,3 +478,27 @@ Format:
   PR.
 - Left over: a search typed with the network off on the Pixel, and the
   sentence's spacing against the mockup, for Tophe (in the PR body).
+
+## 2026-11-12 — T176 The search kept in the address — done
+- Did: `router.ts` hands `CatalogueView` the address's `q` as the prop
+  `query`; the view opens on that search under its five loading rows,
+  writes `?q=` with `router.replace` at each search and follows the prop
+  while shown. S7 runs whole.
+- Decided: the view keeps `lastAsked`, the query its own `replace`
+  writes (`""` under two characters), and follows a prop of any other
+  value; at setup `lastAsked` is the prop.
+- Decided: `arriving` is cleared by any change of the search state, the
+  `ready` an emptied box writes included, so step 8 needed no code of its
+  own; the loading rows also stand while the catalogue is `loading` and
+  no search answer is held, which lists an answer come first (step 9).
+- Decided: the view calls `search(props.query)` at setup whatever the
+  prop; an empty one asks nothing.
+- Deviations from the brief: step 10's case first sets the prop to
+  `goscinny`, as the view's own `replace` would through the router: the
+  view mounted alone holds `""` from the start, and setting `""` again
+  changes nothing a `watch` sees. The case was committed red once before
+  that fix; history is not rewritten. Steps 3, 7, 8, 12 and 13 were green
+  on arrival and are guards; step 11 was red. One commit subject runs to
+  73 characters.
+- Left over: on the Pixel, an ouvrage opened from a search and the back
+  gesture, and the installed app reopened on a search (in the PR body).
