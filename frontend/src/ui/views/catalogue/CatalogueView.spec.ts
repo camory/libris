@@ -209,9 +209,9 @@ describe("CatalogueView", () => {
     await flushPromises();
 
     // When
-    await fireEvent.input(screen.getByRole("searchbox"), {
-      target: { value: "goscinny" },
-    });
+    const box = screen.getByRole<HTMLInputElement>("searchbox");
+    await fireEvent.input(box, { target: { value: "goscinny" } });
+    await fireEvent.submit(box.form!);
     await flushPromises();
 
     // Then
@@ -219,6 +219,27 @@ describe("CatalogueView", () => {
     expect(items).toHaveLength(2);
     expect(within(items[0]!).getByText("Romance dawn")).toBeDefined();
     expect(within(items[1]!).getByText("Astérix le Gaulois")).toBeDefined();
+  });
+
+  it("asks nothing while the reader types", async () => {
+    // Given
+    const searchApi = new FakeSearchApi({
+      goscinny: [{ books: [romanceDawn], next: null, near: false }],
+    });
+    const { screen } = open(
+      new FakeCatalogueApi([{ books: [asterixLeGaulois], next: null }]),
+      searchApi,
+    );
+    await flushPromises();
+
+    // When
+    await fireEvent.input(screen.getByRole("searchbox"), {
+      target: { value: "goscinny" },
+    });
+    await flushPromises();
+
+    // Then
+    expect(searchApi.asked).toEqual([]);
   });
 
   it("offers each row as one link, and no button", async () => {
