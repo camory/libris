@@ -7,7 +7,8 @@ export type SearchState =
   | { status: "ready" }
   | { status: "found"; books: Book[]; loadingMore: boolean }
   | { status: "near"; query: string; books: Book[]; loadingMore: boolean }
-  | { status: "nothing"; query: string };
+  | { status: "nothing"; query: string }
+  | { status: "unavailable"; query: string; books: Book[]; near: boolean };
 
 export function useSearchCatalogue(searchApi: SearchApi): {
   state: Ref<SearchState>;
@@ -27,8 +28,12 @@ export function useSearchCatalogue(searchApi: SearchApi): {
       state.value = { status: "ready" };
       return;
     }
-    const page = await searchApi.search(query, null);
+    const page = await pageOf(query, null);
     if (asked !== latest) return;
+    if (page === null) {
+      state.value = { status: "unavailable", query, books: [], near: false };
+      return;
+    }
     shownSearch = asked;
     searched = query;
     next = page.next;
@@ -41,14 +46,27 @@ export function useSearchCatalogue(searchApi: SearchApi): {
     if (next === null || shown.loadingMore) return;
     state.value = { ...shown, loadingMore: true };
     const extended = shownSearch;
-    const page = await searchApi.search(searched, next);
+    const page = await pageOf(searched, next);
     if (extended !== latest) return;
+    if (page === null) {
+      state.value = {
+        status: "unavailable",
+        query: searched,
+        books: shown.books,
+        near: shown.status === "near",
+      };
+      return;
+    }
     next = page.next;
     state.value = stateOf(searched, {
       ...page,
       books: [...shown.books, ...page.books],
       near: shown.status === "near",
     });
+  }
+
+  function pageOf(query: string, after: string | null) {
+    return searchApi.search(query, after).catch(() => null);
   }
 
   return { state, search, searchMore };

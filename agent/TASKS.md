@@ -132,7 +132,7 @@ every task.
       alone, and a next page of an earlier search arriving late is dropped
       too. Realises S8; un-skips its frontend test.
 
-- [ ] T175 Frontend: Libris unavailable during a search.
+- [x] T175 Frontend: Libris unavailable during a search.
       A search not answered says *Erreur lors de la recherche, veuillez
       réessayer plus tard.* with the alert icon in the list's place, no
       row, the box keeping its text and its outline (U05); a next page not

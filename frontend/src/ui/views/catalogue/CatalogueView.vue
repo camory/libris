@@ -21,7 +21,15 @@ const {
 } = useSearchCatalogue(inject(searchApiKey)!);
 const searchText = ref("");
 
-const answer = computed(() => {
+interface Answer {
+  sentence?: string;
+  label?: string;
+  books?: Book[];
+  loadingMore?: boolean;
+  error?: string;
+}
+
+const answer = computed<Answer>(() => {
   const shown = searchState.value;
   switch (shown.status) {
     case "found":
@@ -33,8 +41,7 @@ const answer = computed(() => {
       };
     case "near":
       return {
-        sentence: t("catalogue.search.nothing", { query: shown.query }),
-        label: t("catalogue.search.near"),
+        ...saidNear(shown.query),
         books: shown.books,
         loadingMore: shown.loadingMore,
       };
@@ -44,9 +51,29 @@ const answer = computed(() => {
         label: undefined,
         books: [],
       };
+    case "unavailable":
+      return {
+        ...(shown.near ? saidNear(shown.query) : {}),
+        books: shown.books,
+        error: t("catalogue.search.error"),
+      };
     default:
       return { sentence: undefined, label: undefined, books: undefined };
   }
+});
+
+function saidNear(query: string) {
+  return {
+    sentence: t("catalogue.search.nothing", { query }),
+    label: t("catalogue.search.near"),
+  };
+}
+
+const message = computed(() => {
+  if (answer.value.books !== undefined) return answer.value.error;
+  return state.value.status === "unavailable"
+    ? t("catalogue.error")
+    : undefined;
 });
 
 function rowsOf(catalogueBooks: Book[]): Book[] {
@@ -126,17 +153,23 @@ void browse();
             <CatalogueRow :book="book" />
           </li>
         </ul>
-        <template v-if="answer.loadingMore ?? state.status === 'loadingMore'">
+        <template
+          v-if="
+            answer.books === undefined
+              ? state.status === 'loadingMore'
+              : answer.loadingMore
+          "
+        >
           <CatalogueRowSkeleton v-for="row in 2" :key="row" />
         </template>
       </div>
       <p
-        v-if="state.status === 'unavailable'"
+        v-if="message"
         class="flex items-start gap-2 text-body text-danger"
-        :class="{ 'mt-5': state.books.length > 0 }"
+        :class="{ 'mt-5': rowsOf(state.books).length > 0 }"
       >
         <CircleAlert :size="22" class="shrink-0" />
-        <span>{{ t("catalogue.error") }}</span>
+        <span>{{ message }}</span>
       </p>
     </template>
   </main>

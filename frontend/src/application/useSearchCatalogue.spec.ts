@@ -249,6 +249,104 @@ describe("useSearchCatalogue", () => {
     });
   });
 
+  it("holds Libris unavailable, no book, when the first page does not come", async () => {
+    // Given
+    const { state, search } = useSearchCatalogue(
+      new FakeSearchApi({ goscinny: [new TypeError("Failed to fetch")] }),
+    );
+
+    // When
+    await search("goscinny");
+
+    // Then
+    expect(state.value).toEqual({
+      status: "unavailable",
+      query: "goscinny",
+      books: [],
+      near: false,
+    });
+  });
+
+  it("lists no book of the search shown when the next search does not come", async () => {
+    // Given
+    const { state, search } = useSearchCatalogue(
+      new FakeSearchApi({
+        goscinny: [lastPage()],
+        oda: [new TypeError("Failed to fetch")],
+      }),
+    );
+    await search("goscinny");
+
+    // When
+    await search("oda");
+
+    // Then
+    expect(state.value).toEqual({
+      status: "unavailable",
+      query: "oda",
+      books: [],
+      near: false,
+    });
+  });
+
+  it("keeps the books listed when the next page does not come", async () => {
+    // Given
+    const { state, search, searchMore } = useSearchCatalogue(
+      new FakeSearchApi({
+        goscinny: [firstPage(), new TypeError("Failed to fetch")],
+      }),
+    );
+    await search("goscinny");
+
+    // When
+    await searchMore();
+
+    // Then
+    expect(state.value).toEqual({
+      status: "unavailable",
+      query: "goscinny",
+      books: [romanceDawn],
+      near: false,
+    });
+  });
+
+  it("keeps the nearest said near when their next page does not come", async () => {
+    // Given
+    const { state, search, searchMore } = useSearchCatalogue(
+      new FakeSearchApi({
+        goscinny: [firstPage(true), new TypeError("Failed to fetch")],
+      }),
+    );
+    await search("goscinny");
+
+    // When
+    await searchMore();
+
+    // Then
+    expect(state.value).toEqual({
+      status: "unavailable",
+      query: "goscinny",
+      books: [romanceDawn],
+      near: true,
+    });
+  });
+
+  it("asks nothing more once a next page did not come", async () => {
+    // Given
+    const searchApi = new FakeSearchApi({
+      goscinny: [firstPage(), new TypeError("Failed to fetch")],
+    });
+    const { search, searchMore } = useSearchCatalogue(searchApi);
+    await search("goscinny");
+    await searchMore();
+
+    // When
+    await searchMore();
+
+    // Then
+    expect(searchApi.asked).toHaveLength(2);
+  });
+
   it("holds the latest search's answer when an earlier one arrives after it", async () => {
     // Given
     const goscinny = later();
@@ -380,6 +478,55 @@ describe("useSearchCatalogue", () => {
     });
   });
 
+  it("drops an earlier search's failure arriving after the latest search's answer", async () => {
+    // Given
+    const goscinny = later();
+    const { state, search } = useSearchCatalogue(
+      new FakeSearchApi({
+        goscinny: [goscinny.page],
+        oda: [{ books: [lePetitPrince], next: null, near: false }],
+      }),
+    );
+    const earlier = search("goscinny");
+    await search("oda");
+
+    // When
+    goscinny.fails(new TypeError("Failed to fetch"));
+    await earlier;
+
+    // Then
+    expect(state.value).toEqual({
+      status: "found",
+      books: [lePetitPrince],
+      loadingMore: false,
+    });
+  });
+
+  it("drops a failing next page of an earlier search", async () => {
+    // Given
+    const nextPage = later();
+    const { state, search, searchMore } = useSearchCatalogue(
+      new FakeSearchApi({
+        goscinny: [firstPage(), nextPage.page],
+        oda: [{ books: [lePetitPrince], next: null, near: false }],
+      }),
+    );
+    await search("goscinny");
+    const more = searchMore();
+    await search("oda");
+
+    // When
+    nextPage.fails(new TypeError("Failed to fetch"));
+    await more;
+
+    // Then
+    expect(state.value).toEqual({
+      status: "found",
+      books: [lePetitPrince],
+      loadingMore: false,
+    });
+  });
+
   it("shows the whole catalogue when a search arrives after the box is emptied", async () => {
     // Given
     const goscinny = later();
@@ -407,9 +554,11 @@ describe("useSearchCatalogue", () => {
 
   function later() {
     let arrives: (page: SearchPage) => void = () => {};
-    const page = new Promise<SearchPage>((resolve) => {
+    let fails: (error: Error) => void = () => {};
+    const page = new Promise<SearchPage>((resolve, reject) => {
       arrives = resolve;
+      fails = reject;
     });
-    return { page, arrives };
+    return { page, arrives, fails };
   }
 });

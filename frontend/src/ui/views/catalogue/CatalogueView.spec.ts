@@ -680,6 +680,147 @@ describe("CatalogueView", () => {
     expect(wrapper.findAllComponents(CatalogueRowSkeleton)).toHaveLength(0);
   });
 
+  it("says to try again later when the search does not come", async () => {
+    // Given
+    const { wrapper, screen } = open(
+      new FakeCatalogueApi([firstPage()]),
+      new FakeSearchApi({ goscinny: [new TypeError("Failed to fetch")] }),
+    );
+    await flushPromises();
+
+    // When
+    await searchFor(screen, "goscinny");
+
+    // Then
+    expect(
+      screen.getByText(
+        "Erreur lors de la recherche, veuillez réessayer plus tard.",
+      ),
+    ).toBeDefined();
+    expect(wrapper.findAllComponents(CircleAlert)).toHaveLength(1);
+  });
+
+  it("lists no row when the search does not come", async () => {
+    // Given
+    const { wrapper, screen } = open(
+      new FakeCatalogueApi([firstPage()]),
+      new FakeSearchApi({ goscinny: [new TypeError("Failed to fetch")] }),
+    );
+    await flushPromises();
+
+    // When
+    await searchFor(screen, "goscinny");
+
+    // Then
+    expect(screen.queryAllByRole("listitem")).toEqual([]);
+    expect(screen.queryByRole("list")).toBeNull();
+    expect(wrapper.findAllComponents(CatalogueRowSkeleton)).toHaveLength(0);
+  });
+
+  it("says to try again later under the search's rows when its next page does not come", async () => {
+    // Given
+    const { wrapper, screen } = open(
+      new FakeCatalogueApi([firstPage()]),
+      new FakeSearchApi({
+        goscinny: [firstSearchPage(), new TypeError("Failed to fetch")],
+      }),
+    );
+    await flushPromises();
+    await searchFor(screen, "goscinny");
+
+    // When
+    theLastRowComes(true);
+    await flushPromises();
+
+    // Then
+    const message = screen.getByText(
+      "Erreur lors de la recherche, veuillez réessayer plus tard.",
+    );
+    expect(under(screen.getByRole("list"), message)).toBe(true);
+    expect(screen.getAllByRole("listitem")).toHaveLength(1);
+    expect(wrapper.findAllComponents(CircleAlert)).toHaveLength(1);
+    expect(wrapper.findAllComponents(CatalogueRowSkeleton)).toHaveLength(0);
+  });
+
+  it("keeps the nearest's sentence and label when their next page does not come", async () => {
+    // Given
+    const { screen } = open(
+      new FakeCatalogueApi([firstPage()]),
+      new FakeSearchApi({
+        goscinny: [
+          { ...firstSearchPage(), near: true },
+          new TypeError("Failed to fetch"),
+        ],
+      }),
+    );
+    await flushPromises();
+    await searchFor(screen, "goscinny");
+
+    // When
+    theLastRowComes(true);
+    await flushPromises();
+
+    // Then
+    expect(
+      screen.getByText("Aucun ouvrage ne correspond à « goscinny »."),
+    ).toBeDefined();
+    expect(
+      screen.getByRole("list", { name: "Les plus proches\u00A0:" }),
+    ).toBeDefined();
+    expect(
+      screen.getByText(
+        "Erreur lors de la recherche, veuillez réessayer plus tard.",
+      ),
+    ).toBeDefined();
+  });
+
+  it("shows the catalogue's error no more once a search is shown", async () => {
+    // Given
+    const { screen } = open(
+      new FakeCatalogueApi([new TypeError("Failed to fetch")]),
+      new FakeSearchApi({ goscinny: [lastSearchPage()] }),
+    );
+    await flushPromises();
+
+    // When
+    await searchFor(screen, "goscinny");
+
+    // Then
+    expect(
+      screen.queryByText(
+        "Erreur lors du chargement, veuillez réessayer plus tard.",
+      ),
+    ).toBeNull();
+    expect(screen.getAllByRole("listitem")).toHaveLength(1);
+  });
+
+  it("shows no catalogue skeleton under the search's rows when its next page does not come", async () => {
+    // Given
+    const { wrapper, screen } = open(
+      {
+        browse: (after) =>
+          after === null
+            ? Promise.resolve(firstPage())
+            : new Promise<BookPage>(() => {}),
+        find: () => Promise.reject(Error("no find in this case")),
+      },
+      new FakeSearchApi({
+        goscinny: [firstSearchPage(), new TypeError("Failed to fetch")],
+      }),
+    );
+    await flushPromises();
+    theLastRowComes(true);
+    await flushPromises();
+    await searchFor(screen, "goscinny");
+
+    // When
+    theLastRowComes(true);
+    await flushPromises();
+
+    // Then
+    expect(wrapper.findAllComponents(CatalogueRowSkeleton)).toHaveLength(0);
+  });
+
   function firstPage(): BookPage {
     return {
       books: [asterixLeGaulois, asterixEtSesAmis],

@@ -453,3 +453,28 @@ Format:
 - Left over: the failure of a search, the latest's or an earlier one's,
   still escapes `search` and `searchMore` (T175); the Pixel check of two
   words typed apart on a slow network, in the PR body.
+
+## 2026-11-12 — T175 Libris unavailable during a search — done
+- Did: `useSearchCatalogue` holds `unavailable` (query, books still listed,
+  `near`) when a page does not come, and neither verb rejects any more;
+  `CatalogueView` says the search's error in the list's place or under its
+  rows, one message paragraph for the list shown. S9 runs whole.
+- Decided: a rejection of the port is read as `null` by a private `pageOf`,
+  so each verb keeps a single drop check for a late answer, failure or not.
+- Decided (review fix-up): the two skeleton rows read the catalogue's
+  `loadingMore` while `answer.books` is `undefined` and the search's
+  otherwise, the rule `message` and `growTheList()` read, so the
+  catalogue's own `loadingMore` never draws its skeleton under the
+  search's rows.
+- Decided: the message paragraph reads the search's error while a search is
+  shown (`answer.books` defined) and the catalogue's otherwise, its `mt-5`
+  reading the rows drawn; this answers the PROPOSED item on the catalogue's
+  error under the search's rows, removed.
+- Deviations from the brief: one case beyond the plan, *shows no catalogue
+  skeleton under the search's rows when its next page does not come* (red:
+  two skeletons). Steps 5, 8 and 12 were red on arrival, not guards. Three
+  commit subjects run 73 to 75 characters; history is not rewritten.
+- Run in two parts: a handoff after step 13, then the self-review and the
+  PR.
+- Left over: a search typed with the network off on the Pixel, and the
+  sentence's spacing against the mockup, for Tophe (in the PR body).
