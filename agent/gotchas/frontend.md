@@ -202,8 +202,10 @@ Read whole by a run that changes `frontend/`, after `every-run.md`.
   since T169, `bootstrap` giving one instance to both ports;
   `SearchScenarios`' `open()` gives `world.search`, a `FakeSearchApi()` by
   default, the other scenario files a `FakeSearchApi()`.
-  `useSearchCatalogue(searchApi)` holds `state` (`ready`, then `found` with
-  the first page's books) and `search(text)`, which reads
+  `useSearchCatalogue(searchApi)` holds `state` (`ready`, then, from the
+  first page, `nothing` with the `query` asked for a page of no book,
+  whatever its `near`, `near` with the `query` and the books for one said
+  near, `found` with the books otherwise) and `search(text)`, which reads
   `searchQueryOf(text)` (`src/domain/SearchQuery.ts`: the text trimmed,
   `null` under two characters): on `null` it asks nothing and holds
   `ready` again, otherwise it asks the query with `after` `null`, keeps
@@ -225,8 +227,15 @@ Read whole by a run that changes `frontend/`, after `every-run.md`.
   `dist/assets/*.css` after `npm run build`. It is drawn by
   `CatalogueView` unless the catalogue is `empty`; the view calls `search`
   on the field's `@search`, no `watch` on its `searchText`, and `rowsOf`
-  puts the found books in place of the catalogue's once the catalogue's
-  first page has come (never over its `loading`).
+  puts the `found` or `near` books in place of the catalogue's, and none
+  for `nothing`, once the catalogue's first page has come (never over its
+  `loading`), read from `answer`, the one `computed` over the search state,
+  which also gives the sentence and the label: over `nothing` and `near`
+  the sentence `catalogue.search.nothing` (*Aucun ouvrage ne correspond à
+  « gaston ».*, the query asked, U+00A0 inside the guillemets, `lead`
+  `muted`) comes first, and over `near` the `h2` label
+  `catalogue.search.near` (*Les plus proches :*, `mt-5 pb-2`) between the
+  sentence and the rows, whose `ul` takes it as `aria-label`.
   `CatalogueView.spec.ts`' `open()` takes the search port second,
   `new FakeSearchApi()` by default; a case types with
   `fireEvent.input(getByRole("searchbox"), { target: { value } })`, then
@@ -526,6 +535,11 @@ Read whole by a run that changes `frontend/`, after `every-run.md`.
   proves nothing about it: a case asserting the non-breaking space passes
   `{ normalizer: (text) => text }` (`SourceEditionCard.spec.ts`, the
   question).
+  The other way round, `getByRole`'s `name` given as a string is compared
+  to the accessible name exactly, never normalised: a list whose
+  `aria-label` holds U+00A0 is not found by a name typed with a plain
+  space, and the case writes the escape (`CatalogueView.spec.ts`, *Les
+  plus proches :*, T172).
 - The colour roles and the type steps of `docs/DESIGN.md` are Tailwind theme
   tokens in `src/ui/style.css`: custom properties on `:root`, overridden in a
   `prefers-color-scheme: dark` block, exposed through `@theme inline` as

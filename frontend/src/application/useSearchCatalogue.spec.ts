@@ -24,6 +24,40 @@ describe("useSearchCatalogue", () => {
     });
   });
 
+  it("holds no match, with the query asked, when the answer holds no edition", async () => {
+    // Given
+    const { state, search } = useSearchCatalogue(
+      new FakeSearchApi({
+        gaston: [{ books: [], next: null, near: false }],
+      }),
+    );
+
+    // When
+    await search(" gaston ");
+
+    // Then
+    expect(state.value).toEqual({ status: "nothing", query: "gaston" });
+  });
+
+  it("holds the nearest, with the query asked, when the answer is said near", async () => {
+    // Given
+    const { state, search } = useSearchCatalogue(
+      new FakeSearchApi({
+        asterik: [{ books: [asterixLeGaulois], next: null, near: true }],
+      }),
+    );
+
+    // When
+    await search("asterik");
+
+    // Then
+    expect(state.value).toEqual({
+      status: "near",
+      query: "asterik",
+      books: [asterixLeGaulois],
+    });
+  });
+
   it("asks the words without the spaces at their ends", async () => {
     // Given
     const searchApi = new FakeSearchApi({

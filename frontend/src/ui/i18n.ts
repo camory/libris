@@ -160,6 +160,8 @@ const fr = {
       label: "Rechercher dans le catalogue",
       placeholder: "Titre, série, auteur, ISBN",
       clear: "Effacer la recherche",
+      nothing: "Aucun ouvrage ne correspond à «\u00A0{query}\u00A0».",
+      near: "Les plus proches\u00A0:",
     },
     series: {
       BOOK: "{name} · tome {volume}",

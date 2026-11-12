@@ -73,7 +73,7 @@ describe("Search", () => {
     expect(search.asked).toEqual([{ query: "goscinny", after: null }]);
   });
 
-  it.skip("S3 Near matches when the words find nothing", async () => {
+  it("S3 Near matches when the words find nothing", async () => {
     // Given
     const search = librisAnswers({
       asterik: [near(asterixLeGaulois, laSerpeDOr)],
@@ -89,7 +89,7 @@ describe("Search", () => {
     expect(rows(screen)).toEqual([reads(asterixLeGaulois), reads(laSerpeDOr)]);
   });
 
-  it.skip("S3 Near matches when the words find nothing, none near either", async () => {
+  it("S3 Near matches when the words find nothing, none near either", async () => {
     // Given
     const search = librisAnswers({ gaston: [nothing()] });
     const screen = await theCatalogueOpen(search);

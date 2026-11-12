@@ -1,5 +1,10 @@
 import { BookOpen, CircleAlert } from "@lucide/vue";
-import { fireEvent, within } from "@testing-library/dom";
+import {
+  fireEvent,
+  queries,
+  within,
+  type BoundFunctions,
+} from "@testing-library/dom";
 import { flushPromises, mount } from "@vue/test-utils";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import {
@@ -209,16 +214,156 @@ describe("CatalogueView", () => {
     await flushPromises();
 
     // When
-    const box = screen.getByRole<HTMLInputElement>("searchbox");
-    await fireEvent.input(box, { target: { value: "goscinny" } });
-    await fireEvent.submit(box.form!);
-    await flushPromises();
+    await searchFor(screen, "goscinny");
 
     // Then
     const items = screen.getAllByRole("listitem");
     expect(items).toHaveLength(2);
     expect(within(items[0]!).getByText("Romance dawn")).toBeDefined();
     expect(within(items[1]!).getByText("Astérix le Gaulois")).toBeDefined();
+  });
+
+  it("says that no ouvrage matches the query asked", async () => {
+    // Given
+    const { screen } = open(
+      new FakeCatalogueApi([
+        { books: [asterixLeGaulois, asterixEtSesAmis], next: null },
+      ]),
+      new FakeSearchApi({
+        gaston: [{ books: [], next: null, near: false }],
+      }),
+    );
+    await flushPromises();
+
+    // When
+    await searchFor(screen, "gaston");
+
+    // Then
+    expect(
+      screen.getByText("Aucun ouvrage ne correspond à «\u00A0gaston\u00A0».", {
+        normalizer: (text) => text,
+      }),
+    ).toBeDefined();
+  });
+
+  it("lists no row when no ouvrage matches", async () => {
+    // Given
+    const { screen } = open(
+      new FakeCatalogueApi([
+        { books: [asterixLeGaulois, asterixEtSesAmis], next: null },
+      ]),
+      new FakeSearchApi({
+        gaston: [{ books: [], next: null, near: false }],
+      }),
+    );
+    await flushPromises();
+
+    // When
+    await searchFor(screen, "gaston");
+
+    // Then
+    expect(screen.queryAllByRole("listitem")).toEqual([]);
+  });
+
+  it("says that no ouvrage matches when Libris answers the nearest", async () => {
+    // Given
+    const { screen } = open(
+      new FakeCatalogueApi([
+        { books: [asterixLeGaulois, asterixEtSesAmis], next: null },
+      ]),
+      new FakeSearchApi({
+        asterik: [
+          { books: [romanceDawn, asterixLeGaulois], next: null, near: true },
+        ],
+      }),
+    );
+    await flushPromises();
+
+    // When
+    await searchFor(screen, "asterik");
+
+    // Then
+    expect(
+      screen.getByText("Aucun ouvrage ne correspond à « asterik »."),
+    ).toBeDefined();
+  });
+
+  it("labels the nearest under the sentence", async () => {
+    // Given
+    const { screen } = open(
+      new FakeCatalogueApi([
+        { books: [asterixLeGaulois, asterixEtSesAmis], next: null },
+      ]),
+      new FakeSearchApi({
+        asterik: [
+          { books: [romanceDawn, asterixLeGaulois], next: null, near: true },
+        ],
+      }),
+    );
+    await flushPromises();
+
+    // When
+    await searchFor(screen, "asterik");
+
+    // Then
+    const label = screen.getByText("Les plus proches\u00A0:", {
+      normalizer: (text) => text,
+    });
+    expect(
+      under(
+        screen.getByText("Aucun ouvrage ne correspond à « asterik »."),
+        label,
+      ),
+    ).toBe(true);
+  });
+
+  it("lists the nearest in a list named after its label", async () => {
+    // Given
+    const { screen } = open(
+      new FakeCatalogueApi([
+        { books: [asterixLeGaulois, asterixEtSesAmis], next: null },
+      ]),
+      new FakeSearchApi({
+        asterik: [
+          { books: [romanceDawn, asterixLeGaulois], next: null, near: true },
+        ],
+      }),
+    );
+    await flushPromises();
+
+    // When
+    await searchFor(screen, "asterik");
+
+    // Then
+    const list = screen.getByRole("list", { name: "Les plus proches\u00A0:" });
+    const items = within(list).getAllByRole("listitem");
+    expect(items).toHaveLength(2);
+    expect(within(items[0]!).getByText("Romance dawn")).toBeDefined();
+    expect(within(items[1]!).getByText("Astérix le Gaulois")).toBeDefined();
+    expect(under(screen.getByText("Les plus proches :"), list)).toBe(true);
+  });
+
+  it("says nothing of no match when the words find editions", async () => {
+    // Given
+    const { screen } = open(
+      new FakeCatalogueApi([
+        { books: [asterixLeGaulois, asterixEtSesAmis], next: null },
+      ]),
+      new FakeSearchApi({
+        goscinny: [{ books: [romanceDawn], next: null, near: false }],
+      }),
+    );
+    await flushPromises();
+
+    // When
+    await searchFor(screen, "goscinny");
+
+    // Then
+    expect(screen.queryByText(/Aucun ouvrage/)).toBeNull();
+    expect(screen.queryByText("Les plus proches :")).toBeNull();
+    expect(
+      screen.queryByRole("list", { name: "Les plus proches\u00A0:" }),
+    ).toBeNull();
   });
 
   it("asks nothing while the reader types", async () => {
@@ -450,6 +595,16 @@ describe("CatalogueView", () => {
       },
     });
     return { wrapper, screen: within(wrapper.element as HTMLElement) };
+  }
+
+  async function searchFor(
+    screen: BoundFunctions<typeof queries>,
+    text: string,
+  ) {
+    const box = screen.getByRole<HTMLInputElement>("searchbox");
+    await fireEvent.input(box, { target: { value: text } });
+    await fireEvent.submit(box.form!);
+    await flushPromises();
   }
 
   function theLastRowComes(inView: boolean) {

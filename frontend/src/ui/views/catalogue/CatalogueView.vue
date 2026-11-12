@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { BookOpen, CircleAlert } from "@lucide/vue";
-import { inject, onUnmounted, ref, useTemplateRef, watch } from "vue";
+import { computed, inject, onUnmounted, ref, useTemplateRef, watch } from "vue";
 import { useI18n } from "vue-i18n";
 import { catalogueApiKey } from "../../../application/CatalogueApi";
 import { searchApiKey } from "../../../application/SearchApi";
@@ -19,10 +19,30 @@ const { state: searchState, search } = useSearchCatalogue(
 );
 const searchText = ref("");
 
+const answer = computed(() => {
+  const shown = searchState.value;
+  switch (shown.status) {
+    case "found":
+      return { sentence: undefined, label: undefined, books: shown.books };
+    case "near":
+      return {
+        sentence: t("catalogue.search.nothing", { query: shown.query }),
+        label: t("catalogue.search.near"),
+        books: shown.books,
+      };
+    case "nothing":
+      return {
+        sentence: t("catalogue.search.nothing", { query: shown.query }),
+        label: undefined,
+        books: [],
+      };
+    default:
+      return { sentence: undefined, label: undefined, books: undefined };
+  }
+});
+
 function rowsOf(catalogueBooks: Book[]): Book[] {
-  return searchState.value.status === "found"
-    ? searchState.value.books
-    : catalogueBooks;
+  return answer.value.books ?? catalogueBooks;
 }
 
 const rows = useTemplateRef("rows");
@@ -75,11 +95,21 @@ void browse();
       <p class="text-lead text-muted">{{ t("catalogue.empty") }}</p>
     </div>
     <template v-else>
+      <p v-if="answer.sentence" class="text-lead text-muted">
+        {{ answer.sentence }}
+      </p>
+      <h2 v-if="answer.label" class="mt-5 pb-2 text-label text-muted">
+        {{ answer.label }}
+      </h2>
       <div
         v-if="rowsOf(state.books).length > 0"
         class="divide-y divide-border overflow-hidden rounded-[14px] border border-border bg-surface"
       >
-        <ul ref="rows" class="divide-y divide-border">
+        <ul
+          ref="rows"
+          :aria-label="answer.label"
+          class="divide-y divide-border"
+        >
           <li v-for="book in rowsOf(state.books)" :key="book.id">
             <CatalogueRow :book="book" />
           </li>

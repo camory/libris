@@ -375,3 +375,29 @@ Format:
 - Left over: near (T172), the next pages (T173), the order of answers
   (T174), the failure (T175), the address (T176); the Pixel checks listed
   in the PR body.
+
+## 2026-11-12 — T172 No ouvrage matches — done
+- Did: `useSearchCatalogue` tells `found`, `near` and `nothing` apart and
+  keeps the query asked; `CatalogueView` says *Aucun ouvrage ne correspond
+  à « … ».* in the list's place, and over the nearest labels their list
+  *Les plus proches :*. S3 runs whole.
+- Decided: the reading of a page is `stateOf(query, page)` beside
+  `search`: no book is `nothing` before `near` is read, as the brief says.
+- Decided: the label is an `h2` at `mt-5 pb-2` after the sentence, the
+  sentence a plain `<p>` with no margin, so the 20 and the 8 hang on the
+  label alone; `rowsOf` gives `[]` for `nothing`, which drops the rows'
+  block whole.
+- Decided: the view spec gains a `searchFor(screen, text)` helper, the
+  input, the submit and the flush the earlier case wrote inline.
+- Decided: the un-skip was its own red commit, read before any unit test;
+  *…, none near either* went green at step 4, before the near steps, since
+  it asserts nothing the near state draws; step 10's mutation reds it.
+- Deviations from the brief: step 7 names the list `Les plus
+  proches\u00A0:` in its role query: `getByRole`'s name is compared
+  exactly, so a plain space finds nothing (gotcha added).
+- Decided by Tophe at review: a non-breaking space inside guillemets,
+  now in `docs/DESIGN.md`'s words on screen and in
+  `catalogue.search.nothing`; the view reads the search state once, in
+  `answer`, for the states T173 to T175 add.
+- Left over: the next pages (T173), the order of answers (T174), the
+  failure (T175), the address (T176); the Pixel checks in the PR body.
