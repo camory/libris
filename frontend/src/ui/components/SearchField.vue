@@ -13,6 +13,7 @@ function pause() {
 }
 
 function askAtOnce() {
+  clearTimeout(pending);
   emit("search", text.value);
 }
 

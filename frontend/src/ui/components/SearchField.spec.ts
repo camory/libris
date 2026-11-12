@@ -105,6 +105,20 @@ describe("SearchField", () => {
     // Then
     expect(wrapper.emitted("search")).toEqual([["goscinny"]]);
   });
+
+  it("asks once when the search key ends the pause", async () => {
+    // Given
+    vi.useFakeTimers({ toFake: ["setTimeout", "clearTimeout"] });
+    const wrapper = field();
+    await type(wrapper, "goscinny");
+
+    // When
+    await pressTheSearchKey(wrapper);
+    vi.advanceTimersByTime(300);
+
+    // Then
+    expect(wrapper.emitted("search")).toEqual([["goscinny"]]);
+  });
 });
 
 function field() {
