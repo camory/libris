@@ -409,8 +409,9 @@ Format:
   two skeleton rows follow that list. S4 runs whole.
 - Decided: the composable keeps the query asked and the cursor in two
   plain `let`s beside `state`, as `useBrowseCatalogue` keeps its `next`; the
-  next page's `near` decides the state, the books of both pages joined
-  through the same `stateOf`.
+  books of both pages are joined through the same `stateOf`, `near` kept
+  from the state shown (fix-up on the review: a next page of no book is
+  `near: false` and turned a near search `found`).
 - Decided: the view's observer calls `growTheList()`, `browse()` while
   `answer.books` is `undefined`, `searchMore()` otherwise; over `nothing`
   no row is drawn, so nothing calls back.

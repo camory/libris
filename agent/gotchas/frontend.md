@@ -208,9 +208,10 @@ Read whole by a run that changes `frontend/`, after `every-run.md`.
   near, `found` with the books otherwise; `found` and `near` carry
   `loadingMore`, `true` from the ask of a next page to its answer),
   `searchMore()`, which over `found` or `near` asks the query kept with
-  `after` the last page's `next` and holds both pages' books, the near
-  of the next page deciding, and asks nothing once a page named no next
-  nor while `loadingMore`, and does not catch, and `search(text)`, which reads
+  `after` the last page's `next` and holds both pages' books, `near` kept
+  from the state shown (a page of no book is `near: false`), and asks
+  nothing once a page named no next nor while `loadingMore`, and does not
+  catch, and `search(text)`, which reads
   `searchQueryOf(text)` (`src/domain/SearchQuery.ts`: the text trimmed,
   `null` under two characters): on `null` it asks nothing and holds
   `ready` again, otherwise it asks the query with `after` `null`, keeps

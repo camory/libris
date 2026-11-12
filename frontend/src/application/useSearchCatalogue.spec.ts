@@ -101,6 +101,27 @@ describe("useSearchCatalogue", () => {
     });
   });
 
+  it("holds the nearest still said near when the next page holds no book", async () => {
+    // Given
+    const { state, search, searchMore } = useSearchCatalogue(
+      new FakeSearchApi({
+        asterik: [firstPage(true), { books: [], next: null, near: false }],
+      }),
+    );
+    await search("asterik");
+
+    // When
+    await searchMore();
+
+    // Then
+    expect(state.value).toEqual({
+      status: "near",
+      query: "asterik",
+      books: [romanceDawn],
+      loadingMore: false,
+    });
+  });
+
   it("asks nothing more after a page naming no next", async () => {
     // Given
     const searchApi = new FakeSearchApi({ goscinny: [lastPage()] });

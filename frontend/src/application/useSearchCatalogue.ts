@@ -40,6 +40,7 @@ export function useSearchCatalogue(searchApi: SearchApi): {
     state.value = stateOf(searched, {
       ...page,
       books: [...shown.books, ...page.books],
+      near: shown.status === "near",
     });
   }
 
