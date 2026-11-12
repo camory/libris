@@ -147,13 +147,15 @@ class JdbcCatalogueEditions(private val jdbcClient: JdbcClient) : CatalogueEditi
       .param("readerId", readerId.value)
       .param("after", after?.value)
       .param("size", size + 1)
-      .query { rs, _ -> EditionId(rs.getObject("id", UUID::class.java)) to rs.getBoolean("near") }
+      .query { rs, _ -> PageRow(EditionId(rs.getObject("id", UUID::class.java)), rs.getBoolean("near")) }
       .list()
     val page = following.take(size)
     return EditionIdPage(
-      page.map { it.first },
-      if (following.size > size) page.last().first else null,
-      page.any { it.second },
+      page.map { it.editionId },
+      if (following.size > size) page.last().editionId else null,
+      page.any { it.near },
     )
   }
 }
+
+private data class PageRow(val editionId: EditionId, val near: Boolean)
