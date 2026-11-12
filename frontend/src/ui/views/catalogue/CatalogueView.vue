@@ -24,6 +24,8 @@ const {
   searchMore,
 } = useSearchCatalogue(inject(searchApiKey)!);
 const searchText = ref(props.query);
+const arriving = ref(searchQueryOf(props.query) !== null);
+watch(searchState, () => (arriving.value = false));
 const router = useRouter();
 
 function searchFor(text: string) {
@@ -136,7 +138,7 @@ void search(props.query);
     />
 
     <div
-      v-if="state.status === 'loading'"
+      v-if="state.status === 'loading' || arriving"
       class="divide-y divide-border overflow-hidden rounded-[14px] border border-border bg-surface"
     >
       <CatalogueRowSkeleton v-for="row in 5" :key="row" />

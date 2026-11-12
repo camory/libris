@@ -906,6 +906,25 @@ describe("CatalogueView", () => {
     expect(searchApi.asked).toEqual([{ query: "goscinny", after: null }]);
   });
 
+  it("shows only the loading rows until the search the address names answers", async () => {
+    // Given
+    const searchApi = new FakeSearchApi({
+      goscinny: [new Promise<SearchPage>(() => {})],
+    });
+
+    // When
+    const { wrapper, screen } = open(
+      new FakeCatalogueApi([firstPage()]),
+      searchApi,
+      { query: "goscinny" },
+    );
+    await flushPromises();
+
+    // Then
+    expect(wrapper.findAllComponents(CatalogueRowSkeleton)).toHaveLength(5);
+    expect(screen.queryAllByRole("listitem")).toHaveLength(0);
+  });
+
   function firstPage(): BookPage {
     return {
       books: [asterixLeGaulois, asterixEtSesAmis],
