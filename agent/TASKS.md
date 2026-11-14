@@ -263,10 +263,3 @@ today stays green and guards each task.
   another reader. T081, T088 and T084 read such a refusal as no answer and
   show their S9 sentence; say if one should read otherwise. T135 reads
   the removal's `400`, which the screen never provokes, the same way.
-- **The ports answering outcomes, left unplanned.** The *Promoted* entry
-  on `{ outcome: "problem"; type }` changes the shape every fake of
-  `src/fixture` is built with, and the failure Givens of thirteen frontend
-  scenario test files build their fakes with a `/problems/…` slug, so the
-  task cannot stay green without editing scenario tests, which are yours.
-  Say whether a run may rewrite those Givens for this one task, or move
-  the entry to *With Tophe*; it is planned once you answer.

@@ -66,12 +66,6 @@
   `SeriesPageView` and `EditionPageView` pick their failure's words with the
   same `computed`; one mapping would serve the three (found on T115,
   2026-10-23).
-- Frontend: the ports answer `{ outcome: "problem"; type }`, so a
-  `/problems/…` slug crosses into the application layer and every fake and
-  view speaks it. The adapter alone should turn the status into an outcome
-  in the spec's words (`unknown`, `unavailable`, `refused`…), the views map
-  outcomes to messages, and the `Fetch*Api` specs assert outcomes (found
-  reviewing contract v0.8.0 with Tophe, 2026-09-30).
 - T186 Frontend: `EditionPageView` and `IsbnView` keep the removed copy's id in a
   mutable `let removedId`, set by a wrapper before `remove` and read in
   `afterRemoval`; were `useRemoveCopy` to hand the id to `afterRemoval`,
@@ -112,6 +106,13 @@
   `spring.flyway.target=12`; migrating to 12 through a `Flyway` built from
   the context's configuration, as its second half already does, would let
   it share the scenario context. Tophe's scenario (Tophe, 2026-11-14).
+- Frontend: the ports answer `{ outcome: "problem"; type }`, so a
+  `/problems/…` slug crosses into the application layer and every fake and
+  view speaks it. The adapter alone should turn the status into an outcome
+  in the spec's words (`unknown`, `unavailable`, `refused`…), the views map
+  outcomes to messages, and the `Fetch*Api` specs assert outcomes; the
+  failure Givens of thirteen scenario test files change with it, Tophe's
+  (found reviewing contract v0.8.0 with Tophe, 2026-09-30).
 - Contract: `Problem.type` in `camory/libris-api` is described as "a slug
   the client switches on", while since T060 both clients read the HTTP
   status and fall back on `type`; reword it at the next contract release
