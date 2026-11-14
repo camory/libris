@@ -18,49 +18,49 @@
 
 ## Promoted
 
-- Frontend: a lookup Libris does not answer hangs. `FetchIsbnApi` has no
+- T177 Frontend: a lookup Libris does not answer hangs. `FetchIsbnApi` has no
   401 branch, unlike `FetchMeApi`, and `search()` in `IsbnView` awaits
   `lookUp` with no `finally`, so an expired session or a rejected fetch
   leaves *Chercher* busy and the skeleton standing for ever. Give the
   lookup client the me client's `onUnauthenticated` and release
   `searching` in a `finally`; what the screen then says is in PRD §4.7
   (seen by Tophe on the Pixel, in production, 2026-09-15).
-- Backend: a bare number in the BnF's `200 $h` is not read as a tome:
+- T179 Backend: a bare number in the BnF's `200 $h` is not read as a tome:
   `tomeOf` in `BnfRecord.kt` matches only `tome (\d+)`, so the minimal
   Tonkam *Dragon Quest, la quête de Daï* records, 9782845808461 (tome 14,
   `ark:/12148/cb434739456`) and 9782845808485 (tome 16,
   `ark:/12148/cb43474820t`), with `$h 14` and no `461`, get no series.
   Accept a `$h` of digits only beside `tome N`, with a recording of one of
   the two (found 2026-10-11; corrected by hand in production).
-- Backend: `RemoteIdentity.of` accepts a blank `Remote-User`, which makes a
+- T180 Backend: `RemoteIdentity.of` accepts a blank `Remote-User`, which makes a
   reader with an empty username; refuse it as a blank email is refused.
   Only `Remote-Name` is decoded from UTF-8, so a non-ASCII `Remote-User`,
   `Remote-Email` or `Remote-Groups` reads mangled (found on T005,
   2026-09-09, and T037, 2026-09-24).
-- Frontend: `IsbnView` asks the series and author names on each lookup and
+- T178 Frontend: `IsbnView` asks the series and author names on each lookup and
   `useListSeriesNames` and `useListAuthorNames` keep whichever answer lands
   last, so on a slow network an older answer replaces a newer one (found on
   T126, 2026-11-03).
-- Backend: the add checks at the edge only what T037's brief listed; the
+- T181 Backend: the add checks at the edge only what T037's brief listed; the
   contract's bounds on `language`, `publicationYear`, `pageCount` and
   `series.volumeNumber` reach the use case unchecked through
   `NewBookRequest`, and a value the `edition` table refuses answers `500`
   (found on T037, 2026-09-24).
-- Frontend: the failure message, `CircleAlert` and a sentence in `danger`,
+- T182 Frontend: the failure message, `CircleAlert` and a sentence in `danger`,
   is drawn by hand in fourteen components and views (`DockedButton`,
   `EditionForm`, `IsbnView`, `HomeView`…); one component of
   `ui/components` with its own spec would draw it once (found on T098 and
   T124, 2026-10-16 and 2026-11-03).
-- Frontend: `IconButton` draws the icon button in `IsbnView`,
+- T183 Frontend: `IconButton` draws the icon button in `IsbnView`,
   `EditionPageView`, `AuthorBox`, `SearchField` and `BookshelvesHolding`;
   `HomeView`, `BookshelfView`, `ReaderChoice`, `BookshelfRow` and
   `NewBookshelfRow` still write its box by hand. Move them onto it, their
   tests unchanged (found on T128, 2026-11-03).
-- Frontend: `SeriesRow.vue` copies `CatalogueRow.vue`'s cover block: the
+- T184 Frontend: `SeriesRow.vue` copies `CatalogueRow.vue`'s cover block: the
   48 × 74 box, the `img` that falls back on `error` and the `BookOpen`
   stand-in. One cover component with its own spec (found on T097,
   2026-10-16).
-- Frontend: `useFindBookshelf`, `useFindCatalogueSeries` and
+- T185 Frontend: `useFindBookshelf`, `useFindCatalogueSeries` and
   `useFindCatalogueEdition` map a find's answer alike (a rejection or any
   problem but not-found and validation to `unavailable`), and
   `SeriesPageView` and `EditionPageView` pick their failure's words with the
@@ -72,33 +72,33 @@
   in the spec's words (`unknown`, `unavailable`, `refused`…), the views map
   outcomes to messages, and the `Fetch*Api` specs assert outcomes (found
   reviewing contract v0.8.0 with Tophe, 2026-09-30).
-- Frontend: `EditionPageView` and `IsbnView` keep the removed copy's id in a
+- T186 Frontend: `EditionPageView` and `IsbnView` keep the removed copy's id in a
   mutable `let removedId`, set by a wrapper before `remove` and read in
   `afterRemoval`; were `useRemoveCopy` to hand the id to `afterRemoval`,
   both `let`s and both wrappers would go (found on T136, 2026-11-07).
-- Frontend: `FetchCatalogueApi`'s `browse` and `search` read a page alike;
+- T187 Frontend: `FetchCatalogueApi`'s `browse` and `search` read a page alike;
   one private method would serve both (found on #407, 2026-11-12).
-- Frontend tests: `EditionForm`, `ReaderChoice` and `AuthorBox` call
+- T188 Frontend tests: `EditionForm`, `ReaderChoice` and `AuthorBox` call
   `scrollIntoView?.(…)` because jsdom lacks it; a vitest `setupFiles` entry
   defining it as a no-op would let them call it plainly, the jsdom gotchas
   rewritten as one (found on T124, 2026-11-03). `HomeView.spec.ts`
   *renders the French title from the messages* has no Given / When / Then
   markers (found on T079, 2026-10-13).
-- Backend: `BrowseCatalogue`, `FindCatalogueSeries` and `HeldEditionReads`
+- T189 Backend: `BrowseCatalogue`, `FindCatalogueSeries` and `HeldEditionReads`
   each build the reader's bookshelves by id with the same chain,
   `findByMember(readerId).mapNotNull { ReaderBookshelf.of(it, readerId) }
   .associateBy { it.id }`; one function would hold it (found on T130,
   2026-11-06).
-- Backend tests: every `@WebSliceTest` class names every use case of `web`
+- T190 Backend tests: every `@WebSliceTest` class names every use case of `web`
   in its `@MockitoBean`, and the identical lists are what let
   `ProblemAdviceTest` and `SecurityConfigTest` share a context; declaring
   the mocks once on `@WebSliceTest` would keep one list, if `@MockitoBean`
   is honoured on a meta-annotation (found on T020 and T142).
-- Backend tests: the top-level fixtures sit above the class in
+- T191 Backend tests: the top-level fixtures sit above the class in
   `LookupIsbnForReaderTest`, `LookupEditionByIsbnTest`, `AwaitedCoverTest`
   and `ProblemAdviceTest`; move them below the class and its helpers
   (found on T093, 2026-10-15).
-- Backend tests: delete `ProblemAdviceTest`'s *a bookshelf id that is not a
+- T191 Backend tests: delete `ProblemAdviceTest`'s *a bookshelf id that is not a
   uuid is a validation problem*, which the contract case `auto: path 'id'
   type mismatch` proves since `v0.9.0` (Tophe, 2026-11-14).
 
