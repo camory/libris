@@ -41,9 +41,13 @@ class BnfRecordTest {
 
   @Test
   fun `a tome is read from the title statement only when it names one`() {
+    // Given / When / Then
     tomeOf("tome 7") shouldBe 7
     tomeOf("chapitre treizième") shouldBe null
     tomeOf(null) shouldBe null
+    tomeOf("partie 3") shouldBe null
+    tomeOf("-3") shouldBe null
+    tomeOf("99999999999") shouldBe null
   }
 
   @Test

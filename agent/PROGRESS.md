@@ -172,3 +172,16 @@ Format:
 - Deviations from the brief: none.
 - Left over: nothing; the two callers, `IsbnView` and `EditionPageView`,
   are unchanged and read the fixed `names` as before.
+
+## 2026-11-14 — T179 a tome of digits alone in the BnF's record — done
+- Did: `tomeOf` reads a `200 $h` that is digits alone, the whole subfield
+  as written, as that tome, after `tome N`; the BnF answer of
+  9782845808461 is recorded and read whole by `BnfSourceTest`.
+- Decided: the bare form is a second clause of `tomeOf`'s elvis, a regex
+  `\d+` matched against the whole `$h` then `toIntOrNull()`, so `tome N`
+  keeps its first place and a `$h` past an `Int` is no tome.
+- Deviations from the brief: none; the recording matched every value the
+  brief measured while planning.
+- Left over: 9782845808485 (tome 16) reads by the same rule, unrecorded;
+  the other forms of `$h` (`t. 14`, `14 bis`) stay out until a record
+  shows one.

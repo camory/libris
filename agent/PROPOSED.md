@@ -27,13 +27,6 @@
 
 ## Promoted
 
-- T179 Backend: a bare number in the BnF's `200 $h` is not read as a tome:
-  `tomeOf` in `BnfRecord.kt` matches only `tome (\d+)`, so the minimal
-  Tonkam *Dragon Quest, la quête de Daï* records, 9782845808461 (tome 14,
-  `ark:/12148/cb434739456`) and 9782845808485 (tome 16,
-  `ark:/12148/cb43474820t`), with `$h 14` and no `461`, get no series.
-  Accept a `$h` of digits only beside `tome N`, with a recording of one of
-  the two (found 2026-10-11; corrected by hand in production).
 - T180 Backend: `RemoteIdentity.of` accepts a blank `Remote-User`, which makes a
   reader with an empty username; refuse it as a blank email is refused.
   Only `Remote-Name` is decoded from UTF-8, so a non-ASCII `Remote-User`,

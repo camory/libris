@@ -164,7 +164,7 @@ today stays green and guards each task.
       the answer to the latest ask counts, for the series and the authors
       alike (D05).
 
-- [ ] T179 Backend: a tome of digits alone in the BnF's record.
+- [x] T179 Backend: a tome of digits alone in the BnF's record.
       Bug, its entry T179. Goes red: the BnF record of 9782845808461, a
       recording of the BnF's answer, reads no series and no volume number.
       Green: it reads its series and tome 14, a tome of digits alone read

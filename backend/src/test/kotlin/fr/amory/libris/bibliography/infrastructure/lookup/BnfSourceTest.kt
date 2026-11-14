@@ -147,6 +147,39 @@ class BnfSourceTest {
   }
 
   @Test
+  fun `a record numbering its tome by digits alone in its title statement is what the BnF knows about it`() {
+    // Given
+    bnf.knows(DRAGON_QUEST)
+
+    // When
+    val answer = source.answerFor(isbnOf(DRAGON_QUEST))
+
+    // Then
+    answer shouldBe Known(
+      EditionPreview(
+        isbn = isbnOf(DRAGON_QUEST),
+        kind = BOOK,
+        title = "Dragon Quest",
+        subtitle = "la quête de Daï",
+        contributions = Contributions.of(
+          listOf(
+            Contribution("Riku Sanjō", WRITER),
+            Contribution("Kōji Inada", ARTIST),
+          ),
+        ),
+        series = SeriesEntry("Dragon Quest", 14),
+        collection = "Shonen",
+        publisher = "Tonkam",
+        publicationYear = 2009,
+        language = "fr",
+        pageCount = 224,
+        summary = DRAGON_QUEST_SUMMARY,
+      ),
+      CoverCandidate(BNF, DRAGON_QUEST_COVER),
+    )
+  }
+
+  @Test
   fun `a contributor or a series without a name is left out`() {
     // Given
     bnf.answers(BLANK_NAMES, CONTRIBUTOR_AND_SERIES_WITHOUT_A_NAME)
@@ -363,6 +396,7 @@ class BnfSourceTest {
     const val NERONIA = "9782505125990"
     const val LEMURIA = "9782505083399"
     const val APOTHICAIRE = "9782371025219"
+    const val DRAGON_QUEST = "9782845808461"
     const val PRINTER_FIRST = "9782999999992"
     const val UNKNOWN = "9782000000013"
     const val WITHOUT_A_TEN = "9791000000008"
@@ -390,6 +424,13 @@ class BnfSourceTest {
         "pour démêler les intrigues de cour... Phénoménal succès de librairie au Japon désormais " +
         "adapté pour le petit écran, ce roman permet de découvrir une période de l'histoire " +
         "fascinante et une héroïne incroyablement attachante."
+    const val DRAGON_QUEST_COVER =
+      "https://catalogue.bnf.fr/couverture?&appName=NE&idArk=ark:/12148/cb434739456&couverture=1"
+    const val DRAGON_QUEST_SUMMARY =
+      "C'est en fait Zamza, le fils de Zaboera, qui a organisé le tournoi de Romos afin de réunir " +
+        "tous les ennemis potentiels de l'armée du Mal en un seul lieu et s'en débarrasser. Zamza se " +
+        "transforme en créature maléfique et s'apprête à affronter Daï avec à la fois des monstres " +
+        "puissants et ses capacités magiques hors norme."
     const val BLANK_NAMES = "9782723489898"
     val CONTRIBUTOR_AND_SERIES_WITHOUT_A_NAME = """
             <srw:searchRetrieveResponse xmlns:srw="http://www.loc.gov/zing/srw/">
