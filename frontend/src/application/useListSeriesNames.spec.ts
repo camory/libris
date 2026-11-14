@@ -51,6 +51,26 @@ describe("useListSeriesNames", () => {
     // Then
     expect(names.value).toEqual(["One piece", "Astérix"]);
   });
+
+  it("keeps the latest ask's names when an earlier ask fails after it", async () => {
+    // Given
+    const first = later();
+    const second = later();
+    const { names, list } = useListSeriesNames(
+      new LibrisAnsweringInTurn([first.names, second.names]),
+    );
+    const earlier = list();
+    const latest = list();
+
+    // When
+    second.arrives(["One piece", "Astérix"]);
+    await latest;
+    first.fails(new TypeError("Failed to fetch"));
+
+    // Then
+    await expect(earlier).resolves.toBeUndefined();
+    expect(names.value).toEqual(["One piece", "Astérix"]);
+  });
 });
 
 class LibrisAnsweringInTurn extends FakeSeriesApi {
