@@ -148,7 +148,7 @@ frontend's before the backend's, then the refactors. No task touches the
 contract (D04), and none edits a scenario test: every scenario test running
 today stays green and guards each task.
 
-- [ ] T177 Frontend: a lookup Libris does not answer no longer hangs.
+- [x] T177 Frontend: a lookup Libris does not answer no longer hangs.
       Bug, its entry T177. Goes red: a lookup answered `401` does not take
       the reader through the expired session's navigation as `/me` does
       (D06), and a lookup whose fetch is rejected leaves *Chercher* busy and

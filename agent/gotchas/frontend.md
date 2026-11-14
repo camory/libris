@@ -96,6 +96,13 @@ Read whole by a run that changes `frontend/`, after `every-run.md`.
   taken for an answer of Libris. A client whose contract names 400 and 404
   alone passes `problemOf`'s `validationOrNotFound`; one naming another
   status (409, 503) writes its own map.
+- A `401` is outside the contract: `FetchMeApi` and `FetchIsbnApi` (since
+  T177) take `onUnauthenticated: () => void` second, required, call it on a
+  `401` and reject; `bootstrap` builds the one callback, the navigation to
+  `/session`, and hands it to both. Every other client hands a `401` to
+  `problemOf` or rejects it as any non-`2xx`. A client's `401` case stubs
+  `fetch` over `"http://libris.invalid"` and passes a `vi.fn()`; its other
+  cases pass `() => {}`.
 - A scenario file builds the application through `createLibrisApp` over the
   fakes of `src/fixture`; only `infra/api` specs and the smoke case *the
   application runs over the mock* use `inject("mockBaseUrl")`. A new port
@@ -497,7 +504,8 @@ Read whole by a run that changes `frontend/`, after `every-run.md`.
   rejection by the time the When awaits it: the test passes, and Vitest
   reports an *Unhandled Rejection* that fails the run (measured 2026-09-25).
   `FakeBookshelfApi` takes the `Error` itself and rejects when `add()` is
-  called; do the same for any fake that has to fail.
+  called, `FakeIsbnApi` on `lookUp()` since T177; do the same for any fake
+  that has to fail.
 - Over the fakes nothing calls `fetch`, so `vi.spyOn(globalThis, "fetch")`
   is always uncalled and proves nothing. *S3 Not an ISBN* proves the
   sources are not asked through the screen: its fake knows One Piece 1 and

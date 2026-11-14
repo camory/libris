@@ -144,3 +144,19 @@ Format:
   the phases before it did.
 - Left over: the backlog is empty; the next feature needs its spec,
   written with Tophe.
+
+## 2026-11-14 — T177 a lookup Libris does not answer no longer hangs — done
+- Did: `FetchIsbnApi` takes `onUnauthenticated` and calls it on a `401`,
+  then rejects; `bootstrap` hands it the callback it hands `FetchMeApi`;
+  `IsbnView`'s `search()` reads a rejected lookup as no answer.
+- Decided: the catch is `lookUp(isbn13).catch(() => null)` followed by an
+  early return, so `searching` falls back on the next line whatever the
+  answer and nothing is drawn under the field (no card, no form, no
+  message), as the brief asks; the `finally` the PROPOSED entry named
+  would have left the rejection escaping the click handler.
+- Deviations from the brief: none.
+- Left over: what the lookup screen says when Libris does not answer
+  (PRD §4.7 *Still to spec*), in the PR's Follow-ups for Tophe; a `401` on
+  the other clients, each its own bug; the D06 and D07 sentences proposed
+  in the PR body; a lookup with the network off and one with an expired
+  session, left to Tophe on the Pixel.

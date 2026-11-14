@@ -18,13 +18,6 @@
 
 ## Promoted
 
-- T177 Frontend: a lookup Libris does not answer hangs. `FetchIsbnApi` has no
-  401 branch, unlike `FetchMeApi`, and `search()` in `IsbnView` awaits
-  `lookUp` with no `finally`, so an expired session or a rejected fetch
-  leaves *Chercher* busy and the skeleton standing for ever. Give the
-  lookup client the me client's `onUnauthenticated` and release
-  `searching` in a `finally`; what the screen then says is in PRD §4.7
-  (seen by Tophe on the Pixel, in production, 2026-09-15).
 - T179 Backend: a bare number in the BnF's `200 $h` is not read as a tome:
   `tomeOf` in `BnfRecord.kt` matches only `tome (\d+)`, so the minimal
   Tonkam *Dragon Quest, la quête de Daï* records, 9782845808461 (tome 14,
