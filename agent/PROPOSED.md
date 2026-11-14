@@ -1,9 +1,18 @@
 # Libris — Proposed
 
-> Follow-ups found by agent runs and ideas from Tophe, one bullet each, with
-> the date and where it was found. Nothing here is picked up by a run: a
-> human promotes an item by writing a spec for it in `specs/` or by adding a
-> task line to an open phase in `agent/TASKS.md`.
+> Changes that could be a task today: a bug with how it is reproduced, or a
+> duplication or smell that names its files. One bullet each, three lines
+> at most, with the date and where it was found, under *Bugs*, *Tidy* or
+> *Loop, CI and gate*. Nothing else goes here: a note that waits for a day
+> that has not come is not written, a product question goes to the pull
+> request's **Follow-ups**, a fact learned to `agent/PROGRESS.md`, a tool or
+> version to watch to `agent/gotchas/`.
+>
+> At each spec's Done walk, Tophe reads the file with Claude and promotes or
+> deletes every entry. A promoted entry moves to *Promoted*; the planner
+> plans that section as the phase *Tidy*, each entry prefixed with the ID
+> of its task, and the run that ticks a task removes its entries. Nothing
+> else here is picked up by a run.
 
 ## Bugs
 

@@ -25,7 +25,8 @@ question; do not guess.
 
 ## How to work
 - **One task per run.** Do not start the next task, do not "quickly also"
-  fix unrelated things. Note follow-ups in `agent/PROPOSED.md`.
+  fix unrelated things. Note a follow-up in `agent/PROPOSED.md` when it
+  meets the bar of its header.
 - **Only what the task uses.** No placeholder files or directories, and no
   dependency, plugin, migration, configuration or property that no test or
   feature of this task exercises. Infrastructure arrives with the first task

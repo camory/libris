@@ -14,7 +14,8 @@
 > *Precondition (human)* on its line; Tophe does it between runs, and the
 > planner reports `blocked` while it is missing.
 >
-> Follow-ups and ideas go to `agent/PROPOSED.md`, never here.
+> Follow-ups go to `agent/PROPOSED.md`; only its *Promoted* entries come
+> here, as the phase *Tidy*.
 
 ## Done
 

@@ -6,7 +6,9 @@ for the implementer. You never write application code.
 1. `CLAUDE.md` and `docs/ARCHITECTURE.md`; `docs/DESIGN.md` when the task
    has a frontend side
 2. The line for {{TASK_ID}} in `agent/TASKS.md`, the spec of its phase in
-   `specs/` and the scenarios the line cites; the PRD for vocabulary (§3)
+   `specs/` and the scenarios the line cites, or for the phase *Tidy* the
+   entries of *Promoted* in `agent/PROPOSED.md` that carry its ID; the PRD
+   for vocabulary (§3)
 3. The last entries of `agent/PROGRESS.md`
 4. `agent/gotchas/every-run.md`, and `backend.md` or `frontend.md` beside
    it for each side the task changes, each whole with the Read tool: what
@@ -68,7 +70,10 @@ much of the code base the implementer must understand first.
   with two cases is two steps, and guards are steps of their own, so that
   one step is one cycle is one commit. Step 1 is the un-skip of the
   scenario tests the line cites, red, before any unit step; a scenario
-  test is never a guard at the plan's end. Each step names the component
+  test is never a guard at the plan's end. A task of the phase *Tidy*
+  cites no scenario: a bug's step 1 is a test of what its line says goes
+  red, and a refactor's criterion is the existing tests green, moved with
+  what they test at most, its steps the moves of the refactor. Each step names the component
   that owns what it asserts; a value copied into a response gets no step,
   its form is the contract's, and no step tests a controller.
 - Fill the **First of its kind** line of the template. It names the kind of

@@ -16,25 +16,28 @@ to approve.
    reshape. Ticked tasks are history: never edit, move or renumber them
 6. `agent/PROGRESS.md` — what was learned while building, and
    `agent/gotchas/` — what of it is still true
-7. The repository tree and the modules that exist, so the plan matches reality
+7. `agent/PROPOSED.md` — its *Promoted* section is yours to plan; the rest
+   is not
+8. The repository tree and the modules that exist, so the plan matches reality
 
 ## What a good backlog looks like
 - One phase = one spec, headed `## <Feature> — specs/<feature>.md`, in the
   order the specs depend on each other. It ends with the spec's *Done*.
+  The one phase without a spec is *Tidy*, below.
 - One task = one implementer run = one pull request a human reads in ten
   minutes, with all tests green at the end. When in doubt, split.
 - Dependency order. A task may only rely on tasks above it.
 - Once foundations exist, prefer vertical slices (one thin scenario end to
   end) over horizontal layers (all entities, then all endpoints, then all
   screens).
-- Every task starts red on a scenario test and ends green through it: its
-  line names the scenario test it un-skips, and the implementer's first
-  move is that un-skip. A task that un-skips nothing is a foundation, and
-  a foundation is allowed only when no scenario of the spec can go red
-  before it; say why in the line. The first task of a side is the walking
-  skeleton: the pin bump and the thinnest answer that keeps the contract
-  verifier green, un-skipping the thinnest scenario; the tasks after it
-  each add one scenario to that answer.
+- Every task of a spec's phase starts red on a scenario test and ends
+  green through it: its line names the scenario test it un-skips, and the
+  implementer's first move is that un-skip. A task that un-skips nothing
+  is a foundation, and a foundation is allowed only when no scenario of
+  the spec can go red before it; say why in the line. The first task of a
+  side is the walking skeleton: the pin bump and the thinnest answer that
+  keeps the contract verifier green, un-skipping the thinnest scenario;
+  the tasks after it each add one scenario to that answer.
 - Each task is one bullet: `- [ ] T### Title.` followed by 3 to 8 indented
   lines in the words of PRD §3: what the reader gets and which bounded
   context answers it; the fields of what it holds, when the spec or the PRD
@@ -67,14 +70,21 @@ to approve.
   it; they arrive with that feature's task.
 - A phase whose tasks are all ticked and whose spec says `done` becomes one
   line under `## Done`: feature, first and last ID, date, spec path.
-- Follow-ups belong in `agent/PROPOSED.md`, never in the backlog.
+- The entries of *Promoted* in `agent/PROPOSED.md` are planned as the
+  phase `## Tidy — agent/PROPOSED.md`, after the phases of specs whose
+  tasks are open. One task takes one entry, or several that touch the same
+  code. Its line points to the entries rather than restating them, and
+  cites no scenario: a bug's line says what goes red, a refactor's says
+  the behaviour stays as it is. Prefix each entry with the ID of its task. The phase becomes one line under `## Done` once its tasks
+  are ticked. No other entry of the file enters the backlog.
 
 ## Steps
 1. Read everything above.
 2. Check `git status` is clean on `main`. Create the branch `plan/<today>`
    using `date +%F`; if it exists, append `-2`, `-3`, …
-3. Rewrite `agent/TASKS.md` and fill the *Tasks* section of each spec you
-   planned with its task IDs. Change nothing else in the repository.
+3. Rewrite `agent/TASKS.md`, fill the *Tasks* section of each spec you
+   planned with its task IDs, and prefix each entry of *Promoted* you
+   planned with its task ID. Change nothing else in the repository.
 4. Commit with the message `chore(plan): refresh backlog <today>` and push the
    branch. Open a pull request against `main` titled `plan: backlog <today>`.
    Body: a short list of what changed and why (added, removed, split, merged,

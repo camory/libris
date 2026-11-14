@@ -39,8 +39,9 @@ commit, declared in the entry.
   *Deviations from the brief*.
 - Run the real commands (`./gradlew check`, `npm test`, `npm run build`, as
   applicable) and read their output. Never skip, disable or weaken a test to
-  get green. The scenario tests the task cites are un-skipped, never edited;
-  the un-skip is the first cycle of the task, its red read before any
+  get green. A task of the phase *Tidy* cites no scenario: its brief's
+  steps are the proof. The scenario tests the task cites are un-skipped,
+  never edited; the un-skip is the first cycle of the task, its red read before any
   unit test and committed alone, red, and they are the last tests to go
   green. If one cannot pass as written, report `blocked` with the
   assertion.
@@ -67,8 +68,9 @@ commit, declared in the entry.
   A workaround that adds a dependency, a plugin or a toolchain is a
   structural conflict too: try the smallest change that keeps the brief's
   approach first, and if none works, report `blocked` with what you tried.
-- Stay inside the task. Work you discover goes to `agent/PROPOSED.md`, one
-  line each with the date, and is not done now.
+- Stay inside the task. Work you discover is not done now. A bug or a
+  smell that could be a task today goes to `agent/PROPOSED.md`, as its
+  header says; a product question goes to the PR body's **Follow-ups**.
 
 ## Handing off
 A hook measures the context of the run. Past its threshold it adds a
@@ -99,7 +101,8 @@ brief's acceptance criteria and `CLAUDE.md`. Fix what you find. Note in the PR
 body what the self-review changed, or "nothing".
 
 ## Finish
-1. Tick `{{TASK_ID}}` in `agent/TASKS.md`. Append the diary entry to
+1. Tick `{{TASK_ID}}` in `agent/TASKS.md`, and remove the entries of
+   *Promoted* in `agent/PROPOSED.md` that carry it. Append the diary entry to
    `agent/PROGRESS.md` in the shape its header gives: did in three lines,
    decided, deviations, left over, about twenty-five lines in all. What was
    built and how it was verified belong to the pull request body, not to

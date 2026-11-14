@@ -11,7 +11,7 @@
 | `PROGRESS.md` | Append-only diary written by runs |
 | `gotchas/` | What a run must know before it starts, kept true: `every-run.md`, read whole by every role, and `backend.md`, `frontend.md`, read whole by a role whose task changes that side |
 | `archive/` | The diary entries of finished phases, one file per phase |
-| `PROPOSED.md` | Follow-ups and ideas, appended by runs and by Tophe, promoted by a human |
+| `PROPOSED.md` | Bugs and smells that could be a task today, appended by runs and by Tophe, triaged at each Done walk; the *Promoted* ones become the phase *Tidy* |
 | `Dockerfile`, `compose.yaml` | Sandbox image (JDK 25, Node 24, contracteer, git, gh, claude) + PostgreSQL 18 sidecar |
 | `hooks/guard-git.sh` | PreToolUse hook denying pushes to main, force pushes, `rm -rf /`, sudo, and any commit or push carrying a credential (gitleaks) |
 | `hooks/test-guard-git.sh` | Behavioural tests of the guard hook, run by the CI `guardrails` job |
