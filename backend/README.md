@@ -24,8 +24,21 @@ cp .env.example .env
 
 With the URL of `.env.example`, each test run starts its own PostgreSQL 18 in
 a container at the first connection and removes it when the run ends: the
-machine needs Docker only. Docker Desktop works as is; Colima or OrbStack may
-need `DOCKER_HOST` set for Testcontainers.
+machine needs Docker only.
+
+Testcontainers finds the daemon through `DOCKER_HOST`, `docker.host` in
+`~/.testcontainers.properties`, or `/var/run/docker.sock`, never through a
+Docker context. Docker Desktop works as is. OrbStack creates
+`/var/run/docker.sock` when given admin privileges, linked to the socket of
+the macOS user who gave them: `ls -l /var/run/docker.sock` must name your own
+`~/.orbstack/run/docker.sock`. Otherwise, relink it,
+
+```
+sudo ln -sf "$HOME/.orbstack/run/docker.sock" /var/run/docker.sock
+```
+
+or set `docker.host=unix:///Users/<you>/.orbstack/run/docker.sock` in
+`~/.testcontainers.properties`.
 
 The sandbox and CI give a running PostgreSQL instead, through a
 `jdbc:postgresql://` URL in the environment.
