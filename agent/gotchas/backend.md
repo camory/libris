@@ -263,7 +263,9 @@ Read whole by a run that changes `backend/`, after `every-run.md`.
   in `200 $h` (`tome 7`), writes its page count without the stop
   (`1 volume 348 p`) and marks its date of publication `u`. The catalogue
   replaces such a record with a final one, so its recording drifts from the
-  live API.
+  live API. A final record may carry no 461 either and write its tome in
+  `200 $h` as digits alone: 9782845808461 (`14`), read by `tomeOf` as the
+  whole `$h`, never as digits found inside it.
 - `BnfStubs.answers(isbn, body)` serves a body written in the test,
   `knows(isbn)` the recording of that ISBN under
   `backend/src/test/resources/scenarios/bnf/`. A hand-written body is not
