@@ -3,6 +3,12 @@
 Read whole by a run that changes `backend/`, after `every-run.md`.
 
 ## Backend build and detekt
+- `org.testcontainers:testcontainers-postgresql`, on the test runtime
+  classpath, serves developers' machines only: `backend/.env.example` gives
+  `LIBRIS_DB_URL=jdbc:tc:postgresql:18-alpine:///libris`, which starts a
+  throwaway PostgreSQL in Docker. The sandbox and CI give a
+  `jdbc:postgresql://` URL and never load it. Keep the dependency, and never
+  name Testcontainers in a test, a fixture or a configuration.
 - Spring Boot 4.1.1 names: `spring-boot-starter-webmvc`,
   `spring-boot-starter-flyway`, `tools.jackson.module:jackson-module-kotlin`
   (Jackson 3, `tools.jackson.databind`; `com.fasterxml.jackson` 2.x is on the

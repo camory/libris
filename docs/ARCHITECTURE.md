@@ -411,11 +411,21 @@ the sandbox and CI:
 - the `contracteer` binary on the PATH;
 - the pinned JDK and Node.
 
+The one exception is a developer's tests: `backend/.env.example` gives the
+Testcontainers URL `jdbc:tc:postgresql:18-alpine:///libris`, with which the
+Testcontainers JDBC driver, on the test runtime classpath only, starts a
+throwaway PostgreSQL in Docker at the first connection and removes it when
+the test JVM exits. A developer then needs Docker and nothing else, while the
+agents stay isolated: the sandbox and CI give a `jdbc:postgresql://` URL and
+never use the driver, which stays although no gate exercises it. `bootRun`
+still needs a given PostgreSQL.
+
 Tests migrate the given database with Flyway and never drop or recreate it.
 Production differs from tests and local dev by these environment variables
 only: there is no profile-specific configuration file.
-No Docker, no Testcontainers (it needs the Docker socket the sandbox
-deliberately lacks), no other service. A test that needs more blocks the task.
+No Docker inside the sandbox, no Testcontainers named in a test, a fixture
+or a configuration (it needs the Docker socket the sandbox deliberately
+lacks), no other service. A test that needs more blocks the task.
 
 ### D09 — Runtime packaging and deployment
 - Backend: multi-stage Dockerfile, JRE 25 image running the boot jar as a

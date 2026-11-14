@@ -54,6 +54,7 @@ dependencies {
   testImplementation(libs.archunit.junit5)
   testImplementation(libs.wiremock.standalone)
   testRuntimeOnly("org.junit.platform:junit-platform-launcher")
+  testRuntimeOnly("org.testcontainers:testcontainers-postgresql")
 }
 
 detekt {
