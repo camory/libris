@@ -11,10 +11,12 @@
 > At each spec's Done walk, Tophe reads the file with Claude and promotes or
 > deletes every entry. A promoted entry moves to *Promoted*; the planner
 > plans that section as the phase *Tidy*, each entry prefixed with the ID
-> of its task, and the run that ticks a task removes its entries. Nothing
-> else here is picked up by a run.
+> of its task, and the run that ticks a task removes its entries. An entry
+> no run may do, the loop, CI and the gate, or Tophe's scenario tests,
+> moves to *With Tophe* instead and leaves when it is done in a session.
+> Nothing else here is picked up by a run.
 
-## Bugs
+## Promoted
 
 - Frontend: a lookup Libris does not answer hangs. `FetchIsbnApi` has no
   401 branch, unlike `FetchMeApi`, and `search()` in `IsbnView` awaits
@@ -44,15 +46,6 @@
   `series.volumeNumber` reach the use case unchecked through
   `NewBookRequest`, and a value the `edition` table refuses answers `500`
   (found on T037, 2026-09-24).
-- Backend: the BnF and Open Library lookups catch `NotFound` and a list of
-  exceptions (`RestClientException`, `SAXException`, `JsonNodeException`),
-  so an answer with a malformed `Content-Type` throws
-  `InvalidMediaTypeException` out of `answerFor`, past `Failed`. Their
-  failure branch could go through `nullOnFailure`'s catch-all, `NotFound`
-  still first (found fixing up T054, 2026-10-04).
-
-## Tidy
-
 - Frontend: the failure message, `CircleAlert` and a sentence in `danger`,
   is drawn by hand in fourteen components and views (`DockedButton`,
   `EditionForm`, `IsbnView`, `HomeView`…); one component of
@@ -83,11 +76,6 @@
   mutable `let removedId`, set by a wrapper before `remove` and read in
   `afterRemoval`; were `useRemoveCopy` to hand the id to `afterRemoval`,
   both `let`s and both wrappers would go (found on T136, 2026-11-07).
-- Frontend: `EditionPageView` passes the stored cover to
-  `SourceEditionCard` as the candidate `{ source: "Libris", url }`, a name
-  nothing reads. One prop saying either "held, this picture or none" or
-  "these candidates" would drop it; open: whether the lookup's held answer
-  keeps its candidate in the contract (Tophe, 2026-10-22, on T114).
 - Frontend: `FetchCatalogueApi`'s `browse` and `search` read a page alike;
   one private method would serve both (found on #407, 2026-11-12).
 - Frontend tests: `EditionForm`, `ReaderChoice` and `AuthorBox` call
@@ -101,9 +89,6 @@
   `findByMember(readerId).mapNotNull { ReaderBookshelf.of(it, readerId) }
   .associateBy { it.id }`; one function would hold it (found on T130,
   2026-11-06).
-- Backend: `BookshelfName.kt` and `Contributions.kt` each fold a name,
-  alike but for the end spaces the second trims; open: whether a shared
-  kernel of the domain holds one (found on T143, 2026-11-08).
 - Backend tests: every `@WebSliceTest` class names every use case of `web`
   in its `@MockitoBean`, and the identical lists are what let
   `ProblemAdviceTest` and `SecurityConfigTest` share a context; declaring
@@ -116,6 +101,9 @@
 - Backend tests: delete `ProblemAdviceTest`'s *a bookshelf id that is not a
   uuid is a validation problem*, which the contract case `auto: path 'id'
   type mismatch` proves since `v0.9.0` (Tophe, 2026-11-14).
+
+## With Tophe
+
 - Backend: `BnfSource` builds its cover candidate on the constant
   `https://catalogue.bnf.fr/couverture` while `libris.sources.bnf-covers-url`
   exists; build it on the setting, with `FastEntryScenarios` reading the
@@ -124,14 +112,10 @@
   `spring.flyway.target=12`; migrating to 12 through a `Flyway` built from
   the context's configuration, as its second half already does, would let
   it share the scenario context. Tophe's scenario (Tophe, 2026-11-14).
-- Contract and spec: `Problem.type` in `camory/libris-api` is "a slug the
-  client switches on" and `specs/fast-entry.md` says "the screen picks its
-  text from `type`", while since T060 both clients read the HTTP status.
-  Reword both at the next contract release and spec session, with Tophe
+- Contract: `Problem.type` in `camory/libris-api` is described as "a slug
+  the client switches on", while since T060 both clients read the HTTP
+  status and fall back on `type`; reword it at the next contract release
   (found on T060, 2026-10-06).
-
-## Loop, CI and gate
-
 - Loop: `sandbox_down` runs `compose down`, which leaves the one-off `run`
   container, so an interrupted loop leaves the agent running and spending.
   Remove the run containers too (`docker compose rm -sf agent`, to verify),
@@ -141,18 +125,8 @@
   report and the loop exits 6 with the task half done. Sleep until the
   reset and rerun the role once with `claude -p --resume <session_id>`,
   with a case in `agent/test-loop.sh` (seen 2026-09-08).
-- Gate: `./gradlew check` takes about 42 s warm on the sandbox host, the
-  cost being cold-JVM class loading. Levers in order: a JDK 25 AOT cache or
-  AppCDS archive plus `-XX:TieredStopAtLevel=1` on the test JVM, measured
-  in a scratch worktree first; one test class during red and green, the
-  full gate at commit (measured 2026-09-09).
 - Gate: nothing runs Prettier, so `src/domain/Copy.ts`,
   `src/scenario/CoversScenarios.spec.ts` and
   `src/ui/components/SourceEditionCard.spec.ts` are unformatted on `main`
-  and `npm run format` rewrites them. A `prettier --check` in the frontend
-  gate, or nothing (found on T032, re-measured 2026-11-14).
-- CI: the backend image's build stage downloads Gradle and every dependency
-  on each run, since its `--mount=type=cache` does not outlive the runner.
-  Carrying the cache into Docker, or building the jar in the `backend` job,
-  would make `images` faster and less exposed to download outages (found on
-  #356, 2026-11-08).
+  and `npm run format` rewrites them. Add a `prettier --check` to the
+  frontend gate and format the three (found on T032, decided 2026-11-14).
