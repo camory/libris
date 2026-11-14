@@ -184,7 +184,8 @@ answered the same with a `sources` array; `v0.4.0` drops it):
   `400_NOT_AN_ISBN` (9782723488526, wrong check digit), `404_UNKNOWN_ISBN`
   (9782000000006), `503_SOURCES_DOWN` (9791000000008).
 
-Problems carry no wording: the screen picks its text from `type`. A 5xx
+Problems carry no wording: the screen picks its text from the HTTP
+status, and from `type` for a status the contract does not name. A 5xx
 without a problem body means Libris itself is unavailable, not the sources.
 `contracteer mock` serves a problem only when the request's `Accept` lists
 `application/problem+json`, which the client always sends.
