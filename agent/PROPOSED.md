@@ -540,3 +540,18 @@
   (Duplicated Code); one private method reading a page would serve both,
   as the reviewer suggested on #407. No test of T173 touched the client
   (moved from T169's entry, 2026-11-12).
+- Bibliography: the card names an author as the book prints them when BnF
+  files them under another name, after *Mont Tombe* (9782344008980) showed
+  *Albert Sechao* where the book says *Asan* (Tophe, 2026-11-14, who took
+  it for a BnF error). The lookup reads only BnF's authorised headings
+  (`BnfRecord.kt`, 700/701/702); the record also copies the title page
+  (200 $f/$g, *Izu ; [dessin], Asan*), and the author's authority record
+  lists the pen name as a variant (400). On the 22 ISBNs of staging BnF
+  knows, 1 author of 38 is printed under another name; 8 differ only by
+  accents or order (*Riku Sanjo* / *Riku Sanjō*, *Liu Cixin* / *Ci xin
+  Liu*). Open before a spec: which name the card shows, the printed one,
+  the authorised one, or the authorised one unless the book prints another
+  name; whether the title page's role words (*scénario*, *dessins*) also
+  correct the roles, as on 9782845808621 where Kōji Inada, *dessins*, is a
+  writer. The authority id ($3) and the ISNI on each heading are an exact
+  key for a later de-duplication of the authors.
