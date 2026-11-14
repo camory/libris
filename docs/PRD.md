@@ -221,6 +221,8 @@ Still to spec:
   owned, and the completion. The number comes from the sources (the BnF
   knows the highest volume published); a reader types it when no source
   knows it.
+- A series has a cover of its own, its lowest tome's: the household's or
+  the reader's, and kept true when a cover arrives late or an edition moves.
 
 ### 4.6 Wishlist (P2)
 What the family wants next.
@@ -236,6 +238,21 @@ added in one step.
 Specs: `specs/fast-entry.md`, `specs/bookshelf.md`, `specs/kind.md`,
 `specs/covers.md`, `specs/edition-form.md`, `specs/authors-edit.md`,
 `specs/summary.md`, `specs/scan-beep.md`.
+
+Still to spec:
+- What the lookup screen says when Libris does not answer the lookup.
+- A book whose BnF record comes back empty in UNIMARC but whole in
+  INTERMARC (*Le comte de Monte-Cristo*, 9782253098058) is found, not
+  unknown.
+- The keyboard's go key starts the search.
+- A refused camera says why; a camera that finds nothing usable for a while
+  says so; whether the camera takes the place of the message and skeleton
+  under the field, as it does the card's and the form's.
+- What the screen does when *Chercher* is pressed while an add runs.
+- The suggestions of the form match *œ* and *oe*, *æ* and *ae* alike, as
+  the stored names do.
+- The lookup's time when the house lacks the edition, 0.55–0.9 s on
+  staging, set by Open Library (measured 2026-10-07).
 
 ### 4.8 PWA behaviour (P1)
 Libris on the phone, as an app.
@@ -297,3 +314,12 @@ Still to spec:
    authorised heading, or a mix? The lookup reads the heading today, so a
    pen name printed on the cover shows as the name the BnF files the author
    under, and accents or name order may differ from the print.
+2. Which roles does Libris name? It knows four and reads every other BnF
+   function code as writer, so a project director (`651`) or a preface
+   writer shows as an author. Naming more roles, with a fallback for the
+   rest, is a contract change.
+3. Do "the spaces at its ends" of §3 mean every whitespace? A tab or a
+   non-breaking space at a series or author name's end makes a second
+   series or author today; only a direct API caller can send one.
+4. Does a refused field of a form point a screen reader to its message
+   (`aria-describedby`)? Today it hears *invalide* without the reason.
