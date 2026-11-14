@@ -6,13 +6,13 @@ export function useListAuthorNames(authorsApi: AuthorsApi): {
   list: () => Promise<void>;
 } {
   const names = ref<string[] | null>(null);
+  let latest = 0;
 
   async function list() {
-    try {
-      names.value = await authorsApi.names();
-    } catch {
-      names.value = null;
-    }
+    const asked = ++latest;
+    const answer = await authorsApi.names().catch(() => null);
+    if (asked !== latest) return;
+    names.value = answer;
   }
 
   return { names, list };

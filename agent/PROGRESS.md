@@ -160,3 +160,15 @@ Format:
   the other clients, each its own bug; the D06 and D07 sentences proposed
   in the PR body; a lookup with the network off and one with an expired
   session, left to Tophe on the Pixel.
+
+## 2026-11-14 — T178 the form suggests the names of the latest lookup — done
+- Did: `useListSeriesNames` and `useListAuthorNames` number each `list()`
+  call and write `names` only for the latest one, its answer or its
+  rejection's `null`; an earlier answer or failure writes nothing.
+- Decided: the rejection is read as `null` through `.catch(() => null)`
+  before the latest-ask check, as `useSearchCatalogue`'s `pageOf` does,
+  so one check covers an answer and a failure alike; the spec-local fakes
+  are named `LibrisAnsweringInTurn`, as `useCreateBookshelf.spec.ts`'s.
+- Deviations from the brief: none.
+- Left over: nothing; the two callers, `IsbnView` and `EditionPageView`,
+  are unchanged and read the fixed `names` as before.
