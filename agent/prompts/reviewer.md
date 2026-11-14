@@ -52,7 +52,8 @@ is blocking. The *Rework* section of the PR body says how the run met them.
    every claim a future run would act on (an API's behaviour, a library's
    shape, a command, a trap) must be true of the code on the branch; check
    each one against the code. A fact of that kind the entry tells and the
-   gotchas file does not hold is a suggestion.
+   gotchas file does not hold is a suggestion. An entry the diff adds to
+   `agent/PROPOSED.md` that misses the bar of its header is a finding.
    Read the brief against `docs/ARCHITECTURE.md` and `docs/DESIGN.md` too,
    not only the code against the brief: an instruction of the brief that
    contradicts a decision is a finding under *Notes on the brief*, and code
@@ -78,7 +79,8 @@ is blocking. The *Rework* section of the PR body says how the run met them.
    code that passes it, refactors in their own commits (`tdd` skill, "One
    cycle, one commit")? A commit adding several tests is a finding. The
    first commit un-skips the cited scenario tests alone and is red, its red
-   quoted in the PR body: that is the rule, not a finding.
+   quoted in the PR body: that is the rule, not a finding. A task of the
+   phase *Tidy* cites no scenario and starts on its brief's first step.
    Before writing suggestions, invoke the `code-smells` skill: a suggestion
    about structure names its smell and the remedy.
 5. Trace before judging: when something seems missing, open the helper or
