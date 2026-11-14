@@ -24,8 +24,7 @@ cp .env.example .env
 
 With the URL of `.env.example`, each test run starts its own PostgreSQL 18 in
 a container at the first connection and removes it when the run ends: the
-machine needs Docker only. Docker Desktop works as is; Colima or OrbStack may
-need `DOCKER_HOST` set for Testcontainers.
+machine needs Docker only.
 
 The sandbox and CI give a running PostgreSQL instead, through a
 `jdbc:postgresql://` URL in the environment.
