@@ -154,8 +154,11 @@ async function search() {
   void listSeriesNames();
   void listAuthorNames();
   searching.value = true;
-  const answer = await isbnApi.lookUp(isbn13);
+  const answer = await isbnApi.lookUp(isbn13).catch(() => null);
   searching.value = false;
+  if (answer === null) {
+    return;
+  }
   if (answer.outcome === "found") {
     edition.value = answer.edition;
     held.value = answer.id !== null;
