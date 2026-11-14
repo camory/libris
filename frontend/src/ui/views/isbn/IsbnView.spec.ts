@@ -42,6 +42,7 @@ import { FakeSeriesApi } from "../../../fixture/FakeSeriesApi";
 import { lea } from "../../../fixture/Readers";
 import { onePiece1 } from "../../../fixture/SourceEditions";
 import BusySpinner from "../../components/BusySpinner.vue";
+import SourceEditionCardSkeleton from "../../components/SourceEditionCardSkeleton.vue";
 import { createLibrisI18n } from "../../i18n";
 import IsbnView from "./IsbnView.vue";
 
@@ -641,6 +642,22 @@ describe("IsbnView", () => {
       screen.getByRole<HTMLButtonElement>("button", { name: "Chercher" })
         .disabled,
     ).toBe(false);
+  });
+
+  it("comes back to itself when Libris does not answer the lookup", async () => {
+    // Given
+    const view = mountView(new FakeIsbnApi(new TypeError("Failed to fetch")));
+    const screen = within(view.element as HTMLElement);
+
+    // When
+    await ask(screen, "9782723488525");
+
+    // Then
+    expect(
+      screen.getByRole<HTMLButtonElement>("button", { name: "Chercher" })
+        .disabled,
+    ).toBe(false);
+    expect(view.findAllComponents(SourceEditionCardSkeleton)).toHaveLength(0);
   });
 
   it("shows no word on the button Chercher", () => {

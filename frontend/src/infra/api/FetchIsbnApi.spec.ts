@@ -17,7 +17,7 @@ describe("FetchIsbnApi", () => {
 
   it("answers what the sources know about the ISBN", async () => {
     // Given
-    const api = new FetchIsbnApi(inject("mockBaseUrl"));
+    const api = new FetchIsbnApi(inject("mockBaseUrl"), () => {});
 
     // When
     const answer = await api.lookUp("9782723488525");
@@ -44,7 +44,7 @@ describe("FetchIsbnApi", () => {
 
   it("answers the copies on the reader's bookshelves beside the edition", async () => {
     // Given
-    const api = new FetchIsbnApi(inject("mockBaseUrl"));
+    const api = new FetchIsbnApi(inject("mockBaseUrl"), () => {});
 
     // When
     const answer = await api.lookUp("9782723489898");
@@ -57,7 +57,7 @@ describe("FetchIsbnApi", () => {
 
   it("answers a problem when no source knows the ISBN", async () => {
     // Given
-    const api = new FetchIsbnApi(inject("mockBaseUrl"));
+    const api = new FetchIsbnApi(inject("mockBaseUrl"), () => {});
 
     // When
     const answer = await api.lookUp("9782000000013");
@@ -68,7 +68,7 @@ describe("FetchIsbnApi", () => {
 
   it("answers a problem when no source answered", async () => {
     // Given
-    const api = new FetchIsbnApi(inject("mockBaseUrl"));
+    const api = new FetchIsbnApi(inject("mockBaseUrl"), () => {});
 
     // When
     const answer = await api.lookUp("9791000000008");
@@ -82,7 +82,7 @@ describe("FetchIsbnApi", () => {
 
   it("answers a problem when the API refuses the ISBN", async () => {
     // Given
-    const api = new FetchIsbnApi(inject("mockBaseUrl"));
+    const api = new FetchIsbnApi(inject("mockBaseUrl"), () => {});
 
     // When
     const answer = await api.lookUp("9782723488526");
@@ -96,7 +96,7 @@ describe("FetchIsbnApi", () => {
 
   it("answers no problem for a 404 without a problem body", async () => {
     // Given
-    const api = new FetchIsbnApi("http://libris.invalid");
+    const api = new FetchIsbnApi("http://libris.invalid", () => {});
     vi.stubGlobal("fetch", () =>
       Promise.resolve(
         new Response("404 page not found", {
@@ -113,9 +113,25 @@ describe("FetchIsbnApi", () => {
     await expect(answer).rejects.toThrow();
   });
 
+  it("reports an expired session and answers nothing", async () => {
+    // Given
+    const onUnauthenticated = vi.fn();
+    const api = new FetchIsbnApi("http://libris.invalid", onUnauthenticated);
+    vi.stubGlobal("fetch", () =>
+      Promise.resolve(new Response(null, { status: 401 })),
+    );
+
+    // When
+    const answer = api.lookUp("9782723488525");
+
+    // Then
+    await expect(answer).rejects.toThrow();
+    expect(onUnauthenticated).toHaveBeenCalledOnce();
+  });
+
   it("reads the fields it knows when the answer carries one it does not", async () => {
     // Given
-    const api = new FetchIsbnApi("http://an-older-backend");
+    const api = new FetchIsbnApi("http://an-older-backend", () => {});
     const body = {
       isbn13: "9782723488525",
       kind: "MANGA",
