@@ -166,15 +166,15 @@ notes),
 Priorities: **P1** = the family misses it now, **P2** = soon,
 **P3** = nice to have.
 
-Each section names the specs that are done and lists what is still to spec;
-when a spec is written with Tophe, the lines it covers leave *Still to spec*
-and the spec joins *Done*.
+Each section names its specs, each carrying its own status, and lists what
+is still to spec; when a spec is written with Tophe, the lines it covers
+leave *Still to spec* and the spec joins *Specs*.
 
 ### 4.1 Catalogue (P1)
 What the family owns: the catalogue, an ouvrage's page, adding, correcting
 and removing.
 
-Done: `specs/catalogue.md`, `specs/edition-page.md`, `specs/bookshelf.md`,
+Specs: `specs/catalogue.md`, `specs/edition-page.md`, `specs/bookshelf.md`,
 `specs/edition-form.md`, `specs/held-edition-edit.md`,
 `specs/authors-edit.md`, `specs/remove-copy.md`, `specs/covers.md`,
 `specs/summary.md`.
@@ -190,7 +190,7 @@ Still to spec:
 ### 4.2 Search (P1)
 Finding an ouvrage of the catalogue as the reader types.
 
-Done: `specs/search.md`.
+Specs: `specs/search.md`.
 
 Still to spec:
 - Search by tag once Libris holds tags.
@@ -198,7 +198,7 @@ Still to spec:
 ### 4.3 Bookshelves and copies (P1)
 Where the copies sit and who shares them.
 
-Done: `specs/bookshelf.md`, `specs/bookshelves.md`.
+Specs: `specs/bookshelf.md`, `specs/bookshelves.md`.
 
 Still to spec:
 - An owner removes a member; a bookshelf keeps at least one owner (P2).
@@ -214,7 +214,7 @@ Still to spec:
 ### 4.5 Series tracking (P2)
 What the family has of a series, and what is missing.
 
-Done: `specs/series-list.md`, `specs/series-page.md`.
+Specs: `specs/series-list.md`, `specs/series-page.md`.
 
 Still to spec:
 - Show the number of volumes published, the ones missing after the highest
@@ -233,14 +233,15 @@ Still to spec:
 An ouvrage scanned or typed by its ISBN, prefilled from public sources,
 added in one step.
 
-Done: `specs/fast-entry.md`, `specs/bookshelf.md`, `specs/kind.md`,
+Specs: `specs/fast-entry.md`, `specs/bookshelf.md`, `specs/kind.md`,
 `specs/covers.md`, `specs/edition-form.md`, `specs/authors-edit.md`,
 `specs/summary.md`, `specs/scan-beep.md`.
 
 ### 4.8 PWA behaviour (P1)
 Libris on the phone, as an app.
 
-Done: installable on Android home screens; `specs/update.md`.
+Specs: `specs/update.md`. Installable on Android home screens, with no
+spec of its own.
 
 Still to spec:
 - Libris's own icon, drawn for the shapes Android crops it to, on the home
@@ -252,8 +253,8 @@ Still to spec:
 Who the readers are. Accounts, passwords, second factor and deactivation are
 managed in Authelia, outside Libris.
 
-Done: a reader's profile created on their first visit, from the name
-Authelia provides (`specs/bookshelf.md`).
+Specs: `specs/bookshelf.md`, which creates a reader's profile on their
+first visit, from the name Authelia provides.
 
 Still to spec:
 - The admin edits a reader's profile and hides a departed reader (P3).
