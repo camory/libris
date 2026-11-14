@@ -1,8 +1,7 @@
-# Libris — Product Requirements (DRAFT v0.4, 2026-09-18)
+# Libris — Product Requirements (v0.5, 2026-11-14)
 
-> Status: **draft for review by Tophe**. The agentic loop treats this file as
-> the source of truth for *what* to build. Edit it freely before the first run;
-> after that, change it deliberately and add tasks for the delta.
+> The source of truth for *what* Libris does. It changes deliberately, with
+> Tophe; a change to built behaviour arrives through a spec.
 
 ## 1. Purpose
 
@@ -40,9 +39,9 @@ rejected: do not reintroduce them.
 One published version of a work, the thing an ISBN-13 identifies. Two editions
 of the same novel are two editions. Has a kind.
 *On screen*: ouvrage (kind-neutral); livre, BD, manga by kind.
-The API has no schema of that name yet: the lookup answers an `IsbnLookup`,
-what an ISBN identifies, with no id since nothing may be stored; a stored
-edition addressed by id will be a `Book`.
+In the API, an `Edition` is what an edition says of itself, with its ISBN-13;
+the lookup answers an `IsbnLookup`, with no id since nothing is stored yet;
+a stored edition, addressed by id, is a `Book`.
 _Avoid_: item, book (as the domain entity), publication, work, volume.
 
 **Kind**:
@@ -83,6 +82,7 @@ _Avoid_: function, credit, job.
 **Tag**:
 A free label a reader puts on an edition (*policier*, *shōnen*, *jeunesse*).
 There is no closed list and no separate notion of genre.
+Not in Libris yet: tags arrive with their own feature.
 *On screen*: tag.
 _Avoid_: genre, category, subject, keyword, label.
 
@@ -121,9 +121,13 @@ notes),
 ### Relationships and rules
 
 - An Edition has a kind, at most one series with a volume number, zero or
-  more authors each with a role, zero or more tags, and optionally a
-  collection, a cover URL and every descriptive field the lookup sources give
-  (subtitle, publisher, publication year, language, page count, summary).
+  more authors each with a role, zero or more tags once Libris holds them, and
+  optionally a collection, a cover and every descriptive field the lookup
+  sources give (subtitle, publisher, publication year, language, page count,
+  summary).
+- An edition's cover is a picture Libris keeps: the reader picks one among
+  the sources' pictures when adding the ouvrage, and Libris fetches it and
+  serves it from then on.
 - An Edition may have one ISBN, stored as the thirteen digits of its ISBN-13,
   which is what the EAN-13 barcode on the book carries. An ISBN-10 typed by
   hand is converted on entry. Old or self-published books have none.
@@ -159,85 +163,108 @@ notes),
 
 ## 4. Functional requirements
 
-Priorities: **P1** = needed before the family uses it, **P2** = soon after,
+Priorities: **P1** = the family misses it now, **P2** = soon,
 **P3** = nice to have.
 
+Each section names the specs that are done and lists what is still to spec;
+when a spec is written with Tophe, the lines it covers leave *Still to spec*
+and the spec joins *Done*.
+
 ### 4.1 Catalogue (P1)
-- A reader's catalogue is the copies on every bookshelf they belong to, shown
-  by edition.
-- Add an ouvrage to a bookshelf: the edition is created if its ISBN is
-  unknown, with kind, title, subtitle, series and volume number, authors by
-  role, publisher, collection, publication year, ISBN-13, language, page
-  count, summary, cover URL and tags, else written with the fields sent;
-  the copy is created on the reader's
-  default bookshelf, or on another bookshelf they own when they choose one.
-- View and edit an edition; remove a copy from a bookshelf.
-- List the catalogue with filters (kind, series, bookshelf, tag; reading
-  state once it exists) and sort (title, series and volume, added date).
-- Edition page showing its copies with their bookshelves, and later the
-  reading states and loans.
+What the family owns: the catalogue, an ouvrage's page, adding, correcting
+and removing.
+
+Done: `specs/catalogue.md`, `specs/edition-page.md`, `specs/bookshelf.md`,
+`specs/edition-form.md`, `specs/held-edition-edit.md`,
+`specs/authors-edit.md`, `specs/remove-copy.md`, `specs/covers.md`,
+`specs/summary.md`.
+
+Still to spec:
+- Add an ouvrage to a bookshelf the reader owns other than their default,
+  chosen at the add (P2).
+- Filter the catalogue by kind (P2), and by tag and reading state once they
+  exist.
+- The edition page shows the reading states and the loans, with §4.4 and
+  §4.11.
 
 ### 4.2 Search (P1)
-- One search box over the reader's catalogue that finds editions as the
-  reader types, by title, subtitle, series, tome, author and ISBN, and by
-  tag once Libris holds tags, with accent- and case-insensitive matching
-  (`Asterix` finds *Astérix*) and typo tolerance when the words find
-  nothing.
-- Results in the order a shelf reads, the catalogue's, a series' editions
-  together; no ranking by relevance.
-- Backed by PostgreSQL full-text search; no separate search service.
+Finding an ouvrage of the catalogue as the reader types.
+
+Done: `specs/search.md`.
+
+Still to spec:
+- Search by tag once Libris holds tags.
 
 ### 4.3 Bookshelves and copies (P1)
-- A reader's first bookshelf is created on their first visit, named after
-  them, and is their default. A reader creates other bookshelves and is their
-  owner; an owner adds other readers as owner or viewer, and removes them.
-  A reader chooses their default among the bookshelves they own.
-  A bookshelf is visible only to its members and keeps at least one owner.
-- A copy sits on one bookshelf and may be moved to another the reader owns.
-  It has a condition and an acquisition date.
-- Mark a copy as lent (to whom, since when) and as returned.
+Where the copies sit and who shares them.
+
+Done: `specs/bookshelf.md`, `specs/bookshelves.md`.
+
+Still to spec:
+- An owner removes a member; a bookshelf keeps at least one owner (P2).
+- Move a copy to another bookshelf the reader owns (P2).
 
 ### 4.4 Reading (P1)
+Who reads what, and what they thought of it.
+
+Still to spec:
 - Each reader sets their reading state per copy, a 1–5 rating, and notes.
 - A reader's "currently reading" and "to read" lists.
 
 ### 4.5 Series tracking (P2)
-- For a series, show owned volumes and gaps (e.g. "missing 4, 7").
-- Optionally record the total number of published volumes to show completion.
+What the family has of a series, and what is missing.
+
+Done: `specs/series-list.md`, `specs/series-page.md`.
+
+Still to spec:
+- Show the number of volumes published, the ones missing after the highest
+  owned, and the completion. The number comes from the sources (the BnF
+  knows the highest volume published); a reader types it when no source
+  knows it.
 
 ### 4.6 Wishlist (P2)
+What the family wants next.
+
+Still to spec:
 - A reader adds a wish for an edition they want. Turning a wish into a copy
   on a bookshelf is one action.
 
-### 4.7 Fast entry (P1, the first feature)
-- Scan the EAN-13 barcode with the phone camera, or type an ISBN, and prefill
-  the form from public metadata sources; then add the ouvrage to a bookshelf
-  in one step.
-- Sources arrive one at a time, each degrading gracefully when it fails or
-  knows nothing: the BnF SRU first and alone, the one that gives roles,
-  series and collection for French titles, with the catalogue's own cover.
-  Open Library and Google Books (with an API key) come later, each with its
-  own scenarios. Sites without an API (Bedetheque, BDGest, Babelio) are
-  candidates for later, subject to their terms of use.
-- Delivered in two specs: `specs/fast-entry.md` is the lookup alone, showing
-  what the sources know; `specs/bookshelf.md` adds the ouvrage to the
-  reader's default bookshelf from that card.
+### 4.7 Fast entry (P1)
+An ouvrage scanned or typed by its ISBN, prefilled from public sources,
+added in one step.
 
-### 4.8 PWA behaviour (P1 for install, P2 for offline)
-- Installable on Android home screens, with icons and a splash screen.
-- Works offline for browsing the last synced catalogue (read-only); edits made
-  offline are rejected with a clear message in v1 (no sync queue).
+Done: `specs/fast-entry.md`, `specs/bookshelf.md`, `specs/kind.md`,
+`specs/covers.md`, `specs/edition-form.md`, `specs/authors-edit.md`,
+`specs/summary.md`, `specs/scan-beep.md`.
 
-### 4.9 Import / export (P3)
-- Export the catalogue as CSV; import from CSV with a preview and error report.
+### 4.8 PWA behaviour (P1)
+Libris on the phone, as an app.
+
+Done: installable on Android home screens; `specs/update.md`.
+
+Still to spec:
+- Libris's own icon, drawn for the shapes Android crops it to, on the home
+  screen and the splash screen (P1).
+- Browse the last synced catalogue offline, read-only; an edit made offline
+  is refused with a clear message, with no sync queue (P2).
 
 ### 4.10 Administration (P1)
-- Accounts, passwords, second factor and deactivation are managed in Authelia,
-  outside Libris. Libris creates a reader profile on first visit, from the name
-  Authelia provides; the admin can edit profiles and hide departed readers.
-- Backups are done by the server's existing Gordien solution (hourly `pg_dump`
-  and restic); Libris only has to be registered there and document how to
-  restore from a dump.
+Who the readers are. Accounts, passwords, second factor and deactivation are
+managed in Authelia, outside Libris.
+
+Done: a reader's profile created on their first visit, from the name
+Authelia provides (`specs/bookshelf.md`).
+
+Still to spec:
+- The admin edits a reader's profile and hides a departed reader (P3).
+
+### 4.11 Loans (P2)
+Which copies are out of the house, and which books are in it on loan.
+
+Still to spec:
+- Mark a copy as lent (to whom, since when) and as returned.
+- Record an ouvrage borrowed from outside the house (from whom, since when)
+  and its return.
 
 ## 5. Non-functional requirements
 
@@ -250,6 +277,8 @@ Priorities: **P1** = needed before the family uses it, **P2** = soon after,
 - **Language**: UI in French. Code, commits, docs in English.
 - **Operability**: deployable with `docker compose up -d` behind Traefik;
   logs to stdout; health endpoint.
+- **Backups**: the database is backed up by the server's existing solution,
+  hourly and before each deployment; how to restore lives on the server.
 - **Testability**: every feature ships with automated tests; the API is
   described by an OpenAPI document that is verified in CI.
 
@@ -262,5 +291,7 @@ Priorities: **P1** = needed before the family uses it, **P2** = soon after,
 
 ## 7. Open questions for Tophe
 
-1. Is a barcode-scan lookup source for BD needed beyond BnF? (Bedetheque has
-   no public API.)
+1. Which name does an author get: the one printed on the book, the BnF's
+   authorised heading, or a mix? The lookup reads the heading today, so a
+   pen name printed on the cover shows as the name the BnF files the author
+   under, and accents or name order may differ from the print.
