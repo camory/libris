@@ -141,19 +141,10 @@
 
 ## Questions for the human
 
-- **No spec yet**, so nothing is planned for them: PRD §4.1 beyond the
-  add, its form and the authors in it, the listing, the edition page,
-  removing a copy and editing an edition the house holds — changing an
-  edition's cover, adding an ouvrage with no ISBN, the filters and sorts
-  of the list, and on the edition page the link to its series and its tags
-  — §4.3 beyond creating a bookshelf, adding a member and choosing the
-  default — removing a member, changing a member's role, adding to a
-  bookshelf other than the default, moving and lending a copy, its
-  condition and acquisition date — §4.4 reading, §4.5 beyond the series
-  list and the series page — the series details, the tomes after the
-  highest owned, the number of published volumes and the completion, the
-  series filter and renaming a series — §4.6 wishlist, §4.9 import and
-  export, §4.10 administration, and the offline browsing of §4.8.
+- **No spec yet**, so nothing is planned for them: the *Still to spec*
+  lines of PRD §4. Seen while specifying and in no PRD line yet: changing
+  an edition's cover, adding an ouvrage with no ISBN, a link from the
+  edition page to its series, changing a member's role, renaming a series.
 - **A refusal the bookshelves screens never provoke.** The spec says what
   each form shows when Libris does not answer (S9), and the taken name
   (S3), not what it shows when Libris refuses otherwise: a blank name the
