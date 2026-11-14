@@ -17,10 +17,11 @@ import { WebStorageBeepSetting } from "./infra/storage/WebStorageBeepSetting";
 
 export function bootstrap(origin: string, revision: string): App {
   const catalogueApi = new FetchCatalogueApi(origin);
+  const onUnauthenticated = () => window.location.assign("/session");
   return createLibrisApp(
     {
-      meApi: new FetchMeApi(origin, () => window.location.assign("/session")),
-      isbnApi: new FetchIsbnApi(origin),
+      meApi: new FetchMeApi(origin, onUnauthenticated),
+      isbnApi: new FetchIsbnApi(origin, onUnauthenticated),
       bookshelfApi: new FetchBookshelfApi(origin),
       barcodeScanner: new CameraBarcodeScanner(),
       appUpdate: new ServiceWorkerAppUpdate(() => window.location.reload()),

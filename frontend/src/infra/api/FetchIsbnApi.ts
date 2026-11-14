@@ -28,12 +28,19 @@ const problems = new Map([
 ]);
 
 export class FetchIsbnApi implements IsbnApi {
-  constructor(private readonly baseUrl: string) {}
+  constructor(
+    private readonly baseUrl: string,
+    private readonly onUnauthenticated: () => void,
+  ) {}
 
   async lookUp(isbn13: string): Promise<IsbnAnswer> {
     const response = await fetch(`${this.baseUrl}/api/v1/isbn/${isbn13}`, {
       headers: { Accept: "application/json, application/problem+json" },
     });
+    if (response.status === 401) {
+      this.onUnauthenticated();
+      throw new Error("The session has expired");
+    }
     if (response.status === 200) {
       const body = (await response.json()) as IsbnResponse;
       return {
