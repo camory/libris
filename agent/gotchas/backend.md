@@ -94,6 +94,10 @@ Read whole by a run that changes `backend/`, after `every-run.md`.
   `retries=3` and `retryBackOffMs=2000`; `./gradlew wrapper` rewrites the
   file with Gradle's defaults, so an upgrade of the wrapper keeps those
   three lines.
+- The wrapper cannot move to Gradle 10 while detekt is 1.23.8: its plugin
+  calls `ReportingExtension.file(String)`, removed in Gradle 10, hence the
+  "incompatible with Gradle 10" warning on every build. Look at detekt's
+  next major version first, and whether it lifts the cleared `jdkHome`.
 
 ## Backend tests
 - The reviewer counts statements, not phases: a case of two or more
@@ -237,7 +241,10 @@ Read whole by a run that changes `backend/`, after `every-run.md`.
   rule in the same cycle or does not carry it.
 - `ArchitectureTest`'s port rule matches any non-interface class assignable
   to a domain interface, so the variants of a sealed *interface* in `domain`
-  break it: a state is a sealed *class*.
+  break it: a state is a sealed *class*. The first task that needs a domain
+  class implementing a domain interface adds one clause to the rule,
+  `.and().resideOutsideOfPackage("..domain..")`, and nothing else (decided
+  with Tophe on 2026-09-13).
 - A bean of `bibliography.infrastructure.lookup` may not be named `bnf`: the
   scenario harness owns
   that name for its WireMock server.

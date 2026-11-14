@@ -11,6 +11,9 @@ Read whole by a run that changes `frontend/`, after `every-run.md`.
   type package or a `/// <reference types="node" />` in the app program puts
   Node's globals into every file under `src/` unnoticed by the boundaries
   rule.
+- `typescript` stays on 6.0.x while `typescript-eslint` declares a peer
+  range below 6.1 (`>=4.8.4 <6.1.0` on 8.70.0): with 7 the ESLint step of
+  the gate cannot run.
 - `eslint-plugin-boundaries`: elements are matched in array order, first
   match wins, so `src/ui/components`, `src/ui/views` and `src/fixture` must
   sit above `src/ui` and `src` in `eslint.config.ts`. `settings["import/

@@ -5,538 +5,145 @@
 > human promotes an item by writing a spec for it in `specs/` or by adding a
 > task line to an open phase in `agent/TASKS.md`.
 
-- Loop: `sandbox_down` in `agent/loop.sh` runs `compose down`, which stops
-  the sidecar but not the one-off `run` container, so an interrupted loop
-  leaves the agent running and spending. Remove the run containers too
-  (`docker compose rm -sf agent`, to verify) and cover it in
-  `agent/test-loop.sh` if the fake `gh` pattern extends to `docker`
-  (found 2026-09-08 when a launch was stopped after twenty seconds).
-- Loop: `branch_pr` in `agent/loop.sh` matches pull requests by head
-  branch name, so a task retried under the same slug after its PR was
-  closed is refused as "closed without merge". Ignore a closed PR whose
-  `headRefOid` is not an ancestor of the local branch, with a case in
-  `agent/test-loop.sh` (found 2026-09-08 on T001's second attempt; worked
-  around by renaming the branch to `task/T001-backend`).
-- Frontend: upgrade to TypeScript 7 once `typescript-eslint` accepts it. T002
-  pinned `typescript` 6.0.3 because `typescript-eslint` 8.70.0 declares
-  `>=4.8.4 <6.1.0`, so the ESLint step of the gate cannot run with 7
-  (found 2026-09-08 while scaffolding the frontend).
-- Backend image: the Dockerfile declares only `org.opencontainers.image.version`
-  and `.source`; `revision` and `created` come from the `images` job's
-  `--label` flags, so a hand-built image carries two of the four D09 labels.
-  Declaring all four needs build arguments the workflow does not pass, and the
-  workflow is edited by humans only (found 2026-09-08 while writing T003).
-- Backend: a blank `Remote-User` header authenticates a reader whose username
-  and display name are empty strings, and a blank `Remote-Name` gives an empty
-  display name; both break `CurrentReader` (`minLength: 1`). T005 refuses a
-  missing user and a missing or blank email; refuse a blank user the same way
-  and treat a blank name as absent, so it falls back to the username, each
-  with a test (found 2026-09-09 while writing and reviewing T005).
-- Backend gate speed: on the sandbox host `./gradlew check` takes about 42 s
-  warm (test 28 s, detekt 10 s). The first Spring context boots in 10 s and
-  the second in 0.9 s, so the cost is cold-JVM class loading, not Spring.
-  Measured 2026-09-09 on T005's 13 tests: `clean test` 7 s on a Mac, 20 s on
-  Gordien, 32 s on bestheda. Levers, in order: a JDK 25 AOT cache or an AppCDS
-  archive plus `-XX:TieredStopAtLevel=1` on the test JVM (`jvmArgs` of
-  `tasks.test`; measure in a scratch worktree first, expected test task
-  28 s to about 20 s); the implementer runs one test class during red and
-  green and the full gate at commit; briefs keep every `@SpringBootTest`
-  class on one context configuration.
-- Loop: resume after the usage window resets. When a role's JSON ends with
-  `is_error: true` and a result like "You've hit your session limit · resets
-  12:20am (UTC)", `run_role` sees no report and the loop exits 6 with the
-  task half done. Detect it, sleep until the reset time, rerun the role once
-  with `claude -p --resume <session_id>` (the id is in the JSON) and the same
-  flags, with a case in `agent/test-loop.sh` (seen 2026-09-08 on T001's
-  reviewer).
-- CI: path filtering. Skip `backend`, `frontend` and `images` on a pull
-  request that changes nothing under `backend/`, `frontend/` or `api/`: a
-  `changes` job (`git diff --name-only` against the base, no marketplace
-  action) whose outputs gate the three jobs with a job-level `if:` on
-  `pull_request` only, because a workflow-level `paths:` filter leaves a
-  required check pending while a skipped job reports success. `images` stays
-  unconditional on push to `main`, since `release.yml` re-tags `sha-<short>`
-  of the tagged commit. `ci.yml` is edited by humans only (Tophe,
-  2026-09-09).
-- Frontend: reload on a new service worker. `registerSW.js` only registers;
-  with `registerType: "autoUpdate"` the new worker takes over on the first
-  load after a release but the page shown came from the old precache, so
-  the home page shows the previous revision until a second load. Register
-  through `virtual:pwa-register` and reload when the new worker takes
-  control, or show a "new version" notice (seen by Tophe on 2026-09-10 with
-  the first release).
-- Backend: narrow the ArchUnit port rule. "A port of the domain is
-  implemented in the infrastructure only" matches every class assignable to
-  any `domain` interface, so the variants of a sealed interface, or an enum
-  implementing a domain interface, break it; T013 chose a sealed class for
-  `SourceAnswer` because of it. Remedy decided with Tophe on 2026-09-13: add
-  one clause, `.and().resideOutsideOfPackage("..domain..")`, so a class
-  outside `domain` that implements a domain interface must reside in
-  `infra`, and the domain may use its own interfaces; no naming convention,
-  no marker. To apply in the first task that needs a domain implementer of
-  a domain interface, one clause and nothing else (seen on T013,
-  2026-09-12).
-- Backend: Open Library in one request. `/api/books?bibkeys=ISBN:<isbn>&jscmd=data&format=json`
-  answers title, subtitle, publishers, publish date, page count and the
-  author names inline, with no redirect and no per-author request; nothing
-  known is a 200 with an empty object, and the cover comes by cover id
-  rather than by ISBN. Measured on 2026-09-12 against `9782723488525`: it
-  lists one author (尾田栄一郎) where the edition document lists two (the
-  second is Shueisha, a publisher filed as an author), so the two endpoints
-  do not answer the same list. A spec change: `specs/fast-entry.md` names
-  the edition endpoint, the recorded answers and the scenario stubs follow
-  it. To weigh with Tophe when T014 is planned (found reviewing T013).
-- Backend: the web slice grows a mock per controller. Every `@WebSliceTest`
-  class must name every use case of `web` in its `@MockitoBean`, because
-  `WebSliceConfiguration` scans the whole package; the list will be copied into
-  each new test class as controllers arrive. Declaring the mocks on the
-  `@WebSliceTest` annotation itself would keep one list (found on T020,
-  2026-09-12). The identical lists are also what lets `ProblemAdviceTest`
-  and `SecurityConfigTest` share one Spring context (`ApiContractTest` has
-  its own for `FixedReaderHeaders`): a list that drifts makes a context of
-  its own without a word, and T142 added `ListAuthorNames` to all three.
-  Whether `@MockitoBean` is honoured on a meta-annotation is to check first
-  (2026-11-08, on T142's review).
-- Backend: the source timeout is per HTTP request, not per lookup. The Open
-  Library client bounds each of its requests (the edition, then one per
-  author), so a source slow on every request may take several timeouts and
-  still answer, while the spec's "does not answer in time" reads per lookup.
-  Rare in practice (a source is down or hanging rather than uniformly slow);
-  a per-lookup deadline is more code in every client. To decide with Tophe
-  if it ever bites (found on 2026-09-13).
-- Backend: the wait when every source hangs. The default timeout is 5 s per
-  request and T014 asks the sources in turn, so two hanging sources mean
-  10 s before the 503; asking in parallel would halve it at the price of an
-  executor in `application`. Sequential is the boring choice; a shorter
-  default is a product number for Tophe (found on 2026-09-13).
-- Backend: the BnF never says colourist. Three Murena records read on
-  2026-09-16: on 9782505010166 (tome 8, 2010) and 9782505083399 (tome 11,
-  2020) the colourist is prose in the title statement only (`200 $g
-  couleurs, Jérémy Petiqueux`), with no 70x entry and no `$4`; on
-  9782505125990 (tome 13, 2025) he draws and colours and carries the one
-  code `440`. The BnF gives one function per person, so `COLOURIST` has no
-  code to map and stays a role the BnF never produces. The same records
-  code their artists `070` on the 2010 and 2020 ones and `440` on the 2025
-  one, so the card says *scénario* for an artist on a share of BD records;
-  the only correction would parse the `$g` prose, which nothing does
-  (found on 2026-09-13, settled 2026-09-16).
-- Backend: the BnF language map holds one entry, `fre → fr`. The mapping
-  from UNIMARC `101$a` to the two-letter code the contract wants grows one
-  language at a time, with the recordings that exercise it; a whole ISO
-  639-2 to 639-1 table would be code no test asks for. To revisit if the
-  library turns out to hold much beyond French (found on 2026-09-13).
-- Backend: a bare number in the BnF's `200 $h` is not read as a tome. The
-  title-statement fallback of `BnfRecord.kt` only matches `tome (\d+)`, so a
-  record with no `461` and `$h 14` gets no series. Seen on the Tonkam
-  *Dragon Quest, la quête de Daï*: 9782845808461 (tome 14,
+## Bugs
+
+- Frontend: a lookup Libris does not answer hangs. `FetchIsbnApi` has no
+  401 branch, unlike `FetchMeApi`, and `search()` in `IsbnView` awaits
+  `lookUp` with no `finally`, so an expired session or a rejected fetch
+  leaves *Chercher* busy and the skeleton standing for ever. Give the
+  lookup client the me client's `onUnauthenticated` and release
+  `searching` in a `finally`; what the screen then says is in PRD §4.7
+  (seen by Tophe on the Pixel, in production, 2026-09-15).
+- Backend: a bare number in the BnF's `200 $h` is not read as a tome:
+  `tomeOf` in `BnfRecord.kt` matches only `tome (\d+)`, so the minimal
+  Tonkam *Dragon Quest, la quête de Daï* records, 9782845808461 (tome 14,
   `ark:/12148/cb434739456`) and 9782845808485 (tome 16,
-  `ark:/12148/cb43474820t`) are the BnF's only records for those ISBNs,
-  minimal 2009 ones (`200 $a Dragon Quest $b Texte imprimé $e la quête de
-  Daï $h 14`, no `461`), while every other tome of the series has the full
-  record (`461 $t Dragon quest $v 15`, tome 15 is `cb42035928f`). Open
-  Library knows neither ISBN. Accepting a `$h` made of digits only as the
-  tome, beside `tome N`, would put both in the series (matched on
-  `LOWER(name)`, so *Dragon Quest* joins *Dragon quest*), with a recording
-  of one of the two records. The two editions added in production on
-  2026-10-11 are corrected there by hand (found on 2026-10-11).
-- Backend: the same two minimal records read as a livre. Their `105 $a` is
-  `a   z   00|y|`, with no `t` at positions 4–7, and their `101` has no
-  `$c jpn`, where the full records of the series have `||||t   00|a|` and
-  `101 $a fre $c jpn`. Nothing in these records says manga, so the parser
-  cannot recover the kind; the correction is changing a kind after the
-  lookup, the not-yet-planned edit-fields feature (found on 2026-10-11).
-- Backend: an unknown BnF function code reads as writer. `contributionRoleOf`
-  maps only `070`, `440` and `730` and defaults the rest to `WRITER`, so on
-  the full *Dragon Quest, la quête de Daï* records from tome 15 on Yūji
-  Horii, `702 … $4 651` (project director), shows as a writer beside Riku
-  Sanjō. Those records also code Kōji Inada `701 … $4 070` (writer) where
-  the minimal ones of tomes 14 and 16 code him `702 … $4 440` (artist), so
-  the tomes of one series disagree on his role; that one is the BnF's data
-  (see the colourist item above). Dropping an unknown code's person, or
-  mapping `651` to a role, is a product call for Tophe (found on
-  2026-10-11).
-- Frontend: `FetchIsbnApi` has no `onUnauthenticated` callback. D06 gives the
-  API client one and T012 wired it for `/me` only, so a reader whose Authelia
-  session expires while on the lookup screen sees the promise reject instead
-  of a navigation to `/session`. The mock cannot produce a 401 and the
-  contract does not declare it, so the task that adds it is the one that
-  decides how it is exercised — and it is also when the two clients' shared
-  request shape is worth extracting (found on T016, 2026-09-14).
-- Frontend: the lookup screen has a button, not a form, so the go key of the
-  phone keyboard does not start the search. A `<form @submit.prevent>` buys
-  it at the price of a behaviour no scenario describes and of jsdom's own
-  form submission in the tests; the task that adds it is the one that decides
-  what the spec says about the keyboard (found on T017, 2026-09-14).
-- Frontend: a rejected `lookUp` (the network down, the API unreachable)
-  leaves the lookup screen's button busy for ever and says nothing, since
-  `search()` awaits it without a `finally`. What the screen says then is a
-  scenario of `specs/fast-entry.md` to write with Tophe; the button coming
-  back is a `finally` (raised by the reviewer of PR #71, 2026-09-14).
-- Frontend: the silhouette of the card inherits the busy button's bug. A
-  rejected `lookUp` leaves the skeleton standing where the card would be, for
-  ever and saying nothing, exactly as it leaves the button busy (the bullet
-  above); the `finally` that frees the button frees the answer's place too
-  (found on T018, 2026-09-14).
-- Frontend: a reader who refuses the camera sees the camera block disappear
-  and nothing else; the screen never says why, and the words for a refused
-  camera are in no document. A sentence under the field, or a state of the
-  icon button, is a scenario of `specs/fast-entry.md` to write with Tophe
-  (found on T019, 2026-09-14).
-- Frontend: the camera keeps looking for ever past codes the ISBN rule
-  refuses, which is what a viewfinder does, but a shelf that answers nothing
-  usable for a while says nothing either. Whether a *rien trouvé* message
-  arrives after a while, and when, is product behaviour for Tophe (found on
-  T019, 2026-09-14).
-- Backend: the same record comes back empty in `unimarcxchange`, the schema
-  `BnfSource` parses: the record slot holds a diagnostic (`erreur de
-  traitement`, details `-20`) and no fields, on every attempt, while
-  `intermarcxchange` and `dublincore` return it whole. A fallback schema for
-  a record that fails in UNIMARC is a decision for the T021 spec conversation
-  (measured 2026-09-14, for T021's brief).
-- Contract: `ONE_PIECE_1`, the `200_FOUND` example of `libris-api` `v0.3.0`,
-  still carries an Open Library cover and `["BNF", "OPEN_LIBRARY"]`, while
-  since T021 Libris answers the catalogue's cover and `["BNF"]` alone. The
-  contract only checks the shape, so `ApiContractTest` passes as it stands,
-  but the example now describes an answer the application cannot give. Give
-  the example the catalogue's cover URL and the single source on the next
-  release of `camory/libris-api`, with Tophe (found on T021, 2026-09-14).
-- Backend: a book whose UNIMARC record is a diagnostic is now unknown. The
-  BnF answers `9782253098058` (*Le comte de Monte-Cristo*) with an empty
-  record in `unimarcxchange` and the whole record in `intermarcxchange`;
-  with Open Library gone, nothing else answers, so the card says the ISBN is
-  unknown for a book the catalogue holds. The fallback schema bullet above
-  is what fixes it (found on T021, 2026-09-14).
-- Frontend: Open Library still shows on the frontend side. `SourceEditions.ts`
-  gives its fixtures a `covers.openlibrary.org` cover, `SourceEditionCard`'s
-  cases name Open Library, and the scenario spec lists two sources; the
-  backend answers one source and a `catalogue.bnf.fr` cover since T021. The
-  words the card shows come from the API, so nothing is broken, but the
-  fixtures no longer look like an answer (found on T021, 2026-09-14).
-- Frontend: an expired session during a lookup leaves the search hanging.
-  `FetchIsbnApi` has no 401 branch, unlike `FetchMeApi`, so the body parse
-  throws, `search()` in `IsbnView` never releases `searching`, and the button
-  stays disabled with its spinner until the app is relaunched (seen by Tophe
-  on the Pixel, in production, 2026-09-15). Give the lookup client the same
-  `onUnauthenticated` as the me client, release `searching` in a `finally`
-  with the generic message, and add the expired session to the spec as a
-  scenario with Tophe.
-- Frontend: `SourceEditionCard` never forgets a cover that failed. The card
-  remembers the failure in a ref and no `watch` resets it when `edition`
-  changes, which is sound today because `IsbnView` unmounts the card between
-  two answers; the day a screen shows the card for two editions in a row
-  without unmounting it, that screen's task adds the reset and the case that
-  proves it (decided on T022, 2026-09-15).
-- Frontend: the domain `Isbn` derives no ISBN-10. The backend's does, for the
-  BnF's CQL query; nothing on the frontend reads a ten, so no test of T023
-  motivated the property. The day a screen shows the ten of a book, its task
-  adds `isbn10` to `frontend/src/domain/Isbn.ts` with the case that wants it
-  (decided on T023, 2026-09-15).
-- Docs: `docs/ARCHITECTURE.md`'s D02 still lists `Isbn13` among what lives at
-  the root of `domain`; the class is `Isbn` since T023. The run proposed the
-  one-word amendment in its pull request body rather than editing the document
-  (CLAUDE.md); Tophe settles it on the review (found on T023, 2026-09-15).
-- Backend: `OpenLibrarySource` reads a 404 as `NothingKnown` whoever answered
-  it, so a 404 on `/search.json` would say the ISBN is unknown instead of
-  failing. Open Library's search answers 200 with no doc when it finds
-  nothing, so no case of T024 could make it wrong; the day the two requests
-  need telling apart, the adapter catches around each one (found on T024,
-  2026-09-15).
-- Frontend: nothing tells the reader an update that does not finish. The
-  banner's `updating` state ends only on the reload, so a worker that never
-  activates leaves *Mise à jour…* on the screen for ever; `specs/update.md`
-  describes no such state and the adapter waits without a deadline. The day it
-  is seen in the wild, its task decides what the reader is told and how long
-  the app waits (found on T028, 2026-09-18).
-
-- Frontend: every case of `ServiceWorkerAppUpdate.spec.ts` builds an adapter
-  that adds a `visibilitychange` listener to the shared jsdom `document` and
-  never removes it, so one dispatched event wakes every adapter of the cases
-  before, each with the registration it captured. The run's cases do not see
-  it, each asserting on its own fresh spy, but a case counting timers cannot
-  be written (17 stale adapters armed an hour each on the review fix-up), and
-  `check()` still re-arms with a `null` registration for the same reason: no
-  case can observe it. The day either matters, the adapter gets a way to stop
-  listening (an `AbortController` on its listeners) that the spec's
-  `afterEach` calls (found on T029, 2026-09-18).
-
-- Frontend: the grouping of the authors by their set of roles lives in
-  `SourceEditionCard`'s `authorLines`, where the catalogue's words are
-  reachable. The day a second screen names authors, the part that does not
-  need the words — grouping by name and comparing the sets of role codes —
-  moves to `domain` with a spec of its own, and the components keep the
-  formatting of their lines (decided on T032, 2026-09-19).
-- Frontend: `src/ui/views/home/HomeView.spec.ts` and
-  `src/scenario/KindScenarios.spec.ts` are unformatted on `main`; the gate does
-  not run Prettier, so `npm run format` rewrites them whenever it is run whole.
-  The task that next edits either file formats it, as T032 did for
-  `vitest.global-setup.ts` (found on T032, 2026-09-19).
-
-- Backend: an edition carries no tag. PRD §3 gives it zero or more and D11
-  names a `tag` table, but no lookup answers a tag and no scenario of this
-  phase names one. The task that first shows or sets a tag writes the table,
-  the column and the cases (found on T034, 2026-09-21).
-- Backend: the editions `JdbcEditionRepositoryTest` builds come from a private
-  helper of the class. The day a second class needs the same shapes — T035
-  creating an edition the house lacks is the likely one — the helper moves to
-  `bibliography/fixture/` (found on T034, 2026-09-21).
-- Backend and contract: `ContributionRole` knows four roles and the BnF
-  client folds every other function code onto `WRITER`, so a preface writer
-  or a scriptwriter reads as an author. A richer enumeration with a fallback
-  role for the codes the house does not name changes the `role` of the ISBN
-  answer, so it starts with a contract release (decided with Tophe on the
-  review of T034, 2026-09-21).
-- Backend: two adds of the same unknown ISBN at once. The unique `isbn13` of
-  `edition` makes the second insert throw, and `AddBookToBookshelf` neither
-  catches it nor retries the way `ReaderVisit` does for a username; the task
-  that first serves the add over HTTP decides whether a lost race answers the
-  copy on the edition the other add stored (found on T035, 2026-09-22).
-- Contract: `POST /api/v1/bookshelves/{id}/books` answers `400` and `404`
-  only, yet `AddBookToBookshelf` refuses a viewer with `NotAnOwner`, a reader
-  who sees the bookshelf. Until a release adds `403`, T037 has to answer that
-  refusal with one of the two; a viewer membership cannot be created before
-  the invite feature, so nothing reaches it yet (found on the review of T035,
-  2026-09-22).
-- Backend: the add refuses at the edge only what the brief lists; the
+  `ark:/12148/cb43474820t`), with `$h 14` and no `461`, get no series.
+  Accept a `$h` of digits only beside `tome N`, with a recording of one of
+  the two (found 2026-10-11; corrected by hand in production).
+- Backend: `RemoteIdentity.of` accepts a blank `Remote-User`, which makes a
+  reader with an empty username; refuse it as a blank email is refused.
+  Only `Remote-Name` is decoded from UTF-8, so a non-ASCII `Remote-User`,
+  `Remote-Email` or `Remote-Groups` reads mangled (found on T005,
+  2026-09-09, and T037, 2026-09-24).
+- Frontend: `IsbnView` asks the series and author names on each lookup and
+  `useListSeriesNames` and `useListAuthorNames` keep whichever answer lands
+  last, so on a slow network an older answer replaces a newer one (found on
+  T126, 2026-11-03).
+- Backend: the add checks at the edge only what T037's brief listed; the
   contract's bounds on `language`, `publicationYear`, `pageCount` and
-  `series.volumeNumber` reach the use case unchecked, and a value the
-  `edition` table refuses would answer `500` (found on T037, 2026-09-24).
-- Backend: only `Remote-Name` is decoded from UTF-8; a non-ASCII
-  `Remote-User`, `Remote-Email` or `Remote-Groups` would be read mangled
+  `series.volumeNumber` reach the use case unchecked through
+  `NewBookRequest`, and a value the `edition` table refuses answers `500`
   (found on T037, 2026-09-24).
-- Frontend: no case proves that a second lookup replaces the copies of the
-  first on the card: `IsbnView.spec.ts` has one answer per `FakeIsbnApi`, and
-  each scenario boots a fresh app; the mutation keeping the previous copies
-  survives the gate. A `FakeIsbnApi` of successive answers would carry the
-  case, with T039's added copy (found on T038, 2026-09-25).
-- Frontend: `npx prettier --check src/ui` warns on
-  `src/ui/views/home/HomeView.spec.ts`, already on `main`; the gate runs no
-  Prettier, so nothing catches it (found on T041, 2026-09-25).
-- Frontend: *Chercher* stays usable while an add runs; since T040 each
-  lookup builds a fresh `useAddBookToBookshelf`, so an add that answers
-  after a newer lookup lands on an add the view no longer renders: the new
-  card shows its button ready and neither the copy nor a failure of the
-  earlier add, though Libris may hold that copy. The spec does not say what
-  the screen should do (found on T039, rewritten on T040, 2026-09-25).
-- Frontend: the two primary buttons of `IsbnView.vue` share `rounded-xl
-  bg-accent text-white active:bg-accent-pressed disabled:opacity-70` and a
-  `BusySpinner` while busy, but not their box nor their content: *Chercher*
-  is the `size-[50px]` square with a glyph alone and a 22 spinner in its
-  place, *Ajouter à ma bibliothèque* the full-width `h-[50px]` bar with a
-  word and a 16 spinner beside it; a third primary button would call for a
-  shared component (found on T039, rewritten on T042, 2026-09-25).
-- Frontend: the T038 item above about a second lookup replacing the copies
-  is now covered by `IsbnView.spec.ts` *offers the add again on the next
-  card*: the mutation keeping the previous copies reds it (found on T039,
-  2026-09-25).
-- Frontend: `FetchIsbnApi.spec.ts` asserts the copies of
-  `ONE_PIECE_2_OWNED`, a value the contract does not promise; it should
-  assert shape only (found 2026-09-26 while reviewing the examples of the
-  v0.7.0 contract; the problem slugs of the same item went to T060 on
-  2026-09-30).
-- Planner: a criterion of the form "no French literal under `ui/views` and
-  `ui/components`" matches the view specs, which assert the French texts;
-  the grep should exclude `*.spec.ts` (found 2026-09-28 while implementing
-  T046).
-- Planner: T046's brief placed the `/catalogue` route at the wiring step,
-  but the active-tab case of the tab bar cannot go green without it; a
-  brief should put a route with the first case that resolves it (found
-  2026-09-28 while implementing T046).
-- Frontend: `CatalogueRow` and `SourceEditionCard` each group the copies of
-  an edition by bookshelf with the same loop; one function beside `Book` or
-  `Copy` could serve both (found 2026-09-28 while implementing T047).
-- Frontend: the lookup and add ports answer `{ outcome: "problem"; type }`,
-  so the wire string `/problems/not-found` crosses into the application
-  layer, `IsbnView` maps it to a message and every fake speaks it. The
-  adapter alone should turn the status code into an outcome in the spec's
-  words (`unknown`, `unavailable`, `refused`, `not-my-bookshelf`,
-  `failed`), the view map outcomes to messages, the fakes answer outcomes;
-  the contract guarantees the status per key and no problem type value.
-  `unavailable` then gets the message S6 of `specs/fast-entry.md` asks for,
-  which the view never shows today (found 2026-09-30 reviewing contract
-  v0.8.0 with Tophe).
-- Frontend: `FetchIsbnApi.spec.ts` and `FetchBookshelfApi.spec.ts` assert
-  the problem `type` the mock answers, a value no schema of the contract
-  defines and that v0.8.0 no longer carries as an example; with the ports
-  answering outcomes by status they assert the outcome instead (found
-  2026-09-30 reviewing contract v0.8.0 with Tophe).
-- Backend: `BookshelfScenarios` *S2* answered `503` once, first case of the
-  JVM, green alone and on rerun; three lookups now run at once under the 1 s
-  source timeout of the scenarios, a cold start may exceed it (found
-  2026-10-01 on T052).
-- Backend: `ProblemAdviceTest`'s *a bookshelf id that is not a uuid is a
-  validation problem* proves what the contract case `auto: path 'id' type
-  mismatch` now proves too, since `v0.9.0` types the add's id `format:
-  uuid`; whether D07 lets the hand-written case go is Tophe's (found
-  2026-10-03 on T067).
-- Backend build: detekt 1.23.8's plugin calls `ReportingExtension.file(String)`
-  (`DetektPlugin.apply`), deprecated in Gradle 9 and removed in Gradle 10, so
-  every build warns "incompatible with Gradle 10" and the wrapper cannot move
-  to 10 before detekt does. Before that upgrade, look at detekt's next major
-  version, and whether it also lifts the cleared `jdkHome` on JDK 25 (found
-  2026-10-04 measuring the configuration cache with Tophe, traced with
-  `--warning-mode all -Dorg.gradle.deprecation.trace=true`).
-- Backend: the BnF and Open Library lookups catch `NotFound` for a miss and
-  a list of exceptions for a failure (`RestClientException`, `SAXException`,
-  `JsonNodeException`), so an answer with a malformed `Content-Type` throws
-  `InvalidMediaTypeException` out of `lookUp`, past what `Failed` means.
-  Their failure branch could go through `nullOnFailure`'s catch-all as the
-  fetches do, `NotFound` still first (found 2026-10-04 fixing up T054 with
-  Tophe, not measured on the lookups).
-- Backend: the BnF's cover candidate is built on the public constant
-  `https://catalogue.bnf.fr/couverture`, while Open Library's is built on its
-  covers setting (decided with Tophe after T054); building the BnF's on
-  `libris.sources.bnf-covers-url` needs *FastEntryScenarios* to read the
-  stub's address, a scenario edit that is Tophe's (found 2026-10-04 on T057).
-- Contract and spec: `Problem.type` in `camory/libris-api` is described as
-  "A slug under /problems/ the client switches on", and
-  `specs/fast-entry.md:185` says "the screen picks its text from `type`";
-  since T060 both clients read the HTTP status of a problem body and fall
-  back on `type` for a status the contract does not name. No byte changes:
-  reword the description at the next release of the contract, and the spec
-  line at the next spec session, with Tophe (found 2026-10-06 reviewing
-  T060 with Tophe).
-- 2026-10-06: the card's dots are 32 wide, so three fill the cover's 96; a
-  fourth candidate (Google Books, D02's "later") overflows the column. Decide
-  with Tophe whether the row wraps, shrinks or caps the dots before a fourth
-  cover source lands (found implementing T061).
-- Backend: an ISBN lookup the house lacks takes 0.55–0.9 s on staging, set
-  by Open Library, the slowest of the sources asked at once. Measured from
-  bestheda (p50): Open Library `/isbn/….json` 751 ms with its redirect,
-  `search.json` 521 ms, cover 507 ms (p90 2.2 s), its TCP + TLS ~170 ms;
-  inventaire.io lookup 116 ms, cover 146 ms; BnF SRU 111 ms, cover 398 ms.
-  Levers to weigh with Tophe: ask the redirect's target directly, one Open
-  Library request instead of two, a shorter Open Library timeout, or answer
-  without it past a delay (found 2026-10-07 by Tophe on the lookup page).
-- Frontend: `HomeView.spec.ts` *renders the French title from the messages*
-  is two statements with no Given / When / Then markers, as on `main`
-  before T079 changed its text; give it the markers or one statement
-  (found 2026-10-13 reworking T079).
-- Backend tests: move the top-level fixtures below the class and its
-  helpers in `BrowseCatalogueTest`, `LookupIsbnForReaderTest`,
-  `LookupEditionByIsbnTest`, `AwaitedCoverTest` and `ProblemAdviceTest`,
-  as D10's top-down order asks (found 2026-10-15 by T093's review).
-- Frontend: `SeriesRow.vue` copies `CatalogueRow.vue`'s cover block line
-  for line: the 48 × 74 box, the `img` that falls back on `error` and the
-  `BookOpen` stand-in. Extract a cover component both rows use, with its
-  own spec taking the cover cases of `SeriesRow.spec.ts` (found
-  2026-10-16 by T097's review).
-- Frontend: the message of a failure, `CircleAlert` and a sentence in a `p`
-  with `flex items-start gap-2 text-body text-danger`, is written out nine
-  times: in `SeriesView`, `CatalogueView`, `HomeView`, `BookshelfView`,
-  twice in `IsbnView`, and in `BookshelfRow`, `NewBookshelfRow` and
-  `ReaderChoice`, each adding only its own spacing. Extract a message
-  component taking the sentence, with its own spec (found 2026-10-16 by
-  T098's review).
-- Bibliography: the series gains a cover of its own, `Series.coverName`,
-  kept on write as the cover of its lowest tome, after the series page
-  phase (Tophe, 2026-10-18, when the series became an aggregate). Open
-  before a spec: whether it is the household's lowest tome or the
-  reader's, the latter being what the series list's *S3* and the series
-  page's *S4* show today; whether it is a fact of its own or a copy of an
-  edition's cover, which D12 forbids an aggregate to carry; what keeps it
-  true when a cover arrives late through the awaited covers, when an
-  edition is corrected or moves to another series, and when the lowest
-  tome has no cover or the series only untomed editions.
-- Frontend: `SourceEditionCard` takes a cover as candidates plus `held`, so
-  `EditionPageView` passes the stored cover as the one candidate
-  `{ source: "Libris", url }`, a name it writes itself and nothing reads,
-  copied from the lookup's answer for a held edition (`IsbnController`,
-  *S10* of `specs/covers.md`). One prop could say either "held, this
-  picture or none" or "these candidates", and the stored cover would carry
-  no source (Tophe, 2026-10-22, on T114). Open before a task: whether the
-  lookup's held answer keeps its candidate in the contract.
+- Backend: the BnF and Open Library lookups catch `NotFound` and a list of
+  exceptions (`RestClientException`, `SAXException`, `JsonNodeException`),
+  so an answer with a malformed `Content-Type` throws
+  `InvalidMediaTypeException` out of `answerFor`, past `Failed`. Their
+  failure branch could go through `nullOnFailure`'s catch-all, `NotFound`
+  still first (found fixing up T054, 2026-10-04).
+
+## Tidy
+
+- Frontend: the failure message, `CircleAlert` and a sentence in `danger`,
+  is drawn by hand in fourteen components and views (`DockedButton`,
+  `EditionForm`, `IsbnView`, `HomeView`…); one component of
+  `ui/components` with its own spec would draw it once (found on T098 and
+  T124, 2026-10-16 and 2026-11-03).
+- Frontend: `IconButton` draws the icon button in `IsbnView`,
+  `EditionPageView`, `AuthorBox`, `SearchField` and `BookshelvesHolding`;
+  `HomeView`, `BookshelfView`, `ReaderChoice`, `BookshelfRow` and
+  `NewBookshelfRow` still write its box by hand. Move them onto it, their
+  tests unchanged (found on T128, 2026-11-03).
+- Frontend: `SeriesRow.vue` copies `CatalogueRow.vue`'s cover block: the
+  48 × 74 box, the `img` that falls back on `error` and the `BookOpen`
+  stand-in. One cover component with its own spec (found on T097,
+  2026-10-16).
 - Frontend: `useFindBookshelf`, `useFindCatalogueSeries` and
-  `useFindCatalogueEdition` each map a find's answer the same way, a
-  rejection or any problem but `/problems/not-found` and
-  `/problems/validation` to `unavailable`, the two to `notFound`; and
-  `SeriesPageView` and `EditionPageView` each pick their failure's words
-  with the same `computed` (Duplicated Code, three copies since T115).
-  One mapping of a find's problem to the screen's state could serve the
-  three (found by the reviewer on T115, Tophe 2026-10-23).
-- Backend: `series_name_unique` (`V014`) trims with `BTRIM(name)`, which
-  removes U+0020 alone, so a tab or a non-breaking space at a name's ends
-  still creates a second series beside the one the house holds (measured
-  with a tab). The form sends nothing of the kind, its `trim()` removing
-  every whitespace; only a direct API caller can. Open before a task:
-  whether "the spaces at its ends" of PRD §3 means every whitespace, and
-  whether the backend then trims the name before it is stored, the index
-  following (found by the reviewer on T120, Tophe 2026-11-01).
-- 2026-11-03 Frontend: `IconButton` draws the icon button of U04 in
-  `IsbnView` alone; `HomeView`, `BookshelfView`, `ReaderChoice`,
-  `BookshelfRow` and `NewBookshelfRow` still write its box by hand, some
-  with a margin, `relative` or `text-muted` of their own. Move them onto
-  it, one refactor, their tests unchanged (found on T128's fix-ups, Tophe).
-- 2026-11-03 Frontend: while the camera is open, the message under the
-  field (*ISBN invalide*, *Erreur lors de la recherche…*) still draws under
-  it, and so does the skeleton of a lookup typed meanwhile; whether the
-  camera takes their place too, as it does the card's and the form's, is
-  for Tophe and the spec (found on T129, out of its scope).
-- 2026-11-03 Frontend: a refused field of the edition form is not linked
-  to its message (`aria-describedby`); no document asks it, so a screen
-  reader hears *invalide* without the reason until Tophe decides it (found
-  on T124, out of its scope).
-- 2026-11-03 Frontend: the message of U05, the round alert icon at 22 and
-  the words in `danger`, is drawn by hand in twelve components and views
-  (`DockedButton`, `EditionForm`, `IsbnView`, `HomeView`…); one component of
-  `ui/components` would draw it once (found on T124, out of its scope:
-  `ui/views` is outside its footprint).
-- 2026-11-03 Frontend: `EditionForm` and `ReaderChoice` call
-  `scrollIntoView?.(…)` only because jsdom lacks it; a vitest `setupFiles`
-  entry defining it as a no-op on `Element.prototype` would let both call
-  it plainly, the two gotchas on jsdom's missing `scrollIntoView` rewritten
-  as one (found on T124's review, Tophe).
-- 2026-11-03 Frontend: `IsbnView` asks the series names on each lookup and
-  keeps whatever answer lands last, so on a slow network an older answer can
-  replace a newer one; keeping only the answer to the latest request would
-  rule that out (found on T126).
-- 2026-11-03 Frontend: `suggestionsFor` strips accents through NFD, which
-  also splits a Hangul syllable into its jamo, so `하` finds *한국* with
-  *한* in semibold; worth a decision before T127 reuses the rule for the
-  language: keep it (it helps while a Korean IME composes) or recompose
-  what NFD split but the marks (found on T126's review).
-- 2026-11-04 Frontend: *Série*'s word compares through `nameOrder`, which
-  holds *œ* equal to *oe*, as the database's series names do, but
-  `suggestionsFor` folds one character at a time, so typing *Coeur* says
-  *Existante* for *Cœur* and no row offers it. Tophe wants the rows to
-  match *œ* and *oe* (and *æ* and *ae*) alike; the same holds for
-  *Langue*'s rows (found on T127's review, Tophe).
-- 2026-11-06 Backend: `BrowseCatalogue`, `FindCatalogueEdition` and
-  `FindCatalogueSeries` each build the reader's bookshelves by id with the
-  same chain, `bookshelves.findByMember(readerId).mapNotNull {
-  ReaderBookshelf.of(it, readerId) }.associateBy { it.id }`; one function
-  answering the reader's bookshelves by id would hold it once (Duplicated
-  Code, found on T130's review).
-- 2026-11-07 Frontend: `EditionPageView` keeps the removed copy's id in a
-  mutable `let removedId`, set by its `removeCopy` wrapper before `remove`
-  and read by `copiesLeft` in `afterRemoval`, and `IsbnView` does the same
-  for `dropRemovedCopy` (T137); were `useRemoveCopy` to hand the copy's id
-  to `afterRemoval`, both `let`s and both wrappers would go (Middle Man,
-  temporal coupling, found on T136's review).
-- 2026-11-08 CI: the backend image's build stage downloads the Gradle
-  distribution and every dependency on each CI run, since its
-  `--mount=type=cache,target=/root/.gradle` does not outlive the runner.
-  Carrying that cache into Docker (buildkit-cache-dance with
-  `actions/cache`), or building the jar in the `backend` job and copying it
-  into the image (which amends the multi-stage Dockerfile of the
-  architecture and the local image builds), would make the `images` job
-  faster and less exposed to download outages (found when a GitHub release
-  outage failed #356's `images` job; the wrapper's retries were kept
-  instead).
-- Backend: `StoredSummaryScenarios` is the only scenario class off the
-  shared `@ScenarioTest` context: its `@TestPropertySource`
-  `spring.flyway.target=12` makes a full boot of its own (1.4 s on the
-  host) and a Hikari pool of ten connections more. It already migrates to
-  the latest version through a `Flyway` built from the context's
-  configuration; its first half done the same way (clean, migrate to 12,
-  insert, then migrate to the latest) would let it share the scenario
-  context. A scenario test is Tophe's, so the change is his (found on
-  T142's review, 2026-11-08).
-- Backend: two private foldings of a name, `BookshelfName.kt` and
-  `Contributions.kt`, alike but for the trim of the end spaces the second
-  adds (Duplicated Code), one per context since `bibliography` never
-  depends on `library`. Open: whether a shared kernel of the domain should
-  hold one (found on T143, 2026-11-08).
-- Frontend: `FetchCatalogueApi`'s `browse` and `search` read a page alike
-  (Duplicated Code); one private method reading a page would serve both,
-  as the reviewer suggested on #407. No test of T173 touched the client
-  (moved from T169's entry, 2026-11-12).
+  `useFindCatalogueEdition` map a find's answer alike (a rejection or any
+  problem but not-found and validation to `unavailable`), and
+  `SeriesPageView` and `EditionPageView` pick their failure's words with the
+  same `computed`; one mapping would serve the three (found on T115,
+  2026-10-23).
+- Frontend: the ports answer `{ outcome: "problem"; type }`, so a
+  `/problems/…` slug crosses into the application layer and every fake and
+  view speaks it. The adapter alone should turn the status into an outcome
+  in the spec's words (`unknown`, `unavailable`, `refused`…), the views map
+  outcomes to messages, and the `Fetch*Api` specs assert outcomes (found
+  reviewing contract v0.8.0 with Tophe, 2026-09-30).
+- Frontend: `EditionPageView` and `IsbnView` keep the removed copy's id in a
+  mutable `let removedId`, set by a wrapper before `remove` and read in
+  `afterRemoval`; were `useRemoveCopy` to hand the id to `afterRemoval`,
+  both `let`s and both wrappers would go (found on T136, 2026-11-07).
+- Frontend: `EditionPageView` passes the stored cover to
+  `SourceEditionCard` as the candidate `{ source: "Libris", url }`, a name
+  nothing reads. One prop saying either "held, this picture or none" or
+  "these candidates" would drop it; open: whether the lookup's held answer
+  keeps its candidate in the contract (Tophe, 2026-10-22, on T114).
+- Frontend: `FetchCatalogueApi`'s `browse` and `search` read a page alike;
+  one private method would serve both (found on #407, 2026-11-12).
+- Frontend tests: `EditionForm`, `ReaderChoice` and `AuthorBox` call
+  `scrollIntoView?.(…)` because jsdom lacks it; a vitest `setupFiles` entry
+  defining it as a no-op would let them call it plainly, the jsdom gotchas
+  rewritten as one (found on T124, 2026-11-03). `HomeView.spec.ts`
+  *renders the French title from the messages* has no Given / When / Then
+  markers (found on T079, 2026-10-13).
+- Backend: `BrowseCatalogue`, `FindCatalogueSeries` and `HeldEditionReads`
+  each build the reader's bookshelves by id with the same chain,
+  `findByMember(readerId).mapNotNull { ReaderBookshelf.of(it, readerId) }
+  .associateBy { it.id }`; one function would hold it (found on T130,
+  2026-11-06).
+- Backend: `BookshelfName.kt` and `Contributions.kt` each fold a name,
+  alike but for the end spaces the second trims; open: whether a shared
+  kernel of the domain holds one (found on T143, 2026-11-08).
+- Backend tests: every `@WebSliceTest` class names every use case of `web`
+  in its `@MockitoBean`, and the identical lists are what let
+  `ProblemAdviceTest` and `SecurityConfigTest` share a context; declaring
+  the mocks once on `@WebSliceTest` would keep one list, if `@MockitoBean`
+  is honoured on a meta-annotation (found on T020 and T142).
+- Backend tests: the top-level fixtures sit above the class in
+  `LookupIsbnForReaderTest`, `LookupEditionByIsbnTest`, `AwaitedCoverTest`
+  and `ProblemAdviceTest`; move them below the class and its helpers
+  (found on T093, 2026-10-15).
+- Backend tests: delete `ProblemAdviceTest`'s *a bookshelf id that is not a
+  uuid is a validation problem*, which the contract case `auto: path 'id'
+  type mismatch` proves since `v0.9.0` (Tophe, 2026-11-14).
+- Backend: `BnfSource` builds its cover candidate on the constant
+  `https://catalogue.bnf.fr/couverture` while `libris.sources.bnf-covers-url`
+  exists; build it on the setting, with `FastEntryScenarios` reading the
+  stub's address, a scenario edit that is Tophe's (Tophe, 2026-11-14).
+- Backend tests: `SummaryScenarios` boots a context of its own for its
+  `spring.flyway.target=12`; migrating to 12 through a `Flyway` built from
+  the context's configuration, as its second half already does, would let
+  it share the scenario context. Tophe's scenario (Tophe, 2026-11-14).
+- Contract and spec: `Problem.type` in `camory/libris-api` is "a slug the
+  client switches on" and `specs/fast-entry.md` says "the screen picks its
+  text from `type`", while since T060 both clients read the HTTP status.
+  Reword both at the next contract release and spec session, with Tophe
+  (found on T060, 2026-10-06).
+
+## Loop, CI and gate
+
+- Loop: `sandbox_down` runs `compose down`, which leaves the one-off `run`
+  container, so an interrupted loop leaves the agent running and spending.
+  Remove the run containers too (`docker compose rm -sf agent`, to verify),
+  with a case in `agent/test-loop.sh` (found 2026-09-08).
+- Loop: resume after the usage window resets. A role whose JSON ends with
+  `is_error: true` and "You've hit your session limit · resets …" leaves no
+  report and the loop exits 6 with the task half done. Sleep until the
+  reset and rerun the role once with `claude -p --resume <session_id>`,
+  with a case in `agent/test-loop.sh` (seen 2026-09-08).
+- Gate: `./gradlew check` takes about 42 s warm on the sandbox host, the
+  cost being cold-JVM class loading. Levers in order: a JDK 25 AOT cache or
+  AppCDS archive plus `-XX:TieredStopAtLevel=1` on the test JVM, measured
+  in a scratch worktree first; one test class during red and green, the
+  full gate at commit (measured 2026-09-09).
+- Gate: nothing runs Prettier, so `src/domain/Copy.ts`,
+  `src/scenario/CoversScenarios.spec.ts` and
+  `src/ui/components/SourceEditionCard.spec.ts` are unformatted on `main`
+  and `npm run format` rewrites them. A `prettier --check` in the frontend
+  gate, or nothing (found on T032, re-measured 2026-11-14).
+- CI: the backend image's build stage downloads Gradle and every dependency
+  on each run, since its `--mount=type=cache` does not outlive the runner.
+  Carrying the cache into Docker, or building the jar in the `backend` job,
+  would make `images` faster and less exposed to download outages (found on
+  #356, 2026-11-08).
