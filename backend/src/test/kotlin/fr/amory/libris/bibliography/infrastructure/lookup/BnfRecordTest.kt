@@ -46,6 +46,7 @@ class BnfRecordTest {
     tomeOf("chapitre treizième") shouldBe null
     tomeOf(null) shouldBe null
     tomeOf("partie 3") shouldBe null
+    tomeOf("-3") shouldBe null
   }
 
   @Test
