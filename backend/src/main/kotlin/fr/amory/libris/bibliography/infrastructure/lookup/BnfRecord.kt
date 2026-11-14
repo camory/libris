@@ -24,6 +24,7 @@ private const val FORM_LENGTH = 4
 private val YEAR = Regex("\\d{4}")
 private val PAGES = Regex("(\\d+)\\s*p\\b")
 private val TOME = Regex("tome (\\d+)")
+private val DIGITS = Regex("\\d+")
 private const val YEAR_AT = 9
 private const val YEAR_LENGTH = 4
 private const val PUBLISHER_INDICATOR = "0"
@@ -66,6 +67,7 @@ internal fun publicationYearOf(dateOfPublication: String?, publication: String?)
 
 internal fun tomeOf(partNumber: String?): Int? =
   TOME.find(partNumber.orEmpty())?.groupValues?.get(1)?.toIntOrNull()
+    ?: partNumber?.takeIf { DIGITS.matches(it) }?.toIntOrNull()
 
 internal fun pageCountOf(extent: String?): Int? =
   PAGES.find(extent.orEmpty())?.groupValues?.get(1)?.toIntOrNull()
