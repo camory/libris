@@ -66,8 +66,9 @@ internal fun publicationYearOf(dateOfPublication: String?, publication: String?)
     ?: YEAR.find(publication.orEmpty())?.value?.toIntOrNull()
 
 internal fun tomeOf(partNumber: String?): Int? =
-  TOME.find(partNumber.orEmpty())?.groupValues?.get(1)?.toIntOrNull()
-    ?: partNumber?.takeIf { DIGITS.matches(it) }?.toIntOrNull()
+  partNumber?.let {
+    TOME.find(it)?.groupValues?.get(1)?.toIntOrNull() ?: it.takeIf(DIGITS::matches)?.toIntOrNull()
+  }
 
 internal fun pageCountOf(extent: String?): Int? =
   PAGES.find(extent.orEmpty())?.groupValues?.get(1)?.toIntOrNull()
