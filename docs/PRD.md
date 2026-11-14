@@ -278,8 +278,9 @@ Still to spec:
 - **Language**: UI in French. Code, commits, docs in English.
 - **Operability**: deployable with `docker compose up -d` behind Traefik;
   logs to stdout; health endpoint.
-- **Backups**: the database is backed up by the server's existing solution,
-  hourly and before each deployment; how to restore lives on the server.
+- **Backups**: the database and the covers are backed up by the server's
+  existing solution, hourly and before each deployment; how to restore
+  lives on the server.
 - **Testability**: every feature ships with automated tests; the API is
   described by an OpenAPI document that is verified in CI.
 

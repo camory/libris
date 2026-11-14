@@ -11,9 +11,9 @@
 ## Overview
 
 ```
-phone / browser ──► https://libris.amory.fr
+phone / browser ──► https, the household's domain
                              │
-              Traefik (Kimsufi, existing, Let's Encrypt)
+              Traefik (existing, TLS)
               forward-auth ──► Authelia (existing) ──► Remote-* headers
                              │
              ┌───────────────┴───────────────┐
@@ -25,7 +25,8 @@ phone / browser ──► https://libris.amory.fr
    PostgreSQL 18
    (data volume)
         │
-   Gordien (existing): hourly pg_dump + restic
+   server backups (existing), database and covers:
+   hourly and before each deployment
 
    backend ──► BnF, Open Library                   (outbound, optional)
 ```
@@ -440,7 +441,7 @@ deliberately lacks), no other service. A test that needs more blocks the task.
 - `deploy/` holds the production compose: PostgreSQL 18, backend and frontend
   pulled by `LIBRIS_TAG` from an uncommitted `.env`, joined to the existing
   Traefik network, no published ports, no labels, two named volumes, the
-  database's and the covers'. Traefik routing (`libris.amory.fr` to the frontend, `/api` to the
+  database's and the covers'. Traefik routing (the domain to the frontend, `/api` to the
   backend, the Authelia forward-auth middleware on both routers) and the
   Authelia access rule are declared by hand in the server's Traefik dynamic
   configuration files and Authelia configuration, outside this repository.
@@ -456,10 +457,10 @@ deliberately lacks), no other service. A test that needs more blocks the task.
   and sets the `Remote-*` headers. Where staging runs and how it is deployed
   live beside it, outside this repository.
 - Deploy is manual: set `LIBRIS_TAG`, then `docker compose pull && docker
-  compose up -d` on the Kimsufi box. Rollback is the previous tag.
-- Backups are not the app's job: the server's Gordien (hourly `pg_dump` +
-  restic) covers the database. Deployment registers
-  Libris there; the server's runbook documents the restore.
+  compose up -d` on the server. Rollback is the previous tag.
+- Backups are not the app's job: the server's existing solution backs up
+  the database and the covers volume hourly and before each deployment;
+  the server's runbook documents the restore.
 
 ### D10 — Conventions
 - Kotlin: official style but for the layout below, immutable by default,

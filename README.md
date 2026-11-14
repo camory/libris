@@ -4,14 +4,14 @@ A progressive web app for the Amory household to manage its books, mangas and
 BD (bandes dessinées): what we own, where it is, who is reading it, what is
 missing from a series, and what we would like next.
 
-Served at `https://libris.amory.fr` from the family server.
+Served from the family server.
 
 ## Stack
 
 - **Frontend**: Vue 3 + Vite + TypeScript, installable PWA (`vite-plugin-pwa`)
 - **Backend**: Kotlin + Spring Boot, Gradle (Kotlin DSL)
 - **Database**: PostgreSQL, full-text search built in (`tsvector`, `unaccent`, `pg_trgm`)
-- **Deployment**: Docker Compose behind the existing Traefik on the Kimsufi box
+- **Deployment**: Docker Compose behind the server's existing Traefik
 
 See [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) for the decisions and
 [`docs/PRD.md`](docs/PRD.md) for what the product must do.
