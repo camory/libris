@@ -46,7 +46,11 @@ named as open in the draft, not asked again and not guessed.
    scenarios; a shape that a snippet states more precisely than prose
    (a schema, a type) may sit in *Contract*.
 
-4. Stop. Tophe reviews the draft; the PR, the mockups, the scenario tests
+4. Update the PRD section the feature comes from: the spec joins its
+   *Specs* list, the *Still to spec* lines it covers leave, and a line it
+   covers in part is rewritten to what remains.
+
+5. Stop. Tophe reviews the draft; the PR, the mockups, the scenario tests
    committed skipped and the contract release each need his go.
 
 ## Out of scope

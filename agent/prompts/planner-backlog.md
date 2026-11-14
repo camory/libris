@@ -56,10 +56,12 @@ to approve.
 - IDs are stable. Never renumber or reuse an ID. New tasks take the next free
   number after the highest ID in `agent/TASKS.md`, the *Done* section
   included.
-- Plan only what a spec describes. A PRD feature without a spec is not
-  planned: name it under a final `## Questions for the human` as "no spec
-  yet". If a spec is ambiguous, do not guess: ask there and, if the task
-  cannot be shaped without the answer, leave it unplanned.
+- Plan only what a spec describes. What PRD §4 lists as *Still to spec* is
+  not planned: point to those lines under a final `## Questions for the
+  human` as "no spec yet", never copy them, and keep the items listed there
+  that no PRD line holds yet. If a spec is ambiguous, do not guess: ask
+  there and, if the task cannot be shaped without the answer, leave it
+  unplanned.
 - A task line names only what its acceptance criteria exercise: no
   migration, dependency or configuration ahead of the feature that needs
   it; they arrive with that feature's task.
