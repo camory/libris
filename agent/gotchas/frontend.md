@@ -320,9 +320,11 @@ Read whole by a run that changes `frontend/`, after `every-run.md`.
   `FetchSeriesApi.names()` rejects any answer but `200`. `IsbnView` holds
   them through `useListSeriesNames(seriesApi)` (`names`, `null` until
   answered and when Libris does not answer, never `[]` then, so the form
-  tells "the house holds none" from "unknown"; `list()` never rejects), calls
-  `list()` unawaited on each accepted lookup and passes `names` to the form
-  as `seriesNames`. `IsbnView.spec.ts`' `mountView` and `open` take a
+  tells "the house holds none" from "unknown"; `list()` never rejects, and
+  only the answer to the latest `list()` call counts, a rejection included:
+  an earlier one, landing before or after it, writes nothing, since T178),
+  calls `list()` unawaited on each accepted lookup and passes `names` to
+  the form as `seriesNames`. `IsbnView.spec.ts`' `mountView` and `open` take a
   `seriesApi` fourth, `new FakeSeriesApi([])` by default, and a
   `copiesApi` fifth, a `FakeCopiesApi` rejecting by default; its
   `removeCopy(screen, row?)` taps the trash of the row whose text is `row`
@@ -336,9 +338,10 @@ Read whole by a run that changes `frontend/`, after `every-run.md`.
   `createLibrisApp`. `AuthorsEditScenarios`' `open()` gives `world.authors`,
   the other scenario files a `FakeAuthorsApi([])`. `IsbnView` holds them
   through `useListAuthorNames(authorsApi)` (`names`, `null` until answered
-  and when Libris does not answer; `list()` never rejects), calls `list()`
-  unawaited on each accepted lookup beside the series' names and passes
-  `names` to the form as `authorNames`. `IsbnView.spec.ts`' `mountView`
+  and when Libris does not answer; `list()` never rejects, and only the
+  latest call's answer counts, a rejection included, as for the series'
+  names), calls `list()` unawaited on each accepted lookup beside the
+  series' names and passes `names` to the form as `authorNames`. `IsbnView.spec.ts`' `mountView`
   takes an `authorsApi` seventh, `new FakeAuthorsApi([])` by default, and
   `open` sixth.
 - The save of a held edition is `EditionsApi.save(id, edition)`

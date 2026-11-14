@@ -30,10 +30,6 @@
   Only `Remote-Name` is decoded from UTF-8, so a non-ASCII `Remote-User`,
   `Remote-Email` or `Remote-Groups` reads mangled (found on T005,
   2026-09-09, and T037, 2026-09-24).
-- T178 Frontend: `IsbnView` asks the series and author names on each lookup and
-  `useListSeriesNames` and `useListAuthorNames` keep whichever answer lands
-  last, so on a slow network an older answer replaces a newer one (found on
-  T126, 2026-11-03).
 - T181 Backend: the add checks at the edge only what T037's brief listed; the
   contract's bounds on `language`, `publicationYear`, `pageCount` and
   `series.volumeNumber` reach the use case unchecked through

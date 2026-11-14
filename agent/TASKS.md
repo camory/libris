@@ -157,7 +157,7 @@ today stays green and guards each task.
       button back and takes the skeleton down. No sentence is added: what
       the screen says then is a *Still to spec* line of PRD §4.7 (D05).
 
-- [ ] T178 Frontend: the form suggests the names of the latest lookup.
+- [x] T178 Frontend: the form suggests the names of the latest lookup.
       Bug, its entry T178. Goes red: when the series' and the authors'
       names asked by a first lookup land after those of a second, the
       older answer replaces the newer and the form suggests it. Green: only
