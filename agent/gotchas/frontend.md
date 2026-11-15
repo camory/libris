@@ -404,8 +404,8 @@ Read whole by a run that changes `frontend/`, after `every-run.md`.
   `scrollIntoView({ block: "center" })`s the bordered box, through
   `defineExpose`; prop `refusal`, optional, an `AuthorRefusal`: while set
   the box takes `border-danger` and neither `accent` class, and a line
-  under the box, 4 under it plus the root's `gap-1`, draws `CircleAlert`
-  and `isbn.form.authors.refusal.<code>` (*Rôle manquant*, *Auteur en
+  under the box, 4 under it plus the root's `gap-1`, draws `FailureMessage`
+  with `isbn.form.authors.refusal.<code>` (*Rôle manquant*, *Auteur en
   double*)) draws the name's line, the
   textbox *Nom de l'auteur* then the trash, an `IconButton` drawing
   `Trash2` at 22, named `isbn.form.authors.remove` (*Retirer {name}*) or
@@ -652,7 +652,7 @@ Read whole by a run that changes `frontend/`, after `every-run.md`.
   bookshelf; with the optional prop `removing` the check becomes a
   disabled `BusySpinner` button *Retrait en cours…* and the cross and
   every trash are disabled; new `copies` close the question. With the
-  optional prop `removalFailed` the asking row draws `CircleAlert` and
+  optional prop `removalFailed` the asking row draws `FailureMessage` with
   `isbn.card.removal.failed` under its question, inside its `bg` block,
   its buttons enabled; the row keeps its own `failed`, set from the
   prop's changes and cleared by the cross and every trash, so a question
@@ -975,6 +975,13 @@ Read whole by a run that changes `frontend/`, after `every-run.md`.
   `:size` (`:size="22"`), which writes the `svg`'s own `width` and
   `height`, and carries no `shrink-0` of its own: one beside a sentence
   in a flex row says `class="shrink-0"`.
+- The message of a failure is `FailureMessage` (`ui/components`, one
+  required prop `sentence`, translated by the caller): the alert at 22 and
+  the sentence in `danger`, its root a `<p>` holding the flex row and
+  nothing else. A caller's condition and spacing sit on the tag (`v-if`,
+  `class="pt-5"`, a bound `:class`), falling through to the root; no
+  component or view writes `CircleAlert` or `text-danger` for a message.
+  A spec still reaches the icon with `findAllComponents(CircleAlert)`.
 - `findComponent(SomeIcon)` over a tree that draws none answers an empty
   wrapper whose `.element` throws `Cannot call element on an empty
   VueWrapper`: that is the red of a case asserting an icon before the icon is

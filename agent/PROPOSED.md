@@ -30,11 +30,6 @@
 
 ## Promoted
 
-- T182 Frontend: the failure message, `CircleAlert` and a sentence in `danger`,
-  is drawn by hand in fourteen components and views (`DockedButton`,
-  `EditionForm`, `IsbnView`, `HomeView`…); one component of
-  `ui/components` with its own spec would draw it once (found on T098 and
-  T124, 2026-10-16 and 2026-11-03).
 - T183 Frontend: `IconButton` draws the icon button in `IsbnView`,
   `EditionPageView`, `AuthorBox`, `SearchField` and `BookshelvesHolding`;
   `HomeView`, `BookshelfView`, `ReaderChoice`, `BookshelfRow` and
