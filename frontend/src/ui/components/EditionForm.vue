@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { CircleAlert } from "@lucide/vue";
 import { computed, nextTick, reactive, ref, useId } from "vue";
 import { useI18n } from "vue-i18n";
 import type { Book } from "../../domain/Book";
@@ -27,6 +26,7 @@ import AuthorBox from "./AuthorBox.vue";
 import BookshelvesHolding from "./BookshelvesHolding.vue";
 import CoverChoice from "./CoverChoice.vue";
 import DockedButton from "./DockedButton.vue";
+import FailureMessage from "./FailureMessage.vue";
 import NameStatusWord from "./NameStatusWord.vue";
 import SuggestionList from "./SuggestionList.vue";
 
@@ -284,13 +284,10 @@ function focusFirstRefused(refused: (AuthorRefusal | null)[]) {
             class="-mt-1"
             @choose="choose(field, $event)"
           />
-          <p
+          <FailureMessage
             v-if="refusals[field]"
-            class="flex items-start gap-2 text-body text-danger"
-          >
-            <CircleAlert :size="22" class="shrink-0" />
-            <span>{{ t(messageOf(refusals[field])) }}</span>
-          </p>
+            :sentence="t(messageOf(refusals[field]))"
+          />
         </div>
         <div v-if="field === 'volume'" class="flex flex-col gap-2">
           <p class="text-label text-muted">

@@ -186,7 +186,7 @@ today stays green and guards each task.
       field, as it refuses the fields it checks today (D02, D11);
       Contracteer stays green (D04, D07).
 
-- [ ] T182 Frontend: the failure message drawn once.
+- [x] T182 Frontend: the failure message drawn once.
       Refactor, its entry T182: the message of U05, its icon and its
       sentence in danger, is one presentational component with its own
       spec, used by every component and view that draws it by hand (D05).

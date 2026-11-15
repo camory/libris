@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { CircleAlert, Pencil, ScanBarcode, Search, X } from "@lucide/vue";
+import { Pencil, ScanBarcode, Search, X } from "@lucide/vue";
 import {
   computed,
   inject,
@@ -32,6 +32,7 @@ import type { SourceEdition } from "../../../domain/SourceEdition";
 import BusySpinner from "../../components/BusySpinner.vue";
 import DockedButton from "../../components/DockedButton.vue";
 import EditionForm from "../../components/EditionForm.vue";
+import FailureMessage from "../../components/FailureMessage.vue";
 import IconButton from "../../components/IconButton.vue";
 import SourceEditionCard from "../../components/SourceEditionCard.vue";
 import SourceEditionCardSkeleton from "../../components/SourceEditionCardSkeleton.vue";
@@ -356,9 +357,6 @@ async function send(edition: SourceEdition) {
       />
     </div>
 
-    <p v-if="message" class="mt-5 flex items-start gap-2 text-body text-danger">
-      <CircleAlert :size="22" class="shrink-0" />
-      <span>{{ t(message) }}</span>
-    </p>
+    <FailureMessage v-if="message" class="mt-5" :sentence="t(message)" />
   </main>
 </template>

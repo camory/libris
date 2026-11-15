@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { BookOpen, CircleAlert } from "@lucide/vue";
+import { BookOpen } from "@lucide/vue";
 import { computed, inject, onUnmounted, ref, useTemplateRef, watch } from "vue";
 import { useI18n } from "vue-i18n";
 import { useRouter } from "vue-router";
@@ -12,6 +12,7 @@ import { searchQueryOf } from "../../../domain/SearchQuery";
 import CatalogueRow from "../../components/CatalogueRow.vue";
 import CatalogueRowSkeleton from "../../components/CatalogueRowSkeleton.vue";
 import CatalogueSwitch from "../../components/CatalogueSwitch.vue";
+import FailureMessage from "../../components/FailureMessage.vue";
 import SearchField from "../../components/SearchField.vue";
 
 const props = withDefaults(defineProps<{ query?: string }>(), { query: "" });
@@ -195,14 +196,11 @@ void search(props.query);
           <CatalogueRowSkeleton v-for="row in 2" :key="row" />
         </template>
       </div>
-      <p
+      <FailureMessage
         v-if="message"
-        class="flex items-start gap-2 text-body text-danger"
         :class="{ 'mt-5': rowsShown().length > 0 }"
-      >
-        <CircleAlert :size="22" class="shrink-0" />
-        <span>{{ message }}</span>
-      </p>
+        :sentence="message"
+      />
     </template>
   </main>
 </template>

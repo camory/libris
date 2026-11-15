@@ -231,3 +231,16 @@ Format:
   field, not the whole answer, as the review asks.
 - Left over: nothing; the mixed green and refactor of `72dfdb08` stays in
   the history, which is not rewritten.
+
+## 2026-11-15 — T182 the failure message drawn once — done
+- Did: `FailureMessage` (`ui/components`, prop `sentence`) draws the alert
+  and the sentence of a failure; the fourteen components and views that
+  wrote it by hand draw it, each keeping its condition and spacing.
+- Decided: the moves were done by a throwaway script that read each hand
+  block and wrote the tag, its common classes dropped and the rest kept on
+  the tag, then Prettier; the catalogue's block, whose bound `:class` holds
+  a `>`, was moved by hand. Subjects say each screen's name ("the lookup
+  screen draws FailureMessage").
+- Deviations from the brief: none.
+- Left over: a look at the home page's *Erreur lors du chargement* and a
+  refused field of the form on the running app, left to Tophe in the PR.

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { CircleAlert, CirclePlus } from "@lucide/vue";
+import { CirclePlus } from "@lucide/vue";
 import { computed, inject, ref, watch } from "vue";
 import { useI18n } from "vue-i18n";
 import { bookshelvesApiKey } from "../../../application/BookshelvesApi";
@@ -15,6 +15,7 @@ import {
 } from "../../../domain/Member";
 import type { MembershipRole } from "../../../domain/Membership";
 import type { Reader } from "../../../domain/Reader";
+import FailureMessage from "../../components/FailureMessage.vue";
 import MemberRow from "../../components/MemberRow.vue";
 import MemberRowSkeleton from "../../components/MemberRowSkeleton.vue";
 import PageTitleSkeleton from "../../components/PageTitleSkeleton.vue";
@@ -89,10 +90,7 @@ watch([() => props.id, reader], ([id, current]) => {
 
 <template>
   <main class="mx-auto w-full max-w-120 px-5 pb-5">
-    <p v-if="failure" class="flex items-start gap-2 pt-5 text-body text-danger">
-      <CircleAlert :size="22" class="shrink-0" />
-      <span>{{ failure }}</span>
-    </p>
+    <FailureMessage v-if="failure" class="pt-5" :sentence="failure" />
     <template v-else>
       <header class="pt-5 pb-3">
         <h1 v-if="state.status === 'found'" class="text-page-title">

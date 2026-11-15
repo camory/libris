@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { Check, ChevronDown, CircleAlert, Trash2 } from "@lucide/vue";
+import { Check, ChevronDown, Trash2 } from "@lucide/vue";
 import { computed, onMounted, onUnmounted, ref, useTemplateRef } from "vue";
 import { useI18n } from "vue-i18n";
 import type { AuthorRefusal } from "../../domain/EditionDraft";
@@ -11,6 +11,7 @@ import {
   type Kind,
 } from "../../domain/SourceEdition";
 import { suggestionsFor } from "../../domain/Suggestion";
+import FailureMessage from "./FailureMessage.vue";
 import IconButton from "./IconButton.vue";
 import NameStatusWord from "./NameStatusWord.vue";
 import SuggestionList from "./SuggestionList.vue";
@@ -149,10 +150,11 @@ const label = computed(() =>
         </span>
       </button>
     </div>
-    <p v-if="refusal" class="mt-1 flex items-start gap-2 text-body text-danger">
-      <CircleAlert :size="22" class="shrink-0" />
-      <span>{{ t(`isbn.form.authors.refusal.${refusal}`) }}</span>
-    </p>
+    <FailureMessage
+      v-if="refusal"
+      class="mt-1"
+      :sentence="t(`isbn.form.authors.refusal.${refusal}`)"
+    />
     <SuggestionList
       v-if="suggestions.length"
       :suggestions="suggestions"

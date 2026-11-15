@@ -1,9 +1,10 @@
 <script setup lang="ts">
-import { Check, CircleAlert } from "@lucide/vue";
+import { Check } from "@lucide/vue";
 import { onMounted, ref, useTemplateRef } from "vue";
 import { useI18n } from "vue-i18n";
 import { isBookshelfName } from "../../domain/Bookshelf";
 import BusySpinner from "./BusySpinner.vue";
+import FailureMessage from "./FailureMessage.vue";
 
 defineProps<{
   creating: boolean;
@@ -48,12 +49,10 @@ onMounted(() => field.value?.focus());
         </button>
       </div>
     </div>
-    <p
+    <FailureMessage
       v-if="failure"
-      class="flex items-start gap-2 pt-2 pb-1 text-body text-danger"
-    >
-      <CircleAlert :size="22" class="shrink-0" />
-      <span>{{ t(`home.bookshelves.failure.${failure}`) }}</span>
-    </p>
+      class="pt-2 pb-1"
+      :sentence="t(`home.bookshelves.failure.${failure}`)"
+    />
   </div>
 </template>
