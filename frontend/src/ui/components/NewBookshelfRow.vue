@@ -44,7 +44,7 @@ onMounted(() => field.value?.focus());
           @click="emit('create', name)"
         >
           <BusySpinner v-if="creating" class="size-5.5" />
-          <Check v-else :stroke-width="3" />
+          <Check v-else :size="22" :stroke-width="3" />
         </IconButton>
       </div>
     </div>

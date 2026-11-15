@@ -91,7 +91,7 @@ void list();
           :label="t('home.bookshelves.new')"
           @click="naming = true"
         >
-          <CirclePlus />
+          <CirclePlus :size="22" />
         </IconButton>
       </div>
       <FailureMessage

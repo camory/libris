@@ -41,7 +41,7 @@ const role = computed(() => {
           v-if="isDefault"
           class="mr-1.5 flex size-11 shrink-0 items-center justify-center text-accent"
         >
-          <Star fill="currentColor" />
+          <Star :size="22" fill="currentColor" />
         </span>
         <IconButton
           v-else
@@ -55,7 +55,7 @@ const role = computed(() => {
           @click="emit('choose')"
         >
           <BusySpinner v-if="busy" class="size-5.5" />
-          <Star v-else />
+          <Star v-else :size="22" />
         </IconButton>
       </template>
     </div>

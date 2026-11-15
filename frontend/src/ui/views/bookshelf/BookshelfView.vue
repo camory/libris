@@ -110,7 +110,7 @@ watch([() => props.id, reader], ([id, current]) => {
             :label="t('bookshelf.members.new')"
             @click="choosing = true"
           >
-            <CirclePlus />
+            <CirclePlus :size="22" />
           </IconButton>
         </div>
         <div

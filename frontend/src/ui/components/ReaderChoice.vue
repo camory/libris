@@ -56,7 +56,7 @@ function toggleOwner() {
         :label="t('bookshelf.members.close')"
         @click="emit('close')"
       >
-        <X class="text-muted" />
+        <X :size="22" class="text-muted" />
       </IconButton>
     </div>
     <div class="overflow-hidden rounded-[14px] border border-border bg-surface">
@@ -76,7 +76,10 @@ function toggleOwner() {
                 :aria-pressed="role === 'OWNER'"
                 @click="toggleOwner"
               >
-                <Crown :fill="role === 'OWNER' ? 'currentColor' : 'none'" />
+                <Crown
+                  :size="22"
+                  :fill="role === 'OWNER' ? 'currentColor' : 'none'"
+                />
               </IconButton>
               <IconButton
                 :disabled="adding"
@@ -88,7 +91,7 @@ function toggleOwner() {
                 @click="emit('add', reader.id, role)"
               >
                 <BusySpinner v-if="adding" class="size-5.5" />
-                <Check v-else :stroke-width="3" />
+                <Check v-else :size="22" :stroke-width="3" />
               </IconButton>
             </div>
             <FailureMessage

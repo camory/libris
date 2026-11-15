@@ -983,7 +983,8 @@ Read whole by a run that changes `frontend/`, after `every-run.md`.
   component or view writes `CircleAlert` or `text-danger` for a message.
   A spec still reaches the icon with `findAllComponents(CircleAlert)`.
 - Every icon button is `IconButton` (`ui/components`, one required prop
-  `label`, its `aria-label`; the icon in its default slot): `class`,
+  `label`, its `aria-label`; the icon in its default slot, at
+  `:size="22"` like every icon of the tree but the empty state's): `class`,
   `disabled`, `aria-pressed` and `@click` fall through to its `button`,
   which sets `type="button"`, the 44 box, `shrink-0` and `text-accent`. A
   colour other than `accent` goes on the icon (`<X class="text-muted" />`,
