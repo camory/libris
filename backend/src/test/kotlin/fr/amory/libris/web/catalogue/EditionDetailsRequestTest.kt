@@ -121,20 +121,11 @@ class EditionDetailsRequestTest {
 
     // When / Then
     request.validate() shouldBe Accepted(
-      EditionDetails(
-        kind = MANGA,
-        title = "Aux prises avec Baggy et ses hommes",
-        subtitle = "Le clown pirate",
-        contributions = Contributions.of(
-          listOf(Contribution("Eiichirō Oda", WRITER), Contribution("Eiichirō Oda", ARTIST)),
-        ),
+      DETAILS_OF_BAGGY_AND_HIS_MEN.copy(
         series = SeriesEntry("One Piece", null),
-        collection = "Shonen manga",
-        publisher = "Glénat",
         publicationYear = null,
         language = null,
         pageCount = null,
-        summary = "Luffy et Zoro affrontent le pirate Baggy le clown.",
       ),
     )
   }
@@ -146,21 +137,7 @@ class EditionDetailsRequestTest {
 
     // When / Then
     request.validate() shouldBe Accepted(
-      EditionDetails(
-        kind = MANGA,
-        title = "Aux prises avec Baggy et ses hommes",
-        subtitle = "Le clown pirate",
-        contributions = Contributions.of(
-          listOf(Contribution("Eiichirō Oda", WRITER), Contribution("Eiichirō Oda", ARTIST)),
-        ),
-        series = SeriesEntry("One Piece", 1),
-        collection = "Shonen manga",
-        publisher = "Glénat",
-        publicationYear = 1,
-        language = "fr",
-        pageCount = 1,
-        summary = "Luffy et Zoro affrontent le pirate Baggy le clown.",
-      ),
+      DETAILS_OF_BAGGY_AND_HIS_MEN.copy(series = SeriesEntry("One Piece", 1), publicationYear = 1, pageCount = 1),
     )
   }
 
@@ -183,3 +160,19 @@ class EditionDetailsRequestTest {
       summary = "Luffy et Zoro affrontent le pirate Baggy le clown.",
     )
 }
+
+private val DETAILS_OF_BAGGY_AND_HIS_MEN = EditionDetails(
+  kind = MANGA,
+  title = "Aux prises avec Baggy et ses hommes",
+  subtitle = "Le clown pirate",
+  contributions = Contributions.of(
+    listOf(Contribution("Eiichirō Oda", WRITER), Contribution("Eiichirō Oda", ARTIST)),
+  ),
+  series = SeriesEntry("One Piece", 2),
+  collection = "Shonen manga",
+  publisher = "Glénat",
+  publicationYear = 2013,
+  language = "fr",
+  pageCount = 208,
+  summary = "Luffy et Zoro affrontent le pirate Baggy le clown.",
+)
