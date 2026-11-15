@@ -175,9 +175,8 @@ Read whole by a run that changes `frontend/`, after `every-run.md`.
   `@remove` call `removeCopyFromCard.remove`, read at the event. It never
   asks Libris again: `dropRemovedCopy(copyId)` keeps the shown copies (the
   lookup's and the added one) less the id `afterRemoval` gave and,
-  unless an add is being sent, rebuilds `addBookToBookshelf`, which ends the *Added* state and brings
-  the dock back; after an add it
-  also makes `edition` the sent one, `covers` the sent candidate, `held`
+  unless an add is being sent, rebuilds `addBookToBookshelf`, which ends
+  the *Added* state and brings the dock back; after an add it also makes `edition` the sent one, `covers` the sent candidate, `held`
   true and `editing` false, so the card is the house's: no dots, and the
   pencil once none of the reader's copies is left on it.
   `useFindCatalogueEdition`'s `refresh(id)` asks again with no `loading`
