@@ -18,7 +18,7 @@ class RemoteIdentity private constructor(
   val authorities: List<GrantedAuthority>) {
   companion object {
     fun of(request: HttpServletRequest): RemoteIdentity? {
-      val username = request.getHeader("Remote-User")
+      val username = request.getHeader("Remote-User")?.takeUnless { it.isBlank() }
       val email = request.getHeader("Remote-Email")?.takeUnless { it.isBlank() }
       if (username == null || email == null) return null
       return RemoteIdentity(

@@ -22,6 +22,11 @@ class RemoteIdentityTest {
   }
 
   @Test
+  fun `a blank username names no reader`() {
+    RemoteIdentity.of(requestOf("Remote-User" to " ", "Remote-Email" to "juliette@amory.fr")) shouldBe null
+  }
+
+  @Test
   fun `the display name is the name header`() {
     // Given
     val request = julietteSending("Remote-Name" to "Juliette")
