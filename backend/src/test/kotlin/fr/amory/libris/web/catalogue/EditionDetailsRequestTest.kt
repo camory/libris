@@ -138,6 +138,31 @@ class EditionDetailsRequestTest {
     )
   }
 
+  @Test
+  fun `a year, a page count and a volume number of one are accepted`() {
+    // Given
+    val request = baggyAndHisMen(volumeNumber = 1).copy(publicationYear = 1, pageCount = 1)
+
+    // When / Then
+    request.validate() shouldBe Accepted(
+      EditionDetails(
+        kind = MANGA,
+        title = "Aux prises avec Baggy et ses hommes",
+        subtitle = "Le clown pirate",
+        contributions = Contributions.of(
+          listOf(Contribution("Eiichirō Oda", WRITER), Contribution("Eiichirō Oda", ARTIST)),
+        ),
+        series = SeriesEntry("One Piece", 1),
+        collection = "Shonen manga",
+        publisher = "Glénat",
+        publicationYear = 1,
+        language = "fr",
+        pageCount = 1,
+        summary = "Luffy et Zoro affrontent le pirate Baggy le clown.",
+      ),
+    )
+  }
+
   private fun baggyAndHisMen(
     title: String = "Aux prises avec Baggy et ses hommes",
     artist: String = "Eiichirō Oda",
