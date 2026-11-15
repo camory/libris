@@ -5,6 +5,7 @@ import { useI18n } from "vue-i18n";
 import type { Membership } from "../../domain/Membership";
 import BusySpinner from "./BusySpinner.vue";
 import FailureMessage from "./FailureMessage.vue";
+import IconButton from "./IconButton.vue";
 
 const props = defineProps<{
   membership: Membership;
@@ -42,21 +43,20 @@ const role = computed(() => {
         >
           <Star fill="currentColor" />
         </span>
-        <button
+        <IconButton
           v-else
-          type="button"
           :disabled="busy || locked"
-          :aria-label="
+          :label="
             busy
               ? t('home.bookshelves.choosingDefault')
               : t('home.bookshelves.chooseDefault')
           "
-          class="relative mr-1.5 flex size-11 shrink-0 items-center justify-center rounded-[10px] text-accent"
+          class="relative mr-1.5"
           @click="emit('choose')"
         >
           <BusySpinner v-if="busy" class="size-5.5" />
           <Star v-else />
-        </button>
+        </IconButton>
       </template>
     </div>
     {{ " " }}
