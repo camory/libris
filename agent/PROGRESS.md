@@ -329,3 +329,11 @@ Format:
   1 and 2, 76 and 78 characters) passed the 72; they are left as they
   are, since history is not rewritten, and the squash title is within.
 - Left over: nothing.
+
+## 2026-11-15 — T190 the web slice's mocks declared once — done
+- Did: `@WebSliceTest` carries the `@MockitoBean` of the nineteen use cases
+  of `web`, in the order of the old lists; `ApiContractTest`,
+  `ProblemAdviceTest` and `SecurityConfigTest` lost theirs, in one commit.
+- Decided: nothing; the brief settled the place, the order and the step.
+- Deviations from the brief: none.
+- Left over: nothing.

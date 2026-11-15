@@ -1,25 +1,8 @@
 package fr.amory.libris.web.problem
 
-import fr.amory.libris.bibliography.application.cover.FindCover
-import fr.amory.libris.bibliography.application.edition.ListAuthorNames
-import fr.amory.libris.bibliography.application.series.ListSeriesNames
 import fr.amory.libris.fixture.WebSliceTest
 import fr.amory.libris.library.application.AddBookToBookshelf
-import fr.amory.libris.library.application.AddMemberToBookshelf
-import fr.amory.libris.library.application.ChooseDefaultBookshelf
-import fr.amory.libris.library.application.CreateBookshelf
-import fr.amory.libris.library.application.FindBookshelf
-import fr.amory.libris.library.application.FindDefaultBookshelf
-import fr.amory.libris.library.application.ListReaderBookshelves
-import fr.amory.libris.library.application.ListReaders
-import fr.amory.libris.library.application.RemoveCopy
 import fr.amory.libris.library.application.WelcomeReader
-import fr.amory.libris.library.application.catalogue.BrowseCatalogue
-import fr.amory.libris.library.application.catalogue.FindCatalogueEdition
-import fr.amory.libris.library.application.catalogue.FindCatalogueSeries
-import fr.amory.libris.library.application.catalogue.ListCatalogueSeries
-import fr.amory.libris.library.application.catalogue.SaveEdition
-import fr.amory.libris.library.application.lookup.LookupIsbnForReader
 import fr.amory.libris.library.domain.bookshelf.BookshelfId
 import fr.amory.libris.library.domain.reader.ReaderId
 import fr.amory.libris.library.fixture.readerNamed
@@ -31,7 +14,6 @@ import org.mockito.Mockito.verifyNoInteractions
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.core.ParameterizedTypeReference
 import org.springframework.http.MediaType.APPLICATION_JSON
-import org.springframework.test.context.bean.override.mockito.MockitoBean
 import org.springframework.test.web.servlet.client.RestTestClient
 import java.util.UUID
 
@@ -43,29 +25,6 @@ private val TOPHE = readerNamed(
 )
 
 @WebSliceTest
-@MockitoBean(
-  types = [
-    WelcomeReader::class,
-    LookupIsbnForReader::class,
-    FindDefaultBookshelf::class,
-    AddBookToBookshelf::class,
-    BrowseCatalogue::class,
-    FindCover::class,
-    ListReaderBookshelves::class,
-    CreateBookshelf::class,
-    FindBookshelf::class,
-    ListReaders::class,
-    AddMemberToBookshelf::class,
-    ChooseDefaultBookshelf::class,
-    ListCatalogueSeries::class,
-    FindCatalogueSeries::class,
-    FindCatalogueEdition::class,
-    ListSeriesNames::class,
-    ListAuthorNames::class,
-    RemoveCopy::class,
-    SaveEdition::class,
-  ],
-)
 class ProblemAdviceTest @Autowired constructor(
   private val client: RestTestClient,
   private val welcomeReader: WelcomeReader,

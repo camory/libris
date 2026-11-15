@@ -95,34 +95,10 @@ import org.springframework.boot.web.servlet.FilterRegistrationBean
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Import
 import org.springframework.core.Ordered
-import org.springframework.test.context.bean.override.mockito.MockitoBean
 import java.util.UUID
 
 @WebSliceTest
 @Import(ApiContractTest.FixedReaderHeaders::class)
-@MockitoBean(
-  types = [
-    WelcomeReader::class,
-    LookupIsbnForReader::class,
-    FindDefaultBookshelf::class,
-    AddBookToBookshelf::class,
-    BrowseCatalogue::class,
-    FindCover::class,
-    ListReaderBookshelves::class,
-    CreateBookshelf::class,
-    FindBookshelf::class,
-    ListReaders::class,
-    AddMemberToBookshelf::class,
-    ChooseDefaultBookshelf::class,
-    ListCatalogueSeries::class,
-    FindCatalogueSeries::class,
-    FindCatalogueEdition::class,
-    ListSeriesNames::class,
-    ListAuthorNames::class,
-    RemoveCopy::class,
-    SaveEdition::class,
-  ],
-)
 @Suppress("LongParameterList")
 class ApiContractTest @Autowired constructor(
   @field:ContracteerServerPort @param:LocalServerPort val serverPort: Int,
