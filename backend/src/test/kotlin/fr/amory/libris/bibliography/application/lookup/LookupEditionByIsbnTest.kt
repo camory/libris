@@ -35,27 +35,6 @@ import io.kotest.matchers.types.shouldBeInstanceOf
 import org.junit.jupiter.api.Test
 import java.util.concurrent.CyclicBarrier
 
-private val ROMANCE_DAWN = Edition(
-  id = EditionId.new(),
-  isbn = isbnOf("9782723488525"),
-  kind = MANGA,
-  title = "Romance dawn",
-  subtitle = "Tome 01",
-  contributions = Contributions.of(emptyList()),
-  seriesVolume = null,
-  collection = null,
-  publisher = null,
-  publicationYear = null,
-  language = null,
-  pageCount = null,
-  summary = null,
-  coverName = null,
-)
-
-private val NO_COVER = CoverCandidates.of(emptyList())
-
-private val ROMANCE_DAWN_COVER = CoverName("9c56cc51b374c3ba189210d5b6d4bf57790d351c96c47c02190ecf1e430635ab")
-
 class LookupEditionByIsbnTest {
   @Test
   fun `an ISBN the house holds is answered as the house holds it, without asking the sources`() {
@@ -336,3 +315,24 @@ class LookupEditionByIsbnTest {
     val NO_COVER_LOOKUP get() = CoverLookupAnswering(null)
   }
 }
+
+private val ROMANCE_DAWN = Edition(
+  id = EditionId.new(),
+  isbn = isbnOf("9782723488525"),
+  kind = MANGA,
+  title = "Romance dawn",
+  subtitle = "Tome 01",
+  contributions = Contributions.of(emptyList()),
+  seriesVolume = null,
+  collection = null,
+  publisher = null,
+  publicationYear = null,
+  language = null,
+  pageCount = null,
+  summary = null,
+  coverName = null,
+)
+
+private val ROMANCE_DAWN_COVER = CoverName("9c56cc51b374c3ba189210d5b6d4bf57790d351c96c47c02190ecf1e430635ab")
+
+private val NO_COVER = CoverCandidates.of(emptyList())
