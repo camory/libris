@@ -36,11 +36,6 @@
 
 ## Promoted
 
-- T189 Backend: `BrowseCatalogue`, `FindCatalogueSeries` and `HeldEditionReads`
-  each build the reader's bookshelves by id with the same chain,
-  `findByMember(readerId).mapNotNull { ReaderBookshelf.of(it, readerId) }
-  .associateBy { it.id }`; one function would hold it (found on T130,
-  2026-11-06).
 - T190 Backend tests: every `@WebSliceTest` class names every use case of `web`
   in its `@MockitoBean`, and the identical lists are what let
   `ProblemAdviceTest` and `SecurityConfigTest` share a context; declaring
