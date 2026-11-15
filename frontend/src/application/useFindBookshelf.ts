@@ -3,6 +3,7 @@ import type { Bookshelf } from "../domain/Bookshelf";
 import type { KnownReader } from "../domain/KnownReader";
 import { isOwnedBy, type Member } from "../domain/Member";
 import type { BookshelvesApi, FindAnswer } from "./BookshelvesApi";
+import { findFailureOf, type FindFailure } from "./FindFailure";
 import type { ReadersApi } from "./ReadersApi";
 
 export type FoundBookshelfState =
@@ -13,8 +14,7 @@ export type FoundBookshelfState =
       members: Member[];
       readers: KnownReader[];
     }
-  | { status: "notFound" }
-  | { status: "unavailable" };
+  | FindFailure;
 
 export function useFindBookshelf(
   bookshelvesApi: BookshelvesApi,
@@ -58,11 +58,5 @@ function stateOf(
       members: answer.members,
       readers,
     };
-  switch (answer.type) {
-    case "/problems/not-found":
-    case "/problems/validation":
-      return { status: "notFound" };
-    default:
-      return { status: "unavailable" };
-  }
+  return findFailureOf(answer.type);
 }
