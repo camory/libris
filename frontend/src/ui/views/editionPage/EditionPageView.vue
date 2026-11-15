@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { CircleAlert, Pencil, X } from "@lucide/vue";
+import { Pencil, X } from "@lucide/vue";
 import { computed, inject, ref, watch } from "vue";
 import { useI18n } from "vue-i18n";
 import { useRouter } from "vue-router";
@@ -16,6 +16,7 @@ import { useSaveEdition } from "../../../application/useSaveEdition";
 import type { CoverCandidate } from "../../../domain/Cover";
 import type { SourceEdition } from "../../../domain/SourceEdition";
 import EditionForm from "../../components/EditionForm.vue";
+import FailureMessage from "../../components/FailureMessage.vue";
 import HeldEditionCardSkeleton from "../../components/HeldEditionCardSkeleton.vue";
 import IconButton from "../../components/IconButton.vue";
 import SourceEditionCard from "../../components/SourceEditionCard.vue";
@@ -157,9 +158,6 @@ const failure = computed(() =>
         </IconButton>
       </template>
     </SourceEditionCard>
-    <p v-else class="flex items-start gap-2 text-body text-danger">
-      <CircleAlert :size="22" class="shrink-0" />
-      <span>{{ failure }}</span>
-    </p>
+    <FailureMessage v-else :sentence="failure" />
   </main>
 </template>
