@@ -9,7 +9,7 @@ import AuthorBox from "./AuthorBox.vue";
 
 describe("AuthorBox", () => {
   afterEach(() => {
-    Reflect.deleteProperty(HTMLElement.prototype, "scrollIntoView");
+    vi.restoreAllMocks();
   });
 
   it("holds the author's name", () => {
@@ -426,11 +426,7 @@ describe("AuthorBox", () => {
 
   it("brings its box to the top when its name takes the focus", async () => {
     // Given
-    const scrollIntoView = vi.fn();
-    Object.defineProperty(HTMLElement.prototype, "scrollIntoView", {
-      configurable: true,
-      value: scrollIntoView,
-    });
+    const scrollIntoView = vi.spyOn(Element.prototype, "scrollIntoView");
     const view = screen("", [], "BOOK");
     const name = view.getByRole("textbox", { name: "Nom de l'auteur" });
 
@@ -546,11 +542,7 @@ describe("AuthorBox", () => {
 
   it("brings its box into view on focusRoles", () => {
     // Given
-    const scrollIntoView = vi.fn();
-    Object.defineProperty(HTMLElement.prototype, "scrollIntoView", {
-      configurable: true,
-      value: scrollIntoView,
-    });
+    const scrollIntoView = vi.spyOn(Element.prototype, "scrollIntoView");
     const wrapper = box("Albert Uderzo", [], "BD");
 
     // When

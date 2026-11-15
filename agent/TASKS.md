@@ -223,7 +223,7 @@ today stays green and guards each task.
       it is: the client's specs against the Contracteer mock green
       unchanged (D07).
 
-- [ ] T188 Frontend tests: the browser's missing scroll defined once.
+- [x] T188 Frontend tests: the browser's missing scroll defined once.
       Refactor of tests, its entry T188: the test setup defines the scroll
       jsdom lacks, so the components call it plainly and their specs stop
       defining it; the home view's spec gains its Given, When and Then

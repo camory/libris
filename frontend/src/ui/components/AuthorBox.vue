@@ -55,13 +55,13 @@ function focusName() {
 
 function focusRoles() {
   rolesLine.value?.focus();
-  box.value?.scrollIntoView?.({ block: "center" });
+  box.value?.scrollIntoView({ block: "center" });
 }
 
 function nameFocused() {
   focused.value = true;
   chosen.value = false;
-  box.value?.scrollIntoView?.({ block: "start" });
+  box.value?.scrollIntoView({ block: "start" });
 }
 
 function choose(tapped: string) {

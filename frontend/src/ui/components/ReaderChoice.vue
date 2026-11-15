@@ -32,7 +32,7 @@ watch(
 );
 
 const root = useTemplateRef("root");
-onMounted(() => root.value?.scrollIntoView?.({ block: "nearest" }));
+onMounted(() => root.value?.scrollIntoView({ block: "nearest" }));
 
 function choose(readerId: string) {
   chosenId.value = readerId;
