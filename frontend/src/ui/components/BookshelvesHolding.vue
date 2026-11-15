@@ -1,9 +1,10 @@
 <script setup lang="ts">
-import { BookOpen, Check, CircleAlert, Trash2, X } from "@lucide/vue";
+import { BookOpen, Check, Trash2, X } from "@lucide/vue";
 import { computed, ref, watch } from "vue";
 import { useI18n } from "vue-i18n";
 import { bookshelvesHolding, type Copy } from "../../domain/Copy";
 import BusySpinner from "./BusySpinner.vue";
+import FailureMessage from "./FailureMessage.vue";
 import IconButton from "./IconButton.vue";
 
 const props = defineProps<{
@@ -78,13 +79,11 @@ function remove(bookshelfId: string) {
             <Check v-else :size="22" :stroke-width="3" class="text-danger" />
           </IconButton>
         </div>
-        <p
+        <FailureMessage
           v-if="failed"
-          class="flex items-start gap-2 pt-2 text-body text-danger"
-        >
-          <CircleAlert :size="22" class="shrink-0" />
-          <span>{{ t("isbn.card.removal.failed") }}</span>
-        </p>
+          class="pt-2"
+          :sentence="t('isbn.card.removal.failed')"
+        />
       </div>
       <div v-else class="flex items-start gap-2">
         <BookOpen :size="22" class="my-2.75 shrink-0" />
