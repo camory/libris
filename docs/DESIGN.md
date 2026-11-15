@@ -243,11 +243,12 @@ cours…*; the field stays editable,
 while the fields of a form look the same and accept nothing.
 It comes back to itself when the answer arrives, whatever the answer is.
 
-**Icon button.** An icon alone, 44 by 44, radius 10, no border, no
-background, `accent`; always an `aria-label` that names the action in
-French, *Scanner le code-barres*, *Fermer la caméra*. An icon button that
-toggles a state changes its icon, the barcode becomes a cross, the pencil
-*Modifier* the cross *Annuler les modifications*, and its label with it.
+**Icon button.** An icon alone, 22, in a box 44 by 44, radius 10, no
+border, no background, `accent`; always an `aria-label` that names the
+action in French, *Scanner le code-barres*, *Fermer la caméra*. An icon
+button that toggles a state changes its icon, the barcode becomes a cross,
+the pencil *Modifier* the cross *Annuler les modifications*, and its label
+with it.
 
 **Text button.** A verb in the infinitive, `button` step, `accent`, no
 border, no background, 44 tall, 12 of side padding. It lives in a banner

@@ -6,6 +6,7 @@ import type { KnownReader } from "../../domain/KnownReader";
 import type { MembershipRole } from "../../domain/Membership";
 import BusySpinner from "./BusySpinner.vue";
 import FailureMessage from "./FailureMessage.vue";
+import IconButton from "./IconButton.vue";
 
 const props = defineProps<{
   readers: KnownReader[];
@@ -50,15 +51,13 @@ function toggleOwner() {
       <h2 class="text-label text-muted">
         {{ t("bookshelf.members.choose") }}
       </h2>
-      <button
-        type="button"
+      <IconButton
         :disabled="adding"
-        :aria-label="t('bookshelf.members.close')"
-        class="flex size-11 items-center justify-center rounded-[10px] text-muted"
+        :label="t('bookshelf.members.close')"
         @click="emit('close')"
       >
-        <X />
-      </button>
+        <X :size="22" class="text-muted" />
+      </IconButton>
     </div>
     <div class="overflow-hidden rounded-[14px] border border-border bg-surface">
       <ul
@@ -71,30 +70,29 @@ function toggleOwner() {
               <span class="min-w-0 flex-1 text-body text-text">
                 {{ reader.displayName }}
               </span>
-              <button
-                type="button"
+              <IconButton
                 :disabled="adding"
-                :aria-label="t('bookshelf.members.owner')"
+                :label="t('bookshelf.members.owner')"
                 :aria-pressed="role === 'OWNER'"
-                class="flex size-11 shrink-0 items-center justify-center rounded-[10px] text-accent"
                 @click="toggleOwner"
               >
-                <Crown :fill="role === 'OWNER' ? 'currentColor' : 'none'" />
-              </button>
-              <button
-                type="button"
+                <Crown
+                  :size="22"
+                  :fill="role === 'OWNER' ? 'currentColor' : 'none'"
+                />
+              </IconButton>
+              <IconButton
                 :disabled="adding"
-                :aria-label="
+                :label="
                   adding
                     ? t('bookshelf.members.adding')
                     : t('bookshelf.members.add')
                 "
-                class="flex size-11 shrink-0 items-center justify-center rounded-[10px] text-accent"
                 @click="emit('add', reader.id, role)"
               >
                 <BusySpinner v-if="adding" class="size-5.5" />
-                <Check v-else :stroke-width="3" />
-              </button>
+                <Check v-else :size="22" :stroke-width="3" />
+              </IconButton>
             </div>
             <FailureMessage
               v-if="reader.id === failedId"

@@ -244,3 +244,14 @@ Format:
 - Deviations from the brief: none.
 - Left over: a look at the home page's *Erreur lors du chargement* and a
   refused field of the form on the running app, left to Tophe in the PR.
+
+## 2026-11-15 — T183 every icon button on the one icon button — done
+- Did: the plus of the home page and of a bookshelf, the star of a home
+  row, the check of a new bookshelf and the cross, the crown and the check
+  of the choice of a reader are drawn by `IconButton`, one commit per file.
+- Decided: nothing; the brief settled the cross's `text-muted` on `<X>`
+  and the `shrink-0` the four buttons gain.
+- Deviations from the brief: none.
+- Left over: a look at the home page and a bookshelf's members on the
+  running app, and the icons' sizes (24 here, 22 on the other callers),
+  left to Tophe in the PR.
