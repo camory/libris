@@ -14,7 +14,9 @@ Served from the family server.
 - **Deployment**: Docker Compose behind the server's existing Traefik
 
 See [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) for the decisions and
-[`docs/PRD.md`](docs/PRD.md) for what the product must do.
+[`docs/PRD.md`](docs/PRD.md) for what the product must do. To run or test a
+side on your machine, see [`backend/README.md`](backend/README.md) and
+[`frontend/README.md`](frontend/README.md).
 
 ## How it is being built
 

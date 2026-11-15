@@ -54,6 +54,7 @@ dependencies {
   testImplementation(libs.archunit.junit5)
   testImplementation(libs.wiremock.standalone)
   testRuntimeOnly("org.junit.platform:junit-platform-launcher")
+  testRuntimeOnly("org.testcontainers:testcontainers-postgresql")
 }
 
 detekt {
@@ -72,7 +73,7 @@ tasks.detekt {
 tasks.test {
   useJUnitPlatform()
   jvmArgs("-XX:TieredStopAtLevel=1")
-  environmentFromDotenv()
+  environmentFrom(".env.test")
   testLogging {
     events(TestLogEvent.PASSED, TestLogEvent.SKIPPED, TestLogEvent.FAILED)
     exceptionFormat = TestExceptionFormat.FULL
@@ -80,12 +81,12 @@ tasks.test {
 }
 
 tasks.bootRun {
-  environmentFromDotenv()
+  environmentFrom(".env")
 }
 
-val dotenv: Map<String, String> = file(".env").takeIf { it.isFile }?.readLines().orEmpty()
+fun dotenv(name: String): Map<String, String> = file(name).takeIf { it.isFile }?.readLines().orEmpty()
   .filter { it.isNotBlank() && !it.startsWith("#") }
   .associate { it.substringBefore("=").trim() to it.substringAfter("=").trim() }
 
-fun ProcessForkOptions.environmentFromDotenv() =
-  dotenv.forEach { (name, value) -> if (System.getenv(name) == null) environment(name, value) }
+fun ProcessForkOptions.environmentFrom(name: String) =
+  dotenv(name).forEach { (key, value) -> if (System.getenv(key) == null) environment(key, value) }

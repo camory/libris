@@ -57,8 +57,9 @@ true; the diary keeps the date it was found.
 - The loop takes the agent PostgreSQL down at the end of a run; a host gate
   then fails with connection refused until
   `docker compose --env-file agent/.env -f agent/compose.yaml up -d postgres`.
-  `backend/.env` points the host gate at that database, and `FreshSchema`
-  wipes it: what was entered by hand through `bootRun` is gone after a gate.
+  `backend/.env.test` points the host gate at that database, and
+  `FreshSchema` wipes it: what was entered by hand through `bootRun`, which
+  reads `backend/.env`, is gone after a gate.
 - From the host, the frontend gate needs Node 24 and `contracteer` on the
   `PATH`; without them it runs inside the sandbox image,
   `docker run --rm -v "$PWD":/work -w /work/frontend libris-agent:local
