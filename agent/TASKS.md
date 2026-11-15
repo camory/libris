@@ -204,7 +204,7 @@ today stays green and guards each task.
       stand-in, is one presentational component with its own spec (D05).
       Behaviour stays as it is: both rows' tests unchanged and green.
 
-- [ ] T185 Frontend: one reading of a find's failure.
+- [x] T185 Frontend: one reading of a find's failure.
       Refactor, its entry T185: the finds of a bookshelf, of a catalogue
       series and of a catalogue edition map their answer through one
       mapping, and the pages of a series and of an edition pick their

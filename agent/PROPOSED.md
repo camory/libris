@@ -27,15 +27,12 @@
 - Backend tests: `EditionDetailsRequestTest` and `NewBookRequestTest` assert
   the codes `blank` and `not-an-isbn`, which no operation of the contract
   enumerates; assert the refusal and its field only (T181, 2026-11-15).
+- Frontend: `BookshelfView` picks its failure's words in a `switch` of its
+  own, `undefined` outside a failure; it could draw `FindFailureMessage` as
+  the series and edition pages do (found on T185, 2026-11-15).
 
 ## Promoted
 
-- T185 Frontend: `useFindBookshelf`, `useFindCatalogueSeries` and
-  `useFindCatalogueEdition` map a find's answer alike (a rejection or any
-  problem but not-found and validation to `unavailable`), and
-  `SeriesPageView` and `EditionPageView` pick their failure's words with the
-  same `computed`; one mapping would serve the three (found on T115,
-  2026-10-23).
 - T186 Frontend: `EditionPageView` and `IsbnView` keep the removed copy's id in a
   mutable `let removedId`, set by a wrapper before `remove` and read in
   `afterRemoval`; were `useRemoveCopy` to hand the id to `afterRemoval`,

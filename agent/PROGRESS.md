@@ -269,3 +269,15 @@ Format:
   characters. History is not rewritten; both are declared in the PR.
 - Left over: a look at a row with a cover and one without, in the catalogue
   and the series list, on the running app, left to Tophe in the PR.
+
+## 2026-11-15 — T185 one reading of a find's failure — done
+- Did: `FindFailure` and `findFailureOf` (`application/FindFailure.ts`)
+  read a find's problem once; the three finds read through it. The series
+  and edition pages draw `FindFailureMessage`, one commit per move.
+- Decided: nothing; the brief settled the names, the place and the props.
+- Deviations from the brief: the first subject runs to 80 characters; step
+  2's commit also carried a stray `useFindBookshelf.ts.new`, a scratch
+  file of the move, which step 3's commit removes. History is not
+  rewritten; both are declared in the PR.
+- Left over: `BookshelfView`'s own failure words, proposed under *Tidy* in
+  `agent/PROPOSED.md`.
