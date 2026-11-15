@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { CircleAlert } from "@lucide/vue";
 import { computed, inject, ref, watch } from "vue";
 import { useI18n } from "vue-i18n";
 import { seriesApiKey } from "../../../application/SeriesApi";
@@ -7,6 +6,7 @@ import { useFindCatalogueSeries } from "../../../application/useFindCatalogueSer
 import { booksAndGapsInOrder } from "../../../domain/Book";
 import CatalogueRow from "../../components/CatalogueRow.vue";
 import CatalogueRowSkeleton from "../../components/CatalogueRowSkeleton.vue";
+import FailureMessage from "../../components/FailureMessage.vue";
 import FieldRowSkeleton from "../../components/FieldRowSkeleton.vue";
 import GapRow from "../../components/GapRow.vue";
 import PageHintSkeleton from "../../components/PageHintSkeleton.vue";
@@ -105,9 +105,6 @@ watch(
         </ul>
       </div>
     </template>
-    <p v-else class="flex items-start gap-2 pt-5 text-body text-danger">
-      <CircleAlert :size="22" class="shrink-0" />
-      <span>{{ failure }}</span>
-    </p>
+    <FailureMessage v-else class="pt-5" :sentence="failure" />
   </main>
 </template>
