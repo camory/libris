@@ -38,25 +38,6 @@ import io.kotest.matchers.shouldBe
 import io.kotest.matchers.types.shouldBeInstanceOf
 import org.junit.jupiter.api.Test
 
-private const val ONE_PIECE = "9782723488525"
-
-private val ROMANCE_DAWN = Edition(
-  id = EditionId.new(),
-  isbn = isbnOf(ONE_PIECE),
-  kind = MANGA,
-  title = "Romance dawn",
-  subtitle = null,
-  contributions = Contributions.of(emptyList()),
-  seriesVolume = null,
-  collection = null,
-  publisher = null,
-  publicationYear = null,
-  language = null,
-  pageCount = null,
-  summary = null,
-  coverName = null,
-)
-
 class LookupIsbnForReaderTest {
   private val lea = ReaderId.new()
   private val copies = CopiesInMemory()
@@ -151,3 +132,22 @@ class LookupIsbnForReaderTest {
       bookshelves,
     )
 }
+
+private const val ONE_PIECE = "9782723488525"
+
+private val ROMANCE_DAWN = Edition(
+  id = EditionId.new(),
+  isbn = isbnOf(ONE_PIECE),
+  kind = MANGA,
+  title = "Romance dawn",
+  subtitle = null,
+  contributions = Contributions.of(emptyList()),
+  seriesVolume = null,
+  collection = null,
+  publisher = null,
+  publicationYear = null,
+  language = null,
+  pageCount = null,
+  summary = null,
+  coverName = null,
+)

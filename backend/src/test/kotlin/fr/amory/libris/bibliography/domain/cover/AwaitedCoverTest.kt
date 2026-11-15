@@ -7,9 +7,6 @@ import org.junit.jupiter.api.Test
 import java.time.Duration
 import java.time.Instant
 
-private const val ONE_PIECE = "9782723488525"
-private val NOW = Instant.parse("2026-10-05T08:00:00Z")
-
 class AwaitedCoverTest {
   @Test
   fun `an awaited cover never attempted is due`() {
@@ -46,3 +43,6 @@ class AwaitedCoverTest {
     attempted shouldBe AwaitedCover(isbnOf(ONE_PIECE), OPEN_LIBRARY, NOW)
   }
 }
+
+private const val ONE_PIECE = "9782723488525"
+private val NOW = Instant.parse("2026-10-05T08:00:00Z")

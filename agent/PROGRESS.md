@@ -337,3 +337,16 @@ Format:
 - Decided: nothing; the brief settled the place, the order and the step.
 - Deviations from the brief: none.
 - Left over: nothing.
+
+## 2026-11-15 — T191 fixtures below their class, a proven case gone — done
+- Did: `LookupIsbnForReaderTest`, `LookupEditionByIsbnTest`,
+  `AwaitedCoverTest` and `ProblemAdviceTest` keep their fixtures below the
+  class, in the order reached; `ProblemAdviceTest` lost its uuid case.
+- Decided: `AwaitedCoverTest`'s `ONE_PIECE` and `NOW` stay on adjacent
+  lines, as they were written above the class. Tophe, at review: the
+  body case goes too, so `ProblemAdviceTest` goes; without
+  `HttpMessageNotReadableException` in the advice, five `auto: body type
+  mismatch` cases of `ApiContractTest` fail.
+- Deviations from the brief: two cases fewer, not one.
+- Left over: the nine test classes that still keep fixtures above the
+  class, under *Tidy* in `agent/PROPOSED.md`.
