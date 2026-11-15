@@ -40,6 +40,19 @@ class RemoteIdentityTest {
   }
 
   @Test
+  fun `an email sent in UTF-8 is read whole`() {
+    // Given
+    val asTomcatReadsIt = String("léa@amory.fr".toByteArray(UTF_8), ISO_8859_1)
+    val request = requestOf("Remote-User" to "juliette", "Remote-Email" to asTomcatReadsIt)
+
+    // When
+    val identity = RemoteIdentity.of(request).shouldNotBeNull()
+
+    // Then
+    identity.email shouldBe "léa@amory.fr"
+  }
+
+  @Test
   fun `the display name is the name header`() {
     // Given
     val request = julietteSending("Remote-Name" to "Juliette")

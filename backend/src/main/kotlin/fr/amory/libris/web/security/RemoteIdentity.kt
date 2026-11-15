@@ -19,7 +19,7 @@ class RemoteIdentity private constructor(
   companion object {
     fun of(request: HttpServletRequest): RemoteIdentity? {
       val username = request.getHeader("Remote-User")?.let(::utf8)?.takeUnless { it.isBlank() }
-      val email = request.getHeader("Remote-Email")?.takeUnless { it.isBlank() }
+      val email = request.getHeader("Remote-Email")?.let(::utf8)?.takeUnless { it.isBlank() }
       if (username == null || email == null) return null
       return RemoteIdentity(
         username = username,
