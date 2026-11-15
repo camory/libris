@@ -160,8 +160,9 @@ Read whole by a run that changes `frontend/`, after `every-run.md`.
   `unavailable`, `afterRemoval` not run. `EditionPageView` passes
   `removing` and `removal-failed` (`unavailable`) to the card; its
   `@remove` reaches the composable's `remove`, and its `afterRemoval`
-  calls `refresh` while the ouvrage holds a copy other than the one given (on any bookshelf, whatever the role), and otherwise leaves
-  the page without asking: `router.back()` when
+  calls `refresh` while the ouvrage holds a copy other than the one given
+  (on any bookshelf, whatever the role), and otherwise leaves the page
+  without asking: `router.back()` when
   `openedFromAnotherScreen()` (`router.options.history.state.back` set)
   answers true, awaited through a one-shot
   `router.afterEach` so the spinner turns until the page is left, and
@@ -173,8 +174,8 @@ Read whole by a run that changes `frontend/`, after `every-run.md`.
   current one, so a late answer leaves the next card alone; both cards'
   `@remove` call `removeCopyFromCard.remove`, read at the event. It never
   asks Libris again: `dropRemovedCopy(copyId)` keeps the shown copies (the
-  lookup's and the added one) less the id `afterRemoval` gave and, unless an add is being sent,
-  rebuilds `addBookToBookshelf`, which ends the *Added* state and brings
+  lookup's and the added one) less the id `afterRemoval` gave and,
+  unless an add is being sent, rebuilds `addBookToBookshelf`, which ends the *Added* state and brings
   the dock back; after an add it
   also makes `edition` the sent one, `covers` the sent candidate, `held`
   true and `editing` false, so the card is the house's: no dots, and the
