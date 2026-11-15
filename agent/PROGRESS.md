@@ -198,3 +198,36 @@ Format:
 - Deviations from the brief: none.
 - Left over: the check of stored usernames outside ASCII before the
   deploy, in the PR's Follow-ups for Tophe.
+
+## 2026-11-15 — T181 an add out of the contract's bounds is refused — done
+- Did: `EditionDetailsRequest.validate` refuses a language that is not two
+  lower-case letters (`not-a-language`), and a publication year, a page
+  count or a volume number below one (`not-positive`, the last on `series`).
+- Decided: the four checks sit in a private `outOfBounds`, its errors after
+  the blank ones, since a fourth check in `validate` crossed detekt's
+  cyclomatic threshold of 15; a below-one number reads through a private
+  `Int?.isBelowOne`. The edit's `PUT /api/v1/books/{id}` refuses the same
+  values, validating through the same class.
+- Deviations from the brief: `baggyAndHisMen` gains `volumeNumber` alone;
+  the language, the year and the page count are set with `copy(…)`, since
+  three more parameters would cross detekt's `LongParameterList` threshold
+  of six for a function. The split of `validate` landed in step 5's commit,
+  not a refactor of its own, since detekt failed that green without it.
+- Left over: nothing.
+
+## 2026-11-15 — T181 an add out of the contract's bounds is refused — reworked
+- Did: the five bound refusals of `EditionDetailsRequestTest` assert the
+  refused field alone, through `shouldBeInstanceOf<Refused>()`, no longer
+  its code; the two accepted guards expect `DETAILS_OF_BAGGY_AND_HIS_MEN`
+  with `copy(…)`, a fixture below the class.
+- Decided: the reviewer's verdict of 2026-11-15 settled that a test asserts
+  no code the contract does not enumerate, which the brief's acceptance
+  criteria and test plan asked; the codes stay in the production code as
+  documentation. The first case, *a body of every field is accepted…*,
+  keeps its own literal: the brief wants the existing cases unchanged.
+  Each case's red and each guard's mutation was run again on the new
+  assertions and read red.
+- Deviations from the brief: the refusal cases assert `Refused` and its
+  field, not the whole answer, as the review asks.
+- Left over: nothing; the mixed green and refactor of `72dfdb08` stays in
+  the history, which is not rewritten.

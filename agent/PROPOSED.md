@@ -24,14 +24,12 @@
 - Frontend tests: `later()`, a promise settled by hand, is written in the
   specs of `useListSeriesNames`, `useListAuthorNames`, `useSearchCatalogue`
   and in `SearchScenarios`; one generic in `src/fixture` (T178, 2026-11-14).
+- Backend tests: `EditionDetailsRequestTest` and `NewBookRequestTest` assert
+  the codes `blank` and `not-an-isbn`, which no operation of the contract
+  enumerates; assert the refusal and its field only (T181, 2026-11-15).
 
 ## Promoted
 
-- T181 Backend: the add checks at the edge only what T037's brief listed; the
-  contract's bounds on `language`, `publicationYear`, `pageCount` and
-  `series.volumeNumber` reach the use case unchecked through
-  `NewBookRequest`, and a value the `edition` table refuses answers `500`
-  (found on T037, 2026-09-24).
 - T182 Frontend: the failure message, `CircleAlert` and a sentence in `danger`,
   is drawn by hand in fourteen components and views (`DockedButton`,
   `EditionForm`, `IsbnView`, `HomeView`…); one component of

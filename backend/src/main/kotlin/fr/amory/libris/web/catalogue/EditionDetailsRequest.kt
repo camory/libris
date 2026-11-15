@@ -43,9 +43,18 @@ data class EditionDetailsRequest(
       if (details == null) add(ValidationErrorResponse("title", "blank"))
       if (null in contributions) add(ValidationErrorResponse("authors", "blank"))
       if (series != null && seriesEntry == null) add(ValidationErrorResponse("series", "blank"))
+      addAll(outOfBounds())
     }
     return if (details != null && errors.isEmpty()) Accepted(details) else Refused(errors)
   }
+
+  private fun outOfBounds() =
+    buildList {
+      if (language != null && !LANGUAGE.matches(language)) add(ValidationErrorResponse("language", "not-a-language"))
+      if (publicationYear.isBelowOne()) add(ValidationErrorResponse("publicationYear", "not-positive"))
+      if (pageCount.isBelowOne()) add(ValidationErrorResponse("pageCount", "not-positive"))
+      if (series?.volumeNumber.isBelowOne()) add(ValidationErrorResponse("series", "not-positive"))
+    }
 }
 
 sealed interface EditionDetailsValidation {
@@ -53,3 +62,8 @@ sealed interface EditionDetailsValidation {
 
   data class Refused(val errors: List<ValidationErrorResponse>) : EditionDetailsValidation
 }
+
+private val LANGUAGE = Regex("[a-z]{2}")
+
+private fun Int?.isBelowOne() =
+  this != null && this < 1
