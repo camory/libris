@@ -193,7 +193,7 @@ today stays green and guards each task.
       Behaviour stays as it is: every view, component and scenario test
       green unchanged.
 
-- [ ] T183 Frontend: every icon button on the one icon button.
+- [x] T183 Frontend: every icon button on the one icon button.
       Refactor, its entry T183: the views and components that still write
       the icon button of U04 by hand use the one that exists (D05).
       Behaviour stays as it is: their tests unchanged and green.

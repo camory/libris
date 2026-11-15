@@ -30,11 +30,6 @@
 
 ## Promoted
 
-- T183 Frontend: `IconButton` draws the icon button in `IsbnView`,
-  `EditionPageView`, `AuthorBox`, `SearchField` and `BookshelvesHolding`;
-  `HomeView`, `BookshelfView`, `ReaderChoice`, `BookshelfRow` and
-  `NewBookshelfRow` still write its box by hand. Move them onto it, their
-  tests unchanged (found on T128, 2026-11-03).
 - T184 Frontend: `SeriesRow.vue` copies `CatalogueRow.vue`'s cover block: the
   48 × 74 box, the `img` that falls back on `error` and the `BookOpen`
   stand-in. One cover component with its own spec (found on T097,

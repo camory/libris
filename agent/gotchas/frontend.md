@@ -982,6 +982,14 @@ Read whole by a run that changes `frontend/`, after `every-run.md`.
   `class="pt-5"`, a bound `:class`), falling through to the root; no
   component or view writes `CircleAlert` or `text-danger` for a message.
   A spec still reaches the icon with `findAllComponents(CircleAlert)`.
+- Every icon button is `IconButton` (`ui/components`, one required prop
+  `label`, its `aria-label`; the icon in its default slot): `class`,
+  `disabled`, `aria-pressed` and `@click` fall through to its `button`,
+  which sets `type="button"`, the 44 box, `shrink-0` and `text-accent`. A
+  colour other than `accent` goes on the icon (`<X class="text-muted" />`,
+  `ReaderChoice`'s *Fermer*, `BookshelvesHolding`'s *Annuler*), never on
+  the tag, where it would sit beside `text-accent`; no component or view
+  writes `rounded-[10px] text-accent` but `IconButton.vue` (since T183).
 - `findComponent(SomeIcon)` over a tree that draws none answers an empty
   wrapper whose `.element` throws `Cannot call element on an empty
   VueWrapper`: that is the red of a case asserting an icon before the icon is
