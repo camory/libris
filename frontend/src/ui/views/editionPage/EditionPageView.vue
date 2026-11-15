@@ -41,21 +41,20 @@ const {
   reset: forgetSave,
 } = useSaveEdition(inject(editionsApiKey)!);
 const saving = computed(() => saveState.value.status === "saving");
-let removedId: string | null = null;
 const { state: removal, remove } = useRemoveCopy(
   inject(copiesApiKey)!,
   afterRemoval,
 );
 
-async function afterRemoval() {
-  if (copiesLeft().length > 0) await refresh(props.id);
+async function afterRemoval(copyId: string) {
+  if (copiesLeft(copyId).length > 0) await refresh(props.id);
   else if (openedFromAnotherScreen()) await back();
   else await router.replace("/catalogue");
 }
 
-function copiesLeft() {
+function copiesLeft(copyId: string) {
   return state.value.status === "found"
-    ? state.value.book.copies.filter((copy) => copy.id !== removedId)
+    ? state.value.book.copies.filter((copy) => copy.id !== copyId)
     : [];
 }
 
@@ -71,11 +70,6 @@ function back() {
     });
     router.back();
   });
-}
-
-async function removeCopy(copyId: string) {
-  removedId = copyId;
-  await remove(copyId);
 }
 
 function edit() {
@@ -144,7 +138,7 @@ const covers = computed<CoverCandidate[]>(() => {
       page-title
       :removing="removal.status === 'removing'"
       :removal-failed="removal.status === 'unavailable'"
-      @remove="removeCopy"
+      @remove="remove"
     >
       <template v-if="state.book.isbn13" #corner>
         <IconButton :label="t('isbn.edit')" @click="edit">
