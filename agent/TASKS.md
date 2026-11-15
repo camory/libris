@@ -198,7 +198,7 @@ today stays green and guards each task.
       the icon button of U04 by hand use the one that exists (D05).
       Behaviour stays as it is: their tests unchanged and green.
 
-- [ ] T184 Frontend: one cover for the catalogue's rows.
+- [x] T184 Frontend: one cover for the catalogue's rows.
       Refactor, its entry T184: the cover of a catalogue row and of a
       series row, its box, its picture falling back on error and its
       stand-in, is one presentational component with its own spec (D05).

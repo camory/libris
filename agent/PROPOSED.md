@@ -30,10 +30,6 @@
 
 ## Promoted
 
-- T184 Frontend: `SeriesRow.vue` copies `CatalogueRow.vue`'s cover block: the
-  48 × 74 box, the `img` that falls back on `error` and the `BookOpen`
-  stand-in. One cover component with its own spec (found on T097,
-  2026-10-16).
 - T185 Frontend: `useFindBookshelf`, `useFindCatalogueSeries` and
   `useFindCatalogueEdition` map a find's answer alike (a rejection or any
   problem but not-found and validation to `unavailable`), and
