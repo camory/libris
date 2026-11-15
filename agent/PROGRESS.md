@@ -214,3 +214,20 @@ Format:
   of six for a function. The split of `validate` landed in step 5's commit,
   not a refactor of its own, since detekt failed that green without it.
 - Left over: nothing.
+
+## 2026-11-15 — T181 an add out of the contract's bounds is refused — reworked
+- Did: the five bound refusals of `EditionDetailsRequestTest` assert the
+  refused field alone, through `shouldBeInstanceOf<Refused>()`, no longer
+  its code; the two accepted guards expect `DETAILS_OF_BAGGY_AND_HIS_MEN`
+  with `copy(…)`, a fixture below the class.
+- Decided: the reviewer's verdict of 2026-11-15 settled that a test asserts
+  no code the contract does not enumerate, which the brief's acceptance
+  criteria and test plan asked; the codes stay in the production code as
+  documentation. The first case, *a body of every field is accepted…*,
+  keeps its own literal: the brief wants the existing cases unchanged.
+  Each case's red and each guard's mutation was run again on the new
+  assertions and read red.
+- Deviations from the brief: the refusal cases assert `Refused` and its
+  field, not the whole answer, as the review asks.
+- Left over: nothing; the mixed green and refactor of `72dfdb08` stays in
+  the history, which is not rewritten.

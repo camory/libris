@@ -81,6 +81,12 @@ Read whole by a run that changes `backend/`, after `every-run.md`.
   that reaches 11 functions, private ones included: `JdbcEditionRepository`
   sits at 10 since T066 (T157 traded `nameIdOf` for `authorIdsOf`), so a
   function it gains costs another its place.
+- detekt's `CyclomaticComplexMethod` keeps its default `threshold: 15`
+  (`config/detekt/detekt.yml` does not override it), and each `if`, `&&`
+  and `||` of a function counts: `EditionDetailsRequest.validate` reached
+  16 with its fourth bound check (T181), so its bounds sit in a private
+  `outOfBounds`. A check added to a `validate` near the limit takes
+  the split in the same cycle, since detekt fails that green.
 - `UnusedPrivateMember` fails two private overloads of one name that are
   called only from lambdas (`map { responseOf(it) }`), though both are used;
   give them distinct names (`bookOf`, `copyOf`).
