@@ -3,7 +3,6 @@ package fr.amory.libris.library.application.catalogue
 import fr.amory.libris.bibliography.domain.edition.EditionId
 import fr.amory.libris.bibliography.domain.edition.EditionRepository
 import fr.amory.libris.bibliography.domain.series.SeriesRepository
-import fr.amory.libris.library.application.ReaderBookshelf
 import fr.amory.libris.library.application.lookup.CopyOnBookshelf
 import fr.amory.libris.library.domain.bookshelf.BookshelfRepository
 import fr.amory.libris.library.domain.copy.CatalogueEditions
@@ -25,10 +24,7 @@ class BrowseCatalogue(
     val page = query
       ?.let { catalogueEditions.findPage(readerId, it, after, PAGE_SIZE) }
       ?: catalogueEditions.findPage(readerId, after, PAGE_SIZE)
-    val readersBookshelves = bookshelves
-      .findByMember(readerId)
-      .mapNotNull { ReaderBookshelf.of(it, readerId) }
-      .associateBy { it.id }
+    val readersBookshelves = readersBookshelvesOf(bookshelves, readerId)
     val editionsById = editions.findByIds(page.editionIds).associateBy { it.id }
     val seriesById = seriesRepository
       .findByIds(editionsById.values.mapNotNull { it.seriesVolume?.seriesId }.distinct())

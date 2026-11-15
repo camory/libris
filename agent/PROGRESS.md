@@ -317,3 +317,15 @@ Format:
 - Deviations from the brief: none.
 - Left over: the three scenario files' own definitions, now redundant,
   under *Tidy* in `agent/PROPOSED.md` for Tophe.
+
+## 2026-11-15 — T189 the reader's bookshelves by id built once — done
+- Did: `readersBookshelvesOf(bookshelves, readerId)`, `internal` in
+  `HeldEditionReads.kt` below `readersCopiesOf`, answers the reader's
+  bookshelves by id; `readersCopiesOf`, `BrowseCatalogue` and
+  `FindCatalogueSeries` read them through it, one commit per move.
+- Decided: its parameters sit one per line, as `readersCopiesOf`'s, since
+  the signature on one line passed detekt's line length.
+- Deviations from the brief: none in the code. Two commit subjects (steps
+  1 and 2, 76 and 78 characters) passed the 72; they are left as they
+  are, since history is not rewritten, and the squash title is within.
+- Left over: nothing.

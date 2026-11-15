@@ -3,7 +3,6 @@ package fr.amory.libris.library.application.catalogue
 import fr.amory.libris.bibliography.domain.edition.EditionRepository
 import fr.amory.libris.bibliography.domain.series.SeriesId
 import fr.amory.libris.bibliography.domain.series.SeriesRepository
-import fr.amory.libris.library.application.ReaderBookshelf
 import fr.amory.libris.library.application.catalogue.FindCatalogueSeriesResult.Found
 import fr.amory.libris.library.application.catalogue.FindCatalogueSeriesResult.NoSuchSeries
 import fr.amory.libris.library.application.lookup.CopyOnBookshelf
@@ -21,10 +20,7 @@ class FindCatalogueSeries(
   private val editions: EditionRepository,
   private val seriesRepository: SeriesRepository) {
   operator fun invoke(readerId: ReaderId, seriesId: SeriesId): FindCatalogueSeriesResult {
-    val readersBookshelves = bookshelves
-      .findByMember(readerId)
-      .mapNotNull { ReaderBookshelf.of(it, readerId) }
-      .associateBy { it.id }
+    val readersBookshelves = readersBookshelvesOf(bookshelves, readerId)
     val copiesByEditionId = copies
       .findByBookshelfIds(readersBookshelves.keys.toList())
       .groupBy { it.editionId }

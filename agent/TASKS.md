@@ -230,7 +230,7 @@ today stays green and guards each task.
       (D07). The jsdom gotchas become one item. Behaviour stays as it is:
       `npm test` green, no scenario test edited.
 
-- [ ] T189 Backend: the reader's bookshelves by id built once.
+- [x] T189 Backend: the reader's bookshelves by id built once.
       Refactor, its entry T189: the catalogue's browse, the catalogue's
       series and the held edition's reads build the reader's bookshelves
       by id through one function (D02). Behaviour stays as it is: their
