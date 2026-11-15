@@ -1,9 +1,10 @@
 <script setup lang="ts">
-import { CircleAlert, Star } from "@lucide/vue";
+import { Star } from "@lucide/vue";
 import { computed } from "vue";
 import { useI18n } from "vue-i18n";
 import type { Membership } from "../../domain/Membership";
 import BusySpinner from "./BusySpinner.vue";
+import FailureMessage from "./FailureMessage.vue";
 
 const props = defineProps<{
   membership: Membership;
@@ -59,12 +60,10 @@ const role = computed(() => {
       </template>
     </div>
     {{ " " }}
-    <p
+    <FailureMessage
       v-if="failed"
-      class="relative -mt-1.5 flex items-start gap-2 px-3.5 pb-3.5 text-body text-danger"
-    >
-      <CircleAlert :size="22" class="shrink-0" />
-      <span>{{ t("home.bookshelves.defaultError") }}</span>
-    </p>
+      class="relative -mt-1.5 px-3.5 pb-3.5"
+      :sentence="t('home.bookshelves.defaultError')"
+    />
   </div>
 </template>
