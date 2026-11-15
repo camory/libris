@@ -1,12 +1,10 @@
 import { ref, type Ref } from "vue";
 import type { Book } from "../domain/Book";
 import type { CatalogueApi, FindBookAnswer } from "./CatalogueApi";
+import { findFailureOf, type FindFailure } from "./FindFailure";
 
 export type FoundEditionState =
-  | { status: "loading" }
-  | { status: "found"; book: Book }
-  | { status: "notFound" }
-  | { status: "unavailable" };
+  { status: "loading" } | { status: "found"; book: Book } | FindFailure;
 
 export function useFindCatalogueEdition(catalogueApi: CatalogueApi): {
   state: Ref<FoundEditionState>;
@@ -38,11 +36,5 @@ export function useFindCatalogueEdition(catalogueApi: CatalogueApi): {
 
 function stateOf(answer: FindBookAnswer): FoundEditionState {
   if (answer.outcome === "found") return { status: "found", book: answer.book };
-  switch (answer.type) {
-    case "/problems/not-found":
-    case "/problems/validation":
-      return { status: "notFound" };
-    default:
-      return { status: "unavailable" };
-  }
+  return findFailureOf(answer.type);
 }

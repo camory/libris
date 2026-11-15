@@ -996,6 +996,18 @@ Read whole by a run that changes `frontend/`, after `every-run.md`.
   the picture, which gives way to `BookOpen` once it fails to load, and
   `BookOpen` for a `null` `url`. `CatalogueRow` and `SeriesRow` draw it
   (since T184); the skeletons and `GapRow` draw their own empty box.
+- A find's failure is `FindFailure` (`application/FindFailure.ts`,
+  `{ status: "notFound" } | { status: "unavailable" }`), and
+  `findFailureOf(type)` reads a problem's type as `notFound` for
+  `/problems/not-found` and `/problems/validation`, `unavailable` for any
+  other: `useFindBookshelf`, `useFindCatalogueSeries` and
+  `useFindCatalogueEdition` read through it, their state types ending on
+  `| FindFailure`, and each keeps its own `catch` as `unavailable`.
+  `FindFailureMessage` (`ui/components`, required props `status`,
+  `notFound` and `unavailable`, the two sentences translated by the
+  caller) draws `FailureMessage` with the one of the status;
+  `SeriesPageView` and `EditionPageView` draw it in their last `v-else`
+  (since T185).
 - `findComponent(SomeIcon)` over a tree that draws none answers an empty
   wrapper whose `.element` throws `Cannot call element on an empty
   VueWrapper`: that is the red of a case asserting an icon before the icon is

@@ -16,7 +16,7 @@ import { useSaveEdition } from "../../../application/useSaveEdition";
 import type { CoverCandidate } from "../../../domain/Cover";
 import type { SourceEdition } from "../../../domain/SourceEdition";
 import EditionForm from "../../components/EditionForm.vue";
-import FailureMessage from "../../components/FailureMessage.vue";
+import FindFailureMessage from "../../components/FindFailureMessage.vue";
 import HeldEditionCardSkeleton from "../../components/HeldEditionCardSkeleton.vue";
 import IconButton from "../../components/IconButton.vue";
 import SourceEditionCard from "../../components/SourceEditionCard.vue";
@@ -102,12 +102,6 @@ const covers = computed<CoverCandidate[]>(() => {
   const coverUrl = state.value.status === "found" && state.value.book.coverUrl;
   return coverUrl ? [{ source: "Libris", url: coverUrl }] : [];
 });
-
-const failure = computed(() =>
-  state.value.status === "unavailable"
-    ? t("editionPage.error")
-    : t("editionPage.notFound"),
-);
 </script>
 
 <template>
@@ -158,6 +152,11 @@ const failure = computed(() =>
         </IconButton>
       </template>
     </SourceEditionCard>
-    <FailureMessage v-else :sentence="failure" />
+    <FindFailureMessage
+      v-else
+      :status="state.status"
+      :not-found="t('editionPage.notFound')"
+      :unavailable="t('editionPage.error')"
+    />
   </main>
 </template>
