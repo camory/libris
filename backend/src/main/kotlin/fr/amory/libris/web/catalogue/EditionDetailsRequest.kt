@@ -47,6 +47,7 @@ data class EditionDetailsRequest(
       if (publicationYear != null && publicationYear < 1) {
         add(ValidationErrorResponse("publicationYear", "not-positive"))
       }
+      if (pageCount != null && pageCount < 1) add(ValidationErrorResponse("pageCount", "not-positive"))
     }
     return if (details != null && errors.isEmpty()) Accepted(details) else Refused(errors)
   }

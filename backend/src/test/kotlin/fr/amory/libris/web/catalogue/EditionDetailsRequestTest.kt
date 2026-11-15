@@ -95,6 +95,15 @@ class EditionDetailsRequestTest {
     request.validate() shouldBe Refused(listOf(ValidationErrorResponse("publicationYear", "not-positive")))
   }
 
+  @Test
+  fun `a page count below one is refused`() {
+    // Given
+    val request = baggyAndHisMen().copy(pageCount = 0)
+
+    // When / Then
+    request.validate() shouldBe Refused(listOf(ValidationErrorResponse("pageCount", "not-positive")))
+  }
+
   private fun baggyAndHisMen(
     title: String = "Aux prises avec Baggy et ses hommes",
     artist: String = "Eiichirō Oda",
