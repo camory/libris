@@ -104,16 +104,26 @@ class EditionDetailsRequestTest {
     request.validate() shouldBe Refused(listOf(ValidationErrorResponse("pageCount", "not-positive")))
   }
 
+  @Test
+  fun `a volume number below one is refused`() {
+    // Given
+    val request = baggyAndHisMen(volumeNumber = 0)
+
+    // When / Then
+    request.validate() shouldBe Refused(listOf(ValidationErrorResponse("series", "not-positive")))
+  }
+
   private fun baggyAndHisMen(
     title: String = "Aux prises avec Baggy et ses hommes",
     artist: String = "Eiichirō Oda",
-    series: String = "One Piece") =
+    series: String = "One Piece",
+    volumeNumber: Int? = 2) =
     EditionDetailsRequest(
       kind = MANGA,
       title = title,
       subtitle = "Le clown pirate",
       authors = listOf(NewAuthorRequest("Eiichirō Oda", WRITER), NewAuthorRequest(artist, ARTIST)),
-      series = NewSeriesRequest(series, 2),
+      series = NewSeriesRequest(series, volumeNumber),
       collection = "Shonen manga",
       publisher = "Glénat",
       publicationYear = 2013,
