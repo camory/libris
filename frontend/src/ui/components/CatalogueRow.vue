@@ -1,16 +1,14 @@
 <script setup lang="ts">
-import { BookOpen } from "@lucide/vue";
-import { computed, ref } from "vue";
+import { computed } from "vue";
 import { useI18n } from "vue-i18n";
 import type { Book } from "../../domain/Book";
 import { bookshelvesHolding } from "../../domain/Copy";
 import { authorsInOrder } from "../../domain/SourceEdition";
+import RowCover from "./RowCover.vue";
 
 const props = defineProps<{ book: Book; withoutSeriesName?: boolean }>();
 
 const { t, locale } = useI18n();
-
-const coverFailed = ref(false);
 
 const overline = computed(() => {
   const series = props.book.series;
@@ -48,18 +46,10 @@ const bookshelves = computed(() =>
 
 <template>
   <RouterLink :to="`/catalogue/ouvrages/${book.id}`" class="flex gap-3.5 p-3.5">
-    <div
-      class="flex h-18.5 w-12 shrink-0 items-center justify-center rounded-md bg-border"
-    >
-      <img
-        v-if="book.coverUrl && !coverFailed"
-        :src="book.coverUrl"
-        :alt="t('catalogue.cover', { title: book.title })"
-        class="h-full w-full rounded-md object-contain"
-        @error="coverFailed = true"
-      />
-      <BookOpen v-else :size="22" class="shrink-0 text-muted opacity-60" />
-    </div>
+    <RowCover
+      :url="book.coverUrl"
+      :alt="t('catalogue.cover', { title: book.title })"
+    />
     <div class="flex min-w-0 flex-col gap-1.5">
       <p v-if="overline" class="text-overline uppercase text-accent">
         {{ overline }}
