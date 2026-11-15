@@ -113,6 +113,31 @@ class EditionDetailsRequestTest {
     request.validate() shouldBe Refused(listOf(ValidationErrorResponse("series", "not-positive")))
   }
 
+  @Test
+  fun `a body without year, language, page count or volume number is accepted`() {
+    // Given
+    val request = baggyAndHisMen(volumeNumber = null).copy(publicationYear = null, language = null, pageCount = null)
+
+    // When / Then
+    request.validate() shouldBe Accepted(
+      EditionDetails(
+        kind = MANGA,
+        title = "Aux prises avec Baggy et ses hommes",
+        subtitle = "Le clown pirate",
+        contributions = Contributions.of(
+          listOf(Contribution("Eiichirō Oda", WRITER), Contribution("Eiichirō Oda", ARTIST)),
+        ),
+        series = SeriesEntry("One Piece", null),
+        collection = "Shonen manga",
+        publisher = "Glénat",
+        publicationYear = null,
+        language = null,
+        pageCount = null,
+        summary = "Luffy et Zoro affrontent le pirate Baggy le clown.",
+      ),
+    )
+  }
+
   private fun baggyAndHisMen(
     title: String = "Aux prises avec Baggy et ses hommes",
     artist: String = "Eiichirō Oda",
