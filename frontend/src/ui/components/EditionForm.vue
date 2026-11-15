@@ -118,7 +118,7 @@ function focused(field: Field) {
   if (!offered.value[field]) return;
   suggesting.value = field;
   chosen.value = false;
-  if (field === "series") boxes.series?.scrollIntoView?.({ block: "start" });
+  if (field === "series") boxes.series?.scrollIntoView({ block: "start" });
 }
 
 function left(field: Field) {
@@ -192,7 +192,7 @@ function focusFirstRefused(refused: (AuthorRefusal | null)[]) {
   const author = authors.value[at];
   if (field && (!author || fields.indexOf(field) <= volumeAt)) {
     boxes[field]?.focus();
-    boxes[field]?.scrollIntoView?.({ block: "center" });
+    boxes[field]?.scrollIntoView({ block: "center" });
     return true;
   }
   if (!author) return false;

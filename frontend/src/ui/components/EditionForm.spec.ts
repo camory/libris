@@ -48,7 +48,7 @@ const onLea: Copy = {
 
 describe("EditionForm", () => {
   afterEach(() => {
-    Reflect.deleteProperty(HTMLElement.prototype, "scrollIntoView");
+    vi.restoreAllMocks();
   });
 
   it("shows the ISBN under its label", () => {
@@ -853,11 +853,7 @@ describe("EditionForm", () => {
 
   it("brings the first refused field into view", async () => {
     // Given
-    const scrollIntoView = vi.fn();
-    Object.defineProperty(HTMLElement.prototype, "scrollIntoView", {
-      configurable: true,
-      value: scrollIntoView,
-    });
+    const scrollIntoView = vi.spyOn(Element.prototype, "scrollIntoView");
     const wrapper = form(onePiece1);
     const screen = within(wrapper.element as HTMLElement);
     await typeIn(screen, "Titre", "");
@@ -1161,11 +1157,7 @@ describe("EditionForm", () => {
 
   it("brings Série to the top when it takes the focus", async () => {
     // Given
-    const scrollIntoView = vi.fn();
-    Object.defineProperty(HTMLElement.prototype, "scrollIntoView", {
-      configurable: true,
-      value: scrollIntoView,
-    });
+    const scrollIntoView = vi.spyOn(Element.prototype, "scrollIntoView");
     const fields = screen(onePiece1, [], [], { seriesNames: houseSeries });
     const series = fields.getByRole("textbox", { name: "Série" });
 
@@ -1289,11 +1281,7 @@ describe("EditionForm", () => {
 
   it("does not scroll Langue on focus", async () => {
     // Given
-    const scrollIntoView = vi.fn();
-    Object.defineProperty(HTMLElement.prototype, "scrollIntoView", {
-      configurable: true,
-      value: scrollIntoView,
-    });
+    const scrollIntoView = vi.spyOn(Element.prototype, "scrollIntoView");
     const fields = screen(onePiece1, [], [], { seriesNames: houseSeries });
 
     // When
