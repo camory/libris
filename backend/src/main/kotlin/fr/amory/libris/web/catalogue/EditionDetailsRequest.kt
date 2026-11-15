@@ -44,6 +44,9 @@ data class EditionDetailsRequest(
       if (null in contributions) add(ValidationErrorResponse("authors", "blank"))
       if (series != null && seriesEntry == null) add(ValidationErrorResponse("series", "blank"))
       if (language != null && !LANGUAGE.matches(language)) add(ValidationErrorResponse("language", "not-a-language"))
+      if (publicationYear != null && publicationYear < 1) {
+        add(ValidationErrorResponse("publicationYear", "not-positive"))
+      }
     }
     return if (details != null && errors.isEmpty()) Accepted(details) else Refused(errors)
   }
