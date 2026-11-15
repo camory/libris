@@ -1,3 +1,4 @@
+import { BookOpen } from "@lucide/vue";
 import { within } from "@testing-library/dom";
 import { mount } from "@vue/test-utils";
 import { describe, expect, it } from "vitest";
@@ -13,6 +14,15 @@ describe("RowCover", () => {
       name: "Couverture de Romance dawn",
     });
     expect(picture.getAttribute("src")).toBe(romanceDawnCover);
+  });
+
+  it("shows a book icon when it has no picture", () => {
+    // When
+    const { wrapper, screen } = show(null, "Couverture du Petit Prince");
+
+    // Then
+    expect(screen.queryByRole("img")).toBeNull();
+    expect(wrapper.findAllComponents(BookOpen)).toHaveLength(1);
   });
 });
 
