@@ -16,6 +16,7 @@ import {
 import type { MembershipRole } from "../../../domain/Membership";
 import type { Reader } from "../../../domain/Reader";
 import FailureMessage from "../../components/FailureMessage.vue";
+import IconButton from "../../components/IconButton.vue";
 import MemberRow from "../../components/MemberRow.vue";
 import MemberRowSkeleton from "../../components/MemberRowSkeleton.vue";
 import PageTitleSkeleton from "../../components/PageTitleSkeleton.vue";
@@ -104,15 +105,13 @@ watch([() => props.id, reader], ([id, current]) => {
           <h2 class="text-label text-muted">
             {{ t("bookshelf.members.label") }}
           </h2>
-          <button
+          <IconButton
             v-if="members && nonMembers.length > 0 && !choosing"
-            type="button"
-            :aria-label="t('bookshelf.members.new')"
-            class="flex size-11 items-center justify-center rounded-[10px] text-accent"
+            :label="t('bookshelf.members.new')"
             @click="choosing = true"
           >
             <CirclePlus />
-          </button>
+          </IconButton>
         </div>
         <div
           class="overflow-hidden rounded-[14px] border border-border bg-surface"
