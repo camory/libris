@@ -27,11 +27,6 @@
 
 ## Promoted
 
-- T181 Backend: the add checks at the edge only what T037's brief listed; the
-  contract's bounds on `language`, `publicationYear`, `pageCount` and
-  `series.volumeNumber` reach the use case unchecked through
-  `NewBookRequest`, and a value the `edition` table refuses answers `500`
-  (found on T037, 2026-09-24).
 - T182 Frontend: the failure message, `CircleAlert` and a sentence in `danger`,
   is drawn by hand in fourteen components and views (`DockedButton`,
   `EditionForm`, `IsbnView`, `HomeView`…); one component of

@@ -198,3 +198,19 @@ Format:
 - Deviations from the brief: none.
 - Left over: the check of stored usernames outside ASCII before the
   deploy, in the PR's Follow-ups for Tophe.
+
+## 2026-11-15 — T181 an add out of the contract's bounds is refused — done
+- Did: `EditionDetailsRequest.validate` refuses a language that is not two
+  lower-case letters (`not-a-language`), and a publication year, a page
+  count or a volume number below one (`not-positive`, the last on `series`).
+- Decided: the four checks sit in a private `outOfBounds`, its errors after
+  the blank ones, since a fourth check in `validate` crossed detekt's
+  cyclomatic threshold of 15; a below-one number reads through a private
+  `Int?.isBelowOne`. The edit's `PUT /api/v1/books/{id}` refuses the same
+  values, validating through the same class.
+- Deviations from the brief: `baggyAndHisMen` gains `volumeNumber` alone;
+  the language, the year and the page count are set with `copy(…)`, since
+  three more parameters would cross detekt's `LongParameterList` threshold
+  of six for a function. The split of `validate` landed in step 5's commit,
+  not a refactor of its own, since detekt failed that green without it.
+- Left over: nothing.

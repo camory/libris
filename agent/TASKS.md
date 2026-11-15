@@ -178,7 +178,7 @@ today stays green and guards each task.
       UTF-8 as `Remote-Name` is, by the one class that reads them (D06),
       tested on its own (D07).
 
-- [ ] T181 Backend: an add out of the contract's bounds is refused.
+- [x] T181 Backend: an add out of the contract's bounds is refused.
       Bug, its entry T181. Goes red: an add whose language, publication
       year, page count or volume number lies outside the bounds of the
       pinned contract answers `500` once the database refuses it. Green:
