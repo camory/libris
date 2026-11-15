@@ -68,6 +68,15 @@ class EditionDetailsRequestTest {
     request.validate() shouldBe Refused(listOf(ValidationErrorResponse("series", "blank")))
   }
 
+  @Test
+  fun `a language that is not two lower-case letters is refused`() {
+    // Given
+    val request = baggyAndHisMen().copy(language = "fre")
+
+    // When / Then
+    request.validate() shouldBe Refused(listOf(ValidationErrorResponse("language", "not-a-language")))
+  }
+
   private fun baggyAndHisMen(
     title: String = "Aux prises avec Baggy et ses hommes",
     artist: String = "Eiichirō Oda",

@@ -43,10 +43,13 @@ data class EditionDetailsRequest(
       if (details == null) add(ValidationErrorResponse("title", "blank"))
       if (null in contributions) add(ValidationErrorResponse("authors", "blank"))
       if (series != null && seriesEntry == null) add(ValidationErrorResponse("series", "blank"))
+      if (language != null && !LANGUAGE.matches(language)) add(ValidationErrorResponse("language", "not-a-language"))
     }
     return if (details != null && errors.isEmpty()) Accepted(details) else Refused(errors)
   }
 }
+
+private val LANGUAGE = Regex("[a-z]{2}")
 
 sealed interface EditionDetailsValidation {
   data class Accepted(val details: EditionDetails) : EditionDetailsValidation
