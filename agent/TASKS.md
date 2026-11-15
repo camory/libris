@@ -217,7 +217,7 @@ today stays green and guards each task.
       copy of their own (D05). Behaviour stays as it is: the views' tests
       and the removal's scenario tests green unchanged.
 
-- [ ] T187 Frontend: the catalogue's client reads a page once.
+- [x] T187 Frontend: the catalogue's client reads a page once.
       Refactor, its entry T187: the browse and the search of the catalogue
       read their page alike through one reading (D05). Behaviour stays as
       it is: the client's specs against the Contracteer mock green

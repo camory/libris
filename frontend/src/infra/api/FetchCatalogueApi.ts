@@ -22,30 +22,19 @@ export class FetchCatalogueApi implements CatalogueApi, SearchApi {
   async browse(after: string | null): Promise<BookPage> {
     const query =
       after === null ? "" : `?${new URLSearchParams({ after }).toString()}`;
-    const response = await fetch(`${this.baseUrl}/api/v1/books${query}`, {
-      headers: { Accept: "application/json, application/problem+json" },
-    });
-    if (response.status !== 200) {
-      throw Error(`The catalogue answered ${response.status}`);
-    }
-    const body = (await response.json()) as BookPageResponse;
-    return { books: body.books.map(bookOf), next: body.next };
+    const body = await this.bodyAt<BookPageResponse>(
+      `${this.baseUrl}/api/v1/books${query}`,
+    );
+    return pageOf(body);
   }
 
   async search(query: string, after: string | null): Promise<SearchPage> {
     const parameters = new URLSearchParams({ q: query });
     if (after !== null) parameters.set("after", after);
-    const response = await fetch(
+    const body = await this.bodyAt<SearchPageResponse>(
       `${this.baseUrl}/api/v1/books?${parameters.toString()}`,
-      {
-        headers: { Accept: "application/json, application/problem+json" },
-      },
     );
-    if (response.status !== 200) {
-      throw Error(`The search answered ${response.status}`);
-    }
-    const body = (await response.json()) as SearchPageResponse;
-    return { books: body.books.map(bookOf), next: body.next, near: body.near };
+    return { ...pageOf(body), near: body.near };
   }
 
   async find(id: string): Promise<FindBookAnswer> {
@@ -60,4 +49,18 @@ export class FetchCatalogueApi implements CatalogueApi, SearchApi {
     const body = (await response.json()) as BookResponse;
     return { outcome: "found", book: bookOf(body) };
   }
+
+  private async bodyAt<Body>(address: string): Promise<Body> {
+    const response = await fetch(address, {
+      headers: { Accept: "application/json, application/problem+json" },
+    });
+    if (response.status !== 200) {
+      throw Error(`The catalogue answered ${response.status}`);
+    }
+    return (await response.json()) as Body;
+  }
+}
+
+function pageOf(body: BookPageResponse): BookPage {
+  return { books: body.books.map(bookOf), next: body.next };
 }
