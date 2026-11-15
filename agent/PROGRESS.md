@@ -294,14 +294,14 @@ Format:
 - Left over: nothing.
 
 ## 2026-11-15 — T187 the catalogue's client reads a page once — done
-- Did: `FetchCatalogueApi`'s private `pageAt(address)` asks a page, rejects
-  any answer but `200` with *The catalogue answered {status}* and maps the
-  books; `browse` and `search` read through it, one commit per move.
-- Decided: `pageAt` is generic over the body (`Body extends
-  BookPageResponse`) and answers `{ page, body }`, so the search reads
-  `near` from the body it was handed and the browse returns `page` alone,
-  no field of the body passed through; each read's address lines are
-  untouched.
+- Did: `FetchCatalogueApi`'s private `bodyAt<Body>(address)` asks a page,
+  rejects any answer but `200` with *The catalogue answered {status}* and
+  answers the body; the module's `pageOf(body)` maps the books; `browse`
+  and `search` read through both, one commit per move.
+- Decided: the run's `pageAt` answered `{ page, body }`; on Tophe's
+  fix-up call it became `bodyAt` + `pageOf`, so the search adds `near` to
+  `pageOf(body)` and no pair is handed back; each read's address lines
+  are untouched.
 - Deviations from the brief: none.
 - Left over: no case pins the bare `browse(null)` address nor the status
   check before the body is read; both named in the PR's follow-ups.

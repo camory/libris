@@ -22,17 +22,19 @@ export class FetchCatalogueApi implements CatalogueApi, SearchApi {
   async browse(after: string | null): Promise<BookPage> {
     const query =
       after === null ? "" : `?${new URLSearchParams({ after }).toString()}`;
-    const { page } = await this.pageAt(`${this.baseUrl}/api/v1/books${query}`);
-    return page;
+    const body = await this.bodyAt<BookPageResponse>(
+      `${this.baseUrl}/api/v1/books${query}`,
+    );
+    return pageOf(body);
   }
 
   async search(query: string, after: string | null): Promise<SearchPage> {
     const parameters = new URLSearchParams({ q: query });
     if (after !== null) parameters.set("after", after);
-    const { page, body } = await this.pageAt<SearchPageResponse>(
+    const body = await this.bodyAt<SearchPageResponse>(
       `${this.baseUrl}/api/v1/books?${parameters.toString()}`,
     );
-    return { ...page, near: body.near };
+    return { ...pageOf(body), near: body.near };
   }
 
   async find(id: string): Promise<FindBookAnswer> {
@@ -48,16 +50,17 @@ export class FetchCatalogueApi implements CatalogueApi, SearchApi {
     return { outcome: "found", book: bookOf(body) };
   }
 
-  private async pageAt<Body extends BookPageResponse>(
-    address: string,
-  ): Promise<{ page: BookPage; body: Body }> {
+  private async bodyAt<Body>(address: string): Promise<Body> {
     const response = await fetch(address, {
       headers: { Accept: "application/json, application/problem+json" },
     });
     if (response.status !== 200) {
       throw Error(`The catalogue answered ${response.status}`);
     }
-    const body = (await response.json()) as Body;
-    return { page: { books: body.books.map(bookOf), next: body.next }, body };
+    return (await response.json()) as Body;
   }
+}
+
+function pageOf(body: BookPageResponse): BookPage {
+  return { books: body.books.map(bookOf), next: body.next };
 }
