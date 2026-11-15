@@ -1,0 +1,62 @@
+import { ref, type Ref } from "vue";
+import type { Bookshelf } from "../domain/Bookshelf";
+import type { KnownReader } from "../domain/KnownReader";
+import { isOwnedBy, type Member } from "../domain/Member";
+import type { BookshelvesApi, FindAnswer } from "./BookshelvesApi";
+import { findFailureOf, type FindFailure } from "./FindFailure";
+import type { ReadersApi } from "./ReadersApi";
+
+export type FoundBookshelfState =
+  | { status: "loading" }
+  | {
+      status: "found";
+      bookshelf: Bookshelf;
+      members: Member[];
+      readers: KnownReader[];
+    }
+  | FindFailure;
+
+export function useFindBookshelf(
+  bookshelvesApi: BookshelvesApi,
+  readersApi: ReadersApi,
+): {
+  state: Ref<FoundBookshelfState>;
+  find: (id: string, readerId: string) => Promise<void>;
+} {
+  const state = ref<FoundBookshelfState>({ status: "loading" });
+
+  async function find(id: string, readerId: string) {
+    state.value = { status: "loading" };
+    try {
+      const answer = await bookshelvesApi.find(id);
+      state.value = stateOf(answer, await readersFor(answer, readerId));
+    } catch {
+      state.value = { status: "unavailable" };
+    }
+  }
+
+  async function readersFor(
+    answer: FindAnswer,
+    readerId: string,
+  ): Promise<KnownReader[]> {
+    return answer.outcome === "found" && isOwnedBy(answer.members, readerId)
+      ? readersApi.known()
+      : [];
+  }
+
+  return { state, find };
+}
+
+function stateOf(
+  answer: FindAnswer,
+  readers: KnownReader[],
+): FoundBookshelfState {
+  if (answer.outcome === "found")
+    return {
+      status: "found",
+      bookshelf: answer.bookshelf,
+      members: answer.members,
+      readers,
+    };
+  return findFailureOf(answer.type);
+}
