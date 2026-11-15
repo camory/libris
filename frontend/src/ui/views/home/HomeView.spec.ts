@@ -60,8 +60,10 @@ const mountHomeView = (
 
 describe("HomeView", () => {
   it("renders the French title from the messages", () => {
+    // When
     const wrapper = mountHomeView(chloe);
 
+    // Then
     expect(wrapper.text()).toContain("Libris");
   });
 
