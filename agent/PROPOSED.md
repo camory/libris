@@ -33,10 +33,6 @@
 
 ## Promoted
 
-- T186 Frontend: `EditionPageView` and `IsbnView` keep the removed copy's id in a
-  mutable `let removedId`, set by a wrapper before `remove` and read in
-  `afterRemoval`; were `useRemoveCopy` to hand the id to `afterRemoval`,
-  both `let`s and both wrappers would go (found on T136, 2026-11-07).
 - T187 Frontend: `FetchCatalogueApi`'s `browse` and `search` read a page alike;
   one private method would serve both (found on #407, 2026-11-12).
 - T188 Frontend tests: `EditionForm`, `ReaderChoice` and `AuthorBox` call

@@ -153,15 +153,14 @@ Read whole by a run that changes `frontend/`, after `every-run.md`.
   hands any answer but `204` to `problemOf`.
   `useRemoveCopy(copiesApi, afterRemoval)` exposes `state` (`ready`,
   `removing`, `removed`, `unavailable`) and `remove(copyId)`, which never
-  rejects as long as its `afterRemoval` does not, and stays `removing`
-  until `afterRemoval` is done. The
+  rejects as long as its `afterRemoval` does not, hands that `copyId` to
+  `afterRemoval(copyId)`, and stays `removing` until it is done. The
   `/problems/not-found` answer is taken as `removed`, `afterRemoval` run;
   a rejection, `/problems/validation` and any other type are
   `unavailable`, `afterRemoval` not run. `EditionPageView` passes
   `removing` and `removal-failed` (`unavailable`) to the card; its
-  `@remove` goes through `removeCopy`, which keeps the copy's id, and its
-  `afterRemoval` calls `refresh` while the ouvrage holds a copy other than
-  that one (on any bookshelf, whatever the role), and otherwise leaves
+  `@remove` reaches the composable's `remove`, and its `afterRemoval`
+  calls `refresh` while the ouvrage holds a copy other than the one given (on any bookshelf, whatever the role), and otherwise leaves
   the page without asking: `router.back()` when
   `openedFromAnotherScreen()` (`router.options.history.state.back` set)
   answers true, awaited through a one-shot
@@ -171,9 +170,10 @@ Read whole by a run that changes `frontend/`, after `every-run.md`.
   `SourceEditionCard`s, the lookup's and the added one, and holds its
   `useRemoveCopy` in a `shallowRef` rebuilt by `copyRemoval()` on each
   lookup, whose `afterRemoval` acts only while that removal is still the
-  current one, so a late answer leaves the next card alone. It never asks
-  Libris again: `dropRemovedCopy` keeps the shown copies (the lookup's and
-  the added one) less the removed id and, unless an add is being sent,
+  current one, so a late answer leaves the next card alone; both cards'
+  `@remove` call `removeCopyFromCard.remove`, read at the event. It never
+  asks Libris again: `dropRemovedCopy(copyId)` keeps the shown copies (the
+  lookup's and the added one) less the id `afterRemoval` gave and, unless an add is being sent,
   rebuilds `addBookToBookshelf`, which ends the *Added* state and brings
   the dock back; after an add it
   also makes `edition` the sent one, `covers` the sent candidate, `held`

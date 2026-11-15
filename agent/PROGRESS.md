@@ -281,3 +281,14 @@ Format:
   rewritten; both are declared in the PR.
 - Left over: `BookshelfView`'s own failure words, proposed under *Tidy* in
   `agent/PROPOSED.md`.
+
+## 2026-11-15 — T186 the removal hands back the removed copy — done
+- Did: `useRemoveCopy` hands the id it removed to `afterRemoval(copyId)`;
+  the ouvrage's page and the lookup screen read it there, their `let
+  removedId` and `removeCopy` wrappers gone, one commit per move.
+- Decided: the page's `copiesLeft` takes the id as `copyId`, not
+  `removedId`, so the brief's `git grep` over the views answers nothing;
+  the lookup screen's cards call `removeCopyFromCard.remove` in the
+  template, as the brief's note on the `shallowRef` said.
+- Deviations from the brief: none.
+- Left over: nothing.
