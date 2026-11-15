@@ -4,9 +4,11 @@ Read whole by a run that changes `backend/`, after `every-run.md`.
 
 ## Backend build and detekt
 - `org.testcontainers:testcontainers-postgresql`, on the test runtime
-  classpath, serves developers' machines only: `backend/.env.example` gives
-  `LIBRIS_DB_URL=jdbc:tc:postgresql:18-alpine:///libris`, which starts a
-  throwaway PostgreSQL in Docker. The sandbox and CI give a
+  classpath, serves developers' machines only: `backend/.env.test.example`
+  gives `LIBRIS_DB_URL=jdbc:tc:postgresql:18-alpine:///libris`, which starts
+  a throwaway PostgreSQL in Docker. `test` reads `backend/.env.test`,
+  `bootRun` reads `backend/.env`, each only for a variable the environment
+  does not define. The sandbox and CI give a
   `jdbc:postgresql://` URL and never load it. Keep the dependency, and never
   name Testcontainers in a test, a fixture or a configuration.
 - Spring Boot 4.1.1 names: `spring-boot-starter-webmvc`,

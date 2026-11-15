@@ -405,14 +405,15 @@ The build creates no infrastructure. It receives, identically in local dev,
 the sandbox and CI:
 - a PostgreSQL of the production major, through `LIBRIS_DB_URL`,
   `LIBRIS_DB_USER`, `LIBRIS_DB_PASSWORD`; on a developer's machine they
-  may come from `backend/.env`, copied from `backend/.env.example`, which
-  Gradle's `test` and `bootRun` read when the environment does not define
-  them;
+  may come from a git-ignored file that Gradle reads when the environment
+  does not define them: `backend/.env.test` for `test`, copied from
+  `backend/.env.test.example`, and `backend/.env` for `bootRun`, copied
+  from `backend/.env.example`;
 - the `contracteer` binary on the PATH;
 - the pinned JDK and Node.
 
-The one exception is a developer's tests: `backend/.env.example` gives the
-Testcontainers URL `jdbc:tc:postgresql:18-alpine:///libris`, with which the
+The one exception is a developer's tests: `backend/.env.test.example` gives
+the Testcontainers URL `jdbc:tc:postgresql:18-alpine:///libris`, with which the
 Testcontainers JDBC driver, on the test runtime classpath only, starts a
 throwaway PostgreSQL in Docker at the first connection and removes it when
 the test JVM exits. A developer then needs Docker and nothing else, while the
