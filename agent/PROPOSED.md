@@ -33,6 +33,9 @@
 - Frontend tests: three scenario files define and delete a `scrollIntoView`
   that `vitest.setup.ts` now defines for every spec file; drop theirs, a
   scenario edit, Tophe's (found on T188, 2026-11-15).
+- Backend tests: nine classes keep fixtures above the class (`AddBookToBookshelfTest`,
+  `ExecutorCoverWorkerTest`, `FileCoverStoreTest`, three `Jdbc…RepositoryTest`,
+  `CoverFetchesTest`, `CoverNameTest`, `FetchAwaitedCoversTest`) (T191, 2026-11-15).
 
 ## Loop, CI and gate
 
@@ -41,14 +44,6 @@
   hook on `git commit`, would refuse it (found on T189, 2026-11-15).
 
 ## Promoted
-
-- T191 Backend tests: the top-level fixtures sit above the class in
-  `LookupIsbnForReaderTest`, `LookupEditionByIsbnTest`, `AwaitedCoverTest`
-  and `ProblemAdviceTest`; move them below the class and its helpers
-  (found on T093, 2026-10-15).
-- T191 Backend tests: delete `ProblemAdviceTest`'s *a bookshelf id that is not a
-  uuid is a validation problem*, which the contract case `auto: path 'id'
-  type mismatch` proves since `v0.9.0` (Tophe, 2026-11-14).
 
 ## With Tophe
 

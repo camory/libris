@@ -242,7 +242,7 @@ today stays green and guards each task.
       slice test shares one context (D07). Behaviour stays as it is:
       `./gradlew check` green, as many cases as before.
 
-- [ ] T191 Backend tests: fixtures below their class, a proven case gone.
+- [x] T191 Backend tests: fixtures below their class, a proven case gone.
       Refactor of tests, its entries T191: the four test classes the entry
       names keep their fixtures below the class and its helpers (D10), and
       the advice's case of a bookshelf id that is not a uuid goes, which

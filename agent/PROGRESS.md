@@ -337,3 +337,15 @@ Format:
 - Decided: nothing; the brief settled the place, the order and the step.
 - Deviations from the brief: none.
 - Left over: nothing.
+
+## 2026-11-15 — T191 fixtures below their class, a proven case gone — done
+- Did: `LookupIsbnForReaderTest`, `LookupEditionByIsbnTest`,
+  `AwaitedCoverTest` and `ProblemAdviceTest` keep their fixtures below the
+  class, in the order reached; `ProblemAdviceTest` lost its uuid case.
+- Decided: `AwaitedCoverTest`'s `ONE_PIECE` and `NOW` stay on adjacent
+  lines, as they were written above the class.
+- Deviations from the brief: none.
+- Left over: the nine test classes that still keep fixtures above the
+  class, under *Tidy* in `agent/PROPOSED.md`; the advice's body case,
+  which `auto: body type mismatch` covers too, named in the PR's
+  follow-ups.
