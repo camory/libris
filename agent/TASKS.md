@@ -139,115 +139,12 @@
   empties the box, only the latest search counts, the search stays in the
   address, and no box sits over an empty catalogue; checked on the Pixel
   from the installed app on staging.
-
-## Tidy — agent/PROPOSED.md
-
-The entries of *Promoted*, each prefixed with the ID of the task that takes
-it; the run that ticks a task removes its entries. The bugs come first, the
-frontend's before the backend's, then the refactors. No task touches the
-contract (D04), and none edits a scenario test: every scenario test running
-today stays green and guards each task.
-
-- [x] T177 Frontend: a lookup Libris does not answer no longer hangs.
-      Bug, its entry T177. Goes red: a lookup answered `401` does not take
-      the reader through the expired session's navigation as `/me` does
-      (D06), and a lookup whose fetch is rejected leaves *Chercher* busy and
-      the skeleton standing. Green: the `401` goes through the same
-      callback the application wires, and a rejected lookup gives the
-      button back and takes the skeleton down. No sentence is added: what
-      the screen says then is a *Still to spec* line of PRD §4.7 (D05).
-
-- [x] T178 Frontend: the form suggests the names of the latest lookup.
-      Bug, its entry T178. Goes red: when the series' and the authors'
-      names asked by a first lookup land after those of a second, the
-      older answer replaces the newer and the form suggests it. Green: only
-      the answer to the latest ask counts, for the series and the authors
-      alike (D05).
-
-- [x] T179 Backend: a tome of digits alone in the BnF's record.
-      Bug, its entry T179. Goes red: the BnF record of 9782845808461, a
-      recording of the BnF's answer, reads no series and no volume number.
-      Green: it reads its series and tome 14, a tome of digits alone read
-      beside *tome N*; every record recorded before reads as it did. The lookup of fast entry answers (D02, D07).
-
-- [x] T180 Backend: the proxy's headers read whole.
-      Bug, its entry T180. Goes red: a blank `Remote-User` makes a reader
-      with an empty username, and a `Remote-User`, `Remote-Email` or
-      `Remote-Groups` outside ASCII reads mangled. Green: a blank username
-      is refused as a blank email is, and every header is decoded from
-      UTF-8 as `Remote-Name` is, by the one class that reads them (D06),
-      tested on its own (D07).
-
-- [x] T181 Backend: an add out of the contract's bounds is refused.
-      Bug, its entry T181. Goes red: an add whose language, publication
-      year, page count or volume number lies outside the bounds of the
-      pinned contract answers `500` once the database refuses it. Green:
-      the web adapter refuses each with a validation problem naming its
-      field, as it refuses the fields it checks today (D02, D11);
-      Contracteer stays green (D04, D07).
-
-- [x] T182 Frontend: the failure message drawn once.
-      Refactor, its entry T182: the message of U05, its icon and its
-      sentence in danger, is one presentational component with its own
-      spec, used by every component and view that draws it by hand (D05).
-      Behaviour stays as it is: every view, component and scenario test
-      green unchanged.
-
-- [x] T183 Frontend: every icon button on the one icon button.
-      Refactor, its entry T183: the views and components that still write
-      the icon button of U04 by hand use the one that exists (D05).
-      Behaviour stays as it is: their tests unchanged and green.
-
-- [x] T184 Frontend: one cover for the catalogue's rows.
-      Refactor, its entry T184: the cover of a catalogue row and of a
-      series row, its box, its picture falling back on error and its
-      stand-in, is one presentational component with its own spec (D05).
-      Behaviour stays as it is: both rows' tests unchanged and green.
-
-- [x] T185 Frontend: one reading of a find's failure.
-      Refactor, its entry T185: the finds of a bookshelf, of a catalogue
-      series and of a catalogue edition map their answer through one
-      mapping, and the pages of a series and of an edition pick their
-      failure's words through one (D05). Behaviour stays as it is: the
-      composables' and views' tests green unchanged.
-
-- [x] T186 Frontend: the removal hands back the removed copy.
-      Refactor, its entry T186: the removal of a copy tells what follows it
-      which copy went, so the ouvrage's page and the lookup screen keep no
-      copy of their own (D05). Behaviour stays as it is: the views' tests
-      and the removal's scenario tests green unchanged.
-
-- [x] T187 Frontend: the catalogue's client reads a page once.
-      Refactor, its entry T187: the browse and the search of the catalogue
-      read their page alike through one reading (D05). Behaviour stays as
-      it is: the client's specs against the Contracteer mock green
-      unchanged (D07).
-
-- [x] T188 Frontend tests: the browser's missing scroll defined once.
-      Refactor of tests, its entry T188: the test setup defines the scroll
-      jsdom lacks, so the components call it plainly and their specs stop
-      defining it; the home view's spec gains its Given, When and Then
-      (D07). The jsdom gotchas become one item. Behaviour stays as it is:
-      `npm test` green, no scenario test edited.
-
-- [x] T189 Backend: the reader's bookshelves by id built once.
-      Refactor, its entry T189: the catalogue's browse, the catalogue's
-      series and the held edition's reads build the reader's bookshelves
-      by id through one function (D02). Behaviour stays as it is: their
-      tests green unchanged.
-
-- [x] T190 Backend tests: the web slice's mocks declared once.
-      Refactor of tests, its entry T190: the mocked use cases of the web
-      slice are declared once, on the slice's own annotation, and every
-      slice test shares one context (D07). Behaviour stays as it is:
-      `./gradlew check` green, as many cases as before.
-
-- [x] T191 Backend tests: fixtures below their class, a proven case gone.
-      Refactor of tests, its entries T191: the four test classes the entry
-      names keep their fixtures below the class and its helpers (D10), and
-      the advice's case of a bookshelf id that is not a uuid goes, which
-      the contract's verification proves (D07). `./gradlew check` green,
-      one case fewer.
+- Tidy, T177 to T191, done 2026-11-15, `agent/PROPOSED.md`: the entries
+  Tophe promoted on 2026-11-14, five bugs then ten refactors; a lookup
+  Libris does not answer no longer hangs, the form suggests the names of
+  the latest lookup, a tome of digits alone is read from the BnF's record,
+  the proxy's headers are read whole, an add out of the contract's bounds
+  is refused; the refactors left behaviour as it was.
 
 ## Questions for the human
 

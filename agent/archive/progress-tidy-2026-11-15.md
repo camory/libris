@@ -1,0 +1,212 @@
+# Libris — Progress log, Tidy of 2026-11-15
+
+The entries of `agent/PROGRESS.md` of the phase *Tidy*, T177 to T191,
+planned from the entries of `agent/PROPOSED.md` Tophe promoted on
+2026-11-14, done 2026-11-15, moved here on 2026-11-15 once what a run
+needs of them was in `agent/gotchas/`. Nothing is appended here.
+
+## 2026-11-14 — T177 a lookup Libris does not answer no longer hangs — done
+- Did: `FetchIsbnApi` takes `onUnauthenticated` and calls it on a `401`,
+  then rejects; `bootstrap` hands it the callback it hands `FetchMeApi`;
+  `IsbnView`'s `search()` reads a rejected lookup as no answer.
+- Decided: the catch is `lookUp(isbn13).catch(() => null)` followed by an
+  early return, so `searching` falls back on the next line whatever the
+  answer and nothing is drawn under the field (no card, no form, no
+  message), as the brief asks; the `finally` the PROPOSED entry named
+  would have left the rejection escaping the click handler.
+- Deviations from the brief: none.
+- Left over: what the lookup screen says when Libris does not answer
+  (PRD §4.7 *Still to spec*), in the PR's Follow-ups for Tophe; a `401` on
+  the other clients, each its own bug; the D06 and D07 sentences proposed
+  in the PR body; a lookup with the network off and one with an expired
+  session, left to Tophe on the Pixel.
+
+## 2026-11-14 — T178 the form suggests the names of the latest lookup — done
+- Did: `useListSeriesNames` and `useListAuthorNames` number each `list()`
+  call and write `names` only for the latest one, its answer or its
+  rejection's `null`; an earlier answer or failure writes nothing.
+- Decided: the rejection is read as `null` through `.catch(() => null)`
+  before the latest-ask check, as `useSearchCatalogue`'s `pageOf` does,
+  so one check covers an answer and a failure alike; the spec-local fakes
+  are named `LibrisAnsweringInTurn`, as `useCreateBookshelf.spec.ts`'s.
+- Deviations from the brief: none.
+- Left over: nothing; the two callers, `IsbnView` and `EditionPageView`,
+  are unchanged and read the fixed `names` as before.
+
+## 2026-11-14 — T179 a tome of digits alone in the BnF's record — done
+- Did: `tomeOf` reads a `200 $h` that is digits alone, the whole subfield
+  as written, as that tome, after `tome N`; the BnF answer of
+  9782845808461 is recorded and read whole by `BnfSourceTest`.
+- Decided: the bare form is a second clause of `tomeOf`'s elvis, a regex
+  `\d+` matched against the whole `$h` then `toIntOrNull()`, so `tome N`
+  keeps its first place and a `$h` past an `Int` is no tome.
+- Deviations from the brief: none; the recording matched every value the
+  brief measured while planning.
+- Left over: 9782845808485 (tome 16) reads by the same rule, unrecorded;
+  the other forms of `$h` (`t. 14`, `14 bis`) stay out until a record
+  shows one.
+
+## 2026-11-15 — T180 the proxy's headers read whole — done
+- Did: `RemoteIdentity.of` answers no identity for a blank `Remote-User`,
+  as for a blank `Remote-Email`, and decodes `Remote-User`, `Remote-Email`
+  and `Remote-Groups` from UTF-8 as it decoded `Remote-Name`.
+- Decided: every header goes through one private `textOf`, decoded then
+  refused when blank, so blankness is judged on the decoded text; the
+  groups split inside `authoritiesOf`, which now takes the header's text.
+  The test's `asTomcatReads` builds a header as Tomcat reads it, for the
+  four UTF-8 cases.
+- Deviations from the brief: none.
+- Left over: the check of stored usernames outside ASCII before the
+  deploy, in the PR's Follow-ups for Tophe.
+
+## 2026-11-15 — T181 an add out of the contract's bounds is refused — done
+- Did: `EditionDetailsRequest.validate` refuses a language that is not two
+  lower-case letters (`not-a-language`), and a publication year, a page
+  count or a volume number below one (`not-positive`, the last on `series`).
+- Decided: the four checks sit in a private `outOfBounds`, its errors after
+  the blank ones, since a fourth check in `validate` crossed detekt's
+  cyclomatic threshold of 15; a below-one number reads through a private
+  `Int?.isBelowOne`. The edit's `PUT /api/v1/books/{id}` refuses the same
+  values, validating through the same class.
+- Deviations from the brief: `baggyAndHisMen` gains `volumeNumber` alone;
+  the language, the year and the page count are set with `copy(…)`, since
+  three more parameters would cross detekt's `LongParameterList` threshold
+  of six for a function. The split of `validate` landed in step 5's commit,
+  not a refactor of its own, since detekt failed that green without it.
+- Left over: nothing.
+
+## 2026-11-15 — T181 an add out of the contract's bounds is refused — reworked
+- Did: the five bound refusals of `EditionDetailsRequestTest` assert the
+  refused field alone, through `shouldBeInstanceOf<Refused>()`, no longer
+  its code; the two accepted guards expect `DETAILS_OF_BAGGY_AND_HIS_MEN`
+  with `copy(…)`, a fixture below the class.
+- Decided: the reviewer's verdict of 2026-11-15 settled that a test asserts
+  no code the contract does not enumerate, which the brief's acceptance
+  criteria and test plan asked; the codes stay in the production code as
+  documentation. The first case, *a body of every field is accepted…*,
+  keeps its own literal: the brief wants the existing cases unchanged.
+  Each case's red and each guard's mutation was run again on the new
+  assertions and read red.
+- Deviations from the brief: the refusal cases assert `Refused` and its
+  field, not the whole answer, as the review asks.
+- Left over: nothing; the mixed green and refactor of `72dfdb08` stays in
+  the history, which is not rewritten.
+
+## 2026-11-15 — T182 the failure message drawn once — done
+- Did: `FailureMessage` (`ui/components`, prop `sentence`) draws the alert
+  and the sentence of a failure; the fourteen components and views that
+  wrote it by hand draw it, each keeping its condition and spacing.
+- Decided: the moves were done by a throwaway script that read each hand
+  block and wrote the tag, its common classes dropped and the rest kept on
+  the tag, then Prettier; the catalogue's block, whose bound `:class` holds
+  a `>`, was moved by hand. Subjects say each screen's name ("the lookup
+  screen draws FailureMessage").
+- Deviations from the brief: none.
+- Left over: a look at the home page's *Erreur lors du chargement* and a
+  refused field of the form on the running app, left to Tophe in the PR.
+
+## 2026-11-15 — T183 every icon button on the one icon button — done
+- Did: the plus of the home page and of a bookshelf, the star of a home
+  row, the check of a new bookshelf and the cross, the crown and the check
+  of the choice of a reader are drawn by `IconButton`, one commit per file.
+- Decided: nothing; the brief settled the cross's `text-muted` on `<X>`
+  and the `shrink-0` the four buttons gain.
+- Deviations from the brief: none.
+- Left over: a look at the home page and a bookshelf's members on the
+  running app, and the icons' sizes (24 here, 22 on the other callers),
+  left to Tophe in the PR.
+
+## 2026-11-15 — T184 one cover for the catalogue's rows — done
+- Did: `RowCover` (`ui/components`, props `url` and `alt`) draws a row's
+  cover, its picture, the fall-back on error and the book icon; the
+  catalogue row and the series row draw it, one commit each.
+- Decided: the failure's ref is `failed` in the component, the rows'
+  `coverFailed` being the row's word for it; step 1's green wrote
+  `:src="url ?? undefined"`, since `vue-tsc` refuses `null` there, and
+  step 2's `v-if` dropped it.
+- Deviations from the brief: step 2 is two commits, its red case committed
+  alone by mistake, then its green; the first subject runs to 73
+  characters. History is not rewritten; both are declared in the PR.
+- Left over: a look at a row with a cover and one without, in the catalogue
+  and the series list, on the running app, left to Tophe in the PR.
+
+## 2026-11-15 — T185 one reading of a find's failure — done
+- Did: `FindFailure` and `findFailureOf` (`application/FindFailure.ts`)
+  read a find's problem once; the three finds read through it. The series
+  and edition pages draw `FindFailureMessage`, one commit per move.
+- Decided: nothing; the brief settled the names, the place and the props.
+- Deviations from the brief: the first subject runs to 80 characters; step
+  2's commit also carried a stray `useFindBookshelf.ts.new`, a scratch
+  file of the move, which step 3's commit removes. History is not
+  rewritten; both are declared in the PR.
+- Left over: `BookshelfView`'s own failure words, proposed under *Tidy* in
+  `agent/PROPOSED.md`.
+
+## 2026-11-15 — T186 the removal hands back the removed copy — done
+- Did: `useRemoveCopy` hands the id it removed to `afterRemoval(copyId)`;
+  the ouvrage's page and the lookup screen read it there, their `let
+  removedId` and `removeCopy` wrappers gone, one commit per move.
+- Decided: the page's `copiesLeft` takes the id as `copyId`, not
+  `removedId`, so the brief's `git grep` over the views answers nothing;
+  the lookup screen's cards call `removeCopyFromCard.remove` in the
+  template, as the brief's note on the `shallowRef` said.
+- Deviations from the brief: none.
+- Left over: nothing.
+
+## 2026-11-15 — T187 the catalogue's client reads a page once — done
+- Did: `FetchCatalogueApi`'s private `bodyAt<Body>(address)` asks a page,
+  rejects any answer but `200` with *The catalogue answered {status}* and
+  answers the body; the module's `pageOf(body)` maps the books; `browse`
+  and `search` read through both, one commit per move.
+- Decided: the run's `pageAt` answered `{ page, body }`; on Tophe's
+  fix-up call it became `bodyAt` + `pageOf`, so the search adds `near` to
+  `pageOf(body)` and no pair is handed back; each read's address lines
+  are untouched.
+- Deviations from the brief: none.
+- Left over: no case pins the bare `browse(null)` address nor the status
+  check before the body is read; both named in the PR's follow-ups.
+
+## 2026-11-15 — T188 the browser's missing scroll defined once — done
+- Did: `frontend/vitest.setup.ts`, the first `setupFiles` entry, defines
+  `Element.prototype.scrollIntoView` as a no-op; `AuthorBox`, `EditionForm`
+  and `ReaderChoice` call it plainly and their six asserting cases spy on
+  it; `HomeView.spec.ts`' title case carries its markers.
+- Decided: the setup is one assignment, `Element.prototype.scrollIntoView =
+  () => {};`, which the scenario files' `Reflect.deleteProperty` and
+  `vi.spyOn` both handle; nothing else the brief left open.
+- Deviations from the brief: none.
+- Left over: the three scenario files' own definitions, now redundant,
+  under *Tidy* in `agent/PROPOSED.md` for Tophe.
+
+## 2026-11-15 — T189 the reader's bookshelves by id built once — done
+- Did: `readersBookshelvesOf(bookshelves, readerId)`, `internal` in
+  `HeldEditionReads.kt` below `readersCopiesOf`, answers the reader's
+  bookshelves by id; `readersCopiesOf`, `BrowseCatalogue` and
+  `FindCatalogueSeries` read them through it, one commit per move.
+- Decided: its parameters sit one per line, as `readersCopiesOf`'s, since
+  the signature on one line passed detekt's line length.
+- Deviations from the brief: none in the code. Two commit subjects (steps
+  1 and 2, 76 and 78 characters) passed the 72; they are left as they
+  are, since history is not rewritten, and the squash title is within.
+- Left over: nothing.
+
+## 2026-11-15 — T190 the web slice's mocks declared once — done
+- Did: `@WebSliceTest` carries the `@MockitoBean` of the nineteen use cases
+  of `web`, in the order of the old lists; `ApiContractTest`,
+  `ProblemAdviceTest` and `SecurityConfigTest` lost theirs, in one commit.
+- Decided: nothing; the brief settled the place, the order and the step.
+- Deviations from the brief: none.
+- Left over: nothing.
+
+## 2026-11-15 — T191 fixtures below their class, a proven case gone — done
+- Did: `LookupIsbnForReaderTest`, `LookupEditionByIsbnTest`,
+  `AwaitedCoverTest` and `ProblemAdviceTest` keep their fixtures below the
+  class, in the order reached; `ProblemAdviceTest` lost its uuid case.
+- Decided: `AwaitedCoverTest`'s `ONE_PIECE` and `NOW` stay on adjacent
+  lines, as they were written above the class. Tophe, at review: the
+  body case goes too, so `ProblemAdviceTest` goes; without
+  `HttpMessageNotReadableException` in the advice, five `auto: body type
+  mismatch` cases of `ApiContractTest` fail.
+- Deviations from the brief: two cases fewer, not one.
+- Left over: the nine test classes that still keep fixtures above the
+  class, under *Tidy* in `agent/PROPOSED.md`.
