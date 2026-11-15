@@ -34,6 +34,12 @@
   that `vitest.setup.ts` now defines for every spec file; drop theirs, a
   scenario edit, Tophe's (found on T188, 2026-11-15).
 
+## Loop, CI and gate
+
+- No check holds a commit subject to D10's 72 characters: T184, T185, T189
+  slipped; a `guardrails` step over the PR's commits, or the sandbox's guard
+  hook on `git commit`, would refuse it (found on T189, 2026-11-15).
+
 ## Promoted
 
 - T190 Backend tests: every `@WebSliceTest` class names every use case of `web`
