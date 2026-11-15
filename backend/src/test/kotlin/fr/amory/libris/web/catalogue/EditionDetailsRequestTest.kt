@@ -77,6 +77,15 @@ class EditionDetailsRequestTest {
     request.validate() shouldBe Refused(listOf(ValidationErrorResponse("language", "not-a-language")))
   }
 
+  @Test
+  fun `a language in capitals is refused`() {
+    // Given
+    val request = baggyAndHisMen().copy(language = "FR")
+
+    // When / Then
+    request.validate() shouldBe Refused(listOf(ValidationErrorResponse("language", "not-a-language")))
+  }
+
   private fun baggyAndHisMen(
     title: String = "Aux prises avec Baggy et ses hommes",
     artist: String = "Eiichirō Oda",
