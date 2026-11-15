@@ -22,23 +22,17 @@ export class FetchCatalogueApi implements CatalogueApi, SearchApi {
   async browse(after: string | null): Promise<BookPage> {
     const query =
       after === null ? "" : `?${new URLSearchParams({ after }).toString()}`;
-    return this.pageAt(`${this.baseUrl}/api/v1/books${query}`);
+    const { page } = await this.pageAt(`${this.baseUrl}/api/v1/books${query}`);
+    return page;
   }
 
   async search(query: string, after: string | null): Promise<SearchPage> {
     const parameters = new URLSearchParams({ q: query });
     if (after !== null) parameters.set("after", after);
-    const response = await fetch(
+    const { page, body } = await this.pageAt<SearchPageResponse>(
       `${this.baseUrl}/api/v1/books?${parameters.toString()}`,
-      {
-        headers: { Accept: "application/json, application/problem+json" },
-      },
     );
-    if (response.status !== 200) {
-      throw Error(`The search answered ${response.status}`);
-    }
-    const body = (await response.json()) as SearchPageResponse;
-    return { books: body.books.map(bookOf), next: body.next, near: body.near };
+    return { ...page, near: body.near };
   }
 
   async find(id: string): Promise<FindBookAnswer> {
@@ -54,14 +48,16 @@ export class FetchCatalogueApi implements CatalogueApi, SearchApi {
     return { outcome: "found", book: bookOf(body) };
   }
 
-  private async pageAt(address: string): Promise<BookPage> {
+  private async pageAt<Body extends BookPageResponse>(
+    address: string,
+  ): Promise<{ page: BookPage; body: Body }> {
     const response = await fetch(address, {
       headers: { Accept: "application/json, application/problem+json" },
     });
     if (response.status !== 200) {
       throw Error(`The catalogue answered ${response.status}`);
     }
-    const body = (await response.json()) as BookPageResponse;
-    return { books: body.books.map(bookOf), next: body.next };
+    const body = (await response.json()) as Body;
+    return { page: { books: body.books.map(bookOf), next: body.next }, body };
   }
 }
