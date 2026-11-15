@@ -17,13 +17,6 @@ import org.springframework.http.MediaType.APPLICATION_JSON
 import org.springframework.test.web.servlet.client.RestTestClient
 import java.util.UUID
 
-private val TOPHE = readerNamed(
-  username = "tophe",
-  displayName = "Tophe",
-  id = ReaderId(UUID.fromString("01991c3a-5b7e-7c1d-8f2a-3d4e5f607181")),
-  defaultBookshelfId = BookshelfId(UUID.fromString("01991c3a-5b7e-7c1d-8f2a-3d4e5f607191")),
-)
-
 @WebSliceTest
 class ProblemAdviceTest @Autowired constructor(
   private val client: RestTestClient,
@@ -59,3 +52,10 @@ class ProblemAdviceTest @Autowired constructor(
       .expectBody(object : ParameterizedTypeReference<Map<String, Any>>() {})
       .returnResult().responseBody
 }
+
+private val TOPHE = readerNamed(
+  username = "tophe",
+  displayName = "Tophe",
+  id = ReaderId(UUID.fromString("01991c3a-5b7e-7c1d-8f2a-3d4e5f607181")),
+  defaultBookshelfId = BookshelfId(UUID.fromString("01991c3a-5b7e-7c1d-8f2a-3d4e5f607191")),
+)
