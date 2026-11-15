@@ -2,6 +2,7 @@ import { BookOpen } from "@lucide/vue";
 import { within } from "@testing-library/dom";
 import { mount } from "@vue/test-utils";
 import { describe, expect, it } from "vitest";
+import { nextTick } from "vue";
 import RowCover from "./RowCover.vue";
 
 describe("RowCover", () => {
@@ -19,6 +20,22 @@ describe("RowCover", () => {
   it("shows a book icon when it has no picture", () => {
     // When
     const { wrapper, screen } = show(null, "Couverture du Petit Prince");
+
+    // Then
+    expect(screen.queryByRole("img")).toBeNull();
+    expect(wrapper.findAllComponents(BookOpen)).toHaveLength(1);
+  });
+
+  it("shows a book icon when the picture does not load", async () => {
+    // Given
+    const { wrapper, screen } = show(
+      romanceDawnCover,
+      "Couverture de Romance dawn",
+    );
+
+    // When
+    screen.getByRole("img").dispatchEvent(new Event("error"));
+    await nextTick();
 
     // Then
     expect(screen.queryByRole("img")).toBeNull();
