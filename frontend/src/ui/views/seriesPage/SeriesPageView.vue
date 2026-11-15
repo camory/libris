@@ -6,8 +6,8 @@ import { useFindCatalogueSeries } from "../../../application/useFindCatalogueSer
 import { booksAndGapsInOrder } from "../../../domain/Book";
 import CatalogueRow from "../../components/CatalogueRow.vue";
 import CatalogueRowSkeleton from "../../components/CatalogueRowSkeleton.vue";
-import FailureMessage from "../../components/FailureMessage.vue";
 import FieldRowSkeleton from "../../components/FieldRowSkeleton.vue";
+import FindFailureMessage from "../../components/FindFailureMessage.vue";
 import GapRow from "../../components/GapRow.vue";
 import PageHintSkeleton from "../../components/PageHintSkeleton.vue";
 import PageTitleSkeleton from "../../components/PageTitleSkeleton.vue";
@@ -41,12 +41,6 @@ const booksAndGaps = computed(() =>
   state.value.status === "found"
     ? booksAndGapsInOrder(state.value.series.books, locale.value)
     : [],
-);
-
-const failure = computed(() =>
-  state.value.status === "unavailable"
-    ? t("seriesPage.error")
-    : t("seriesPage.notFound"),
 );
 
 watch(
@@ -105,6 +99,12 @@ watch(
         </ul>
       </div>
     </template>
-    <FailureMessage v-else class="pt-5" :sentence="failure" />
+    <FindFailureMessage
+      v-else
+      class="pt-5"
+      :status="state.status"
+      :not-found="t('seriesPage.notFound')"
+      :unavailable="t('seriesPage.error')"
+    />
   </main>
 </template>
