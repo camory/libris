@@ -146,9 +146,14 @@ Read whole by a run that changes `backend/`, after `every-run.md`.
   `@SpringBootTest` with explicit `classes` does not detect nested
   `@TestConfiguration` classes: `@Import` them.
 - The web slice (`@WebSliceTest`, in the `fixture` package) component-scans
-  `fr.amory.libris.web`, so every use case a controller there takes must be
-  in the class-level `@MockitoBean(types = [...])` of every web-slice test,
-  not only the one exercised. Its `WebSliceConfiguration` cannot live in the root test
+  `fr.amory.libris.web`, so every use case a controller there takes is a
+  mock, declared once in the `@MockitoBean(types = [...])` carried by
+  `@WebSliceTest` itself: a use case a controller gains joins that list. A
+  web-slice class declares no mock of its own: naming in its own
+  `@MockitoBean` a type the annotation already names fails at load
+  (`initializationError`, `Duplicate BeanOverrideHandler discovered in test
+  class`). A class takes the mocks it stubs through its `@Autowired`
+  constructor. Its `WebSliceConfiguration` cannot live in the root test
   package: a `@SpringBootTest` without `classes` looks for one
   `@SpringBootConfiguration` in the test's own package and finds two there,
   `@TestComponent` notwithstanding. Mockito stubs a method taking a value

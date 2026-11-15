@@ -42,11 +42,6 @@
 
 ## Promoted
 
-- T190 Backend tests: every `@WebSliceTest` class names every use case of `web`
-  in its `@MockitoBean`, and the identical lists are what let
-  `ProblemAdviceTest` and `SecurityConfigTest` share a context; declaring
-  the mocks once on `@WebSliceTest` would keep one list, if `@MockitoBean`
-  is honoured on a meta-annotation (found on T020 and T142).
 - T191 Backend tests: the top-level fixtures sit above the class in
   `LookupIsbnForReaderTest`, `LookupEditionByIsbnTest`, `AwaitedCoverTest`
   and `ProblemAdviceTest`; move them below the class and its helpers

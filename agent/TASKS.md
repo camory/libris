@@ -236,7 +236,7 @@ today stays green and guards each task.
       by id through one function (D02). Behaviour stays as it is: their
       tests green unchanged.
 
-- [ ] T190 Backend tests: the web slice's mocks declared once.
+- [x] T190 Backend tests: the web slice's mocks declared once.
       Refactor of tests, its entry T190: the mocked use cases of the web
       slice are declared once, on the slice's own annotation, and every
       slice test shares one context (D07). Behaviour stays as it is:
