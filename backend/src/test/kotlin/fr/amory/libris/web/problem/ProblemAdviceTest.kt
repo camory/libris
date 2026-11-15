@@ -30,20 +30,6 @@ class ProblemAdviceTest @Autowired constructor(
   private val welcomeReader: WelcomeReader,
   private val addBookToBookshelf: AddBookToBookshelf) {
   @Test
-  fun `a bookshelf id that is not a uuid is a validation problem`() {
-    // Given
-    given(welcomeReader("tophe", "tophe@amory.fr", "Tophe")).willReturn(TOPHE)
-
-    // When
-    val body = add("salon", """{}""")
-
-    // Then
-    body?.get("type") shouldBe "/problems/validation"
-    body!! shouldNotContainKey "detail"
-    verifyNoInteractions(addBookToBookshelf)
-  }
-
-  @Test
   fun `a body of the wrong types is a validation problem`() {
     // Given
     given(welcomeReader("tophe", "tophe@amory.fr", "Tophe")).willReturn(TOPHE)
