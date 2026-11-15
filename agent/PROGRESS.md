@@ -185,3 +185,16 @@ Format:
 - Left over: 9782845808485 (tome 16) reads by the same rule, unrecorded;
   the other forms of `$h` (`t. 14`, `14 bis`) stay out until a record
   shows one.
+
+## 2026-11-15 — T180 the proxy's headers read whole — done
+- Did: `RemoteIdentity.of` answers no identity for a blank `Remote-User`,
+  as for a blank `Remote-Email`, and decodes `Remote-User`, `Remote-Email`
+  and `Remote-Groups` from UTF-8 as it decoded `Remote-Name`.
+- Decided: every header goes through one private `textOf`, decoded then
+  refused when blank, so blankness is judged on the decoded text; the
+  groups split inside `authoritiesOf`, which now takes the header's text.
+  The test's `asTomcatReads` builds a header as Tomcat reads it, for the
+  four UTF-8 cases.
+- Deviations from the brief: none.
+- Left over: the check of stored usernames outside ASCII before the
+  deploy, in the PR's Follow-ups for Tophe.

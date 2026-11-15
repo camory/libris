@@ -359,9 +359,9 @@ Read whole by a run that changes `backend/`, after `every-run.md`.
   `L?a`) and Tomcat reads them as ISO-8859-1. The scenario client and the
   web slice's client are built on `SimpleClientHttpRequestFactory`, which
   sends the UTF-8 bytes as Authelia does; `RemoteIdentity.of` decodes
-  `Remote-Name` from ISO-8859-1 bytes to UTF-8, and the security chain's
-  `StrictHttpFirewall` checks every header value after the same decoding;
-  the other `Remote-*` headers are read as they come.
+  every `Remote-*` header from ISO-8859-1 bytes to UTF-8, before a blank
+  one is refused and before the groups are split, and the security chain's
+  `StrictHttpFirewall` checks every header value after the same decoding.
 - Tomcat itself answers `400` to a C0 control character (`\u0007`) in a
   header value, before Spring: a case on the firewall's header check sends a
   C1 one (`\u0085`, on the wire `C2 85`), which only the firewall refuses.

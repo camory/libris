@@ -27,11 +27,6 @@
 
 ## Promoted
 
-- T180 Backend: `RemoteIdentity.of` accepts a blank `Remote-User`, which makes a
-  reader with an empty username; refuse it as a blank email is refused.
-  Only `Remote-Name` is decoded from UTF-8, so a non-ASCII `Remote-User`,
-  `Remote-Email` or `Remote-Groups` reads mangled (found on T005,
-  2026-09-09, and T037, 2026-09-24).
 - T181 Backend: the add checks at the edge only what T037's brief listed; the
   contract's bounds on `language`, `publicationYear`, `pageCount` and
   `series.volumeNumber` reach the use case unchecked through

@@ -170,7 +170,7 @@ today stays green and guards each task.
       Green: it reads its series and tome 14, a tome of digits alone read
       beside *tome N*; every record recorded before reads as it did. The lookup of fast entry answers (D02, D07).
 
-- [ ] T180 Backend: the proxy's headers read whole.
+- [x] T180 Backend: the proxy's headers read whole.
       Bug, its entry T180. Goes red: a blank `Remote-User` makes a reader
       with an empty username, and a `Remote-User`, `Remote-Email` or
       `Remote-Groups` outside ASCII reads mangled. Green: a blank username

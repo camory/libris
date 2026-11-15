@@ -18,21 +18,24 @@ class RemoteIdentity private constructor(
   val authorities: List<GrantedAuthority>) {
   companion object {
     fun of(request: HttpServletRequest): RemoteIdentity? {
-      val username = request.getHeader("Remote-User")
-      val email = request.getHeader("Remote-Email")?.takeUnless { it.isBlank() }
+      val username = textOf(request, "Remote-User")
+      val email = textOf(request, "Remote-Email")
       if (username == null || email == null) return null
       return RemoteIdentity(
         username = username,
         email = email,
-        displayName = request.getHeader("Remote-Name")?.let(::utf8)?.takeUnless { it.isBlank() } ?: username,
-        authorities = authoritiesOf(request.getHeader("Remote-Groups").orEmpty().split(",").map { it.trim() }),
+        displayName = textOf(request, "Remote-Name") ?: username,
+        authorities = authoritiesOf(textOf(request, "Remote-Groups").orEmpty()),
       )
     }
 
-    private fun authoritiesOf(groups: List<String>): List<GrantedAuthority> =
+    private fun textOf(request: HttpServletRequest, header: String): String? =
+      request.getHeader(header)?.let(::utf8)?.takeUnless { it.isBlank() }
+
+    private fun authoritiesOf(groups: String): List<GrantedAuthority> =
       buildList {
         add(SimpleGrantedAuthority(READER_AUTHORITY))
-        if (ADMIN_GROUP in groups) add(SimpleGrantedAuthority(ADMIN_AUTHORITY))
+        if (ADMIN_GROUP in groups.split(",").map { it.trim() }) add(SimpleGrantedAuthority(ADMIN_AUTHORITY))
       }
   }
 }
