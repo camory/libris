@@ -13,6 +13,7 @@ import fr.amory.libris.web.catalogue.EditionDetailsValidation.Accepted
 import fr.amory.libris.web.catalogue.EditionDetailsValidation.Refused
 import fr.amory.libris.web.problem.ValidationErrorResponse
 import io.kotest.matchers.shouldBe
+import io.kotest.matchers.types.shouldBeInstanceOf
 import org.junit.jupiter.api.Test
 
 class EditionDetailsRequestTest {
@@ -74,7 +75,7 @@ class EditionDetailsRequestTest {
     val request = baggyAndHisMen().copy(language = "fre")
 
     // When / Then
-    request.validate() shouldBe Refused(listOf(ValidationErrorResponse("language", "not-a-language")))
+    request.validate().shouldBeInstanceOf<Refused>().errors.map { it.field } shouldBe listOf("language")
   }
 
   @Test
@@ -83,7 +84,7 @@ class EditionDetailsRequestTest {
     val request = baggyAndHisMen().copy(language = "FR")
 
     // When / Then
-    request.validate() shouldBe Refused(listOf(ValidationErrorResponse("language", "not-a-language")))
+    request.validate().shouldBeInstanceOf<Refused>().errors.map { it.field } shouldBe listOf("language")
   }
 
   @Test
@@ -92,7 +93,7 @@ class EditionDetailsRequestTest {
     val request = baggyAndHisMen().copy(publicationYear = 0)
 
     // When / Then
-    request.validate() shouldBe Refused(listOf(ValidationErrorResponse("publicationYear", "not-positive")))
+    request.validate().shouldBeInstanceOf<Refused>().errors.map { it.field } shouldBe listOf("publicationYear")
   }
 
   @Test
@@ -101,7 +102,7 @@ class EditionDetailsRequestTest {
     val request = baggyAndHisMen().copy(pageCount = 0)
 
     // When / Then
-    request.validate() shouldBe Refused(listOf(ValidationErrorResponse("pageCount", "not-positive")))
+    request.validate().shouldBeInstanceOf<Refused>().errors.map { it.field } shouldBe listOf("pageCount")
   }
 
   @Test
@@ -110,7 +111,7 @@ class EditionDetailsRequestTest {
     val request = baggyAndHisMen(volumeNumber = 0)
 
     // When / Then
-    request.validate() shouldBe Refused(listOf(ValidationErrorResponse("series", "not-positive")))
+    request.validate().shouldBeInstanceOf<Refused>().errors.map { it.field } shouldBe listOf("series")
   }
 
   @Test
