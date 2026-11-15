@@ -1,3 +1,4 @@
+import { CircleAlert } from "@lucide/vue";
 import { mount } from "@vue/test-utils";
 import { describe, expect, it } from "vitest";
 import FailureMessage from "./FailureMessage.vue";
@@ -9,6 +10,14 @@ describe("FailureMessage", () => {
 
     // Then
     expect(wrapper.text()).toBe("ISBN invalide");
+  });
+
+  it("draws the alert beside its sentence", () => {
+    // When
+    const wrapper = show("ISBN inconnu");
+
+    // Then
+    expect(wrapper.findAllComponents(CircleAlert)).toHaveLength(1);
   });
 });
 
