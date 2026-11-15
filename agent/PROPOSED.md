@@ -30,15 +30,12 @@
 - Frontend: `BookshelfView` picks its failure's words in a `switch` of its
   own, `undefined` outside a failure; it could draw `FindFailureMessage` as
   the series and edition pages do (found on T185, 2026-11-15).
+- Frontend tests: three scenario files define and delete a `scrollIntoView`
+  that `vitest.setup.ts` now defines for every spec file; drop theirs, a
+  scenario edit, Tophe's (found on T188, 2026-11-15).
 
 ## Promoted
 
-- T188 Frontend tests: `EditionForm`, `ReaderChoice` and `AuthorBox` call
-  `scrollIntoView?.(…)` because jsdom lacks it; a vitest `setupFiles` entry
-  defining it as a no-op would let them call it plainly, the jsdom gotchas
-  rewritten as one (found on T124, 2026-11-03). `HomeView.spec.ts`
-  *renders the French title from the messages* has no Given / When / Then
-  markers (found on T079, 2026-10-13).
 - T189 Backend: `BrowseCatalogue`, `FindCatalogueSeries` and `HeldEditionReads`
   each build the reader's bookshelves by id with the same chain,
   `findByMember(readerId).mapNotNull { ReaderBookshelf.of(it, readerId) }

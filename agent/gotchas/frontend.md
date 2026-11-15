@@ -431,8 +431,7 @@ Read whole by a run that changes `frontend/`, after `every-run.md`.
   `focus` calls `scrollIntoView({ block: "start" })` on the bordered box
   (name and roles' line, `scroll-mt-28`). Its spec's `box()` and
   `screen()` take `authorNames` fifth and fourth, `null` by default, then
-  `refusal`, optional, and
-  the file's `afterEach` deletes a `scrollIntoView` a case defined.
+  `refusal`, optional.
   Its spec's `valuesOf` leaves out the name boxes, `suggestions` the roles
   lines (`aria-expanded`), the trashes (`trashes()`, buttons named from
   *Retirer*) and *Ajouter un auteur*; `disabledOf` reads the fields, the
@@ -490,15 +489,11 @@ Read whole by a run that changes `frontend/`, after `every-run.md`.
   none by default (`seriesNames` and `authorNames` `null`, so no word,
   `action` `"add"`), and gives the edition's own `isbn13`
   when there is one; the focus case passes `attachTo: document.body` and
-  unmounts at its end, and the file's `afterEach` deletes a
-  `scrollIntoView` a case defined.
+  unmounts at its end.
 - On a detached tree a `fireEvent.click` on a radio checks nothing and fires
   no `change`, so `v-model` keeps the kind: a component spec chooses a kind
   with `fireEvent.change(radio, { target: { checked: true } })`. The
   scenarios mount on an attached host, where the click works.
-- jsdom has no `Element.prototype.scrollIntoView`: `EditionFormScenarios`
-  defines it as a no-op for its tests and deletes it after each; a component
-  spec that reaches a call to it needs the same.
 - A port that gains a method reds `vue-tsc` on every object literal typed
   as that port, specs included: `CatalogueView.spec.ts` builds a
   `CatalogueApi` by hand, so `find` reached it when the port gained it
@@ -1053,11 +1048,16 @@ Read whole by a run that changes `frontend/`, after `every-run.md`.
   as one of the base's: `FakeBookshelvesApi` holds a private `answers`, and
   a constructor parameter `private readonly answers` fails `vue-tsc` with
   `TS2415 … Types have separate declarations of a private property`.
-- jsdom 30 has no `scrollIntoView` (`HTMLElement.prototype.scrollIntoView`
-  is `undefined`): a component that calls it throws under every test that
-  reaches the call, unit and scenario alike. The call goes through optional
-  chaining, `element?.scrollIntoView?.(…)`, or a test that asserts it
-  defines it on the element first.
+- jsdom 30 has no `scrollIntoView`: `vitest.setup.ts` (the `setupFiles`
+  of `vite.config.ts`, in the `include` of `tsconfig.app.json`) defines
+  `Element.prototype.scrollIntoView` as a no-op before every spec file, so
+  a component calls it plainly (`box.value?.scrollIntoView({ … })`). A case
+  asserting the call spies with `vi.spyOn(Element.prototype,
+  "scrollIntoView")` and reads `mock.contexts` for the element; its file's
+  `afterEach` calls `vi.restoreAllMocks()`. `AuthorsEditScenarios`,
+  `EditionFormScenarios` and `HeldEditionEditScenarios` still define and
+  delete their own on the same prototype, harmless: each spec file runs the
+  setup in a jsdom of its own.
 - jsdom moves the focus only to an element in the document: on the detached
   tree every spec mounts, `focus()` leaves `document.activeElement` on the
   body. A case about the focus mounts with `attachTo: document.body` and

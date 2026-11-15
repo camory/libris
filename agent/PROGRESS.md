@@ -305,3 +305,15 @@ Format:
 - Deviations from the brief: none.
 - Left over: no case pins the bare `browse(null)` address nor the status
   check before the body is read; both named in the PR's follow-ups.
+
+## 2026-11-15 — T188 the browser's missing scroll defined once — done
+- Did: `frontend/vitest.setup.ts`, the first `setupFiles` entry, defines
+  `Element.prototype.scrollIntoView` as a no-op; `AuthorBox`, `EditionForm`
+  and `ReaderChoice` call it plainly and their six asserting cases spy on
+  it; `HomeView.spec.ts`' title case carries its markers.
+- Decided: the setup is one assignment, `Element.prototype.scrollIntoView =
+  () => {};`, which the scenario files' `Reflect.deleteProperty` and
+  `vi.spyOn` both handle; nothing else the brief left open.
+- Deviations from the brief: none.
+- Left over: the three scenario files' own definitions, now redundant,
+  under *Tidy* in `agent/PROPOSED.md` for Tophe.
