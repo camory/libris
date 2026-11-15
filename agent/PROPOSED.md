@@ -24,6 +24,9 @@
 - Frontend tests: `later()`, a promise settled by hand, is written in the
   specs of `useListSeriesNames`, `useListAuthorNames`, `useSearchCatalogue`
   and in `SearchScenarios`; one generic in `src/fixture` (T178, 2026-11-14).
+- Backend tests: `EditionDetailsRequestTest` and `NewBookRequestTest` assert
+  the codes `blank` and `not-an-isbn`, which no operation of the contract
+  enumerates; assert the refusal and its field only (T181, 2026-11-15).
 
 ## Promoted
 
