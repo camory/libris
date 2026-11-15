@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import { CircleAlert } from "@lucide/vue";
 import { useI18n } from "vue-i18n";
 import BusySpinner from "./BusySpinner.vue";
+import FailureMessage from "./FailureMessage.vue";
 
 defineProps<{
   action: "add" | "save";
@@ -33,10 +33,7 @@ const { t } = useI18n();
         <BusySpinner v-if="busy" class="size-4" />
         {{ t(busy ? words[action].busy : words[action].idle) }}
       </button>
-      <p v-if="failed" class="flex items-start gap-2 text-body text-danger">
-        <CircleAlert :size="22" class="shrink-0" />
-        <span>{{ t(words[action].error) }}</span>
-      </p>
+      <FailureMessage v-if="failed" :sentence="t(words[action].error)" />
     </div>
   </div>
 </template>
