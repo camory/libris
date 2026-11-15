@@ -18,16 +18,19 @@ class RemoteIdentity private constructor(
   val authorities: List<GrantedAuthority>) {
   companion object {
     fun of(request: HttpServletRequest): RemoteIdentity? {
-      val username = request.getHeader("Remote-User")?.let(::utf8)?.takeUnless { it.isBlank() }
-      val email = request.getHeader("Remote-Email")?.let(::utf8)?.takeUnless { it.isBlank() }
+      val username = textOf(request, "Remote-User")
+      val email = textOf(request, "Remote-Email")
       if (username == null || email == null) return null
       return RemoteIdentity(
         username = username,
         email = email,
-        displayName = request.getHeader("Remote-Name")?.let(::utf8)?.takeUnless { it.isBlank() } ?: username,
-        authorities = authoritiesOf(request.getHeader("Remote-Groups")?.let(::utf8).orEmpty()),
+        displayName = textOf(request, "Remote-Name") ?: username,
+        authorities = authoritiesOf(textOf(request, "Remote-Groups").orEmpty()),
       )
     }
+
+    private fun textOf(request: HttpServletRequest, header: String): String? =
+      request.getHeader(header)?.let(::utf8)?.takeUnless { it.isBlank() }
 
     private fun authoritiesOf(groups: String): List<GrantedAuthority> =
       buildList {

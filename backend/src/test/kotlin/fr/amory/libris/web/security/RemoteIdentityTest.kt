@@ -29,8 +29,7 @@ class RemoteIdentityTest {
   @Test
   fun `a username sent in UTF-8 is read whole`() {
     // Given
-    val asTomcatReadsIt = String("léa".toByteArray(UTF_8), ISO_8859_1)
-    val request = requestOf("Remote-User" to asTomcatReadsIt, "Remote-Email" to "lea@amory.fr")
+    val request = requestOf("Remote-User" to asTomcatReads("léa"), "Remote-Email" to "lea@amory.fr")
 
     // When
     val identity = RemoteIdentity.of(request).shouldNotBeNull()
@@ -42,8 +41,7 @@ class RemoteIdentityTest {
   @Test
   fun `an email sent in UTF-8 is read whole`() {
     // Given
-    val asTomcatReadsIt = String("léa@amory.fr".toByteArray(UTF_8), ISO_8859_1)
-    val request = requestOf("Remote-User" to "juliette", "Remote-Email" to asTomcatReadsIt)
+    val request = requestOf("Remote-User" to "juliette", "Remote-Email" to asTomcatReads("léa@amory.fr"))
 
     // When
     val identity = RemoteIdentity.of(request).shouldNotBeNull()
@@ -67,8 +65,7 @@ class RemoteIdentityTest {
   @Test
   fun `a name sent in UTF-8 is read whole`() {
     // Given
-    val asTomcatReadsIt = String("Léa".toByteArray(UTF_8), ISO_8859_1)
-    val request = julietteSending("Remote-Name" to asTomcatReadsIt)
+    val request = julietteSending("Remote-Name" to asTomcatReads("Léa"))
 
     // When
     val identity = RemoteIdentity.of(request).shouldNotBeNull()
@@ -104,11 +101,8 @@ class RemoteIdentityTest {
 
   @Test
   fun `a group set off by a non-breaking space is read`() {
-    // Given
-    val asTomcatReadsIt = String("family,\u00A0libris-admin".toByteArray(UTF_8), ISO_8859_1)
-
-    // When / Then
-    authoritiesOf("Remote-Groups" to asTomcatReadsIt) shouldBe listOf("ROLE_READER", "ROLE_ADMIN")
+    authoritiesOf("Remote-Groups" to asTomcatReads("family,\u00A0libris-admin")) shouldBe
+      listOf("ROLE_READER", "ROLE_ADMIN")
   }
 
   @Test
@@ -124,4 +118,7 @@ class RemoteIdentityTest {
 
   private fun requestOf(vararg headers: Pair<String, String>): MockHttpServletRequest =
     MockHttpServletRequest().apply { headers.forEach { (name, value) -> addHeader(name, value) } }
+
+  private fun asTomcatReads(text: String): String =
+    String(text.toByteArray(UTF_8), ISO_8859_1)
 }
