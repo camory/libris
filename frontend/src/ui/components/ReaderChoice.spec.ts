@@ -12,7 +12,7 @@ import ReaderChoice from "./ReaderChoice.vue";
 
 describe("ReaderChoice", () => {
   afterEach(() => {
-    Reflect.deleteProperty(HTMLElement.prototype, "scrollIntoView");
+    vi.restoreAllMocks();
   });
 
   it("offers a row per reader, each a button", () => {
@@ -219,11 +219,7 @@ describe("ReaderChoice", () => {
 
   it("brings itself into view when it opens", () => {
     // Given
-    const scrollIntoView = vi.fn();
-    Object.defineProperty(HTMLElement.prototype, "scrollIntoView", {
-      configurable: true,
-      value: scrollIntoView,
-    });
+    const scrollIntoView = vi.spyOn(Element.prototype, "scrollIntoView");
 
     // When
     const { wrapper } = open();
