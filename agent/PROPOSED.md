@@ -33,8 +33,6 @@
 
 ## Promoted
 
-- T187 Frontend: `FetchCatalogueApi`'s `browse` and `search` read a page alike;
-  one private method would serve both (found on #407, 2026-11-12).
 - T188 Frontend tests: `EditionForm`, `ReaderChoice` and `AuthorBox` call
   `scrollIntoView?.(…)` because jsdom lacks it; a vitest `setupFiles` entry
   defining it as a no-op would let them call it plainly, the jsdom gotchas
