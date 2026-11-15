@@ -255,3 +255,17 @@ Format:
 - Left over: a look at the home page and a bookshelf's members on the
   running app, and the icons' sizes (24 here, 22 on the other callers),
   left to Tophe in the PR.
+
+## 2026-11-15 — T184 one cover for the catalogue's rows — done
+- Did: `RowCover` (`ui/components`, props `url` and `alt`) draws a row's
+  cover, its picture, the fall-back on error and the book icon; the
+  catalogue row and the series row draw it, one commit each.
+- Decided: the failure's ref is `failed` in the component, the rows'
+  `coverFailed` being the row's word for it; step 1's green wrote
+  `:src="url ?? undefined"`, since `vue-tsc` refuses `null` there, and
+  step 2's `v-if` dropped it.
+- Deviations from the brief: step 2 is two commits, its red case committed
+  alone by mistake, then its green; the first subject runs to 73
+  characters. History is not rewritten; both are declared in the PR.
+- Left over: a look at a row with a cover and one without, in the catalogue
+  and the series list, on the running app, left to Tophe in the PR.

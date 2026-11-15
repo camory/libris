@@ -991,6 +991,11 @@ Read whole by a run that changes `frontend/`, after `every-run.md`.
   `ReaderChoice`'s *Fermer*, `BookshelvesHolding`'s *Annuler*), never on
   the tag, where it would sit beside `text-accent`; no component or view
   writes `rounded-[10px] text-accent` but `IconButton.vue` (since T183).
+- A row's cover is `RowCover` (`ui/components`, required props `url`,
+  `string | null`, and `alt`, translated by the caller): the 48 × 74 box,
+  the picture, which gives way to `BookOpen` once it fails to load, and
+  `BookOpen` for a `null` `url`. `CatalogueRow` and `SeriesRow` draw it
+  (since T184); the skeletons and `GapRow` draw their own empty box.
 - `findComponent(SomeIcon)` over a tree that draws none answers an empty
   wrapper whose `.element` throws `Cannot call element on an empty
   VueWrapper`: that is the red of a case asserting an icon before the icon is
