@@ -83,7 +83,6 @@ const shownCopies = computed(() =>
     ? [...copies.value, addState.value.copy]
     : copies.value,
 );
-let removedId: string | null = null;
 const removeCopyFromCard = shallowRef(copyRemoval());
 const removalState = computed(() => removeCopyFromCard.value.state.value);
 const removing = computed(() => removalState.value.status === "removing");
@@ -173,14 +172,14 @@ async function search() {
 }
 
 function copyRemoval() {
-  const removal = useRemoveCopy(copiesApi, async () => {
-    if (removeCopyFromCard.value === removal) dropRemovedCopy();
+  const removal = useRemoveCopy(copiesApi, async (copyId) => {
+    if (removeCopyFromCard.value === removal) dropRemovedCopy(copyId);
   });
   return removal;
 }
 
-function dropRemovedCopy() {
-  copies.value = shownCopies.value.filter(({ id }) => id !== removedId);
+function dropRemovedCopy(copyId: string) {
+  copies.value = shownCopies.value.filter(({ id }) => id !== copyId);
   if (addState.value.status === "added" && sent.value) {
     edition.value = sent.value;
     covers.value = sentCovers.value;
@@ -190,11 +189,6 @@ function dropRemovedCopy() {
   if (!adding.value) {
     addBookToBookshelf.value = useAddBookToBookshelf(meApi, bookshelfApi);
   }
-}
-
-async function removeCopy(copyId: string) {
-  removedId = copyId;
-  await removeCopyFromCard.value.remove(copyId);
 }
 
 async function send(edition: SourceEdition) {
@@ -296,7 +290,7 @@ async function send(edition: SourceEdition) {
           :covers="sentCovers"
           :removing="removing"
           :removal-failed="removalFailed"
-          @remove="removeCopy"
+          @remove="removeCopyFromCard.remove"
         />
         <EditionForm
           v-else-if="answerShown === 'form'"
@@ -335,7 +329,7 @@ async function send(edition: SourceEdition) {
           :removing="removing"
           :removal-failed="removalFailed"
           @cover-source="coverSource = $event"
-          @remove="removeCopy"
+          @remove="removeCopyFromCard.remove"
         >
           <template v-if="!held || shownCopies.length === 0" #corner>
             <IconButton

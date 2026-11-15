@@ -211,7 +211,7 @@ today stays green and guards each task.
       failure's words through one (D05). Behaviour stays as it is: the
       composables' and views' tests green unchanged.
 
-- [ ] T186 Frontend: the removal hands back the removed copy.
+- [x] T186 Frontend: the removal hands back the removed copy.
       Refactor, its entry T186: the removal of a copy tells what follows it
       which copy went, so the ouvrage's page and the lookup screen keep no
       copy of their own (D05). Behaviour stays as it is: the views' tests
