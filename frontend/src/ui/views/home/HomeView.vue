@@ -16,6 +16,7 @@ import type { Reader } from "../../../domain/Reader";
 import BookshelfRow from "../../components/BookshelfRow.vue";
 import BookshelfRowSkeleton from "../../components/BookshelfRowSkeleton.vue";
 import FailureMessage from "../../components/FailureMessage.vue";
+import IconButton from "../../components/IconButton.vue";
 import NewBookshelfRow from "../../components/NewBookshelfRow.vue";
 
 const { t, locale } = useI18n();
@@ -85,15 +86,13 @@ void list();
         <h2 class="text-label text-muted">
           {{ t("home.bookshelves.label") }}
         </h2>
-        <button
+        <IconButton
           v-if="memberships && !naming"
-          type="button"
-          :aria-label="t('home.bookshelves.new')"
-          class="flex size-11 items-center justify-center rounded-[10px] text-accent"
+          :label="t('home.bookshelves.new')"
           @click="naming = true"
         >
           <CirclePlus />
-        </button>
+        </IconButton>
       </div>
       <FailureMessage
         v-if="state.status === 'unavailable'"
