@@ -343,9 +343,10 @@ Format:
   `AwaitedCoverTest` and `ProblemAdviceTest` keep their fixtures below the
   class, in the order reached; `ProblemAdviceTest` lost its uuid case.
 - Decided: `AwaitedCoverTest`'s `ONE_PIECE` and `NOW` stay on adjacent
-  lines, as they were written above the class.
-- Deviations from the brief: none.
+  lines, as they were written above the class. Tophe, at review: the
+  body case goes too, so `ProblemAdviceTest` goes; without
+  `HttpMessageNotReadableException` in the advice, five `auto: body type
+  mismatch` cases of `ApiContractTest` fail.
+- Deviations from the brief: two cases fewer, not one.
 - Left over: the nine test classes that still keep fixtures above the
-  class, under *Tidy* in `agent/PROPOSED.md`; the advice's body case,
-  which `auto: body type mismatch` covers too, named in the PR's
-  follow-ups.
+  class, under *Tidy* in `agent/PROPOSED.md`.
