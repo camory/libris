@@ -186,6 +186,9 @@ Still to spec:
   exist.
 - The edition page shows the reading states and the loans, with §4.4 and
   §4.11.
+- A tap on the cover of an edition's card opens it larger.
+- The catalogue shows as a grid, two covers per row, each with its
+  edition's title only.
 
 ### 4.2 Search (P1)
 Finding an ouvrage of the catalogue as the reader types.
@@ -223,6 +226,7 @@ Still to spec:
   knows it.
 - A series has a cover of its own, its lowest tome's: the household's or
   the reader's, and kept true when a cover arrives late or an edition moves.
+- The series show as a grid, as the catalogue does (§4.1).
 
 ### 4.6 Wishlist (P2)
 What the family wants next.
@@ -245,6 +249,9 @@ Still to spec:
   INTERMARC (*Le comte de Monte-Cristo*, 9782253098058) is found, not
   unknown.
 - The keyboard's go key starts the search.
+- The card's covers change with a swipe left or right, through a standard
+  component in place of today's own; a tap opens the shown cover larger,
+  where a swipe or the left and right chevrons change it too.
 - A refused camera says why; a camera that finds nothing usable for a while
   says so; whether the camera takes the place of the message and skeleton
   under the field, as it does the card's and the form's.
