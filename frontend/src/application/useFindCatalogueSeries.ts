@@ -1,12 +1,12 @@
 import { ref, type Ref } from "vue";
 import type { SeriesWithBooks } from "../domain/Series";
+import { findFailureOf, type FindFailure } from "./FindFailure";
 import type { FindSeriesAnswer, SeriesApi } from "./SeriesApi";
 
 export type FoundSeriesState =
   | { status: "loading" }
   | { status: "found"; series: SeriesWithBooks }
-  | { status: "notFound" }
-  | { status: "unavailable" };
+  | FindFailure;
 
 export function useFindCatalogueSeries(seriesApi: SeriesApi): {
   state: Ref<FoundSeriesState>;
@@ -29,11 +29,5 @@ export function useFindCatalogueSeries(seriesApi: SeriesApi): {
 function stateOf(answer: FindSeriesAnswer): FoundSeriesState {
   if (answer.outcome === "found")
     return { status: "found", series: answer.series };
-  switch (answer.type) {
-    case "/problems/not-found":
-    case "/problems/validation":
-      return { status: "notFound" };
-    default:
-      return { status: "unavailable" };
-  }
+  return findFailureOf(answer.type);
 }
