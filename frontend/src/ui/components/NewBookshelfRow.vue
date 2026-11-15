@@ -5,6 +5,7 @@ import { useI18n } from "vue-i18n";
 import { isBookshelfName } from "../../domain/Bookshelf";
 import BusySpinner from "./BusySpinner.vue";
 import FailureMessage from "./FailureMessage.vue";
+import IconButton from "./IconButton.vue";
 
 defineProps<{
   creating: boolean;
@@ -32,21 +33,19 @@ onMounted(() => field.value?.focus());
         class="h-11 min-w-0 flex-1 rounded-xl border-[1.5px] border-border bg-surface px-3 text-field outline-none placeholder:text-muted focus:border-accent"
       />
       <div class="size-11 shrink-0">
-        <button
+        <IconButton
           v-if="creating || isBookshelfName(name)"
-          type="button"
           :disabled="creating"
-          :aria-label="
+          :label="
             creating
               ? t('home.bookshelves.creating')
               : t('home.bookshelves.create')
           "
-          class="flex size-11 items-center justify-center rounded-[10px] text-accent"
           @click="emit('create', name)"
         >
           <BusySpinner v-if="creating" class="size-5.5" />
           <Check v-else :stroke-width="3" />
-        </button>
+        </IconButton>
       </div>
     </div>
     <FailureMessage
