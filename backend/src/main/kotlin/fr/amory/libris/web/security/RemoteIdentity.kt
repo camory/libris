@@ -25,14 +25,14 @@ class RemoteIdentity private constructor(
         username = username,
         email = email,
         displayName = request.getHeader("Remote-Name")?.let(::utf8)?.takeUnless { it.isBlank() } ?: username,
-        authorities = authoritiesOf(request.getHeader("Remote-Groups").orEmpty().split(",").map { it.trim() }),
+        authorities = authoritiesOf(request.getHeader("Remote-Groups")?.let(::utf8).orEmpty()),
       )
     }
 
-    private fun authoritiesOf(groups: List<String>): List<GrantedAuthority> =
+    private fun authoritiesOf(groups: String): List<GrantedAuthority> =
       buildList {
         add(SimpleGrantedAuthority(READER_AUTHORITY))
-        if (ADMIN_GROUP in groups) add(SimpleGrantedAuthority(ADMIN_AUTHORITY))
+        if (ADMIN_GROUP in groups.split(",").map { it.trim() }) add(SimpleGrantedAuthority(ADMIN_AUTHORITY))
       }
   }
 }

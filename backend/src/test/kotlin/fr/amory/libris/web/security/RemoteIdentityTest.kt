@@ -103,6 +103,15 @@ class RemoteIdentityTest {
   }
 
   @Test
+  fun `a group set off by a non-breaking space is read`() {
+    // Given
+    val asTomcatReadsIt = String("family,\u00A0libris-admin".toByteArray(UTF_8), ISO_8859_1)
+
+    // When / Then
+    authoritiesOf("Remote-Groups" to asTomcatReadsIt) shouldBe listOf("ROLE_READER", "ROLE_ADMIN")
+  }
+
+  @Test
   fun `another group is no admin`() {
     authoritiesOf("Remote-Groups" to "family") shouldBe listOf("ROLE_READER")
   }
